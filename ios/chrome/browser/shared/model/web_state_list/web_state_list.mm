@@ -77,15 +77,21 @@ struct WebStateList::DetachParams {
 };
 
 WebStateList::DetachParams WebStateList::DetachParams::Detaching() {
-  return {.is_closing = false, .is_user_action = false};
+  return {
+      .is_closing = false,
+      .is_user_action = false,
+      .by_browsing_data_remover = false,
+  };
 }
 
 WebStateList::DetachParams WebStateList::DetachParams::Closing(
     bool is_user_action,
     bool by_browsing_data_remover) {
-  return {.is_closing = true,
-          .is_user_action = is_user_action,
-          .by_browsing_data_remover = by_browsing_data_remover};
+  return {
+      .is_closing = true,
+      .is_user_action = is_user_action,
+      .by_browsing_data_remover = by_browsing_data_remover,
+  };
 }
 
 // Wrapper around a WebState stored in a WebStateList.
