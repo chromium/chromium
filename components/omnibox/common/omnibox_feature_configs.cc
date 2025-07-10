@@ -254,6 +254,10 @@ Toolbelt::Toolbelt() {
       base::FeatureParam<bool>(&kOmniboxToolbelt, "UseActionIconsInLocationBar",
                                enabled)
           .Get();
+  select_toolbelt_before_opening =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "SelectToolbeltBeforeOpening",
+                               enabled)
+          .Get();
 }
 
 DocumentProvider::DocumentProvider() {

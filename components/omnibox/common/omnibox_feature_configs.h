@@ -270,6 +270,12 @@ struct Toolbelt : Config<Toolbelt> {
   // Whether to set the location bar `OmniboxView` icon to the selected
   // toolbelt action's icon, when a toolbelt action is selected via keyboard.
   bool use_action_icons_in_location_bar;
+
+  // Whether to select the toolbelt match before opening one of its actions.
+  // This has the effect of taking the toolbelt match's fill into edit, the
+  // verbatim user input text, instead of any text that might have been selected
+  // or inline autocompleted previously.
+  bool select_toolbelt_before_opening;
 };
 
 // If enabled, adjusts the indentation of the omnibox input and matches to fix

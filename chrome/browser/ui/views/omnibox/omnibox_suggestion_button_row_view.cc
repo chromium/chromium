@@ -485,6 +485,11 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
       popup_view_->model()->AcceptKeyword(entry_method);
     }
   } else {
+    if (omnibox_feature_configs::Toolbelt::Get()
+            .select_toolbelt_before_opening &&
+        match().IsToolbelt()) {
+      popup_view_->model()->SetPopupSelection(selection);
+    }
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
     popup_view_->model()->OpenSelection(selection, event.time_stamp(),
