@@ -411,11 +411,11 @@
   {
     "name": "app-launch-shortcut",
     "owners": [
+      "jimmyxgong@chromium.org",
       "michaelcheco@google.com",
-      "dpad@google.com",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "app-specific-history",
@@ -3288,7 +3288,7 @@
       "michaelcheco@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-experimental-web-platform-features",
@@ -7625,7 +7625,7 @@
   {
     "name": "pcie-billboard-notification",
     "owners": [ "jimmyxgong@chromium.org", "cros-device-enablement@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "pdf-ink2",
@@ -8432,7 +8432,7 @@
       "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "restrict-gamepad-access",
@@ -9199,10 +9199,10 @@
   {
     "name": "system-shortcut-behavior",
     "owners": [
-      "dpad@google.com",
+      "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "system-voice-isolation-option",
@@ -9843,7 +9843,7 @@
       "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "use-stork-smds-server-address",
