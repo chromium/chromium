@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.picture_in_picture;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 
 import android.os.Build.VERSION_CODES;
 
@@ -53,7 +54,7 @@ import java.util.concurrent.TimeoutException;
     BlinkFeatures.MEDIA_SESSION_ENTER_PICTURE_IN_PICTURE,
     MediaFeatures.AUTO_PICTURE_IN_PICTURE_FOR_VIDEO_PLAYBACK
 })
-@Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({RESTRICTION_TYPE_NON_AUTO, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R) // crbug.com/430452403
 @Batch(Batch.PER_CLASS)
 public class AutoPictureInPictureTabHelperTest {
