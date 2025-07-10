@@ -9525,6 +9525,24 @@
             ]
         }
     ],
+    "EnableWatermarkTestPage": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableWatermarkTestPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EncryptedPrefHashing": [
         {
             "platforms": [
