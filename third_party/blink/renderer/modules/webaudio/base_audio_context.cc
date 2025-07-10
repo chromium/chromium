@@ -187,16 +187,15 @@ void BaseAudioContext::Dispose() {
 }
 
 void BaseAudioContext::ContextLifecycleStateChanged(
-    mojom::FrameLifecycleState state) {
+    mojom::blink::FrameLifecycleState state) {
   // Don't need to do anything for an offline context.
   if (!HasRealtimeConstraint()) {
     return;
   }
 
-  if (state == mojom::FrameLifecycleState::kRunning) {
+  if (state == mojom::blink::FrameLifecycleState::kRunning) {
     destination()->GetAudioDestinationHandler().Resume();
-  } else if (state == mojom::FrameLifecycleState::kFrozen ||
-             state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia) {
+  } else if (state == mojom::blink::FrameLifecycleState::kFrozen) {
     destination()->GetAudioDestinationHandler().Pause();
   }
 }

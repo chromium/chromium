@@ -394,9 +394,8 @@ void PresentationConnection::ContextDestroyed() {
 }
 
 void PresentationConnection::ContextLifecycleStateChanged(
-    mojom::FrameLifecycleState state) {
-  if (state == mojom::FrameLifecycleState::kFrozen ||
-      state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia) {
+    mojom::blink::FrameLifecycleState state) {
+  if (state == mojom::blink::FrameLifecycleState::kFrozen) {
     CloseConnection();
   }
 }

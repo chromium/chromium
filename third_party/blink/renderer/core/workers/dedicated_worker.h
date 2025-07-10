@@ -141,7 +141,8 @@ class CORE_EXPORT DedicatedWorker final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
 
-  void ContextLifecycleStateChanged(mojom::FrameLifecycleState state) override;
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override;
   void Trace(Visitor*) const override;
 
  private:

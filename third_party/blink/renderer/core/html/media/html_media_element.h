@@ -531,7 +531,7 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInteractiveContent() const final;
 
   // ExecutionContextLifecycleStateObserver functions.
-  void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
+  void ContextLifecycleStateChanged(mojom::blink::FrameLifecycleState) override;
   void ContextDestroyed() override;
 
   virtual void OnPlay() {}
@@ -865,7 +865,6 @@ class CORE_EXPORT HTMLMediaElement
   bool muted_ : 1;
   bool paused_ : 1;
   bool seeking_ : 1;
-  bool paused_by_context_paused_ : 1;
   bool show_poster_flag_ : 1;
 
   // data has not been loaded since sending a "stalled" event

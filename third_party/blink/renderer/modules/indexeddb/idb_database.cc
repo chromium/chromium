@@ -576,8 +576,7 @@ void IDBDatabase::ContextLifecycleStateChanged(
     return;
   }
 
-  if (state == mojom::blink::FrameLifecycleState::kFrozen ||
-      state == mojom::blink::FrameLifecycleState::kFrozenAutoResumeMedia) {
+  if (state == mojom::blink::FrameLifecycleState::kFrozen) {
     DidBecomeInactive();
   }
 }

@@ -639,23 +639,22 @@ const AtomicString& DedicatedWorker::InterfaceName() const {
 }
 
 void DedicatedWorker::ContextLifecycleStateChanged(
-    mojom::FrameLifecycleState state) {
+    mojom::blink::FrameLifecycleState state) {
   DCHECK(GetExecutionContext()->IsContextThread());
   switch (state) {
-    case mojom::FrameLifecycleState::kPaused:
+    case mojom::blink::FrameLifecycleState::kPaused:
       // Do not do anything in this case. kPaused is only used
       // for when the main thread is paused we shouldn't worry
       // about pausing the worker thread in this case.
       break;
-    case mojom::FrameLifecycleState::kFrozen:
-    case mojom::FrameLifecycleState::kFrozenAutoResumeMedia:
+    case mojom::blink::FrameLifecycleState::kFrozen:
       if (!requested_frozen_) {
         requested_frozen_ = true;
         context_proxy_->Freeze(
             GetExecutionContext()->is_in_back_forward_cache());
       }
       break;
-    case mojom::FrameLifecycleState::kRunning:
+    case mojom::blink::FrameLifecycleState::kRunning:
       if (requested_frozen_) {
         context_proxy_->Resume();
         requested_frozen_ = false;

@@ -405,7 +405,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   void ResetWebMediaPlayer() const { Media()->web_media_player_.reset(); }
 
-  void MediaContextLifecycleStateChanged(mojom::FrameLifecycleState state) {
+  void MediaContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) {
     Media()->ContextLifecycleStateChanged(state);
   }
 
@@ -1038,28 +1039,16 @@ TEST_P(HTMLMediaElementTest, ContextFrozen) {
   test::RunPendingTasks();
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
-  // First, set frozen but with auto resume.
+  // Set to frozen.
   EXPECT_CALL((*MockMediaPlayer()), OnFrozen());
-  EXPECT_FALSE(Media()->paused());
   GetExecutionContext()->SetLifecycleState(
-      mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
-  EXPECT_TRUE(Media()->paused());
-  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
-
-  // Now, if we set back to running the media should auto resume.
-  GetExecutionContext()->SetLifecycleState(
-      mojom::FrameLifecycleState::kRunning);
-  EXPECT_FALSE(Media()->paused());
-
-  // Then set to frozen without auto resume.
-  EXPECT_CALL((*MockMediaPlayer()), OnFrozen());
-  GetExecutionContext()->SetLifecycleState(mojom::FrameLifecycleState::kFrozen);
+      mojom::blink::FrameLifecycleState::kFrozen);
   EXPECT_TRUE(Media()->paused());
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
 
   // Now, the media should stay paused.
   GetExecutionContext()->SetLifecycleState(
-      mojom::FrameLifecycleState::kRunning);
+      mojom::blink::FrameLifecycleState::kRunning);
   EXPECT_TRUE(Media()->paused());
 }
 
@@ -1752,8 +1741,7 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithoutMediaPlayerAttached) {
   EXPECT_TRUE(MediaIsPlaying());
 
   // Freeze with auto resume.
-  MediaContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
+  MediaContextLifecycleStateChanged(mojom::blink::FrameLifecycleState::kFrozen);
 
   EXPECT_FALSE(MediaIsPlaying());
 }
@@ -1774,8 +1762,7 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithMediaPlayerAttached) {
   EXPECT_TRUE(MediaIsPlaying());
 
   // Freeze with auto resume.
-  MediaContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
+  MediaContextLifecycleStateChanged(mojom::blink::FrameLifecycleState::kFrozen);
 
   EXPECT_FALSE(MediaIsPlaying());
 }

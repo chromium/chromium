@@ -96,7 +96,8 @@ class MODULES_EXPORT PresentationConnection
   void ContextDestroyed() override;
 
   // ExecutionContextLifecycleStateObserver implementation.
-  void ContextLifecycleStateChanged(mojom::FrameLifecycleState state) override;
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override;
 
   String id_;
   KURL url_;

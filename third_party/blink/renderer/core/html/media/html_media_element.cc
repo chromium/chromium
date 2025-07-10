@@ -474,7 +474,6 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       muted_(false),
       paused_(true),
       seeking_(false),
-      paused_by_context_paused_(false),
       show_poster_flag_(true),
       sent_stalled_event_(false),
       ignore_preload_none_(false),
@@ -4087,22 +4086,12 @@ void HTMLMediaElement::ClearMediaPlayer() {
 }
 
 void HTMLMediaElement::ContextLifecycleStateChanged(
-    mojom::FrameLifecycleState state) {
-  if (state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia && playing_) {
-    paused_by_context_paused_ = true;
+    mojom::blink::FrameLifecycleState state) {
+  if (state == mojom::blink::FrameLifecycleState::kFrozen && playing_) {
     pause();
     if (web_media_player_) {
       web_media_player_->OnFrozen();
     }
-  } else if (state == mojom::FrameLifecycleState::kFrozen && playing_) {
-    pause();
-    if (web_media_player_) {
-      web_media_player_->OnFrozen();
-    }
-  } else if (state == mojom::FrameLifecycleState::kRunning &&
-             paused_by_context_paused_) {
-    paused_by_context_paused_ = false;
-    Play();
   }
 }
 
