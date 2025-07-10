@@ -175,7 +175,8 @@ bool IsEligibleForMigrationToAccount(
 bool IsProfileEligibleForMigrationToAccount(
     const AddressDataManager& address_data_manager,
     const AutofillProfile& profile) {
-  return !address_data_manager.IsProfileMigrationBlocked(profile.guid());
+  return !profile.IsAccountProfile() &&
+         !address_data_manager.IsProfileMigrationBlocked(profile.guid());
 }
 
 }  // namespace autofill

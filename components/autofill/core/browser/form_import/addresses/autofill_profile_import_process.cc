@@ -274,17 +274,11 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
 void ProfileImportProcess::MaybeSetMigrationCandidate(
     std::optional<AutofillProfile>& migration_candidate,
     const AutofillProfile& profile) const {
-  // Basic checks: No migration candidate was selected yet, prompts can be shown
-  // (i.e. not only silent updates) and the `profile` is not stored in the
-  // user's account already.
   if (migration_candidate || allow_only_silent_updates_ ||
-      profile.IsAccountProfile()) {
+      !IsEligibleForMigrationToAccount(*address_data_manager_, profile)) {
     return;
   }
-  // Check the eligiblity of the user and profile.
-  if (IsEligibleForMigrationToAccount(*address_data_manager_, profile)) {
-    migration_candidate = profile;
-  }
+  migration_candidate = profile;
 }
 
 void ProfileImportProcess::ApplyImport() {
