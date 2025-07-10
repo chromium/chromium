@@ -60,6 +60,10 @@ static_library("system_info_provider") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/services/network_config/public/cpp",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("eche_app_ui") {
@@ -244,6 +248,10 @@ source_set("unit_tests") {
     "//ui/display",
     "//ui/display:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 js_type_check("closure_compile") {
