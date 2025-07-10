@@ -12,7 +12,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -277,7 +279,8 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
 }
 
 // Scans the given `entities` for values that match `value_u16`. It adds the
-// matching `FieldType` to `PossibleTypes::types`.
+// matching `FieldType` to `PossibleTypes::types` and, if applicable, a format
+// string to `PossibleTypes::format`.
 //
 // If kAutofillAiNoTagTypes is disabled:
 // This may not just include Autofill AI types like PASSPORT_NUMBER but
@@ -313,6 +316,34 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
             pt.types.insert(attribute.type().field_type());
           }
           pt.types.insert(field_type);
+          if (IsAffixFormatStringEnabledForType(field_type) &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillAiVoteForFormatStringsForAffixes)) {
+            pt.formats.emplace(FormatString_Type_AFFIX, u"0");
+          }
+        }
+
+        // Test if `value_in_field` is an affix of `value_on_file`.
+        if (IsAffixFormatStringEnabledForType(field_type) &&
+            value_in_field.size() < value_on_file.size() &&
+            value_in_field.size() >=
+                data_util::kMinAffixLengthForFormatString &&
+            value_in_field.size() <=
+                data_util::kMaxAffixLengthForFormatString &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillAiVoteForFormatStringsForAffixes)) {
+          if (value_on_file.starts_with(value_in_field)) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(FormatString_Type_AFFIX,
+                               base::NumberToString16(value_in_field.size()));
+          }
+          if (value_on_file.ends_with(value_in_field)) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(
+                FormatString_Type_AFFIX,
+                base::NumberToString16(
+                    -1 * static_cast<int>(value_in_field.size())));
+          }
         }
       }
     }

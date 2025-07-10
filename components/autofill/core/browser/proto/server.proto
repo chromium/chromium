@@ -202,6 +202,9 @@ message FormatString {
     // The format string represents a date as documented
     // autofill::data_util::IsValidDateFormat().
     DATE = 0;
+    // The format string the length of a prefix or suffix as documented
+    // autofill::data_util::IsValidAffixFormat().
+    AFFIX = 1;
   }
   optional Type type = 49;
   optional string format_string = 50;

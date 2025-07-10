@@ -30,6 +30,8 @@ namespace autofill {
 void PrintTo(const PossibleTypes& ps, std::ostream* os) {
   auto type_to_string = [](FormatString_Type t) {
     switch (t) {
+      case FormatString_Type_AFFIX:
+        return u"AFFIX";
       case FormatString_Type_DATE:
         return u"DATE";
     }
@@ -72,6 +74,33 @@ template <typename... Ts>
 Matcher<const PossibleTypes&> HasTypes(Ts&&... field_types) {
   return Field("PossibleTypes::types", &PossibleTypes::types,
                UnorderedElementsAre(field_types...));
+}
+
+// Matcher for `PossibleTypes::formats`.
+template <typename... Ts>
+  requires(std::convertible_to<Ts, const char*> && ...)
+Matcher<const PossibleTypes&> HasNoFormats() {
+  return Field("PossibleTypes::formats", &PossibleTypes::formats, IsEmpty());
+}
+
+// Matcher for `PossibleTypes::formats`.
+template <typename... Ts>
+  requires(std::convertible_to<Ts, const char*> && ...)
+Matcher<const PossibleTypes&> HasAffixFormats(Ts&&... formats) {
+  return Field("PossibleTypes::formats", &PossibleTypes::formats,
+               UnorderedElementsAre(
+                   Pair(FormatString_Type_AFFIX,
+                        base::UTF8ToUTF16(std::string_view(formats)))...));
+}
+
+// Matcher for `PossibleTypes::formats`.
+template <typename... Ts>
+  requires(std::convertible_to<Ts, const char*> && ...)
+Matcher<const PossibleTypes&> HasDateFormats(Ts&&... formats) {
+  return Field("PossibleTypes::formats", &PossibleTypes::formats,
+               UnorderedElementsAre(
+                   Pair(FormatString_Type_DATE,
+                        base::UTF8ToUTF16(std::string_view(formats)))...));
 }
 
 // Fakes that a `form` has been seen (without its field value) and parsed and
@@ -370,6 +399,7 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
   DeterminePossibleFieldTypesForUploadTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema, features::kAutofillAiNoTagTypes,
+         features::kAutofillAiVoteForFormatStringsForAffixes,
          features::kAutofillAiVoteForFormatStringsFromSingleFields,
          features::kAutofillAiVoteForFormatStringsFromMultipleFields,
          features::kAutofillEnableLoyaltyCardsFilling},
@@ -695,6 +725,79 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
                           HasTypes(PASSPORT_ISSUE_DATE),          //
                           HasTypes(PASSPORT_ISSUE_DATE),          //
                           HasTypes(UNKNOWN_TYPE)));
+}
+
+// Tests if format strings are crowdsourced for certain Autofill AI FieldTypes.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceAutofillAiFormatStrings) {
+  FormData form;
+  form.set_fields({
+      // Complete first/last name.
+      CreateTestFormField("first-name", "first-name", "Pippi",
+                          FormControlType::kInputText),
+      CreateTestFormField("last-name", "last-name", "Longstocking",
+                          FormControlType::kInputText),
+      // Complete passport number.
+      CreateTestFormField("number", "number", "0123456789",
+                          FormControlType::kInputText),
+      // Affixes of the passport number.
+      CreateTestFormField("number", "number", "0123",
+                          FormControlType::kInputText),
+      CreateTestFormField("number", "number", "789",
+                          FormControlType::kInputText),
+      CreateTestFormField("number", "number", "23456789",
+                          FormControlType::kInputText),
+      // These two are too long.
+      CreateTestFormField("number", "number", "012345678",
+                          FormControlType::kInputText),
+      CreateTestFormField("number", "number", "123456789",
+                          FormControlType::kInputText),
+      // Date format strings.
+      CreateTestFormField("expiry-date", "expiry-date", "30/08/2019",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-day", "01",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-month", "09",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-year", "2010",
+                          FormControlType::kInputText),
+      // No format string.
+      CreateTestFormField("wrong-country", "wrong-country", "Finland",
+                          FormControlType::kInputText),
+  });
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  EntityInstance entity = test::GetPassportEntityInstance({
+      .name = u"Pippi Longstocking",
+      .number = u"0123456789",
+      .country = u"Sweden",
+      .expiry_date = u"2019-08-30",
+      .issue_date = u"2010-09-01",
+  });
+
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", "en-US",
+          form_structure->fields()),
+      ElementsAre(
+          AllOf(HasTypes(NAME_FIRST), HasNoFormats()),
+          AllOf(HasTypes(NAME_LAST, NAME_LAST_SECOND), HasNoFormats()),
+          AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("0")),
+          AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("4")),
+          AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("-3")),
+          AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("-8")),
+          AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats()),
+          AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats()),
+          AllOf(HasTypes(PASSPORT_EXPIRATION_DATE),
+                HasDateFormats("DD/MM/YYYY")),
+          AllOf(HasTypes(PASSPORT_ISSUE_DATE), HasDateFormats("DD", "MM")),
+          AllOf(HasTypes(PASSPORT_ISSUE_DATE), HasDateFormats("DD", "MM")),
+          AllOf(HasTypes(PASSPORT_ISSUE_DATE), HasDateFormats("YYYY")),
+          AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats())));
 }
 
 // Test fixture for PreProcessStateMatchingTypes().

@@ -42,6 +42,9 @@ bool IsTagType(FieldType type);
 // Indicates whether the FieldType's domain are dates (year, month, day).
 bool IsDateFieldType(FieldType field_type);
 
+// Returns true for FieldTypes like PASSPORT_NUMBER.
+bool IsAffixFormatStringEnabledForType(FieldType type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_

@@ -39,7 +39,8 @@ struct PossibleTypes {
   FieldTypeSet types;
 
   // The format strings that match the field value.
-  // Format strings are determined only for Autofill AI dates.
+  // Format strings are determined only for Autofill AI dates and identification
+  // number (e.g., PASSPORT_NUMBER) affixes.
   std::set<std::pair<FormatString_Type, std::u16string>> formats;
 };
 

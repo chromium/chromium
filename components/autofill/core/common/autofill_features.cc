@@ -152,6 +152,14 @@ const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
 const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
     &kAutofillAiServerModel, "autofill_ai_model_use_cache_results", false};
 
+// If enabled, votes for prefix and suffix lengths of identification number
+// fields are uploaded. For example, if there's a passport with number CX1235987
+// on file, <input type=text value=CX12> uploads a format string "4".
+// TODO(crbug.com/429704303): Clean up when launched.
+BASE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes,
+             "AutofillAiVoteForFormatStringsForAffixes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, votes for date format strings from individual fields are
 // uploaded. For example, <input type=text value=31/12/2025> leads to the format
 // strings DD/MM/YYYY and D/M/YYYY.

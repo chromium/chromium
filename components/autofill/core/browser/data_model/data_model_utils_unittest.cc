@@ -365,5 +365,33 @@ TEST(AutofillDataModelUtils, IsValidDateForFormat) {
   EXPECT_FALSE(IsValidDateForFormat(Date(2025, 12, 32), u"YYYY-MM-DD"));
 }
 
+// Tests the constraints defined in the documentation of IsValidAffixFormat().
+TEST(AutofillDataModelUtils, IsValidAffixFormat) {
+  EXPECT_TRUE(IsValidAffixFormat(u"-8"));
+  EXPECT_TRUE(IsValidAffixFormat(u"-7"));
+  EXPECT_TRUE(IsValidAffixFormat(u"-6"));
+  EXPECT_TRUE(IsValidAffixFormat(u"-5"));
+  EXPECT_TRUE(IsValidAffixFormat(u"-4"));
+  EXPECT_TRUE(IsValidAffixFormat(u"-3"));
+  EXPECT_TRUE(IsValidAffixFormat(u"0"));
+  EXPECT_TRUE(IsValidAffixFormat(u"3"));
+  EXPECT_TRUE(IsValidAffixFormat(u"4"));
+  EXPECT_TRUE(IsValidAffixFormat(u"5"));
+  EXPECT_TRUE(IsValidAffixFormat(u"6"));
+  EXPECT_TRUE(IsValidAffixFormat(u"7"));
+  EXPECT_TRUE(IsValidAffixFormat(u"8"));
+
+  EXPECT_FALSE(IsValidAffixFormat(u""));
+  EXPECT_FALSE(IsValidAffixFormat(u"foo"));
+  EXPECT_FALSE(IsValidAffixFormat(u"-100"));
+  EXPECT_FALSE(IsValidAffixFormat(u"-9"));
+  EXPECT_FALSE(IsValidAffixFormat(u"-2"));
+  EXPECT_FALSE(IsValidAffixFormat(u"-1"));
+  EXPECT_FALSE(IsValidAffixFormat(u"1"));
+  EXPECT_FALSE(IsValidAffixFormat(u"2"));
+  EXPECT_FALSE(IsValidAffixFormat(u"9"));
+  EXPECT_FALSE(IsValidAffixFormat(u"100"));
+}
+
 }  // namespace
 }  // namespace autofill::data_util

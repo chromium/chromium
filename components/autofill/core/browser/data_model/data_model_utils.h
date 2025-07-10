@@ -116,6 +116,16 @@ bool IsValidDateForFormat(const Date& date, std::u16string_view format);
 // ICU without caching the SimpleDateFormat).
 std::u16string FormatDate(Date date, std::u16string_view format);
 
+inline constexpr size_t kMinAffixLengthForFormatString = 3;
+inline constexpr size_t kMaxAffixLengthForFormatString = 8;
+
+// Indicates if `format` presents the length of prefix or suffix:
+// - u"N" means the value is a prefix of length `N`;
+// - u"-N" means the value is a suffix of length `N`;
+// - u"0" means the value is a full value;
+// where `3 <= N <= 8`.
+bool IsValidAffixFormat(std::u16string_view format);
+
 // Converts the integer |expiration_month| to std::u16string. Returns a value
 // between ["01"-"12"].
 std::u16string Expiration2DigitMonthAsString(int expiration_month);
