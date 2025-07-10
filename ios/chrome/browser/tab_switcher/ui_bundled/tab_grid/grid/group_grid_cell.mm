@@ -291,10 +291,9 @@ const CGFloat kTopBarLargeInset = 20;
 
 - (void)setTitle:(NSString*)title {
   _titleLabel.text = title;
-  self.accessibilityLabel = l10n_util::GetNSStringF(
-      IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE,
-      base::SysNSStringToUTF16(title), base::NumberToString16(_tabsCount));
   _title = [title copy];
+
+  [self updateAccessibilityLabel];
 }
 
 - (UIDragPreviewParameters*)dragPreviewParameters {
@@ -335,6 +334,11 @@ const CGFloat kTopBarLargeInset = 20;
 - (void)setTabsCount:(NSInteger)tabsCount {
   _tabsCount = tabsCount;
   _groupSnapshotsView.tabsCount = tabsCount;
+}
+
+- (void)setActivityLabelData:(ActivityLabelData*)activityLabelData {
+  [super setActivityLabelData:activityLabelData];
+  [self updateAccessibilityLabel];
 }
 
 #pragma mark - Private
@@ -579,6 +583,21 @@ const CGFloat kTopBarLargeInset = 20;
     [NSLayoutConstraint
         deactivateConstraints:_dotContainerAccessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_dotContainerNormalConstraints];
+  }
+}
+
+// Updates the accessibility label.
+- (void)updateAccessibilityLabel {
+  if (self.activityLabelData) {
+    self.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_TAB_GROUP_CELL_UPDATED_ACCESSIBILITY_TITLE,
+        base::SysNSStringToUTF16(self.title),
+        base::NumberToString16(_tabsCount));
+  } else {
+    self.accessibilityLabel =
+        l10n_util::GetNSStringF(IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE,
+                                base::SysNSStringToUTF16(self.title),
+                                base::NumberToString16(_tabsCount));
   }
 }
 

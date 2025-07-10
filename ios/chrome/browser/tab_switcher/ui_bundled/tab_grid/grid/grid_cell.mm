@@ -12,6 +12,7 @@
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -349,21 +350,13 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
   [self.priceCardView setPriceDrop:price previousPrice:previousPrice];
-  // Only append PriceCardView accessibility text if it doesn't already exist in
-  // the accessibility label.
-  if ([self.accessibilityLabel
-          rangeOfString:self.priceCardView.accessibilityLabel]
-          .location == NSNotFound) {
-    self.accessibilityLabel =
-        [@[ self.accessibilityLabel, self.priceCardView.accessibilityLabel ]
-            componentsJoinedByString:@". "];
-  }
+  [self updateAccessibilityLabel];
 }
 
 - (void)setTitle:(NSString*)title {
   self.titleLabel.text = title;
-  self.accessibilityLabel = title;
   _title = title;
+  [self updateAccessibilityLabel];
 }
 
 - (void)setTitleHidden:(BOOL)titleHidden {
@@ -396,7 +389,29 @@ void PositionView(UIView* view, CGPoint point) {
                               underName:kSelectedRegularCellGuide];
 }
 
+- (void)setActivityLabelData:(ActivityLabelData*)activityLabelData {
+  [super setActivityLabelData:activityLabelData];
+  [self updateAccessibilityLabel];
+}
+
 #pragma mark - Private
+
+// Updates the accessibility label.
+- (void)updateAccessibilityLabel {
+  NSString* accessibilityLabel;
+  if (self.activityLabelData) {
+    accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_TAB_GRID_CELL_UPDATED, base::SysNSStringToUTF16(self.title));
+  } else {
+    accessibilityLabel = self.title;
+  }
+  if (self.priceCardView.accessibilityLabel) {
+    accessibilityLabel =
+        [@[ accessibilityLabel, self.priceCardView.accessibilityLabel ]
+            componentsJoinedByString:@". "];
+  }
+  self.accessibilityLabel = accessibilityLabel;
+}
 
 // Sets up the top bar with icon, title, and close button.
 - (UIView*)setupTopBar {
