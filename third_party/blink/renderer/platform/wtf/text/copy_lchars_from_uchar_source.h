@@ -37,7 +37,7 @@
 #endif
 #endif
 
-namespace WTF {
+namespace blink {
 
 inline void CopyLCharsFromUCharSource(base::span<LChar> destination,
                                       base::span<const UChar> source) {
@@ -93,6 +93,6 @@ inline void CopyLCharsFromUCharSource(base::span<LChar> destination,
 #endif
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_COPY_LCHARS_FROM_UCHAR_SOURCE_H_
