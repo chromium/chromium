@@ -42,12 +42,46 @@ export function getHtml(this: TraceRecorderElement) {
       </div>
     </div>
 
+     <div class="card">
+      <cr-expand-button class="cr-row" ?expanded="${this.tagsExpanded_}"
+          @expanded-changed="${this.onTagsExpandedChanged_}">
+        Track Event Tags
+      </cr-expand-button>
+      <cr-collapse class="expanded-content" ?opened="${this.tagsExpanded_}">
+        <p>Select the tags to enable or disable.</p>
+        <div class="tags-grid">
+          <div class="header-row-group">
+            <div>Enable</div>
+            <div>Disable</div>
+            <div>Tag</div>
+          </div>
+          ${this.trackEventTags.map(tagName => html`
+            <div class="tag-row">
+              <input
+                type="checkbox"
+                .checked="${this.isTagEnabled(tagName)}"
+                @change="${
+                  (e: Event) => this.onTagsChange_(e, tagName, true)}"/>
+              <input
+                type="checkbox"
+                .checked="${this.isTagDisabled(tagName)}"
+                @change="${
+                  (e: Event) => this.onTagsChange_(e, tagName, false)}"/>
+              <div>${tagName}</div>
+            </div>
+          `)}
+        </div>
+      </cr-collapse>
+    </div>
+
     <div class="card">
       <cr-expand-button class="cr-row" ?expanded="${this.categoriesExpanded_}"
           @expanded-changed="${this.onCategoriesExpandedChanged_}">
         Track Event Categories
       </cr-expand-button>
-      <cr-collapse id="expanded-content" ?opened="${this.categoriesExpanded_}">
+      <cr-collapse
+          class="expanded-content"
+          ?opened="${this.categoriesExpanded_}">
         <p>Select the categories to include in the trace config.</p>
         <div class="category-grid">
           <div class="header-row-group">
@@ -56,13 +90,14 @@ export function getHtml(this: TraceRecorderElement) {
             <div>Tags</div>
             <div>Description</div>
           </div>
-          ${this.traceCategories.map(category => html`
+          ${this.trackEventCategories.map(category => html`
             <div class="category-row">
               <input
                 type="checkbox"
-                .checked="${this.isEnabled(category.name)}"
+                .disabled="${this.isCategoryForced(category)}"
+                .checked="${this.isCategoryEnabled(category)}"
                 @change="${
-                  (e: Event) => this.onCategoryChange_(e, category.name)}">
+                  (e: Event) => this.onCategoryChange_(e, category.name)}"/>
               <div>${category.name}</div>
               <div>${category.tags.join(', ')}</div>
               <div>${category.description}</div>

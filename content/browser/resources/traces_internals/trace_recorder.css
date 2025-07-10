@@ -101,7 +101,14 @@
      - 4fr for the description (takes up 4x the space of name/tags)
   */
   grid-template-columns: 40px 1fr 1fr 4fr;
-  gap: 8px 16px;
+  gap: 2px 16px;
+  align-items: start;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: 40px 40px 1fr;
+  gap: 2px 16px;
   align-items: start;
 }
 
@@ -112,7 +119,8 @@
 }
 
 .header-row-group,
-.category-row {
+.category-row,
+.tag-row {
   /*
     This allows the cells to refer back to the parent .category-grid
     for their layout instructions.
@@ -120,6 +128,6 @@
   display: contents;
 }
 
-#expanded-content {
+.expanded-content {
   padding: 0 12px 8px;
 }
