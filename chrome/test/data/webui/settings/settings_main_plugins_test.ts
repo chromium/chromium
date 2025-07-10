@@ -35,6 +35,7 @@ suite('SettingsMain', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({isGuest: false});
     createSettingsMain();
   });
 
@@ -151,11 +152,36 @@ suite('SettingsMain', function() {
     assertEquals(undefined, pageVisibility);
     assertVisibilityRespected();
 
-    // Case2: Guest mode case
+    // Case2: Guest mode
     loadTimeData.overrideValues({isGuest: true});
     resetPageVisibilityForTesting();
     // Create a new instance for the visibility to have an effect.
     createSettingsMain();
     assertVisibilityRespected();
+  });
+
+  // Test which section is displayed when chrome://settings/ is visited.
+  test('TopLevelRoute', function() {
+    // Case1: Default (non-guest mode)
+    assertFalse(loadTimeData.getBoolean('isGuest'));
+    let active = settingsMain.$.switcher.querySelector<HTMLElement>(
+        '.active[slot=view]');
+    assertTrue(!!active);
+    assertEquals('old', active.id);
+
+    // Case2: Guest mode.
+    loadTimeData.overrideValues({isGuest: true});
+    resetPageVisibilityForTesting();
+    // Create a new instance for the visibility to have an effect.
+    createSettingsMain();
+    active = settingsMain.$.switcher.querySelector<HTMLElement>(
+        '.active[slot=view]');
+    assertTrue(!!active);
+    // <if expr="not is_chromeos">
+    assertEquals('search', active.id);
+    // </if>
+    // <if expr="is_chromeos">
+    assertEquals('old', active.id);
+    // </if>
   });
 });

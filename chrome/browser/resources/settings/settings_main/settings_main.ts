@@ -55,8 +55,6 @@ function getTopLevelRoute() {
   return guestTopLevelRoute;
 }
 
-const TOP_LEVEL_EQUIVALENT_ROUTE: Route = getTopLevelRoute();
-
 export interface SettingsMainElement {
   $: {
     noSearchResults: HTMLElement,
@@ -138,6 +136,8 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private languages_?: LanguagesModel;
   // </if>
 
+  private topLevelEquivalentRoute_: Route = getTopLevelRoute();
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -159,7 +159,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     }
 
     const effectiveRoute =
-        route === routes.BASIC ? TOP_LEVEL_EQUIVALENT_ROUTE : route;
+        route === routes.BASIC ? this.topLevelEquivalentRoute_ : route;
 
     if (this.lastRoute_ === effectiveRoute) {
       // Nothing to do.
@@ -168,7 +168,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
     this.lastRoute_ = effectiveRoute;
 
-    if (!route.hasMigratedToPlugin) {
+    if (!effectiveRoute.hasMigratedToPlugin) {
       // Case where the requested section still resides within the old
       // <settings-basic-page> element. Show that element, and let it handle
       // showing the correct content.
