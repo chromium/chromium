@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/content_settings/core/browser/content_settings_default_provider.h"
+
 #include <memory>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/browser/content_settings_default_provider.h"
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -70,7 +74,43 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
   base::Value value = TestUtils::GetContentSettingValue(
       &provider_, GURL("http://example.com/"), GURL("http://example.com/"),
       ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
-  EXPECT_TRUE(value.is_none());
+  EXPECT_TRUE(value.is_none()) << value.DebugString();
+}
+
+TEST_F(ContentSettingsDefaultProviderTest, DefaultPermissionSettings) {
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  // Check setting defaults.
+  base::Value default_setting = PermissionSettingToValue(
+      info, GeolocationSetting{PermissionOption::kAsk, PermissionOption::kAsk});
+  EXPECT_EQ(default_setting,
+            TestUtils::GetContentSettingValue(
+                &provider_, GURL(), GURL(),
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
+
+  base::Value block_setting = PermissionSettingToValue(
+      info,
+      GeolocationSetting{PermissionOption::kAsk, PermissionOption::kDenied});
+  provider_.SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, block_setting.Clone(),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  EXPECT_EQ(block_setting,
+            TestUtils::GetContentSettingValue(
+                &provider_, GURL(), GURL(),
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
+
+  provider_.SetWebsiteSetting(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, base::Value(),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+
+  EXPECT_EQ(default_setting,
+            TestUtils::GetContentSettingValue(
+                &provider_, GURL(), GURL(),
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
