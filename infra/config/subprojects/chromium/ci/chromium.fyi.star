@@ -1626,6 +1626,7 @@ fyi_ios_builder(
         additional_compile_targets = [
             "base_unittests",
             "content_shell",
+            "components_unittests",
             "content_unittests",
         ],
         mixins = [
