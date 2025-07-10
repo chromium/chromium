@@ -58,7 +58,10 @@ class PasswordChangeUIControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OfferingPasswordChangeDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+
+  EXPECT_CALL(delegate_, StartPasswordChangeFlow);
   GetDialogDelegate()->AcceptDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.LeakDetectionDialog",
       PasswordChangeDialogAction::kAcceptButtonClicked,
@@ -72,7 +75,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OfferingPasswordChangeDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kOfferingPasswordChange);
+
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.LeakDetectionDialog",
       PasswordChangeDialogAction::kCancelButtonClicked,
@@ -86,7 +92,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PrivacyNoticeDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_CALL(delegate_, OnPrivacyNoticeAccepted);
   GetDialogDelegate()->AcceptDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.LeakDetectionDialog",
       PasswordChangeDialogAction::kAcceptButtonClicked,
@@ -100,7 +109,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PrivacyNoticeDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kWaitingForAgreement);
+
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.LeakDetectionDialog",
       PasswordChangeDialogAction::kCancelButtonClicked,
@@ -114,7 +126,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PasswordFormNotFoundDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+
+  EXPECT_CALL(delegate_, OpenPasswordChangeTab);
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->AcceptDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.NoPasswordForm",
       PasswordChangeDialogAction::kAcceptButtonClicked,
@@ -124,7 +140,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        PasswordFormNotFoundDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.NoPasswordForm",
       PasswordChangeDialogAction::kCancelButtonClicked,
@@ -134,7 +153,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        ErrorDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kPasswordChangeFailed);
+
+  EXPECT_CALL(delegate_, OpenPasswordChangeTab);
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->AcceptDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedInteraction",
       PasswordChangeDialogAction::kAcceptButtonClicked,
@@ -144,7 +167,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        ErrorDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kPasswordChangeFailed);
+
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedInteraction",
       PasswordChangeDialogAction::kCancelButtonClicked,
@@ -154,7 +180,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OtpDetectedDialogAccepted) {
   UpdateState(PasswordChangeDelegate::State::kOtpDetected);
+
+  EXPECT_CALL(delegate_, OpenPasswordChangeTab);
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->AcceptDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.OTPRequested",
       PasswordChangeDialogAction::kAcceptButtonClicked,
@@ -164,7 +194,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        OtpDetectedDialogCancelled) {
   UpdateState(PasswordChangeDelegate::State::kOtpDetected);
+
+  EXPECT_CALL(delegate_, Stop);
   GetDialogDelegate()->CancelDialog();
+
   histogram_tester_.ExpectUniqueSample(
       "PasswordManager.PasswordChange.OTPRequested",
       PasswordChangeDialogAction::kCancelButtonClicked,
@@ -193,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        CheckingSignInToastShownAndCancelled) {
   UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
+  EXPECT_CALL(delegate_, CancelPasswordChangeFlow);
   views::test::ButtonTestApi clicker(GetToastActionButton());
   clicker.NotifyClick(ui::test::TestEvent());
 
@@ -206,6 +240,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                        ChangingPasswordToastShownAndCancelled) {
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
 
+  EXPECT_CALL(delegate_, CancelPasswordChangeFlow);
   views::test::ButtonTestApi clicker(GetToastActionButton());
   clicker.NotifyClick(ui::test::TestEvent());
 

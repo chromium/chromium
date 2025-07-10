@@ -449,7 +449,7 @@ void PasswordChangeUIController::StartPasswordChangeFlow() {
 void PasswordChangeUIController::OnPrivacyNoticeAccepted() {
   CHECK(password_change_delegate_);
   LogDialogAction(state_, PasswordChangeDialogAction::kAcceptButtonClicked);
-  password_change_delegate_->StartPasswordChangeFlow();
+  password_change_delegate_->OnPrivacyNoticeAccepted();
 }
 
 void PasswordChangeUIController::ShowPasswordDetails() {
