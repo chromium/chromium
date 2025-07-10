@@ -13312,6 +13312,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="LoginDetectionV2" singular="True">
+  <owner>yigu@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>web-identity-eng@chromium.org</owner>
+  <summary>
+    Records the info about login detected for sites based on different
+    heuristics. Recorded once per page load when OAuth login was detected on
+    page load. Note: the first version of LoginDetection recorded all pageload
+    types including password logins and no logins etc.
+  </summary>
+  <metric name="Page.LoginType" enum="LoginDetectionType">
+    <summary>
+      An enum for representing the different ways of user login to a site. At
+      this moment only OAuth logins are recorded in UKM.
+    </summary>
+  </metric>
+</event>
+
 <event name="LookalikeUrl.NavigationSuggestion" singular="True">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>

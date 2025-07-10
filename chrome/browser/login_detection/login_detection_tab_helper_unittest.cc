@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace login_detection {
 
@@ -30,18 +31,34 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   void ResetMetricsTesters() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  // Verifies the UMA metrics for the given login detection type to be
-  // recorded.
+  // Verifies the metrics for the given login detection type to be recorded.
   void VerifyLoginDetectionTypeMetrics(LoginDetectionType type) {
     histogram_tester_->ExpectUniqueSample("Login.PageLoad.DetectionType", type,
                                           1);
+    VerifyLoginDetectionUkm(type);
+  }
+
+  void VerifyLoginDetectionUkm(LoginDetectionType type) {
+    auto entries = ukm_recorder_->GetEntriesByName(
+        ukm::builders::LoginDetectionV2::kEntryName);
+    if (type == LoginDetectionType::kNoLogin) {
+      EXPECT_TRUE(entries.empty());
+      return;
+    }
+
+    ASSERT_EQ(1u, entries.size());
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        entries[0], ukm::builders::LoginDetectionV2::kPage_LoginTypeName,
+        static_cast<int64_t>(type));
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 TEST_F(LoginDetectionTabHelperTest, NoLogin) {
@@ -149,6 +166,39 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
   simulator->Commit();
 
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
+}
+
+TEST_F(LoginDetectionTabHelperTest, PopUpOAuthLogin) {
+  // Opener page.
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
+  // Simulate opening a popup.
+  std::unique_ptr<content::WebContents> popup_web_contents =
+      CreateTestWebContents();
+  LoginDetectionTabHelper::MaybeCreateForWebContents(popup_web_contents.get());
+  LoginDetectionTabHelper* opener_tab_helper =
+      LoginDetectionTabHelper::FromWebContents(web_contents());
+  opener_tab_helper->DidOpenRequestedURL(
+      popup_web_contents.get(), web_contents()->GetPrimaryMainFrame(),
+      GURL("https://oauth.com/authenticate?client_id=123"), content::Referrer(),
+      WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_LINK, false, true);
+
+  // Navigate the popup.
+  auto popup_simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://oauth.com/authenticate?client_id=123"),
+      popup_web_contents.get());
+  popup_simulator->Commit();
+
+  // The popup navigation should not record any login metric.
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  ResetMetricsTesters();
+
+  // Destroying the popup should trigger login detection.
+  popup_web_contents.reset();
+  VerifyLoginDetectionTypeMetrics(
+      LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);
 }
 
 }  // namespace login_detection

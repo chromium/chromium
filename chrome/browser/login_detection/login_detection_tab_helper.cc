@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace login_detection {
 
@@ -28,8 +29,16 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
       ->GetPrefs();
 }
 
-void RecordLoginDetectionMetrics(LoginDetectionType type) {
+void RecordLoginDetectionMetrics(LoginDetectionType type,
+                                 ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
+
+  if (type == LoginDetectionType::kNoLogin) {
+    return;
+  }
+  ukm::builders::LoginDetectionV2 builder(ukm_source_id);
+  builder.SetPage_LoginType(static_cast<int64_t>(type))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace
@@ -50,7 +59,9 @@ LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
-      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
+      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
+      ukm_source_id_(
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }
 
@@ -82,11 +93,13 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   if (auto signedin_site = oauth_login_detector_->GetSuccessfulLoginFlowSite(
           prev_navigation_url, navigation_handle->GetRedirectChain())) {
     ProcessNewSignedInSite(*signedin_site);
-    RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
+    RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
+                                navigation_handle->GetNextPageUkmSourceId());
     return;
   }
 
-  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin);
+  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin,
+                              navigation_handle->GetNextPageUkmSourceId());
 }
 
 void LoginDetectionTabHelper::DidOpenRequestedURL(
@@ -116,11 +129,15 @@ void LoginDetectionTabHelper::DidOpenAsPopUp(
   oauth_login_detector_->DidOpenAsPopUp(opener_navigation_url);
 }
 
+void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+}
+
 void LoginDetectionTabHelper::WebContentsDestroyed() {
   if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
     ProcessNewSignedInSite(*signedin_site);
     RecordLoginDetectionMetrics(
-        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow, ukm_source_id_);
   }
   oauth_login_detector_.reset();
 }

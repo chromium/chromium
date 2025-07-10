@@ -8,6 +8,7 @@
 #include "chrome/browser/login_detection/oauth_login_detector.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 class NavigationHandle;
@@ -29,6 +30,7 @@ class LoginDetectionTabHelper
 
  private:
   friend class content::WebContentsUserData<LoginDetectionTabHelper>;
+  FRIEND_TEST_ALL_PREFIXES(LoginDetectionTabHelperTest, PopUpOAuthLogin);
 
   explicit LoginDetectionTabHelper(content::WebContents* web_contents);
 
@@ -47,6 +49,7 @@ class LoginDetectionTabHelper
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
   // Called when a new signed-in site has just been discovered from one of the
@@ -55,6 +58,11 @@ class LoginDetectionTabHelper
 
   // Detects successful OAuth login flows.
   std::unique_ptr<OAuthLoginDetector> oauth_login_detector_;
+
+  // The UKM source id for the primary page. We may need to log something in
+  // WebContentsDestroyed and retrieving the UKM source ID then would be too
+  // late.
+  ukm::SourceId ukm_source_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
