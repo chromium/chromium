@@ -1082,6 +1082,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.EntityTable.{EncryptionStage}Status"
+    enum="Boolean" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the {EncryptionStage} stage of reading/writing into the
+    EntityTable was successful or not. Emitted every time autofill tries to
+    {EncryptionStage} a value to read/write to the table.
+  </summary>
+  <token key="EncryptionStage">
+    <variant name="Decrypt" summary="decrypt"/>
+    <variant name="Encrypt" summary="encrypt"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}"
     enum="Boolean" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
