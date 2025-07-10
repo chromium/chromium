@@ -58,7 +58,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   void FillChangePasswordForm(
       password_manager::PasswordFormManager* form_manager,
       const std::u16string& username,
-      const std::u16string& original_password,
+      const std::u16string& login_password,
       const std::u16string& generated_password);
 
   // Triggers verification if `web_contents` is the same as initial WebContents.
@@ -130,7 +130,11 @@ class ChangePasswordFormFillingSubmissionHelper {
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   std::u16string username_;
-  std::u16string original_password_;
+  // `login_password_` and `stored_password_` can be different if the password
+  // used for logging in is different from the one we store. This can happen if
+  // the user manually entered a password to log in. Otherwise, they are equal.
+  std::u16string login_password_;
+  std::u16string stored_password_;
   std::u16string generated_password_;
 
   // Callback for receiving Annotated Page Content.

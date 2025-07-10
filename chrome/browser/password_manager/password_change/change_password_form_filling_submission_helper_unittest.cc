@@ -440,6 +440,78 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SavePassword) {
   EXPECT_EQ(saved_generated_password_form.GetPasswordBackup(), kOldPassword);
 }
 
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SavePasswordDifferentInputPassword) {
+  password_manager::PasswordForm* stored_form = existing_credential();
+  stored_form->password_value = u"stored_password";
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{*stored_form});
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+  password_manager::PasswordForm saved_generated_password_form;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  // Presave generated password.
+  EXPECT_CALL(*profile_password_store(), UpdateLogin);
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<1>(/*success=*/true)));
+  run_loop.Run();
+  // Unblock fetch after presaving the generated password.
+  static_cast<password_manager::FakeFormFetcher*>(
+      verifier->form_manager()->GetFormFetcher())
+      ->NotifyFetchCompleted();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+  base::RunLoop save_run_loop;
+  EXPECT_CALL(*profile_password_store(), UpdateLogin)
+      .WillOnce(DoAll(Invoke(&save_run_loop, &base::RunLoop::Quit),
+                      testing::SaveArg<0>(&saved_generated_password_form)));
+  verifier->SavePassword(kUsername);
+
+  save_run_loop.Run();
+
+  EXPECT_EQ(saved_generated_password_form.username_value,
+            existing_credential()->username_value);
+  EXPECT_EQ(saved_generated_password_form.password_value, kNewPassword);
+  EXPECT_EQ(saved_generated_password_form.url, existing_credential()->url);
+  EXPECT_EQ(saved_generated_password_form.signon_realm,
+            existing_credential()->signon_realm);
+  EXPECT_EQ(saved_generated_password_form.GetPasswordBackup(),
+            stored_form->password_value);
+}
+
+// Tests that we do not overwrite the stored password during the presave phase
+// if the password used for log in doesn't match the stored password.
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       PresaveGeneratedPasswordForDifferentInputPassword) {
+  password_manager::PasswordForm* stored_form = existing_credential();
+  stored_form->password_value = u"stored_password";
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{*stored_form});
+  auto verifier = CreateVerifier(form_manager.get(), base::DoNothing());
+  password_manager::PasswordForm presaved_generated_password_form;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  // Presave generated password.
+  EXPECT_CALL(*profile_password_store(), UpdateLogin)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      testing::SaveArg<0>(&presaved_generated_password_form)));
+  run_loop.Run();
+
+  EXPECT_EQ(presaved_generated_password_form.username_value,
+            stored_form->username_value);
+  EXPECT_EQ(presaved_generated_password_form.password_value,
+            stored_form->password_value);
+  EXPECT_EQ(presaved_generated_password_form.url, stored_form->url);
+  EXPECT_EQ(presaved_generated_password_form.signon_realm,
+            stored_form->signon_realm);
+  EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
+}
+
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
   auto form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});

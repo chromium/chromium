@@ -20,6 +20,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -90,18 +91,27 @@ ChangePasswordFormFillingSubmissionHelper::
 void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
     password_manager::PasswordFormManager* form_manager,
     const std::u16string& username,
-    const std::u16string& original_password,
+    const std::u16string& login_password,
     const std::u16string& generated_password) {
   CHECK(form_manager);
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 
   username_ = username;
-  original_password_ = original_password;
+  login_password_ = login_password;
   generated_password_ = generated_password;
 
   // TODO(crbug.com/422125487): Fix metrics duplication.
   form_manager_ = form_manager->Clone();
+
+  const password_manager::PasswordForm* best_match =
+      password_manager_util::FindFormByUsername(form_manager_->GetBestMatches(),
+                                                username_);
+  // If we already have a password for the website but it doesn't match the one
+  // used to log in, we don't want to overwrite the existing password without
+  // user consent even if the password is wrong.
+  stored_password_ = best_match ? best_match->password_value : login_password_;
+
   // PostTask is required because if the form is filled immediately the fields
   // might be cleared by PasswordAutofillAgent if there were no credentials to
   // fill during SendFillInformationToRenderer call.
@@ -165,7 +175,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 
   driver->FillChangePasswordForm(
       form.password_element_renderer_id, form.new_password_element_renderer_id,
-      form.confirmation_password_element_renderer_id, original_password_,
+      form.confirmation_password_element_renderer_id, login_password_,
       generated_password_,
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled,
@@ -174,7 +184,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username_;
-  form_to_save.password_value = original_password_;
+  form_to_save.password_value = stored_password_;
   password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
       *form_manager_, form_to_save, generated_password_);
   // Fetch newly saved password so that it's included in the matches when we
@@ -213,7 +223,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
-  form_manager_->UpdateBackupPassword(original_password_);
+  form_manager_->UpdateBackupPassword(stored_password_);
   driver->SubmitFormWithEnter(
       field_id,
       base::BindOnce(
