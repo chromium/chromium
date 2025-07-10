@@ -64,12 +64,6 @@ AppLaunchInfo::AppLaunchInfo() = default;
 AppLaunchInfo::~AppLaunchInfo() = default;
 
 // static
-const std::string& AppLaunchInfo::GetLaunchLocalPath(
-    const Extension* extension) {
-  return GetAppLaunchInfo(extension).launch_local_path_;
-}
-
-// static
 const GURL& AppLaunchInfo::GetLaunchWebURL(const Extension* extension) {
   return GetAppLaunchInfo(extension).launch_web_url_;
 }
@@ -93,11 +87,8 @@ int AppLaunchInfo::GetLaunchHeight(const Extension* extension) {
 // static
 GURL AppLaunchInfo::GetFullLaunchURL(const Extension* extension) {
   const AppLaunchInfo& info = GetAppLaunchInfo(extension);
-  if (info.launch_local_path_.empty()) {
-    return info.launch_web_url_;
-  } else {
-    return extension->GetResourceURL(info.launch_local_path_);
-  }
+  return info.launch_local_url_.is_valid() ? info.launch_local_url_
+                                           : info.launch_web_url_;
 }
 
 bool AppLaunchInfo::Parse(Extension* extension, std::u16string* error) {
@@ -129,18 +120,14 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
           keys::kLaunchLocalPath);
       return false;
     }
-    const std::string launch_path = temp->GetString();
 
-    // Ensure the launch path is a valid relative URL.
-    GURL resolved = extension->GetResourceURL(launch_path);
-    if (!resolved.is_valid()) {
+    launch_local_url_ = extension->GetResourceURL(temp->GetString());
+    if (!launch_local_url_.is_valid()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
           keys::kLaunchLocalPath);
       return false;
     }
-
-    launch_local_path_ = launch_path;
   } else if (temp = extension->manifest()->FindPath(keys::kLaunchWebURL);
              temp) {
     if (!temp->is_string()) {

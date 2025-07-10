@@ -28,9 +28,6 @@ class AppLaunchInfo : public Extension::ManifestData {
 
   ~AppLaunchInfo() override;
 
-  // Get the local path inside the extension to use with the launcher.
-  static const std::string& GetLaunchLocalPath(const Extension* extension);
-
   // Get the absolute web url to use with the launcher.
   static const GURL& GetLaunchWebURL(const Extension* extension);
 
@@ -56,7 +53,7 @@ class AppLaunchInfo : public Extension::ManifestData {
   bool LoadLaunchContainer(Extension* extension, std::u16string* error);
   void OverrideLaunchURL(Extension* extension, GURL override_url);
 
-  std::string launch_local_path_;
+  GURL launch_local_url_;
 
   GURL launch_web_url_;
 
