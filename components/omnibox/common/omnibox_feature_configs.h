@@ -266,6 +266,10 @@ struct Toolbelt : Config<Toolbelt> {
   // the row's action count. This defaults to true and is just a kill switch
   // in case of an unexpected performance regression (safer to merge).
   bool rebuild_button_row_views;
+
+  // Whether to set the location bar `OmniboxView` icon to the selected
+  // toolbelt action's icon, when a toolbelt action is selected via keyboard.
+  bool use_action_icons_in_location_bar;
 };
 
 // If enabled, adjusts the indentation of the omnibox input and matches to fix
