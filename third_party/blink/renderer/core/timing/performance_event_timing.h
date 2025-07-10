@@ -19,12 +19,25 @@ namespace blink {
 
 class Frame;
 
+enum class FallbackReason {
+  kNone,
+  kUnexpectedFrameSource,
+  kVisibilityChange,
+  kModalDialog,
+  kSwapPromiseBroken,
+  kMacOSArtificialEvent,
+  kDoesNotNeedNextPaint,
+};
+
 class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   // Information used for event timing reporting purpose only.
   struct EventTimingReportingInfo {
+    // The reason(s) why fallback time was used.
+    FallbackReason fallback_reason = FallbackReason::kNone;
+
     // Presentation promise index in which the entry in |event_timing_| was
     // added.
     uint64_t presentation_index = 0;
@@ -86,6 +99,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   static PerformanceEventTiming* CreateFirstInputTiming(
       PerformanceEventTiming* entry);
 
+  static String FallbackReasonToString(FallbackReason reason);
+
   PerformanceEventTiming(const AtomicString& event_type,
                          const AtomicString& entry_type,
                          EventTimingReportingInfo repoerting_info,
@@ -119,7 +134,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   base::TimeTicks GetEndTime() const;
 
-  void UpdateFallbackTime(base::TimeTicks fallback_time);
+  void UpdateFallbackTime(base::TimeTicks fallback_time, FallbackReason reason);
 
   uint32_t interactionOffset() const;
 

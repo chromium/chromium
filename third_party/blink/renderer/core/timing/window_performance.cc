@@ -688,7 +688,8 @@ void WindowPerformance::EventTimingProcessingEnd(
 #if BUILDFLAG(IS_MAC)
     // MacOS in particular seems to have an issue measuring these, because
     // it leads to arbitrarily long presentation delays. crbug.com/1321819.
-    entry->UpdateFallbackTime(processing_end);
+    entry->UpdateFallbackTime(processing_end,
+                              FallbackReason::kMacOSArtificialEvent);
 #endif  // BUILDFLAG(IS_MAC)
   }
 
@@ -777,7 +778,7 @@ void WindowPerformance::OnPresentationPromiseResolved(
   // presentation time, when we dont need next paint, rather than after.
   if (presentation_index == event_presentation_promise_count_ &&
       !need_new_promise_for_event_presentation_time_) {
-    UpdatePendingEventTimingsWithFallbackTime(
+    ReportEventTimingsWithoutNextPaint(
         presentation_details.presentation_feedback.timestamp);
     need_new_promise_for_event_presentation_time_ = true;
     return;
@@ -801,7 +802,8 @@ void WindowPerformance::OnPresentationPromiseResolved(
                 features::
                     kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource)) {
           CHECK(!timing->commit_finish_time.is_null());
-          entry->UpdateFallbackTime(timing->commit_finish_time);
+          entry->UpdateFallbackTime(timing->commit_finish_time,
+                                    FallbackReason::kUnexpectedFrameSource);
         }
       }
 
@@ -820,9 +822,11 @@ void WindowPerformance::OnPresentationPromiseResolved(
           last_hidden_timestamp_ < timing->presentation_time) {
         if (!timing->commit_finish_time.is_null() &&
             last_hidden_timestamp_ > timing->commit_finish_time) {
-          entry->UpdateFallbackTime(timing->commit_finish_time);
+          entry->UpdateFallbackTime(timing->commit_finish_time,
+                                    FallbackReason::kVisibilityChange);
         } else {
-          entry->UpdateFallbackTime(timing->processing_end_time);
+          entry->UpdateFallbackTime(timing->processing_end_time,
+                                    FallbackReason::kVisibilityChange);
         }
       }
 
@@ -843,19 +847,21 @@ void WindowPerformance::OnPresentationPromiseResolved(
       }
       if (!show_modal_dialog_timestamps_.empty() &&
           show_modal_dialog_timestamps_.front() < timing->presentation_time) {
-        entry->UpdateFallbackTime(show_modal_dialog_timestamps_.front());
+        entry->UpdateFallbackTime(show_modal_dialog_timestamps_.front(),
+                                  FallbackReason::kModalDialog);
       }
     }
   }
   ReportEventTimings();
 }
 
-void WindowPerformance::UpdatePendingEventTimingsWithFallbackTime(
+void WindowPerformance::ReportEventTimingsWithoutNextPaint(
     base::TimeTicks fallback_time) {
   for (auto event_timing_entry : event_timing_entries_) {
     if (event_timing_entry->GetEventTimingReportingInfo()->presentation_index ==
         event_presentation_promise_count_) {
-      event_timing_entry->UpdateFallbackTime(fallback_time);
+      event_timing_entry->UpdateFallbackTime(
+          fallback_time, FallbackReason::kDoesNotNeedNextPaint);
     }
   }
   ReportEventTimings();
@@ -897,12 +903,13 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
   // actually have an accurate value for that (it would need to come from
   // browser IPC).
   for (auto event_timing_entry : event_timing_entries_) {
-    if (!event_timing_entry->HasKnownEndTime() &&
-        !event_timing_entry->GetEventTimingReportingInfo()
-             ->processing_end_time.is_null()) {
-      event_timing_entry->GetEventTimingReportingInfo()->fallback_time =
-          event_timing_entry->GetEventTimingReportingInfo()
-              ->processing_end_time;
+    auto* entryInfo = event_timing_entry->GetEventTimingReportingInfo();
+    bool has_no_known_end_time = !event_timing_entry->HasKnownEndTime();
+    bool has_processing_end_time = !entryInfo->processing_end_time.is_null();
+
+    if (has_no_known_end_time && has_processing_end_time) {
+      event_timing_entry->UpdateFallbackTime(entryInfo->processing_end_time,
+                                             FallbackReason::kVisibilityChange);
     }
   }
   ReportEventTimings();
@@ -1205,18 +1212,16 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
       TRACE_EVENT_CATEGORY_ENABLED("devtools.timeline");
 
   if (latency_tracing_enabled || devtools_tracing_enabled) {
-    base::TimeTicks unsafe_start_time =
-        entry->GetEventTimingReportingInfo()->creation_time;
+    auto* entryInfo = entry->GetEventTimingReportingInfo();
+    base::TimeTicks unsafe_start_time = entryInfo->creation_time;
     base::TimeTicks unsafe_end_time = entry->GetEndTime();
     unsigned hash = GetHash(entry->name());
     AddFloatToHash(hash, entry->startTime());
     auto track_id = perfetto::Track::ThreadScoped(this);
     auto flow_id = perfetto::Flow::FromPointer(entry);
     TRACE_EVENT_INSTANT("latency", "EventCreation", track_id,
-                        entry->GetEventTimingReportingInfo()->creation_time,
-                        flow_id);
-    auto enqueued_to_main_thread_time =
-        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time;
+                        entryInfo->creation_time, flow_id);
+    auto enqueued_to_main_thread_time = entryInfo->enqueued_to_main_thread_time;
     if (!enqueued_to_main_thread_time.is_null()) {
       TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", track_id,
                           enqueued_to_main_thread_time, flow_id);
@@ -1230,15 +1235,17 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 
     TRACE_EVENT_BEGIN(
         "latency", "EventProcessing", track_id,
-        entry->GetEventTimingReportingInfo()->processing_start_time, flow_id,
+        entryInfo->processing_start_time, flow_id, "fallback_reason",
+        PerformanceEventTiming::FallbackReasonToString(
+            entryInfo->fallback_reason),
+        "fallback_time", entryInfo->fallback_time,
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_event_timing();
           entry->SetPerfettoData(DomWindow()->GetFrame(), data,
                                  GetTimeOriginInternal());
         });
-    TRACE_EVENT_END("latency", track_id,
-                    entry->GetEventTimingReportingInfo()->processing_end_time);
+    TRACE_EVENT_END("latency", track_id, entryInfo->processing_end_time);
     // TODO(sullivan): Remove these events when DevTools migrates to the above
     // perfetto events.
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(

@@ -46,6 +46,28 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
   return first_input;
 }
 
+// static
+String PerformanceEventTiming::FallbackReasonToString(FallbackReason reason) {
+  switch (reason) {
+    case FallbackReason::kNone:
+      return "None";
+    case FallbackReason::kUnexpectedFrameSource:
+      return "UnexpectedFrameSource";
+    case FallbackReason::kVisibilityChange:
+      return "VisibilityChange";
+    case FallbackReason::kModalDialog:
+      return "ModalDialog";
+    case FallbackReason::kSwapPromiseBroken:
+      return "SwapPromiseBroken";
+    case FallbackReason::kMacOSArtificialEvent:
+      return "MacOSArtificialEvent";
+    case FallbackReason::kDoesNotNeedNextPaint:
+      return "DoesNotNeedNextPaint";
+    default:
+      return "None";
+  }
+}
+
 PerformanceEventTiming::PerformanceEventTiming(
     const AtomicString& event_type,
     const AtomicString& entry_type,
@@ -134,10 +156,13 @@ base::TimeTicks PerformanceEventTiming::GetEndTime() const {
   return reporting_info_.presentation_time;
 }
 
-void PerformanceEventTiming::UpdateFallbackTime(base::TimeTicks fallback_time) {
+void PerformanceEventTiming::UpdateFallbackTime(base::TimeTicks fallback_time,
+                                                FallbackReason reason) {
   if (reporting_info_.fallback_time.is_null() ||
       fallback_time < reporting_info_.fallback_time) {
     reporting_info_.fallback_time = fallback_time;
+
+    reporting_info_.fallback_reason = reason;
   }
 }
 

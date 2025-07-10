@@ -113,7 +113,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetCommitFinishTimeStampForPendingEvents(
       base::TimeTicks commit_finish_time);
 
-  void UpdatePendingEventTimingsWithFallbackTime(base::TimeTicks fallback_time);
+  void ReportEventTimingsWithoutNextPaint(base::TimeTicks fallback_time);
 
   // Set render start time for all pending events that have finished processing.
   void SetRenderStartTimeForPendingEvents(base::TimeTicks render_start_time);
