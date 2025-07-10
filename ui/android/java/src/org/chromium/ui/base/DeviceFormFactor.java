@@ -65,7 +65,7 @@ public class DeviceFormFactor {
     @VisibleForTesting public static final int SCREEN_BUCKET_TABLET = 2;
 
     /** Matches the value set in res/values-sw720dp/values.xml */
-    private static final int SCREEN_BUCKET_LARGET_TABLET = 3;
+    private static final int SCREEN_BUCKET_LARGE_TABLET = 3;
 
     /** See {@link #setIsTabletForTesting(boolean)}. */
     private static @Nullable Boolean sIsTabletForTesting;
@@ -125,13 +125,12 @@ public class DeviceFormFactor {
 
     /**
      * @return Whether the display associated with the given context is large enough to be
-     *         considered a large tablet and will thus load large-tablet-specific resources (those
-     *         in the config -sw720).
-     *         Not affected by Android N multi-window, but can change for external displays.
-     *         E.g. http://developer.samsung.com/samsung-dex/testing
+     *     considered a large tablet and will thus load large-tablet-specific resources (those in
+     *     the config -sw720). Not affected by Android N multi-window, but can change for external
+     *     displays. E.g. http://developer.samsung.com/samsung-dex/testing
      */
     public static boolean isNonMultiDisplayContextOnLargeTablet(Context context) {
-        return detectScreenWidthBucket(context) == SCREEN_BUCKET_LARGET_TABLET;
+        return detectScreenWidthBucket(context) == SCREEN_BUCKET_LARGE_TABLET;
     }
 
     /**
