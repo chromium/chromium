@@ -734,10 +734,6 @@ extern bool ShouldZstdCompressPdfBytes();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetZstdCompressionLevel();
 
-// Whether to show the upload progress bar in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldShowUploadProgressBar();
-
 // This is a heuristic value that determines when to show the upload progress
 // bar. The value is a percentage of the total page content upload that is
 // received in the progress handler. If one call to the progress handler

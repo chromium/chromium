@@ -2531,9 +2531,9 @@ void LensOverlayController::HandleInteractionResponse(
 
 void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
                                                             uint64_t total) {
-  // If the progress bar is disabled, do not show it.
-  if (!lens::features::ShouldShowUploadProgressBar() ||
-      !is_upload_progress_bar_shown_ || !IsContextualSearchbox()) {
+  // If the progress bar is not being shown for this upload, or if this user is
+  // not making contextual queries, do not update the progress bar.
+  if (!is_upload_progress_bar_shown_ || !IsContextualSearchbox()) {
     return;
   }
 

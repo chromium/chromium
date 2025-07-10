@@ -397,9 +397,6 @@ constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
 constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
 
-constexpr base::FeatureParam<bool> kShowUploadProgressBar{
-    &kLensOverlayContextualSearchbox, "show-upload-progress-bar", true};
-
 constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
     &kLensOverlayContextualSearchbox, "upload-progress-bar-show-heuristic",
     0.1};
@@ -982,10 +979,6 @@ bool ShouldZstdCompressPdfBytes() {
 
 int GetZstdCompressionLevel() {
   return kZstdCompressionLevel.Get();
-}
-
-bool ShouldShowUploadProgressBar() {
-  return kShowUploadProgressBar.Get();
 }
 
 double GetUploadProgressBarShowHeuristic() {
