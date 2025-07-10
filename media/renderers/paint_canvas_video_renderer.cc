@@ -842,7 +842,8 @@ class VideoTextureBacking : public cc::TextureBacking {
 
     // This SI is used to cache the VideoFrame. We will eventually read out
     // its contents into a destination GL texture via the GLES2 interface.
-    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ;
     // We copy the contents of the source VideoFrame *into* the
     // cached SI over the raster interface - the usage bits depend on
     // whether OOP-Raster is enabled.
@@ -858,14 +859,12 @@ class VideoTextureBacking : public cc::TextureBacking {
                                 flags, "PaintCanvasVideoRenderer"},
                                gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
-    raster_context_provider_->RasterInterface()->WaitSyncTokenCHROMIUM(
-        sii->GenUnverifiedSyncToken().GetConstData());
+    sync_token_ = shared_image_->creation_sync_token();
   }
 
   ~VideoTextureBacking() override {
-    auto* ri = raster_context_provider_->RasterInterface();
-    gpu::SyncToken sync_token;
-    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    gpu::SyncToken sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_access_));
     auto* sii = raster_context_provider_->SharedImageInterface();
     sii->DestroySharedImage(sync_token, std::move(shared_image_));
   }
@@ -885,6 +884,10 @@ class VideoTextureBacking : public cc::TextureBacking {
   // Returns false when failing to create SkImage, and true if the creation
   // is successful or not necessary.
   bool BeginAccess(gpu::raster::RasterInterface* ri) {
+    CHECK(!ri_access_);
+    ri_access_ =
+        shared_image_->BeginRasterAccess(ri, sync_token_, /*readonly=*/true);
+
     if (raster_context_provider()->ContextCapabilities().gpu_rasterization) {
       return true;
     }
@@ -909,7 +912,11 @@ class VideoTextureBacking : public cc::TextureBacking {
     return true;
   }
 
-  void clear_access() { access_.reset(); }
+  void clear_access() {
+    access_.reset();
+    CHECK(ri_access_);
+    sync_token_ = gpu::RasterScopedAccess::EndAccess(std::move(ri_access_));
+  }
 
   sk_sp<SkImage> GetSkImageViaReadback() override {
     sk_sp<SkData> image_pixels =
@@ -962,6 +969,11 @@ class VideoTextureBacking : public cc::TextureBacking {
     ctx->flushAndSubmit(sk_image_);
   }
 
+  const gpu::SyncToken& sync_token() { return sync_token_; }
+  void UpdateSyncToken(const gpu::SyncToken& sync_token) {
+    sync_token_ = sync_token;
+  }
+
  private:
   sk_sp<SkImage> sk_image_;
   SkImageInfo sk_image_info_;
@@ -972,6 +984,9 @@ class VideoTextureBacking : public cc::TextureBacking {
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
   std::unique_ptr<ScopedSharedImageAccess> access_;
+
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access_;
+  gpu::SyncToken sync_token_;
 };
 
 PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
@@ -1842,6 +1857,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         cache_->texture_backing->GetSharedImage();
 
     // Copy into the shared image backing of the cached copy.
+    std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+        client_shared_image->BeginRasterAccess(
+            ri, cache_->texture_backing->sync_token(),
+            /*readonly=*/false);
     std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
         video_frame_si->BeginRasterAccess(ri, video_frame->acquire_sync_token(),
                                           /*readonly=*/true);
@@ -1858,6 +1877,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     SynchronizeVideoFrameRead(video_frame, ri,
                               raster_context_provider->ContextSupport(),
                               std::move(src_ri_access));
+    gpu::SyncToken sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
+    cache_->texture_backing->UpdateSyncToken(sync_token);
 
     cache_->coded_size = video_frame->coded_size();
 
