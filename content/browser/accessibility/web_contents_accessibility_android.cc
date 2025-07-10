@@ -420,8 +420,10 @@ std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
 
   // This causes the caller to stop its search and indicate appropriately when
   // trying to move past a boundary.
-  if (want_row_index < 0 || (size_t)want_row_index >= table_info->row_count ||
-      want_col_index < 0 || (size_t)want_col_index >= table_info->col_count) {
+  if (want_row_index < 0 ||
+      static_cast<size_t>(want_row_index) >= table_info->row_count ||
+      want_col_index < 0 ||
+      static_cast<size_t>(want_col_index) >= table_info->col_count) {
     return ui::kInvalidAXNodeID;
   }
 

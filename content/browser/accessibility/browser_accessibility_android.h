@@ -320,10 +320,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
                                            std::optional<size_t> min_length,
                                            AXStyleData* style_data) const;
 
-  std::u16string cached_text_;
   std::u16string old_value_;
   std::u16string new_value_;
-  int32_t unique_id_;
 };
 
 }  // namespace content
