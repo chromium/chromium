@@ -176,6 +176,8 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
   }
 
   // Ensure we still callback if Screen2x is not available.
+  VLOG(1) << "Screen 2x not available, running callback with ID: "
+          << tree.GetAXTreeID();
   on_ax_tree_distilled_callback_.Run(tree.GetAXTreeID(), content_node_ids);
 }
 
@@ -278,6 +280,8 @@ void AXTreeDistiller::ProcessScreen2xResult(
 
   RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - merged_start_time,
                       !content_node_ids_algorithm.empty());
+  VLOG(1) << "Screen 2x extracted content, running callback with ID: "
+          << tree_id;
   on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);
 
   // TODO(crbug.com/40802192): If no content nodes were identified, and
@@ -311,6 +315,8 @@ void AXTreeDistiller::ScreenAIServiceReady() {
 
 void AXTreeDistiller::OnMainContentExtractorDisconnected() {
   main_content_extractor_.reset();
+  VLOG(1) << "Main content extractor disconnected; running callback with "
+             "unknown ID";
   on_ax_tree_distilled_callback_.Run(ui::AXTreeIDUnknown(),
                                      std::vector<ui::AXNodeID>());
 }
