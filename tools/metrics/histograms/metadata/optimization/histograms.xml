@@ -1465,13 +1465,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-11-09">
   <owner>wittman@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
     Records the time duration it took to load a model file successfully for
     {OptimizationTarget}. Recorded once per model load attempt for
     {OptimizationTarget}.
+
+    Warning: this histogram was expired from 2025-01-26 to 2025-07-09; data may
+    be missing.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
