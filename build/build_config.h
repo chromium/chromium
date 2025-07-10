@@ -16,13 +16,13 @@
 //
 //  Operating System:
 //    IS_AIX / IS_ANDROID / IS_ASMJS / IS_CHROMEOS / IS_FREEBSD / IS_FUCHSIA /
-//    IS_IOS / IS_IOS_MACCATALYST / IS_IOS_TVOS / IS_LINUX / IS_MAC / IS_NACL /
+//    IS_IOS / IS_IOS_MACCATALYST / IS_IOS_TVOS / IS_LINUX / IS_MAC /
 //    IS_NETBSD / IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WATCHOS / IS_WIN
 //  Operating System family:
 //    IS_APPLE: IOS or MAC or IOS_MACCATALYST or IOS_TVOS or WATCHOS
 //    IS_BSD: FREEBSD or NETBSD or OPENBSD
 //    IS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
-//              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
+//              or MAC or NETBSD or OPENBSD or QNX or SOLARIS
 
 // This file also adds defines specific to the platform, architecture etc.
 //
@@ -60,10 +60,7 @@
 // IWYU pragma: always_keep
 
 // A set of macros to use for platform detection.
-#if defined(__native_client__)
-// __native_client__ must be first, so that other OS_ defines are not set.
-#define OS_NACL 1
-#elif defined(ANDROID)
+#if defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)
 // Only include TargetConditionals after testing ANDROID as some Android builds
@@ -136,11 +133,11 @@
 
 // For access to standard POSIXish features, use OS_POSIX instead of a
 // more specific macro.
-#if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||  \
-    defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX) ||  \
-    defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_NACL) ||  \
-    defined(OS_NETBSD) || defined(OS_OPENBSD) || defined(OS_QNX) || \
-    defined(OS_SOLARIS) || defined(OS_ZOS)
+#if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||   \
+    defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX) ||   \
+    defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_NETBSD) || \
+    defined(OS_OPENBSD) || defined(OS_QNX) || defined(OS_SOLARIS) || \
+    defined(OS_ZOS)
 #define OS_POSIX 1
 #endif
 
@@ -223,11 +220,8 @@
 #define BUILDFLAG_INTERNAL_IS_MAC() (0)
 #endif
 
-#if defined(OS_NACL)
-#define BUILDFLAG_INTERNAL_IS_NACL() (1)
-#else
+// TODO(crbug.com/40511454): Remove all uses.
 #define BUILDFLAG_INTERNAL_IS_NACL() (0)
-#endif
 
 #if defined(OS_NETBSD)
 #define BUILDFLAG_INTERNAL_IS_NETBSD() (1)
@@ -331,7 +325,7 @@
 #define ARCH_CPU_ARM64 1
 #define ARCH_CPU_64_BITS 1
 #define ARCH_CPU_LITTLE_ENDIAN 1
-#elif defined(__pnacl__) || defined(__asmjs__) || defined(__wasm__)
+#elif defined(__asmjs__) || defined(__wasm__)
 #define ARCH_CPU_32_BITS 1
 #define ARCH_CPU_LITTLE_ENDIAN 1
 #elif defined(__MIPSEL__)

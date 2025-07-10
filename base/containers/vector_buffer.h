@@ -47,7 +47,7 @@ class VectorBuffer {
  public:
   constexpr VectorBuffer() = default;
 
-#if defined(__clang__) && !defined(__native_client__)
+#if defined(__clang__)
   // This constructor converts an uninitialized void* to a T* which triggers
   // clang Control Flow Integrity. Since this is as-designed, disable.
   __attribute__((no_sanitize("cfi-unrelated-cast", "vptr")))
