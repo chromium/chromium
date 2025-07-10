@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/bluetooth/socket.h"
 
 #include <string>
@@ -110,22 +105,21 @@ void Socket::ReceiveMore() {
   bluetooth_socket_->Receive(
       base::checked_cast<int>(pending_write_buffer.size()),
       base::BindOnce(&Socket::OnBluetoothSocketReceive,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     pending_write_buffer.data()),
+                     weak_ptr_factory_.GetWeakPtr(), pending_write_buffer),
       base::BindOnce(&Socket::OnBluetoothSocketReceiveError,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void Socket::OnBluetoothSocketReceive(void* pending_write_buffer,
+void Socket::OnBluetoothSocketReceive(base::span<uint8_t> pending_write_buffer,
                                       int num_bytes_received,
                                       scoped_refptr<net::IOBuffer> io_buffer) {
   DCHECK_GT(num_bytes_received, 0);
-  DCHECK(io_buffer->data());
 
   if (!receive_stream_.is_valid())
     return;
 
-  memcpy(pending_write_buffer, io_buffer->data(), num_bytes_received);
+  pending_write_buffer.copy_prefix_from(
+      io_buffer->span().first(base::checked_cast<size_t>(num_bytes_received)));
   receive_stream_->EndWriteData(static_cast<uint32_t>(num_bytes_received));
 
   ReceiveMore();

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -46,7 +47,7 @@ class Socket : public mojom::Socket {
   void OnReceiveStreamWritable(MojoResult result);
   void ShutdownReceive();
   void ReceiveMore();
-  void OnBluetoothSocketReceive(void* pending_write_buffer,
+  void OnBluetoothSocketReceive(base::span<uint8_t> pending_write_buffer,
                                 int num_bytes_received,
                                 scoped_refptr<net::IOBuffer> io_buffer);
   void OnBluetoothSocketReceiveError(
