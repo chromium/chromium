@@ -22,7 +22,6 @@
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 
