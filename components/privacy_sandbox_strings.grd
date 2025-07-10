@@ -1050,7 +1050,7 @@
         Learn more about managing Incognito tracking protections
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph>Incongito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
+        Sites you visit may embed content from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="" formatter_data="android_java" translateable="false">
         Block third-party cookies
