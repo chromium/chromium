@@ -64,3 +64,9 @@ void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
   CheckController(promo_controller_);
   promo_controller_->OnPromoClicked(promo_id);
 }
+
+void NtpPromoHandler::OnPromosShown(
+    const std::vector<std::string>& eligible_shown,
+    const std::vector<std::string>& completed_shown) {
+  promo_controller_->OnPromosShown(eligible_shown, completed_shown);
+}

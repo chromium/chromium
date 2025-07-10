@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 
+#include <string>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
@@ -58,6 +61,10 @@ class MockController : public user_education::NtpPromoController {
   ~MockController() override = default;
 
   MOCK_METHOD(user_education::NtpShowablePromos, GenerateShowablePromos, ());
+  MOCK_METHOD(void,
+              OnPromosShown,
+              (const std::vector<std::string>&,
+               const std::vector<std::string>&));
   MOCK_METHOD(void, OnPromoClicked, (user_education::NtpPromoIdentifier));
 };
 
@@ -116,6 +123,13 @@ class NtpPromoHandlerTest : public testing::Test {
 TEST_F(NtpPromoHandlerTest, PassesOnClick) {
   EXPECT_CALL(mock_controller(), OnPromoClicked(kPromo1Id));
   handler().OnPromoClicked(kPromo1Id);
+}
+
+TEST_F(NtpPromoHandlerTest, PassesOnPromosShown) {
+  EXPECT_CALL(mock_controller(),
+              OnPromosShown(testing::ElementsAre(kPromo1Id, kPromo3Id),
+                            testing::ElementsAre(kPromo2Id)));
+  handler().OnPromosShown({kPromo1Id, kPromo3Id}, {kPromo2Id});
 }
 
 TEST_F(NtpPromoHandlerTest, RespondsToRequest) {

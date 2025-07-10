@@ -19,12 +19,17 @@ class TestNtpPromoHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'requestPromos',
+      'onPromosShown',
       'onPromoClicked',
     ]);
   }
 
   requestPromos() {
     this.methodCalled('requestPromos');
+  }
+
+  onPromosShown(eligible: string[], completed: string[]) {
+    this.methodCalled('onPromosShown', eligible, completed);
   }
 
   onPromoClicked(promoId: string) {
@@ -112,6 +117,9 @@ suite('NtpPromoTest', () => {
     ntpPromo.onSetPromos(promos);
     await waitForVisibilityEvents();
     assertTrue(isVisible(ntpPromo), 'promo frame should become visible');
+    assertEquals(1, testProxy.getHandler().getCallCount('onPromosShown'));
+    assertDeepEquals(
+        [[[promo.id], []]], testProxy.getHandler().getArgs('onPromosShown'));
     assertEquals(promo.bodyText, ntpPromo.$.bodyText.innerText);
     assertEquals(promo.buttonText, ntpPromo.$.actionButton.innerText);
   });
@@ -121,6 +129,9 @@ suite('NtpPromoTest', () => {
     ntpPromo.onSetPromos(promos);
     await waitForVisibilityEvents();
     assertTrue(isVisible(ntpPromo), 'promo frame should become visible');
+    assertEquals(1, testProxy.getHandler().getCallCount('onPromosShown'));
+    assertDeepEquals(
+        [[[promo.id], []]], testProxy.getHandler().getArgs('onPromosShown'));
     assertEquals(promo.bodyText, ntpPromo.$.bodyText.innerText);
     assertEquals(promo.buttonText, ntpPromo.$.actionButton.innerText);
   });

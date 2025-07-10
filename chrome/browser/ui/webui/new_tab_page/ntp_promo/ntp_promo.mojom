@@ -18,6 +18,13 @@ interface NtpPromoHandler {
   // asynchronously through a call to `SetPromos()`.
   RequestPromos();
 
+  // Notifies the handler that `eligible_shown` and `completed_shown` promos
+  // have been shown. Only called once, after the initial set of promos are
+  // shown, and not after subsequent updates.
+  //
+  // The promos are ordered in each list from top/first to bottom/last.
+  OnPromosShown(array<string> eligible_shown, array<string> completed_shown);
+
   // Called when the user clicks an action button for `promo_id`.
   OnPromoClicked(string promo_id);
 };

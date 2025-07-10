@@ -5,9 +5,11 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
 #include "base/time/time.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/l10n/l10n_util.h"
+
 namespace user_education {
 
 namespace {
@@ -15,8 +17,6 @@ namespace {
 constexpr base::TimeDelta kCompletedPromoShowDuration = base::Days(7);
 
 }  // namespace
-
-using KeyedNtpPromoData = user_education::KeyedNtpPromoData;
 
 using Eligibility = NtpPromoSpecification::Eligibility;
 
@@ -93,6 +93,17 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
   return showable_promos;
 }
 
+void NtpPromoController::OnPromosShown(
+    const std::vector<NtpPromoIdentifier>& eligible_shown,
+    const std::vector<NtpPromoIdentifier>& completed_shown) {
+  // In the current implementation, only the top eligible promo needs to be
+  // updated. However, metrics should be output for every promo shown in this
+  // way.
+  if (!eligible_shown.empty()) {
+    OnPromoShownInTopSpot(eligible_shown[0]);
+  }
+}
+
 void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
   registry_->GetNtpPromoSpecification(id)->action_callback().Run(nullptr);
 }
@@ -100,6 +111,18 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id) {
 // static
 base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest() {
   return kCompletedPromoShowDuration;
+}
+
+void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
+  const int current_session = storage_service_->GetSessionNumber();
+  // If no data is present, default-construct.
+  auto data =
+      storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+  if (data.last_top_spot_session != current_session) {
+    data.last_top_spot_session = current_session;
+    ++data.top_spot_session_count;
+    storage_service_->SaveNtpPromoData(id, data);
+  }
 }
 
 }  // namespace user_education

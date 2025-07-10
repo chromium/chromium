@@ -20,13 +20,11 @@ import {getCss} from './ntp_promo.css.js';
 import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
 import {getHtml} from './ntp_single_promo.html.js';
 
-
 export interface NtpSinglePromoElement {
   $: {
     actionButton: CrButtonElement,
     bodyIcon: HTMLElement,
     bodyText: HTMLElement,
-    promoFrame: HTMLElement,
   };
 }
 
@@ -58,6 +56,7 @@ export class NtpSinglePromoElement extends CrLitElement {
   private handler_: NtpPromoHandlerInterface;
   private callbackRouter_: NtpPromoClientCallbackRouter;
   private listenerIds_: number[] = [];
+  private notifiedShown_: boolean = false;
 
   constructor() {
     super();
@@ -96,6 +95,11 @@ export class NtpSinglePromoElement extends CrLitElement {
       this.bodyText_ = '';
       this.actionButtonText_ = '';
       this.style.display = 'none';
+    }
+    if (!this.notifiedShown_) {
+      this.notifiedShown_ = true;
+      const shown: string[] = this.promoId ? [this.promoId] : [];
+      this.handler_.onPromosShown(shown, []);
     }
   }
 

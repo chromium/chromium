@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_data.h"
@@ -62,6 +63,13 @@ class NtpPromoController {
   // displayed by the NTP. May update prefs as a side effect.
   virtual NtpShowablePromos GenerateShowablePromos();
 
+  // Called when promos are shown by the NTP promo component.
+  //
+  // The promos should be ordered in each list from top/first to bottom/last.
+  virtual void OnPromosShown(
+      const std::vector<NtpPromoIdentifier>& eligible_shown,
+      const std::vector<NtpPromoIdentifier>& completed_shown);
+
   // Called in response to an NTP promo activation.
   virtual void OnPromoClicked(NtpPromoIdentifier id);
 
@@ -69,6 +77,9 @@ class NtpPromoController {
   static base::TimeDelta GetCompletedPromoShowDurationForTest();
 
  private:
+  // Updates the data on the promo shown in the top spot.
+  void OnPromoShownInTopSpot(NtpPromoIdentifier id);
+
   const raw_ref<NtpPromoRegistry> registry_;
   const raw_ref<UserEducationStorageService> storage_service_;
 };
