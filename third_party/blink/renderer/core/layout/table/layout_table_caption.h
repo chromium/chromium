@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class LayoutTable;
+
 class CORE_EXPORT LayoutTableCaption final : public LayoutBlockFlow {
  public:
   explicit LayoutTableCaption(Element*);
@@ -28,6 +30,12 @@ class CORE_EXPORT LayoutTableCaption final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return true;
   }
+
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style) override;
+
+ private:
+  LayoutTable* Table() const;
 };
 
 // wtf/casting.h helper.
