@@ -3637,7 +3637,7 @@ bool LayoutObject::ShouldUseTransformFromContainer(
   // or perspective. We just care about transform, so check the layer's
   // transform directly.
   return (HasLayer() && To<LayoutBoxModelObject>(this)->Layer()->Transform()) ||
-         (container_object && container_object->StyleRef().HasPerspective());
+         (container_object && container_object->HasPerspective());
 }
 
 void LayoutObject::GetTransformFromContainer(
@@ -3661,8 +3661,7 @@ void LayoutObject::GetTransformFromContainer(
   transform.PostTranslate(offset_in_container.left.ToFloat(),
                           offset_in_container.top.ToFloat());
 
-  bool has_perspective = container_object && container_object->HasLayer() &&
-                         container_object->StyleRef().HasPerspective();
+  bool has_perspective = container_object && container_object->HasPerspective();
   if (has_perspective && container_object != NearestAncestorForElement()) {
     has_perspective = false;
 

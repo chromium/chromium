@@ -1578,6 +1578,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsBox() || IsSVG();
   }
 
+  bool HasPerspective() const {
+    NOT_DESTROYED();
+    return StyleRef().HasPerspective() && HasLayer() && IsTransformApplicable();
+  }
+
   bool HasMask() const {
     NOT_DESTROYED();
     return StyleRef().HasMask();
