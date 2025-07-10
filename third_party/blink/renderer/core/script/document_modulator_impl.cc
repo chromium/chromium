@@ -34,9 +34,7 @@ Vector<AtomicString> FindUrlPrefixes(AtomicString specifier) {
 
 DocumentModulatorImpl::DocumentModulatorImpl(ScriptState* script_state)
     : ModulatorImplBase(script_state) {
-  if (RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
-    import_map_ = MakeGarbageCollected<ImportMap>();
-  }
+  import_map_ = MakeGarbageCollected<ImportMap>();
 }
 
 ModuleScriptFetcher* DocumentModulatorImpl::CreateModuleScriptFetcher(
@@ -54,12 +52,6 @@ bool DocumentModulatorImpl::IsDynamicImportForbidden(String* reason) {
 // https://html.spec.whatwg.org/C/#merge-existing-and-new-import-maps
 void DocumentModulatorImpl::MergeExistingAndNewImportMaps(
     ImportMap* new_import_map) {
-  if (!RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
-    // TODO(crbug.com/365578430): Remove this logic once the MultipleImportMaps
-    // flag is removed.
-    import_map_ = new_import_map;
-    return;
-  }
   import_map_->MergeExistingAndNewImportMaps(
       new_import_map, scoped_resolved_module_map_,
       toplevel_resolved_module_set_, *GetExecutionContext());
@@ -69,9 +61,6 @@ void DocumentModulatorImpl::MergeExistingAndNewImportMaps(
 void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
     std::optional<AtomicString> referring_script_url,
     AtomicString specifier) {
-  if (!RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
-    return;
-  }
   // 1. Let global be settingsObject's global object.
 
   // 2. If global does not implement Window, then return.

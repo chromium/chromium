@@ -23,7 +23,6 @@ virtual/text-size-adjust/wpt_internal/*
 virtual/text-size-adjust-with-os-font-scale/wpt_internal/*
 virtual/generic-sensor-extra-classes/wpt_internal/*
 virtual/unload-allowed/wpt_internal/*
-virtual/single-import-map/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.

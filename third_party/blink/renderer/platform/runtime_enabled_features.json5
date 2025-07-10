@@ -3126,10 +3126,6 @@
       status: "experimental",
     },
     {
-      name: "MultipleImportMaps",
-      status: "stable",
-    },
-    {
       name: "NavigateEventCanTransition",
     },
     {

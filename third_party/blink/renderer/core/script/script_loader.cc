@@ -951,43 +951,6 @@ PendingScript* ScriptLoader::PrepareScript(
 
       // <spec step="32.2.C">"importmap"</spec>
       case ScriptTypeAtPrepare::kImportMap: {
-        if (!RuntimeEnabledFeatures::MultipleImportMapsEnabled()) {
-          // TODO(crbug.com/365578430): Remove this logic once the
-          // MultipleImportMaps flag is removed.
-          //
-          // <spec step="32.2.C.1">If el's relevant global object's import maps
-          // allowed is false, then queue an element task on the DOM
-          // manipulation task source given el to fire an event named error at
-          // el, and return.</spec>
-          Modulator* modulator = Modulator::From(script_state);
-          auto acquiring_state = modulator->GetAcquiringImportMapsState();
-          switch (acquiring_state) {
-            case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
-            case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
-              element_document.AddConsoleMessage(MakeGarbageCollected<
-                                                 ConsoleMessage>(
-                  mojom::blink::ConsoleMessageSource::kJavaScript,
-                  mojom::blink::ConsoleMessageLevel::kError,
-                  acquiring_state == Modulator::AcquiringImportMapsState::
-                                         kAfterModuleScriptLoad
-                      ? "An import map is added after module script load was "
-                        "triggered."
-                      : "Multiple import maps are not yet supported. "
-                        "https://crbug.com/927119"));
-              element_document.GetTaskRunner(TaskType::kDOMManipulation)
-                  ->PostTask(
-                      FROM_HERE,
-                      WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                    WrapPersistent(element_.Get())));
-              return nullptr;
-
-            case Modulator::AcquiringImportMapsState::kAcquiring:
-              modulator->SetAcquiringImportMapsState(
-                  Modulator::AcquiringImportMapsState::kMultipleImportMaps);
-
-              break;
-          }
-        }
         UseCounter::Count(*context_window, WebFeature::kImportMap);
 
         // <spec step="32.2.C.3">Let result be the result of creating an import
