@@ -116,6 +116,9 @@ BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdate);
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdateV2);
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdateV3);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Omnibox suggestions tuning
 BASE_DECLARE_FEATURE(kNumNtpZpsRecentSearches);

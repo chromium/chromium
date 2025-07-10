@@ -7232,6 +7232,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-mobile-parity-update-v3",
+    "owners": [ "jlebel@google.com", "stkhapugin@google.com",  "chrome-mobile-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com"],
     "expiry_milestone": 140
