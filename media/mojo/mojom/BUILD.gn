@@ -374,14 +374,6 @@ mojom("mojom") {
           mojom = "media.mojom.VideoPipelineInfo"
           cpp = "::media::VideoPipelineInfo"
         },
-        {
-          mojom = "media.mojom.AudioDecoderType"
-          cpp = "::media::AudioDecoderType"
-        },
-        {
-          mojom = "media.mojom.VideoDecoderType"
-          cpp = "::media::VideoDecoderType"
-        },
       ]
       traits_headers = [ "pipeline_status_mojom_traits.h" ]
     },
@@ -611,10 +603,6 @@ mojom("mojom") {
           cpp = "::media::ChannelLayout"
         },
         {
-          mojom = "media.mojom.DecodeStatus"
-          cpp = "::media::DecodeStatus"
-        },
-        {
           mojom = "media.mojom.EncryptionScheme"
           cpp = "::media::EncryptionScheme"
         },
@@ -665,10 +653,6 @@ mojom("mojom") {
         {
           mojom = "media.mojom.MediaStatusState"
           cpp = "::media::MediaStatus::State"
-        },
-        {
-          mojom = "media.mojom.StatusCode"
-          cpp = "::media::StatusCode"
         },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
