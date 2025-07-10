@@ -126,8 +126,6 @@ def _replace_icons(paths, dist, config):
     commands.copy_files(new_asset_catalog,
                         os.path.join(resources_dir, 'Assets.car'))
     commands.copy_files(new_app_icon, os.path.join(resources_dir, 'app.icns'))
-    commands.copy_files(new_document_icon,
-                        os.path.join(resources_dir, 'document.icns'))
 
     # Also update the icon in the Alert Helper app.
     alert_helper_resources_dir = os.path.join(
