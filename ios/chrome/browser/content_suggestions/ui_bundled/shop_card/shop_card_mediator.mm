@@ -130,6 +130,7 @@ int GetImpressionLimit() {
 
 - (void)reset {
   _shopCardItem = nil;
+  _shoppingDataForShopCardFound = false;
 }
 
 #pragma mark - ShopCardFaviconConsumerSource
@@ -178,6 +179,10 @@ int GetImpressionLimit() {
 
 - (void)onPriceTrackedBookmarksReceived:
     (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  if (_shoppingDataForShopCardFound) {
+    // Prevent duplicate Magic Stack insertions.
+    return;
+  }
   // Iterate through all subscriptions, find the first recent one with a drop
   // populate item.
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
@@ -198,6 +203,7 @@ int GetImpressionLimit() {
       continue;
     }
 
+    _shoppingDataForShopCardFound = true;
     [self populateShopCardItem:specifics bookmark:bookmark];
 
     GURL productImageUrl = GURL(meta->lead_image().url());
