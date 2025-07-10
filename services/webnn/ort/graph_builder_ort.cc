@@ -98,6 +98,18 @@ constexpr base::cstring_view kOpTypeAveragePool2d = "AveragePool";
 constexpr base::cstring_view kOpTypeMaxPool2d = "MaxPool";
 constexpr base::cstring_view kOpTypeLpPool2d = "LpPool";
 
+// Reduction operations
+constexpr char kOpTypeReduceL1[] = "ReduceL1";
+constexpr char kOpTypeReduceL2[] = "ReduceL2";
+constexpr char kOpTypeReduceLogSum[] = "ReduceLogSum";
+constexpr char kOpTypeReduceLogSumExp[] = "ReduceLogSumExp";
+constexpr char kOpTypeReduceMax[] = "ReduceMax";
+constexpr char kOpTypeReduceMean[] = "ReduceMean";
+constexpr char kOpTypeReduceMin[] = "ReduceMin";
+constexpr char kOpTypeReduceProd[] = "ReduceProd";
+constexpr char kOpTypeReduceSum[] = "ReduceSum";
+constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
+
 constexpr std::string_view kInserted = "Inserted";
 constexpr std::string_view kToEmulate = "ToEmulate";
 constexpr std::string_view kUnderscore = "_";
@@ -184,6 +196,70 @@ int64_t CalculateOutputPaddingSize(int64_t input_size,
   // re-compute it by using other attributes.
   CHECK(output_padding.IsValid());
   return output_padding.ValueOrDie();
+}
+
+void CheckReduceInputSupported(const DataTypeLimits& data_type_limits,
+                               mojom::Reduce::Kind kind,
+                               const OperandDescriptor& input_descriptor) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      CHECK(data_type_limits.reduce_l1_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kL2:
+      CHECK(data_type_limits.reduce_l2_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kLogSum:
+      CHECK(data_type_limits.reduce_log_sum_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kLogSumExp:
+      CHECK(
+          data_type_limits.reduce_log_sum_exp_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kMax:
+      CHECK(data_type_limits.reduce_max_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kMean:
+      CHECK(data_type_limits.reduce_mean_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kMin:
+      CHECK(data_type_limits.reduce_min_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kProduct:
+      CHECK(data_type_limits.reduce_product_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kSum:
+      CHECK(data_type_limits.reduce_sum_input.Supports(input_descriptor));
+      break;
+    case mojom::Reduce::Kind::kSumSquare:
+      CHECK(
+          data_type_limits.reduce_sum_square_input.Supports(input_descriptor));
+      break;
+  }
+}
+
+std::string MapReduceKindToOrtOpType(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return kOpTypeReduceL1;
+    case mojom::Reduce::Kind::kL2:
+      return kOpTypeReduceL2;
+    case mojom::Reduce::Kind::kLogSum:
+      return kOpTypeReduceLogSum;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return kOpTypeReduceLogSumExp;
+    case mojom::Reduce::Kind::kMax:
+      return kOpTypeReduceMax;
+    case mojom::Reduce::Kind::kMean:
+      return kOpTypeReduceMean;
+    case mojom::Reduce::Kind::kMin:
+      return kOpTypeReduceMin;
+    case mojom::Reduce::Kind::kProduct:
+      return kOpTypeReduceProd;
+    case mojom::Reduce::Kind::kSum:
+      return kOpTypeReduceSum;
+    case mojom::Reduce::Kind::kSumSquare:
+      return kOpTypeReduceSumSquare;
+  }
 }
 
 }  // namespace
@@ -1257,6 +1333,83 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
+  const std::string input = GetOperandNameById(reduce.input_operand_id);
+  const std::string output = GetOperandNameById(reduce.output_operand_id);
+  std::vector<const char*> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  CheckReduceInputSupported(context_properties_.data_type_limits, reduce.kind,
+                            GetOperand(reduce.input_operand_id).descriptor);
+
+  // According to
+  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce,
+  // if axes is empty, WebNN applies reduction function to each value in the
+  // tensor individually with no dimensions reduced, but the ONNX reduction
+  // operations either reduce all dimensions or act as a no-op. So we need to
+  // emulate the behavior of reducing each value individually:
+  // 1. Element-wise log for reduceLogSum
+  // 2. Element-wise pow of 2 for reduceSumSquare
+  // 3. Element-wise abs for reduceL1 and reduceL2
+  // 4. No-op for other reduction operations e.g. reduceMin and reduceSum
+  //
+  // TODO(crbug.com/429272269): Remove the workaround for reduction operations
+  // when ORT issue is fixed.
+  if (reduce.axes.empty()) {
+    switch (reduce.kind) {
+      case mojom::Reduce::Kind::kLogSum: {
+        const std::string node_name = GenerateNodeName(base::JoinString(
+            {kInserted, kOpTypeLog, kToEmulate, reduce.label}, kUnderscore));
+        model_editor_.AddNode(kOpTypeLog, node_name, inputs, outputs);
+        return;
+      }
+      case mojom::Reduce::Kind::kSumSquare: {
+        const std::string node_name = GenerateNodeName(base::JoinString(
+            {kInserted, kOpTypePow, kToEmulate, reduce.label}, kUnderscore));
+        const std::string pow = CreateScalarInitializer<int64_t>(2);
+        inputs.push_back(pow.c_str());
+        model_editor_.AddNode(kOpTypePow, node_name, inputs, outputs);
+        return;
+      }
+      case mojom::Reduce::Kind::kL1:
+      case mojom::Reduce::Kind::kL2: {
+        const std::string node_name = GenerateNodeName(base::JoinString(
+            {kInserted, kOpTypeAbs, kToEmulate, reduce.label}, kUnderscore));
+        model_editor_.AddNode(kOpTypeAbs, node_name, inputs, outputs);
+        return;
+      }
+      case mojom::Reduce::Kind::kLogSumExp:
+      case mojom::Reduce::Kind::kMax:
+      case mojom::Reduce::Kind::kMean:
+      case mojom::Reduce::Kind::kMin:
+      case mojom::Reduce::Kind::kProduct:
+      case mojom::Reduce::Kind::kSum:
+        // Setting the `noop_with_empty_axes` attribute to 1 will make them act
+        // as a no-op.
+        break;
+    }
+  }
+
+  const std::string axes = CreateInt64InitializerForUint32Array(reduce.axes);
+  inputs.push_back(axes.c_str());
+
+  int64_t keepdims = reduce.keep_dimensions ? 1 : 0;
+  constexpr base::cstring_view kAttrKeepdims = "keepdims";
+
+  int64_t noop_with_empty_axes = 1;
+  constexpr base::cstring_view kAttrNoopWithEmptyAxes = "noop_with_empty_axes";
+
+  std::array<ScopedOrtOpAttr, 2> attributes = {
+      model_editor_.CreateAttribute(kAttrKeepdims, keepdims),
+      model_editor_.CreateAttribute(kAttrNoopWithEmptyAxes,
+                                    noop_with_empty_axes),
+  };
+
+  const std::string node_name = GenerateNodeName(reduce.label);
+  std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
+  model_editor_.AddNode(reduce_op_type, node_name, inputs, outputs, attributes);
+}
+
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GenerateNodeName(reshape.label);
   const std::string input = GetOperandNameById(reshape.input_operand_id);
@@ -1730,6 +1883,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_relu(), kOpTypeRelu);
         break;
       }
+      case mojom::Operation::Tag::kReduce: {
+        AddReduceOperation(*operation->get_reduce());
+        break;
+      }
       case mojom::Operation::Tag::kReshape: {
         AddReshapeOperation(*operation->get_reshape());
         break;
@@ -1800,7 +1957,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTriangular:

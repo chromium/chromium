@@ -197,6 +197,7 @@ class GraphBuilderOrt {
   void AddPadOperation(const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddPreluOperation(const mojom::Prelu& prelu);
+  void AddReduceOperation(const mojom::Reduce& reduce);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddReverseOperation(const mojom::Reverse& reverse);
   void AddScatterElementsOperation(

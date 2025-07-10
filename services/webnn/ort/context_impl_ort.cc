@@ -178,16 +178,26 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*prelu_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
-       /*reduce_l1_input=*/{},
-       /*reduce_l2_input=*/{},
-       /*reduce_log_sum_input=*/{},
-       /*reduce_log_sum_exp_input=*/{},
-       /*reduce_max_input=*/{},
-       /*reduce_mean_input=*/{},
-       /*reduce_min_input=*/{},
-       /*reduce_product_input=*/{},
-       /*reduce_sum_input=*/{},
-       /*reduce_sum_square_input=*/{},
+       /*reduce_l1_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_l2_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_log_sum_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_log_sum_exp_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_max_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_mean_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_min_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_product_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_sum_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
+       /*reduce_sum_square_input=*/
+       {kFloat16To32Int32To64, kMaxRank},
        /*relu_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
        /*resample2d_input=*/{},
        // TODO(crbug.com/425151000): Add int4/uint4 support for reshape once the
