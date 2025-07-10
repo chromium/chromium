@@ -1749,7 +1749,6 @@ static_library("browser") {
     "webid/federated_identity_permission_context_factory.cc",
     "webid/federated_identity_permission_context_factory.h",
     "webid/identity_provider_permission_request.cc",
-    "webid/identity_provider_permission_request.h",
   ]
 
   if (is_chromeos) {
@@ -2084,6 +2083,8 @@ static_library("browser") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_search",
     "//chrome/browser/ui/translate",
+    "//chrome/browser/ui/webid",
+    "//chrome/browser/webid",
 
     # TODO(crbug.com/369436587): Remove this dependency when
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.

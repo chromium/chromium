@@ -15,7 +15,8 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/webid",
+    "//chrome/test:test_support",
     "//content/public/browser",
     "//testing/gtest",
     "//ui/gfx",

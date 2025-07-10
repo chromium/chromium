@@ -52,3 +52,12 @@ if (is_android) {
     ]
   }
 }
+
+source_set("webid") {
+  sources = [ "identity_provider_permission_request.h" ]
+  public_deps = [
+    "//components/content_settings/core/common",
+    "//components/permissions",
+    "//url",
+  ]
+}
