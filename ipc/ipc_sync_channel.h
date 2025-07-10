@@ -19,7 +19,6 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_sync_message.h"
-#include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
@@ -128,11 +127,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   // Incoming messages belonging to the kRestrictDispatchGroup_None group (the
   // default) will be dispatched in any case.
   void SetRestrictDispatchChannelGroup(int group);
-
-  // Creates a new IPC::SyncMessageFilter and adds it to this SyncChannel.
-  // This should be used instead of directly constructing a new
-  // SyncMessageFilter.
-  scoped_refptr<IPC::SyncMessageFilter> CreateSyncMessageFilter();
 
  protected:
   friend class ReceivedSyncMsgQueue;
@@ -247,9 +241,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   // Used to signal events between the IPC and listener threads.
   base::WaitableEventWatcher dispatch_watcher_;
   base::WaitableEventWatcher::EventCallback dispatch_watcher_callback_;
-
-  // Tracks SyncMessageFilters created before complete channel initialization.
-  std::vector<scoped_refptr<SyncMessageFilter>> pre_init_sync_message_filters_;
 };
 
 }  // namespace IPC
