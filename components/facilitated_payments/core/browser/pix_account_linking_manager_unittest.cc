@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -266,6 +267,30 @@ TEST_F(PixAccountLinkingManagerTest,
   // The user returns to Chrome.
   ASSERT_TRUE(on_return_to_chrome_callback);
   std::move(on_return_to_chrome_callback).Run();
+}
+
+TEST_F(PixAccountLinkingManagerTest, ScreenShown_PromptShownLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+  test_api().OnUiScreenEvent(UiEvent::kNewScreenShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinkingPromptShown",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+  test_api().OnUiScreenEvent(UiEvent::kScreenCouldNotBeShown);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinkingPromptShown",
+      /*sample=*/true,
+      /*expected_bucket_count=*/0);
 }
 
 }  // namespace payments::facilitated

@@ -275,6 +275,9 @@ void LogFopSelectorShownLatency(
     base::TimeDelta latency,
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
+// Logs that the Pix account linking prompt was shown.
+void LogPixAccountLinkingPromptShown();
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_

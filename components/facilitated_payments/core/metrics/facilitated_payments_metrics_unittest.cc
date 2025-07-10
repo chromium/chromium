@@ -185,6 +185,16 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixTransactionResultAndLatency) {
   }
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptShown) {
+  base::HistogramTester histogram_tester;
+
+  LogPixAccountLinkingPromptShown();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinkingPromptShown", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogEwalletInitiatePurchaseActionResultAndLatency_DeviceBound) {
   for (PurchaseActionResult result :

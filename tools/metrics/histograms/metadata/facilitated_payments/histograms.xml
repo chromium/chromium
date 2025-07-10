@@ -293,6 +293,21 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.AccountLinkingPromptShown"
+    enum="BooleanShown" expires_after="2026-06-01">
+  <owner>longsheng@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count for the number of times the Pix account linking prompt is shown.
+    Records true every time the prompt is shown. [Frequency] Logged once per Pix
+    account linking flow. [Trigger] The histogram is logged when the prompt
+    appears after user completes the payment on their bank/payment app and
+    return back to Chrome.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>

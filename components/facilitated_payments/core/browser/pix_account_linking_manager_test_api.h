@@ -26,6 +26,9 @@ class PixAccountLinkingManagerTestApi {
   void DismissPrompt() { manager_->DismissPrompt(); }
   void OnAccepted() { manager_->OnAccepted(); }
   void OnDeclined() { manager_->OnDeclined(); }
+  void OnUiScreenEvent(UiEvent ui_event_type) {
+    manager_->OnUiScreenEvent(ui_event_type);
+  }
   void Reset() { manager_->Reset(); }
 
  private:

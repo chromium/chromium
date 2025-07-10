@@ -383,4 +383,9 @@ void LogFopSelectorShownLatency(
   }
 }
 
+void LogPixAccountLinkingPromptShown() {
+  base::UmaHistogramBoolean("FacilitatedPayments.Pix.AccountLinkingPromptShown",
+                            /*sample=*/true);
+}
+
 }  // namespace payments::facilitated

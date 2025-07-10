@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
 namespace payments::facilitated {
 
@@ -121,8 +122,7 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK(is_prompt_showing_);
-      // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
-      // prompt shown.
+      LogPixAccountLinkingPromptShown();
       break;
     }
     case UiEvent::kScreenCouldNotBeShown: {
