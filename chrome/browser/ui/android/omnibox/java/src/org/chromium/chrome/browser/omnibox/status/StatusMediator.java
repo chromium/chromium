@@ -700,6 +700,10 @@ public class StatusMediator
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
+        mModel.set(
+                StatusProperties.STATUS_ICON_DESCRIPTION_RES,
+                ContentSettingsResources.getPermissionResultAnnouncementForScreenReader(
+                        mLastPermission, result));
         Runnable finishIconAnimation = () -> updateLocationBarIcon(IconTransitionType.ROTATE);
         mPermissionTaskHandler.postDelayed(
                 finishIconAnimation, PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
