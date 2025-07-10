@@ -168,9 +168,6 @@ bool SystemSessionAnalyzer::FetchEvents(size_t requested_events,
   DWORD event_cnt = 0U;
   BOOL success = ::EvtNext(query_handle_.get(), desired_event_cnt,
                            events_raw.data(), kTimeoutMs, 0, &event_cnt);
-  if (!success) {
-    DPLOG(ERROR) << "Failed to retrieve events.";
-  }
 
   // Ensure handles get closed. The MSDN sample seems to imply handles may need
   // to be closed even if EvtNext failed.
@@ -179,6 +176,8 @@ bool SystemSessionAnalyzer::FetchEvents(size_t requested_events,
     events[i].reset(events_raw[i]);
 
   if (!success) {
+    // Failed to retrieve the targeted events. The system has likely been
+    // running long enough that the shutdown/startup events have rolled off.
     SetExtendedFailureStatus(ExtendedStatus::RETRIEVE_EVENTS_FAILURE);
     return false;
   }
