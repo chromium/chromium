@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.text.TextUtils;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -92,5 +93,18 @@ public class GSAUtils {
             }
         }
         return sPackageInfo;
+    }
+
+    /**
+     * Sets the package info for AGSA for testing.
+     *
+     * @param packageInfo The package info to set for AGSA.
+     */
+    public static void setAgsaPackageInfoForTesting(@Nullable PackageInfo packageInfo) {
+        sPackageInfo = packageInfo;
+        ResettersForTesting.register(
+                () -> {
+                    sPackageInfo = null;
+                });
     }
 }
