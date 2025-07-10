@@ -12,6 +12,7 @@ enum CustomizeChromeSection {
   kModules,
   kWallpaperSearch,
   kToolbar,
+  kFooter,
 };
 
 enum SidePanelOpenTrigger {

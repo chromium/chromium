@@ -84,7 +84,6 @@ class FooterInteractiveTest
                    chrome::ExecuteCommand(browser(),
                                           IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
                  })),
-                 WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
                  InstrumentNonTabWebView(
                      contents_id, kCustomizeChromeSidePanelWebViewElementId));
   }
@@ -115,6 +114,17 @@ class FooterInteractiveTest
                  MoveMouseTo(kLocalFooterElementId, kFooterContainer),
                  ClickMouse(ui_controls::RIGHT), WaitForShow(menu_item_id),
                  SelectMenuItem(menu_item_id, InputType::kMouse));
+  }
+
+  InteractiveTestApi::MultiStep WaitForElementExists(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+    StateChange element_exists;
+    element_exists.type = StateChange::Type::kExists;
+    element_exists.where = element;
+    element_exists.event = kElementExists;
+    return WaitForStateChange(contents_id, element_exists);
   }
 
   new_tab_footer::NewTabFooterWebView* GetFooterView() {
@@ -210,6 +220,11 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuHidesFooter) {
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
+                                    "customize-chrome-footer",
+                                    "#showToggleContainer"};
+
   // Override the ntp with an extension.
   LoadNtpOverridingExtension();
   RunTestSequence(
@@ -218,8 +233,14 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuOpensCustomizeChrome) {
       // Open context menu and select "customize chrome" option.
       OpenContextMenuAndSelect(
           FooterContextMenu::kShowCustomizeChromeIdForTesting),
-      // Ensure customize chrome opens.
-      WaitForShow(kCustomizeChromeSidePanelWebViewElementId));
+      // Ensure customize chrome opens to footer section.
+      Steps(
+          InstrumentNonTabWebView(kLocalCustomizeChromeElementId,
+                                  kCustomizeChromeSidePanelWebViewElementId,
+                                  false),
+          WaitForElementExists(kLocalCustomizeChromeElementId, kFooterSection),
+          WaitForElementToRender(kLocalCustomizeChromeElementId,
+                                 kFooterSection)));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 

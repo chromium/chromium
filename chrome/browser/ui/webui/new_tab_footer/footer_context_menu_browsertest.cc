@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, HidesFooter) {
 
 IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, OpensCustomizeChrome) {
   ASSERT_EQ(actions::ActionManager::Get()
-                .FindAction(kActionSidePanelShowCustomizeChrome)
+                .FindAction(kActionSidePanelShowCustomizeChromeFooter)
                 ->GetInvokeCount(),
             0);
   histogram_tester()->ExpectTotalCount(kMenuClickHistogram, 0);
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(FooterContextMenuBrowserTest, OpensCustomizeChrome) {
   ExecuteCommand(kCustomizeMenuItem);
 
   ASSERT_EQ(actions::ActionManager::Get()
-                .FindAction(kActionSidePanelShowCustomizeChrome)
+                .FindAction(kActionSidePanelShowCustomizeChromeFooter)
                 ->GetInvokeCount(),
             1);
   histogram_tester()->ExpectTotalCount(kMenuClickHistogram, 1);
