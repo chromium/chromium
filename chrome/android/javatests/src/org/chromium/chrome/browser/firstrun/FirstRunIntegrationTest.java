@@ -89,6 +89,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -103,6 +104,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration test suite for the first run experience. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
 @DoNotBatch(reason = "This test interacts with startup, native initialization, and first run.")
 public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";

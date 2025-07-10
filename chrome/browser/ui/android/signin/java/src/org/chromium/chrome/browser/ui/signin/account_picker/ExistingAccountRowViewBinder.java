@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -21,9 +23,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 /** This class regroups the buildView and bindView util methods of the existing account row. */
 @NullMarked
 public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
+
+    // Unicode control character that prevents line breaking
+    private static final String NO_BREAK_CHAR = "\u2060";
+
     /**
-     * View binder that associates an existing account view with the model of
-     * {@link ExistingAccountRowProperties}.
+     * View binder that associates an existing account view with the model of {@link
+     * ExistingAccountRowProperties}.
      */
     @Override
     public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
@@ -68,10 +74,19 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
             final int secondaryTextVisibility =
                     TextUtils.isEmpty(profileData.getFullName()) ? View.GONE : View.VISIBLE;
             if (secondaryTextVisibility == View.VISIBLE) {
-                accountTextSecondary.setText(profileData.getAccountEmail());
+                String emailText = profileData.getAccountEmail();
+                if (SigninFeatureMap.isEnabled(SigninFeatures.SMART_EMAIL_LINE_BREAKING)) {
+                    emailText = formatEmailForDisplay(emailText);
+                }
+                accountTextSecondary.setText(emailText);
             }
             accountTextSecondary.setVisibility(secondaryTextVisibility);
         }
+    }
+
+    /** Formats the email address for display, preventing it from breaking lines at periods */
+    protected static String formatEmailForDisplay(String email) {
+        return email.replace(".", NO_BREAK_CHAR + ".");
     }
 
     /**

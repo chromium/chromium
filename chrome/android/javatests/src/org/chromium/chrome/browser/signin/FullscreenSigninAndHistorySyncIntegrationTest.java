@@ -54,6 +54,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -71,6 +72,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -529,11 +531,11 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         // Verify that the fullscreen sign-in promo is shown with the default account.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(TestAccounts.AADC_ADULT_ACCOUNT.getEmail()))
+        onViewWaiting(withText(TestAccounts.AADC_ADULT_ACCOUNT.getFullName()))
                 .check(matches(isDisplayed()));
 
         // Add the second account.
-        onView(withText(TestAccounts.AADC_ADULT_ACCOUNT.getEmail())).perform(click());
+        onView(withText(TestAccounts.AADC_ADULT_ACCOUNT.getFullName())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
@@ -630,6 +632,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     public void testSigninAndHistorySync() throws Exception {
         FullscreenSigninAndHistorySyncConfig config =
                 new FullscreenSigninAndHistorySyncConfig.Builder().build();
@@ -657,6 +660,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     public void testSigninAndHistorySyncCustomization() throws Exception {
         // Create a config which only uses non-default resource values to test customization.
         // For instance, the default sign-in strings are used for history sync and vice versa.

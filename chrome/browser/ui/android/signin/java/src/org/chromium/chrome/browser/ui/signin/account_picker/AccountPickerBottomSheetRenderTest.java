@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,8 +41,10 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -169,12 +172,14 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testCollapsedSheetWithAccountViewForWebSigninEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
+        ViewUtils.waitForVisibleView(
+                allOf(SigninMatchers.withFormattedEmailText(TEST_EMAIL1), isDisplayed()));
         ViewUtils.waitForVisibleView(allOf(withText(FULL_NAME1), isDisplayed()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
@@ -183,13 +188,15 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testCollapsedSheetWithAccountViewForSendTabToSelfEntryPoint(
             boolean nightModeEnabled) throws IOException {
         mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
+        ViewUtils.waitForVisibleView(
+                allOf(SigninMatchers.withFormattedEmailText(TEST_EMAIL1), isDisplayed()));
         ViewUtils.waitForVisibleView(allOf(withText(FULL_NAME1), isDisplayed()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
@@ -199,13 +206,15 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testCollapsedSheetWithAccountViewForBookmarksEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
-        ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
+        ViewUtils.waitForVisibleView(
+                allOf(SigninMatchers.withFormattedEmailText(TEST_EMAIL1), isDisplayed()));
         ViewUtils.waitForVisibleView(allOf(withText(FULL_NAME1), isDisplayed()));
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(),
@@ -215,6 +224,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForWebSigninEntryPoint(boolean nightModeEnabled)
             throws IOException {
@@ -228,6 +238,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForSendTabToSelfEntryPoint(boolean nightModeEnabled)
             throws IOException {
@@ -243,6 +254,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForBookmarksEntryPoint(boolean nightModeEnabled)
             throws IOException {
@@ -258,6 +270,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSignInInProgressView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -269,6 +282,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
@@ -284,6 +298,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -297,6 +312,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -310,6 +326,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testConfirmManagementView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);

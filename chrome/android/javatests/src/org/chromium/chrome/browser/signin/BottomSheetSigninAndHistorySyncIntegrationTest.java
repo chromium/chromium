@@ -449,7 +449,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
-                                withText(TestAccounts.ACCOUNT1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getFullName()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
 
@@ -475,7 +475,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Select an account on the shown expanded sign-in bottom-sheet.
         onView(
                         allOf(
-                                withText(TestAccounts.ACCOUNT1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getFullName()),
                                 isDescendantOfA(withId(R.id.account_picker_state_expanded)),
                                 isCompletelyDisplayed()))
                 .perform(click());
@@ -534,7 +534,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verifies that the default account sign-in bottom-sheet is shown and select the account.
         onView(
                         allOf(
-                                withText(TestAccounts.ACCOUNT1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getFullName()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed)),
                                 isCompletelyDisplayed()))
                 .perform(click());
@@ -547,7 +547,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
-                                withText(TestAccounts.ACCOUNT1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getFullName()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
 
