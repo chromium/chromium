@@ -207,7 +207,7 @@ TEST_F(BlinkSchedulerSingleThreadTaskRunnerTest,
     delete (unowned_test_object);
   }
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
 }
 

@@ -85,7 +85,7 @@ class NonMainThreadImplTest : public testing::Test {
 #if DCHECK_IS_ON()
   void TearDown() override {
     thread_.reset();
-    WTF::SetIsBeforeThreadCreatedForTest();
+    SetIsBeforeThreadCreatedForTest();
   }
 #endif  // DCHECK_IS_ON()
 

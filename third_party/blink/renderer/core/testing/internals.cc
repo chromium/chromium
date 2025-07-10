@@ -2784,7 +2784,7 @@ void Internals::setMediaControlsTestMode(HTMLMediaElement* media_element,
 void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
     const String& scheme) {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(scheme);
 }
@@ -2800,7 +2800,7 @@ void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
       policy_areas_enum |= SchemeRegistry::kPolicyAreaStyle;
   }
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       scheme, static_cast<SchemeRegistry::PolicyAreas>(policy_areas_enum));
@@ -2809,7 +2809,7 @@ void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
 void Internals::removeURLSchemeRegisteredAsBypassingContentSecurityPolicy(
     const String& scheme) {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::
       RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(scheme);

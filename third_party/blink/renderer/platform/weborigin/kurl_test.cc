@@ -904,7 +904,7 @@ TEST(KURLTest, urlStrippedForUseAsReferrerRespectsReferrerScheme) {
 
   EXPECT_EQ("", foobar_url.StrippedForUseAsReferrer().Utf8());
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);
   EXPECT_EQ("foobar://somepage/", foobar_url.StrippedForUseAsReferrer());
@@ -939,7 +939,7 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 #if DCHECK_IS_ON()
   // Simulate the static getters being called during/after threads have been
   // started, so that StaticSingleton's thread checks will be applied.
-  WTF::WillCreateThread();
+  WillCreateThread();
 #endif
 
   // Take references to the static KURLs, so that each has two references to
@@ -968,7 +968,7 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 
 #if DCHECK_IS_ON()
   // Restore the IsBeforeThreadCreated() flag.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
 }
 

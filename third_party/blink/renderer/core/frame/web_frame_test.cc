@@ -1221,7 +1221,7 @@ TEST_F(WebFrameTest, ChromePageNoJavascript) {
   // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
   // This is needed because the preload scanner creates a thread when loading a
   // page.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs("chrome");
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
@@ -10626,7 +10626,7 @@ TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
   // This is needed because the preload scanner creates a thread when loading a
   // page.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
   EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL(not_base_url_))

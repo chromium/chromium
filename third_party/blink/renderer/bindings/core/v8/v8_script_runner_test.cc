@@ -351,7 +351,7 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
   // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
   // This is needed because the preload scanner creates a thread when loading a
   // page.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
@@ -398,7 +398,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
   // This is needed because the preload scanner creates a thread when loading a
   // page.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
@@ -566,7 +566,7 @@ class WebUIBundledCodeCacheV8ScriptRunnerTest : public V8ScriptRunnerTest {
   void SetUp() override {
     V8ScriptRunnerTest::SetUp();
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();
+    SetIsBeforeThreadCreatedForTest();
 #endif
     SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
 
@@ -577,7 +577,7 @@ class WebUIBundledCodeCacheV8ScriptRunnerTest : public V8ScriptRunnerTest {
 
   void TearDown() override {
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();
+    SetIsBeforeThreadCreatedForTest();
 #endif
     SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     V8ScriptRunnerTest::TearDown();

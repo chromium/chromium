@@ -98,7 +98,7 @@ size_t GetUnderestimatedStackSize() {
   }
   return pthread_get_stacksize_np(pthread_self());
 #elif BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
-  return Threading::ThreadStackSize();
+  return blink::Threading::ThreadStackSize();
 #else
 #error "Stack frame size estimation not supported on this platform."
   return 0;

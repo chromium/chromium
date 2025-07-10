@@ -201,7 +201,7 @@ TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
     url::ScopedSchemeRegistryForTests scoped_registry;
     url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
     SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
         "very-special-scheme");

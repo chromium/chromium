@@ -17,7 +17,7 @@ const char kTestScheme2[] = "test-scheme-2";
 class SchemeRegistryTest : public testing::Test {
   void TearDown() override {
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
     SchemeRegistry::
         RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
@@ -34,7 +34,7 @@ TEST_F(SchemeRegistryTest, NoCSPBypass) {
 
 TEST_F(SchemeRegistryTest, FullCSPBypass) {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme);
@@ -50,7 +50,7 @@ TEST_F(SchemeRegistryTest, FullCSPBypass) {
 
 TEST_F(SchemeRegistryTest, PartialCSPBypass) {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme, SchemeRegistry::kPolicyAreaImage);
@@ -74,7 +74,7 @@ TEST_F(SchemeRegistryTest, BypassSecureContextCheck) {
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme3));
 
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck("random-scheme");
 
@@ -89,7 +89,7 @@ TEST_F(SchemeRegistryTest, WebUIScheme) {
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
 
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsWebUI(kTestScheme);
 
@@ -118,7 +118,7 @@ TEST_F(SchemeRegistryTest, ExtensionScheme) {
   EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   CommonSchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
 

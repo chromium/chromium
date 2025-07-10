@@ -139,7 +139,7 @@ class TestPlatformForRedirects final : public TestingPlatformSupport {
 
 void RegisterURLSchemeAsCodeCacheWithHashing() {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
@@ -2184,14 +2184,14 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
   void SetUp() override {
     ResourceRequestSenderTestBase::SetUp();
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();
+    SetIsBeforeThreadCreatedForTest();
 #endif
     SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
   }
 
   void TearDown() override {
 #if DCHECK_IS_ON()
-    WTF::SetIsBeforeThreadCreatedForTest();
+    SetIsBeforeThreadCreatedForTest();
 #endif
     SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     ResourceRequestSenderTestBase::TearDown();

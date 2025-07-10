@@ -184,7 +184,7 @@ class VideoCaptureImplTest : public ::testing::Test {
   }
 
 #if DCHECK_IS_ON()
-  ~VideoCaptureImplTest() override { WTF::SetIsBeforeThreadCreatedForTest(); }
+  ~VideoCaptureImplTest() override { SetIsBeforeThreadCreatedForTest(); }
 #endif
 
   VideoCaptureImplTest(const VideoCaptureImplTest&) = delete;

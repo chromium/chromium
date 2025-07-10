@@ -124,7 +124,7 @@ const URLSchemesRegistry& GetURLSchemesRegistry() {
 
 URLSchemesRegistry& GetMutableURLSchemesRegistry() {
 #if DCHECK_IS_ON()
-  DCHECK(WTF::IsBeforeThreadCreated());
+  DCHECK(IsBeforeThreadCreated());
 #endif
   return URLSchemesRegistry::GetInstance();
 }

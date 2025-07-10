@@ -69,7 +69,7 @@ namespace {
 
 class HeapTest : public TestSupportingGC {
 #if DCHECK_IS_ON()
-  void TearDown() override { WTF::SetIsBeforeThreadCreatedForTest(); }
+  void TearDown() override { SetIsBeforeThreadCreatedForTest(); }
 #endif
 };
 
