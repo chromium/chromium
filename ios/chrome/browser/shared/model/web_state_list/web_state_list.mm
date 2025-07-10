@@ -767,8 +767,8 @@ bool WebStateList::ShouldInsertWebState(const TabGroup* group) {
   if (!group) {
     return false;
   }
-  const auto iter = groups_.find(group);
-  if (iter == groups_.end() || group->range().count() > 1) {
+  CHECK(ContainsGroup(group));
+  if (group->range().count() > 1) {
     return false;
   }
   return (groups_delegate_ && !groups_delegate_->ShouldDeleteGroup(group));
