@@ -9,10 +9,6 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>GIF image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -21,10 +17,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>HTML document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -33,10 +25,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>XHTML document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -45,10 +33,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>JavaScript script</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -57,10 +41,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>JPEG image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -69,10 +49,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>MHTML document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -81,10 +57,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>HTML5 Audio (Ogg)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -93,10 +65,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>HTML5 Video (Ogg)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -105,10 +73,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>PNG image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -117,10 +81,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>SVG document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -129,10 +89,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Plain text document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -141,10 +97,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>HTML5 Video (WebM)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -153,10 +105,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>WebP image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -173,10 +121,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>PDF Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -185,10 +129,6 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeIconFile</key>
-			<string>document.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Chromium Shortcut</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
@@ -201,6 +141,8 @@
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
 	<string>app.icns</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>${CHROMIUM_BUNDLE_ID}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -275,6 +217,13 @@
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Chromium Extension</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>EXTENSION</string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>org.chromium.extension</string>
 			<key>UTTypeTagSpecification</key>
@@ -296,6 +245,13 @@
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Chromium Shortcut</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>SHORTCUT</string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>org.chromium.shortcut</string>
 			<key>UTTypeTagSpecification</key>
@@ -315,14 +271,163 @@
 	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
+			<string>public.image</string>
+			<key>UTTypeDescription</key>
+			<string>GIF image</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>GIF</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.compuserve.gif</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>GIFf</string>
+				<key>public.filename-extension</key>
+				<string>gif</string>
+				<key>public.mime-type</key>
+				<string>image/gif</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.text</string>
+			<key>UTTypeDescription</key>
+			<string>HTML text</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>HTML</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.html</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.nspboard-type</key>
+				<string>Apple HTML pasteboard type</string>
+				<key>com.apple.ostype</key>
+				<string>HTML</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>html</string>
+					<string>htm</string>
+					<string>shtml</string>
+					<string>shtm</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>text/html</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.xml</string>
+			<key>UTTypeDescription</key>
+			<string>XHTML</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>XHTML</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.xhtml</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>xhtml</string>
+					<string>xhtm</string>
+					<string>xht</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>application/xhtml+xml</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.script</string>
+				<string>public.executable</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>JavaScript</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>JAVASCRIPT</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.netscape.javascript-source</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>js</string>
+					<string>jscript</string>
+					<string>javascript</string>
+					<string>mjs</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/javascript</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.image</string>
+			<key>UTTypeDescription</key>
+			<string>JPEG image</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>JPEG</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.jpeg</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>JPEG</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>jpeg</string>
+					<string>jpg</string>
+					<string>jpe</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>image/jpeg</string>
+					<string>image/jpg</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
 				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>MIME HTML document</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>MHTML</string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>org.ietf.mhtml</string>
 			<key>UTTypeReferenceURL</key>
@@ -349,9 +454,14 @@
 				<string>public.audio</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Ogg Audio</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
+			<string>Ogg audio</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>OGG</string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>org.xiph.ogg-audio</string>
 			<key>UTTypeReferenceURL</key>
@@ -375,9 +485,14 @@
 				<string>public.movie</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Ogg Video</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
+			<string>Ogg video</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>OGV</string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>org.xiph.ogv</string>
 			<key>UTTypeReferenceURL</key>
@@ -393,6 +508,165 @@
 				<array>
 					<string>video/ogg</string>
 				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.image</string>
+			<key>UTTypeDescription</key>
+			<string>PNG image</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>PNG</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.png</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.nspboard-type</key>
+				<string>Apple PNG pasteboard type</string>
+				<key>com.apple.ostype</key>
+				<string>PNGf</string>
+				<key>public.filename-extension</key>
+				<string>png</string>
+				<key>public.mime-type</key>
+				<string>image/png</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.image</string>
+				<string>public.xml</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>SVG image</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>SVG</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.svg-image</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<array>
+					<string>svg </string>
+					<string>svgz</string>
+				</array>
+				<key>public.filename-extension</key>
+				<array>
+					<string>svg</string>
+					<string>svgz</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>image/svg+xml</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>text</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>TEXT</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.text</string>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.movie</string>
+			<key>UTTypeDescription</key>
+			<string>WebM media</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>WEBM</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.webmproject.webm</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://www.webmproject.org/docs/container/</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>webm</string>
+				<key>public.mime-type</key>
+				<array>
+					<string>video/webm</string>
+					<string>audio/webm</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.image</string>
+			<key>UTTypeDescription</key>
+			<string>WebP image</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>WEBP</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.webmproject.webp</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://developers.google.com/speed/webp</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>webp</string>
+				<key>public.mime-type</key>
+				<string>image/webp</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.composite-content</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>PDF document</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>PDF</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.adobe.pdf</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.nspboard-type</key>
+				<string>Apple PDF pasteboard type</string>
+				<key>com.apple.ostype</key>
+				<string>PDF </string>
+				<key>public.filename-extension</key>
+				<string>pdf</string>
+				<key>public.mime-type</key>
+				<string>application/pdf</string>
 			</dict>
 		</dict>
 	</array>
