@@ -107,7 +107,7 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void SameDocumentNavigationCommitted(const String& url,
                                        SoftNavigationContext*);
-  bool ModifiedDOM(Node* node);
+  void ModifiedDOM(Node* node);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
@@ -156,7 +156,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
 
   void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
-  LocalFrame* GetLocalFrameIfOutermostAndNotDetached() const;
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
   uint64_t CalculateRequiredPaintArea() const;

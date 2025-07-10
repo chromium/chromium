@@ -211,13 +211,14 @@ SoftNavigationHeuristics* GetHeuristicsForNodeIfShouldTrack(const Node& node) {
   if (!document.IsTrackingSoftNavigationHeuristics()) {
     return nullptr;
   }
-  if (!node.isConnected()) {
+  // This handles both disconnected nodes and detached frames.
+  if (!node.InActiveDocument()) {
     return nullptr;
   }
+  // The window cannot be null unless the document has been shut down, which is
+  // not true for active documents.
   LocalDOMWindow* window = document.domWindow();
-  if (!window) {
-    return nullptr;
-  }
+  CHECK(window);
   return window->GetSoftNavigationHeuristics();
 }
 
@@ -242,7 +243,7 @@ SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
   if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     return nullptr;
   }
-  if (!window->GetFrame()->IsMainFrame()) {
+  if (!window->GetFrame()->IsOutermostMainFrame()) {
     return nullptr;
   }
   if (Document* document = window->document()) {
@@ -374,14 +375,14 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   }
 }
 
-bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
-  // Don't bother marking dom nodes unless they are in the right frame.
-  if (!GetLocalFrameIfOutermostAndNotDetached()) {
-    return false;
-  }
+void SoftNavigationHeuristics::ModifiedDOM(Node* node) {
+  // This should only be called by `ModifiedNode()` and `InsertedNode()`, and
+  // detached windows should already be filtered out.
+  CHECK(window_->GetFrame());
+
   SoftNavigationContext* context = GetSoftNavigationContextForCurrentTask();
   if (!context) {
-    return false;
+    return;
   }
 
   if (IsPrePaintBasedAttributionEnabled()) {
@@ -392,7 +393,6 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   }
 
   EmitSoftNavigationEntryIfAllConditionsMet(context);
-  return true;
 }
 
 // TODO(crbug.com/424448145): re-architect how we pick our FCP point, when we
@@ -487,17 +487,9 @@ SoftNavigationHeuristics::TakePaintTimingCallback() {
   // If we need paint timing, we must have a context that needs FCP.
   CHECK(!context_for_first_contentful_paint_->HasFirstContentfulPaint());
 
-  // TODO(crbug.com/40871933): We are already only marking dom nodes when we
-  // have a frame, and we are already limiting paints attribution to contexts
-  // that come from the same SNH/window instance.  So, this might be safe to
-  // CHECK().  However, potentially it is possible to meet paint criteria,
-  // then meet some other final criteria in a different frame?  Until we test
-  // that, let's just guard carefully.
-  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
-  if (!frame) {
-    return {};
-  }
-  String frameIdForTracing = GetFrameIdForTracing(frame);
+  // We should not be scheduling paint timing callbacks for detached frames.
+  LocalFrame* frame = window_->GetFrame();
+  CHECK(frame);
 
   auto callback = WTF::BindOnce(
       [](SoftNavigationHeuristics* self, Member<SoftNavigationContext> context,
@@ -527,7 +519,7 @@ SoftNavigationHeuristics::TakePaintTimingCallback() {
       },
       WrapWeakPersistent(this),
       WrapPersistent(context_for_first_contentful_paint_.Get()),
-      frameIdForTracing);
+      GetFrameIdForTracing(frame));
 
   context_for_first_contentful_paint_ = nullptr;
   return std::move(callback);
@@ -556,27 +548,23 @@ void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
   soft_navigation_lcp_details_for_metrics_ =
       context_for_current_url_->LatestLcpDetailsForUkm();
 
-  Document* document = window_->document();
-  if (!document) {
-    return;
-  }
-  DocumentLoader* loader = document->Loader();
-  if (!loader) {
-    return;
-  }
+  LocalFrame* frame = window_->GetFrame();
+  // We should not be running paint timing callbacks for detached frames.
+  CHECK(frame);
+  auto* loader = frame->Loader().GetDocumentLoader();
+  // This should only be null if the frame was detached.
+  CHECK(loader);
   loader->DidChangePerformanceTiming();
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     SoftNavigationContext* context) const {
-  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
-  if (!frame) {
-    return;
-  }
+  LocalFrame* frame = window_->GetFrame();
+  // We should not be running paint timing callbacks for detached frames.
+  CHECK(frame);
   auto* loader = frame->Loader().GetDocumentLoader();
-  if (!loader) {
-    return;
-  }
+  // This should only be null if the frame was detached.
+  CHECK(loader);
 
   CHECK(EnsureContextForCurrentWindow(context));
 
@@ -674,20 +662,6 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   }
 }
 
-LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfOutermostAndNotDetached()
-    const {
-  if (!window_->IsCurrentlyDisplayedInFrame()) {
-    return nullptr;
-  }
-
-  LocalFrame* frame = window_->GetFrame();
-  if (!frame->IsOutermostMainFrame()) {
-    return nullptr;
-  }
-
-  return frame;
-}
-
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     EventScope::Type type,
     ScriptState* script_state) {
@@ -778,13 +752,14 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
 }
 
 uint64_t SoftNavigationHeuristics::CalculateViewportArea() const {
-  static constexpr uint64_t kMinViewportArea = 1;
+  // This should not be called after detach, so neither the frame nor the frame
+  // view should be null.
   LocalFrame* frame = window_->GetFrame();
   CHECK(frame);
   LocalFrameView* local_frame_view = frame->View();
-  if (!local_frame_view) {
-    return kMinViewportArea;
-  }
+  CHECK(local_frame_view);
+
+  static constexpr uint64_t kMinViewportArea = 1;
   uint64_t viewport_area = local_frame_view->GetLayoutSize().Area64();
   return std::max(viewport_area, kMinViewportArea);
 }
