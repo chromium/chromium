@@ -41,8 +41,7 @@ wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
 
 wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
     const wgpu::Device& device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
-    bool requires_dawn_signal_fence);
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
 
 wgpu::Buffer CreateDawnSharedBuffer(
     const wgpu::SharedBufferMemory& shared_buffer_memory,

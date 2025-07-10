@@ -922,7 +922,7 @@ TEST_P(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
     SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
     canvas->clear(SkColors::kRed);
-    context_state_->FlushAndSubmit(/*sync_to_cpu=*/false);
+    context_state_->FlushWriteAccess(scoped_write_access.get());
 
     skia_representation->SetCleared();
   }

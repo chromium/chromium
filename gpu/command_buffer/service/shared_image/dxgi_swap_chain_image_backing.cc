@@ -376,8 +376,8 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
       return nullptr;
     }
 
-    shared_texture_memory_ = CreateDawnSharedTextureMemory(
-        device, backbuffer_texture, /*requires_dawn_signal_fence=*/false);
+    shared_texture_memory_ =
+        CreateDawnSharedTextureMemory(device, backbuffer_texture);
     if (!shared_texture_memory_) {
       LOG(ERROR) << "Failed to create shared texture memory.";
       return nullptr;
@@ -405,6 +405,10 @@ wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
   CHECK(shared_texture_memory_);
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
   swapchain_begin_state.isSwapchain = true;
+
+  wgpu::SharedTextureMemoryD3D11BeginState d3d11_begin_state = {};
+  d3d11_begin_state.requiresEndAccessFence = false;
+  swapchain_begin_state.nextInChain = &d3d11_begin_state;
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   desc.initialized = true;

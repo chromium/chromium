@@ -260,11 +260,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
-  bool use_cross_device_synchronization() const {
-    // Cross device sync is needed if we have DXGI shared handle.
-    return dxgi_shared_handle_state_ != nullptr;
-  }
-
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
     // mutex for synchronization.
@@ -318,6 +313,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Flush pending graphite submits. It will call Graphite's Context::submit.
   void FlushGraphiteCommandsIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void InvalidatePersistentGraphiteDawnAccess() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
   // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be

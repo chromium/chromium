@@ -475,8 +475,7 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   // Import the texture into dawn
   if (!shared_texture_memory_) {
     shared_texture_memory_ =
-        CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_,
-                                      /*requires_dawn_signal_fence=*/false);
+        CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_);
     if (!shared_texture_memory_) {
       LOG(ERROR) << "Failed to create shared texture memory.";
       return nullptr;
@@ -485,6 +484,10 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
 
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
   swapchain_begin_state.isSwapchain = true;
+
+  wgpu::SharedTextureMemoryD3D11BeginState d3d11_begin_state = {};
+  d3d11_begin_state.requiresEndAccessFence = false;
+  swapchain_begin_state.nextInChain = &d3d11_begin_state;
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   desc.initialized = true;
