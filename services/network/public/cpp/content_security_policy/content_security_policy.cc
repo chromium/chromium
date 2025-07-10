@@ -803,6 +803,13 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
+    if (base::FeatureList::IsEnabled(
+            network::features::kCSPScriptSrcHashesInV1) &&
+        base::EqualsCaseInsensitiveASCII(expression, "'strict-dynamic-url'")) {
+      directive->allow_dynamic_url = true;
+      continue;
+    }
+
     auto eval_hash = mojom::CSPHashSource::New();
     if (ParseEvalHash(expression, eval_hash.get())) {
       if (base::FeatureList::IsEnabled(

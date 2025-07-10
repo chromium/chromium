@@ -86,7 +86,10 @@ struct CSPSourceList {
   bool allow_eval = false;
   bool allow_wasm_eval = false;
   bool allow_wasm_unsafe_eval = false;
+  // True if source list has strict-dynamic keyword.
   bool allow_dynamic = false;
+  // True if source list has strict-dynamic-url keyword.
+  bool allow_dynamic_url = false;
   bool allow_unsafe_hashes = false;
   bool report_sample = false;
   IntegrityAlgorithm? report_hash_algorithm;

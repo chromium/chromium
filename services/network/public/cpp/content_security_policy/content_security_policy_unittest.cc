@@ -1640,6 +1640,14 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'script-src' contains an invalid source: ''wrong''. It will be "
           "ignored.",
       },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'wrong' 'strict-dynamic-url'",
+          base::BindOnce([] { return mojom::CSPSourceList::New(); }),
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
+      },
   };
 
   for (auto& test : cases) {
