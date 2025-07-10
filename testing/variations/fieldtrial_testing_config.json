@@ -3029,6 +3029,25 @@
             ]
         }
     ],
+    "AutomatedPasswordChangeStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImprovedPasswordChangeService",
+                        "PasswordChangeSubmissionMqlsLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [
