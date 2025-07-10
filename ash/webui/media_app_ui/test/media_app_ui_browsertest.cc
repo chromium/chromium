@@ -10,6 +10,7 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -60,8 +61,9 @@ std::string MediaAppUiBrowserTest::AppJsTestLibrary() {
 // static
 void MediaAppUiBrowserTest::PrepareAppForTest(content::WebContents* web_ui) {
   EXPECT_TRUE(WaitForLoadStop(web_ui));
-  EXPECT_EQ(nullptr, MediaAppUiBrowserTest::EvalJsInAppFrame(
-                         web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
+  EXPECT_EQ(base::Value(),
+            MediaAppUiBrowserTest::EvalJsInAppFrame(
+                web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaAppUiBrowserTest, GuestCanLoad) {

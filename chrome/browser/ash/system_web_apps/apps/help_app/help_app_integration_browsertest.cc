@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   )";
 
   EXPECT_EQ(0, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             SandboxedWebUiAppTestBase::EvalJsInAppFrame(web_contents, kScript));
   EXPECT_EQ(1, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
 }

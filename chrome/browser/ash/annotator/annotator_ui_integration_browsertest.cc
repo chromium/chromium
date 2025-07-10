@@ -8,6 +8,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/safe_base_name.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -37,7 +38,7 @@ content::EvalJsResult EvalJsInMainFrame(content::WebContents* web_ui,
 
 void PrepareAnnotatorForTest(content::WebContents* web_contents) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             EvalJsInMainFrame(web_contents,
                               SandboxedWebUiAppTestBase::LoadJsTestLibrary(
                                   base::FilePath(kTestLibraryPath))));

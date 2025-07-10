@@ -45,6 +45,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -7838,8 +7839,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
       https_server()->GetURL(
           kHostname,
           base::StrCat({kTargetPath, "foo&inline_script_without_csp"}))));
-  EXPECT_EQ(nullptr, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                            "window.is_inline_script_executed"));
+  EXPECT_EQ(base::Value(),
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "window.is_inline_script_executed"));
 
   // The third navigation. Synthetic response is enabled, inline scripts are
   // allowed after the script-src update in <meta> tag.

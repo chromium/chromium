@@ -14,6 +14,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -685,13 +686,13 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
   // the b.com iframe since a.com is cross-origin. Also, this approach avoids
   // using BroadcastChannel which doesn't work when third-party storage
   // partitioning is enabled.
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(third_party_iframe,
                             "self.message_promise = new Promise(resolve => {\n"
                             "  self.onmessage = resolve;\n"
                             "}); null;"));
 
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(
                 third_party_web_contents,
                 "self.onmessage = (e) => {\n"
@@ -699,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                 "  iframe.contentWindow.postMessage('😀', '*', [e.ports[0]]);\n"
                 "}; null;"));
 
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(first_party_web_contents,
                             "let message_channel = new MessageChannel();\n"
                             "self.message_port = message_channel.port1;\n"
@@ -708,7 +709,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                             "null;"));
 
   EXPECT_EQ(
-      nullptr,
+      base::Value(),
       content::EvalJs(third_party_iframe,
                       "(async () => {\n"
                       "  let e = await self.message_promise;\n"
@@ -850,13 +851,13 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
   // iframe since a.com is cross-origin. Also, this approach avoids using
   // BroadcastChannel which doesn't work when third-party storage partitioning
   // is enabled.
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(third_party_iframe,
                             "self.message_promise = new Promise(resolve => {\n"
                             "  self.onmessage = resolve;\n"
                             "}); null;"));
 
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(
                 third_party_web_contents,
                 "self.onmessage = (e) => {\n"
@@ -864,7 +865,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                 "  iframe.contentWindow.postMessage('😀', '*', [e.ports[0]]);\n"
                 "}; null;"));
 
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             content::EvalJs(first_party_web_contents,
                             "let message_channel = new MessageChannel();\n"
                             "self.message_port = message_channel.port1;\n"
@@ -873,7 +874,7 @@ IN_PROC_BROWSER_TEST_P(PersistedPermissionsFileSystemAccessBrowserTest,
                             "null;"));
 
   EXPECT_EQ(
-      nullptr,
+      base::Value(),
       content::EvalJs(third_party_iframe,
                       "(async () => {\n"
                       "  let e = await self.message_promise;\n"

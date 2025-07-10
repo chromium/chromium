@@ -6,6 +6,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -175,7 +176,7 @@ class InterestGroupPermissionsBrowserTest
                      https_server_->GetURL("a.test", "/"),
                      https_server_->GetURL(
                          "a.test", "/interest_group/decision_logic.js")));
-    if (nullptr == auction_result) {
+    if (base::Value() == auction_result) {
       return false;
     }
     EXPECT_TRUE(base::StartsWith(auction_result.ExtractString(), "urn:uuid:",

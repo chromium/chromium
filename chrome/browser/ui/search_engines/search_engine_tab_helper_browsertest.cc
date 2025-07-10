@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -265,7 +266,8 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   content::RenderFrameHost* render_frame_host =
       content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
           *prerender_web_contents, host_id);
-  EXPECT_EQ(nullptr, content::EvalJs(render_frame_host, "submit_form();"));
+  EXPECT_EQ(base::Value(),
+            content::EvalJs(render_frame_host, "submit_form();"));
   // Since navigation from a prerendering page is disallowed, prerendering is
   // canceled.
   host_observer.WaitForDestroyed();
@@ -278,8 +280,9 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
   // Submits a search query.
   content::TestNavigationObserver observer(GetWebContents());
-  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
-                                     "submit_form();"));
+  EXPECT_EQ(base::Value(),
+            content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
+                            "submit_form();"));
   observer.Wait();
 
   // A new template url is added on the primary page.

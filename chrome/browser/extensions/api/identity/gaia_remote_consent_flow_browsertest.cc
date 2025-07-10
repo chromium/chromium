@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -174,10 +175,11 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     // Gaia Origin to filter out unwanted urls, and in the test we are
     // overriding the value of Gaia Origin, so we can bypass the filter for
     // testing. JS function is properly called but returns nullptr.
-    ASSERT_EQ(nullptr, content::EvalJs(
-                           flow()->GetWebAuthFlowForTesting()->web_contents(),
-                           "window.OAuthConsent.setConsentResult(\"" +
-                               consent_value + "\")"));
+    ASSERT_EQ(
+        base::Value(),
+        content::EvalJs(
+            flow()->GetWebAuthFlowForTesting()->web_contents(),
+            "window.OAuthConsent.setConsentResult(\"" + consent_value + "\")"));
   }
 
   MockGaiaRemoteConsentFlowDelegate& mock() {

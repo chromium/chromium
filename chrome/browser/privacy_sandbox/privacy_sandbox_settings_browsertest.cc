@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -1086,9 +1087,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAttestProtectedAudienceBrowserTest,
       })())",
                                   auction_page, join_page));
     if (test_case.expect_auction_succeeds) {
-      EXPECT_NE(nullptr, result);
+      EXPECT_NE(base::Value(), result);
     } else {
-      EXPECT_EQ(nullptr, result);
+      EXPECT_EQ(base::Value(), result);
     }
   }
 }

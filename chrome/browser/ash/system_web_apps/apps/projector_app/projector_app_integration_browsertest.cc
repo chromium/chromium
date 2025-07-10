@@ -14,6 +14,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -38,7 +39,7 @@ constexpr base::FilePath::CharType kTestLibraryPath[] =
 
 void PrepareAnnotatorForTest(content::WebContents* web_contents) {
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(nullptr,
+  EXPECT_EQ(base::Value(),
             EvalJsInMainFrame(web_contents,
                               SandboxedWebUiAppTestBase::LoadJsTestLibrary(
                                   base::FilePath(kTestLibraryPath))));

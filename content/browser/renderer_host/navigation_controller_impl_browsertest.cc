@@ -27,6 +27,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_lock.h"
@@ -3289,7 +3290,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
 
     // We lost the history.state value from before the failed navigation.
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
     previous_entry = controller.GetLastCommittedEntry();
   }
 
@@ -3642,7 +3643,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(1, controller.GetEntryCount());
 
     // We lost the history.state value from before the failed navigation.
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
     previous_entry = controller.GetLastCommittedEntry();
   }
 
@@ -12731,7 +12732,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               controller.GetEntryAtIndex(1)->GetFrameEntry(root));
 
     // The main frame's history.state is reset
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
 
     // The root FrameNavigationEntry and NavigationEntry are both reused. This
     // means the previous pushState FrameNavigationEntry is shared with the
@@ -12763,7 +12764,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // TODO(crbug.com/40188865): We should probably restore "foo" here,
     // as location.replace() shouldn't affect entries other than the one it
     // replaced.
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
 
     // The root FrameNavigationEntry is reused since it is shared with the
     // traversed NavigationEntry.
@@ -12791,7 +12792,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(capturer.is_same_document());
 
     // The main frame's history.state stays as null.
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
 
     // The root FrameNavigationEntry and NavigationEntry are not reused.
     EXPECT_NE(
@@ -12893,7 +12894,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(2, controller.GetCurrentEntryIndex());
 
     // The main frame's history.state is reset
-    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
 
     // The root FrameNavigationEntry and NavigationEntry are not reused.
     EXPECT_NE(
@@ -19557,7 +19558,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // TODO(http://crbug.com/1188956): Ensure error page isolation correctly
     // maintains history.state as well.
     if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
-      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+      EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
     } else {
       EXPECT_EQ("foo", EvalJs(child, "history.state"));
     }
@@ -19712,7 +19713,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(5, controller.GetEntryCount());
   EXPECT_EQ(4, controller.GetCurrentEntryIndex());
   EXPECT_EQ("a", EvalJs(ftn_a, "window.state"));
-  EXPECT_EQ(nullptr, EvalJs(ftn_b, "window.state"));
+  EXPECT_EQ(base::Value(), EvalJs(ftn_b, "window.state"));
 }
 
 // Verify that if a history navigation only affects a subframe that was
@@ -21236,7 +21237,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(other_url, child->current_url());
   }
   // Check that the history.state is not retained after the navigation.
-  EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+  EXPECT_EQ(base::Value(), EvalJs(child, "history.state"));
 
   // Do a replaceState on the main frame to set the history.state to "bar".
   ReplaceState(root, "bar");
@@ -21250,7 +21251,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate the main frame to a different URL.
   ASSERT_TRUE(NavigateToURL(shell(), other_url));
   // Check that the history.state is not retained after the navigation.
-  EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+  EXPECT_EQ(base::Value(), EvalJs(root, "history.state"));
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,

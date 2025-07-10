@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -155,8 +156,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ(url_2, EvalJs(new_contents, "window.location.href;"));
 
   // The object is no longer accessible from each side.
-  EXPECT_EQ(nullptr, EvalJs(web_contents(), "other_window.foo;"));
-  EXPECT_EQ(nullptr, EvalJs(new_contents, "window.foo"));
+  EXPECT_EQ(base::Value(), EvalJs(web_contents(), "other_window.foo;"));
+  EXPECT_EQ(base::Value(), EvalJs(new_contents, "window.foo"));
 
   // Define the variable again.
   EXPECT_TRUE(ExecJs(web_contents(), "other_window.foo = 'bar_2';"));
@@ -200,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest,
       main_rfh->child_at(0)->current_frame_host();
 
   // The object is no longer accessible from each side.
-  EXPECT_EQ(nullptr, EvalJs(main_rfh, "other_window.foo;"));
-  EXPECT_EQ(nullptr, EvalJs(subframe_rfh_2, "window.foo"));
+  EXPECT_EQ(base::Value(), EvalJs(main_rfh, "other_window.foo;"));
+  EXPECT_EQ(base::Value(), EvalJs(subframe_rfh_2, "window.foo"));
 
   // Define the variable again.
   EXPECT_TRUE(ExecJs(main_rfh, "other_window.foo = 'bar_2';"));

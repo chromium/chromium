@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
@@ -130,9 +131,10 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
                                    "{\"updateViaCache\": \"all\"}")));
         break;
       case WorkerType::kSharedWorker:
-        EXPECT_EQ(nullptr, EvalJs(subframe_rfh,
-                                  JsReplace("let worker = new SharedWorker($1)",
-                                            main_script_file_with_param)));
+        EXPECT_EQ(
+            base::Value(),
+            EvalJs(subframe_rfh, JsReplace("let worker = new SharedWorker($1)",
+                                           main_script_file_with_param)));
         break;
     }
   }

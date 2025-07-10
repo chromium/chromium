@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/media_session.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_client.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +36,7 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
     auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
 
     // Start playback.
-    ASSERT_EQ(nullptr, content::EvalJs(web_contents, "play()"));
+    ASSERT_EQ(base::Value(), content::EvalJs(web_contents, "play()"));
   }
 
   media_session::MediaMetadata GetExpectedMetadata() {

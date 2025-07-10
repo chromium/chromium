@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
 
   // Request to change pointer lock options and wait for return.
   EXPECT_EQ(
-      nullptr,
+      base::Value(),
       EvalJs(child,
              "document.body.requestPointerLock({unadjustedMovement:true})"));
 

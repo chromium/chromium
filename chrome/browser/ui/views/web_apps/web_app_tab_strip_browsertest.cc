@@ -6,6 +6,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -774,7 +775,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 0);
 
   // Execute some JS to set a variable.
-  EXPECT_EQ(nullptr, EvalJs(tab_strip->GetWebContentsAt(0), "var test = 5"));
+  EXPECT_EQ(base::Value(),
+            EvalJs(tab_strip->GetWebContentsAt(0), "var test = 5"));
 
   // Navigate to a non home tab URL.
   OpenUrlAndWait(app_browser,

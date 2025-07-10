@@ -7335,7 +7335,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Redirecting a bidder script, even to another bidder script, should cause
   // the request to fail, which causes the entire auction to fail, since there's
   // only one bidder script.
-  EXPECT_EQ(nullptr, content::EvalJs(web_contents(), run_auction_command));
+  EXPECT_EQ(base::Value(),
+            content::EvalJs(web_contents(), run_auction_command));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

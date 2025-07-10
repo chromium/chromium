@@ -348,14 +348,15 @@ CreateLaunchWebAuthFlowFunction() {
 // pattern: "https://%s.chromiumapp.org/".
 void SimulateUrlRedirect(const std::string& url_prefix,
                          content::WebContents* auth_web_contents) {
-  ASSERT_EQ(nullptr, content::EvalJs(auth_web_contents,
-                                     "apply_consent(\"" + url_prefix + "\");"));
+  ASSERT_EQ(base::Value(),
+            content::EvalJs(auth_web_contents,
+                            "apply_consent(\"" + url_prefix + "\");"));
 }
 
 // Similar to SimulateUrlRedirect, but uses provided url instead of the pattern
 void SimulateCustomUrlRedirect(const std::string& redirect_url,
                                content::WebContents* auth_web_contents) {
-  ASSERT_EQ(nullptr,
+  ASSERT_EQ(base::Value(),
             content::EvalJs(auth_web_contents, "window.location.replace(\"" +
                                                    redirect_url + "\");"));
 }

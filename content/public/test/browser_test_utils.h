@@ -31,6 +31,7 @@
 #include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "base/types/to_address.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/public/browser/commit_deferring_condition.h"
@@ -869,7 +870,7 @@ struct EvalJsResult {
   //
   //    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
   //    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
-  //    ASSERT_EQ(nullptr, EvalJs(rfh, "var a = 1 + 1"))
+  //    ASSERT_EQ(base::Value(), EvalJs(rfh, "var a = 1 + 1"))
   //
   // Error values are incomparable to other values (including other errors).
   template <typename T>
@@ -883,10 +884,6 @@ struct EvalJsResult {
       return std::partial_ordering::unordered;
     }
     return value <=> JsLiteralHelper<T>::Convert(t);
-  }
-
-  inline bool operator==(std::nullptr_t) const {
-    return error.empty() && base::Value() == value;
   }
 };
 

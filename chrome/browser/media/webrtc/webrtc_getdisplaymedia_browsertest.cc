@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -1923,8 +1924,9 @@ class CaptureSessionDetails {
   std::optional<int> GetZoomLevel() {
     const content::EvalJsResult result = content::EvalJs(
         capturing_tab_->GetPrimaryMainFrame(), "getZoomLevel();");
-    return (result == nullptr) ? std::nullopt
-                               : std::make_optional<int>(result.ExtractInt());
+    return (result == base::Value())
+               ? std::nullopt
+               : std::make_optional<int>(result.ExtractInt());
   }
 
   // Call `controller.getSupportedZoomLevels()`.
