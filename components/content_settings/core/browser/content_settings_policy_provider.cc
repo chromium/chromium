@@ -214,6 +214,8 @@ constexpr const char* kManagedPrefs[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     prefs::kManagedSmartCardConnectAllowedForUrls,
     prefs::kManagedSmartCardConnectBlockedForUrls,
+    prefs::kManagedDeviceAttributesAllowedForOrigins,
+    prefs::kManagedDeviceAttributesBlockedForOrigins,
 #endif
     prefs::kManagedControlledFrameAllowedForUrls,
     prefs::kManagedControlledFrameBlockedForUrls,
@@ -253,7 +255,8 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting,
     prefs::kManagedDefaultControlledFrameSetting,
 #if BUILDFLAG(IS_CHROMEOS)
-    prefs::kManagedDefaultSmartCardConnectSetting
+    prefs::kManagedDefaultSmartCardConnectSetting,
+    prefs::kManagedDefaultDeviceAttributesSetting,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

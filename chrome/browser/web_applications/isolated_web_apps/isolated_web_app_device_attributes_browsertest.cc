@@ -17,11 +17,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
@@ -101,8 +101,9 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   bool IsAdminPolicyAllowed() { return std::get<2>(GetParam()); }
 
   void AllowDeviceAttributesForOrigin(const std::string& origin) {
-    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
-                                   base::Value::List().Append(origin));
+    profile()->GetPrefs()->SetList(
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        base::Value::List().Append(origin));
   }
 
   void SetUpOnMainThread() override {

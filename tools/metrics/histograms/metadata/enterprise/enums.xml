@@ -2246,6 +2246,8 @@ chromium-metrics-reviews@google.com.
   <int value="1375"
       label="DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled"/>
   <int value="1376" label="AutomatedPasswordChangeSettings"/>
+  <int value="1377" label="DefaultDeviceAttributesSetting"/>
+  <int value="1378" label="DeviceAttributesBlockedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

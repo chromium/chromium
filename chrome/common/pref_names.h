@@ -3943,13 +3943,6 @@ inline constexpr char kMediaAppLensEnabled[] = "media_app.enable_lens";
 inline constexpr char kExplicitlyAllowedNetworkPorts[] =
     "net.explicitly_allowed_network_ports";
 
-#if !BUILDFLAG(IS_ANDROID)
-// Pref name for whether force-installed web apps (origins) are able to query
-// device attributes.
-inline constexpr char kDeviceAttributesAllowedForOrigins[] =
-    "policy.device_attributes_allowed_for_origins";
-#endif
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // A boolean indicating whether the desktop sharing hub is enabled by enterprise
 // policy.

@@ -157,6 +157,7 @@ LEGACY_DEVICE_POLICY_NAME_OFFENDERS = [
 LEGACY_USER_POLICY_NAME_OFFENDERS = [
     'DeviceLocalAccountManagedSessionEnabled',
     'DeviceAttributesAllowedForOrigins',
+    'DeviceAttributesBlockedForOrigins',
     'DevicePowerAdaptiveChargingEnabled',
 ]
 

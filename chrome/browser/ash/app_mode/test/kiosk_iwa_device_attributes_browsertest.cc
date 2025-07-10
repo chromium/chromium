@@ -24,12 +24,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/web_contents.h"
@@ -138,7 +138,7 @@ class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
 
   void AllowDeviceAttributesForIwaOrigin() {
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kDeviceAttributesAllowedForOrigins,
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
         base::Value::List().Append(kAppOrigin.Serialize()));
   }
 

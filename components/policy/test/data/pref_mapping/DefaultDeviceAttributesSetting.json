@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.device_attributes",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

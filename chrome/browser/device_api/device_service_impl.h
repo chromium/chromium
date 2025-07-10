@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
@@ -40,9 +39,6 @@ class DeviceServiceImpl final
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
       std::unique_ptr<DeviceAttributeApi> device_attribute_api);
-
-  // Register the user prefs.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   DeviceServiceImpl(const DeviceServiceImpl&) = delete;
   DeviceServiceImpl& operator=(const DeviceServiceImpl&) = delete;

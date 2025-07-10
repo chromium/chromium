@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -126,9 +127,11 @@ bool IsForceInstalledOrigin(content::RenderFrameHost& host,
   return registrar.IsInstalledByPolicy(app_id.value());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 const PrefService* GetPrefs(content::RenderFrameHost& host) {
   return GetProfile(host)->GetPrefs();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsAffiliatedUser() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -137,7 +140,7 @@ bool IsAffiliatedUser() {
   return (user != nullptr) && user->IsAffiliated();
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool IsTrustedContext(content::RenderFrameHost& host,
@@ -191,9 +194,13 @@ bool IsBlockedByAdminPolicy(content::RenderFrameHost& host,
   if (IsPermissionsPolicyFeatureEnabled() && IsIwa(host)) {
     return false;
   }
+#if BUILDFLAG(IS_CHROMEOS)
   return !policy::IsOriginInAllowlist(
       origin.GetURL(), GetPrefs(host),
-      prefs::kDeviceAttributesAllowedForOrigins);
+      prefs::kManagedDeviceAttributesAllowedForOrigins);
+#else
+  return true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -207,10 +214,6 @@ DeviceServiceImpl::DeviceServiceImpl(
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host.GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kDeviceAttributesAllowedForOrigins,
-      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kWebAppInstallForceList,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
@@ -221,6 +224,10 @@ DeviceServiceImpl::DeviceServiceImpl(
 #if BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(
       prefs::kKioskBrowserPermissionsAllowedForOrigins,
+      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kManagedDeviceAttributesAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -274,11 +281,6 @@ void DeviceServiceImpl::CreateForTest(
     std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
   CHECK_IS_TEST();
   Create(host, std::move(receiver), std::move(device_attribute_api));
-}
-
-// static
-void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kDeviceAttributesAllowedForOrigins);
 }
 
 void DeviceServiceImpl::OnWebAppSourceRemoved(const webapps::AppId& app_id) {

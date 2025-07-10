@@ -34,6 +34,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -59,7 +60,6 @@ namespace {
 constexpr char kDefaultAppInstallUrl[] = "https://example.com/install";
 constexpr char kTrustedUrl[] = "https://example.com/sample";
 constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
-constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
 constexpr char kUserEmail[] = "user-email@example.com";
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
@@ -67,6 +67,7 @@ constexpr char kUntrustedIwaAppOrigin[] =
     "isolated-app://abc2sheak3vpmm7vmjqnjwuzx3xwot3vdayrlgnvbkq2mp5lg4daaaic";
 
 #if BUILDFLAG(IS_CHROMEOS)
+constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
 constexpr char kKioskAppUrl[] = "https://kiosk.com/sample";
 constexpr char kInvalidKioskAppUrl[] = "https://invalid-kiosk.com/sample";
 constexpr char kNotAllowedOriginErrorMessage[] =
@@ -222,7 +223,9 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
     WebAppTest::SetUp();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
     InstallTrustedApps();
+#if BUILDFLAG(IS_CHROMEOS)
     SetAllowedOrigin();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void InstallTrustedApps() {
@@ -253,13 +256,16 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
         webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void SetAllowedOrigin() {
     base::Value::List allowed_origins;
     allowed_origins.Append(kTrustedUrl);
     allowed_origins.Append(kKioskAppInstallUrl);
-    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
-                                   std::move(allowed_origins));
+    profile()->GetPrefs()->SetList(
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        std::move(allowed_origins));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void TryCreatingService(
       const GURL& url,
@@ -452,13 +458,14 @@ class DeviceAPIServiceParamTest
  public:
   void SetAllowedOriginFromParam() {
     profile()->GetPrefs()->SetList(
-        prefs::kDeviceAttributesAllowedForOrigins,
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
         base::Value::List().Append(GetParamOrigin()));
   }
 
   void SetAllowedOrigin(const std::string& origin) {
-    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
-                                   base::Value::List().Append(origin));
+    profile()->GetPrefs()->SetList(
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
+        base::Value::List().Append(origin));
   }
 
   void EnableFeatureAndAllowlistOrigin(const base::Feature& param,
@@ -528,8 +535,8 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceParamTest {
   }
 
   void RemoveAllowedOrigin() {
-    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
-                                   base::Value::List());
+    profile()->GetPrefs()->SetList(
+        prefs::kManagedDeviceAttributesAllowedForOrigins, base::Value::List());
   }
 
   void TearDown() override {

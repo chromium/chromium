@@ -14,9 +14,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -122,7 +122,7 @@ class WebKioskDeviceAttributesTest : public MixinBasedInProcessBrowserTest {
 
   void AllowDeviceAttributesForOrigin(const std::string& origin) {
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kDeviceAttributesAllowedForOrigins,
+        prefs::kManagedDeviceAttributesAllowedForOrigins,
         base::Value::List().Append(origin));
   }
 

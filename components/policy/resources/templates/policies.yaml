@@ -1375,6 +1375,8 @@ policies:
   1374: LiveCaptionEnabled
   1375: DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled
   1376: AutomatedPasswordChangeSettings
+  1377: DefaultDeviceAttributesSetting
+  1378: DeviceAttributesBlockedForOrigins
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1434,3 +1436,4 @@ atomic_groups:
   56: WebRtc
   57: ControlledFrameSettings
   58: LocalNetworkAccessSettings
+  59: DeviceAttributesSettings
