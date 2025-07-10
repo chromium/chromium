@@ -381,8 +381,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  CanvasResourceProvider* provider =
-      canvas() ? GetResourceProviderForCanvas2D() : nullptr;
+  CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   if (provider != nullptr) [[likely]] {
     // If we already had a provider, we can check whether it recorded ops passed
     // the autoflush limit.
@@ -405,8 +404,7 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
   if (isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  const CanvasResourceProvider* provider =
-      canvas() ? GetResourceProviderForCanvas2D() : nullptr;
+  const CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   if (!provider) [[unlikely]] {
     return nullptr;
   }
@@ -414,8 +412,7 @@ const cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
 }
 
 const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
-  const CanvasResourceProvider* provider =
-      canvas() ? GetResourceProviderForCanvas2D() : nullptr;
+  const CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
@@ -446,8 +443,7 @@ void CanvasRenderingContext2D::WillDraw(
 
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  CanvasResourceProvider* provider =
-      canvas() ? GetResourceProviderForCanvas2D() : nullptr;
+  CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
   if (provider == nullptr) [[unlikely]] {
     return std::nullopt;
   }
@@ -912,7 +908,7 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
 }
 
 bool CanvasRenderingContext2D::IsPaintable() const {
-  return canvas() && GetResourceProviderForCanvas2D();
+  return GetResourceProviderForCanvas2D();
 }
 
 Color CanvasRenderingContext2D::GetCurrentColor() const {
@@ -1129,7 +1125,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 
 CanvasResourceProvider*
 CanvasRenderingContext2D::GetResourceProviderForCanvas2D() const {
-  return canvas()->GetResourceProviderForCanvas2D();
+  return canvas() ? canvas()->GetResourceProviderForCanvas2D() : nullptr;
 }
 
 CanvasResourceProvider*
