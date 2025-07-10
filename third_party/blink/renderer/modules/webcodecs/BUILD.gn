@@ -171,6 +171,10 @@ source_set("unit_tests") {
   ]
 
   data = [ "//third_party/blink/web_tests/images/resources/" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzable_proto_library("fuzzer_protos") {
