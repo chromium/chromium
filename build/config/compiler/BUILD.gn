@@ -195,6 +195,15 @@ declare_args() {
   # debugging information which is required by some specialized
   # debugging tools.
   simple_template_names = is_clang && !is_win && !is_apple
+
+  # This switch is used to enable -Wexit-time-destructors by default. This
+  # warning serves as a flip switch to allow a gradual migration of targets
+  # away from the opt-in wexit_time_destructors config, and into the default
+  # compiler config.
+  # TODO(crbug.com/40031409): This argument will eventually default to true,
+  # but ultimately the goal is for it to eventually be removed, once this mode
+  # is stable enough.
+  is_wexit_time_destructors_default = false
 }
 
 declare_args() {
@@ -2163,6 +2172,13 @@ config("default_warnings") {
     if (cc_wrapper == "ccache" || cc_wrapper == "icecc") {
       cflags += [ "-Wno-gnu-line-marker" ]
     }
+
+    if (is_wexit_time_destructors_default) {
+      # TODO(crbug.com/40031409): We are migrating towards making this warning
+      # enabled by default, and once that is completed, the warning
+      # should always be added for clang builds.
+      cflags = [ "-Wexit-time-destructors" ]
+    }
   }
 
   # TODO(crbug.com/354162568): Clean up and enable.
@@ -2513,10 +2529,20 @@ config("unnecessary_virtual_specifier_warning") {
 
 # This will generate warnings when using Clang if code generates exit-time
 # destructors, which will slow down closing the program.
-# TODO(thakis): Make this a blocklist instead, http://crbug.com/101600
+# TODO(crbug.com/40031409): Remove this config once -Wexit-time-destructors is
+# being passed by default and shown to be working stable enough.
 config("wexit_time_destructors") {
-  if (is_clang) {
+  if (!is_wexit_time_destructors_default && is_clang) {
     cflags = [ "-Wexit-time-destructors" ]
+  }
+}
+
+# This config should be used to disable `Wexit-time-destructors` warnings in
+# targets that are not ready to handle this warning, or that require such
+# exclusion.
+config("no_exit_time_destructors") {
+  if (is_clang) {
+    cflags = [ "-Wno-exit-time-destructors" ]
   }
 }
 
