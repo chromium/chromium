@@ -44,15 +44,18 @@ class ToolRequest;
 // memory until the process is destroyed.
 class ActorKeyedService : public KeyedService {
  public:
-  explicit ActorKeyedService(
-      Profile* profile,
-      std::unique_ptr<ui::ActorUiStateManagerInterface> ui_state_manager);
+  explicit ActorKeyedService(Profile* profile);
   ActorKeyedService(const ActorKeyedService&) = delete;
   ActorKeyedService& operator=(const ActorKeyedService&) = delete;
   ~ActorKeyedService() override;
 
   // Convenience method, may return nullptr.
   static ActorKeyedService* Get(content::BrowserContext* context);
+
+  // TODO(crbug.com/428014205): Create a mock ActorKeyedService for testing so
+  // we can remove this function.
+  void SetActorUiStateManagerForTesting(
+      std::unique_ptr<ui::ActorUiStateManagerInterface> ausm);
 
   // Starts tracking an existing task. Returns the new task ID.
   TaskId AddActiveTask(std::unique_ptr<ActorTask> task);
@@ -115,6 +118,11 @@ class ActorKeyedService : public KeyedService {
   void OnActorTaskStateChanged(TaskId task_id, ActorTask::State task_state);
 
   bool IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
+  Profile* GetProfile();
+
+ protected:
+  // Holds subscriptions for ActorTask callbacks.
+  std::map<TaskId, base::CallbackListSubscription> actor_task_subscriptions_;
 
  private:
   // Start task is currently asynchronous.
@@ -153,9 +161,6 @@ class ActorKeyedService : public KeyedService {
   std::map<TaskId, std::unique_ptr<ActorTask>> inactive_tasks_;
 
   std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
-
-  // Holds subscriptions for ActorTask callbacks.
-  std::vector<base::CallbackListSubscription> actor_task_subscriptions_;
 
   TaskId::Generator next_task_id_;
 

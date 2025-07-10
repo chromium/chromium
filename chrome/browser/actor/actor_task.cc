@@ -111,8 +111,8 @@ void ActorTask::Stop() {
     execution_engine_->CancelOngoingActions(
         mojom::ActionResultCode::kTaskWentAway);
   }
-  SetState(State::kFinished);
   end_time_ = base::Time::Now();
+  SetState(State::kFinished);
 }
 
 void ActorTask::Pause() {

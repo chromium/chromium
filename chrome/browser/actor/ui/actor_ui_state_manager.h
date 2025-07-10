@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_H_
 
+#include "base/timer/timer.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
@@ -13,13 +15,11 @@ namespace tabs {
 class TabInterface;
 }
 
-class Profile;
-
 namespace actor::ui {
 
 class ActorUiStateManager : public ActorUiStateManagerInterface {
  public:
-  explicit ActorUiStateManager(Profile* profile);
+  explicit ActorUiStateManager(ActorKeyedService& actor_service);
   ~ActorUiStateManager() override;
 
   // ActorUiStateManagerInterface:
@@ -33,8 +33,21 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Returns the tabs associated with a given task id if it exists.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
+  // Returns the current profile scoped ui state.
+  UiState GetUiState() const;
+
  private:
-  raw_ptr<Profile> profile_;
+  void MaybeUpdateProfileScopedUiState();
+  // Returns completed tasks within the kCompletedTaskExpiryDelay of the
+  // `current_time`.
+  std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
+
+  base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
+  base::OneShotTimer completed_tasks_expiry_timer_;
+
+  const raw_ref<ActorKeyedService> actor_service_;
+  UiState state_ = UiState::kInactive;
+  base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };
 
 }  // namespace actor::ui

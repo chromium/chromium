@@ -45,8 +45,11 @@ class EventDispatcherTest : public ::testing::Test {
         std::make_unique<MockActorUiStateManager>();
     mock_state_manager_ = mock_state_manager.get();
 
-    return std::make_unique<ActorKeyedService>(profile_.get(),
-                                               std::move(mock_state_manager));
+    auto actor_keyed_service =
+        std::make_unique<ActorKeyedService>(static_cast<Profile*>(context));
+    actor_keyed_service->SetActorUiStateManagerForTesting(
+        std::move(mock_state_manager));
+    return std::move(actor_keyed_service);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -78,8 +81,10 @@ TEST_F(EventDispatcherTest, NoUiStateManager) {
               ActorKeyedServiceFactory::GetInstance(),
               base::BindOnce([](content::BrowserContext*)
                                  -> std::unique_ptr<KeyedService> {
-                return std::make_unique<ActorKeyedService>(
-                    /*profile=*/nullptr, /*ui_state_manager=*/nullptr);
+                auto actor_keyed_service = std::make_unique<ActorKeyedService>(
+                    /*profile=*/nullptr);
+                actor_keyed_service->SetActorUiStateManagerForTesting(nullptr);
+                return std::move(actor_keyed_service);
               }))
           .Build();
   MoveMouseToolRequest tr(tabs::TabHandle(123),

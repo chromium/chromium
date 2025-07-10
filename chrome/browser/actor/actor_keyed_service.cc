@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
@@ -58,16 +58,20 @@ namespace actor {
 
 using ui::ActorUiStateManagerInterface;
 
-ActorKeyedService::ActorKeyedService(
-    Profile* profile,
-    std::unique_ptr<ActorUiStateManagerInterface> ui_state_manager)
-    : actor_ui_state_manager_(std::move(ui_state_manager)), profile_(profile) {}
+ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
+  actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
+}
 
 ActorKeyedService::~ActorKeyedService() = default;
 
 // static
 ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
   return ActorKeyedServiceFactory::GetActorKeyedService(context);
+}
+
+void ActorKeyedService::SetActorUiStateManagerForTesting(
+    std::unique_ptr<ui::ActorUiStateManagerInterface> ausm) {
+  actor_ui_state_manager_ = std::move(ausm);
 }
 
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
@@ -135,6 +139,10 @@ TaskId ActorKeyedService::CreateTask() {
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(std::move(execution_engine));
   TaskId task_id = AddActiveTask(std::move(actor_task));
+  actor_task_subscriptions_.emplace(
+      task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
+                   &ActorKeyedService::OnActorTaskStateChanged,
+                   weak_ptr_factory_.GetWeakPtr())));
   return task_id;
 }
 
@@ -185,10 +193,11 @@ void ActorKeyedService::FinishStartTask(
 
   auto actor_task =
       std::make_unique<actor::ActorTask>(std::move(execution_engine));
-  actor_task_subscriptions_.push_back(actor_task->RegisterTaskStateChange(
-      base::BindRepeating(&ActorKeyedService::OnActorTaskStateChanged,
-                          weak_ptr_factory_.GetWeakPtr())));
   actor::TaskId task_id = AddActiveTask(std::move(actor_task));
+  actor_task_subscriptions_.emplace(
+      task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
+                   &ActorKeyedService::OnActorTaskStateChanged,
+                   weak_ptr_factory_.GetWeakPtr())));
 
   optimization_guide::proto::BrowserStartTaskResult result;
   result.set_task_id(task_id.value());
@@ -311,9 +320,11 @@ void ActorKeyedService::StopTask(TaskId task_id) {
 
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
-    task.mapped()->Stop();
-    inactive_tasks_.insert(std::move(task));
+    auto ret = inactive_tasks_.insert(std::move(task));
+    ret.position->second->Stop();
   }
+
+  actor_task_subscriptions_.erase(task_id);
 }
 
 ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
@@ -351,6 +362,10 @@ bool ActorKeyedService::IsAnyTaskActingOnTab(
   }
 
   return false;
+}
+
+Profile* ActorKeyedService::GetProfile() {
+  return profile_;
 }
 
 }  // namespace actor
