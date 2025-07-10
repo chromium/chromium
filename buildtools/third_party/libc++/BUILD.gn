@@ -75,6 +75,7 @@ if (use_libcxx_modules) {
       forward_variables_from(invoker,
                              [
                                "deps",
+                               "public_configs",
                                "public_deps",
                              ])
       use_libcxx_modules = false
@@ -103,7 +104,11 @@ if (use_libcxx_modules) {
   if (defined(sysroot_modulemap)) {
     template("sysroot_modules") {
       modulemap(target_name) {
-        forward_variables_from(invoker, [ "public_deps" ])
+        forward_variables_from(invoker,
+                               [
+                                 "public_configs",
+                                 "public_deps",
+                               ])
         modulemap = sysroot_modulemap
         deps = [
           ":copy_custom_headers",
@@ -241,6 +246,14 @@ if (use_libcxx_modules) {
       actual = [ ":sysroot" ]
     }
 
+    config("wchar_fix") {
+      # See https://github.com/llvm/llvm-project/blob/3f33e7ba5b08a97939280e539ad20a34d54b2719/libcxx/include/wchar.h#L139
+      # Since android doesn't come with glibc, this isn't defined, and thus
+      # wchar.h defines (not declares) additional overloads when this is unset,
+      # and wchar.h is textual, we set this to ensure ODR is not violated.
+      defines = [ "_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS" ]
+    }
+
     sysroot_modules("sysroot") {
       public_deps = [
         ":_Builtin_limits",
@@ -248,6 +261,7 @@ if (use_libcxx_modules) {
         ":_Builtin_stddef",
         ":_Builtin_stdint",
       ]
+      public_configs = [ ":wchar_fix" ]
     }
 
     alias("all_sysroot") {
