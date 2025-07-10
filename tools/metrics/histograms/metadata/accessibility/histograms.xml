@@ -508,6 +508,100 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Android.TextFormatting.Performance.DurationForRangeCount.{Bucket}"
+    units="microseconds" expires_after="M152">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The total amount of time taken to populate the AccessibilityNodeInfo text
+    with {Bucket} text formatting style ranges in Clank with the
+    AccessibilityTextFormatting feature enabled.
+  </summary>
+  <token key="Bucket">
+    <variant name="0" summary="0"/>
+    <variant name="1To5" summary="1-5"/>
+    <variant name="6To10" summary="6-10"/>
+    <variant name="11To20" summary="11-20"/>
+    <variant name="21To40" summary="21-40"/>
+    <variant name="41To80" summary="41-80"/>
+    <variant name="81To160" summary="81-160"/>
+    <variant name="161To320" summary="161-320"/>
+    <variant name="Over320" summary="over 320"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.TextFormatting.Performance.{Operation}Duration{WithStyleData}"
+    units="microseconds" expires_after="M152">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The amount of time taken to perform the {Operation} operation
+    {WithStyleData} when populating the AccessibilityNodeInfo text in Clank with
+    the AccessibilityTextFormatting feature enabled.
+  </summary>
+  <token key="Operation">
+    <variant name="GetTextContent" summary="GetSubstringTextContentUTF16()"/>
+    <variant name="SetAniText" summary="setAccessibilityNodeInfoText() JNI"/>
+    <variant name="ToJavaData" summary="conversion to Java data structures"/>
+    <variant name="Total" summary="overall"/>
+  </token>
+  <token key="WithStyleData">
+    <variant name="" summary="with text formatting data"/>
+    <variant name=".NoStyleData" summary="without text formatting data"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.TextFormatting.Ranges.CountForTextLength.{Bucket}"
+    units="ranges" expires_after="M152">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of text formatting style ranges when populating the
+    AccessibilityNodeInfo text with {Bucket} characters in Clank with the
+    AccessibilityTextFormatting feature enabled.
+  </summary>
+  <token key="Bucket">
+    <variant name="0" summary="0"/>
+    <variant name="1To10" summary="1-10"/>
+    <variant name="11To25" summary="11-25"/>
+    <variant name="26To50" summary="26-50"/>
+    <variant name="51To100" summary="51-100"/>
+    <variant name="101To250" summary="101-250"/>
+    <variant name="251To500" summary="251-500"/>
+    <variant name="501To1000" summary="501-1000"/>
+    <variant name="Over1000" summary="Over 1000"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.Android.TextFormatting.Ranges.TotalCount"
+    units="ranges" expires_after="M152">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The total number of text formatting style ranges when populating the
+    AccessibilityNodeInfo text in Clank with the AccessibilityTextFormatting
+    feature enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.Android.TextFormatting.TextLength{WithStyleData}"
+    units="characters" expires_after="M152">
+  <owner>aluh@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The length of text {WithStyleData} when populating the AccessibilityNodeInfo
+    text in Clank with the AccessibilityTextFormatting feature enabled.
+  </summary>
+  <token key="WithStyleData">
+    <variant name="" summary="with text formatting data"/>
+    <variant name=".NoStyleData" summary="without text formatting data"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
     enum="BooleanHit" expires_after="2026-06-01">
   <owner>mschillaci@google.com</owner>

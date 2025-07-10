@@ -431,7 +431,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::android::ScopedJavaLocalRef<jobject> ToJavaCanonicalStringRangesMap(
       JNIEnv* env,
       const std::optional<
-          absl::flat_hash_map<std::string, AXStyleData::RangePairs>>& attrs);
+          absl::flat_hash_map<std::string, AXStyleData::RangePairs>>& attrs,
+      int* ranges_count);
 
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;

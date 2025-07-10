@@ -321,14 +321,19 @@ public class WebContentsAccessibilityTest {
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
+    private void clearNodeInfoCacheForGivenId(int virtualViewId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.mWcax.clearNodeInfoCacheForGivenId(virtualViewId));
+    }
+
     /**
      * Helper method for sending text related events and confirming that the associated text
      * selection and traversal events have been dispatched before continuing with test.
      *
-     * @param viewId            int virtualViewId of the text field
-     * @param action            AccessibilityActionCompat action to perform
-     * @param args              Bundle optional arguments
-     * @throws ExecutionException   Error
+     * @param viewId int virtualViewId of the text field
+     * @param action AccessibilityActionCompat action to perform
+     * @param args Bundle optional arguments
+     * @throws ExecutionException Error
      */
     private void performTextActionOnUiThread(
             int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat action, Bundle args)
@@ -1729,7 +1734,7 @@ public class WebContentsAccessibilityTest {
                 () -> {
                     mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
                 });
-        mActivityTestRule.mWcax.clearNodeInfoCacheForGivenId(textNodeVirtualViewId);
+        clearNodeInfoCacheForGivenId(textNodeVirtualViewId);
 
         // Focus on the node so the suggestions get populated.
         focusNode(textNodeVirtualViewId);
@@ -3175,6 +3180,141 @@ public class WebContentsAccessibilityTest {
                     .that(actualSpans)
                     .containsNoDuplicates();
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+    public void testAccessibilityNodeInfo_textFormatting_histogramsWithStyleData()
+            throws Throwable {
+        setupTestWithHTML("<div>Some text with <b>bold</b> styling.</div>");
+        String expectedString = "Some text with bold styling.";
+        int expectedRangeCount = 16;
+
+        int vvid = waitForNodeMatching(sTextMatcher, expectedString);
+        focusNode(vvid);
+        clearNodeInfoCacheForGivenId(vvid);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.DurationForRangeCount.11To20")
+                        .expectIntRecord(
+                                "Accessibility.Android.TextFormatting.Ranges.TotalCount",
+                                expectedRangeCount)
+                        .expectIntRecord(
+                                "Accessibility.Android.TextFormatting.Ranges.CountForTextLength.26To50",
+                                expectedRangeCount)
+                        .expectIntRecord(
+                                "Accessibility.Android.TextFormatting.TextLength",
+                                expectedString.length())
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.TextLength.NoStyleData")
+                        .build();
+
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+    public void testAccessibilityNodeInfo_textFormatting_histogramsWithoutStyleData() {
+        setupTestWithHTML("<p>Example Text</p>");
+        String expectedText = "Example Text";
+
+        int vvid = waitForNodeMatching(sTextMatcher, expectedText);
+        clearNodeInfoCacheForGivenId(vvid);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration.NoStyleData")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration.NoStyleData")
+                        .expectNoRecords("Accessibility.Android.TextFormatting.TextLength")
+                        .expectIntRecord(
+                                "Accessibility.Android.TextFormatting.TextLength.NoStyleData",
+                                expectedText.length())
+                        .build();
+
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
+    public void testAccessibilityNodeInfo_textFormatting_histogramsWithFeatureOff()
+            throws Throwable {
+        setupTestWithHTML("<p>Example <b>bold</b> text</p>");
+        String expectedText = "Example bold text";
+
+        int vvid = waitForNodeMatching(sTextMatcher, expectedText);
+        focusNode(vvid);
+        clearNodeInfoCacheForGivenId(vvid);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.TotalDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.GetTextContentDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.ToJavaDataDuration.NoStyleData")
+                        .expectAnyRecord(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration")
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.Performance.SetAniTextDuration.NoStyleData")
+                        .expectIntRecord(
+                                "Accessibility.Android.TextFormatting.TextLength",
+                                expectedText.length())
+                        .expectNoRecords(
+                                "Accessibility.Android.TextFormatting.TextLength.NoStyleData")
+                        .build();
+
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        histogramWatcher.assertExpected();
     }
 
     private void assertActionsContainNoScrolls(AccessibilityNodeInfoCompat nodeInfo) {

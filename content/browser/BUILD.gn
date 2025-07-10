@@ -3266,6 +3266,8 @@ source_set("browser") {
       "accessibility/browser_accessibility_state_impl_android.h",
       "accessibility/captioning_controller.cc",
       "accessibility/captioning_controller.h",
+      "accessibility/text_formatting_metrics_android.cc",
+      "accessibility/text_formatting_metrics_android.h",
       "accessibility/web_contents_accessibility_android.cc",
       "accessibility/web_contents_accessibility_android.h",
       "android/additional_navigation_params_utils.cc",
