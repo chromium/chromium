@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
@@ -108,6 +109,14 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
+  bool AppHasPendingUpdateInfo(const webapps::AppId& app_id) {
+    return provider()
+        .registrar_unsafe()
+        .GetAppById(app_id)
+        ->pending_update_info()
+        .has_value();
+  }
+
   GURL app_url() { return app_url_; }
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
@@ -163,6 +172,7 @@ TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             new_start_url);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
               BucketsAre(base::Bucket(
@@ -184,6 +194,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ThemeColorUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppThemeColor(app_id),
             SK_ColorYELLOW);
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -207,6 +218,7 @@ TEST_F(ManifestSilentUpdateCommandTest, BackgroundColorUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppBackgroundColor(app_id),
             SK_ColorYELLOW);
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -231,6 +243,7 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayModeUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(
       provider().registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id),
       DisplayMode::kBrowser);
@@ -256,6 +269,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(app_id), new_scope);
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Webapp.Update.ManifestSilentUpdateCheckResult"),
@@ -282,6 +296,7 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayOverrideUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppDisplayModeOverride(app_id),
             new_display_override);
   EXPECT_EQ(provider().registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
@@ -311,6 +326,7 @@ TEST_F(ManifestSilentUpdateCommandTest, NoteTakingUrlUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider()
                 .registrar_unsafe()
                 .GetAppById(app_id)
@@ -345,6 +361,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
 
   const auto& new_shortcuts =
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
@@ -384,6 +401,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppShareTarget(app_id)->action,
             GURL("https://www.foo.bar/share"));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -416,6 +434,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
 
   const auto& new_protocol_handlers =
       provider().registrar_unsafe().GetAppById(app_id)->protocol_handlers();
@@ -460,6 +479,7 @@ TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
 
   const auto* new_file_handlers =
       provider().registrar_unsafe().GetAppFileHandlers(app_id);
@@ -492,6 +512,7 @@ TEST_F(ManifestSilentUpdateCommandTest, LaunchHandlerUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppById(app_id)->launch_handler(),
       LaunchHandler(
@@ -525,6 +546,7 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeExtensionsUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
 
   const auto& new_scope_extensions =
       provider().registrar_unsafe().GetScopeExtensions(app_id);
@@ -561,6 +583,8 @@ TEST_F(ManifestSilentUpdateCommandTest, TabStripUpdatedSilently) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
+
   EXPECT_TRUE(provider()
                   .registrar_unsafe()
                   .GetAppById(app_id)
@@ -581,5 +605,72 @@ TEST_F(ManifestSilentUpdateCommandTest, TabStripUpdatedSilently) {
 
 // TODO(crbug.com/424246884): Check for lock_screen_start_url to update if the
 // feature is enabled.
+
+TEST_F(ManifestSilentUpdateCommandTest, AppNameChangedPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
+      base::UTF16ToUTF8(u"Foo App"));
+
+  auto& new_manifest = GetPageManifest();
+  new_manifest->name = u"New Name";
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_TRUE(pending_update_info->has_name());
+  EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
+                  /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       AppNameAndStartUrlChangedPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
+      base::UTF16ToUTF8(u"Foo App"));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/basic.html");
+
+  auto& new_manifest = GetPageManifest();
+  new_manifest->name = u"New Name";
+  const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
+  new_manifest->start_url = new_start_url;
+
+  EXPECT_EQ(
+      RunManifestUpdateAndGetResult(),
+      ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_TRUE(pending_update_info->has_name());
+  EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            new_start_url);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(
+          ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges,
+          /*count=*/1)));
+}
 
 }  // namespace web_app

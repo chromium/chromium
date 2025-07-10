@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
 class GURL;
@@ -26,7 +27,7 @@ enum class ManifestSilentUpdateCommandStage {
   kFetchingNewManifestData,
   kLoadingExistingManifestData,
   kAcquiringAppLock,
-  kComparingNonSecuritySensitiveManifestData,
+  kComparingManifestData,
   kFinalizingSilentManifestChanges,
   kCompleteCommand,
 };
@@ -40,7 +41,9 @@ enum class ManifestSilentUpdateCheckResult {
   kAppUpToDate = 4,
   kIconReadFromDiskFailed = 5,
   kWebContentsDestroyed = 6,
-  kMaxValue = kWebContentsDestroyed,
+  kAppOnlyHasSecurityUpdate = 7,
+  kAppHasNonSecurityAndSecurityChanges = 8,
+  kMaxValue = kAppHasNonSecurityAndSecurityChanges,
 };
 
 struct WebAppInstallInfo;
@@ -101,18 +104,19 @@ class ManifestSilentUpdateCommand
   // Stage: Loading existing manifest data from disk.
   // (ManifestSilentUpdateCommandStage::kLoadingExistingManifestData)
   void StashExistingAppIcons(IconBitmaps icon_bitmaps);
+
+  // Stage: Comparing manifest data and exiting update if no changes detected.
+  // (ManifestSilentUpdateCommandStage::kComparingManifestData)
   void StashExistingShortcutsMenuIconsFinalizeUpdateIfNeeded(
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
-  // Stage: Compare the manifest data from the new and existing manifests.
-  // (ManifestSilentUpdateCommandStage::
-  // kComparingNonSecuritySensitiveManifestData)
-  void CompareManifestDataForSilentUpdate();
-
   // Stage: Finalize silent changes to web app.
   // (ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges)
-  void NonSecuritySensitiveFieldsApplied(const webapps::AppId& app_id,
-                                         webapps::InstallResultCode code);
+  void NonSecuritySensitiveFieldsApplied(
+      bool silent_update_applied,
+      std::optional<proto::PendingUpdateInfo> pending_update_info,
+      const webapps::AppId& app_id,
+      webapps::InstallResultCode code);
 
   // Stage: Update check complete.
   // (ManifestSilentUpdateCommandStage::kCompleteCommand)
