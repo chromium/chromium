@@ -11,3 +11,52 @@ auto-local-bookmark = false
 # We want chrome's formatters, not google3's.
 [fix.tools.google3format]
 enabled = false
+
+# The source of truth for the following formatters is depot_tools' git_cl.py
+[fix.tools.gn-format]
+command = ["gn", "format", "--stdin"]
+patterns = [
+    "glob:'**/*.gn'",
+    "glob:'**/*.gni'",
+    "glob:'**/*.typemap'",
+]
+
+[fix.tools.java-format]
+command = ["third_party/google-java-format/google-java-format", "--aosp", "-"]
+patterns = ["glob:'**/*.java'"]
+
+[fix.tools.rust-format]
+command = ["third_party/depot_tools/rustfmt.py", "--config-path=.rustfmt.toml"]
+patterns = ["glob:'**/*.rs'"]
+
+[fix.tools.clang-format]
+command = ["third_party/depot_tools/clang_format.py", "--assume-filename=$path"]
+patterns = [
+    "glob:'**/*.cc'",
+    "glob:'**/*.cpp'",
+    "glob:'**/*.h'",
+    "glob:'**/*.m'",
+    "glob:'**/*.mm'",
+    "glob:'**/*.proto'",
+    "glob:'**/*.js'",
+    "glob:'**/*.ts'",
+]
+
+[fix.tools.py-format]
+command = ["tools/jj/formatters/python.py", "$path"]
+patterns = ["glob:'**/*.py'"]
+
+[fix.tools.swift-format]
+command = ["tools/jj/formatters/swift.py", "format"]
+patterns = ["glob:'**/*.swift'"]
+
+[fix.tools.mojom-format]
+command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
+patterns = [
+    "glob:'**/*.mojom'",
+    "glob:'**/*.test-mojom'",
+]
+
+[fix.tools.lucicfg-format]
+command = ["lucicfg", "fmt", "-stdio", "$path"]
+patterns = ["glob:'**/*.star'"]
