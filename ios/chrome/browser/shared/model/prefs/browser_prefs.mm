@@ -1048,6 +1048,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kIOSBwgConsent, false);
 
+  registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
+
+  registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
+
   registry->RegisterBooleanPref(prefs::kIOSBWGManualPromo, false);
 
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,

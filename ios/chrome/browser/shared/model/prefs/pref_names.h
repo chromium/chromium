@@ -780,6 +780,14 @@ inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
 // A boolean specifying whether the bwg consent form has been accepted.
 inline constexpr char kIOSBwgConsent[] = "ios.bwg.consent";
 
+// A boolean specifying whether the BWG precise location setting is enabled.
+inline constexpr char kIOSBWGPreciseLocationSetting[] =
+    "ios.bwg.precise.location.setting";
+
+// A boolean specifying whether the BWG page content setting is enabled.
+inline constexpr char kIOSBWGPageContentSetting[] =
+    "ios.bwg.page.content.setting";
+
 // A boolean specifying whether the BWG Promo was shown manually.
 inline constexpr char kIOSBWGManualPromo[] = "ios.bwg.manual_promo";
 
