@@ -13,6 +13,7 @@ found in the LICENSE file.
   <dimen name="ntp_customization_list_item_background_large_radius">16dp</dimen>
   <dimen name="ntp_customization_back_button_clickable_size">48dp</dimen>
   <dimen name="ntp_customization_back_button_padding">12dp</dimen>
+  <dimen name="ntp_customization_back_button_margin_start">12dp</dimen>
   <dimen name="ntp_customization_edit_icon_margin">16dp</dimen>
   <dimen name="ntp_customization_bottom_sheet_layout_padding_bottom">24dp</dimen>
   <dimen name="ntp_customization_ntp_cards_margin">20dp</dimen>
