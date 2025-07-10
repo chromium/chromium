@@ -1571,6 +1571,10 @@ source_set("unit_tests") {
       "//ui/gfx/geometry",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 group("unit_tests_data") {
@@ -1779,6 +1783,10 @@ test("css_parser_fuzzer") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   fuzztests = [ "CssParser.ParseSheetFuzzer" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("inspector_ghost_rules_fuzzer") {
@@ -1791,6 +1799,10 @@ test("inspector_ghost_rules_fuzzer") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   fuzztests = [ "InspectorGhostRules.PopulateFuzzer" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("css_proto") {
