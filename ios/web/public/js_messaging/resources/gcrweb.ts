@@ -17,6 +17,13 @@ class CrWeb {
   private readonly registeredApis: {[id: string]: CrWebApi} = {};
   private frameId: string = generateRandomId();
 
+  constructor() {
+    const crweb = new CrWebApi();
+    crweb.addFunction('getFrameId', this.getFrameId.bind(this));
+    crweb.addFunction('registerFrame', this.registerFrame.bind(this));
+    this.registerApi('crweb', crweb);
+  }
+
   /*
    * Register a Javascript API into the CrWeb object. In case
    * of any collision, do not override a pre-registered API.
@@ -58,31 +65,63 @@ class CrWeb {
     sendWebKitMessage(
       'FrameBecameAvailable', {'crwFrameId': this.getFrameId()});
   }
+
+  // TODO(crbug.com/399666983): Remove legacy API handling
+  /**
+   * Interface to convert actual calls from the native side into
+   * new CrWeb calls or call legacy code for that function or property.
+   * @param apiName can be undefined.
+   */
+  callFunctionInGcrWeb(
+      apiName: string, funcOrPropName: string, args: unknown[]): unknown {
+    const registeredApi = gCrWeb.getRegisteredApi(apiName);
+    if (registeredApi) {
+      if (registeredApi.hasFunction(funcOrPropName)) {
+        const func = registeredApi.getFunction(funcOrPropName);
+        return func(...args);
+      } else if (registeredApi.hasProperty(funcOrPropName)) {
+        return registeredApi.getProperty(funcOrPropName);
+      }
+      return undefined;
+    } else {
+      if (apiName === '') {
+        return gCrWebLegacy[funcOrPropName](...args);
+      } else {
+        return gCrWebLegacy[apiName][funcOrPropName](...args);
+      }
+    }
+  }
 }
 
 export class CrWebApi {
-  private readonly contents: {[id: string]: unknown} = {};
+  private readonly functions: {[id: string]: Function} = {};
+  private readonly properties: {[id: string]: unknown} = {};
 
-  addFunction(name: string, func: Function): void {
-    this.contents[name] = function(...args: unknown[]) {
+  addFunction(funcName: string, func: Function): void {
+    this.functions[funcName] = function(...args: unknown[]) {
       return catchAndReportErrors.apply(
-        null, [/*crweb=*/ true, name, func, args]);
+        null, [/*crweb=*/ true, funcName, func, args]);
     };
   }
 
-  addProperty(name: string, property: unknown): void {
-    this.contents[name] = property;
+  addProperty(propertyName: string, property: unknown): void {
+    this.properties[propertyName] = property;
   }
 
-  getFunction(name: string): Function|null {
-    if (typeof this.contents[name] === 'function') {
-      return this.contents[name];
-    }
-    return null;
+  getFunction(funcName: string): Function {
+    return this.functions[funcName] as Function;
   }
 
-  getProperty(name: string): unknown {
-    return this.contents[name];
+  getProperty(propertyName: string): unknown {
+    return this.properties[propertyName];
+  }
+
+  hasFunction(funcName: string): boolean {
+    return funcName in this.functions;
+  }
+
+  hasProperty(propertyName: string): boolean {
+    return propertyName in this.properties;
   }
 }
 

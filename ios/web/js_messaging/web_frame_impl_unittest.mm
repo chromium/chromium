@@ -87,13 +87,16 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
   base::Value::List function_params;
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", [])",
+              last_received_script_);
   EXPECT_NSEQ(WKContentWorld.pageWorld, last_received_content_world_);
 
   function_params.Append("param1");
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
+              @"[\"param1\"])",
+              last_received_script_);
   EXPECT_NSEQ(WKContentWorld.pageWorld, last_received_content_world_);
 
   function_params.Append(true);
@@ -101,7 +104,8 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
   function_params.Append(3.14);
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
+              @"[\"param1\",true,27,3.14])",
               last_received_script_);
   EXPECT_NSEQ(WKContentWorld.pageWorld, last_received_content_world_);
 }
@@ -116,13 +120,16 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
 
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", [])",
+              last_received_script_);
   EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
 
   function_params.Append("param1");
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
+              @"[\"param1\"])",
+              last_received_script_);
   EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
 
   function_params.Append(true);
@@ -130,7 +137,8 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
   function_params.Append(3.14);
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
-  EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",
+  EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
+              @"[\"param1\",true,27,3.14])",
               last_received_script_);
   EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
 }

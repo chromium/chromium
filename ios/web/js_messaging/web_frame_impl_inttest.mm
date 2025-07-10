@@ -55,7 +55,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
 
   __block bool called = false;
   main_frame->CallJavaScriptFunction(
-      "getFrameId", base::Value::List(),
+      "crweb.getFrameId", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), main_frame->GetFrameId());
@@ -84,7 +84,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
 
   __block bool called = false;
   iframe->CallJavaScriptFunction(
-      "getFrameId", base::Value::List(),
+      "crweb.getFrameId", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), iframe->GetFrameId());
@@ -101,10 +101,14 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
   ASSERT_TRUE(LoadHtml("<p>"));
 
-  // Inject a function which will never return in order to test feature timeout.
-  ExecuteJavaScript(@"__gCrWeb.testFunctionNeverReturns = function() {"
+  // Inject a function which will never return in order to test feature
+  // timeout.
+  ExecuteJavaScript(@"function testFunctionNeverReturns(){"
                      "  while(true) {}"
-                     "};");
+                     "};"
+                    @"crWebApi = __gCrWeb.getRegisteredApi('crweb');"
+                    @"crWebApi.addFunction('testFunctionNeverReturns', "
+                    @"testFunctionNeverReturns);");
 
   WebFrame* main_frame =
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
@@ -112,7 +116,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
 
   __block bool called = false;
   main_frame->CallJavaScriptFunction(
-      "testFunctionNeverReturns", base::Value::List(),
+      "crweb.testFunctionNeverReturns", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         EXPECT_FALSE(value);
         called = true;
@@ -134,10 +138,11 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
 // world.
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));
-  ExecuteJavaScript(@"__gCrWeb = {};"
-                    @"__gCrWeb['fakeFunction'] = function() {"
+  ExecuteJavaScript(@"function fakeFunction() {"
                     @"  return '10';"
-                    @"}");
+                    @"};"
+                    @"crWebApi = __gCrWeb.getRegisteredApi('crweb');"
+                    @"crWebApi.addFunction('fakeFunction', fakeFunction);");
 
   web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
@@ -152,7 +157,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
-      "fakeFunction", base::Value::List(), &world, base::BindOnce(block),
+      "crweb.fakeFunction", base::Value::List(), &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 
@@ -198,10 +203,12 @@ class WebFrameImplContentWorldIntTest
 // `ExecuteJavaScript` on the main frame in each content world.
 TEST_P(WebFrameImplContentWorldIntTest, ExecuteJavaScriptMainFrame) {
   ASSERT_TRUE(LoadHtml("<p>"));
-  ExecuteJavaScriptInTestContentWorld(@"__gCrWeb = {};"
-                                      @"__gCrWeb['fakeFunction'] = function() {"
-                                      @"  return '10';"
-                                      @"}");
+  ExecuteJavaScriptInTestContentWorld(
+      @"function fakeFunction() {"
+      @"  return '10';"
+      @"};"
+      @"crWebApi = __gCrWeb.getRegisteredApi('crweb');"
+      @"crWebApi.addFunction('fakeFunction', fakeFunction);");
 
   web::WebFrameImpl* main_frame_impl = main_frame();
   ASSERT_TRUE(main_frame_impl);
@@ -213,8 +220,9 @@ TEST_P(WebFrameImplContentWorldIntTest, ExecuteJavaScriptMainFrame) {
     EXPECT_EQ(value->GetString(), "10");
     called = true;
   };
-  EXPECT_TRUE(main_frame_impl->ExecuteJavaScript(u"__gCrWeb['fakeFunction']()",
-                                                 base::BindOnce(block)));
+  EXPECT_TRUE(main_frame_impl->ExecuteJavaScript(
+      u"__gCrWeb.callFunctionInGcrWeb('crweb', 'fakeFunction', [])",
+      base::BindOnce(block)));
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return called;
@@ -227,10 +235,12 @@ TEST_P(WebFrameImplContentWorldIntTest, ExecuteJavaScriptMainFrame) {
 TEST_P(WebFrameImplContentWorldIntTest,
        CallJavaScriptFunctionMainFrameIsolatedWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));
-  ExecuteJavaScriptInTestContentWorld(@"__gCrWeb = {};"
-                                      @"__gCrWeb['fakeFunction'] = function() {"
-                                      @"  return '10';"
-                                      @"}");
+  ExecuteJavaScriptInTestContentWorld(
+      @"function fakeFunction() {"
+      @"  return '10';"
+      @"};"
+      @"crWebApi = __gCrWeb.getRegisteredApi('crweb');"
+      @"crWebApi.addFunction('fakeFunction', fakeFunction);");
 
   web::WebFrameImpl* main_frame_impl = main_frame();
   ASSERT_TRUE(main_frame_impl);
@@ -242,7 +252,7 @@ TEST_P(WebFrameImplContentWorldIntTest,
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
-      "fakeFunction", base::Value::List(), base::BindOnce(block),
+      "crweb.fakeFunction", base::Value::List(), base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 

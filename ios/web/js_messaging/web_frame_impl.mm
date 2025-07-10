@@ -15,6 +15,7 @@
 #import "base/json/json_writer.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -29,21 +30,40 @@
 #import "url/gurl.h"
 
 namespace {
-
-// Creates a JavaScript string for executing the function __gCrWeb.`name` with
-// `parameters`.
-NSString* CreateFunctionCallWithParamaters(
+// Creates a JavaScript string for executing the function
+// __gCrWeb.callFunctionInGcrWeb with parameters api_name, func_or_prop_name and
+// args.
+NSString* CreateFunctionCallWithParameters(
     const std::string& name,
     const base::Value::List& parameters) {
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
+
   for (const auto& value : parameters) {
     std::string string_value;
     base::JSONWriter::Write(value, &string_value);
     [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
   }
 
+  // Assuming 'name' comes in the format "api.functionName" or
+  // "api.propertyName"
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string_view api_name;
+  std::string_view function_name;
+
+  if (name_parts) {
+    api_name = name_parts->first;
+    function_name = name_parts->second;
+  } else {
+    api_name = "";
+    function_name = name;
+  }
+
   return [NSString
-      stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
+      stringWithFormat:@"__gCrWeb.callFunctionInGcrWeb(\"%s\", \"%s\", [%@])",
+                       std::string(api_name).c_str(),
+                       std::string(function_name).c_str(),
                        [parameter_strings componentsJoinedByString:@","]];
 }
 
@@ -306,7 +326,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
   DCHECK(content_world);
   DCHECK(frame_info_);
 
-  NSString* script = CreateFunctionCallWithParamaters(name, parameters);
+  NSString* script = CreateFunctionCallWithParameters(name, parameters);
 
   void (^completion_handler)(id, NSError*) = nil;
   if (reply_with_result) {
