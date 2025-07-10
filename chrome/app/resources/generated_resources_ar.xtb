@@ -1762,7 +1762,7 @@
 <translation id="2217208085547223783">حالة موثوقية الشهادة</translation>
 <translation id="2218019600945559112">الماوس ولوحة اللمس</translation>
 <translation id="2218515861914035131">لصق كنص عادي</translation>
-<translation id="221872881068107022">عكس اتجاه التنقّل في الصفحة</translation>
+<translation id="221872881068107022">عكس اتجاه الانتقال</translation>
 <translation id="2219007152108311874">السؤال عند كل زيارة للموقع الإلكتروني</translation>
 <translation id="2219081237089444028">ضبط كلمة مرور <ph name="DEVICE_TYPE" /> لتسهيل تسجيل الدخول</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
@@ -2409,7 +2409,6 @@
 <translation id="2646132387794831258">‏هل تريد حفظ الإشارة المرجعية ضِمن مجلد في حسابك على Google؟</translation>
 <translation id="264897126871533291">غَطَشُ الأحمر</translation>
 <translation id="2649045351178520408">‏حفظ سلسلة شهادات بتشفير ASCII المرمّز باستخدام Base64</translation>
-<translation id="2650114513545328141">مفعَّل • يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها. وبإمكانك أيضًا طرح الأسئلة والحصول على إجابات استنادًا إلى سجلّ التصفّح</translation>
 <translation id="2651259505411913186">نعم، أريد الاحتفاظ ببياناتي منفصلة عن ملف المؤسسة التعليمية</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}zero{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}two{‏تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}few{‏تم حفظ {COUNT} كلمات مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}many{‏تم حفظ {COUNT} كلمةَ مرورٍ على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}other{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، <ph name="BEGIN_LINK" />يمكنك حفظها في حسابك على Google<ph name="END_LINK" />.}}</translation>
@@ -3006,7 +3005,6 @@
 <translation id="3053013834507634016">استخدام مفتاح الشهادة</translation>
 <translation id="3053273573829329829">تفعيل رقم التعريف الشخصي للمستخدم</translation>
 <translation id="3053274730492362225">عدم تشغيل الوميض</translation>
-<translation id="3054011216223858553">غير مفعَّل • يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها</translation>
 <translation id="3058498974290601450">يمكنك تفعيل المزامنة في أي وقت في الإعدادات.</translation>
 <translation id="3058517085907878899">تسمية الجهاز</translation>
 <translation id="3060952009917586498">تغيير لغة الجهاز اللغة الحالية هي <ph name="LANGUAGE" />.</translation>
@@ -4270,6 +4268,7 @@
 <translation id="3933121352599513978">تصغير الطلبات غير المرغوب فيها (خيار مُقترَح)</translation>
 <translation id="3936260554100916852">‏يشارك <ph name="DEVICE_NAME" /> شبكة Wi-Fi معك.</translation>
 <translation id="3936390757709632190">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
+<translation id="3937110354160507845">‏فتحَ هذا التطبيق نوافذ أو علامات تبويب جديدة في Chrome وإجمالي عددها <ph name="OPENINGS_COUNT" />. يمكنك إدارة هذا السلوك ضِمن إذن "النوافذ المنبثقة وعمليات إعادة التوجيه".</translation>
 <translation id="3937640725563832867">الاسم البديل لجهة إصدار الشهادة</translation>
 <translation id="3937734102568271121">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="3938128855950761626">أجهزة من المورِّد <ph name="VENDOR_ID" /></translation>
@@ -6031,6 +6030,7 @@
 <translation id="520568280985468584">تمت إضافة الشبكة. قد يستغرق تفعيل شبكة الجوّال بضع دقائق.</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="520840839826327499">‏تريد خدمة <ph name="SERVICE_NAME" /> التحقق من أنّك تستخدم جهازًا مؤهَّلاً يعمل بنظام التشغيل Chrome.</translation>
+<translation id="5208722776934437424">تغيير الأذونات</translation>
 <translation id="5208926629108082192">معلومات شبكة الجوّال على الجهاز</translation>
 <translation id="5208988882104884956">نصف العرض</translation>
 <translation id="5209320130288484488">لم يتم العثور على أي أجهزة</translation>
@@ -8428,7 +8428,6 @@
 <translation id="6933321725007230600">تفعيل &amp;المزامنة...</translation>
 <translation id="693459579445775904">تتم مشاركة ملفات الصوت بين المستخدمِين لتوفير مساحة على القرص</translation>
 <translation id="6935031746833428401">مزيد من المعلومات حول "إدارة الأجهزة"</translation>
-<translation id="6935125916377656496">غير مفعَّل • يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها. وبإمكانك أيضًا طرح الأسئلة والحصول على إجابات استنادًا إلى سجلّ التصفّح</translation>
 <translation id="6935286146439255109">درج الورق غير متاح</translation>
 <translation id="6938386202199793006">يتوفّر لديك طابعة واحدة محفوظة.</translation>
 <translation id="6938606182859551396">‏لتلقّي الإشعارات من هاتفك على جهاز <ph name="DEVICE_TYPE" /> الخاص بك، يُرجى اتّباع التعليمات على الهاتف لمنح "خدمات Google Play" إمكانية الوصول إلى الإشعارات.</translation>
@@ -9161,7 +9160,6 @@
 <translation id="7466431077154602932">العرض المكثّف</translation>
 <translation id="7466861475611330213">أسلوب الترقيم</translation>
 <translation id="746861123368584540">تم تحميل الإضافة.</translation>
-<translation id="7469612367552312334">مفعّل • يمكنك استخدام لغة الحياة اليومية للبحث في سجلّ التصفّح والعثور على المواقع الإلكترونية التي زرتها</translation>
 <translation id="7470131554696493512">‏حظْر وصول ملحقات Thunderbolt أو USB4 إلى الذاكرة (ذاكرة الوصول العشوائي) ومشاركتها</translation>
 <translation id="7470274830728993952">الانضمام إلى مجموعة علامات التبويب</translation>
 <translation id="7470284766345262333">‏هذا الحساب ليس من Google، لذا لا تتوفّر به ميزات مثل "مزامنة Chrome"</translation>
@@ -11604,6 +11602,7 @@
 <translation id="9128335130883257666">يُرجى الانتقال إلى صفحة إعدادات <ph name="INPUT_METHOD_NAME" />.</translation>
 <translation id="9128870381267983090">الاتصال بالشبكة</translation>
 <translation id="9129562557082598582">تصدير جميع <ph name="CERT_GROUP" /></translation>
+<translation id="9129857793923570143">فتَحَ "<ph name="APP_NAME" />" نوافذ متعددة.</translation>
 <translation id="9130015405878219958">تم إدخال وضع غير صحيح.</translation>
 <translation id="9130135798965366513">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة<ph name="END_LINK2" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="9130208109420587135">تعديل اسم المجموعة "<ph name="NAME" />"</translation>

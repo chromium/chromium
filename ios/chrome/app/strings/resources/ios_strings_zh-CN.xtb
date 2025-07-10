@@ -518,6 +518,7 @@
 <translation id="3059270601560379555">新搜索</translation>
 <translation id="3064547930554042309">管理下载内容</translation>
 <translation id="3072279342064724558">密码已存在</translation>
+<translation id="3073633853887034268">知道了</translation>
 <translation id="3076846064362030967">您不会因此而退出自己的 Google 账号。当您登录后，系统可能会将<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。
 
 
@@ -979,6 +980,7 @@
 <translation id="4949302115427722371">管理设置…</translation>
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="496392417432935267">已在别处打开</translation>
+<translation id="4970724460420203313">使用受管理的账号登录 Chrome 有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">一旦安排删除文件，便无法取消。</translation>
@@ -2082,7 +2084,6 @@
 <translation id="9206887540681440657">速度</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
 <translation id="926455622548529175">切换并删除</translation>
-<translation id="927162192666499119">组织数据的保密性和安全性有保障</translation>
 <translation id="929748059769569925">突出显示的文字</translation>
 <translation id="932305336591073205">{count,plural, =1{关闭标签页}other{关闭标签页}}</translation>
 <translation id="932327136139879170">首页</translation>

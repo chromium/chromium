@@ -312,6 +312,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
 <translation id="1524669537550112617">Patalpų su baldais nuoma</translation>
 <translation id="1527263332363067270">Laukiama ryšio…</translation>
+<translation id="1527490370616010873">„Google“ nėra jūsų automatinio pildymo teikėjas. Jei norite įgalinti šiuos nustatymus ir naudoti mokėjimo informaciją iš „Google“ paskyros, eikite į <ph name="BEGIN_LINK" />automatinio pildymo paslaugų nustatymus<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">Ryšys užblokuotas, nes jį inicijavo viešas puslapis, skirtas prisijungti prie privataus tinklo įrenginių ar serverių. Įkelkite šį puslapį iš naujo, kad leistumėte prisijungti.</translation>
 <translation id="1529789484829130889">8 dėklas</translation>
 <translation id="1530707389502320859">Svetainė, kurioje ką tik bandėte apsilankyti, atrodo kaip suklastota svetainė. Užpuolėjai kartais sukuria svetainių kopijas ir atlieka nedidelius, sunkiai pastebimus URL pakeitimus.</translation>
@@ -1117,6 +1118,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2902312830803030883">Daugiau veiksmų</translation>
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="290376772003165898">Puslapis parašytas ne <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Jūsų organizacija riboja, ką galite bendrinti</translation>
 <translation id="2905107382358353958">Įspėjimas apie naują mokėjimo nustatymą</translation>
 <translation id="2909946352844186028">Aptiktas tinklo pasikeitimas.</translation>
 <translation id="2911255567212929079">Mašininis mokymasis ir dirbtinis intelektas</translation>
@@ -4710,6 +4712,7 @@ Papildoma išsami informacija:
 <translation id="8975263830901772334">Jūsų spausdinamų failų pavadinimai</translation>
 <translation id="8982884016487650216">PDF įkėlimas baigtas</translation>
 <translation id="8983369100812962543">Dabar galite pakeisti programos dydį</translation>
+<translation id="8984785270737450103">Bendrinimas šiuo metu išjungtas</translation>
 <translation id="8985112471026018799">Išsaugoti kortelę, kad atsiskaitymas vyktų sparčiau</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada „Enter“, kad peržiūrėtumėte naršymo istoriją naršyklėje „Chrome“.</translation>
 <translation id="8987663052629670333">Nuotraukų spausdinimo paslaugos</translation>

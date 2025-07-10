@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">تحذير</translation>
 <translation id="1058009965971887428">إرسال تقرير بالملاحظات</translation>
 <translation id="1059120031266247284">تمت مشاركة هذا الملف معك</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">‫<ph name="ITEM_LABEL" /> مع الزر "إزالة"</translation>
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1073899992769346247">استبدِل البطارية أو أعِد شحنها.</translation>
@@ -539,7 +538,6 @@
 <translation id="2814448776515246190">تصوير جزئي</translation>
 <translation id="2819276065543622893">سيتم تسجيل خروجك الآن.</translation>
 <translation id="2822551631199737692">الكاميرا قيد الاستخدام</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">الرف</translation>
 <translation id="2831035692318564937">مُفعّل حتى شروق الشمس.</translation>
 <translation id="2834813915651407382">تم فتحه مؤخرًا.</translation>
@@ -1636,7 +1634,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: جارٍ التفعيل...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">عرض مصدر الصفحة</translation>
-<translation id="6284232397434400372">تم تغيير درجة الدقة</translation>
 <translation id="6285871695023807425">‏إضافة إلى "تقويم Google"</translation>
 <translation id="6288235558961782912">يمكن إعادة إضافة <ph name="USER_EMAIL_ADDRESS" /> لاحقًا بإذنٍ من أحد الوالدَين.</translation>
 <translation id="6291221004442998378">لا يتم الشحن.</translation>
@@ -1684,7 +1681,6 @@
 <translation id="6452181791372256707">رفض</translation>
 <translation id="6453179446719226835">تم تغيير اللغة</translation>
 <translation id="6456096448804832585">يتوفّر الوضع العمودي فقط</translation>
-<translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">الصور</translation>
 <translation id="6467290994038932560">مفعَّلة مع "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="6468406072297048412">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون دقيقة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}two{إعادة الجهاز إلى الإصدار السابق في غضون دقيقتَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # دقائق}many{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}other{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}}</translation>
@@ -2417,7 +2413,6 @@
 <translation id="8876148469852588625">الحدث <ph name="EVENT_POSITION" /> من إجمالي <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
-<translation id="8878886163241303700">توسيع الشاشة</translation>
 <translation id="8885424115080869847">‏تعذَّر الاتصال بخدمة YouTube Music</translation>
 <translation id="888982883502837004">تتوفّر تحديثات للبرامج الثابتة على جهازك. انقر للمراجعة والتحديث.</translation>
 <translation id="8896630965521842259">سيتم حذف النموذج <ph name="DESK_TEMPLATE_NAME" /> نهائيًا.</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partilhar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Partilhar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Atualizado há <ph name="NUM_YEARS_ONE" /> ano}other{Atualizado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="7773714564112603605">Remover separador e eliminar grupo</translation>
+<translation id="7774428938729954687">Restaure e abra o separador <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Reveja as sugestões.</translation>
 <translation id="7792860826279960128">Aviso sobre as alterações ao grupo de separadores partilhado a meia altura</translation>
 <translation id="7825973332242257878">Grupos de separadores</translation>

@@ -13,6 +13,7 @@
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
+<translation id="1178015372320901893">「我的捷徑」底部功能表</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">這會刪除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
@@ -562,6 +563,7 @@
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器提供虛擬實境或健身追蹤等功能</translation>
 <translation id="7688240020069572972">隱藏 Chrome 提示資訊卡</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
+<translation id="775043444390799886">撤銷權限</translation>
 <translation id="7759147511335618829">控制 MIDI 裝置及重設程式</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -641,6 +643,7 @@
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8558480467877843976">現在起，每當你瀏覽或點選訊息、文件和其他應用程式中的連結時，都可以直接使用 Chrome 來開啟。</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>
+<translation id="8580511488901768832">「我的捷徑」底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="8593422116412089302">如果啟用，網站可以要求使用與你相關的既有資訊；如果停用，網站就無法要求使用這些資訊。</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>

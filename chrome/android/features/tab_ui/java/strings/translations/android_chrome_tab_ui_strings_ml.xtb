@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് പങ്കിടുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ പങ്കിടുക}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> വർഷം മുമ്പ് അപ്‌ഡേറ്റ് ചെയ്തു}other{<ph name="NUM_YEARS_MANY" /> വർഷം മുമ്പ് അപ്ഡേറ്റ് ചെയ്തു}}</translation>
 <translation id="7773714564112603605">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കുക</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> ടാബ് പുനഃസ്ഥാപിച്ച് തുറക്കുക</translation>
 <translation id="7792771145871471484">നിർദ്ദേശങ്ങൾ അവലോകനം ചെയ്യുക.</translation>
 <translation id="7792860826279960128">പങ്കിട്ട ടാബ് ഗ്രൂപ്പിലെ മാറ്റങ്ങളെ കുറിച്ചുള്ള അറിയിപ്പ് സ്ക്രീനിന്റെ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="7825973332242257878">ടാബ് ഗ്രൂപ്പുകൾ</translation>

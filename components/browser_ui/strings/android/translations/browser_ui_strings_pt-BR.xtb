@@ -13,6 +13,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="1073417869336441572">Ajude a melhorar o Chrome informando por que você permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Usar o Chrome por padrão</translation>
+<translation id="1178015372320901893">Página inferior "Meus atalhos"</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1192844206376121885">Essa ação vai excluir todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7681597159868843240">Os sites geralmente usam os sensores de movimento do dispositivo para recursos como realidade virtual ou monitoramento de atividade física</translation>
 <translation id="7688240020069572972">Ocultar card de dicas do Chrome</translation>
 <translation id="7719367874908701697">Zoom da página:</translation>
+<translation id="775043444390799886">Revogar permissão</translation>
 <translation id="7759147511335618829">Controle e reprogramação de dispositivos MIDI</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -641,6 +643,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8549127125482561383">Como mostrar solicitações</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
+<translation id="8580511488901768832">A página inferior "Meus atalhos" está aberta no tamanho máximo</translation>
 <translation id="8593422116412089302">Quando essa configuração está ativada, os sites podem pedir para usar informações que salvaram sobre você. Quando está desativada, os sites não podem pedir para usar as informações que salvaram sobre você.</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando essa configuração está ativada, a versão para computadores dos sites aparece. Quando está desativada, a versão para dispositivos móveis aparece.</translation>

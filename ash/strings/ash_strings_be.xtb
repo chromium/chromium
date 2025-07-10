@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1058009965971887428">Паскардзіцца на водгук</translation>
 <translation id="1059120031266247284">Абагулена з вамі</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> з кнопкай "Выдаліць"</translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1073899992769346247">Замяніце або зарадзіце акумулятар</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">Здыманне часткі экрана</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2822551631199737692">Выкарыстоўваецца камера</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Паліца</translation>
 <translation id="2831035692318564937">Уключана да захаду сонца</translation>
 <translation id="2834813915651407382">Адкрывалася нядаўна</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: ідзе актывацыя...</translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
 <translation id="6276708887952587684">Прагледзець зыходны тэкст старонкі</translation>
-<translation id="6284232397434400372">Раздзяляльнасць зменена</translation>
 <translation id="6285871695023807425">Дадаць у каляндар</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>
 <translation id="6291221004442998378">Не зараджаецца</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">Адхіліць</translation>
 <translation id="6453179446719226835">Мова была зменена</translation>
 <translation id="6456096448804832585">Даступная толькі кніжная арыентацыя</translation>
-<translation id="6459472438155181876">Экран пашыраны на дысплэй <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">відарысы</translation>
 <translation id="6467290994038932560">Уключана для гульні "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="6468406072297048412">{0,plural, =1{Вярніцеся да папярэдняй версіі АС на працягу 1 хвіліны}one{Вярніцеся да папярэдняй версіі АС на працягу # хвіліны}few{Вярніцеся да папярэдняй версіі АС на працягу # хвілін}many{Вярніцеся да папярэдняй версіі АС на працягу # хвілін}other{Вярніцеся да папярэдняй версіі АС на працягу # хвіліны}}</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625">Падзея <ph name="EVENT_POSITION" /> з <ph name="EVENT_TOTAL_COUNT" />.</translation>
 <translation id="8876661425082386199">Праверце падключэнне</translation>
 <translation id="8877788021141246043">Задайце напамін</translation>
-<translation id="8878886163241303700">Экран пашыраецца</translation>
 <translation id="8885424115080869847">Не ўдалося падключыцца да YouTube Music</translation>
 <translation id="888982883502837004">Для вашай прылады даступныя абнаўленні ўбудаванага праграмнага забеспячэння. Націсніце, каб паглядзець і ўсталяваць іх.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будзе выдалены назаўсёды</translation>

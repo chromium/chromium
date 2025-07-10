@@ -609,7 +609,7 @@
 <translation id="1418559532423038045">从 <ph name="DEVICE_TYPE" /> 中移除 <ph name="VM_NAME" />。此操作会删除虚拟机中的所有应用和数据！</translation>
 <translation id="1418882096915998312">正在注册企业版</translation>
 <translation id="1418954524306642206">浏览以指定您的打印机 PPD</translation>
-<translation id="1419086691207546433">添加扩展程序，保持井然有序、简化任务并增强浏览体验</translation>
+<translation id="1419086691207546433">添加扩展程序，保持井然有序、简化任务并提升浏览体验</translation>
 <translation id="1421334842435688311">移动网络位置信息</translation>
 <translation id="1421514190500081936">请输入下载此数据的原因：</translation>
 <translation id="1422159345171879700">加载不安全的脚本</translation>
@@ -1934,6 +1934,7 @@
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
 <translation id="2328636661627946415">当您处于无痕模式时，网站只能使用 Cookie 查看您在相应网站上的浏览活动。无痕式会话结束时，系统会删除 Cookie。</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
+<translation id="2330182457402792918">选择允许此网站读取的文件</translation>
 <translation id="2331334586452217517">此网站的内容会发送给 Google，并且可能会由人工审核员查看。关于<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="2332115969598251205">无法加载已保存到 <ph name="PRIMARY_EMAIL" /> 的设备。请检查互联网连接情况，然后再试一次。</translation>
 <translation id="2332131598580221120">在应用店中查看</translation>
@@ -2395,7 +2396,6 @@
 <translation id="2646132387794831258">要保存到您 Google 账号中的文件夹吗？</translation>
 <translation id="264897126871533291">红色弱</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
-<translation id="2650114513545328141">已开启 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站。您还可以提出问题，系统会根据您的浏览记录提供答案</translation>
 <translation id="2651259505411913186">是，将我的数据与学校数据分开</translation>
 <translation id="265156376773362237">标准预加载</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{有 {COUNT} 个密码仅保存在此设备上。若要在其他设备上使用该密码，请<ph name="BEGIN_LINK" />将其保存到您的 Google 账号中<ph name="END_LINK" />。}other{有 {COUNT} 个密码仅保存在此设备上。若要在其他设备上使用这些密码，请<ph name="BEGIN_LINK" />将其保存到您的 Google 账号中<ph name="END_LINK" />。}}</translation>
@@ -2992,7 +2992,6 @@
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3053274730492362225">不闪烁</translation>
-<translation id="3054011216223858553">已关闭 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
@@ -4253,6 +4252,7 @@
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3936260554100916852">“<ph name="DEVICE_NAME" />”正在与您分享一个 Wi-Fi 网络</translation>
 <translation id="3936390757709632190">在新标签页中打开音频(&amp;O)</translation>
+<translation id="3937110354160507845">此应用已打开 <ph name="OPENINGS_COUNT" /> 个新的 Chrome 窗口或标签页。您可以在“弹出式窗口和重定向”权限下管理此行为。</translation>
 <translation id="3937640725563832867">证书颁发者的备用名称</translation>
 <translation id="3937734102568271121">一律翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="3938128855950761626">来自供应商 <ph name="VENDOR_ID" /> 的设备</translation>
@@ -6015,6 +6015,7 @@
 <translation id="520568280985468584">已成功添加网络。不过，您的移动网络可能要过几分钟才可用。</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />需要检查您使用的是否为符合条件的 Chrome 操作系统设备。</translation>
+<translation id="5208722776934437424">更改权限</translation>
 <translation id="5208926629108082192">设备移动网络信息</translation>
 <translation id="5208988882104884956">半角</translation>
 <translation id="5209320130288484488">未找到任何设备</translation>
@@ -8400,7 +8401,6 @@
 <translation id="6933321725007230600">开启同步功能(&amp;S)…</translation>
 <translation id="693459579445775904">为节省磁盘可用空间，系统会让用户共用语音文件</translation>
 <translation id="6935031746833428401">详细了解“设备管理”</translation>
-<translation id="6935125916377656496">已关闭 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站。您还可以提出问题，系统会根据您的浏览记录提供答案</translation>
 <translation id="6935286146439255109">找不到送纸盘</translation>
 <translation id="6938386202199793006">您有 1 台已保存的打印机。</translation>
 <translation id="6938606182859551396">如需在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知，请按照手机上的说明向 Google Play 服务授予通知权限。</translation>
@@ -8782,6 +8782,7 @@
 <translation id="7222232353993864120">电子邮件地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">选择允许此网站读取的文件</translation>
 <translation id="7223952304612664117">这将允许系统服务使用“位置信息精确度”设置来确定您的位置。“位置信息精确度”设置会使用无线信号和传感器的相关信息来估算设备位置。</translation>
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
@@ -9132,7 +9133,6 @@
 <translation id="7466431077154602932">精简视图</translation>
 <translation id="7466861475611330213">标点样式</translation>
 <translation id="746861123368584540">扩展程序已加载完毕</translation>
-<translation id="7469612367552312334">已开启 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件访问和共享内存 (RAM)</translation>
 <translation id="7470274830728993952">加入标签页分组</translation>
 <translation id="7470284766345262333">此账号未与 Google 关联，因此无法使用 Chrome 同步等功能</translation>
@@ -9919,6 +9919,7 @@
 <translation id="8000020256436988724">工具栏</translation>
 <translation id="800117767980299235">语音突出显示</translation>
 <translation id="8002274832045662704">高级打印机配置</translation>
+<translation id="8002597610026749658">Chrome 可以为此处显示的语言创建字幕</translation>
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004092996156083991">如果您的密码已泄露，我们会通知您。</translation>
 <translation id="8004507136466386272">文字</translation>
@@ -10535,7 +10536,7 @@
 <translation id="8425213833346101688">更改</translation>
 <translation id="8425492902634685834">固定在任务栏上</translation>
 <translation id="8425768983279799676">您可以使用 PIN 码来解锁您的设备。</translation>
-<translation id="8426697201161711396">登录 Chrome 即可获取您在所有设备上保存的密码等</translation>
+<translation id="8426697201161711396">登录 Chrome 即可在所有设备上获取保存的密码和其他信息</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -11569,6 +11570,7 @@
 <translation id="9128335130883257666">打开<ph name="INPUT_METHOD_NAME" />的“设置”页面</translation>
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9129562557082598582">导出全部<ph name="CERT_GROUP" /></translation>
+<translation id="9129857793923570143">“<ph name="APP_NAME" />”打开了多个窗口。</translation>
 <translation id="9130015405878219958">输入的模式无效。</translation>
 <translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9130208109420587135">修改分组名称“<ph name="NAME" />”</translation>

@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058009965971887428">提交反馈</translation>
 <translation id="1059120031266247284">与您分享</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" />（带有“移除”按钮）</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1073899992769346247">更换电池或为电池充电</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="2822551631199737692">摄像头正在使用中</translation>
-<translation id="2825224105325558319">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2831035692318564937">已开启，直到日出</translation>
 <translation id="2834813915651407382">最近打开过</translation>
@@ -1636,7 +1634,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
 <translation id="6274202259872570803">抓屏</translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
-<translation id="6284232397434400372">分辨率已更改</translation>
 <translation id="6285871695023807425">添加到日历</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">未在充电</translation>
@@ -1684,7 +1681,6 @@
 <translation id="6452181791372256707">拒绝</translation>
 <translation id="6453179446719226835">语言已更改</translation>
 <translation id="6456096448804832585">仅支持纵向模式</translation>
-<translation id="6459472438155181876">正在将屏幕扩展到<ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">图片</translation>
 <translation id="6467290994038932560">已为“<ph name="GAME_APP_NAME" />”开启</translation>
 <translation id="6468406072297048412">{0,plural, =1{在 1 分钟内将设备回滚为上一个版本}other{在 # 分钟内将设备回滚为上一个版本}}</translation>
@@ -2416,7 +2412,6 @@
 <translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 个活动，共 <ph name="EVENT_TOTAL_COUNT" /> 个</translation>
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
-<translation id="8878886163241303700">正在扩展屏幕</translation>
 <translation id="8885424115080869847">无法连接到 YouTube Music</translation>
 <translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>

@@ -21,7 +21,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1058009965971887428">Envoyer vos commentaires</translation>
 <translation id="1059120031266247284">Partagé avec vous</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> avec le bouton Retirer</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la pile</translation>
@@ -540,7 +539,6 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez maintenant être déconnecté.</translation>
 <translation id="2822551631199737692">L'appareil photo est en cours d'utilisation</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne permet pas un affichage avec une résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a donc été remise à <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2831035692318564937">Activé jusqu'à l'aube</translation>
 <translation id="2834813915651407382">Ouvert récemment</translation>
@@ -1637,7 +1635,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
 <translation id="6274202259872570803">Vidéocapture d'écran</translation>
 <translation id="6276708887952587684">Afficher la source de la page</translation>
-<translation id="6284232397434400372">Résolution modifiée</translation>
 <translation id="6285871695023807425">Ajouter à Agenda</translation>
 <translation id="6288235558961782912">L'utilisateur <ph name="USER_EMAIL_ADDRESS" /> peut être ajouté de nouveau plus tard, avec l'autorisation d'un parent.</translation>
 <translation id="6291221004442998378">La pile n'est pas en train d'être rechargée</translation>
@@ -1685,7 +1682,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6452181791372256707">Refuser</translation>
 <translation id="6453179446719226835">La langue a été modifiée</translation>
 <translation id="6456096448804832585">Seul le format portrait est disponible</translation>
-<translation id="6459472438155181876">Extension de l'écran à <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">Images</translation>
 <translation id="6467290994038932560">Activées pour <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'une minute}one{Mettez à jour l'appareil vers la version précédente dans un délai de # minute}other{Mettez à jour l'appareil vers la version précédente dans un délai de # minutes}}</translation>
@@ -2416,7 +2412,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8876148469852588625">Événement <ph name="EVENT_POSITION" /> sur <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>
 <translation id="8877788021141246043">Créer un rappel</translation>
-<translation id="8878886163241303700">Extension de l'écran</translation>
 <translation id="8885424115080869847">Impossible de se connecter à YouTube Music</translation>
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les passer en revue et lancer la mise à jour.</translation>
 <translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>

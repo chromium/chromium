@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">අවවාදයයි</translation>
 <translation id="1058009965971887428">ප්‍රතිපෝෂණය වාර්තා කරන්න</translation>
 <translation id="1059120031266247284">ඔබ සමග බෙදා ගත්තේ ය</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">ඉවත් කිරීමේ බොත්තම සහිත <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="1073899992769346247">බැටරිය ප්‍රතිස්ථාපනය හෝ ආරෝපණය කරන්න</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">අර්ධ ග්‍රහණය</translation>
 <translation id="2819276065543622893">ඔබව දැන් වරනු ඇත.</translation>
 <translation id="2822551631199737692">කැමරාව භාවිතයේ ඇත</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> සඳහා සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් කළා.</translation>
 <translation id="2825619548187458965">තට්ටුව</translation>
 <translation id="2831035692318564937">හිරු නැග එන තෙක් ක්‍රියාත්මකයි</translation>
 <translation id="2834813915651407382">මෑතදී විවෘත කරන ලදී</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: සක්‍රීය කරමින්...</translation>
 <translation id="6274202259872570803">තිරසටහන</translation>
 <translation id="6276708887952587684">පිටු මූලාශ්‍රය බලන්න</translation>
-<translation id="6284232397434400372">විභේදනය වෙනස් විය</translation>
 <translation id="6285871695023807425">දින දර්ශනයට එක් කරන්න</translation>
 <translation id="6288235558961782912">මාපියෙකුගේ අවසරය සමඟ පසුව <ph name="USER_EMAIL_ADDRESS" /> එක් කළ හැක.</translation>
 <translation id="6291221004442998378">ආරෝපණය නොවේ</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">පිළිකෙව්</translation>
 <translation id="6453179446719226835">භාෂාව වෙනස් වී ඇත</translation>
 <translation id="6456096448804832585">ලබා ගත හැක්කේ ප්‍රතිමූර්තිය පමණි</translation>
-<translation id="6459472438155181876">තිරය <ph name="DISPLAY_NAME" /> වෙත දිගු කෙරෙමින්</translation>
 <translation id="6464094930452079790">රූප</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> සඳහා ක්‍රියාත්මකයි</translation>
 <translation id="6468406072297048412">{0,plural, =1{මිනිත්තු 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{මිනිත්තු #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{මිනිත්තු #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />න් <ph name="EVENT_POSITION" /> වැනි සිදුවීම</translation>
 <translation id="8876661425082386199">ඔබේ සම්බන්ධතාවය පරීක්ෂා කරන්න</translation>
 <translation id="8877788021141246043">මතක් කිරීමක් සකසන්න</translation>
-<translation id="8878886163241303700">තිරය දික් කරයි</translation>
 <translation id="8885424115080869847">YouTube Music වෙත සම්බන්ධ වීමට නොහැකි විය</translation>
 <translation id="888982883502837004">ඔබගේ උපාංගය සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන තිබේ. සමාලෝචනය කිරීමට සහ යාවත්කාලීන කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ස්ථිරවම මකනු ඇත</translation>

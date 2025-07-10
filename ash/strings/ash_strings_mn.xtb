@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">Анхааруулга</translation>
 <translation id="1058009965971887428">Санал хүсэлт мэдээлэх</translation>
 <translation id="1059120031266247284">Тантай хуваалцсан</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">Хасах товчтой <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">Солих</translation>
 <translation id="1073899992769346247">Батарейг солих эсвэл дахин цэнэглэнэ үү</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
 <translation id="2822551631199737692">Камерыг ашиглаж байна</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн.</translation>
 <translation id="2825619548187458965">Шельф</translation>
 <translation id="2831035692318564937">Нар мандах хүртэл асаалттай</translation>
 <translation id="2834813915651407382">Саяхан нээсэн</translation>
@@ -1639,7 +1637,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: идэвхжүүлж байна...</translation>
 <translation id="6274202259872570803">Дэлгэцийн видео бичлэг</translation>
 <translation id="6276708887952587684">Хуудасны эх сурвалжийг харуулах</translation>
-<translation id="6284232397434400372">Нягтралыг өөрчилсөн</translation>
 <translation id="6285871695023807425">Календарьт нэмэх</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />-г эцэг эхийн зөвшөөрөлтэйгөөр дараа дахин нэмэх боломжтой.</translation>
 <translation id="6291221004442998378">Цэнэглэхгүй байна</translation>
@@ -1687,7 +1684,6 @@
 <translation id="6452181791372256707">Татгалзах</translation>
 <translation id="6453179446719226835">Хэлийг өөрчилсөн</translation>
 <translation id="6456096448804832585">Зөвхөн босоо хэмжээ боломжтой</translation>
-<translation id="6459472438155181876">Дэлгэцийг <ph name="DISPLAY_NAME" /> руу сунгаж байна</translation>
 <translation id="6464094930452079790">зураг</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" />-д асаасан</translation>
 <translation id="6468406072297048412">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
@@ -2420,7 +2416,6 @@
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />-с <ph name="EVENT_POSITION" /> үйл явдал</translation>
 <translation id="8876661425082386199">Холболтоо шалгана уу</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>
-<translation id="8878886163241303700">Дэлгэцийг сунгаж байна</translation>
 <translation id="8885424115080869847">YouTube Music-д холбогдож чадсангүй</translation>
 <translation id="888982883502837004">Таны төхөөрөмжид жижиг программын шинэчлэлтүүд боломжтой байна. Шалгах болон шинэчлэхийн тулд товшино уу.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-г бүрмөсөн устгана</translation>

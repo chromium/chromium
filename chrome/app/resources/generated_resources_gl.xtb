@@ -1940,6 +1940,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2328561734797404498">Reinicia o teu dispositivo para utilizar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Estás no modo de incógnito, os sitios só poden utilizar as cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio. As cookies elimínanse ao final da sesión do modo mencionado.</translation>
 <translation id="2329597144923131178">Inicia sesión para ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos.</translation>
+<translation id="2330182457402792918">Seleccionar ficheiros que este sitio poida ler</translation>
 <translation id="2331334586452217517">O contido deste sitio enviarase a Google e poderá someterse a un proceso de revisión por parte do noso equipo. Acerca de <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Non se puideron cargar os dispositivos gardados en <ph name="PRIMARY_EMAIL" />. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="2332131598580221120">Ver na tenda</translation>
@@ -2402,7 +2403,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2646132387794831258">Queres gardar este marcador nun cartafol da túa Conta de Google?</translation>
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">Cadea de certificado en ASCII con codificación Base64</translation>
-<translation id="2650114513545328141">Activado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación</translation>
 <translation id="2651259505411913186">Si, manter os meus datos separados dos do centro educativo</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{Hai {COUNT} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, <ph name="BEGIN_LINK" />gárdao na túa Conta de Google<ph name="END_LINK" />.}other{Hai {COUNT} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, <ph name="BEGIN_LINK" />gárdaos na túa Conta de Google<ph name="END_LINK" />.}}</translation>
@@ -2999,7 +2999,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3053013834507634016">Uso da clave de certificado</translation>
 <translation id="3053273573829329829">Activar PIN de usuario</translation>
 <translation id="3053274730492362225">Sen escintileo</translation>
-<translation id="3054011216223858553">Desactivado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>
 <translation id="3058498974290601450">Podes activar a sincronización en calquera momento na configuración</translation>
 <translation id="3058517085907878899">Nome de dispositivo</translation>
 <translation id="3060952009917586498">Cambia o idioma do dispositivo. Actualmente úsase o <ph name="LANGUAGE" />.</translation>
@@ -4265,6 +4264,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3933121352599513978">Contraer solicitudes non desexadas (recomendado)</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartindo unha rede wifi contigo</translation>
 <translation id="3936390757709632190">&amp;Abrir audio na pestana nova</translation>
+<translation id="3937110354160507845">Esta aplicación abriu <ph name="OPENINGS_COUNT" /> ventás ou pestanas de Chrome novas. Podes xestionar este comportamento desde o permiso Ventás emerxentes e redireccións.</translation>
 <translation id="3937640725563832867">Nome alternativo do emisor do certificado</translation>
 <translation id="3937734102568271121">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Dispositivos do provedor <ph name="VENDOR_ID" /></translation>
@@ -6029,6 +6029,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="520568280985468584">Engadiuse a rede correctamente. Pode que a rede de telefonía móbil tarde varios minutos en activarse.</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quere comprobar se usas un dispositivo Chrome OS compatible.</translation>
+<translation id="5208722776934437424">Cambiar permisos</translation>
 <translation id="5208926629108082192">Información da rede de telefonía móbil do dispositivo</translation>
 <translation id="5208988882104884956">Ancho medio</translation>
 <translation id="5209320130288484488">Non se atopou ningún dispositivo</translation>
@@ -8415,7 +8416,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6933321725007230600">Activar &amp;sincronización...</translation>
 <translation id="693459579445775904">Os ficheiros de voz compártense entre os usuarios para aforrar espazo no disco</translation>
 <translation id="6935031746833428401">Máis información acerca da xestión de dispositivos</translation>
-<translation id="6935125916377656496">Desactivado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Tamén podes facer preguntas e obter respostas en función do teu historial de navegación</translation>
 <translation id="6935286146439255109">Falta unha bandexa de papel</translation>
 <translation id="6938386202199793006">Tes 1 impresora gardada.</translation>
 <translation id="6938606182859551396">Se queres recibir as notificacións do teléfono no teu dispositivo (<ph name="DEVICE_TYPE" />), sigue as instrucións que se che mostran no móbil para darlles acceso ás notificacións aos servizos de Google Play.</translation>
@@ -8796,6 +8796,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7222232353993864120">Enderezo de correo electrónico</translation>
 <translation id="7222335051802562841">Completar actualización</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">Seleccionar un ficheiro que este sitio poida ler</translation>
 <translation id="7223952304612664117">Se aceptas, permitirás que os servizos do sistema utilicen a opción Precisión da localización para determinar a túa posición. Precisión da localización usa a información dos sensores e sinais sen fíos para calcular onde está o dispositivo.</translation>
 <translation id="7225082563376899794">Usar Windows Hello ao completar contrasinais</translation>
 <translation id="7225179976675429563">Non se atopa o tipo de rede</translation>
@@ -9146,7 +9147,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7466431077154602932">Vista compacta</translation>
 <translation id="7466861475611330213">Estilo de puntuación</translation>
 <translation id="746861123368584540">Cargouse a extensión</translation>
-<translation id="7469612367552312334">Activado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>
 <translation id="7470131554696493512">Impedir que accesorios USB4 ou Thunderbolt accedan á memoria (RAM) e a compartan</translation>
 <translation id="7470274830728993952">Unirse ao grupo de pestanas</translation>
 <translation id="7470284766345262333">Esta conta non está asociada a Google, polo que non están dispoñibles funcións como Sincronización de Chrome</translation>
@@ -9933,6 +9933,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8000020256436988724">Barra de ferramentas</translation>
 <translation id="800117767980299235">Selección de voz</translation>
 <translation id="8002274832045662704">Configuración avanzada da impresora</translation>
+<translation id="8002597610026749658">Chrome pode crear subtítulos para os idiomas que se mostran a continuación</translation>
 <translation id="8002670234429879764">Xa non está dispoñible: <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Avisarémoste se se vulneran os teus contrasinais.</translation>
 <translation id="8004507136466386272">Palabras</translation>
@@ -11582,6 +11583,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9128335130883257666">Abrir páxina de configuración de <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Conectarse á rede</translation>
 <translation id="9129562557082598582">Exportar todos (<ph name="CERT_GROUP" />)</translation>
+<translation id="9129857793923570143"><ph name="APP_NAME" /> abriu varias ventás.</translation>
 <translation id="9130015405878219958">Modo non válido introducido.</translation>
 <translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> do sitio.</translation>
 <translation id="9130208109420587135">Editar nome do grupo <ph name="NAME" /></translation>

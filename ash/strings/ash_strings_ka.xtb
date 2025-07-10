@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">გაფრთხილება</translation>
 <translation id="1058009965971887428">გამოხმაურება</translation>
 <translation id="1059120031266247284">თქვენთან გაზიარებული</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> ამოშლის ღილაკით</translation>
 <translation id="1062407476771304334">შეცვლა</translation>
 <translation id="1073899992769346247">გამოცვალეთ ან ხელახლა დამუხტეთ ბატარეა</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">ნაწილობრივი აღბეჭდვა</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="2822551631199737692">კამერა გამოიყენება</translation>
-<translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე.</translation>
 <translation id="2825619548187458965">თარო</translation>
 <translation id="2831035692318564937">ჩართული მზის ამოსვლამდე</translation>
 <translation id="2834813915651407382">ახლახან გახსნილი</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: გააქტიურება…</translation>
 <translation id="6274202259872570803">სკრინკასტი</translation>
 <translation id="6276708887952587684">გვერდის წყაროს ნახვა</translation>
-<translation id="6284232397434400372">გარჩევადობა შეიცვალა</translation>
 <translation id="6285871695023807425">Calendar-ში დამატება</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> მოგვიანებით მშობლის ნებართვით შეგიძლიათ დაამატოთ.</translation>
 <translation id="6291221004442998378">არ იტენება</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">უარყოფა</translation>
 <translation id="6453179446719226835">ენა შეიცვალა</translation>
 <translation id="6456096448804832585">ხელმისაწვდომია მხოლოდ პორტრეტი</translation>
-<translation id="6459472438155181876">ეკრანის გაგრძელება <ph name="DISPLAY_NAME" />-მდე</translation>
 <translation id="6464094930452079790">სურათები</translation>
 <translation id="6467290994038932560">ჩართულია <ph name="GAME_APP_NAME" />-ისთვის</translation>
 <translation id="6468406072297048412">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წუთის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წუთის განმავლობაში}}</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625">მოვლენა <ph name="EVENT_POSITION" /> / <ph name="EVENT_TOTAL_COUNT" />-დან</translation>
 <translation id="8876661425082386199">შეამოწმეთ კავშირი</translation>
 <translation id="8877788021141246043">შეხსენების დაყენება</translation>
-<translation id="8878886163241303700">ეკრანის გაშლა</translation>
 <translation id="8885424115080869847">YouTube Music-თან დაკავშირება ვერ მოხერხდა</translation>
 <translation id="888982883502837004">თქვენი მოწყობილობისთვის ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები. დააწკაპუნეთ გადასახედად და გასაახლებლად.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ სამუდამოდ წაიშლება</translation>

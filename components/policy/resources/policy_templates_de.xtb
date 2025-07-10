@@ -2534,6 +2534,13 @@ Der Bericht enthält Status- und Nutzungsinformationen zum Profil, darunter die 
 Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</translation>
 <translation id="2846689894646472396">Häufigkeit der Prüfung auf Netzwerkereignisse in Millisekunden.</translation>
 <translation id="2847788524147474533">Richtlinien für Plattformgeräte haben Vorrang vor Richtlinien für Cloud-Rechner</translation>
+<translation id="284877670305984807">Mit dieser Richtlinie können Nutzer Firmware-Updates für den lokalen Computer und nicht für Peripheriegeräte starten.
+
+      Wenn die Richtlinie aktiviert ist, können Nutzer, beispielsweise der Eigentümer des Geräts, Firmware-Updates starten.
+
+      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer keine Firmware-Updates anwenden.
+
+      Diese Richtlinie gilt für Firmware-Updates interner Komponenten von <ph name="PRODUCT_OS_FLEX_NAME" />-Geräten. Firmware-Updates interner Komponenten von <ph name="PRODUCT_OS_NAME" />-Geräten sind von dieser Richtlinie nicht betroffen.</translation>
 <translation id="2849051159985119151">Fotobearbeitung basierend auf generativer KI zulassen, ohne KI-Modelle zu verbessern.</translation>
 <translation id="2849275596224278787">Optionen für Bedienungshilfen im Taskleistenmenü des Anmeldebildschirms ausblenden</translation>
 <translation id="2853649500575897584">Keine alten Erweiterungspunkte im Browserprozess blockieren</translation>
@@ -4433,6 +4440,7 @@ Nicht mehr unterstützt: Die Paketverfolgung ist seit M132 deaktiviert und diese
 <translation id="4192388905594723944">URL zur Überprüfung des Client-Authentifizierungs-Tokens für den Remote-Zugriff</translation>
 <translation id="4195119404667420672">„SpeculationRules“-Prefetch kann an von ServiceWorkers gesteuerte URLs gesendet werden.</translation>
 <translation id="4195698007674066525">Standardmäßig numerische Tastatur für Passworteingabe anzeigen</translation>
+<translation id="4198531346233984110">Reduzierter User-Agent.</translation>
 <translation id="4203055629055264833">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer ihre neuesten Ergebnisse der Standardsuchmaschine in einer Seitenleiste anzeigen, indem sie ein Symbol in der Symbolleiste ein- oder ausschalten.
 
       Wird die Richtlinie deaktiviert, wird das Symbol, das die Seitenleiste mit den Ergebnissen der Standardsuchmaschine öffnet, aus der Symbolleiste entfernt.</translation>
@@ -5846,6 +5854,8 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
       Ist die Richtlinie deaktiviert, werden Nutzer nicht nach einem Passwort zum Entsperren des Geräts gefragt.
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob er nach einem Passwort zum Entsperren des Geräts gefragt werden möchte.</translation>
+<translation id="5194337341464164678">Der HTTP-Anfrageheader „<ph name="USER_AGENT_HEADER_NAME" />“ wurde seit Chrome 110 standardmäßig reduziert und der Test zur Einstellung endete nach Chrome 113. Wenn du weiterhin detaillierte Plattforminformationen erhalten möchtest, migriere bitte zu User-Agent-Client-Hints, die als Ersatz für den eingestellten detaillierten User-Agent-Header dienen: https://web.dev/articles/migrate-to-ua-ch
+      </translation>
 <translation id="5194683382395300627">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen, z. B. um das automatische Ändern von Passwörtern zu ermöglichen</translation>
 <translation id="5196630732055960309">File Handling API bei diesen Webanwendungen erlauben</translation>
 <translation id="5205352023880027050">Aktiviere nicht die Funktion „EphemeralNetworkPolicies“.</translation>
@@ -9442,6 +9452,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />" diese Richtlinie.</translation>
 <translation id="7630403270894231662">Verwende „WeeklyTimeChecked“ in neuem Code.</translation>
+<translation id="7631736894032434210">Nutzern erlauben, interne Firmware-Updates zu starten</translation>
 <translation id="7632147323011514740">Zeiträume, in denen die Aktualisierung des ARC-Datenschnappschusses für verwaltete Gastsitzungen gestartet werden kann</translation>
 <translation id="7632724434767231364">Name der GSSAPI-Bibliothek</translation>
 <translation id="7635106595080609261">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Chrome Dialogfelder zur Dateiauswahl anzeigen und Nutzer können diese öffnen.
@@ -10110,6 +10121,7 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 <translation id="8168359201203671567">Tastaturbeleuchtungsfarbe „Regenbogen“</translation>
 <translation id="8169452762291746260">Überwachung des Gerätestatus deaktivieren</translation>
 <translation id="8170359860920320269">Websites mit Inhalten nur für Erwachsene filtern</translation>
+<translation id="8170672421195760161">Vollständiger (alter) User-Agent.</translation>
 <translation id="8171262216089271568">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="8171924760436219650">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden</translation>
 <translation id="81724933026241365">Geräteausschaltung über das Symbol „Herunterfahren“ oder mit der physischen Ein-/Aus-Taste zulassen</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ແບ່ງປັນ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກ}other{ແບ່ງປັນ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກ}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{ອັບເດດເມື່ອ <ph name="NUM_YEARS_ONE" /> ປີກ່ອນ}other{ອັບເດດເມື່ອ <ph name="NUM_YEARS_MANY" /> ປີກ່ອນ}}</translation>
 <translation id="7773714564112603605">ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມ</translation>
+<translation id="7774428938729954687">ກູ້ຄືນ ແລະ ເປີດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">ກວດເບິ່ງການແນະນຳ.</translation>
 <translation id="7792860826279960128">ແຈ້ງການກ່ຽວກັບການປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວຢູ່ທີ່ຄວາມສູງເຄິ່ງໜຶ່ງ</translation>
 <translation id="7825973332242257878">ກຸ່ມແຖບ</translation>

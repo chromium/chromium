@@ -13,6 +13,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberi tahu kami alasan Anda mengizinkan cookie pihak ketiga. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Anda dapat meminta untuk melihat situs versi desktop</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
+<translation id="1178015372320901893">Panel bawah pintasan saya</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1192844206376121885">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7681597159868843240">Situs biasanya menggunakan sensor gerakan perangkat Anda untuk fitur seperti virtual reality atau pelacak kebugaran</translation>
 <translation id="7688240020069572972">Sembunyikan kartu tips Chrome</translation>
 <translation id="7719367874908701697">Perkecil/perbesar halaman</translation>
+<translation id="775043444390799886">Cabut izin</translation>
 <translation id="7759147511335618829">Program ulang &amp; kontrol perangkat MIDI</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
@@ -641,6 +643,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8549127125482561383">Cara menampilkan permintaan</translation>
 <translation id="8558480467877843976">Anda kini dapat menggunakan Chrome kapan saja dengan mengakses atau mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
+<translation id="8580511488901768832">panel bawah pintasan saya terbuka sepenuhnya</translation>
 <translation id="8593422116412089302">Jika diaktifkan, situs dapat meminta untuk menggunakan informasi tentang Anda yang disimpan situs. Jika dinonaktifkan, situs tidak dapat meminta untuk menggunakan informasi tentang Anda yang disimpan situs.</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8617611086246832542">Jika diaktifkan, tampilan desktop situs akan ditampilkan. Jika dinonaktifkan, tampilan seluler situs akan ditampilkan.</translation>

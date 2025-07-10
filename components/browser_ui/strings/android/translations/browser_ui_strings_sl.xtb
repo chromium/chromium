@@ -13,6 +13,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="1073417869336441572">Pomagajte nam izboljšati Chrome, tako da nam poveste, zakaj ste dovolili piškotke tretjih oseb. <ph name="BEGIN_LINK" />Pošiljanje povratnih informacij<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Zahtevate lahko namizno različico spletnih mest</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
+<translation id="1178015372320901893">Razdelek na dnu zaslona »Moje bližnjice«</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1192844206376121885">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" />.</translation>
@@ -562,6 +563,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7681597159868843240">Spletna mesta običajno uporabljajo tipala gibanja v napravi zaradi funkcij, kot sta navidezna resničnost ali spremljanje telesne pripravljenosti.</translation>
 <translation id="7688240020069572972">Skrivanje kartice z nasveti za Chrome</translation>
 <translation id="7719367874908701697">Povečava/pomanjšava strani</translation>
+<translation id="775043444390799886">Umik dovoljenja</translation>
 <translation id="7759147511335618829">Upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -641,6 +643,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8549127125482561383">Kako prikazati zahteve</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
+<translation id="8580511488901768832">razdelek na dnu zaslona »Moje bližnjice« je odprt pri polni višini</translation>
 <translation id="8593422116412089302">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite uporabo podatkov, ki so jih shranila o vas. Če je ta možnost izklopljena, spletna mesta ne smejo zahtevati, da dovolite uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>

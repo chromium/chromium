@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1058009965971887428">အကြံပြုချက် သတင်းပို့ရန်</translation>
 <translation id="1059120031266247284">သင်နှင့် မျှဝေထားသည်</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">ဖယ်ရှားရန်ခလုတ်ဖြင့် <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1073899992769346247">ဘက်ထရီ လဲပါ (သို့) အားသွင်းပါ</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">တစ်စိတ်တစ်ပိုင်း ပုံဖမ်းယူရန်</translation>
 <translation id="2819276065543622893">သင်ယခု ထွက်ပါမည်။</translation>
 <translation id="2822551631199737692">ကင်မရာ သုံးနေသည်</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည်။</translation>
 <translation id="2825619548187458965">စင်</translation>
 <translation id="2831035692318564937">နေထွက်ချိန်အထိ ဖွင့်ရန်</translation>
 <translation id="2834813915651407382">မကြာသေးမီက ဖွင့်ထားသည်</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: ဖွင့်ပေးနေ...</translation>
 <translation id="6274202259872570803">ဖန်သားပြင် ထုတ်လွှင့်ခြင်း</translation>
 <translation id="6276708887952587684">စာမျက်နှာ အရင်းအမြစ်အား ကြည့်ရန်</translation>
-<translation id="6284232397434400372">ပုံရိပ်ပြတ်သားကိန်း ပြောင်းသွားခြင်း</translation>
 <translation id="6285871695023807425">Calendar တွင် ထည့်ရန်</translation>
 <translation id="6288235558961782912">မိဘခွင့်ပြုချက်ဖြင့် <ph name="USER_EMAIL_ADDRESS" /> ကို နောက်ပိုင်းတွင် ပြန်ထည့်နိုင်သည်။</translation>
 <translation id="6291221004442998378">အားသွင်းမနေပါ</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">ပယ်ချရန်</translation>
 <translation id="6453179446719226835">ဘာသာစကား ပြောင်းထားပါသည်</translation>
 <translation id="6456096448804832585">ဒေါင်လိုက်သာ ရနိုင်သည်</translation>
-<translation id="6459472438155181876"><ph name="DISPLAY_NAME" />သို့ မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="6464094930452079790">ပုံများ</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> အတွက် ဖွင့်ထားသည်</translation>
 <translation id="6468406072297048412">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ ၁ မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625">အစီအစဉ် <ph name="EVENT_TOTAL_COUNT" /> ခုအနက် <ph name="EVENT_POSITION" /> ခု</translation>
 <translation id="8876661425082386199">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
-<translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="8885424115080869847">YouTube Music နှင့် ချိတ်ဆက်၍မရလိုက်ပါ</translation>
 <translation id="888982883502837004">သင့်စက်အတွက် ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ။ ဝင်ကြည့်၍ အပ်ဒိတ်လုပ်ရန် နှိပ်ပါ။</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ကို အပြီးဖျက်လိုက်ပါမည်</translation>

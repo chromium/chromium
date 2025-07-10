@@ -290,7 +290,7 @@
 <translation id="4814736265800133385">Chromium ಅನ್ನು ಖಾತೆಯಿಲ್ಲದೆಯೇ ಬಳಸಿ</translation>
 <translation id="4888717733111232871">mDNS ಟ್ರಾಫಿಕ್‌ಗೆ ಅನುಮತಿಸುವ ನಿಟ್ಟಿನಲ್ಲಿ Chromium ಗೆ ಒಳಬರುವ ನಿಯಮ.</translation>
 <translation id="4893347770495441059">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="4918844574251943176">ಚಿತ್ರವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="4918844574251943176">ಚಿತ್ರವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4943838377383847465">Chromium ಹಿನ್ನೆಲೆ ಮೋಡ್‌ನಲ್ಲಿದೆ.</translation>
 <translation id="494490797786467921">Chromium ಸೈನ್ ಇನ್ ಡೈಲಾಗ್ ಅನ್ನು ಮುಚ್ಚಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4950660488495335294">Chromium ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು Chromium ಗೆ ಸಂಬಂಧಿಸಿದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಂಗತಿಗಳನ್ನು ನೀವು ಪ್ರತ್ಯೇಕವಾಗಿಸಬಹುದು. ಸ್ನೇಹಿತರು ಮತ್ತು ಕುಟುಂಬದವರಿಗಾಗಿ ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ರಚಿಸಿ ಅಥವಾ ಕೆಲಸ ಮತ್ತು ಮೋಜಿನ ವಿಷಯಗಳನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿಸಿ.</translation>
@@ -477,7 +477,7 @@
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="7384121030444253939">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಬದಲಾಗಿ ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
-<translation id="7450541714075000668">ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="7450541714075000668">ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7451052299415159299">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು Chromium ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7458892263350425044">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು, <ph name="BEGIN_LINK" />ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> Chromium ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ನೀಡಿ</translation>
 <translation id="7461356015007898716">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನೀವು Windows 10 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರಬೇಕಾಗುತ್ತದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 7 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
@@ -570,6 +570,7 @@
 <translation id="8648201657708811153">Google Chrome for Testing ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8697124171261953979">ನೀವು Chromium ಪ್ರಾರಂಭಿಸಿದಾಗ ಅಥವಾ ಓಮ್ನಿಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="8704119203788522458">ಇದು ನಿಮ್ಮ Chromium</translation>
+<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8719993436687031146">Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8747073452963259673">ಹುಡುಕಾಟ ಪ್ರದೇಶದ ಕೆಳಗಿನ ಎಡ ಮೂಲೆ: ಎಡಕ್ಕೆ <ph name="LEFT" />%, ಕೆಳಕ್ಕೆ <ph name="BOTTOM" />%</translation>
 <translation id="8768722695577490596">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chromium ನ ಹೊರಗೆ ಮಾತ್ರ ಅಳಿಸಬಹುದು</translation>

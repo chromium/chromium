@@ -855,9 +855,9 @@ Opmerking: Dit beleid heeft alleen invloed op de UI. ChromeOS behoudt de bestaan
 <translation id="1595013560176869154">Als je dit beleid toepast, worden zwakke pincodes toegestaan. Enkele kenmerken van zwakke pincodes: hetzelfde teken (1111), tekens die worden verhoogd met 1 (1234), tekens die worden verlaagd met 1 (4321) en veelgebruikte pincodes. Als je het beleid niet toepast, kunnen gebruikers geen zwakke, makkelijk te raden pincodes instellen.
 
 Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats van een fout) voor een zwakke pincode.</translation>
-<translation id="1596396758769156412">Als je dit beleid niet toepast of niet instelt, weigert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparatuur in de buurt.
+<translation id="1596396758769156412">Als je dit beleid niet toepast of niet instelt, weigert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparaten in de buurt.
 
-Als je dit beleid toepast, accepteert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparatuur in de buurt.
+Als je dit beleid toepast, accepteert je <ph name="PRODUCT_OS_NAME" />-apparaat Just Works-koppelingsverzoeken die worden gestart door bluetooth-randapparaten in de buurt.
 
 Opmerking: Dit beleid wordt pas van kracht nadat een gebruiker is ingelogd en is niet van toepassing op het inlogscherm.</translation>
 <translation id="1597684038583138808">Definitie van Snelle antwoorden aanzetten</translation>
@@ -2532,6 +2532,13 @@ Het rapport bevat de profielstatus en gebruiksinformatie, inclusief maar niet be
 Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2846689894646472396">Snelheid voor checken van netwerkgebeurtenissen in milliseconden.</translation>
 <translation id="2847788524147474533">Platformapparaatbeleid krijgt voorrang op cloud-apparaatbeleid</translation>
+<translation id="284877670305984807">Met dit beleid kunnen gebruikers firmware-updates starten voor de lokale machine in plaats van voor randapparatuur.
+
+      Als je het beleid toepast, kunnen gebruikers zoals de apparaateigenaar firmware-updates starten.
+
+      Als je het beleid niet toepast of niet instelt, kunnen alle gebruikers geen firmware-updates toepassen.
+
+      Dit beleid is van toepassing op firmware voor updates van firmware voor interne componenten voor <ph name="PRODUCT_OS_FLEX_NAME" />-apparaten. Het beleid heeft geen invloed op firmware-updates voor interne componenten voor <ph name="PRODUCT_OS_NAME" />-apparaten.</translation>
 <translation id="2849051159985119151">Fotobewerking met generatieve AI toe zonder AI-modellen te verbeteren.</translation>
 <translation id="2849275596224278787">Toegankelijkheidsopties verbergen in het systeemvakmenu op het inlogscherm</translation>
 <translation id="2853649500575897584">Geen verouderde extensiepunten in het browserproces blokkeren</translation>
@@ -4425,6 +4432,7 @@ Beëindigd: De functie Pakket volgen is uitgezet sinds M132 en dit beleid heeft 
 <translation id="4192388905594723944">URL voor het valideren van verificatietoken voor client voor externe toegang</translation>
 <translation id="4195119404667420672">SpeculationRules-prefetch kan naar URL's worden gestuurd die door ServiceWorker worden beheerd.</translation>
 <translation id="4195698007674066525">Standaard een numeriek toetsenbord tonen voor wachtwoordinvoer</translation>
+<translation id="4198531346233984110">Beperkte user-agent.</translation>
 <translation id="4203055629055264833">Als je dit beleid toepast of niet instelt, kunnen gebruikers de meest recente resultatenpagina van de standaard zoekmachine in een zijvenster tonen door een icoon in de werkbalk aan/uit te zetten.
 
       Als je dit beleid niet toepast, wordt het icoon waarmee het zijvenster met de resultatenpagina van de standaard zoekmachine kan worden geopend, uit de werkbalk verwijderd.</translation>
@@ -5815,6 +5823,8 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
       Als je het beleid niet toepast, wordt gebruikers niet om een wachtwoord gevraagd om het apparaat te ontgrendelen.
 
       Als je het beleid niet instelt, kunnen gebruikers zelf kiezen of ze een wachtwoord moeten invoeren om het apparaat te ontgrendelen.</translation>
+<translation id="5194337341464164678">De HTTP-verzoekheader <ph name="USER_AGENT_HEADER_NAME" /> was standaard beperkt sinds Chrome 110 en de proefperiode voor beëindiging is beëindigd na Chrome 113. Als je gedetailleerde platforminformatie wilt blijven krijgen, migreer je naar User-Agent Client Hints. Dit is een vervanging voor de beëindigde gedetailleerde User-Agent-header: https://web.dev/articles/migrate-to-ua-ch
+      </translation>
 <translation id="5194683382395300627">Toestaan dat <ph name="ASSISTANT_PRODUCT_NAME" /> wordt gebruikt op internet, bijvoorbeeld om wachtwoorden automatisch te wijzigen</translation>
 <translation id="5196630732055960309">De File Handling API toestaan voor deze web-apps</translation>
 <translation id="5205352023880027050">De functie EphemeralNetworkPolicies niet aanzetten.</translation>
@@ -9409,6 +9419,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> overschrijft dit beleid als het is opgegeven.</translation>
 <translation id="7630403270894231662">Gebruik WeeklyTimeChecked in nieuwe code.</translation>
+<translation id="7631736894032434210">Gebruikers toestaan interne firmware-updates te starten</translation>
 <translation id="7632147323011514740">Intervallen wanneer het updateproces voor momentopnamen van ARC-gegevens kan worden gestart voor beheerde gastsessies</translation>
 <translation id="7632724434767231364">Naam van GSSAPI-bibliotheek</translation>
 <translation id="7635106595080609261">Als je dit beleid toepast of niet instelt, kan Chrome dialoogvensters voor het selecteren van bestanden bekijken en kunnen gebruikers deze openen.
@@ -10081,6 +10092,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8168359201203671567">Regenboogachtergrondverlichting van toetsenbord</translation>
 <translation id="8169452762291746260">Controle van apparaatstatus uitzetten</translation>
 <translation id="8170359860920320269">Sites filteren op content voor volwassenen</translation>
+<translation id="8170672421195760161">Volledige (verouderde) user-agent.</translation>
 <translation id="8171262216089271568">Grote cursor op het inlogscherm aanzetten</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="81724933026241365">Gebruikers toestaan het apparaat uit te zetten met het icoon Uitzetten of de aan/uit-knop</translation>

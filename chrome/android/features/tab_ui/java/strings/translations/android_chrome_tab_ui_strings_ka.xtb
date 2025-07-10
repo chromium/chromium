@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის გაზიარება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის გაზიარება}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{განახლდა <ph name="NUM_YEARS_ONE" /> წლის წინ}other{განახლდა <ph name="NUM_YEARS_MANY" /> წლის წინ}}</translation>
 <translation id="7773714564112603605">ჩანართის ამოშლა და ჯგუფის წაშლა</translation>
+<translation id="7774428938729954687">ჩანართის „<ph name="TAB_TITLE" />“ აღდგენა და გახსნა</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
 <translation id="7792860826279960128">საზიარო ჩანართების ჯგუფის ცვლილების შესახებ შეტყობინება ნახევარ სიმაღლეზე</translation>
 <translation id="7825973332242257878">ჩანართების ჯგუფები</translation>

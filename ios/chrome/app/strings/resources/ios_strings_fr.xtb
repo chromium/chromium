@@ -1511,7 +1511,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6979737339423435258">Depuis le début</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6987201788018524855">Découvrez des fonctionnalités utiles que vous avez manquées</translation>
-<translation id="6989636517316575338">Posez une question concernant n'importe quelle page</translation>
+<translation id="6989636517316575338">Posez une question à propos de n'importe quelle page</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Suivez les prix de produits et recevez des alertes en cas de baisse de prix sur un site</translation>
 <translation id="7004032350256606903">Votre organisation exige que vous utilisiez le mode navigation privée.
@@ -1771,7 +1771,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
-<translation id="8069168488983557089">Obtenez les points et informations clés pour comprendre n'importe quel sujet</translation>
+<translation id="8069168488983557089">Obtenez des informations et des points clés pour comprendre n'importe quel sujet</translation>
 <translation id="8069394452933076548">Indiquez quand déplacer les onglets non utilisés récemment vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -2082,7 +2082,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9206887540681440657">Vitesse</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
 <translation id="926455622548529175">Changer et supprimer</translation>
-<translation id="927162192666499119">Les données de votre organisation sont privées et sécurisées</translation>
 <translation id="929748059769569925">Texte en surbrillance</translation>
 <translation id="932305336591073205">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="932327136139879170">Accueil</translation>

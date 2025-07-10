@@ -312,6 +312,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amuebladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
+<translation id="1527490370616010873">Google no es tu proveedor de autocompletado. Si quieres habilitar estos ajustes y usar la información para pagos de tu cuenta de Google, ve a <ph name="BEGIN_LINK" />Configuración de los servicios de autocompletado<ph name="END_LINK" />.</translation>
 <translation id="1528311629279578926">La conexión está bloqueada porque la ha iniciado una página pública para conectarse a dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio web al que estás intentando acceder parece falso. Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
@@ -1117,6 +1118,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2902312830803030883">Más acciones</translation>
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="290376772003165898">¿La página no está en <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Tu organización limita lo que puedes compartir</translation>
 <translation id="2905107382358353958">Alerta sobre nueva configuración de pago</translation>
 <translation id="2909946352844186028">Se ha detectado un cambio de red.</translation>
 <translation id="2911255567212929079">Aprendizaje automático e inteligencia artificial</translation>
@@ -4708,6 +4710,7 @@ Más información:
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
 <translation id="8982884016487650216">Se ha terminado de cargar el PDF</translation>
 <translation id="8983369100812962543">Ahora puedes cambiar el tamaño de la aplicación</translation>
+<translation id="8984785270737450103">La opción para compartir está desactivada</translation>
 <translation id="8985112471026018799">Guarda la tarjeta para comprar más rápido</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para ver tu historial de navegación en Chrome</translation>
 <translation id="8987663052629670333">Servicios de impresión fotográfica</translation>

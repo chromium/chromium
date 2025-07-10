@@ -2413,7 +2413,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2646132387794831258">Да се запази ли в папка в профила ви в Google?</translation>
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодиране Base64, верига сертификати</translation>
-<translation id="2650114513545328141">Включено • Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили. Можете също да задавате въпроси и да получавате отговори въз основа на нея</translation>
 <translation id="2651259505411913186">Да, отделяне на данните ми от училищните</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} парола ще се запази само на това устройство. За да я използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете я в профила си в Google<ph name="END_LINK" />.}other{{COUNT} пароли ще се запазят само на това устройство. За да ги използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете ги в профила си в Google<ph name="END_LINK" />.}}</translation>
@@ -3010,7 +3009,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3053013834507634016">Използване на ключа на сертификата</translation>
 <translation id="3053273573829329829">Активиране на ПИН на потребителя</translation>
 <translation id="3053274730492362225">Без мигане</translation>
-<translation id="3054011216223858553">Изключено • Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили</translation>
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3058517085907878899">Задаване на име на устройството</translation>
 <translation id="3060952009917586498">Променете езика на устройството. Текущият е <ph name="LANGUAGE" />.</translation>
@@ -4274,6 +4272,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3933121352599513978">Свиване на нежеланите заявки (препоръчително)</translation>
 <translation id="3936260554100916852">„<ph name="DEVICE_NAME" />“ споделя с вас данните за Wi-Fi мрежа.</translation>
 <translation id="3936390757709632190">&amp;Отваряне на аудиоклипа в нов раздел</translation>
+<translation id="3937110354160507845">Това приложение отвори <ph name="OPENINGS_COUNT" /> нови прозореца или раздела в Chrome. Можете да управлявате това поведение от разрешението „Изскачащи прозорци и пренасочвания“.</translation>
 <translation id="3937640725563832867">Алтернативно име на издателя на сертификата</translation>
 <translation id="3937734102568271121">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Устройства от <ph name="VENDOR_ID" /></translation>
@@ -6038,6 +6037,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="520568280985468584">Мобилната мрежа е добавена успешно. Активирането ѝ може да отнеме няколко минути.</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> иска да провери дали използвате отговарящо на условията устройство с Chrome OS.</translation>
+<translation id="5208722776934437424">Промяна на разрешенията</translation>
 <translation id="5208926629108082192">Информация за мобилната мрежа на устройството</translation>
 <translation id="5208988882104884956">С половин ширина</translation>
 <translation id="5209320130288484488">Няма намерени устройства</translation>
@@ -8428,7 +8428,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6933321725007230600">Включване на &amp;синхронизирането...</translation>
 <translation id="693459579445775904">Гласовите файлове са общи за потребителите с цел пестене на място на диска</translation>
 <translation id="6935031746833428401">Научете повече за управлението на устройства</translation>
-<translation id="6935125916377656496">Изключено • Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили. Можете също да задавате въпроси и да получавате отговори въз основа на нея</translation>
 <translation id="6935286146439255109">Липсва тава за хартия</translation>
 <translation id="6938386202199793006">Имате 1 запазен принтер.</translation>
 <translation id="6938606182859551396">За да получавате на устройството си <ph name="DEVICE_TYPE" /> известия от телефона си, изпълнете инструкциите на телефона, така че да предоставите на услугите за Google Play достъп до известията.</translation>
@@ -8934,7 +8933,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7314989823816739632">Романтично</translation>
 <translation id="7317342082064136423">Потвърдете профила си</translation>
 <translation id="7317831949569936035">Регистриране в учебно заведение</translation>
-<translation id="731827437403763009">Нововъведения с AI</translation>
+<translation id="731827437403763009">Иновации с AI</translation>
 <translation id="7319320447721994672">Ако посетите сайт, който използва „бисквитки“, може да се наложи временно да активирате „бисквитките“, така че всички функции на сайта да работят.</translation>
 <translation id="7319983568955948908">Спиране на споделянето</translation>
 <translation id="7320213904474460808">Мрежа по подразбиране</translation>
@@ -9161,7 +9160,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7466431077154602932">Компактен изглед</translation>
 <translation id="7466861475611330213">Стил на пунктуацията</translation>
 <translation id="746861123368584540">Разширението е заредено</translation>
-<translation id="7469612367552312334">Включено • Използвайте общ език, за да търсите в историята си на сърфиране и да намирате сайтове, които сте посетили</translation>
 <translation id="7470131554696493512">Блокиране на аксесоарите с Thunderbolt или USB4 така, че да не могат да осъществяват достъп до паметта (RAM) и да я споделят</translation>
 <translation id="7470274830728993952">Присъединяване към група раздели</translation>
 <translation id="7470284766345262333">Този профил не е свързан с Google, затова функции като „Синхронизиране в Chrome“ не са налице</translation>
@@ -11599,6 +11597,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9128335130883257666">Отваряне на страницата с настройки за <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Свързване към мрежа</translation>
 <translation id="9129562557082598582">Експортиране на всички <ph name="CERT_GROUP" /></translation>
+<translation id="9129857793923570143"><ph name="APP_NAME" /> отвори няколко прозореца.</translation>
 <translation id="9130015405878219958">Въведен е невалиден режим.</translation>
 <translation id="9130135798965366513">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />общите условия<ph name="END_LINK2" /> на сайта.</translation>
 <translation id="9130208109420587135">Редактиране на името на групата „<ph name="NAME" />“</translation>

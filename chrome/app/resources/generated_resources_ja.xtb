@@ -2398,7 +2398,6 @@
 <translation id="2646132387794831258">Google アカウントのフォルダに保存しますか？</translation>
 <translation id="264897126871533291">第一色弱</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
-<translation id="2650114513545328141">オン • 普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。</translation>
 <translation id="2651259505411913186">はい、自分のデータを学校用とは別に保持します</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}}</translation>
@@ -2995,7 +2994,6 @@
 <translation id="3053013834507634016">証明書キーの用途</translation>
 <translation id="3053273573829329829">ユーザー PIN を有効にする</translation>
 <translation id="3053274730492362225">点滅なし</translation>
-<translation id="3054011216223858553">オフ • 普段使う表現で閲覧履歴やアクセスしたサイトを検索します</translation>
 <translation id="3058498974290601450">同期は設定でいつでもオンにできます。</translation>
 <translation id="3058517085907878899">デバイス名を指定します</translation>
 <translation id="3060952009917586498">デバイスの言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
@@ -4255,6 +4253,7 @@
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> から Wi-Fi ネットワークが共有されています</translation>
 <translation id="3936390757709632190">オーディオを新しいタブで開く(&amp;O)</translation>
+<translation id="3937110354160507845">このアプリによって <ph name="OPENINGS_COUNT" /> 個の新しい Chrome ウィンドウまたはタブが開かれました。この動作は [ポップアップとリダイレクト] の権限で管理できます。</translation>
 <translation id="3937640725563832867">証明書の発行元の代替名</translation>
 <translation id="3937734102568271121"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="3938128855950761626">ベンダー <ph name="VENDOR_ID" /> のデバイス</translation>
@@ -6014,6 +6013,7 @@
 <translation id="520568280985468584">ネットワークを追加しました。モバイル ネットワークが有効になるまでに数分かかる場合があります。</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> により、ご使用の ChromeOS デバイスが対象かどうかの確認が行われます。</translation>
+<translation id="5208722776934437424">権限を変更</translation>
 <translation id="5208926629108082192">デバイスのモバイル ネットワーク情報</translation>
 <translation id="5208988882104884956">半角</translation>
 <translation id="5209320130288484488">デバイスが見つかりませんでした</translation>
@@ -8399,7 +8399,6 @@
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>
 <translation id="693459579445775904">ディスク容量を節約するため、音声ファイルはユーザー間で共有されます。</translation>
 <translation id="6935031746833428401">デバイス管理の詳細</translation>
-<translation id="6935125916377656496">オフ • 普段使う表現で閲覧履歴やアクセスしたサイトを検索できます。閲覧履歴に関する質問を行って回答を取得することもできます。</translation>
 <translation id="6935286146439255109">用紙トレイが見つかりません</translation>
 <translation id="6938386202199793006">保存済みのプリンタは 1 件です。</translation>
 <translation id="6938606182859551396">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信するには、スマートフォンの画面の指示に沿って、Google Play 開発者サービスへの通知アクセスを許可してください。</translation>
@@ -9132,7 +9131,6 @@
 <translation id="7466431077154602932">コンパクト表示</translation>
 <translation id="7466861475611330213">句読点のスタイル</translation>
 <translation id="746861123368584540">拡張機能を読み込みました</translation>
-<translation id="7469612367552312334">オン • 普段使う表現で閲覧履歴やアクセスしたサイトを検索します</translation>
 <translation id="7470131554696493512">Thunderbolt または USB4 アクセサリーによるメモリ（RAM）へのアクセスとメモリの共有をブロックする</translation>
 <translation id="7470274830728993952">タブグループに参加</translation>
 <translation id="7470284766345262333">このアカウントは Google に関連付けられていないため、Chrome 同期などの機能は使用できません</translation>
@@ -11569,6 +11567,7 @@
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> の設定ページを開く</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9129562557082598582"><ph name="CERT_GROUP" /> をすべてエクスポート</translation>
+<translation id="9129857793923570143"><ph name="APP_NAME" /> が複数のウィンドウを開きました。</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
 <translation id="9130135798965366513">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに<ph name="FIELDS_STRING" />が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />利用規約<ph name="END_LINK2" />をご確認ください。</translation>
 <translation id="9130208109420587135">グループ名 <ph name="NAME" /> を編集</translation>

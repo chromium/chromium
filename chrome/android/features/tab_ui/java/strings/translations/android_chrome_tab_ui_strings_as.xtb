@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছৰ পূৰ্বে আপডে’ট কৰা হৈছে}one{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে আপডে’ট কৰা হৈছে}other{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে আপডে’ট কৰা হৈছে}}</translation>
 <translation id="7773714564112603605">টেবটো আঁতৰাওক আৰু গোটটো মচি পেলাওক</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> টেব পুনৰুদ্ধাৰ কৰক আৰু খোলক</translation>
 <translation id="7792771145871471484">পৰামৰ্শসমূহ পৰ্যালোচনা কৰক।</translation>
 <translation id="7792860826279960128">অৰ্ধ উচ্চতাত শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহৰ বিষয়ে জাননী</translation>
 <translation id="7825973332242257878">টেবৰ গোট</translation>

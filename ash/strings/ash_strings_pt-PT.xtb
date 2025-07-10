@@ -21,7 +21,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1058009965971887428">Enviar feedback</translation>
 <translation id="1059120031266247284">Partilhados consigo</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> com botão Remover</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
@@ -540,7 +539,6 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
 <translation id="2822551631199737692">A câmara está a ser usada</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não suporta <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Prateleira</translation>
 <translation id="2831035692318564937">Ativado até ao nascer do sol</translation>
 <translation id="2834813915651407382">Aberto recentemente</translation>
@@ -1638,7 +1636,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: a ativar...</translation>
 <translation id="6274202259872570803">Gravação de ecrã</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
-<translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6285871695023807425">Adicionar ao Calendário</translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
@@ -1686,7 +1683,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
 <translation id="6453179446719226835">O idioma foi alterado</translation>
 <translation id="6456096448804832585">Apenas vertical disponível</translation>
-<translation id="6459472438155181876">A prolongar ecrã para <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imagens</translation>
 <translation id="6467290994038932560">Ativado para <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 minuto}other{Atualize o dispositivo para a versão anterior dentro de # minutos}}</translation>
@@ -2418,7 +2414,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verifique a sua ligação</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
-<translation id="8878886163241303700">Ecrã alargado</translation>
 <translation id="8885424115080869847">Não foi possível ligar ao YouTube Music</translation>
 <translation id="888982883502837004">Estão disponíveis atualizações de firmware para o seu dispositivo. Clique para rever e atualizar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> será eliminado permanentemente</translation>

@@ -21,7 +21,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1058009965971887428">Laporkan maklum balas</translation>
 <translation id="1059120031266247284">Dikongsi dengan anda</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> dengan butang alih keluar</translation>
 <translation id="1062407476771304334">Gantikan</translation>
 <translation id="1073899992769346247">Gantikan atau cas semula bateri</translation>
@@ -540,7 +539,6 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2814448776515246190">Tangkapan separa</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2831035692318564937">Dihidupkan sehingga matahari terbit</translation>
 <translation id="2834813915651407382">Dibuka baru-baru ini</translation>
@@ -1638,7 +1636,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Rakaman skrin</translation>
 <translation id="6276708887952587684">Lihat sumber halaman</translation>
-<translation id="6284232397434400372">Peleraian ditukar</translation>
 <translation id="6285871695023807425">Tambahkan pada Calendar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> boleh ditambahkan semula kemudian dengan kebenaran ibu bapa.</translation>
 <translation id="6291221004442998378">Tidak mengecas</translation>
@@ -1686,7 +1683,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="6452181791372256707">Tolak</translation>
 <translation id="6453179446719226835">Bahasa telah ditukar</translation>
 <translation id="6456096448804832585">Hanya potret tersedia</translation>
-<translation id="6459472438155181876">Melanjutkan skrin ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imej</translation>
 <translation id="6467290994038932560">Dihidupkan untuk <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 minit}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # minit}}</translation>
@@ -2418,7 +2414,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8876148469852588625">Acara <ph name="EVENT_POSITION" /> daripada <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>
 <translation id="8877788021141246043">Tetapkan peringatan</translation>
-<translation id="8878886163241303700">Meluaskan skrin</translation>
 <translation id="8885424115080869847">Tidak dapat disambungkan kepada YouTube Music</translation>
 <translation id="888982883502837004">Kemaskinian Perisian tegar tersedia untuk peranti anda. Klik untuk menyemak dan mengemas kini.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dipadamkan secara kekal</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Κοινοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κοινοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Έγινε ενημέρωση πριν από <ph name="NUM_YEARS_ONE" /> χρόνο}other{Έγινε ενημέρωση πριν από <ph name="NUM_YEARS_MANY" /> χρόνια}}</translation>
 <translation id="7773714564112603605">Κατάργηση καρτέλας και διαγραφή ομάδας</translation>
+<translation id="7774428938729954687">Επαναφορά και άνοιγμα καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Έλεγχος των προτάσεων.</translation>
 <translation id="7792860826279960128">Ειδοποίηση σχετικά με τις αλλαγές στην κοινόχρηστη ομάδα καρτελών στο μισό ύψος</translation>
 <translation id="7825973332242257878">Ομάδες καρτελών</translation>

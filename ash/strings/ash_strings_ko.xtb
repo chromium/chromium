@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">경고</translation>
 <translation id="1058009965971887428">의견 보내기</translation>
 <translation id="1059120031266247284">나와 공유됨</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">삭제 버튼이 있는 <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1073899992769346247">배터리를 교체하거나 충전해 주세요.</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">부분 캡처</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다.</translation>
 <translation id="2825619548187458965">앱 표시줄</translation>
 <translation id="2831035692318564937">일출까지 켜기</translation>
 <translation id="2834813915651407382">최근에 열림</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: 활성화 중...</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
 <translation id="6276708887952587684">페이지 소스 보기</translation>
-<translation id="6284232397434400372">해상도가 변경됨</translation>
 <translation id="6285871695023807425">Calendar에 추가</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />은(는) 나중에 부모님의 허락을 받아 다시 추가할 수 있습니다.</translation>
 <translation id="6291221004442998378">충전 안함</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">거부</translation>
 <translation id="6453179446719226835">언어가 변경됨</translation>
 <translation id="6456096448804832585">세로 모드만 지원됩니다.</translation>
-<translation id="6459472438155181876">화면을 <ph name="DISPLAY_NAME" />(으)로 확장</translation>
 <translation id="6464094930452079790">이미지</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" />에 사용 설정됨</translation>
 <translation id="6468406072297048412">{0,plural, =1{1분 이내에 기기를 이전 버전으로 업데이트하세요}other{#분 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
@@ -1931,7 +1927,7 @@
 <translation id="7302889331339392448">실시간 자막이 꺼져 있습니다.</translation>
 <translation id="7303365578352795231">다른 기기에서 응답 중입니다.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7311244614769792472">검색결과 없음</translation>
+<translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7312761820869643657">기기를 이전 버전으로 업데이트</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625">일정 <ph name="EVENT_TOTAL_COUNT" />개 중 <ph name="EVENT_POSITION" />번째</translation>
 <translation id="8876661425082386199">연결 상태 확인</translation>
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
-<translation id="8878886163241303700">화면 확대</translation>
 <translation id="8885424115080869847">YouTube Music에 연결할 수 없음</translation>
 <translation id="888982883502837004">이용할 수 있는 기기 펌웨어 업데이트가 있습니다. 클릭하여 확인한 후 업데이트하세요.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 템플릿이 완전히 삭제됩니다.</translation>

@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1058009965971887428">تاثرات کی رپورٹ کریں</translation>
 <translation id="1059120031266247284">آپ کے ساتھ اشتراک کردہ</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176">ہٹائیں بٹن والا <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1073899992769346247">بیٹری کو تبدیل یا ریچارج کریں</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">جزوی کیپچر</translation>
 <translation id="2819276065543622893">آپ اب سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="2822551631199737692">کیمرہ استعمال میں ہے</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔</translation>
 <translation id="2825619548187458965">شیلف</translation>
 <translation id="2831035692318564937">طلوع آفتاب تک آن کریں</translation>
 <translation id="2834813915651407382">حال ہی میں کھولا گیا</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: فعال کیا جا رہا ہے…</translation>
 <translation id="6274202259872570803">اسکرین کاسٹ</translation>
 <translation id="6276708887952587684">صفحہ کا ماخذ دیکھیں</translation>
-<translation id="6284232397434400372">ریزولیوشن تبدیل ہو گئی</translation>
 <translation id="6285871695023807425">کیلنڈر میں شامل کریں</translation>
 <translation id="6288235558961782912">والد/والدہ کی اجازت سے <ph name="USER_EMAIL_ADDRESS" /> بعد میں دوبارہ شامل کیا جا سکتا ہے۔</translation>
 <translation id="6291221004442998378">چارج نہیں ہو رہا ہے</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">مسترد کریں</translation>
 <translation id="6453179446719226835">زبان تبدیل ہو گئی ہے</translation>
 <translation id="6456096448804832585">صرف پورٹریٹ دستیاب ہے</translation>
-<translation id="6459472438155181876">اسکرین کو <ph name="DISPLAY_NAME" /> میں پھیلایا جا رہا ہے</translation>
 <translation id="6464094930452079790">تصاویر</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> کے لیے آن ہے</translation>
 <translation id="6468406072297048412">{0,plural, =1{1 منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
@@ -2417,7 +2413,6 @@
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" /> از <ph name="EVENT_TOTAL_COUNT" /> ایونٹ</translation>
 <translation id="8876661425082386199">اپنا کنکشن چیک کریں</translation>
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
-<translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
 <translation id="8885424115080869847">‏‫YouTube Music سے منسلک نہیں ہو سکا</translation>
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>

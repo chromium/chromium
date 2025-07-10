@@ -21,7 +21,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1058009965971887428">Enviar comentarios</translation>
 <translation id="1059120031266247284">Compartido contigo</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> co botón de quitar</translation>
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1073899992769346247">Substitúe ou carga a batería</translation>
@@ -540,7 +539,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
 <translation id="2822551631199737692">Estase utilizando a cámara</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2831035692318564937">Activado ata o amencer</translation>
 <translation id="2834813915651407382">Abriuse recentemente</translation>
@@ -1639,7 +1637,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
 <translation id="6274202259872570803">Gravación da pantalla</translation>
 <translation id="6276708887952587684">Consulta a fonte da páxina</translation>
-<translation id="6284232397434400372">Cambiouse a resolución</translation>
 <translation id="6285871695023807425">Engadir a Calendar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>
 <translation id="6291221004442998378">Non está cargando</translation>
@@ -1687,7 +1684,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6452181791372256707">Rexeitar</translation>
 <translation id="6453179446719226835">Cambiouse o idioma</translation>
 <translation id="6456096448804832585">Só está dispoñible en vertical</translation>
-<translation id="6459472438155181876">Ampliando pantalla a <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imaxes</translation>
 <translation id="6467290994038932560">Activados para <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 minuto}other{Restaura a versión anterior no dispositivo no prazo de # minutos}}</translation>
@@ -2419,7 +2415,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Comproba a conexión</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
-<translation id="8878886163241303700">Ampliando a pantalla</translation>
 <translation id="8885424115080869847">Non se puido establecer a conexión con YouTube Music</translation>
 <translation id="888982883502837004">Hai actualizacións de firmware dispoñibles para o teu dispositivo. Fai clic para revisalas e instalalas.</translation>
 <translation id="8896630965521842259">Eliminarase <ph name="DESK_TEMPLATE_NAME" /> de forma permanente</translation>

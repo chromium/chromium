@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">Զգուշացում</translation>
 <translation id="1058009965971887428">Ուղարկել կարծիք</translation>
 <translation id="1059120031266247284">Կիսվել են ձեզ հետ</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />՝ <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> հեռացնել կոճակով</translation>
 <translation id="1062407476771304334">Փոխարինել</translation>
 <translation id="1073899992769346247">Փոխարինեք կամ լիցքավորեք մարտկոցը</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">Էկրանի մի մասի տեսագրում</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="2822551631199737692">Տեսախցիկը ներկայումս օգտագործվում է</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։</translation>
 <translation id="2825619548187458965">Դարակ</translation>
 <translation id="2831035692318564937">Միացված է մինչև մայրամուտ</translation>
 <translation id="2834813915651407382">Վերջերս բացել եք</translation>
@@ -1638,7 +1636,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
-<translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
 <translation id="6285871695023807425">Ավելացնել Օրացույցում</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>
 <translation id="6291221004442998378">Չի լիցքավորվում</translation>
@@ -1686,7 +1683,6 @@
 <translation id="6452181791372256707">Մերժել</translation>
 <translation id="6453179446719226835">Լեզուն փոխվել է</translation>
 <translation id="6456096448804832585">Հասանելի է միայն ուղղաձիգ ռեժիմը</translation>
-<translation id="6459472438155181876">Էկրանի ընդլայնում մինչև <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">պատկերներ</translation>
 <translation id="6467290994038932560">Միացված է <ph name="GAME_APP_NAME" /> խաղի համար</translation>
 <translation id="6468406072297048412">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 րոպեի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}}</translation>
@@ -2418,7 +2414,6 @@
 <translation id="8876148469852588625">Միջոցառում <ph name="EVENT_POSITION" />՝ <ph name="EVENT_TOTAL_COUNT" />-ից</translation>
 <translation id="8876661425082386199">Ստուգեք ձեր կապը</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
-<translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
 <translation id="8885424115080869847">Չհաջողվեց միանալ YouTube Music-ին</translation>
 <translation id="888982883502837004">Ձեր սարքի համար հասանելի են ներկառուցված ծրագրի թարմացումներ։ Սեղմեք՝ դրանք տեսնելու և թարմացնելու համար։</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-ն ընդմիշտ կջնջվի</translation>

@@ -1941,6 +1941,7 @@
 <translation id="2328561734797404498">請重新啟動裝置以使用「<ph name="APP_NAME" />」。</translation>
 <translation id="2328636661627946415">使用無痕模式時，網站只能使用 Cookie 查看你在該網站上的瀏覽活動。無痕模式工作階段結束時，系統就會刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
+<translation id="2330182457402792918">選取這個網站可讀取的檔案</translation>
 <translation id="2331334586452217517">這個網站的內容會傳送給 Google，並可能交由專人審查。關於<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="2332115969598251205">無法載入已儲存到 <ph name="PRIMARY_EMAIL" /> 的裝置，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="2332131598580221120">前往商店查看</translation>
@@ -2403,7 +2404,6 @@
 <translation id="2646132387794831258">要儲存到 Google 帳戶的資料夾嗎？</translation>
 <translation id="264897126871533291">紅色弱</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
-<translation id="2650114513545328141">開啟 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站。你也可以提出問題，系統會根據瀏覽記錄提供解答</translation>
 <translation id="2651259505411913186">是，請將我的個人資料與學校資料分開</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2652071759203138150">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}other{這 {COUNT} 個密碼只會儲存到這部裝置。如要在其他裝置上使用，請<ph name="BEGIN_LINK" />儲存到 Google 帳戶<ph name="END_LINK" />。}}</translation>
@@ -3000,7 +3000,6 @@
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
-<translation id="3054011216223858553">關閉 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
@@ -4260,6 +4259,7 @@
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> 正在與你共用 Wi-Fi 網路</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效(&amp;O)</translation>
+<translation id="3937110354160507845">這個應用程式已開啟 <ph name="OPENINGS_COUNT" /> 個新的 Chrome 視窗或分頁。你可以透過「彈出式視窗與重新導向」權限管理這個行為。</translation>
 <translation id="3937640725563832867">憑證發行者替代名稱</translation>
 <translation id="3937734102568271121">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">來自供應商 <ph name="VENDOR_ID" /> 的裝置</translation>
@@ -6022,6 +6022,7 @@
 <translation id="520568280985468584">已成功新增網路。行動網路可能要過幾分鐘才會啟用。</translation>
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想要確認你是否使用合格的 Chrome OS 裝置。</translation>
+<translation id="5208722776934437424">變更權限</translation>
 <translation id="5208926629108082192">裝置行動網路資訊</translation>
 <translation id="5208988882104884956">半形</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
@@ -8406,7 +8407,6 @@
 <translation id="6933321725007230600">開啟同步功能(&amp;S)...</translation>
 <translation id="693459579445775904">為節省磁碟空間，裝置使用者會共用語音檔案</translation>
 <translation id="6935031746833428401">進一步瞭解裝置管理功能</translation>
-<translation id="6935125916377656496">關閉 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站。你也可以提出問題，系統會根據瀏覽記錄提供解答</translation>
 <translation id="6935286146439255109">找不到紙匣</translation>
 <translation id="6938386202199793006">你有 1 台已儲存的印表機。</translation>
 <translation id="6938606182859551396">如要透過 <ph name="DEVICE_TYPE" /> 接收手機的通知，請按照手機上的指示操作，將通知存取權授予 Google Play 服務。</translation>
@@ -8787,6 +8787,7 @@
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7223027547122518521">選取這個網站可讀取的檔案</translation>
 <translation id="7223952304612664117">系統服務將可使用「定位精確度」判斷你的位置。「定位精確度」會根據無線訊號和感應器的相關資訊，估算出裝置位置。</translation>
 <translation id="7225082563376899794">填入密碼時使用 Windows Hello 驗證</translation>
 <translation id="7225179976675429563">找不到網路類型</translation>
@@ -9137,7 +9138,6 @@
 <translation id="7466431077154602932">密集檢視</translation>
 <translation id="7466861475611330213">標點符號樣式</translation>
 <translation id="746861123368584540">已載入擴充功能</translation>
-<translation id="7469612367552312334">開啟 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件存取及共享記憶體 (RAM)</translation>
 <translation id="7470274830728993952">加入分頁群組</translation>
 <translation id="7470284766345262333">這個帳戶未與 Google 建立關聯，因此無法使用 Chrome 同步等功能</translation>
@@ -9924,6 +9924,7 @@
 <translation id="8000020256436988724">工具列</translation>
 <translation id="800117767980299235">醒目顯示朗讀進度</translation>
 <translation id="8002274832045662704">進階印表機設定</translation>
+<translation id="8002597610026749658">Chrome 可產生以下語言的字幕</translation>
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
 <translation id="8004092996156083991">如果密碼外洩，我們會通知你。</translation>
 <translation id="8004507136466386272">字詞</translation>
@@ -11574,6 +11575,7 @@
 <translation id="9128335130883257666">開啟<ph name="INPUT_METHOD_NAME" />的設定頁面</translation>
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9129562557082598582">匯出所有<ph name="CERT_GROUP" /></translation>
+<translation id="9129857793923570143">「<ph name="APP_NAME" />」已開啟多個視窗。</translation>
 <translation id="9130015405878219958">輸入的模式無效。</translation>
 <translation id="9130135798965366513">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。詳情請查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="9130208109420587135">編輯群組名稱「<ph name="NAME" />」</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Kongsi <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Kongsi <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Dikemaskinikan <ph name="NUM_YEARS_ONE" /> tahun yang lalu}other{Dikemaskinikan <ph name="NUM_YEARS_MANY" /> tahun yang lalu}}</translation>
 <translation id="7773714564112603605">Alih keluar tab dan padamkan kumpulan</translation>
+<translation id="7774428938729954687">Pulihkan dan buka tab <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Semak cadangan.</translation>
 <translation id="7792860826279960128">Notis tentang perubahan Kumpulan Tab Kongsi pada separuh ketinggian</translation>
 <translation id="7825973332242257878">Kumpulan tab</translation>

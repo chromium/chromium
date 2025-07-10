@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Поділитися <ph name="TABS_COUNT_ONE" /> вибраною вкладкою}one{Поділитися <ph name="TABS_COUNT_MANY" /> вибраною вкладкою}few{Поділитися <ph name="TABS_COUNT_MANY" /> вибраними вкладками}many{Поділитися <ph name="TABS_COUNT_MANY" /> вибраними вкладками}other{Поділитися <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Оновлено <ph name="NUM_YEARS_ONE" /> рік тому}one{Оновлено <ph name="NUM_YEARS_MANY" /> рік тому}few{Оновлено <ph name="NUM_YEARS_MANY" /> роки тому}many{Оновлено <ph name="NUM_YEARS_MANY" /> років тому}other{Оновлено <ph name="NUM_YEARS_MANY" /> року тому}}</translation>
 <translation id="7773714564112603605">Вилучити вкладку й видалити групу</translation>
+<translation id="7774428938729954687">Відновити й відкрити вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7792771145871471484">Переглянути ці вкладки.</translation>
 <translation id="7792860826279960128">Сповіщення про зміни в спільній групі вкладок відкрито на половину висоти</translation>
 <translation id="7825973332242257878">Групи вкладок</translation>

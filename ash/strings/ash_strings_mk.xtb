@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1058009965971887428">Пријавување повратни информации</translation>
 <translation id="1059120031266247284">Споделено со вас</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> со копче за отстранување</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1073899992769346247">Заменете ја или наполнете ја батеријата</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">Делумно снимање</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
 <translation id="2822551631199737692">Камерата е во употреба</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата е сменета во <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
 <translation id="2831035692318564937">Вклучено до изгрејсонце</translation>
 <translation id="2834813915651407382">Отворено неодамна</translation>
@@ -1639,7 +1637,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: Се активира...</translation>
 <translation id="6274202259872570803">Снимка на екран</translation>
 <translation id="6276708887952587684">Прегледајте го изворот на страницата</translation>
-<translation id="6284232397434400372">Резолуцијата е променета</translation>
 <translation id="6285871695023807425">Додајте во „Календар“</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> може повторно да се додаде подоцна со дозвола од родителот.</translation>
 <translation id="6291221004442998378">Не се полни</translation>
@@ -1687,7 +1684,6 @@
 <translation id="6452181791372256707">Отфрли</translation>
 <translation id="6453179446719226835">Јазикот е променет</translation>
 <translation id="6456096448804832585">Играта е достапна само во ориентација „Портрет“</translation>
-<translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">слики</translation>
 <translation id="6467290994038932560">Вклучено за <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Вратете го уредот на претходна верзија во рок од 1 минута}one{Вратете го уредот на претходна верзија во рок од # минута}other{Вратете го уредот на претходна верзија во рок од # минути}}</translation>
@@ -2419,7 +2415,6 @@
 <translation id="8876148469852588625">Настан <ph name="EVENT_POSITION" /> од <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
-<translation id="8878886163241303700">Проширување екран</translation>
 <translation id="8885424115080869847">Не можеше да се поврзе со YouTube Music</translation>
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>

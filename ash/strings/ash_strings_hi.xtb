@@ -21,7 +21,6 @@
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058009965971887428">सुझाव, शिकायत या राय दें</translation>
 <translation id="1059120031266247284">आपके साथ शेयर की गई</translation>
-<translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> के साथ इसे हटाने का बटन दिख रहा है</translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
@@ -540,7 +539,6 @@
 <translation id="2814448776515246190">पार्शियल कैप्चर</translation>
 <translation id="2819276065543622893">अब आप प्रस्थान कर जाएंगे.</translation>
 <translation id="2822551631199737692">कैमरा इस्तेमाल हो रहा है</translation>
-<translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> के साथ काम नहीं करता. रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> कर दिया गया था.</translation>
 <translation id="2825619548187458965">शेल्फ़</translation>
 <translation id="2831035692318564937">सूरज उगने तक यह सुविधा चालू रहेगी</translation>
 <translation id="2834813915651407382">इसे हाल ही में खोला गया था</translation>
@@ -1639,7 +1637,6 @@
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय हो रहा है...</translation>
 <translation id="6274202259872570803">स्क्रीनकास्ट</translation>
 <translation id="6276708887952587684">पेज का स्रोत देखें</translation>
-<translation id="6284232397434400372">रिज़ॉल्यूशन बदला गया</translation>
 <translation id="6285871695023807425">कैलेंडर में जोड़ें</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> काे माता-पिता की अनुमति से, बाद में जोड़ा जा सकता है.</translation>
 <translation id="6291221004442998378">चार्ज नहीं हो रहा है</translation>
@@ -1687,7 +1684,6 @@
 <translation id="6452181791372256707">अस्‍वीकार करें</translation>
 <translation id="6453179446719226835">भाषा बदल दी गई है</translation>
 <translation id="6456096448804832585">सिर्फ़ पोर्ट्रेट में उपलब्ध है</translation>
-<translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> पर स्क्रीन विस्तृत कर रहा है</translation>
 <translation id="6464094930452079790">इमेज</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> के लिए चालू है</translation>
 <translation id="6468406072297048412">{0,plural, =1{डिवाइस को 1 मिनट के अंदर पिछले वर्शन पर अपडेट करें}one{डिवाइस को # मिनट के अंदर पिछले वर्शन पर अपडेट करें}other{डिवाइस को # मिनट के अंदर पिछले वर्शन पर अपडेट करें}}</translation>
@@ -2419,7 +2415,6 @@
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> में से <ph name="EVENT_POSITION" /> इवेंट</translation>
 <translation id="8876661425082386199">अपने कनेक्शन की जांच करें</translation>
 <translation id="8877788021141246043">रिमाइंडर लगाओ</translation>
-<translation id="8878886163241303700">स्क्रीन का विस्तार करना</translation>
 <translation id="8885424115080869847">YouTube Music से कनेक्ट नहीं किया जा सका</translation>
 <translation id="888982883502837004">आपके डिवाइस के लिए, फ़र्मवेयर के अपडेट उपलब्ध हैं. अपडेट देखने और उन्हें इंस्टॉल करने के लिए क्लिक करें.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> को हमेशा के लिए मिटा दिया जाएगा</translation>
