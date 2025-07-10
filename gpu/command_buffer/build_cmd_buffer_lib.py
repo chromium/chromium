@@ -1975,20 +1975,7 @@ TEST_P(%(test_name)s, %(name)sValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 """
-      if func.GetInfo("gen_func"):
-          valid_test += """
-TEST_P(%(test_name)s, %(name)sValidArgsNewId) {
-  EXPECT_CALL(*gl_, %(gl_func_name)s(kNewServiceId));
-  EXPECT_CALL(*gl_, %(gl_gen_func_name)s(1, _))
-     .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::%(name)s, 0>(true);
-  cmds::%(name)s cmd;
-  cmd.Init(kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(Get%(resource_type)s(kNewClientId) != nullptr);
-}
-"""
+
       self.WriteValidUnitTest(func, f, valid_test, {
           'resource_type': func.GetOriginalArgs()[0].resource_type,
           'gl_gen_func_name': func.GetInfo("gen_func"),
@@ -2002,21 +1989,6 @@ TEST_P(%(test_name)s, %(name)sValidArgs) {
   cmd.Init(%(args)s);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-"""
-      if func.GetInfo("gen_func"):
-        valid_test += """
-TEST_P(%(test_name)s, %(name)sValidArgsNewId) {
-  EXPECT_CALL(*gl_,
-              %(gl_func_name)s(%(gl_args_with_new_id)s));
-  EXPECT_CALL(*gl_, %(gl_gen_func_name)s(1, _))
-     .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::%(name)s, 0>(true);
-  cmds::%(name)s cmd;
-  cmd.Init(%(args_with_new_id)s);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(Get%(resource_type)s(kNewClientId) != nullptr);
 }
 """
 

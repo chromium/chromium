@@ -142,7 +142,6 @@ void GLES2DecoderRestoreStateTest::AddExpectationsForBindSampler(GLuint unit,
 TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
   InitState init;
   init.gl_version = "OpenGL ES 2.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   SetupTexture();
 
@@ -150,16 +149,13 @@ TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
   // Expect to restore texture bindings for unit GL_TEXTURE0.
   AddExpectationsForActiveTexture(GL_TEXTURE0);
   AddExpectationsForBindTexture(GL_TEXTURE_2D, kServiceTextureId);
-  AddExpectationsForBindTexture(GL_TEXTURE_CUBE_MAP,
-                                TestHelper::kServiceDefaultTextureCubemapId);
+  AddExpectationsForBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
   // Expect to restore texture bindings for remaining units.
   for (uint32_t i = 1; i < group().max_texture_units(); ++i) {
     AddExpectationsForActiveTexture(GL_TEXTURE0 + i);
-    AddExpectationsForBindTexture(GL_TEXTURE_2D,
-                                  TestHelper::kServiceDefaultTexture2dId);
-    AddExpectationsForBindTexture(GL_TEXTURE_CUBE_MAP,
-                                  TestHelper::kServiceDefaultTextureCubemapId);
+    AddExpectationsForBindTexture(GL_TEXTURE_2D, 0);
+    AddExpectationsForBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   }
 
   // Expect to restore the active texture unit to GL_TEXTURE0.
@@ -195,7 +191,6 @@ TEST_P(GLES2DecoderRestoreStateTest, NullPreviousState) {
 
 TEST_P(GLES2DecoderRestoreStateTest, WithPreviousStateBGR) {
   InitState init;
-  init.bind_generates_resource = true;
   InitDecoder(init);
   SetupTexture();
 
@@ -272,7 +267,6 @@ TEST_P(GLES2DecoderRestoreStateTest, ActiveUnit1) {
 
 TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit0BGR) {
   InitState init;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   // Bind a non-default texture to GL_TEXTURE1 unit.
@@ -294,8 +288,7 @@ TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit0BGR) {
   // Expect to restore GL_TEXTURE_2D binding for GL_TEXTURE0 unit to
   // a default texture.
   AddExpectationsForActiveTexture(GL_TEXTURE0);
-  AddExpectationsForBindTexture(GL_TEXTURE_2D,
-                                TestHelper::kServiceDefaultTexture2dId);
+  AddExpectationsForBindTexture(GL_TEXTURE_2D, 0);
 
   // Expect to restore GL_TEXTURE_2D binding for GL_TEXTURE1 unit to
   // non-default.
@@ -310,7 +303,6 @@ TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit0BGR) {
 
 TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit1BGR) {
   InitState init;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   // Bind a non-default texture to GL_TEXTURE0 unit.
@@ -331,8 +323,7 @@ TEST_P(GLES2DecoderRestoreStateTest, NonDefaultUnit1BGR) {
   // Expect to restore GL_TEXTURE_2D binding to the default texture
   // for GL_TEXTURE1 unit.
   AddExpectationsForActiveTexture(GL_TEXTURE1);
-  AddExpectationsForBindTexture(GL_TEXTURE_2D,
-                                TestHelper::kServiceDefaultTexture2dId);
+  AddExpectationsForBindTexture(GL_TEXTURE_2D, 0);
 
   // Expect to restore active texture unit to GL_TEXTURE0.
   AddExpectationsForActiveTexture(GL_TEXTURE0);

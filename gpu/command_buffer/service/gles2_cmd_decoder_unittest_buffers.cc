@@ -35,19 +35,6 @@ TEST_P(GLES3DecoderTest, BindBufferBaseValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES3DecoderTest, BindBufferBaseValidArgsNewId) {
-  EXPECT_CALL(*gl_,
-              BindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewServiceId));
-  EXPECT_CALL(*gl_, GenBuffersARB(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::BindBufferBase, 0>(true);
-  cmds::BindBufferBase cmd;
-  cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(GetBuffer(kNewClientId) != nullptr);
-}
-
 TEST_P(GLES3DecoderTest, BindBufferRangeValidArgs) {
   const GLenum kTarget = GL_TRANSFORM_FEEDBACK_BUFFER;
   const GLintptr kRangeOffset = 4;
@@ -91,19 +78,6 @@ TEST_P(GLES3DecoderTest, BindBufferRangeValidArgsWithLessData) {
   cmd.Init(kTarget, 2, client_buffer_id_, kRangeOffset, kRangeSize);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(GLES3DecoderTest, BindBufferRangeValidArgsNewId) {
-  EXPECT_CALL(*gl_, BindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2,
-                                    kNewServiceId));
-  EXPECT_CALL(*gl_, GenBuffersARB(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::BindBufferRange, 0>(true);
-  cmds::BindBufferRange cmd;
-  cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId, 4, 4);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(GetBuffer(kNewClientId) != nullptr);
 }
 
 TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferReadSucceeds) {

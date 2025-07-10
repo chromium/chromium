@@ -30,18 +30,6 @@ TEST_P(GLES2DecoderTest1, BindBufferValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest1, BindBufferValidArgsNewId) {
-  EXPECT_CALL(*gl_, BindBuffer(GL_ARRAY_BUFFER, kNewServiceId));
-  EXPECT_CALL(*gl_, GenBuffersARB(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::BindBuffer, 0>(true);
-  cmds::BindBuffer cmd;
-  cmd.Init(GL_ARRAY_BUFFER, kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(GetBuffer(kNewClientId) != nullptr);
-}
-
 TEST_P(GLES2DecoderTest1, BindBufferInvalidArgs0_0) {
   EXPECT_CALL(*gl_, BindBuffer(_, _)).Times(0);
   SpecializedSetup<cmds::BindBuffer, 0>(false);
@@ -58,18 +46,6 @@ TEST_P(GLES2DecoderTest1, BindFramebufferValidArgs) {
   cmd.Init(GL_FRAMEBUFFER, client_framebuffer_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(GLES2DecoderTest1, BindFramebufferValidArgsNewId) {
-  EXPECT_CALL(*gl_, BindFramebufferEXT(GL_FRAMEBUFFER, kNewServiceId));
-  EXPECT_CALL(*gl_, GenFramebuffersEXT(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::BindFramebuffer, 0>(true);
-  cmds::BindFramebuffer cmd;
-  cmd.Init(GL_FRAMEBUFFER, kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(GetFramebuffer(kNewClientId) != nullptr);
 }
 
 TEST_P(GLES2DecoderTest1, BindFramebufferInvalidArgs0_0) {
@@ -89,18 +65,6 @@ TEST_P(GLES2DecoderTest1, BindRenderbufferValidArgs) {
   cmd.Init(GL_RENDERBUFFER, client_renderbuffer_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(GLES2DecoderTest1, BindRenderbufferValidArgsNewId) {
-  EXPECT_CALL(*gl_, BindRenderbufferEXT(GL_RENDERBUFFER, kNewServiceId));
-  EXPECT_CALL(*gl_, GenRenderbuffersEXT(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<cmds::BindRenderbuffer, 0>(true);
-  cmds::BindRenderbuffer cmd;
-  cmd.Init(GL_RENDERBUFFER, kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(GetRenderbuffer(kNewClientId) != nullptr);
 }
 
 TEST_P(GLES2DecoderTest1, BindRenderbufferInvalidArgs0_0) {

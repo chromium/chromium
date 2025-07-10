@@ -172,9 +172,11 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   share_group_ = share_group ? share_group : new gl::GLShareGroup;
 
+  const bool bind_generates_resource = false;
+
   ContextCreationAttribs attribs;
   attribs.context_type = options.context_type;
-  attribs.bind_generates_resource = options.bind_generates_resource;
+  attribs.bind_generates_resource = bind_generates_resource;
 
   translator_cache_ =
       std::make_unique<gles2::ShaderTranslatorCache>(gpu_preferences_);
@@ -191,7 +193,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
     // not unexpectedly use the wrong command decoder
     context_group = new gles2::ContextGroup(
         gpu_preferences_, /*memory_tracker=*/nullptr, translator_cache_.get(),
-        &completeness_cache_, feature_info, options.bind_generates_resource,
+        &completeness_cache_, feature_info, bind_generates_resource,
         /*progress_reporter=*/nullptr, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);
@@ -265,7 +267,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   const bool support_client_side_arrays = true;
   gles2_implementation_.reset(new gles2::GLES2Implementation(
       gles2_helper_.get(), std::move(client_share_group),
-      transfer_buffer_.get(), options.bind_generates_resource,
+      transfer_buffer_.get(), bind_generates_resource,
       options.lose_context_when_out_of_memory, support_client_side_arrays,
       this));
 

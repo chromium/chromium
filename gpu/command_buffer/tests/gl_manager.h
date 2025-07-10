@@ -55,8 +55,6 @@ class GLManager : private GpuControl {
     raw_ptr<GLManager> share_group_manager = nullptr;
     // If not null will create a virtual manager based on this context.
     raw_ptr<GLManager> virtual_manager = nullptr;
-    // Whether or not glBindXXX generates a resource.
-    bool bind_generates_resource = false;
     // Whether or not the context is auto-lost when GL_OUT_OF_MEMORY occurs.
     bool lose_context_when_out_of_memory = false;
     // Whether or not it's ok to lose the context.
@@ -64,10 +62,6 @@ class GLManager : private GpuControl {
     ContextType context_type = CONTEXT_TYPE_OPENGLES2;
     // Force shader name hashing for all context types.
     bool force_shader_name_hashing = false;
-    // Whether the buffer is multisampled.
-    bool multisampled = false;
-    // If we should use native gmb for backbuffer.
-    bool should_use_native_gmb_for_backbuffer = false;
     // Shared memory limits
     SharedMemoryLimits shared_memory_limits = {};
   };

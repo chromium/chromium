@@ -23,15 +23,6 @@ TEST_F(GLES3DecoderPassthroughTest, BindBufferBaseValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_F(GLES3DecoderPassthroughTest, BindBufferBaseValidArgsNewId) {
-  constexpr GLuint kNewClientId = 502;
-  cmds::BindBufferBase cmd;
-  cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(IsObjectHelper<cmds::IsBuffer>(kNewClientId));
-}
-
 TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgs) {
   const GLenum kTarget = GL_TRANSFORM_FEEDBACK_BUFFER;
   const GLintptr kRangeOffset = 4;
@@ -75,14 +66,6 @@ TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgsWithLessData) {
   cmd.Init(kTarget, 2, kClientBufferId, kRangeOffset, kRangeSize);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgsNewId) {
-  cmds::BindBufferRange cmd;
-  cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId, 4, 4);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_TRUE(IsObjectHelper<cmds::IsBuffer>(kNewClientId));
 }
 
 TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferReadSucceeds) {

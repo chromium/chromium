@@ -908,7 +908,6 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixels2RowLengthWorkaround) {
   workarounds.pack_parameters_workaround_with_pack_buffer = true;
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
   InitDecoderWithWorkarounds(init, workarounds);
 
@@ -959,7 +958,6 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixels2AlignmentWorkaround) {
   workarounds.pack_parameters_workaround_with_pack_buffer = true;
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
   InitDecoderWithWorkarounds(init, workarounds);
 
@@ -1012,7 +1010,6 @@ TEST_P(GLES2DecoderManualInitTest,
   workarounds.pack_parameters_workaround_with_pack_buffer = true;
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
   InitDecoderWithWorkarounds(init, workarounds);
 
@@ -1257,7 +1254,6 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixelsAsyncError) {
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
@@ -1311,7 +1307,6 @@ class GLES2ReadPixelsAsyncTest : public GLES2DecoderManualInitTest {
     init.gl_version = "OpenGL ES 3.0";
     init.has_alpha = true;
     init.request_alpha = true;
-    init.bind_generates_resource = true;
     InitDecoder(init);
   }
 
@@ -1624,7 +1619,6 @@ TEST_P(GLES2DecoderManualInitTest, ActualAlphaMatchesRequestedAlpha) {
   InitState init;
   init.has_alpha = true;
   init.request_alpha = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   EXPECT_CALL(*gl_, GetError())
@@ -1651,7 +1645,6 @@ TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilReportsCorrectValues) {
   init.has_stencil = true;
   init.request_depth = true;
   init.request_stencil = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   EXPECT_CALL(*gl_, GetError())
@@ -1689,7 +1682,6 @@ TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilRenderbufferDepth) {
   InitState init;
   init.extensions = "GL_OES_packed_depth_stencil";
   init.gl_version = "OpenGL ES 2.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -1759,7 +1751,6 @@ TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilRenderbufferStencil) {
   InitState init;
   init.extensions = "GL_OES_packed_depth_stencil";
   init.gl_version = "OpenGL ES 2.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2059,7 +2050,6 @@ TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMGLError) {
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2084,7 +2074,6 @@ TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMBadArgs) {
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2153,7 +2142,6 @@ TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleEXTNotSupported) {
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2477,7 +2465,6 @@ TEST_P(GLES3DecoderManualInitTest, CopyTexImage2DValidInternalFormat_FloatEXT) {
   InitState init;
   init.extensions = "GL_EXT_color_buffer_float";
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
   InitDecoder(init);
 
@@ -2534,7 +2521,6 @@ TEST_P(GLES3DecoderManualInitTest,
   InitState init;
   init.extensions = "GL_EXT_color_buffer_float";
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
   InitDecoder(init);
 
@@ -2758,7 +2744,6 @@ TEST_P(GLES2DecoderManualInitTest,
        UnClearedAttachmentsGetClearedOnReadPixelsAndDrawBufferGetsRestored) {
   InitState init;
   init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
   const GLuint kFBOClientTextureId = 4100;
   const GLuint kFBOServiceTextureId = 4101;
@@ -3292,31 +3277,34 @@ TEST_P(GLES3DecoderTest, DiscardFramebufferEXTUseCorrectTarget) {
                          0,
                          GL_NO_ERROR);
 
+  GLuint draw_fbo = client_framebuffer_id_ + 1;
+  GLuint draw_fbo_service = kServiceFramebufferId + 1;
   EXPECT_CALL(*gl_, GenFramebuffersEXT(_, _))
       .WillOnce(SetArgPointee<1>(kServiceFramebufferId + 1))
       .RetiresOnSaturation();
-  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, client_framebuffer_id_ + 1,
-                    kServiceFramebufferId + 1);
+  GenHelper<cmds::GenFramebuffersImmediate>(draw_fbo);
+  DoBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_fbo, draw_fbo_service);
+
+  GLuint other_texture_id_client = client_texture_id_ + 1;
+  GLuint other_texture_id_service = kServiceTextureId + 1;
   EXPECT_CALL(*gl_, GenTextures(_, _))
-      .WillOnce(SetArgPointee<1>(kServiceTextureId + 1))
+      .WillOnce(SetArgPointee<1>(other_texture_id_service))
       .RetiresOnSaturation();
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_ + 1, kServiceTextureId + 1);
+  GenHelper<cmds::GenTexturesImmediate>(other_texture_id_client);
+  DoBindTexture(GL_TEXTURE_2D, other_texture_id_client,
+                other_texture_id_service);
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                shared_memory_id_, kSharedMemoryOffset);
-  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
-                         GL_COLOR_ATTACHMENT0,
-                         GL_TEXTURE_2D,
-                         client_texture_id_ + 1,
-                         kServiceTextureId + 1,
-                         0,
-                         GL_NO_ERROR);
+  DoFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, other_texture_id_client,
+                         other_texture_id_service, 0, GL_NO_ERROR);
 
   FramebufferManager* framebuffer_manager = GetFramebufferManager();
   Framebuffer* framebuffer =
       framebuffer_manager->GetFramebuffer(client_framebuffer_id_);
   EXPECT_TRUE(framebuffer->IsCleared());
   Framebuffer* other_framebuffer =
-      framebuffer_manager->GetFramebuffer(client_framebuffer_id_ + 1);
+      framebuffer_manager->GetFramebuffer(draw_fbo);
   EXPECT_TRUE(other_framebuffer->IsCleared());
 
   EXPECT_CALL(*gl_, InvalidateFramebuffer(target, count, _))
@@ -3338,7 +3326,6 @@ TEST_P(GLES2DecoderManualInitTest,
   init.gl_version = "OpenGL ES 2.0";
   init.has_alpha = true;
   init.request_alpha = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   const GLuint kFBOClientTextureId = 4100;
@@ -3618,14 +3605,13 @@ TEST_P(GLES3DecoderTest, BlitFramebufferDisabledReadBuffer) {
       .WillOnce(SetArgPointee<1>(kNewServiceId))
       .RetiresOnSaturation();
   GLuint read_fbo = client_framebuffer_id_ + 1;
+  GenHelper<cmds::GenFramebuffersImmediate>(read_fbo);
   DoBindFramebuffer(GL_READ_FRAMEBUFFER, read_fbo, kNewServiceId);
   DoFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, client_renderbuffer_id_,
                             kServiceRenderbufferId, GL_NO_ERROR);
   {
-    EXPECT_CALL(*gl_, ReadBuffer(GL_NONE))
-        .Times(1)
-        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, ReadBuffer(GL_NONE)).Times(1).RetiresOnSaturation();
     cmds::ReadBuffer cmd;
     cmd.Init(GL_NONE);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -3659,11 +3645,13 @@ TEST_P(GLES3DecoderTest, BlitFramebufferMissingDepthOrStencil) {
                      kServiceRenderbufferId);
   DoRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1, 1,
                         GL_NO_ERROR);
+
   GLuint color_renderbuffer = client_renderbuffer_id_ + 1;
   GLuint color_renderbuffer_service = kServiceRenderbufferId + 1;
   EXPECT_CALL(*gl_, GenRenderbuffersEXT(1, _))
       .WillOnce(SetArgPointee<1>(color_renderbuffer_service))
       .RetiresOnSaturation();
+  GenHelper<cmds::GenRenderbuffersImmediate>(color_renderbuffer);
   DoBindRenderbuffer(GL_RENDERBUFFER, color_renderbuffer,
                      color_renderbuffer_service);
   DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, 1, 1, GL_NO_ERROR);
@@ -3683,6 +3671,7 @@ TEST_P(GLES3DecoderTest, BlitFramebufferMissingDepthOrStencil) {
       .WillOnce(SetArgPointee<1>(kNewServiceId))
       .RetiresOnSaturation();
   GLuint color_fbo = client_framebuffer_id_ + 1;
+  GenHelper<cmds::GenFramebuffersImmediate>(color_fbo);
   DoBindFramebuffer(GL_READ_FRAMEBUFFER, color_fbo, kNewServiceId);
   DoFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, color_renderbuffer,

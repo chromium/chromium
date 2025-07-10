@@ -170,7 +170,6 @@ void GLES2DecoderTestBase::SetUp() {
   init.has_depth = true;
   init.request_alpha = true;
   init.request_depth = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 }
 
@@ -211,13 +210,12 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   scoped_refptr<FeatureInfo> feature_info =
       new FeatureInfo(workarounds, gpu_feature_info);
 
+  const bool bind_generates_resource = false;
   group_ = scoped_refptr<ContextGroup>(new ContextGroup(
       gpu_preferences_, memory_tracker_, &shader_translator_cache_,
-      &framebuffer_completeness_cache_, feature_info,
-      normalized_init.bind_generates_resource, /*progress_reporter=*/nullptr,
-      gpu_feature_info, &discardable_manager_, nullptr,
-      &shared_image_manager_));
-  bool use_default_textures = normalized_init.bind_generates_resource;
+      &framebuffer_completeness_cache_, feature_info, bind_generates_resource,
+      /*progress_reporter=*/nullptr, gpu_feature_info, &discardable_manager_,
+      nullptr, &shared_image_manager_));
 
   InSequence sequence;
 
@@ -234,12 +232,9 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   TestHelper::SetupContextGroupInitExpectations(
-      gl_.get(),
-      DisallowedFeatures(),
-      normalized_init.extensions.c_str(),
-      normalized_init.gl_version.c_str(),
-      init.context_type,
-      normalized_init.bind_generates_resource);
+      gl_.get(), DisallowedFeatures(), normalized_init.extensions.c_str(),
+      normalized_init.gl_version.c_str(), init.context_type,
+      bind_generates_resource);
 
   // We initialize the ContextGroup with a MockGLES2Decoder so that
   // we can use the ContextGroup to figure out how the real GLES2Decoder
@@ -330,35 +325,19 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
         group_->feature_info()
             ->feature_flags()
             .nv_egl_stream_consumer_external) {
-      EXPECT_CALL(*gl_,
-                  BindTexture(GL_TEXTURE_EXTERNAL_OES,
-                              use_default_textures
-                                  ? TestHelper::kServiceDefaultExternalTextureId
-                                  : 0))
+      EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_EXTERNAL_OES, 0))
           .Times(1)
           .RetiresOnSaturation();
     }
     if (group_->feature_info()->feature_flags().arb_texture_rectangle) {
-      EXPECT_CALL(
-          *gl_, BindTexture(GL_TEXTURE_RECTANGLE_ANGLE,
-                            use_default_textures
-                                ? TestHelper::kServiceDefaultRectangleTextureId
-                                : 0))
+      EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_RECTANGLE_ANGLE, 0))
           .Times(1)
           .RetiresOnSaturation();
     }
-    EXPECT_CALL(*gl_,
-                BindTexture(GL_TEXTURE_CUBE_MAP,
-                            use_default_textures
-                                ? TestHelper::kServiceDefaultTextureCubemapId
-                                : 0))
+    EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_CUBE_MAP, 0))
         .Times(1)
         .RetiresOnSaturation();
-    EXPECT_CALL(
-        *gl_,
-        BindTexture(
-            GL_TEXTURE_2D,
-            use_default_textures ? TestHelper::kServiceDefaultTexture2dId : 0))
+    EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, 0))
         .Times(1)
         .RetiresOnSaturation();
   }

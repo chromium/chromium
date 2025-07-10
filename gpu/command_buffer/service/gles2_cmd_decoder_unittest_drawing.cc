@@ -63,7 +63,6 @@ class GLES2DecoderGeometryInstancingTest : public GLES2DecoderWithShaderTest {
     init.has_depth = true;
     init.request_alpha = true;
     init.request_depth = true;
-    init.bind_generates_resource = true;
     InitDecoder(init);
     SetupDefaultProgram();
   }
@@ -380,7 +379,6 @@ TEST_P(GLES2DecoderManualInitTest, DepthEnableWithDepth) {
   InitState init;
   init.has_depth = true;
   init.request_depth = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   cmds::Enable cmd;
@@ -431,7 +429,6 @@ TEST_P(GLES2DecoderManualInitTest, StencilEnableWithStencil) {
   InitState init;
   init.has_stencil = true;
   init.request_stencil = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   cmds::Enable cmd;
@@ -487,7 +484,6 @@ TEST_P(GLES2DecoderManualInitTest, CachedColorMask) {
   init.request_alpha = true;
   init.request_depth = true;
   init.request_stencil = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   SetupDefaultProgram();
@@ -514,7 +510,6 @@ TEST_P(GLES2DecoderManualInitTest, CachedDepthMask) {
   init.request_alpha = true;
   init.request_depth = true;
   init.request_stencil = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   SetupDefaultProgram();
@@ -540,7 +535,6 @@ TEST_P(GLES2DecoderManualInitTest, CachedStencilMask) {
   init.request_alpha = true;
   init.request_depth = true;
   init.request_stencil = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   SetupDefaultProgram();
@@ -2000,7 +1994,6 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsDepthTexture) {
   init.has_depth = true;
   init.request_alpha = true;
   init.request_depth = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   SetupDefaultProgram();
@@ -2082,7 +2075,6 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsLargeTexture) {
   init.has_depth = true;
   init.request_alpha = true;
   init.request_depth = true;
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   SetupDefaultProgram();

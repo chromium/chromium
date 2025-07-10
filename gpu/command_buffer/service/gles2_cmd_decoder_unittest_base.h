@@ -230,7 +230,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
     bool request_alpha = false;
     bool request_depth = false;
     bool request_stencil = false;
-    bool bind_generates_resource = false;
     bool lose_context_when_out_of_memory = false;
     bool lose_context_on_init = false;
     bool use_native_vao = true;

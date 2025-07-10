@@ -2554,12 +2554,14 @@ _FUNCTION_INFO = {
   'GetTexParameterfv': {
     'type': 'GETn',
     'decoder_func': 'DoGetTexParameterfv',
-    'result': ['SizedResult<GLfloat>']
+    'result': ['SizedResult<GLfloat>'],
+    'unit_test': False,
   },
   'GetTexParameteriv': {
     'type': 'GETn',
     'decoder_func': 'DoGetTexParameteriv',
-    'result': ['SizedResult<GLint>']
+    'result': ['SizedResult<GLint>'],
+    'unit_test': False,
   },
   'GetTranslatedShaderSourceANGLE': {
     'type': 'STRn',

@@ -16,7 +16,6 @@ class GLSharedResources : public testing::Test {
  protected:
   void SetUp() override {
     GLManager::Options options;
-    options.bind_generates_resource = true;
     gl1_.Initialize(options);
     options.share_group_manager = &gl1_;
     gl2_.Initialize(options);
@@ -47,4 +46,3 @@ TEST_F(GLSharedResources, CreateDelete) {
 }
 
 }  // namespace gpu
-

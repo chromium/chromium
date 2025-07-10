@@ -540,7 +540,6 @@ TEST_P(GLES2DecoderManualInitTest, GetShaderPrecisionFormatSucceeds) {
   // format.
   InitState init;
   init.gl_version = "OpenGL ES 2.0";
-  init.bind_generates_resource = true;
   InitDecoder(init);
 
   cmds::GetShaderPrecisionFormat cmd;

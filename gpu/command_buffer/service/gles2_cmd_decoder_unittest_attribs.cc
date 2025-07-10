@@ -88,6 +88,12 @@ TEST_P(GLES2DecoderWithShaderTest, EnabledVertexAttribArrayIsDisabledIfUnused) {
   EXPECT_CALL(*gl_, DisableVertexAttribArray(3)).Times(1).RetiresOnSaturation();
   // Perform a draw which uses only attributes 0, 1, 2 - not attrib 3
   {
+    EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, _))
+        .Times(2)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE0))
+        .Times(3)
+        .RetiresOnSaturation();
     EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
         .Times(1)
         .RetiresOnSaturation();
@@ -280,7 +286,6 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
   void SetUp() override {
     InitState init;
     init.gl_version = "OpenGL ES 2.0";
-    init.bind_generates_resource = true;
     InitDecoder(init);
     SetupDefaultProgram();
 
@@ -411,7 +416,6 @@ class GLES2DecoderEmulatedVertexArraysOESTest
 
   void SetUp() override {
     InitState init;
-    init.bind_generates_resource = true;
     init.use_native_vao = false;
     InitDecoder(init);
     SetupDefaultProgram();
