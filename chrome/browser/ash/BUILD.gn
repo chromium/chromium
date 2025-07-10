@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions/api/enterprise_platform_keys",
     "//chrome/browser/extensions/api/enterprise_platform_keys_private",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",

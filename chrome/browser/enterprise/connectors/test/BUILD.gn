@@ -58,6 +58,7 @@ source_set("test_support") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//chrome/test:test_support",
       "//components/enterprise/connectors/core:test_support",
       "//components/enterprise/data_controls/core/browser",

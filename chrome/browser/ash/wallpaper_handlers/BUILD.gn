@@ -32,6 +32,7 @@ static_library("wallpaper_handlers") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
   ]

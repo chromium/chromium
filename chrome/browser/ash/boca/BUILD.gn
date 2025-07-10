@@ -31,6 +31,7 @@ static_library("boca") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",
     "//chromeos/ash/components/boca:spotlight",

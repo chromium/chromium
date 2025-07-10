@@ -32,6 +32,7 @@ source_set("impl") {
     "//chrome/browser/commerce",
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/reading_list",
+    "//chrome/browser/signin",
     "//components/query_parser",
     "//components/undo",
   ]

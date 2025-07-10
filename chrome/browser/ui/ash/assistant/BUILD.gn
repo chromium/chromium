@@ -39,6 +39,7 @@ static_library("assistant") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui/ash/assistant_optin",
     "//chrome/browser/web_applications",

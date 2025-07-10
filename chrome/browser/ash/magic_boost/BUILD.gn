@@ -24,6 +24,7 @@ static_library("magic_boost") {
     "//base",
     "//chrome/browser/ash/mahi:mahi_availability",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",

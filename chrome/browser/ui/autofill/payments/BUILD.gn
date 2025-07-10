@@ -96,6 +96,7 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/autofill",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill",

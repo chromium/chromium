@@ -68,6 +68,7 @@ static_library("session") {
     "//chrome/browser/google",
     "//chrome/browser/prefs:util",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/shimless_rma_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",

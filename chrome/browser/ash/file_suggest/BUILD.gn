@@ -43,6 +43,7 @@ static_library("file_suggest") {
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//components/application_locale_storage",

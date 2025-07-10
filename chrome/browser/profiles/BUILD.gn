@@ -261,6 +261,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/serial",
+    "//chrome/browser/signin",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/ui",

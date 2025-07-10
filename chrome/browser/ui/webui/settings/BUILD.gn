@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/content_settings/core/browser",
     "//components/permissions:permissions_common",
     "//components/safe_browsing/core/common:features",

@@ -23,6 +23,7 @@ static_library("wm") {
     "//base",
     "//chrome/browser/ash/app_restore:app_restore",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",

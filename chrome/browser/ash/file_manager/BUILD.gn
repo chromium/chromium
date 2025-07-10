@@ -461,6 +461,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/sync:sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/cast_config",

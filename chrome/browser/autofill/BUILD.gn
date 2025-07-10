@@ -64,6 +64,7 @@ static_library("autofill") {
     "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chrome/browser/sync:factories",
     "//chrome/common:constants",
     "//components/autofill/content/browser",

@@ -40,6 +40,7 @@ static_library("drive") {
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared_cpp_sources",

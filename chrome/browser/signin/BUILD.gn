@@ -17,16 +17,18 @@ source_set("identity_manager_provider") {
 # result in circular deps. Modularization of others to resolve that is
 # non-trivial and is hard to complete at once.
 source_set("signin") {
-  sources = []
-  public_deps = []
+  sources = [ "identity_manager_factory.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
 
   if (enable_dice_support) {
-    sources = [
+    sources += [
       "dice_web_signin_interceptor.h",
       "web_signin_interceptor.h",
     ]
     public_deps += [
-      "//base",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//components/keyed_service/core",

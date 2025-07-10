@@ -37,6 +37,7 @@ static_library("ash") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

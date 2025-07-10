@@ -128,6 +128,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/extensions",
+      "//chrome/browser/signin",
       "//chrome/browser/ui/webui/settings",
       "//components/password_manager/core/browser:password_form",
       "//components/password_manager/core/browser/leak_detection",

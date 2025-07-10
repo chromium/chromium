@@ -54,6 +54,7 @@ static_library("add_supervision") {
     "//chrome/browser/resources/chromeos/add_supervision:resources_grit",
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/resources/chromeos/supervision:resources_grit",
+    "//chrome/browser/signin",
     "//components/constrained_window",
     "//components/google/core/common",
     "//components/services/app_service/public/cpp:app_types",

@@ -73,6 +73,7 @@ static_library("arc") {
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

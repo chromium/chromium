@@ -23,6 +23,7 @@ static_library("tasks") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/web_applications",
     "//components/account_id",
     "//components/policy/content",

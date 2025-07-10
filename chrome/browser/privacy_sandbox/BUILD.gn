@@ -227,6 +227,7 @@ source_set("service_impl_unittest") {
     "//chrome/browser/privacy_sandbox/notice:factory",
     "//chrome/browser/privacy_sandbox/notice:notice_mojom",
     "//chrome/browser/privacy_sandbox/notice:test_support",
+    "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/browsing_topics:test_support",

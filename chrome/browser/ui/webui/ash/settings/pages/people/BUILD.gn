@@ -109,6 +109,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/signin",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/account_manager",

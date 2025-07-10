@@ -20,6 +20,7 @@ static_library("presence") {
     "//chrome/browser/ash/nearby",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/nearby/presence",
     "//components/keyed_service/content",
     "//components/pref_registry",

@@ -66,6 +66,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/access_code_cast:resources",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/common",

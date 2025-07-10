@@ -20,6 +20,7 @@ static_library("ambient") {
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/demo_mode",

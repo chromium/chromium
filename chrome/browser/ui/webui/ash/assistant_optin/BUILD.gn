@@ -36,6 +36,7 @@ static_library("assistant_optin") {
     "//chrome/browser/ash/assistant",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/assistant_optin:resources",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/ash/login",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",

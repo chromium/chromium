@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",

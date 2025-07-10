@@ -376,6 +376,7 @@ source_set("browser_tests") {
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/test:test_support",

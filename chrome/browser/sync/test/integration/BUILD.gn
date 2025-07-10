@@ -20,6 +20,7 @@ source_set("sync_integration_tests_impl") {
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/reading_list",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",

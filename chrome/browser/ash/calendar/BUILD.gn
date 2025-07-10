@@ -23,6 +23,7 @@ static_library("calendar") {
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/web_applications",
     "//components/policy/content",
     "//components/policy/core/browser",

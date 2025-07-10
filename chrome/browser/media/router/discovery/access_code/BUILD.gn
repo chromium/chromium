@@ -62,6 +62,7 @@ if (!is_android) {
       "//chrome/browser/media/router:router",
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
       "//chrome/browser/signin:identity_manager_provider",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//components/access_code_cast/common:metrics",

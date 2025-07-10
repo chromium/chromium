@@ -36,6 +36,7 @@ static_library("policy") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc",

@@ -20,6 +20,7 @@ static_library("bluetooth") {
   ]
   deps = [
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/dbus/upstart",
     "//components/device_event_log",
     "//components/session_manager/core",

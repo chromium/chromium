@@ -163,6 +163,7 @@ static_library("login") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/aura/accessibility",

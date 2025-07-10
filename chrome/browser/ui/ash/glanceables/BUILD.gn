@@ -26,6 +26,7 @@ static_library("glanceables") {
     "//chrome/browser/ash/api/tasks",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//components/policy/content",

@@ -24,6 +24,7 @@ static_library("edu_coexistence") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",

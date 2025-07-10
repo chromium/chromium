@@ -30,6 +30,7 @@ static_library("quick_pair") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//components/cross_device/logging",

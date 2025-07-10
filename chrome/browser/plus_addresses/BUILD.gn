@@ -33,7 +33,10 @@ source_set("impl") {
     "plus_address_service_factory.cc",
     "plus_address_setting_service_factory.cc",
   ]
-  deps = [ ":plus_addresses" ]
+  deps = [
+    ":plus_addresses",
+    "//chrome/browser/signin",
+  ]
 }
 
 if (!is_android) {
@@ -45,6 +48,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/signin",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/plus_addresses",

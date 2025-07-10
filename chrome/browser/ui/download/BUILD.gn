@@ -70,6 +70,7 @@ source_set("unit_tests") {
     ":download",
     "//base/test:test_support",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/signin",
     "//chrome/test:test_support",
     "//components/download/public/common:test_support",
     "//components/prefs",

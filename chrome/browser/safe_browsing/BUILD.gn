@@ -28,6 +28,7 @@ static_library("safe_browsing") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
     "//chrome/common",
@@ -584,6 +585,7 @@ static_library("advanced_protection") {
   deps = [
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/safe_browsing/core/common",

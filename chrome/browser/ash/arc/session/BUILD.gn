@@ -92,6 +92,7 @@ static_library("session") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",

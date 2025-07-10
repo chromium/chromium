@@ -1414,6 +1414,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/segmentation_platform:test_utils",
+    "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/common:buildflags",
     "//chrome/common:constants",

@@ -27,6 +27,7 @@ static_library("recorder_app") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/strings",

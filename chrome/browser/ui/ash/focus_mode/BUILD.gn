@@ -26,6 +26,7 @@ static_library("focus_mode") {
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/attestation",

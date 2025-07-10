@@ -1500,7 +1500,6 @@ static_library("browser") {
     "signin/header_modification_delegate_impl.cc",
     "signin/header_modification_delegate_impl.h",
     "signin/identity_manager_factory.cc",
-    "signin/identity_manager_factory.h",
     "signin/signin_error_controller_factory.cc",
     "signin/signin_error_controller_factory.h",
     "signin/signin_metrics_service_factory.cc",

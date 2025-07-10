@@ -22,6 +22,9 @@ static_library("test_support") {
     "supervised_user_test_util.cc",
     "supervised_user_test_util.h",
   ]
+
+  public_deps = [ "//chrome/browser/signin" ]
+
   deps = [
     "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",

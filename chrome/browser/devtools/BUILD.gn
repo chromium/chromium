@@ -185,6 +185,7 @@ static_library("devtools") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/prefs",

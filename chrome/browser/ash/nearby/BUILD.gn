@@ -34,6 +34,7 @@ static_library("nearby") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/services/nearby/public/cpp",
