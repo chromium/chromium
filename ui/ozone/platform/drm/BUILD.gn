@@ -184,6 +184,10 @@ source_set("gbm") {
     # Enable VLOG(1) so that they are included in field feedbacks.
     "ENABLED_VLOG_LEVEL=1",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("gbm_unittests") {
@@ -231,6 +235,10 @@ source_set("gbm_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("drm_integration_tests") {
