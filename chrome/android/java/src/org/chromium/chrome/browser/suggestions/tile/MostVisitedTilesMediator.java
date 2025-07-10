@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -53,6 +54,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final int mTileViewPortraitEdgePadding;
     private final Runnable mSnapshotTileGridChangedRunnable;
     private final Runnable mTileCountChangedRunnable;
+    private final boolean mNtpCustomizationForMvtFeatureEnabled;
+
+    private NtpCustomizationConfigManager.HomepageStateListener mMvtVisibilityListener;
     private int mTileViewPortraitIntervalPadding;
 
     private TileRenderer mRenderer;
@@ -98,6 +102,23 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
 
         maybeSetPortraitIntervalPaddings();
+
+        mNtpCustomizationForMvtFeatureEnabled =
+                ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled();
+        addMostVisitedTilesVisibilityListener();
+    }
+
+    private void addMostVisitedTilesVisibilityListener() {
+        if (!mNtpCustomizationForMvtFeatureEnabled) return;
+
+        mMvtVisibilityListener =
+                new NtpCustomizationConfigManager.HomepageStateListener() {
+                    @Override
+                    public void onMvtVisibilityChanged(boolean isMvtVisible) {
+                        setMvtVisibility(isMvtVisible);
+                    }
+                };
+        NtpCustomizationConfigManager.getInstance().addListener(mMvtVisibilityListener);
     }
 
     /** Called to initialize this mediator when native is ready. */
@@ -157,7 +178,16 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
         // If Custom Links are enabled, keep container visible for the "Add new" button.
         boolean enable_custom_links = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
-        mModel.set(IS_CONTAINER_VISIBLE, enable_custom_links || !mTileGroup.isEmpty());
+        setMvtVisibility(enable_custom_links || !mTileGroup.isEmpty());
+    }
+
+    /**
+     * Sets the visibility of the Most Visited Tiles section.
+     *
+     * @param isMvtVisible True to show the section, false to hide it.
+     */
+    void setMvtVisibility(boolean isMvtVisible) {
+        mModel.set(IS_CONTAINER_VISIBLE, isMvtVisible);
     }
 
     @Override
@@ -192,6 +222,10 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             mTileGroup = null;
         }
         if (mTemplateUrlService != null) mTemplateUrlService.removeObserver(this);
+
+        if (mMvtVisibilityListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mMvtVisibilityListener);
+        }
     }
 
     public boolean isMVTilesCleanedUp() {

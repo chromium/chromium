@@ -709,6 +709,8 @@ public final class ChromePreferenceKeys {
      */
     public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
 
+    public static final String IS_MVT_VISIBLE = "Chrome.NtpCustomization.IsMvtVisible";
+
     public static final String IS_LAST_VISITED_TAB_SRP = "Chrome.StartSurface.IsLastVisitedTabSRP";
 
     /** Key used to store user actions for collapsing search resumption module on NTP. */
@@ -1067,6 +1069,7 @@ public final class ChromePreferenceKeys {
                 IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,
+                IS_MVT_VISIBLE,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
                 LOCALE_MANAGER_PROMO_V3_CHECKED,

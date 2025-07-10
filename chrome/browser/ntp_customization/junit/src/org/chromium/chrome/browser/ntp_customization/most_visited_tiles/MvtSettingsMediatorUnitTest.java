@@ -4,14 +4,21 @@
 
 package org.chromium.chrome.browser.ntp_customization.most_visited_tiles;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_MVT_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 
 import android.view.View;
+import android.widget.CompoundButton;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MvtSettingsMediator} */
@@ -35,6 +43,7 @@ public class MvtSettingsMediatorUnitTest {
     @Mock private BottomSheetDelegate mDelegate;
     @Mock View mView;
     @Mock private PropertyModel mBottomSheetPropertyModel;
+    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Captor private ArgumentCaptor<View.OnClickListener> mBackPressHandlerCaptor;
 
     private MvtSettingsMediator mMediator;
@@ -42,6 +51,15 @@ public class MvtSettingsMediatorUnitTest {
     @Before
     public void setUp() {
         mMediator = new MvtSettingsMediator(mBottomSheetPropertyModel, mDelegate);
+    }
+
+    @Test
+    public void testConstructor() {
+        verify(mBottomSheetPropertyModel).set(eq(IS_MVT_SWITCH_CHECKED), anyBoolean());
+        verify(mBottomSheetPropertyModel)
+                .set(
+                        eq(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER),
+                        any(CompoundButton.OnCheckedChangeListener.class));
     }
 
     @Test
@@ -65,8 +83,21 @@ public class MvtSettingsMediatorUnitTest {
     }
 
     @Test
+    public void testOnMvtSwitchToggledAndState() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
+        assertTrue(configManager.getPrefIsMvtVisible());
+        assertTrue(mMediator.isMvtTurnedOn());
+
+        mMediator.onMvtSwitchToggled(/* isEnabled= */ false);
+        assertFalse(configManager.getPrefIsMvtVisible());
+        assertFalse(mMediator.isMvtTurnedOn());
+    }
+
+    @Test
     public void testDestroy() {
         mMediator.destroy();
-        verify(mBottomSheetPropertyModel).set(BACK_PRESS_HANDLER, null);
+        verify(mBottomSheetPropertyModel).set(eq(BACK_PRESS_HANDLER), eq(null));
+        verify(mBottomSheetPropertyModel).set(eq(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER), eq(null));
     }
 }

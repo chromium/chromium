@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
 
 import android.content.Context;
 
@@ -34,7 +36,7 @@ public class BottomSheetListContainerViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetListContainerView mMainBottomSheetListContainerView;
-    @Mock private BottomSheetListItemView mMainBottomSheetFeedListItem;
+    @Mock private BottomSheetListItemView mMainBottomSheetListItem;
     @Mock private Context mContext;
 
     private PropertyModel mPropertyModel;
@@ -63,13 +65,23 @@ public class BottomSheetListContainerViewBinderUnitTest {
 
         // Verifies the feed section subtitle of the main bottom sheet will get updated timely.
         when(mMainBottomSheetListContainerView.findViewById(R.id.feed_settings))
-                .thenReturn(mMainBottomSheetFeedListItem);
+                .thenReturn(mMainBottomSheetListItem);
         when(mMainBottomSheetListContainerView.getContext()).thenReturn(mContext);
         when(mContext.getString(R.string.text_on)).thenReturn("On");
         when(mContext.getString(R.string.text_off)).thenReturn("Off");
         mPropertyModel.set(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE, R.string.text_on);
-        verify(mMainBottomSheetFeedListItem).setSubtitle("On");
+        verify(mMainBottomSheetListItem).setSubtitle(eq("On"));
         mPropertyModel.set(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE, R.string.text_off);
-        verify(mMainBottomSheetFeedListItem).setSubtitle("Off");
+        verify(mMainBottomSheetListItem).setSubtitle(eq("Off"));
+
+        // Verifies the mvt section subtitle of the main bottom sheet will get updated timely.
+        clearInvocations(mMainBottomSheetListItem);
+        when(mMainBottomSheetListContainerView.findViewById(R.id.mvt_settings))
+                .thenReturn(mMainBottomSheetListItem);
+
+        mPropertyModel.set(MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE, R.string.text_on);
+        verify(mMainBottomSheetListItem).setSubtitle(eq("On"));
+        mPropertyModel.set(MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE, R.string.text_off);
+        verify(mMainBottomSheetListItem).setSubtitle(eq("Off"));
     }
 }

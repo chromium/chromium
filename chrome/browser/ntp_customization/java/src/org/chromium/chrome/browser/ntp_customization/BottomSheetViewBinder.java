@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_MVT_SWITCH_CHECKED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER;
 
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -20,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class BottomSheetViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        MaterialSwitchWithText mvtSwitch = view.findViewById(R.id.mvt_switch_button);
         if (propertyKey == BACK_PRESS_HANDLER) {
             View backButton = view.findViewById(R.id.back_button);
             backButton.setOnClickListener(model.get(BACK_PRESS_HANDLER));
@@ -40,6 +44,10 @@ public class BottomSheetViewBinder {
                     titleView.setLayoutParams(params);
                 }
             }
+        } else if (propertyKey == IS_MVT_SWITCH_CHECKED) {
+            mvtSwitch.setChecked(model.get(IS_MVT_SWITCH_CHECKED));
+        } else if (propertyKey == MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER) {
+            mvtSwitch.setOnCheckedChangeListener(model.get(MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER));
         }
     }
 }

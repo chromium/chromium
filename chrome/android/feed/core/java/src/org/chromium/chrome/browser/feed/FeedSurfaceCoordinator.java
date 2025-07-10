@@ -523,8 +523,11 @@ public class FeedSurfaceCoordinator
         if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
             mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
             mHomepageStateListener =
-                    backgroundDrawable -> {
-                        setBackground(backgroundDrawable);
+                    new NtpCustomizationConfigManager.HomepageStateListener() {
+                        @Override
+                        public void onBackgroundChanged(@Nullable Drawable backgroundDrawable) {
+                            setBackground(backgroundDrawable);
+                        }
                     };
 
             mNtpCustomizationConfigManager.addListener(mHomepageStateListener);

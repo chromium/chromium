@@ -29,8 +29,6 @@ public class MvtSettingsCoordinator {
                         .inflate(R.layout.ntp_customization_mvt_bottom_sheet, null, false);
         delegate.registerBottomSheetLayout(MVT, view);
 
-        // The bottomSheetPropertyModel is responsible for managing the back press handler of the
-        // back button in the bottom sheet.
         PropertyModel bottomSheetPropertyModel =
                 new PropertyModel(NtpCustomizationViewProperties.BOTTOM_SHEET_KEYS);
         PropertyModelChangeProcessor.create(

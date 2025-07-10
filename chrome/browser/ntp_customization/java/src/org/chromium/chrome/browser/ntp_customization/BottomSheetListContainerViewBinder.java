@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
 
 import android.view.View;
 
@@ -35,6 +36,13 @@ public class BottomSheetListContainerViewBinder {
             String subtitleText =
                     view.getContext().getString(model.get(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE));
             feedListItem.setSubtitle(subtitleText);
+        } else if (propertyKey == MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE) {
+            BottomSheetListItemView mvtListItem = view.findViewById(R.id.mvt_settings);
+            if (mvtListItem == null) return;
+
+            String subtitleText =
+                    view.getContext().getString(model.get(MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE));
+            mvtListItem.setSubtitle(subtitleText);
         }
     }
 }

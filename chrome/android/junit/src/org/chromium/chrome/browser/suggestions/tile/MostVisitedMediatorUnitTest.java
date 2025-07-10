@@ -9,7 +9,10 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +33,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -37,11 +42,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -85,6 +92,11 @@ public class MostVisitedMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Runnable mSnapshotTileGridChangedRunnable;
     @Mock private Runnable mTileCountChangedRunnable;
+    @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+
+    @Captor
+    private ArgumentCaptor<NtpCustomizationConfigManager.HomepageStateListener>
+            mHomepageStateListenerCaptor;
 
     private FakeMostVisitedSites mMostVisitedSites;
     private PropertyModel mModel;
@@ -121,6 +133,8 @@ public class MostVisitedMediatorUnitTest {
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
     }
 
     @Test
@@ -365,6 +379,59 @@ public class MostVisitedMediatorUnitTest {
                 "The horizontal edge padding passed to the model is wrong",
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
                 (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
+    }
+
+    @Test
+    public void testSetMvtVisibility() {
+        createMediatorWithMockPropertyModel();
+        clearInvocations(mModel);
+        mMediator.setMvtVisibility(true);
+        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(true));
+
+        mMediator.setMvtVisibility(false);
+        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(false));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
+    public void testOnMvtVisibilityChanged() {
+        createMediatorWithMockPropertyModel();
+        clearInvocations(mModel);
+        verify(mNtpCustomizationConfigManager).addListener(mHomepageStateListenerCaptor.capture());
+        NtpCustomizationConfigManager.HomepageStateListener listener =
+                mHomepageStateListenerCaptor.getValue();
+
+        // Verifies when the listener is notified, the visibility of the Most Visited Tiles section
+        // is changed properly.
+        listener.onMvtVisibilityChanged(/* isMvtVisible= */ true);
+        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(true));
+
+        listener.onMvtVisibilityChanged(/* isMvtVisible= */ false);
+        verify(mModel).set(eq(IS_CONTAINER_VISIBLE), eq(false));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
+    public void testAddAndRemoveListener_FeatureEnabled() {
+        createMediator();
+        verify(mNtpCustomizationConfigManager).addListener(any());
+
+        mMediator.destroy();
+        verify(mNtpCustomizationConfigManager).removeListener(any());
+    }
+
+    @Test
+    public void testAddAndRemoveListener_FeatureDisabled() {
+        createMediator();
+        verify(mNtpCustomizationConfigManager, never()).addListener(any());
+
+        mMediator.destroy();
+        verify(mNtpCustomizationConfigManager, never()).removeListener(any());
+    }
+
+    private void createMediatorWithMockPropertyModel() {
+        mModel = mock(PropertyModel.class);
+        createMediator(/* isTablet= */ false);
     }
 
     private void createMediator() {

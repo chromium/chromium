@@ -13,8 +13,10 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
@@ -60,6 +62,7 @@ public class NtpCustomizationMediator {
     private final List<Integer> mListContent;
     private final Supplier<Profile> mProfileSupplier;
     private final @Nullable PropertyModel mContainerPropertyModel;
+    private final boolean mNtpCustomizationForMvtFeatureEnabled;
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
     private static @Nullable PrefService sPrefServiceForTest;
@@ -78,6 +81,8 @@ public class NtpCustomizationMediator {
         mViewFlipperMap = new HashMap<>();
         mTypeToListenersMap = new HashMap<>();
         mListContent = buildListContent();
+        mNtpCustomizationForMvtFeatureEnabled =
+                ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled();
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -136,6 +141,11 @@ public class NtpCustomizationMediator {
             // Updates the visibility status (on or off) of the feeds section in the main bottom
             // sheet.
             updateFeedSectionSubtitle(getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE));
+
+            boolean isMvtVisible =
+                    mNtpCustomizationForMvtFeatureEnabled
+                            && NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible();
+            updateMvtSectionSubtitle(isMvtVisible);
         }
     }
 
@@ -160,7 +170,7 @@ public class NtpCustomizationMediator {
             public int getListItemId(int type) {
                 switch (type) {
                     case MVT:
-                        return R.id.mvt;
+                        return R.id.mvt_settings;
                     case NTP_CARDS:
                         return R.id.ntp_cards;
                     case FEED:
@@ -196,7 +206,7 @@ public class NtpCustomizationMediator {
                 }
 
                 if (type == MVT) {
-                    return context.getString(R.string.text_on);
+                    return context.getString(getMvtSectionSubtitleId());
                 }
                 return null;
             }
@@ -279,9 +289,24 @@ public class NtpCustomizationMediator {
                 isFeedVisible ? R.string.text_on : R.string.text_off);
     }
 
+    void updateMvtSectionSubtitle(boolean isMvtVisible) {
+        assumeNonNull(mContainerPropertyModel);
+        mContainerPropertyModel.set(
+                MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE,
+                isMvtVisible ? R.string.text_on : R.string.text_off);
+    }
+
     /** Returns the source id of the feed section subtitle. */
     private int getFeedSectionSubtitleId() {
         return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE)
+                ? R.string.text_on
+                : R.string.text_off;
+    }
+
+    /** Returns the source id of the mvt section subtitle. */
+    @StringRes
+    private int getMvtSectionSubtitleId() {
+        return NtpCustomizationConfigManager.getInstance().getPrefIsMvtVisible()
                 ? R.string.text_on
                 : R.string.text_off;
     }

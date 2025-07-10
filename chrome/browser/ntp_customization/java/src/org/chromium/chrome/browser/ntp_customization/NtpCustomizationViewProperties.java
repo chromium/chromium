@@ -34,18 +34,35 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableIntPropertyKey
             MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE = new PropertyModel.WritableIntPropertyKey();
 
+    /** The mvt section subtitle in the main bottom sheet. */
+    public static final PropertyModel.WritableIntPropertyKey
+            MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE = new PropertyModel.WritableIntPropertyKey();
+
     /** The keys to bind a {@link BottomSheetListContainerView}. */
     public static final PropertyKey[] LIST_CONTAINER_KEYS =
             new PropertyKey[] {
-                LIST_CONTAINER_VIEW_DELEGATE, MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE
+                LIST_CONTAINER_VIEW_DELEGATE,
+                MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE,
+                MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE
             };
 
     /** The click listener to handle back button clicks in the bottom sheet. */
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             BACK_PRESS_HANDLER = new PropertyModel.WritableObjectPropertyKey<>();
 
+    /** The checked state of the MVT visibility switch within the MVT bottom sheet. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_MVT_SWITCH_CHECKED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    /** The on checked change listener for the MVT visibility switch within the MVT bottom sheet. */
+    public static final PropertyModel.WritableObjectPropertyKey<OnCheckedChangeListener>
+            MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+
     /** The keys to bind a NTP customization bottom sheet with a back button inside. */
-    public static final PropertyKey[] BOTTOM_SHEET_KEYS = new PropertyKey[] {BACK_PRESS_HANDLER};
+    public static final PropertyKey[] BOTTOM_SHEET_KEYS =
+            new PropertyKey[] {
+                BACK_PRESS_HANDLER, IS_MVT_SWITCH_CHECKED, MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER
+            };
 
     // Properties specifically for the feed settings bottom sheet:
 

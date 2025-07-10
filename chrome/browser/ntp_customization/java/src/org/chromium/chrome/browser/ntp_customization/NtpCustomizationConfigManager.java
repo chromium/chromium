@@ -12,11 +12,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.concurrent.Executor;
 
@@ -30,9 +33,14 @@ public class NtpCustomizationConfigManager {
 
     /** An interface to get NewTabPage's configuration updates. */
     public interface HomepageStateListener {
+        /** Called when the Most Visited Tiles section's visibility is changed. */
+        default void onMvtVisibilityChanged(boolean isMvtVisible) {}
+
         /** Called when the homepage background is changed. */
-        void onBackgroundChanged(@Nullable Drawable backgroundDrawable);
+        default void onBackgroundChanged(@Nullable Drawable backgroundDrawable) {}
     }
+
+    private static @Nullable NtpCustomizationConfigManager sInstanceForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
@@ -43,6 +51,9 @@ public class NtpCustomizationConfigManager {
 
     /** Returns the singleton instance of NtpCustomizationConfigManager. */
     public static NtpCustomizationConfigManager getInstance() {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
         return NtpCustomizationConfigManager.LazyHolder.sInstance;
     }
 
@@ -61,6 +72,16 @@ public class NtpCustomizationConfigManager {
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> notifyBackgroundImageChanged(bitmap), EXECUTOR);
         }
+    }
+
+    /**
+     * Sets a NtpCustomizationConfigManager instance for testing.
+     *
+     * @param instance The instance to set.
+     */
+    public static void setInstanceForTesting(@Nullable NtpCustomizationConfigManager instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /**
@@ -117,6 +138,27 @@ public class NtpCustomizationConfigManager {
     /** Gets the cached background image. */
     public @Nullable BitmapDrawable getBackgroundImageDrawable() {
         return mBackgroundImageDrawable;
+    }
+
+    /** Gets the user preference for whether the Most Visited Tiles section is visible. */
+    public boolean getPrefIsMvtVisible() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, true);
+    }
+
+    /**
+     * Sets the user preference for whether the Most Visited Tiles section is visible.
+     *
+     * @param isMvtVisible True to show the section, false to hide it.
+     */
+    public void setPrefIsMvtVisible(boolean isMvtVisible) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.IS_MVT_VISIBLE, isMvtVisible);
+
+        // Notifies all the listeners.
+        for (HomepageStateListener listener : mHomepageStateListeners) {
+            listener.onMvtVisibilityChanged(isMvtVisible);
+        }
     }
 
     public void setBackgroundImageDrawableForTesting(@Nullable BitmapDrawable bitmapDrawable) {
