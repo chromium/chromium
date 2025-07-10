@@ -277,7 +277,8 @@ class ChromiumDepGraph {
             org_jetbrains_kotlinx_kotlinx_coroutines_rx3: new PropertyOverride(
                     exclude: true),  // An unnecessary dep of androidx.xr.runtime.
             org_reactivestreams_reactive_streams: new PropertyOverride(
-                    exclude: true),  // An unnecessary dep of androidx.xr.runtime.
+                    licenseName: 'MIT',
+                    licenseUrl: 'https://raw.githubusercontent.com/reactive-streams/reactive-streams-jvm/refs/tags/v1.0.4/LICENSE'),
 
     ]
 

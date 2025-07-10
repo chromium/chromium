@@ -66,13 +66,17 @@ dependencies {
     compileLatest "javax.inject:javax.inject:+"
 
     // Needed by internal targets
+    compileLatest 'com.google.auto.service:auto-service-annotations:+'
     compileLatest "com.google.code.findbugs:jsr305:+"
     compileLatest "com.google.j2objc:j2objc-annotations:+"
+    compileLatest "com.squareup.okio:okio-jvm:+"
+    compileLatest "io.reactivex.rxjava2:rxandroid:+"
     compileLatest "org.checkerframework:checker-qual:+"
     compileLatest "org.checkerframework:checker-util:+"
     compileLatest "org.codehaus.mojo:animal-sniffer-annotations:+"
     compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-android:+"
     compileLatest "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+"
+    compileLatest "org.reactivestreams:reactive-streams:+"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
