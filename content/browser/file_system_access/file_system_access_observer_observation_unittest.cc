@@ -851,4 +851,41 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
       {{MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
 }
 
+TEST_F(FileSystemAccessObserverObservationTest, OnChangesForFile) {
+  base::FilePath file_path = CreateFile();
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url, file_path.BaseName());
+
+  FakeChangeSource source = CreateFileChangeSource(file_url);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(file_handle.get(), /*recursive=*/false);
+
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
+}
+
+TEST_F(FileSystemAccessObserverObservationTest, OnChangesForDirectory) {
+  base::FilePath dir_path = CreateDirectory();
+  storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
+      CreateDirectoryHandle(dir_url);
+
+  FakeChangeSource source =
+      CreateDirectoryChangeSource(dir_url, /*is_recursive=*/false);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(dir_handle.get(), /*recursive=*/false);
+
+  source.SignalChange(
+      ChangeInfo(FilePathType::kDirectory, ChangeType::kModified, dir_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kModified, MojoFilePathType::kDirectory, {}}}));
+}
+
 }  // namespace content
