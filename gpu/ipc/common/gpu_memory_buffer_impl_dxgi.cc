@@ -37,7 +37,6 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
     DestructionCallback callback,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {

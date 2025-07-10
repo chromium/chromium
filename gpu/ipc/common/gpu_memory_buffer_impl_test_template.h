@@ -109,7 +109,7 @@ class GpuMemoryBufferImplTest : public testing::Test {
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE:
         return GpuMemoryBufferImplDXGI::CreateFromHandleForTesting(
-            std::move(handle), size, format, usage, std::move(callback));
+            std::move(handle), size, format, std::move(callback));
 #endif
       default:
         NOTREACHED();

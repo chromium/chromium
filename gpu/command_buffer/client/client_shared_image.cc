@@ -348,7 +348,7 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return GpuMemoryBufferImplDXGI::CreateFromHandle(
-          std::move(handle), size, format, usage, base::DoNothing(),
+          std::move(handle), size, format, base::DoNothing(),
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
