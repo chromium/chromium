@@ -19,8 +19,8 @@
 namespace blink {
 class SchedulerTaskContext;
 class ScriptState;
-class ScriptWrappableTaskStateBase;
 class SoftNavigationContext;
+class TaskAttributionTaskState;
 }  // namespace blink
 
 namespace v8 {
@@ -82,7 +82,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
     TaskScope(TaskAttributionTracker* tracker,
               ScriptState* script_state,
-              ScriptWrappableTaskStateBase* previous_task_state)
+              TaskAttributionTaskState* previous_task_state)
         : task_tracker_(tracker),
           script_state_(script_state),
           previous_task_state_(previous_task_state) {}
@@ -94,7 +94,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     // The rest are on the Oilpan heap, so these are stored as raw pointers
     // since the class is stack allocated.
     ScriptState* script_state_;
-    ScriptWrappableTaskStateBase* previous_task_state_;
+    TaskAttributionTaskState* previous_task_state_;
   };
 
   class Observer : public GarbageCollectedMixin {

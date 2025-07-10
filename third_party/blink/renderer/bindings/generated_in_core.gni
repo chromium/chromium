@@ -1416,8 +1416,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sanitizer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_screen.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_screen.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_script_wrappable_task_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_script_wrappable_task_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event.cc",

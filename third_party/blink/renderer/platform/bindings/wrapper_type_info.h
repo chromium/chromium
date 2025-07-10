@@ -78,9 +78,9 @@ constexpr v8::CppHeapPointerTagRange kScriptWrappableOrGinWrappableTagRange(
 
 enum class CppHeapExternalTag : std::underlying_type_t<v8::CppHeapPointerTag> {
   kFirst = 1,
-  kWrappableTaskStateTag = kFirst,
+  kTaskAttributionTaskStateTag = kFirst,
 
-  kLastTag = kWrappableTaskStateTag
+  kLastTag = kTaskAttributionTaskStateTag
 };
 
 static_assert(static_cast<std::underlying_type_t<v8::CppHeapPointerTag>>(

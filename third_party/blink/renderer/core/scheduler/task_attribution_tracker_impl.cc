@@ -12,8 +12,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -66,9 +66,9 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
 
 scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
     const {
-  if (ScriptWrappableTaskStateBase* task_state =
-          ScriptWrappableTaskState::GetCurrent(isolate_)) {
-    return task_state->WrappedState()->GetTaskAttributionInfo();
+  if (TaskAttributionTaskState* task_state =
+          TaskAttributionTaskState::GetCurrent(isolate_)) {
+    return task_state->GetTaskAttributionInfo();
   }
   // There won't be a running task outside of a `TaskScope` or microtask
   // checkpoint.
@@ -102,12 +102,9 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
 
-  ScriptWrappableTaskStateBase* previous_task_state =
-      ScriptWrappableTaskState::GetCurrent(isolate_);
-  WrappableTaskState* previous_unwrapped_task_state =
-      previous_task_state ? previous_task_state->WrappedState() : nullptr;
-
-  WrappableTaskState* running_task_state = nullptr;
+  TaskAttributionTaskState* previous_task_state =
+      TaskAttributionTaskState::GetCurrent(isolate_);
+  TaskAttributionTaskState* running_task_state = nullptr;
   if (continuation_context) {
     running_task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         task_state, continuation_context);
@@ -117,17 +114,16 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     running_task_state = To<TaskAttributionInfoImpl>(task_state);
   }
 
-  if (running_task_state != previous_unwrapped_task_state) {
-    ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
+  if (running_task_state != previous_task_state) {
+    TaskAttributionTaskState::SetCurrent(script_state, running_task_state);
   }
 
   TaskAttributionInfo* current =
       running_task_state ? running_task_state->GetTaskAttributionInfo()
                          : nullptr;
   TaskAttributionInfo* previous =
-      previous_unwrapped_task_state
-          ? previous_unwrapped_task_state->GetTaskAttributionInfo()
-          : nullptr;
+      previous_task_state ? previous_task_state->GetTaskAttributionInfo()
+                          : nullptr;
 
   // Fire observer callbacks after updating the CPED to keep
   // `CurrentTaskState()` in sync with what is passed to the observer.
@@ -179,7 +175,7 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
 
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
     const TaskScope& task_scope) {
-  ScriptWrappableTaskState::SetCurrent(task_scope.script_state_,
+  TaskAttributionTaskState::SetCurrent(task_scope.script_state_,
                                        task_scope.previous_task_state_);
   TRACE_EVENT_END("scheduler");
 }

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
@@ -18,12 +18,12 @@ class SchedulerTaskContext;
 class SoftNavigationContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
-    : public WrappableTaskState,
+    : public TaskAttributionTaskState,
       public scheduler::TaskAttributionInfo {
  public:
   TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);
 
-  // `WrappableTaskState` implementation:
+  // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
   SchedulerTaskContext* GetSchedulerTaskContext() override;
 

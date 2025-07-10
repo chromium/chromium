@@ -566,7 +566,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/scheduler/scheduler.idl",
   "//third_party/blink/renderer/core/scheduler/scheduler_post_task_callback.idl",
   "//third_party/blink/renderer/core/scheduler/scheduler_post_task_options.idl",
-  "//third_party/blink/renderer/core/scheduler/script_wrappable_task_state.idl",
   "//third_party/blink/renderer/core/scheduler/task_controller.idl",
   "//third_party/blink/renderer/core/scheduler/task_controller_init.idl",
   "//third_party/blink/renderer/core/scheduler/task_priority_change_event.idl",

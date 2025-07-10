@@ -18,8 +18,8 @@
 #include "third_party/blink/renderer/core/scheduler/dom_task_continuation.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
-#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -194,13 +194,13 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
 
 SchedulerTaskContext* DOMScheduler::GetSchedulerTaskContextForYield() {
   auto* inherited_state =
-      ScriptWrappableTaskState::GetCurrent(GetExecutionContext()->GetIsolate());
+      TaskAttributionTaskState::GetCurrent(GetExecutionContext()->GetIsolate());
   if (!inherited_state) {
     return nullptr;
   }
 
   SchedulerTaskContext* task_context =
-      inherited_state->WrappedState()->GetSchedulerTaskContext();
+      inherited_state->GetSchedulerTaskContext();
   if (!task_context) {
     return nullptr;
   }
@@ -251,7 +251,7 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       scheduler::TaskAttributionId(task_id),
       /*soft_navigation_context=*/nullptr);
-  ScriptWrappableTaskState::SetCurrent(script_state, task_state);
+  TaskAttributionTaskState::SetCurrent(script_state, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.
   CHECK(scheduler);
@@ -260,7 +260,7 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
   scheduler->ExecuteAfterCurrentTaskForTesting(
       WTF::BindOnce(
           [](ScriptState* script_state) {
-            ScriptWrappableTaskState::SetCurrent(script_state, nullptr);
+            TaskAttributionTaskState::SetCurrent(script_state, nullptr);
           },
           WrapPersistent(script_state)),
       ExecuteAfterCurrentTaskRestricted{});

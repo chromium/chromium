@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
-#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -181,7 +181,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   } else {
     auto* task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         /*TaskAttributionInfo=*/nullptr, scheduler_task_context_);
-    ScriptWrappableTaskState::SetCurrent(script_state, task_state);
+    TaskAttributionTaskState::SetCurrent(script_state, task_state);
   }
 
   execution_state_ = ExecutionState::kRunningSync;
@@ -206,7 +206,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // If this is a worker, clear the context to prevent it from leaking to the
   // next task (`task_attribution_scope` handles this on the main thread).
   if (!tracker) {
-    ScriptWrappableTaskState::SetCurrent(script_state, nullptr);
+    TaskAttributionTaskState::SetCurrent(script_state, nullptr);
   }
 }
 
