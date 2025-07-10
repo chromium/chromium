@@ -356,6 +356,7 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<actions::ActionId> types_enabled = {
+      kActionShowPasswordsBubbleOrPage,
       kActionShowTranslate,
       kActionZoomNormal,
       kActionShowFileSystemAccess,
