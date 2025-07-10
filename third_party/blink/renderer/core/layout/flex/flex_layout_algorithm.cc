@@ -2725,8 +2725,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           if (row_break_status == BreakStatus::kBrokeBefore) {
             // If a gap overlaps a break, or is the last content before a break,
             // suppress it.
-            UpdateOffsetAdjustmentForSuppressedRowGap(flex_line_idx,
-                                                      flex_lines);
+            UpdateOffsetAdjustmentForSuppressedRowGap(
+                offset_in_stitched_container, flex_line_idx, flex_lines);
 
             ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                                &flex_line);
@@ -3022,12 +3022,18 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
 }
 
 void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
+    LayoutUnit offset_in_stitched_container,
     wtf_size_t flex_line_idx,
     FlexLineVector* flex_lines) const {
   CHECK(!is_column_);
   // Return early if this is the first row or there are no row gaps specified
   // since there will be no gaps to suppress.
   if (flex_line_idx == 0 || gap_between_lines_ == LayoutUnit()) {
+    return;
+  }
+
+  // Return early if we're in a fragmentainer with an unknown block size.
+  if (!GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
     return;
   }
 
@@ -3048,11 +3054,20 @@ void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
   } else {
     // If the break isn't forced, part of the row gap may have already been
     // consumed in this fragmentainer. We only suppress the unconsumed portion.
-    CHECK_GE(gap_between_lines_,
-             FragmentainerSpaceAvailable(intrinsic_block_size_));
+
+    // The available space should be dependent on previous row's block end
+    // relative to this fragmentainer. This allows us to determine the actual
+    // available space and how much of the gap is actually consumed in this
+    // fragmentainer.
+    LayoutUnit prev_flex_line_end =
+        (*flex_lines)[flex_line_idx - 1].LineCrossEnd() -
+        offset_in_stitched_container;
+    LayoutUnit available_space =
+        (FragmentainerSpaceLeftForChildren() - prev_flex_line_end)
+            .ClampNegativeToZero();
+    CHECK_GE(gap_between_lines_, available_space);
     (*flex_lines)[flex_line_idx].item_offset_adjustment -=
-        (gap_between_lines_ -
-         FragmentainerSpaceAvailable(intrinsic_block_size_));
+        (gap_between_lines_ - available_space);
   }
 }
 

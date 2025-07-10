@@ -90,6 +90,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // function calculates the gap that would otherwise appear at the top of the
   // next fragmentainer.
   void UpdateOffsetAdjustmentForSuppressedRowGap(
+      LayoutUnit offset_in_stitched_container,
       wtf_size_t flex_line_idx,
       FlexLineVector* flex_lines) const;
 
