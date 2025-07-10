@@ -72,14 +72,14 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
 LayoutUnit ComputeCharacterWidthAtOffset(const InlineCursor& cursor,
                                          unsigned offset,
                                          const ComputedStyle& style) {
-  const LocalFrameView* frame_view =
-      cursor.Current().GetLayoutObject()->GetFrameView();
   unsigned cluster_size =
       LengthOfGraphemeCluster(cursor.CurrentText().ToString(), offset);
+  // The width calculation takes into account font information from style.
+  // The zoom value is baked into the font size already.
   float width = ComputeTextWidth(
       StringView(cursor.CurrentText(), offset, cluster_size), style);
 
-  return frame_view->ScaleCssPixelForCaret(width);
+  return LayoutUnit(width);
 }
 
 LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,

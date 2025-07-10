@@ -4670,11 +4670,6 @@ LayoutUnit LocalFrameView::BarCaretWidth() const {
       1.0f, GetChromeClient()->WindowToViewportScalar(&GetFrame(), 1.0f)));
 }
 
-LayoutUnit LocalFrameView::ScaleCssPixelForCaret(float width) const {
-  return LayoutUnit(std::max<float>(
-      width, GetChromeClient()->WindowToViewportScalar(&GetFrame(), width)));
-}
-
 void LocalFrameView::RegisterTapEvent(Element* target) {
   if (tap_friendliness_checker_) {
     tap_friendliness_checker_->RegisterTapEvent(target);

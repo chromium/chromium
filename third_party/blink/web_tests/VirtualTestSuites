@@ -2918,7 +2918,9 @@
     "bases": [
       "fast/events/synthetic-events",
       "fast/events/wheel/wheelevent-in-scrolling-div.html",
-      "fast/hidpi/static"
+      "fast/hidpi/static",
+      "external/wpt/css/css-ui/caret-shape-block-zoom.html",
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2953,7 +2955,9 @@
       "fast/hidpi/static",
       "http/tests/csspaint/hidpi",
       "http/tests/inspector-protocol/page/page-captureScreenshot-clip-emulation.js",
-      "inspector-protocol/emulation/device-emulation-no-size.js"
+      "inspector-protocol/emulation/device-emulation-no-size.js",
+      "external/wpt/css/css-ui/caret-shape-block-zoom.html",
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
