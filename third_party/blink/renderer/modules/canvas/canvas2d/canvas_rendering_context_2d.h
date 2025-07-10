@@ -264,6 +264,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
@@ -320,7 +321,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ColorSchemeMayHaveChanged() override;
 
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
 
