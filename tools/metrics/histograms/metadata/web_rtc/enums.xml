@@ -109,6 +109,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="L1T3"/>
 </enum>
 
+<enum name="FullScreenDetectorResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="FailureDueToSameTitleWindows"/>
+</enum>
+
 <enum name="GenerateCertificateAlgorithms">
   <int value="0" label="ECDSA-P256"/>
   <int value="1" label="RSA-1024"/>

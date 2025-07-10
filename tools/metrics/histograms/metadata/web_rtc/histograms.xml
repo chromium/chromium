@@ -1743,7 +1743,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebRTC.Screenshare.DesktopCapturerFullscreenDetector"
     enum="Boolean" expires_after="2025-11-16">
   <owner>kron@chromium.org</owner>
-  <owner>webrtc-video@google.com</owner>
+  <owner>agpalak@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Tracks the usage of the WebRTC Fullscreen Detector. The Fullscreen Detector
     is used when capturing presentation applications such as PowerPoint. If the
@@ -1752,6 +1753,18 @@ chromium-metrics-reviews@google.com.
     is captured. Once the slideshow stops, the editor will be captured again.
     This is recorded the first time this feature is activated, but only once per
     screensharing session.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Screenshare.FullScreenDetectorResult"
+    enum="FullScreenDetectorResult" expires_after="2026-06-16">
+  <owner>agpalak@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Tracks the usage of the WebRTC FullScreen Detector heuristic. The Fullscreen
+    Detector is used when capturing presentation applications such as
+    PowerPoint. This histogram records an enum that tracks if the heuristic was
+    used or not to find the corresponding full screen window.
   </summary>
 </histogram>
 
