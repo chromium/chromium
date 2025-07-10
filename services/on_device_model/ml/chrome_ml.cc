@@ -63,6 +63,12 @@ void FatalGpuErrorFn(const char* msg) {
   msg_continued =
       msg_continued.substr(std::min(kCrashStringSize, msg_continued.size()));
   SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg4", msg_continued);
+  msg_continued =
+      msg_continued.substr(std::min(kCrashStringSize, msg_continued.size()));
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg5", msg_continued);
+  msg_continued =
+      msg_continued.substr(std::min(kCrashStringSize, msg_continued.size()));
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg6", msg_continued);
 
   GpuErrorReason error_reason = GpuErrorReason::kOther;
   if (msg_str.find("DXGI_ERROR_DEVICE_HUNG") != std::string::npos) {
