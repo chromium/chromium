@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/pulse/pulse_util.h"
 
 #include <stdint.h>
@@ -135,7 +140,7 @@ void InputBusCallback(pa_context* context,
     return;
   }
 
-  if (info->name == *data->name_ &&
+  if (strcmp(info->name, data->name_->c_str()) == 0 &&
       pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH)) {
     data->bus_ = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH);
   }
@@ -154,8 +159,8 @@ void OutputBusCallback(pa_context* context,
   }
 
   if (pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH) &&
-      pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH) ==
-          *data->bus_) {
+      strcmp(pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH),
+             data->bus_->c_str()) == 0) {
     data->name_ = info->name;
   }
 }
@@ -359,14 +364,13 @@ pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout) {
     pa_channel_map_init(&channel_map);
 
     channel_map.channels = ChannelLayoutToChannelCount(channel_layout);
-    base::span channel_map_span(channel_map.map);
     for (Channels ch = LEFT; ch <= CHANNELS_MAX;
          ch = static_cast<Channels>(ch + 1)) {
       int channel_index = ChannelOrder(channel_layout, ch);
       if (channel_index < 0)
         continue;
 
-      channel_map_span[channel_index] = ChromiumToPAChannelPosition(ch);
+      channel_map.map[channel_index] = ChromiumToPAChannelPosition(ch);
     }
   }
 

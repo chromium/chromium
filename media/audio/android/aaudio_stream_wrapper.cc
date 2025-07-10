@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/android/aaudio_stream_wrapper.h"
 
 #include <aaudio/AAudio.h>
-
-#include <array>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -97,9 +100,8 @@ static REQUIRES_ANDROID_API(AAUDIO_MIN_API) void OnStreamErrorCallback(
 }
 
 // Matches the ordering of media::Channels.
-static constexpr REQUIRES_ANDROID_API(
-    AAUDIO_CHANNEL_MASK_MIN_API) auto kMediaChannelToAAudioChannel =
-    std::to_array<uint32_t>({
+static constexpr REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API) uint32_t
+    kMediaChannelToAAudioChannel[] = {
         AAUDIO_CHANNEL_FRONT_LEFT,
         AAUDIO_CHANNEL_FRONT_RIGHT,
         AAUDIO_CHANNEL_FRONT_CENTER,
@@ -111,7 +113,7 @@ static constexpr REQUIRES_ANDROID_API(
         AAUDIO_CHANNEL_BACK_CENTER,
         AAUDIO_CHANNEL_SIDE_LEFT,
         AAUDIO_CHANNEL_SIDE_RIGHT,
-    });
+};
 
 REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
 std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(

@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -75,6 +74,9 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Called in Open();
   void SetupAudioBuffer();
 
+  // Called in Close();
+  void ReleaseAudioBuffer();
+
   // If OpenSLES reports an error this function handles it and passes it to
   // the attached AudioOutputCallback::OnError().
   void HandleError(SLresult error);
@@ -114,7 +116,7 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
 
   // Audio buffers that are allocated during Open() based on parameters given
   // during construction.
-  std::array<base::HeapArray<uint8_t>, kMaxNumOfBuffersInQueue> audio_data_;
+  uint8_t* audio_data_[kMaxNumOfBuffersInQueue];
 
   int active_buffer_index_;
 

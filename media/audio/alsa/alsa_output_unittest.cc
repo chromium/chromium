@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/audio/alsa/alsa_output.h"
 
 #include <stdint.h>
 
 #include <memory>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -132,23 +136,13 @@ class AlsaPcmOutputStreamTest : public testing::Test {
   }
 
   // Helper function to malloc the string returned by DeviceNameHint for NAME.
-  static AlsaWrapper::ScopedAlsaString EchoHint(const void* name, Unused) {
-    const char* data = static_cast<const char*>(name);
-    // SAFETY: `name` ends with '\0', so we can use the length measurement
-    // method of C language.
-    return UNSAFE_BUFFERS(
-        base::HeapArray<char, base::FreeDeleter>::FromOwningPointer(
-            strdup(data), std::char_traits<char>::length(data)));
+  static char* EchoHint(const void* name, Unused) {
+    return strdup(static_cast<const char*>(name));
   }
 
   // Helper function to malloc the string returned by DeviceNameHint for IOID.
-  static AlsaWrapper::ScopedAlsaString OutputHint(Unused, Unused) {
-    static constexpr std::string_view output = "Output";
-    // SAFETY: `output` comes from a static string. Its length is fixed.
-    // `strdup` does not change the length.
-    return UNSAFE_BUFFERS(
-        base::HeapArray<char, base::FreeDeleter>::FromOwningPointer(
-            strdup(output.data()), output.size()));
+  static char* OutputHint(Unused, Unused) {
+    return strdup("Output");
   }
 
   // Helper function to initialize |test_stream->buffer_|. Must be called

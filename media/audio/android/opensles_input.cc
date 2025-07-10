@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/android/opensles_input.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <algorithm>
+#include "media/audio/android/opensles_input.h"
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -55,7 +58,7 @@ OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
   hardware_delay_ = base::Seconds(params.frames_per_buffer() /
                                   static_cast<double>(params.sample_rate()));
 
-  std::ranges::fill(audio_data_, nullptr);
+  memset(&audio_data_, 0, sizeof(audio_data_));
 }
 
 OpenSLESInputStream::~OpenSLESInputStream() {

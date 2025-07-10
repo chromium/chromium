@@ -20,9 +20,7 @@ class MockAlsaWrapper : public AlsaWrapper {
   ~MockAlsaWrapper() override;
 
   MOCK_METHOD3(DeviceNameHint, int(int card, const char* iface, void*** hints));
-  MOCK_METHOD2(DeviceNameGetHint,
-               base::HeapArray<char, base::FreeDeleter>(const void* hint,
-                                                        const char* id));
+  MOCK_METHOD2(DeviceNameGetHint, char*(const void* hint, const char* id));
   MOCK_METHOD1(DeviceNameFreeHint, int(void** hints));
   MOCK_METHOD1(CardNext, int(int* rcard));
   MOCK_METHOD4(PcmOpen,
@@ -137,7 +135,7 @@ class MockAlsaWrapper : public AlsaWrapper {
   MOCK_METHOD1(MixerFirstElem, snd_mixer_elem_t*(snd_mixer_t* mixer));
   MOCK_METHOD1(MixerNextElem, snd_mixer_elem_t*(snd_mixer_elem_t* elem));
   MOCK_METHOD1(MixerSelemIsActive, int(snd_mixer_elem_t* elem));
-  MOCK_METHOD1(MixerSelemName, std::string_view(snd_mixer_elem_t* elem));
+  MOCK_METHOD1(MixerSelemName, const char*(snd_mixer_elem_t* elem));
   MOCK_METHOD2(MixerSelemSetCaptureVolumeAll,
                int(snd_mixer_elem_t* elem, long value));
   MOCK_METHOD3(MixerSelemGetCaptureVolume,

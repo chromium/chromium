@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/pulse/pulse_input.h"
 
 #include <stdint.h>
 
-#include <algorithm>
-
 #include "base/check.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/pulse/audio_manager_pulse.h"
@@ -283,9 +285,12 @@ void PulseAudioInputStream::VolumeCallback(pa_context* context,
   if (stream->channels_ != info->channel_map.channels)
     stream->channels_ = info->channel_map.channels;
 
+  pa_volume_t volume = PA_VOLUME_MUTED;  // Minimum possible value.
   // Use the max volume of any channel as the volume.
-  pa_volume_t volume = std::ranges::max(
-      base::span(info->volume.values).first(info->volume.channels));
+  for (int i = 0; i < stream->channels_; ++i) {
+    if (volume < info->volume.values[i])
+      volume = info->volume.values[i];
+  }
 
   // It is safe to access |volume_| here since VolumeCallback() is running
   // under PulseLock.
