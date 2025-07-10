@@ -1010,18 +1010,11 @@ class NavigatingExtensionPopupInteractiveTest
     GURL popup_url = popup_extension().GetResourceURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
 
-    // Note that the |setTimeout| call below is needed to make sure EvalJs
-    // returns *after* a scheduled navigation has already started.
-    std::string script_to_execute = navigation_starting_script +
-                                    "new Promise(resolve => {\n"
-                                    "  setTimeout(\n"
-                                    "    function() { resolve(true); },\n"
-                                    "    0);\n"
-                                    "});\n";
-
     // Try to navigate the pop-up.
+    content::TestNavigationObserver navigation_observer(popup);
     content::WebContentsDestroyedWatcher popup_destruction_watcher(popup);
-    EXPECT_TRUE(ExecJs(popup, script_to_execute));
+    EXPECT_TRUE(ExecJs(popup, navigation_starting_script));
+    navigation_observer.Wait();
     popup = popup_destruction_watcher.web_contents();
 
     // Verify if the popup navigation succeeded or failed as expected.
