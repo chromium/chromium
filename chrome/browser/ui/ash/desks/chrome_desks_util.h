@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-class Browser;
 class TabGroupModel;
 
 namespace ash {
@@ -38,7 +37,8 @@ void AttachTabGroupsToBrowserInstance(
     ash::BrowserDelegate* browser);
 
 // Sets tabs in `browser` to be pinned up to the `first_non_pinned_tab_index`.
-void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index, Browser* browser);
+void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index,
+                          ash::BrowserDelegate* browser);
 
 }  // namespace chrome_desks_util
 

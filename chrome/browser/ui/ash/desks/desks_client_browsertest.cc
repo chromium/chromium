@@ -544,8 +544,9 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
                                        int first_non_pinned_tab_index) {
     Browser* browser = ash::test::CreateBrowser(profile(), urls, std::nullopt);
 
-    chrome_desks_util::SetBrowserPinnedTabs(first_non_pinned_tab_index,
-                                            browser);
+    chrome_desks_util::SetBrowserPinnedTabs(
+        first_non_pinned_tab_index,
+        ash::BrowserController::GetInstance()->GetDelegate(browser));
     browser->window()->Show();
     return browser;
   }

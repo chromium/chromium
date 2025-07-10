@@ -103,6 +103,9 @@ class BrowserDelegate {
   // Creates the specified tab group.
   virtual void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) = 0;
 
+  // Pins the given tab.
+  virtual void PinTab(size_t tab_index) = 0;
+
  protected:
   ~BrowserDelegate() = default;
 };

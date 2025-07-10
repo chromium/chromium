@@ -287,7 +287,8 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
           browser_extra_info.first_non_pinned_tab_index.value() <=
               static_cast<int>(urls.size())) {
         chrome_desks_util::SetBrowserPinnedTabs(
-            browser_extra_info.first_non_pinned_tab_index.value(), browser);
+            browser_extra_info.first_non_pinned_tab_index.value(),
+            ash::BrowserController::GetInstance()->GetDelegate(browser));
       }
 
       // We need to handle minimized windows separately since unlike other

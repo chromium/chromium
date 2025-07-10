@@ -120,4 +120,9 @@ void BrowserDelegateImpl::CreateTabGroup(
   tab_strip_model->ChangeTabGroupVisuals(new_group_id, tab_group.visual_data);
 }
 
+void BrowserDelegateImpl::PinTab(size_t tab_index) {
+  browser_->tab_strip_model()->SetTabPinned(static_cast<int>(tab_index),
+                                            /*pinned=*/true);
+}
+
 }  // namespace ash

@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
@@ -41,13 +39,10 @@ void AttachTabGroupsToBrowserInstance(
 }
 
 void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index,
-                          Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-
-  DCHECK(first_non_pinned_tab_index <= tab_strip_model->count());
+                          ash::BrowserDelegate* browser) {
   for (int32_t tab_index = 0; tab_index < first_non_pinned_tab_index;
        tab_index++) {
-    tab_strip_model->SetTabPinned(tab_index, /*pinned=*/true);
+    browser->PinTab(tab_index);
   }
 }
 
