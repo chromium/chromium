@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.AnimRes;
 import androidx.appcompat.widget.Toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,6 +31,7 @@ import org.chromium.ui.display.DisplayUtil;
  * The automotive back button toolbar allows users to navigate backwards. This coordinator supports
  * the back button toolbar disappearing on fullscreen, appearing on swipe.
  */
+@NullMarked
 public class AutomotiveBackButtonToolbarCoordinator {
     /** Duration automotive back button toolbar is visible after a valid swipe */
     private static final long SHOW_TOOLBAR_ON_SWIPE_DURATION_MS = 10000;
@@ -199,6 +201,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
     }
 
     /** Destroy the Automotive Back Button Toolbar coordinator and its components. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mHideOnSwipeToolbarAnimation.cancel();
         mShowOnSwipeToolbarAnimation.cancel();

@@ -8,16 +8,17 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 
 /**
  * This observer to listen to motion events, and determine whenever a valid swipe occurs (i.e. from
  * the correct edge and the correct length). Triggers a callback whenever valid swipe occurs.
  */
+@NullMarked
 @SuppressWarnings("UnusedVariable") // Remove once implementation is complete.
 public class EdgeSwipeGestureDetector implements TouchEventObserver {
     // Width of back button toolbar in dp on the left edge used for navigation.
@@ -45,7 +46,7 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
                 @Override
                 public boolean onScroll(
                         @Nullable MotionEvent startMotion,
-                        @NonNull MotionEvent currentMotion,
+                        MotionEvent currentMotion,
                         float distanceX,
                         float distanceY) {
                     if (!mIsReadyForNewScroll || startMotion == null) {

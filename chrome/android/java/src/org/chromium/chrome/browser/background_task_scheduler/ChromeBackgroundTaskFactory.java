@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.background_task_scheduler;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchBackgroundTask;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
@@ -26,9 +29,10 @@ import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.UpdateTask;
 
 /**
- * Implementation of {@link BackgroundTaskFactory} for //chrome.
- * Maps all task ids used in //chrome with their BackgroundTask classes.
+ * Implementation of {@link BackgroundTaskFactory} for //chrome. Maps all task ids used in //chrome
+ * with their BackgroundTask classes.
  */
+@NullMarked
 public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
     private static final String TAG = "ChromeBkgrdTaskF";
 
@@ -97,8 +101,10 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 // ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId
                 // to link to the real task.
             default:
-                Log.w(TAG, "Unable to find BackgroundTask class for task id " + taskId);
-                return null;
+                String errorMessage = "Unable to find BackgroundTask class for task id " + taskId;
+                Log.w(TAG, errorMessage);
+                assert false : errorMessage;
+                return assumeNonNull(null);
         }
     }
 }

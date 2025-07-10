@@ -8,6 +8,8 @@ import org.chromium.base.Log;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -18,6 +20,7 @@ import org.chromium.components.background_task_scheduler.NativeBackgroundTaskDel
 /**
  * Chrome implementation of {@link NativeBackgroundTaskDelegate} that handles native initialization.
  */
+@NullMarked
 public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskDelegate {
     private static final String TAG = "BTS_NativeBkgrdTask";
 
@@ -37,7 +40,7 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
                     }
 
                     @Override
-                    public void onStartupFailure(Exception failureCause) {
+                    public void onStartupFailure(@Nullable Exception failureCause) {
                         PostTask.postTask(TaskTraits.UI_DEFAULT, onFailure);
                     }
                 };
