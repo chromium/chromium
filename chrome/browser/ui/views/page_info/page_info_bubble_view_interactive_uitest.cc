@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "url/origin.h"
 
@@ -629,3 +632,54 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   ResetSmartCardReaderGrants();
 }
 #endif
+
+#if BUILDFLAG(IS_MAC)
+// Test that when clipboard permission is denied at the platform level (e.g.,
+// macOS pasteboard permission), the Page Info bubble shows the correct system
+// settings message with a link to open system settings. This verifies the
+// clipboard platform permission UI integration works like camera/microphone.
+// This test is restricted to macOS as clipboard system permissions are only
+// supported on that platform.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
+                       ClipboardPermissionSystemSettingsTest) {
+  // Mock clipboard permission denied at platform level
+  system_permission_settings::ScopedSettingsForTesting clipboard_denied(
+      ContentSettingsType::CLIPBOARD_READ_WRITE, /*blocked=*/true);
+
+  // Set clipboard permission to Allow in content settings to trigger
+  // the system permission check
+  SetPermission(ContentSettingsType::CLIPBOARD_READ_WRITE,
+                CONTENT_SETTING_ALLOW);
+
+  RunTestSequenceInContext(
+      context(), NavigateAndOpenPageInfo(),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // A view with permissions in PageInfo
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Clipboard
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CLIPBOARD)),
+      // Verify the toggle is on (content setting is Allow)
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetToggleButtonStateForTesting, true),
+      // Verify the content setting is Allow
+      CheckContentSettings(ContentSettingsType::CLIPBOARD_READ_WRITE,
+                           CONTENT_SETTING_ALLOW),
+      // Verify that the system settings description appears in the blocked at
+      // system level label
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId),
+      CheckViewProperty(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId,
+          &views::StyledLabel::GetText,
+          u"To use your clipboard, give Chrome access in system settings."));
+}
+#endif  // BUILDFLAG(IS_MAC)

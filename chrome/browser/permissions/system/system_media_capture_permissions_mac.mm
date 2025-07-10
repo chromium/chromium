@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 
 #import <AVFoundation/AVFoundation.h>
+#import <Cocoa/Cocoa.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -130,6 +131,33 @@ SystemPermission CheckSystemVideoCapturePermission() {
 SystemPermission CheckSystemScreenCapturePermission() {
   return IsScreenCaptureAllowed() ? SystemPermission::kAllowed
                                   : SystemPermission::kDenied;
+}
+
+SystemPermission CheckSystemClipboardPermission() {
+  // Check macOS system privacy settings for programmatic clipboard access using
+  // the accessBehavior property available in macOS 15.4+. These settings only
+  // affect programmatic access - direct user actions like ⌘V always work.
+
+  if (@available(macOS 15.4, *)) {
+    NSPasteboardAccessBehavior access_behavior =
+        [NSPasteboard generalPasteboard].accessBehavior;
+
+    switch (access_behavior) {
+      case NSPasteboardAccessBehaviorAlwaysAllow:
+        return SystemPermission::kAllowed;
+      case NSPasteboardAccessBehaviorAlwaysDeny:
+        return SystemPermission::kDenied;
+      case NSPasteboardAccessBehaviorAsk:
+        return SystemPermission::kNotDetermined;
+      case NSPasteboardAccessBehaviorDefault:
+        // Default behavior for the General pasteboard is to ask upon
+        // programmatic access
+        return SystemPermission::kNotDetermined;
+    }
+  } else {
+    // The behavior of older macOS versions is effectively kAllowed.
+    return SystemPermission::kAllowed;
+  }
 }
 
 void RequestSystemAudioCapturePermission(base::OnceClosure callback) {

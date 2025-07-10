@@ -575,6 +575,12 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
         pane_file = @"/System/Library/PreferencePanes/Trackpad.prefPane";
       }
       break;
+    case SystemSettingsPane::kPrivacySecurity_Pasteboard:
+      // Pasteboard permissions were added in macOS 15.
+      DCHECK_GE(MacOSMajorVersion(), 15);
+      url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+            @"extension?Privacy_Pasteboard";
+      break;
   }
 
   DCHECK(url != nil ^ pane_file != nil);

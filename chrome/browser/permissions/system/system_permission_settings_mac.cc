@@ -57,6 +57,9 @@ class PlatformHandleImpl : public PlatformHandle {
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kNotDetermined;
+      case ContentSettingsType::CLIPBOARD_READ_WRITE:
+        return prompt(
+            system_permission_settings::CheckSystemClipboardPermission());
       default:
         return false;
     }
@@ -75,6 +78,9 @@ class PlatformHandleImpl : public PlatformHandle {
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kDenied;
+      case ContentSettingsType::CLIPBOARD_READ_WRITE:
+        return denied(
+            system_permission_settings::CheckSystemClipboardPermission());
       default:
         return false;
     }
@@ -93,6 +99,9 @@ class PlatformHandleImpl : public PlatformHandle {
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
                device::LocationSystemPermissionStatus::kAllowed;
+      case ContentSettingsType::CLIPBOARD_READ_WRITE:
+        return allowed(
+            system_permission_settings::CheckSystemClipboardPermission());
       default:
         return true;
     }
@@ -126,6 +135,12 @@ class PlatformHandleImpl : public PlatformHandle {
       case ContentSettingsType::GEOLOCATION: {
         device::GeolocationSystemPermissionManager::GetInstance()
             ->OpenSystemPermissionSetting();
+        return;
+      }
+      case ContentSettingsType::CLIPBOARD_READ_WRITE: {
+        // Open Privacy & Security settings for clipboard/pasteboard permissions
+        base::mac::OpenSystemSettingsPane(
+            base::mac::SystemSettingsPane::kPrivacySecurity_Pasteboard);
         return;
       }
       default:
@@ -162,6 +177,14 @@ class PlatformHandleImpl : public PlatformHandle {
           CHECK_DEREF(device::GeolocationSystemPermissionManager::GetInstance())
               .RequestSystemPermission();
         }
+        return;
+      }
+      case ContentSettingsType::CLIPBOARD_READ_WRITE: {
+        // Clipboard doesn't have a system permission request mechanism like
+        // camera/microphone. The permission is granted when the app is first
+        // used or can be managed in System Settings > Privacy & Security.
+        // For now, just invoke the callback to indicate completion.
+        std::move(callback).Run();
         return;
       }
       default:

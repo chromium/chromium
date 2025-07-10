@@ -135,6 +135,9 @@ enum class SystemSettingsPane {
   // Privacy & Security > Screen Recording
   kPrivacySecurity_ScreenRecording,
 
+  // Privacy & Security > Pasteboard
+  kPrivacySecurity_Pasteboard,
+
   // Trackpad
   kTrackpad,
 };

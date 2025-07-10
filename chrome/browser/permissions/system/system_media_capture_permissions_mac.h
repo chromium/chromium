@@ -28,6 +28,9 @@ SystemPermission CheckSystemVideoCapturePermission();
 // Returns the system permission to capture the screen.
 SystemPermission CheckSystemScreenCapturePermission();
 
+// Returns the system permission to access the clipboard/pasteboard.
+SystemPermission CheckSystemClipboardPermission();
+
 // Requests the system permission to capture audio or video. This call
 // immediately returns. When requesting permission, the OS will show a user
 // dialog and respond asynchronously. At the response, |callback| is posted as a

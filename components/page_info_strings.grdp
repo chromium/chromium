@@ -515,6 +515,9 @@
     <message name="IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the location permission with a link to system settings.">
         To use your location, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
     </message>
+    <message name="IDS_PAGE_INFO_CLIPBOARD_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the clipboard permission with a link to system settings.">
+        To use your clipboard, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
     <message name="IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK" desc="This is the text of the link pointing to settings of a system. This appears under a permission in the Page Info bubble if the permission is blocked on the system level.">
         system settings
     </message>
