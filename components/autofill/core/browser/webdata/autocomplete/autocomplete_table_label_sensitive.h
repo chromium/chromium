@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/346507576): After initial testing period this file should
+// replace existing autocomplete_table.h. Label sensitive prefix should
+// be dropped everywhere.
+
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_TABLE_LABEL_SENSITIVE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_TABLE_LABEL_SENSITIVE_H_
 
@@ -21,25 +25,76 @@ namespace autofill {
 
 class AutocompleteChangeLabelSensitive;
 class AutocompleteEntryLabelSensitive;
-class FormFieldData;
 
-// This class manages the Autocomplete table. The table in the SQLite database
-// is for historical reasons unfortunately named "autofill".
+enum class MatchingType {
+  kUnknown = 0,
+  kLabel = 1,
+  kName = 2,
+  kNameAndLabel = 3,
+  kMaxValue = kNameAndLabel,
+};
+
+constexpr MatchingType ToSafeMatchingType(
+    std::underlying_type_t<MatchingType> matching_type) {
+  const bool is_valid =
+      matching_type >= 0 &&
+      matching_type <= static_cast<int>(MatchingType::kMaxValue);
+  return is_valid ? static_cast<MatchingType>(matching_type)
+                  : MatchingType::kUnknown;
+}
+
+// This class encompasses all necessary information to present an autocomplete
+// suggestion in the UI layer and report appropriate metrics.
+class AutocompleteSearchResultLabelSensitive {
+ public:
+  AutocompleteSearchResultLabelSensitive(std::u16string value,
+                                         MatchingType matching_type,
+                                         int count);
+  ~AutocompleteSearchResultLabelSensitive();
+
+  // Getters
+  const std::u16string& value() const { return value_; }
+  MatchingType matching_type() const { return matching_type_; }
+  int count() const { return count_; }
+
+  bool operator==(const AutocompleteSearchResultLabelSensitive& other) const {
+    return value_ == other.value_;
+  }
+
+  // Hash function used for deduplication of search results. Takes into
+  // account only the value of the string that can be filled.
+  template <typename H>
+  friend H AbslHashValue(H h,
+                         const AutocompleteSearchResultLabelSensitive& result) {
+    return H::combine(std::move(h), result.value());
+  }
+
+ private:
+  std::u16string value_;
+  MatchingType
+      matching_type_;  // Required for metrics. We want to know if the
+                       // suggestion was found via name, label, or both. Also
+                       // used in search query for ranking suggestions (both
+                       // name and label suggestions first).
+  int count_;
+};
+
+// This class manages the Autocomplete table.
 //
 // Note: The database stores time in seconds, UTC.
 // -----------------------------------------------------------------------------
-// autofill             This table contains autocomplete history data (not
+// autocomplete         This table contains autocomplete history data (not
 //                      structured information).
 //
-//   name               The name of the input as specified in the html.
+//   label              The label of the input as specified in the html.
 //   value              The literal contents of the text field.
 //   value_lower        The contents of the text field made lower_case.
 //   date_created       The date on which the user first entered the string
-//                      |value| into a field of name |name|.
+//                      |value| into a field of name |name| and label |label|.
 //   date_last_used     The date on which the user last entered the string
-//                      |value| into a field of name |name|.
+//                      |value| into a field of label |label|.
 //   count              How many times the user has entered the string |value|
-//                      in a field of name |name|.
+//                      in a field of name |name| and label |label|.
 // -----------------------------------------------------------------------------
 class AutocompleteTableLabelSensitive : public WebDatabaseTable {
  public:
@@ -72,14 +127,15 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
       std::vector<AutocompleteChangeLabelSensitive>* changes);
 
   // Retrieves a vector of all values which have been recorded in the
-  // autocomplete table as the value in a form element with name |name| and
-  // which start with |prefix|. The comparison of the prefix is case
+  // autocomplete table as the value in a form element with label |label|, name
+  // |name| and which start with |prefix|. The comparison of the prefix is case
   // insensitive.
-  bool GetFormValuesForElementName(
+  bool GetFormValuesForElementNameAndLabel(
       const std::u16string& name,
+      const std::u16string& label,
       const std::u16string& prefix,
       int limit,
-      std::vector<AutocompleteEntryLabelSensitive>& entries);
+      std::vector<AutocompleteSearchResultLabelSensitive>& entries);
 
   // Removes rows from the autocomplete table if they were created on or after
   // |delete_begin| and last used strictly before |delete_end|. For rows where
@@ -99,9 +155,10 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   bool RemoveExpiredFormElements(
       std::vector<AutocompleteChangeLabelSensitive>& changes);
 
-  // Removes the row from the autocomplete table for the given |name| |value|
-  // pair.
+  // Removes the row from the autocomplete table for the given |name| |label|
+  // |value| triple.
   bool RemoveFormElement(const std::u16string& name,
+                         const std::u16string& label,
                          const std::u16string& value);
 
   // Returns the number of unique values such that for all autocomplete entries
@@ -116,6 +173,7 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   // Retrieves a single entry from the autocomplete table.
   std::optional<AutocompleteEntryLabelSensitive>
   GetAutocompleteEntryLabelSensitive(const std::u16string& name,
+                                     const std::u16string& label,
                                      const std::u16string& value);
 
   // Replaces existing autocomplete entries with the entries supplied in
@@ -125,7 +183,7 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
 
  private:
   bool AddFormFieldValueTime(
-      const autofill::FormFieldData& element,
+      const FormFieldData& element,
       base::Time time,
       std::vector<AutocompleteChangeLabelSensitive>* changes);
 

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/346507576): After initial testing period autofill_change.cc
+// should be edited to not include AutocompleteChange. This file should be
+// renamed to autocomplete_change.cc
+
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_change_label_sensitive.h"
 
 namespace autofill {

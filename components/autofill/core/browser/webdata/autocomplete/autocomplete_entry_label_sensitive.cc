@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/346507576): After initial testing period this file should
+// replace existing autocomplete_entry_label.cc. Label sensitive prefix should
+// be dropped everywhere.
+
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 
 #include <string>
@@ -14,17 +18,21 @@ AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive() = default;
 
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
     const std::u16string& name,
+    const std::u16string& label,
     const std::u16string& value)
-    : name_(name), value_(value) {}
+    : name_(name), label_(label), value_(value) {}
 
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
     const std::string& name,
+    const std::string& label,
     const std::string& value)
-    : name_(base::UTF8ToUTF16(name)), value_(base::UTF8ToUTF16(value)) {}
+    : name_(base::UTF8ToUTF16(name)),
+      label_(base::UTF8ToUTF16(label)),
+      value_(base::UTF8ToUTF16(value)) {}
 
 AutocompleteKeyLabelSensitive::AutocompleteKeyLabelSensitive(
     const AutocompleteKeyLabelSensitive& key)
-    : name_(key.name()), value_(key.value()) {}
+    : name_(key.name()), label_(key.label()), value_(key.value()) {}
 
 AutocompleteKeyLabelSensitive::~AutocompleteKeyLabelSensitive() = default;
 

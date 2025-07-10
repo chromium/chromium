@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/346507576): After initial testing period this file should
+// replace existing autocomplete_entry.h. Label sensitive prefix should
+// be dropped everywhere.
+
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_ENTRY_LABEL_SENSITIVE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_ENTRY_LABEL_SENSITIVE_H_
 
@@ -15,13 +19,16 @@ class AutocompleteKeyLabelSensitive {
  public:
   AutocompleteKeyLabelSensitive();
   AutocompleteKeyLabelSensitive(const std::u16string& name,
+                                const std::u16string& label,
                                 const std::u16string& value);
   AutocompleteKeyLabelSensitive(const std::string& name,
+                                const std::string& label,
                                 const std::string& value);
   AutocompleteKeyLabelSensitive(const AutocompleteKeyLabelSensitive& key);
   virtual ~AutocompleteKeyLabelSensitive();
 
   const std::u16string& name() const { return name_; }
+  const std::u16string& label() const { return label_; }
   const std::u16string& value() const { return value_; }
 
   friend auto operator<=>(const AutocompleteKeyLabelSensitive& lhs,
@@ -31,6 +38,7 @@ class AutocompleteKeyLabelSensitive {
 
  private:
   std::u16string name_;
+  std::u16string label_;
   std::u16string value_;
 };
 
