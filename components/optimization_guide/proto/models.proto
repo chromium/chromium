@@ -254,6 +254,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API = 62;
   // Target to determine whether to show the iOS default browser promo.
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO = 63;
+  // Target for education classifier.
+  OPTIMIZATION_TARGET_EDU_CLASSIFIER = 64;
 }
 
 // The model engine versions that can be used to do model inference.

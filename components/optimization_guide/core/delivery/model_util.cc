@@ -155,6 +155,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelExecutionFeatureProofreaderApi";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO:
       return "SegmentationIosDefaultBrowserPromo";
+    case proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER:
+      return "EduClassifier";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
