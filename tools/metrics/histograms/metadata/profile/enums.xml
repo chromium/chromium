@@ -358,7 +358,9 @@ chromium-metrics-reviews@google.com.
 <enum name="ProfileGaiaNameShareStatus">
   <int value="0" label="Not shared"/>
   <int value="1" label="Shared by non managed profiles"/>
-  <int value="2" label="Shared only by managed profiles"/>
+  <int value="2"
+      label="Appears at most once in non managed profiles, but shared when
+             including managed profiles"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/profiles/profile_metrics.h:GaiaNameShareStatus) -->
