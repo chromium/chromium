@@ -2652,24 +2652,6 @@
             ]
         }
     ],
-    "AutofillPopupZOrderSecuritySurface_V2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPopupZOrderSecuritySurface"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillRelaxAddressImport": [
         {
             "platforms": [
