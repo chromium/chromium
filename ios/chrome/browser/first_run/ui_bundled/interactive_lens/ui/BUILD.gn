@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "interactive_lens_overlay_promo_view_controller.h",
     "interactive_lens_overlay_promo_view_controller.mm",
+    "lens_overlay_promo_container_view_controller.h",
+    "lens_overlay_promo_container_view_controller.mm",
   ]
   deps = [
     "//base",

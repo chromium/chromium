@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/lens_overlay_promo_container_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -26,25 +27,34 @@ const CGFloat kLensViewHorizontalMargin = 20.0;
 // Height multipliers for the Lens view.
 const CGFloat kLensViewMinHeightMultiplier = 0.4;
 const CGFloat kLensViewMaxHeightMultiplier = 1.45;
-// Corner radius for the top two corners of the Lens view.
-const CGFloat kLensViewCornerRadius = 45.0;
 // Top margin for tip bubble.
 const CGFloat kBubbleViewTopMargin = 10.0;
 // Top margin for scroll view.
 const CGFloat kScrollViewTopMargin = 45.0;
+// Animation duration for the tip bubble.
+const CGFloat kBubbleViewAnimationDuration = 0.3;
 }  // namespace
+
+@interface InteractiveLensOverlayPromoViewController () <
+    LensOverlayPromoContainerViewControllerDelegate>
+
+@end
 
 @implementation InteractiveLensOverlayPromoViewController {
   // View for the tip bubble.
   BubbleView* _bubbleView;
   // View controller for the interactive Lens instance.
-  UIViewController* _lensViewController;
+  LensOverlayPromoContainerViewController* _lensViewController;
   // Scroll view containing the screen's title and subtitle.
   UIScrollView* _textScrollView;
   // Bottom anchor constraint for the tip bubble. The bubble should be
   // constrained to the lens view, but kept within the top padding area of the
   // Lens image.
   NSLayoutConstraint* _bubbleViewBottomConstraint;
+  // Whether the bubble is currently being hidden.
+  BOOL _isBubbleHiding;
+  // A list of gesture recognizers that were disabled.
+  NSMutableArray<UIGestureRecognizer*>* _disabledGestures;
 }
 
 @synthesize lensContainerViewController = _lensViewController;
@@ -53,7 +63,10 @@ const CGFloat kScrollViewTopMargin = 45.0;
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _lensViewController = [[UIViewController alloc] init];
+    _lensViewController =
+        [[LensOverlayPromoContainerViewController alloc] init];
+    _lensViewController.delegate = self;
+    _disabledGestures = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -105,16 +118,11 @@ const CGFloat kScrollViewTopMargin = 45.0;
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
 
   // Add and constrain the Lens view.
-  _lensViewController = [[UIViewController alloc] init];
   [_lensViewController willMoveToParentViewController:self];
   [self addChildViewController:_lensViewController];
   UIView* lensView = _lensViewController.view;
-  [view addSubview:lensView];
   lensView.translatesAutoresizingMaskIntoConstraints = NO;
-  lensView.layer.cornerRadius = kLensViewCornerRadius;
-  lensView.layer.masksToBounds = YES;
-  lensView.layer.maskedCorners =
-      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  [view addSubview:lensView];
 
   NSLayoutConstraint* lensViewTopAnchor =
       [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
@@ -170,6 +178,14 @@ const CGFloat kScrollViewTopMargin = 45.0;
   [self startBubbleAnimation];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  for (UIGestureRecognizer* gesture in _disabledGestures) {
+    gesture.enabled = YES;
+  }
+  [_disabledGestures removeAllObjects];
+}
+
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
@@ -185,6 +201,26 @@ const CGFloat kScrollViewTopMargin = 45.0;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [_textScrollView flashScrollIndicators];
+
+  // Disable the presentation controller's pan gesture.
+  // This prevents the sheet's pull-down gesture from interfering with
+  // the drawing functionality within the Lens view.
+  UIView* presentedView =
+      self.navigationController.presentationController.presentedView;
+  for (UIGestureRecognizer* gesture in presentedView.gestureRecognizers) {
+    if ([gesture isKindOfClass:[UIPanGestureRecognizer class]] &&
+        gesture.enabled) {
+      [_disabledGestures addObject:gesture];
+      gesture.enabled = NO;
+    }
+  }
+}
+
+#pragma mark - LensOverlayPromoContainerViewControllerDelegate
+
+- (void)lensOverlayPromoContainerViewControllerDidReceiveInteraction:
+    (LensOverlayPromoContainerViewController*)viewController {
+  [self handleHideBubbleAnimation];
 }
 
 #pragma mark - Private
@@ -370,6 +406,35 @@ const CGFloat kScrollViewTopMargin = 45.0;
 // Handles taps on the action button.
 - (void)buttonTapped {
   [self.delegate didTapContinueButton];
+}
+
+// Hides the bubble view with a fade-out effect.
+- (void)handleHideBubbleAnimation {
+  // Don't do anything if the view is already hidden or fading out.
+  if (_isBubbleHiding) {
+    return;
+  }
+  _isBubbleHiding = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kBubbleViewAnimationDuration
+      animations:^{
+        [weakSelf setBubbleAlphaToZero];
+      }
+      completion:^(BOOL finished) {
+        [weakSelf hideBubbleAfterAnimation];
+      }];
+}
+
+// Sets the bubble view's alpha to 0. To be used in an animation block.
+- (void)setBubbleAlphaToZero {
+  _bubbleView.alpha = 0;
+}
+
+// Hides the bubble view. To be used as an animation completion.
+- (void)hideBubbleAfterAnimation {
+  _bubbleView.hidden = YES;
+  _isBubbleHiding = NO;
 }
 
 @end
