@@ -822,13 +822,19 @@ constexpr int kTraceUuidIndices[] = {1, 2, -1};
 constexpr MessageInfo kTraceUuid = {kTraceUuidIndices, nullptr};
 
 // Proto Message: CSwitchEtwEvent
-constexpr int kCSwitchEtwEventIndices[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1};
+constexpr int kCSwitchEtwEventIndices[] = {1,  2,  3,  4,  5, 9,
+                                           10, 11, 12, 13, -1};
 constexpr MessageInfo kCSwitchEtwEvent = {kCSwitchEtwEventIndices, nullptr};
 
+// Proto Message: ReadyThreadEtwEvent
+constexpr int kReadyThreadEtwEventIndices[] = {1, 3, 5, 6, -1};
+constexpr MessageInfo kReadyThreadEtwEvent = {kReadyThreadEtwEventIndices,
+                                              nullptr};
+
 // Proto Message: EtwTraceEvent
-constexpr int kEtwTraceEventIndices[] = {1, 2, 4, -1};
+constexpr int kEtwTraceEventIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo const* kEtwTraceEventComplexMessages[] = {
-    nullptr, &kCSwitchEtwEvent, nullptr};
+    nullptr, &kCSwitchEtwEvent, &kReadyThreadEtwEvent, nullptr, nullptr};
 constexpr MessageInfo kEtwTraceEvent = {kEtwTraceEventIndices,
                                         kEtwTraceEventComplexMessages};
 
