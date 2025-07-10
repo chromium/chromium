@@ -2099,16 +2099,11 @@ public class StripLayoutHelper
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
         // If long-pressed on tab (not on close button) or group, mark for delayed reorder during
         // drag.
-        if ((stripView instanceof StripLayoutTab clickedTab
-                        && !clickedTab.checkCloseHitTest(x, y)
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU))
+        if ((stripView instanceof StripLayoutTab clickedTab && !clickedTab.checkCloseHitTest(x, y))
                 || stripView instanceof StripLayoutGroupTitle) {
             mDelayedReorderView = stripView;
             mDelayedReorderInitialX = x;
-        } else if (stripView == null
-                || (stripView instanceof StripLayoutTab
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.TAB_STRIP_CONTEXT_MENU))) {
+        } else if (stripView == null) {
             startReorderMode(x, y, stripView, ReorderType.START_DRAG_DROP);
         }
         showContextMenu(stripView);
@@ -2906,8 +2901,7 @@ public class StripLayoutHelper
      */
     private boolean showContextMenu(@Nullable StripLayoutView clickedView) {
         if (clickedView == null) return false;
-        if (clickedView instanceof StripLayoutTab clickedTab
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
+        if (clickedView instanceof StripLayoutTab clickedTab) {
             showTabContextMenu(clickedTab);
             return true;
         } else if (clickedView instanceof CompositorButton button

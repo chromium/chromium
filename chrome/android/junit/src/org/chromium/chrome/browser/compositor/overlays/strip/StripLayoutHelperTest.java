@@ -1988,31 +1988,19 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
-    public void testOnLongPress_OnTab_NoContextMenu() {
-        // Setup
-        var tabs = initializeTest_ForTab();
-
-        // Act
-        onLongPress_OnTab(tabs);
-
-        // Verify that we don't show the tab menu.
-        assertFalse(
-                "Should not show tab menu after long press on tab.",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     public void testOnLongPress_OnTab_StartReorder() {
         // Setup
         var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
         ReorderDelegate mockDelegate = mock(ReorderDelegate.class);
         mStripLayoutHelper.setReorderDelegateForTesting(mockDelegate);
         mStripLayoutHelper.onTabStateInitialized();
+        float dragDistance = 40f; // Greater than INITIATE_REORDER_DRAG_THRESHOLD
 
         // Act
         onLongPress_OnTab(tabs);
+
+        mStripLayoutHelper.drag(TIMESTAMP, LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
 
         // Verify we start reorder mode.
         verify(mockDelegate)
@@ -2026,7 +2014,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     public void testOnLongPress_OnTab_NoReorder() {
         // Setup
         var tabs = initializeTest_ForTab();
@@ -2043,7 +2030,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Tab Context Menu")
     public void testOnLongPress_OnTab_FeaturesEnabled() {
         var tabs = initializeTest_ForTab();
@@ -2067,7 +2053,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Tab Context Menu")
     public void testOnLongPress_OnTab_WithTopPadding_AndScreenDensity() {
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
@@ -2108,7 +2093,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Tab Context Menu")
     public void testTabContextMenu_PreventsHovercard() {
         // Setup.
@@ -2131,7 +2115,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Tab Group Context Menu")
     public void testTabGroupContextMenu_PreventsHovercard() {
         // Setup.
@@ -2155,7 +2138,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Advanced Peripherals Support")
     public void testCloseTabsContextMenu_PreventsHovercard() {
         // Set up: see testOnLongPress_OnCloseButton setup.
@@ -2195,7 +2177,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Feature("Tab Context Menu")
     public void testBottomSheet_constructedWithoutDestroyHide() {
         var tabs = initializeTest_ForTab();
@@ -2216,21 +2197,6 @@ public class StripLayoutHelperTest {
                         eq(mBottomSheetController),
                         eq(true),
                         eq(false));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
-    @Config(sdk = Build.VERSION_CODES.R)
-    public void testOnLongPress_WithDragDrop_OnTab_ContextMenuEnabled() {
-        var tabs = initializeTest_ForTab();
-        setTabStripDragHandlerMock();
-        setupForIndividualTabContextMenu();
-        mStripLayoutHelper.onTabStateInitialized(); // drag is disabled if tab state is not init'ed
-        onLongPress_OnTab(tabs);
-
-        // Make the drag delta larger than INITIATE_REORDER_DRAG_THRESHOLD
-        mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 110f, /* y= */ 10f, /* deltaX= */ 40f);
-        assertTrue(mStripLayoutHelper.getReorderDelegateForTesting().getInReorderMode());
     }
 
     /** Sets up tabModel and menu coordinator. */
@@ -2345,12 +2311,15 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testOnLongPress_WithDragDrop_OnTab() {
         var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
         setTabStripDragHandlerMock();
+        mStripLayoutHelper.onTabStateInitialized();
         onLongPress_OnTab(tabs);
+        float dragDistance = 40f; // Greater than INITIATE_REORDER_DRAG_THRESHOLD
+        mStripLayoutHelper.drag(TIMESTAMP, LONG_PRESS_X + dragDistance, LONG_PRESS_Y, dragDistance);
         // Verify drag invoked
         verify(mTabStripDragHandler)
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
@@ -2396,7 +2365,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     public void testOnLongPress_OnCloseButton() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -3910,7 +3878,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
     public void testRightClickingClearsTabHoverState() {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
@@ -4941,7 +4908,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
     public void testSecondaryClick() {
         initializeTest(false, false, 0, 4);
         // Update layout to set view draw properties
@@ -5726,7 +5692,6 @@ public class StripLayoutHelperTest {
                 /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_notApplicable() {
         initializeTest(false, false, 0);
@@ -5736,7 +5701,6 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_tab() {
         initializeTest(false, false, 0);
@@ -5749,7 +5713,6 @@ public class StripLayoutHelperTest {
         verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), anyInt());
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_tabGroup() {
         initializeTest(false, false, 0);
@@ -5764,7 +5727,6 @@ public class StripLayoutHelperTest {
         verify(mTabGroupContextMenuCoordinator, times(1)).showMenu(any(), any());
     }
 
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     @Test
     public void testOpenContextMenu_closeButton() {
         initializeTest(false, false, 0);
