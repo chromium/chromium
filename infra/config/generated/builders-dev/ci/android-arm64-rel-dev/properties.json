@@ -5,14 +5,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders-dev/ci/android-pie-arm64-rel-dev/gn-args.json"
+        "infra/config/generated/builders-dev/ci/android-arm64-rel-dev/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-pie-arm64-rel-dev",
+              "builder": "android-arm64-rel-dev",
               "project": "chromium"
             },
             "builder_spec": {
@@ -44,11 +44,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-pie-arm64-rel-dev",
+          "builder": "android-arm64-rel-dev",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders-dev/ci/android-pie-arm64-rel-dev/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders-dev/ci/android-arm64-rel-dev/targets"
     }
   },
   "$build/siso": {

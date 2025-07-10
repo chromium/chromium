@@ -106,7 +106,8 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
 ###############################################################################
 
 ci_builder(
-    name = "android-pie-arm64-rel-dev",
+    name = "android-arm64-rel-dev",
+    description_html = "Run chromium tests on Android arm64 devices.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -151,13 +152,14 @@ ci_builder(
                     expiration_sec = 10800,
                 ),
             ),
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
         ],
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 ci_builder(
