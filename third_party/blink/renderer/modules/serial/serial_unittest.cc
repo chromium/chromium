@@ -122,7 +122,7 @@ TEST(SerialTest, CreateMojoFilter_BluetoothServiceClass) {
   EXPECT_FALSE(mojo_filter->has_vendor_id);
   EXPECT_FALSE(mojo_filter->has_product_id);
   ASSERT_TRUE(mojo_filter->bluetooth_service_class_id);
-  EXPECT_EQ(kTestServiceClassId, mojo_filter->bluetooth_service_class_id);
+  EXPECT_EQ(kTestServiceClassId, mojo_filter->bluetooth_service_class_id->uuid);
 }
 
 TEST(SerialTest, CreateMojoFilter_InvalidBluetoothServiceClass) {

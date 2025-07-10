@@ -46,6 +46,14 @@ mojom_component("mojom") {
           mojom = "chromeos.cdm.mojom.PromiseException"
           cpp = "::media::CdmPromise::Exception"
         },
+        {
+          mojom = "chromeos.cdm.mojom.ProtectionType"
+          cpp = "::display::ContentProtectionMethod"
+        },
+        {
+          mojom = "chromeos.cdm.mojom.LinkType"
+          cpp = "::display::DisplayConnectionType"
+        },
       ]
       traits_headers = [ "cdm_types_enum_mojom_traits.h" ]
       traits_public_deps = [

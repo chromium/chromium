@@ -94,7 +94,7 @@ SerialPortInfo* SerialPort::getInfo() {
   if (info_->bluetooth_service_class_id) {
     info->setBluetoothServiceClassId(
         MakeGarbageCollected<V8UnionStringOrUnsignedLong>(
-            info_->bluetooth_service_class_id));
+            info_->bluetooth_service_class_id->uuid));
   }
   return info;
 }

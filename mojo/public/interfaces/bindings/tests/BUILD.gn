@@ -209,7 +209,7 @@ mojom("test_interfaces_for_containers_of_optionals") {
       types = [
         {
           mojom =
-              "mojo.test.containers_of_nullable_types.mojom.TypemappedContainer"
+              "mojo.test.containers_of_nullable_types.mojom.TypemappedStruct"
           cpp = "::mojo::test::containers_of_nullable_types::NativeStruct"
         },
       ]

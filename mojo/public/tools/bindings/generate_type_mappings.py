@@ -144,21 +144,9 @@ def main():
                       help='The path to which to write the generated JSON.')
   params, _ = parser.parse_known_args()
 
-  # Additional information about the typemap configuration for the module.
-  # The generator should treat this as a special "configuration" section,
-  # and not as a language.
-  metadata = {
-      'module_typemaps': {
-          'c++': [],
-          'typescript': [],
-      }
-  }
-
   cpp_typemaps = {}
   if params.cpp_config_path:
     cpp_typemaps = LoadCppTypemapConfig(params.cpp_config_path)
-  metadata['module_typemaps']['c++'] = list(cpp_typemaps.keys())
-
   missing = [path for path in params.dependency if not os.path.exists(path)]
   if missing:
     raise IOError('Missing dependencies: %s' % ', '.join(missing))
@@ -168,16 +156,12 @@ def main():
   ts_typemaps = {}
   if params.ts_config_path:
     ts_typemaps = LoadTsTypemapConfig(params.ts_config_path)
-  metadata['module_typemaps']['typescript'] = list(ts_typemaps.keys())
 
   WriteFile(
-      json.dumps(
-          {
-              'c++': cpp_typemaps,
-              'typescript': ts_typemaps,
-              '_metadata': metadata,
-          },
-          indent=2), params.output)
+      json.dumps({
+          'c++': cpp_typemaps,
+          'typescript': ts_typemaps
+      }, indent=2), params.output)
 
 
 if __name__ == '__main__':

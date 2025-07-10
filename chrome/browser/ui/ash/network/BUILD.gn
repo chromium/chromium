@@ -54,7 +54,6 @@ static_library("network") {
     "//components/account_id",
     "//components/captive_portal/core",
     "//components/policy/core/common",
-    "//components/proxy_config:proxy_config",
     "//components/session_manager/core",
     "//components/strings:components_strings_grit",
     "//extensions/browser",

@@ -238,6 +238,17 @@ mojom_component("base") {
     {
       types = [
         {
+          mojom = "mojo_base.mojom.PlatformSharedMemoryHandle"
+          cpp =
+              "::base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle"
+          move_only = true
+        },
+        {
+          mojom = "mojo_base.mojom.PlatformSharedMemoryRegion"
+          cpp = "::base::subtle::PlatformSharedMemoryRegion"
+          move_only = true
+        },
+        {
           mojom = "mojo_base.mojom.ReadOnlySharedMemoryRegion"
           cpp = "::base::ReadOnlySharedMemoryRegion"
           move_only = true
@@ -421,7 +432,7 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.MemoryAllocatorDumpCrossProcessUid"
+          mojom = "mojom_base.mojom.MemoryAllocatorDumpCrossProcessUid"
           cpp = "::base::trace_event::MemoryAllocatorDumpGuid"
         },
       ]

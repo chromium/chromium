@@ -172,19 +172,8 @@ class MojomProcessor:
     self._should_generate = should_generate
     self._processed_files = {}
     self._typemap = {}
-    self._typemap_usage_verification = {}
-    self._types_seen = []
 
-  def LoadTypemaps(self, typemaps, langs):
-    """Loads the typemaps. The typemaps contain a '_metadata' field which
-    contains the list of typemaps declared for the types within this
-    module.
-
-    All of the typemaps declared for the module must be consumed after
-    we have generated all of the modules. If a typemap is not consumed
-    after generation, the generator will flag it as a misconfigured
-    typemap.
-    """
+  def LoadTypemaps(self, typemaps):
     # Support some very simple single-line comments in typemap JSON.
     comment_expr = r"^\s*//.*$"
     def no_comments(line):
@@ -193,26 +182,11 @@ class MojomProcessor:
       with open(filename) as f:
         typemaps = json.loads("".join(filter(no_comments, f.readlines())))
         for language, typemap in typemaps.items():
-          if language == '_metadata':
-            continue
           language_map = self._typemap.get(language, {})
           language_map.update(typemap)
           self._typemap[language] = language_map
-
-        if '_metadata' in typemaps:
-          for lang, names in typemaps['_metadata']['module_typemaps'].items():
-            if lang in langs:
-              self._typemap_usage_verification[lang] = names
-
     if 'c++' in self._typemap:
       self._typemap['mojolpm'] = self._typemap['c++']
-
-  def EnsureAllTypemapsUsed(self):
-    for (lang, typemaps) in self._typemap_usage_verification.items():
-      if len(typemaps) > 0:
-        raise Exception(
-            f"Unused typemaps found for {lang}:\n{sorted(typemaps)},\n\n"
-            f"types declared: {sorted(self._types_seen)}")
 
   def _GenerateModule(self, args, remaining_args, check_modules,
                       generator_modules, rel_filename, imported_filename_stack):
@@ -263,38 +237,11 @@ class MojomProcessor:
           filtered_args = [arg for arg in remaining_args
                            if arg.startswith(prefix)]
         generator.GenerateFiles(filtered_args)
-        self._RemoveUsedTypemaps(language, module)
 
     # Save result.
     self._processed_files[rel_filename.path] = module
     return module
 
-  def _RemoveUsedTypemaps(self, language, module):
-    """Remove all the types that were encountered in code generation from the
-    declared typemap list.
-    """
-
-    # Fully qualify the kind and remove it from the declared typemaps.
-    def RemoveUsedKind(kind, enclosing_kind=None):
-      namespace = module.mojom_namespace
-      if enclosing_kind:
-        namespace += f".{enclosing_kind.name}"
-      name = f"{namespace}.{kind.mojom_name}"
-      self._types_seen += [name]
-      if name in self._typemap_usage_verification.get(language, []):
-        self._typemap_usage_verification[language].remove(name)
-
-    for kind in module.unions + module.enums:
-      RemoveUsedKind(kind)
-
-    for struct_kind in module.structs:
-      RemoveUsedKind(struct_kind)
-      for enum in struct_kind.enums:
-        RemoveUsedKind(enum, struct_kind)
-
-    for iface_kind in module.interfaces:
-      for enum in iface_kind.enums:
-        RemoveUsedKind(enum, iface_kind)
 
 def _Generate(args, remaining_args):
   if args.variant == "none":
@@ -314,7 +261,7 @@ def _Generate(args, remaining_args):
   fileutil.EnsureDirectoryExists(args.output_dir)
 
   processor = MojomProcessor(lambda filename: filename in args.filename)
-  processor.LoadTypemaps(set(args.typemaps), generator_modules.keys())
+  processor.LoadTypemaps(set(args.typemaps))
 
   if args.filelist:
     with open(args.filelist) as f:
@@ -324,8 +271,6 @@ def _Generate(args, remaining_args):
     processor._GenerateModule(
         args, remaining_args, check_modules, generator_modules,
         RelativePath(filename, args.depth, args.output_dir), [])
-
-  processor.EnsureAllTypemapsUsed()
 
   return 0
 

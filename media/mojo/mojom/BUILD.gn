@@ -349,6 +349,10 @@ mojom("mojom") {
           mojom = "media.mojom.HdcpVersion"
           cpp = "::media::HdcpVersion"
         },
+        {
+          mojom = "media.mojom.SessionData.KeyType"
+          cpp = "::media::MediaDrmKeyType"
+        },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
       traits_public_deps = [
@@ -507,6 +511,10 @@ mojom("mojom") {
           cpp = "::media::VideoBitrateAllocation"
         },
         {
+          mojom = "media.mojom.VideoEncodeAccelerator.Error"
+          cpp = "::media::VideoEncodeAccelerator::Error"
+        },
+        {
           mojom = "media.mojom.VideoEncodeOptions"
           cpp = "::media::VideoEncoder::EncodeOptions"
         },
@@ -563,6 +571,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.ResolutionBitrateLimit"
+          cpp = "::media::ResolutionBitrateLimit"
+        },
+        {
           mojom = "media.mojom.VideoEncoderInfo"
           cpp = "::media::VideoEncoderInfo"
         },
@@ -597,6 +609,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.ChannelLayout"
           cpp = "::media::ChannelLayout"
+        },
+        {
+          mojom = "media.mojom.DecodeStatus"
+          cpp = "::media::DecodeStatus"
         },
         {
           mojom = "media.mojom.EncryptionScheme"
@@ -649,6 +665,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.MediaStatusState"
           cpp = "::media::MediaStatus::State"
+        },
+        {
+          mojom = "media.mojom.StatusCode"
+          cpp = "::media::StatusCode"
         },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
@@ -724,25 +744,7 @@ mojom("mojom") {
     },
   ]
 
-  if (enable_media_drm_storage) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "media.mojom.SessionData.KeyType"
-            cpp = "::media::MediaDrmKeyType"
-          },
-        ]
-        traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
-        traits_public_deps = [
-          "//media",
-          "//media/base/ipc",
-        ]
-      },
-    ]
-  }
-
-  if (is_chromeos && allow_oop_video_decoder) {
+  if (is_chromeos) {
     shared_typemaps += [
       {
         types = [

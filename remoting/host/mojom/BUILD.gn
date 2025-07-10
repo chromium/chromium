@@ -79,6 +79,10 @@ mojom("mojom") {
           cpp = "::webrtc::DesktopVector"
         },
         {
+          mojom = "remoting.mojom.FileChooserResult"
+          cpp = "::remoting::Result<base::FilePath, ::remoting::protocol::FileTransfer_Error>"
+        },
+        {
           mojom = "remoting.mojom.FileTransferError"
           cpp = "::remoting::protocol::FileTransfer_Error"
         },
@@ -184,17 +188,4 @@ mojom("mojom") {
       ]
     },
   ]
-
-  if (is_win) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "remoting.mojom.FileChooserResult"
-            cpp = "::remoting::Result<base::FilePath, ::remoting::protocol::FileTransfer_Error>"
-          },
-        ]
-      },
-    ]
-  }
 }

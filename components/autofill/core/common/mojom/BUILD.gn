@@ -43,6 +43,10 @@ mojom("mojo_types") {
           cpp = "::autofill::FormFieldDataPredictions"
         },
         {
+          mojom = "autofill.mojom.FormsPredictionsMap"
+          cpp = "::autofill::FormsPredictionsMap"
+        },
+        {
           mojom = "autofill.mojom.FormRendererId"
           cpp = "::autofill::FormRendererId"
           copyable_pass_by_value = true
@@ -59,6 +63,10 @@ mojom("mojo_types") {
         {
           mojom = "autofill.mojom.PasswordAndMetadata"
           cpp = "::autofill::PasswordAndMetadata"
+        },
+        {
+          mojom = "autofill.mojom.PasswordFormFieldPredictionMap"
+          cpp = "::autofill::PasswordFormFieldPredictionMap"
         },
         {
           mojom = "autofill.mojom.PasswordFormFillData"

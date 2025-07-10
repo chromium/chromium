@@ -413,6 +413,16 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.FramePolicy"
+          cpp = "::blink::FramePolicy"
+        },
+      ]
+      traits_headers =
+          [ "//third_party/blink/common/frame/frame_policy_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.NavigationDownloadPolicy"
           cpp = "::blink::NavigationDownloadPolicy"
         },
@@ -470,6 +480,15 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.FrameVisualProperties"
+          cpp = "::blink::FrameVisualProperties"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.DeviceEmulationParams"
           cpp = "::blink::DeviceEmulationParams"
         },
@@ -509,6 +528,16 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.ColorProviderColorMaps"
+          cpp = "::blink::ColorProviderColorMaps"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/page/color_provider_color_maps_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/color" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.Impression"
           cpp = "::blink::Impression"
         },
@@ -533,6 +562,15 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/frame/frame_ad_evidence_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.FrameOwnerElementType"
+          cpp = "::blink::FrameOwnerElementType"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/frame/frame_owner_element_type_mojom_traits.h" ]
     },
     {
       types = [
@@ -629,6 +667,10 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.SafeUrlPattern"
           cpp = "::blink::SafeUrlPattern"
+        },
+        {
+          mojom = "blink.mojom.UrlPatternPart"
+          cpp = "::liburlpattern::Part"
         },
         {
           mojom = "blink.mojom.PatternTemplate"
@@ -855,6 +897,11 @@ mojom("mojom_platform") {
     },
     {
       types = [
+        {
+          mojom = "blink.mojom.FetchAPIDataElement"
+          cpp = "::network::DataElement"
+          move_only = true
+        },
         {
           mojom = "blink.mojom.FetchAPIRequestBody"
           cpp = "::scoped_refptr<::network::ResourceRequestBody>"
@@ -1088,20 +1135,6 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request_headers_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/renderer/platform/wtf" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SerializedArrayBufferContents"
-          cpp = "::blink::ArrayBufferContents"
-          move_only = true
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h" ]
-      traits_public_deps = [
-        "//third_party/blink/public/common",
-        "//third_party/blink/renderer/platform/wtf",
-      ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps
@@ -1460,44 +1493,6 @@ mojom("mojom_core") {
     {
       types = [
         {
-          mojom = "blink.mojom.ColorProviderColorMaps"
-          cpp = "::blink::ColorProviderColorMaps"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/page/color_provider_color_maps_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/color" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.FrameOwnerElementType"
-          cpp = "::blink::FrameOwnerElementType"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/frame/frame_owner_element_type_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.FramePolicy"
-          cpp = "::blink::FramePolicy"
-        },
-      ]
-      traits_headers =
-          [ "//third_party/blink/common/frame/frame_policy_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.FrameVisualProperties"
-          cpp = "::blink::FrameVisualProperties"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "blink.mojom.MessagePortDescriptor"
           cpp = "::blink::MessagePortDescriptor"
           move_only = true
@@ -1596,6 +1591,11 @@ mojom("mojom_core") {
         {
           mojom = "blink.mojom.TransferableMessage"
           cpp = "::blink::BlinkTransferableMessage"
+          move_only = true
+        },
+        {
+          mojom = "blink.mojom.SerializedArrayBufferContents"
+          cpp = "::blink::ArrayBufferContents"
           move_only = true
         },
       ]
@@ -1821,7 +1821,23 @@ mojom("web_bluetooth_mojo_bindings") {
     },
   ]
 
-  blink_cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.UUID"
+          cpp = "::WTF::String"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_private_headers = [
+        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//device/bluetooth" ]
+    },
+  ]
+
+  blink_cpp_typemaps += shared_cpp_typemaps
 
   cpp_typemaps = shared_cpp_typemaps
 

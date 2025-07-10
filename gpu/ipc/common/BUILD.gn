@@ -238,6 +238,10 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
+          mojom = "gpu.mojom.ContextColorspace"
+          cpp = "::gpu::ColorSpace"
+        },
+        {
           mojom = "gpu.mojom.ContextCreationAttribs"
           cpp = "::gpu::ContextCreationAttribs"
         },
@@ -406,12 +410,16 @@ mojom("interfaces") {
     {
       types = [
         {
-          mojom = "gpu.mojom.DevicePerfInfo"
-          cpp = "::gpu::DevicePerfInfo"
+          mojom = "gpu.mojom.IntelGpuGeneration"
+          cpp = "::gpu::IntelGpuGeneration"
         },
         {
-          mojom = "gpu.mojom.HasDiscreteGpu"
-          cpp = "::gpu::HasDiscreteGpu"
+          mojom = "gpu.mojom.D3D_FEATURE_LEVEL"
+          cpp = "::D3D_FEATURE_LEVEL"
+        },
+        {
+          mojom = "gpu.mojom.DevicePerfInfo"
+          cpp = "::gpu::DevicePerfInfo"
         },
       ]
       traits_sources = [ "device_perf_info_mojom_traits.cc" ]
@@ -448,6 +456,14 @@ mojom("interfaces") {
     },
     {
       types = [
+        {
+          mojom = "gpu.mojom.CollectInfoResult"
+          cpp = "::gpu::CollectInfoResult"
+        },
+        {
+          mojom = "gpu.mojom.OverlayInfo"
+          cpp = "::gpu::OverlayInfo"
+        },
         {
           mojom = "gpu.mojom.GpuDevice"
           cpp = "::gpu::GPUInfo::GPUDevice"
@@ -613,23 +629,6 @@ mojom("interfaces") {
       traits_headers = [ "gpu_disk_cache_type_mojom_traits.h" ]
     },
   ]
-
-  if (is_win) {
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "gpu.mojom.OverlayInfo"
-            cpp = "::gpu::OverlayInfo"
-          },
-          {
-            mojom = "gpu.mojom.Direct3DFeatureLevel"
-            cpp = "::D3D_FEATURE_LEVEL"
-          },
-        ]
-      },
-    ]
-  }
 
   blink_cpp_typemaps = [
     {

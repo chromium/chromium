@@ -167,7 +167,6 @@ source_set("unit_tests") {
     "//components/cross_device/nearby:nearby",
     "//components/onc",
     "//components/prefs:test_support",
-    "//components/proxy_config:proxy_config",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//device/bluetooth:deprecated_experimental_mojo",
