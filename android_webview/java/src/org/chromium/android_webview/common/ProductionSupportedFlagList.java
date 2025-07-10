@@ -1077,6 +1077,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("PrefetchUseContentRefactor"),
         Flag.baseFeature("LowPriorityAsyncScriptExecution"),
         Flag.baseFeature("WebViewPrefetchHighestPrefetchPriority"),
+        Flag.baseFeature("ServiceWorkerAutoPreload"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
