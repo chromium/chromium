@@ -510,6 +510,7 @@ robolectric_library("junit") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelperTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinatorTest.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuMediatorTest.java",
     ]
   }
 }
