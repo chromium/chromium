@@ -116,7 +116,6 @@
   },
   "Win Builder": {
     "additional_compile_targets": [
-      "ipc_fuzzer",
       "pdf_fuzzers"
     ],
     "scripts": [
