@@ -134,6 +134,8 @@ class ComponentUpdateService {
  public:
   using Observer = ::update_client::UpdateClient::Observer;
 
+  virtual ~ComponentUpdateService() = default;
+
   // Adds an observer for this class. An observer should not be added more
   // than once. The caller retains the ownership of the observer object.
   virtual void AddObserver(Observer* observer) = 0;
@@ -151,7 +153,7 @@ class ComponentUpdateService {
   virtual base::Version GetMaxPreviousProductVersion(
       const std::string& app_id) = 0;
 
-  // Add component to be checked for updates.
+  // Adds component to be checked for updates.
   virtual bool RegisterComponent(const ComponentRegistration& component) = 0;
 
   // Unregisters the component with the given ID. This means that the component
@@ -177,8 +179,8 @@ class ComponentUpdateService {
   // proactively triggered outside the normal component update service schedule.
   virtual OnDemandUpdater& GetOnDemandUpdater() = 0;
 
-  // This method is used to trigger an on-demand update for component |id|.
-  // This can be used when loading a resource that depends on this component.
+  // Triggers an on-demand update for component |id|. This can be used when
+  // loading a resource that depends on this component.
   //
   // |callback| is called on the main sequence once the on-demand update is
   // complete, regardless of success. |callback| may be called immediately
@@ -191,8 +193,6 @@ class ComponentUpdateService {
   // is called while still on cooldown, |callback| will be called immediately.
   virtual void MaybeThrottle(const std::string& id,
                              base::OnceClosure callback) = 0;
-
-  virtual ~ComponentUpdateService() = default;
 
   // Returns details about registered component in the |item| parameter. The
   // function returns true in case of success and false in case of errors.
