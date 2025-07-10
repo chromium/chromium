@@ -19,7 +19,7 @@ void InitializeCrashKeys() {
   InitializeCrashKeyBaseSupport();
 }
 
-// Returns a value for the crash key named |key_name|. For Crashpad-based
+// Returns a value for the crash key named `key_name`. For Crashpad-based
 // clients, this returns the first instance found of the name.
 std::string GetCrashKeyValue(const std::string& key_name) {
   auto* annotation_list = crashpad::AnnotationList::Get();
