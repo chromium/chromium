@@ -72,8 +72,7 @@ TEST_P(HTMLCanvasElementTest, CleanCanvasResizeDoesntClearFrameBuffer) {
 
   auto* canvas =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
-  CanvasResourceProvider* provider =
-      canvas->GetOrCreateCanvasResourceProviderForCanvas2D();
+  CanvasResourceProvider* provider = canvas->GetResourceProviderForCanvas2D();
 
   cc::PaintFlags fill_flags = FillFlags();
   fill_flags.setColor(SkColors::kBlue);
@@ -106,8 +105,7 @@ TEST_P(HTMLCanvasElementTest, CanvasResizeClearsFrameBuffer) {
 
   auto* canvas =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
-  CanvasResourceProvider* provider =
-      canvas->GetOrCreateCanvasResourceProviderForCanvas2D();
+  CanvasResourceProvider* provider = canvas->GetResourceProviderForCanvas2D();
 
   cc::PaintFlags fill_flags = FillFlags();
   fill_flags.setColor(SkColors::kBlue);
