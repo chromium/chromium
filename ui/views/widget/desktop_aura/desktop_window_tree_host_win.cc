@@ -193,7 +193,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
   if (ShouldAddDWMBackdrop()) {
-    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_MAINWINDOW;
     HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
                                        &backdrop, sizeof(backdrop));
     CHECK_EQ(hr, S_OK);
