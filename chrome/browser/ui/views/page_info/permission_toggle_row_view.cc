@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -36,6 +35,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -275,7 +275,7 @@ void PermissionToggleRowView::InitForManagedSource(
                            gfx::Insets::VH(0, icon_label_spacing));
   row_view_->AddControl(std::move(state_label));
 
-  auto managed_icon = std::make_unique<NonAccessibleImageView>();
+  auto managed_icon = std::make_unique<views::ImageView>();
   managed_icon->SetImage(GetManagedPermissionIcon(permission_));
   std::u16string managed_tooltip =
       PageInfoUI::PermissionManagedTooltipToUIString(delegate, permission_);
