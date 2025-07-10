@@ -45,11 +45,6 @@ template <class P>
 struct ParamTraits;
 }  // namespace IPC
 
-namespace ipc_fuzzer {
-template <class T>
-struct FuzzTraits;
-}  // namespace ipc_fuzzer
-
 namespace mojo {
 template <typename DataViewType, typename T>
 struct StructTraits;
@@ -355,7 +350,6 @@ class COMPONENT_EXPORT(URL) Origin {
   friend class net::SchemefulSite;
   friend class OriginTest;
   friend struct mojo::UrlOriginAdapter;
-  friend struct ipc_fuzzer::FuzzTraits<Origin>;
   friend struct mojo::StructTraits<url::mojom::OriginDataView, url::Origin>;
   friend IPC::ParamTraits<url::Origin>;
   friend COMPONENT_EXPORT(URL) std::ostream& operator<<(std::ostream& out,

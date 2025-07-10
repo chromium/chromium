@@ -116,7 +116,6 @@ group("gn_all") {
       "//third_party/liburlpattern:liburlpattern_unittests",
       "//third_party/rapidhash:rapidhash_fuzztests",
       "//tools/binary_size:binary_size_trybot_py",
-      "//tools/ipc_fuzzer:ipc_fuzzer_all",
       "//tools/metrics:metrics_metadata",
       "//ui/base:ui_base_unittests",
       "//ui/gfx:gfx_unittests",
@@ -1746,9 +1745,6 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     }
     if (!is_win) {
       deps += [ "//skia:filter_fuzz_stub" ]
-    }
-    if (enable_ipc_fuzzer && !is_component_build) {
-      deps += [ "//tools/ipc_fuzzer:ipc_fuzzer_all" ]
     }
     if (!is_chromeos) {
       deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]

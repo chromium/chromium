@@ -200,7 +200,6 @@ third_party/woff2/src/port.h
 third_party/yasm/source/config/linux/config.h
 third_party/yasm/source/config/linux/libyasm-stdint.h
 third_party/zlib/contrib/minizip/crypt.h
-tools/ipc_fuzzer/message_lib/all_message_null_macros.h
 ui/base/clipboard/clipboard_test_template.h
 ui/events/keycodes/keyboard_codes_posix.h
 ui/gfx/overlay_transform.h

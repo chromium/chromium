@@ -26,7 +26,6 @@ target(link_target_type, "child") {
     "//content/public/child:child_sources",
     "//content/renderer/*",
     "//content/utility/*",
-    "//tools/ipc_fuzzer/*",
   ]
   if (is_android) {
     # See comment in content/app/BUILD.gn above content_app_deps.

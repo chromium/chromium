@@ -835,7 +835,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'tools/android/io_benchmark/',
             # Fuzzers are allowed to use standard library random number generators
             # since fuzzing speed + reproducibility is important.
-            r'tools/ipc_fuzzer/',
             r'.+_fuzzer\.cc$',
             r'.+_fuzzertest\.cc$',
             # TODO(https://crbug.com/1380528): These are all unsanctioned uses of

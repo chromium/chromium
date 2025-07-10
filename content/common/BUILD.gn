@@ -11,7 +11,6 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//sandbox/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("features.gni")
 
 # For feature flags internal to content. See content/public/common:features
@@ -64,10 +63,7 @@ source_set("common") {
   # In addition, targets outside of the content component (shell and tests)
   # must not link to this because it will duplicate the code in the component
   # build.
-  visibility = [
-    "//content/*",
-    "//tools/ipc_fuzzer/message_replay:ipc_fuzzer_replay",
-  ]
+  visibility = [ "//content/*" ]
 
   sources = [
     "background_fetch/background_fetch_types.cc",

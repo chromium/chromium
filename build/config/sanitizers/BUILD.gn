@@ -179,9 +179,6 @@ config("default_sanitizer_ldflags") {
   visibility = [
     ":default_sanitizer_flags",
     ":deps",
-
-    # https://crbug.com/360158.
-    "//tools/ipc_fuzzer/fuzzer:ipc_fuzzer",
   ]
 
   if (is_posix || is_fuchsia) {

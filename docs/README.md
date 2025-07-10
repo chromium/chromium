@@ -199,7 +199,6 @@ used when committed.
 *   [Test Descriptions](testing/test_descriptions.md) - Unit test targets that can be
     built, with associated descriptions.
 *   [Fuzz Testing](../testing/libfuzzer/README.md) - Fuzz testing in Chromium.
-*   [IPC Fuzzer](testing/ipc_fuzzer.md) - Fuzz testing of Chromium IPC interfaces.
 *   [Running Chrome tests with AddressSanitizer (asan) and LeakSanitizer (lsan)](testing/linux_running_asan_tests.md) -
     Run Chrome tests with ASAN and LSAN builds to detect addressability issues and memory leaks.
 *   [Code Coverage](testing/code_coverage.md) - Code coverage for Chromium.
