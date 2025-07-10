@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
-#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -44,12 +43,7 @@
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
 
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(
-          self.browser->GetWebStateList()->GetActiveWebState());
-  if (IsLensOverlayAvailable(self.profile->GetPrefs()) &&
-      lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive()) {
+  if (IsLensOverlayAvailable(self.profile->GetPrefs())) {
     _viewController.lensOverlayHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
   }
