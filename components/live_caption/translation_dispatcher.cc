@@ -53,6 +53,39 @@ constexpr char kDataKey[] = "data";
 constexpr char kTranslationsKey[] = "translations";
 constexpr char kTranslatedTextKey[] = "translatedText";
 
+// Histogram names.
+constexpr char kTranslationDispatcherLoadResultHistogram[] =
+    "Accessibility.LiveTranslate.TranslationDispatcher.LoadResult";
+constexpr char kTranslationDispatcherParseResultHistogram[] =
+    "Accessibility.LiveTranslate.TranslationDispatcher.ParseResult";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TranslationDispatcherLoadResult)
+enum class TranslationDispatcherLoadResult {
+  kSuccess = 0,
+  kNetworkError = 1,
+  kHttpError = 2,
+  kEmptyResponse = 3,
+  kMaxValue = kEmptyResponse,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:TranslationDispatcherLoadResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TranslationDispatcherParseResult)
+enum class TranslationDispatcherParseResult {
+  kSuccess = 0,
+  kJsonParseError = 1,
+  kValueNotDict = 2,
+  kDataDictNotFound = 3,
+  kTranslationsListNotFound = 4,
+  kTranslatedTextNotDict = 5,
+  kTranslatedTextNotFound = 6,
+  kMaxValue = kTranslatedTextNotFound,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:TranslationDispatcherParseResult)
+
 TranslationDispatcher::TranslationDispatcher(
     std::string api_key,
     content::BrowserContext* browser_context)
@@ -149,6 +182,9 @@ void TranslationDispatcher::OnURLLoadComplete(
     std::optional<std::string> response_body) {
   // Check that the request succeeded. First with Network Errors...
   if (static_cast<net::Error>(url_loader_->NetError()) != net::Error::OK) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherLoadResultHistogram,
+        TranslationDispatcherLoadResult::kNetworkError);
     EmitError(
         std::move(callback),
         base::StringPrintf(kHttpErrorMessageTemplate,
@@ -160,6 +196,8 @@ void TranslationDispatcher::OnURLLoadComplete(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers &&
       !network::IsSuccessfulStatus(
           url_loader_->ResponseInfo()->headers->response_code())) {
+    base::UmaHistogramEnumeration(kTranslationDispatcherLoadResultHistogram,
+                                  TranslationDispatcherLoadResult::kHttpError);
     EmitError(std::move(callback),
               base::StringPrintf(
                   kHttpErrorMessageTemplate,
@@ -170,12 +208,17 @@ void TranslationDispatcher::OnURLLoadComplete(
 
   // Somehow the request succeeded but the body is empty.
   if (!response_body.has_value()) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherLoadResultHistogram,
+        TranslationDispatcherLoadResult::kEmptyResponse);
     EmitError(std::move(callback),
               "Error parsing response: Translation dispatcher recieved a 2XX "
               "response, but the body was empty");
     return;
   }
 
+  base::UmaHistogramEnumeration(kTranslationDispatcherLoadResultHistogram,
+                                TranslationDispatcherLoadResult::kSuccess);
   // Parse the response in a utility process.
   data_decoder_.ParseJson(
       *response_body,
@@ -192,11 +235,17 @@ void TranslationDispatcher::OnResponseJsonParsed(
     TranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kJsonParseError);
     EmitError(std::move(callback), "Error parsing response: value null");
     return;
   }
 
   if (!result.value().is_dict()) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kValueNotDict);
     EmitError(std::move(callback),
               "Error parsing response: result value is not a dictionary");
     return;
@@ -205,6 +254,9 @@ void TranslationDispatcher::OnResponseJsonParsed(
   const base::Value::Dict* data_dict =
       result.value().GetDict().FindDict(kDataKey);
   if (!data_dict) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kDataDictNotFound);
     EmitError(std::move(callback),
               "Error parsing response: dictionary not found");
     return;
@@ -213,6 +265,9 @@ void TranslationDispatcher::OnResponseJsonParsed(
   const base::Value::List* translations_list =
       data_dict->FindList(kTranslationsKey);
   if (!translations_list || translations_list->empty()) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kTranslationsListNotFound);
     EmitError(std::move(callback),
               "Error parsing response: translations not found");
     return;
@@ -221,6 +276,9 @@ void TranslationDispatcher::OnResponseJsonParsed(
   const base::Value::Dict* translated_text =
       (*translations_list)[0].GetIfDict();
   if (!translated_text) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kTranslatedTextNotDict);
     EmitError(std::move(callback),
               "Error parsing response: translated list entry not found");
     return;
@@ -228,11 +286,16 @@ void TranslationDispatcher::OnResponseJsonParsed(
 
   const std::string* value = translated_text->FindString(kTranslatedTextKey);
   if (!value) {
+    base::UmaHistogramEnumeration(
+        kTranslationDispatcherParseResultHistogram,
+        TranslationDispatcherParseResult::kTranslatedTextNotFound);
     EmitError(std::move(callback),
               "Error parsing response: translated text not found");
     return;
   }
 
+  base::UmaHistogramEnumeration(kTranslationDispatcherParseResultHistogram,
+                                TranslationDispatcherParseResult::kSuccess);
   std::move(callback).Run(TranslateEvent(*value));
 }
 

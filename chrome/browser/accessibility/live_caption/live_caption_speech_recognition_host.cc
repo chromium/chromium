@@ -281,7 +281,6 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
     const std::string& target_language,
     bool is_final,
     const captions::TranslateEvent& result) {
-  // TODO(384019306) Maybe report metrics on failure?
   if (!result.has_value()) {
     return;
   }

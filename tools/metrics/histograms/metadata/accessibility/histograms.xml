@@ -2270,6 +2270,27 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.TranslationDispatcher.LoadResult"
+    enum="TranslationDispatcherLoadResult" expires_after="2025-10-11">
+  <owner>evanliu@google.com</owner>
+  <owner>chrome-accessibility-eng@google.com</owner>
+  <summary>
+    Records the result of a URL load for the TranslationDispatcher. This is used
+    to track the success and failure rates of translation requests.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveTranslate.TranslationDispatcher.ParseResult"
+    enum="TranslationDispatcherParseResult" expires_after="2025-10-11">
+  <owner>evanliu@google.com</owner>
+  <owner>chrome-accessibility-eng@google.com</owner>
+  <summary>
+    Records the result of parsing the JSON response for the
+    TranslationDispatcher. This is used to track the success and failure rates
+    of parsing translation responses.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.MainNodeAnnotations.AnnotationResult"
     enum="MainNodeAnnotationResult" expires_after="2026-06-01">
   <owner>abigailbklein@google.com</owner>
