@@ -34,7 +34,7 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
   SCOPED_TRACE(base::StringPrintf("Args: `%s`", args.data()));
   constexpr char kTemplate[] = "(function() { chrome.runtime.%s(%s); })";
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   // Just verify some error was thrown. Expecting the exact error message
   // tends to rely too much on our argument spec code, which is tested

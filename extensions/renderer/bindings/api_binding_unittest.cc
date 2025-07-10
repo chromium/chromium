@@ -903,7 +903,8 @@ TEST_F(APIBindingUnittest, TestCustomHooks) {
       EXPECT_EQ(1u, arguments->size());
       return result;
     }
-    EXPECT_EQ("foo", gin::V8ToString(context->GetIsolate(), arguments->at(0)));
+    EXPECT_EQ("foo",
+              gin::V8ToString(v8::Isolate::GetCurrent(), arguments->at(0)));
     return result;
   };
   hooks->AddHandler("test.oneString", base::BindRepeating(hook, &did_call));
@@ -1438,7 +1439,7 @@ TEST_F(APIBindingUnittest,
       EXPECT_EQ(1u, arguments->size());
       return result;
     }
-    v8::Isolate* isolate = context->GetIsolate();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     std::string arg_value = gin::V8ToString(isolate, arguments->at(0));
     if (arg_value == "throw") {
       isolate->ThrowException(v8::Exception::Error(
@@ -1446,8 +1447,7 @@ TEST_F(APIBindingUnittest,
       result.code = APIBindingHooks::RequestResult::THROWN;
       return result;
     }
-    result.return_value =
-        gin::StringToV8(context->GetIsolate(), arg_value + " pong");
+    result.return_value = gin::StringToV8(isolate, arg_value + " pong");
     return result;
   };
   hooks->AddHandler("test.oneString", base::BindRepeating(hook, &did_call));
@@ -1678,7 +1678,7 @@ TEST_F(APIBindingUnittest, HooksInstanceInitializer) {
   int count = 0;
   auto hook = [](int* count, v8::Local<v8::Context> context,
                  v8::Local<v8::Object> object) {
-    v8::Isolate* isolate = context->GetIsolate();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     // Add a new property only for the first instance.
     if ((*count)++ == 0) {
       object
@@ -1776,8 +1776,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
                              v8::Local<v8::Context> context,
                              v8::LocalVector<v8::Value>* arguments,
                              const APITypeReferenceMap& map) {
-        context->GetIsolate()->ThrowException(
-            gin::StringToV8(context->GetIsolate(), "some error"));
+        v8::Isolate* isolate = v8::Isolate::GetCurrent();
+        isolate->ThrowException(gin::StringToV8(isolate, "some error"));
         return RequestResult(RequestResult::THROWN);
       }));
   hooks->AddHandler(
@@ -1786,7 +1786,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
                              v8::Local<v8::Context> context,
                              v8::LocalVector<v8::Value>* arguments,
                              const APITypeReferenceMap& map) {
-        arguments->push_back(v8::Integer::New(context->GetIsolate(), 42));
+        arguments->push_back(v8::Integer::New(v8::Isolate::GetCurrent(), 42));
         return RequestResult(RequestResult::HANDLED);
       }));
 
@@ -1837,10 +1837,11 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
         context, base::StringPrintf("(function(binding) { binding.%s(%s); })",
                                     name.data(), string_args.data()));
     v8::Local<v8::Value> args[] = {binding_object};
-    v8::TryCatch try_catch(context->GetIsolate());
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    v8::TryCatch try_catch(isolate);
     // The throwException call will throw an exception; ignore it.
-    std::ignore = call->Call(context, v8::Undefined(context->GetIsolate()),
-                             std::size(args), args);
+    std::ignore =
+        call->Call(context, v8::Undefined(isolate), std::size(args), args);
   };
 
   call_api_method("modifyArgs", "");
@@ -1969,9 +1970,9 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
     if (async_type == binding::AsyncResponseType::kCallback) {
       // For callback based calls change the result to a vector with
       // multiple arguments by appending "bar" to the end.
+      v8::Isolate* isolate = v8::Isolate::GetCurrent();
       v8::LocalVector<v8::Value> new_args(
-          context->GetIsolate(),
-          {result_args[0], gin::StringToV8(context->GetIsolate(), "bar")});
+          isolate, {result_args[0], gin::StringToV8(isolate, "bar")});
       return new_args;
     }
     return result_args;
@@ -2101,9 +2102,9 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifierAndJSHook) {
     if (async_type == binding::AsyncResponseType::kCallback) {
       // For callback based calls change the result to a vector with
       // multiple arguments by appending "bar" to the end.
+      v8::Isolate* isolate = v8::Isolate::GetCurrent();
       v8::LocalVector<v8::Value> new_args(
-          context->GetIsolate(),
-          {result_args[0], gin::StringToV8(context->GetIsolate(), "bar")});
+          isolate, {result_args[0], gin::StringToV8(isolate, "bar")});
       return new_args;
     }
     return result_args;

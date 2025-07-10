@@ -225,7 +225,7 @@ TEST_F(APILastErrorTest, NonLastErrorObject) {
                                std::string_view key,
                                v8::Local<v8::Value> value) {
     v8::Maybe<bool> success = object->Set(
-        context, gin::StringToSymbol(context->GetIsolate(), key), value);
+        context, gin::StringToSymbol(v8::Isolate::GetCurrent(), key), value);
     ASSERT_TRUE(success.IsJust());
     ASSERT_TRUE(success.FromJust());
   };

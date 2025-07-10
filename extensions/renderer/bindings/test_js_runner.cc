@@ -85,7 +85,7 @@ void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                  ResultCallback callback) {
   if (g_suspended) {
     // Script is suspended. Queue up the call and return.
-    v8::Isolate* isolate = context->GetIsolate();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     PendingCall call;
     call.isolate = isolate;
     call.function.Reset(isolate, function);

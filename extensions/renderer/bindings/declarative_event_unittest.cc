@@ -124,7 +124,7 @@ TEST_F(DeclarativeEventTest, TestRulesSchema) {
   v8::Local<v8::Context> context = MainContext();
 
   gin::Handle<DeclarativeEvent> emitter = gin::CreateHandle(
-      context->GetIsolate(),
+      v8::Isolate::GetCurrent(),
       new DeclarativeEvent("declEvent", type_refs(), request_handler(),
                            {"action1", "action2"}, {"condition"}, 0));
 

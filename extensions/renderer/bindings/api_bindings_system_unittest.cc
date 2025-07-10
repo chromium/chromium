@@ -356,13 +356,13 @@ TEST_F(APIBindingsSystemTest, TestCustomHooks) {
       return result;
     }
     std::string argument;
-    EXPECT_EQ("foo", gin::V8ToString(context->GetIsolate(), arguments->at(0)));
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    EXPECT_EQ("foo", gin::V8ToString(isolate, arguments->at(0)));
     if (!arguments->at(1)->IsFunction()) {
       EXPECT_TRUE(arguments->at(1)->IsFunction());
       return result;
     }
-    v8::Local<v8::String> response =
-        gin::StringToV8(context->GetIsolate(), "bar");
+    v8::Local<v8::String> response = gin::StringToV8(isolate, "bar");
     v8::Local<v8::Value> response_args[] = {response};
     RunFunctionOnGlobal(arguments->at(1).As<v8::Function>(),
                         context, 1, response_args);
@@ -585,7 +585,7 @@ TEST_F(APIBindingsSystemTest, TestCustomEvent) {
 
   auto create_custom_event = [](v8::Local<v8::Context> context,
                                 const std::string& event_name) {
-    v8::Isolate* isolate = context->GetIsolate();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::Local<v8::Object> ret = v8::Object::New(isolate);
     ret->Set(context, gin::StringToSymbol(isolate, "name"),
              gin::StringToSymbol(isolate, event_name))

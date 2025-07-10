@@ -29,12 +29,12 @@ bool RunFunctionImpl(v8::Local<v8::Function> function,
                      v8::Local<v8::Value> argv[],
                      v8::Local<v8::Value>* out_value,
                      std::string* out_error) {
-  v8::TryCatch try_catch(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::TryCatch try_catch(isolate);
   v8::MaybeLocal<v8::Value> maybe_result =
       function->Call(context, receiver, argc, argv);
   if (try_catch.HasCaught()) {
-    *out_error =
-        gin::V8ToString(context->GetIsolate(), try_catch.Message()->Get());
+    *out_error = gin::V8ToString(isolate, try_catch.Message()->Get());
     return false;
   }
   v8::Local<v8::Value> result;
@@ -117,7 +117,7 @@ std::string V8ToString(v8::Local<v8::Value> value,
 v8::Local<v8::Value> V8ValueFromScriptSource(v8::Local<v8::Context> context,
                                              std::string_view source) {
   v8::MaybeLocal<v8::Script> maybe_script = v8::Script::Compile(
-      context, gin::StringToV8(context->GetIsolate(), source));
+      context, gin::StringToV8(v8::Isolate::GetCurrent(), source));
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script))
     return v8::Local<v8::Value>();
@@ -128,7 +128,7 @@ v8::Local<v8::Function> FunctionFromString(v8::Local<v8::Context> context,
                                            std::string_view source) {
   v8::Local<v8::Value> value = V8ValueFromScriptSource(context, source);
   v8::Local<v8::Function> function;
-  EXPECT_TRUE(gin::ConvertFromV8(context->GetIsolate(), value, &function));
+  EXPECT_TRUE(gin::ConvertFromV8(v8::Isolate::GetCurrent(), value, &function));
   return function;
 }
 
@@ -155,8 +155,8 @@ v8::Local<v8::Value> RunFunction(v8::Local<v8::Function> function,
                                  v8::Local<v8::Context> context,
                                  int argc,
                                  v8::Local<v8::Value> argv[]) {
-  return RunFunction(function, context, v8::Undefined(context->GetIsolate()),
-                     argc, argv);
+  return RunFunction(function, context,
+                     v8::Undefined(v8::Isolate::GetCurrent()), argc, argv);
 }
 
 v8::Local<v8::Value> RunFunctionOnGlobal(v8::Local<v8::Function> function,
@@ -179,7 +179,7 @@ v8::Global<v8::Value> RunFunctionOnGlobalAndReturnHandle(
     int argc,
     v8::Local<v8::Value> argv[]) {
   return v8::Global<v8::Value>(
-      context->GetIsolate(),
+      v8::Isolate::GetCurrent(),
       RunFunction(function, context, context->Global(), argc, argv));
 }
 
@@ -203,16 +203,17 @@ void RunFunctionAndExpectError(v8::Local<v8::Function> function,
                                v8::Local<v8::Value> argv[],
                                const std::string& expected_error) {
   RunFunctionAndExpectError(function, context,
-                            v8::Undefined(context->GetIsolate()), argc, argv,
-                            expected_error);
+                            v8::Undefined(v8::Isolate::GetCurrent()), argc,
+                            argv, expected_error);
 }
 
 v8::Local<v8::Value> GetPropertyFromObject(v8::Local<v8::Object> object,
                                            v8::Local<v8::Context> context,
                                            std::string_view key) {
   v8::Local<v8::Value> result;
-  EXPECT_TRUE(object->Get(context, gin::StringToV8(context->GetIsolate(), key))
-                  .ToLocal(&result));
+  EXPECT_TRUE(
+      object->Get(context, gin::StringToV8(v8::Isolate::GetCurrent(), key))
+          .ToLocal(&result));
   return result;
 }
 

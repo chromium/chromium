@@ -28,9 +28,10 @@ TEST_F(APIBindingBridgeTest, TestUseAfterContextInvalidation) {
   // the error on context invalidation it's avoided.
   APIRequestHandler* null_request_handler = nullptr;
   APIBindingHooks hooks("apiName", null_request_handler);
-  gin::Handle<APIBindingBridge> bridge_handle = gin::CreateHandle(
-      context->GetIsolate(), new APIBindingBridge(&hooks, context, api_object,
-                                                  extension_id, context_type));
+  gin::Handle<APIBindingBridge> bridge_handle =
+      gin::CreateHandle(v8::Isolate::GetCurrent(),
+                        new APIBindingBridge(&hooks, context, api_object,
+                                             extension_id, context_type));
   v8::Local<v8::Object> bridge_object = bridge_handle.ToV8().As<v8::Object>();
 
   DisposeContext(context);

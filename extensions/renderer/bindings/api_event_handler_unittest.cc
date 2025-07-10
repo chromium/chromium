@@ -246,7 +246,7 @@ TEST_F(APIEventHandlerTest, FiringEvents) {
       return 0;
     int32_t count = 0;
     EXPECT_TRUE(
-        gin::Converter<int32_t>::FromV8(context->GetIsolate(), res, &count))
+        gin::Converter<int32_t>::FromV8(v8::Isolate::GetCurrent(), res, &count))
         << name;
     return count;
   };

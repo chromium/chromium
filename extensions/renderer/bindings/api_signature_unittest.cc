@@ -186,11 +186,12 @@ std::unique_ptr<APISignature> OptionalIntAndInt() {
 
 v8::LocalVector<v8::Value> StringToV8Vector(v8::Local<v8::Context> context,
                                             const char* args) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, args);
   EXPECT_FALSE(v8_args.IsEmpty());
   EXPECT_TRUE(v8_args->IsArray());
-  v8::LocalVector<v8::Value> vector_args(context->GetIsolate());
-  EXPECT_TRUE(gin::ConvertFromV8(context->GetIsolate(), v8_args, &vector_args));
+  v8::LocalVector<v8::Value> vector_args(isolate);
+  EXPECT_TRUE(gin::ConvertFromV8(isolate, v8_args, &vector_args));
   return vector_args;
 }
 
@@ -735,7 +736,7 @@ TEST_F(APISignatureTest, ParseArgumentsToV8WithUnspecifiedOptionalCallback) {
 
   ASSERT_EQ(2u, parse_result.arguments->size());
   int int_value = -1;
-  gin::ConvertFromV8(context->GetIsolate(), (*parse_result.arguments)[0],
+  gin::ConvertFromV8(v8::Isolate::GetCurrent(), (*parse_result.arguments)[0],
                      &int_value);
   EXPECT_EQ(1337, int_value);
   ASSERT_FALSE((*parse_result.arguments)[1].IsEmpty());

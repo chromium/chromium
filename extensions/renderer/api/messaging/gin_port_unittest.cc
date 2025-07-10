@@ -92,7 +92,7 @@ class GinPortTest : public APIBindingTest {
       const PortId& port_id,
       const mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage,
       const char* name = kDefaultPortName) {
-    EXPECT_EQ(context, context->GetIsolate()->GetCurrentContext());
+    EXPECT_EQ(context, v8::Isolate::GetCurrent()->GetCurrentContext());
     return gin::CreateHandle(isolate(),
                              new GinPort(context, port_id, name, channel_type,
                                          event_handler(), delegate()));
