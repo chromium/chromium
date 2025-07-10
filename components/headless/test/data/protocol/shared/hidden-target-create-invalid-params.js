@@ -18,4 +18,4 @@
       {url: 'about:blank?HIDDEN=TARGET', hidden: true, forTab: true}));
 
   testRunner.completeTest();
-})
+});

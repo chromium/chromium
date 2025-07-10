@@ -381,12 +381,12 @@ HEADLESS_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
 // under certain conditions which are note currently satisfied by the test.
 HEADLESS_PROTOCOL_TEST(WindowResizeTo, "sanity/window-resize-to.js")
 
-HEADLESS_PROTOCOL_TEST(HiddenTargetCreate, "sanity/hidden-target-create.js")
-HEADLESS_PROTOCOL_TEST(HiddenTargetClose, "sanity/hidden-target-close.js")
+HEADLESS_PROTOCOL_TEST(HiddenTargetCreate, "shared/hidden-target-create.js")
+HEADLESS_PROTOCOL_TEST(HiddenTargetClose, "shared/hidden-target-close.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
-                       "sanity/hidden-target-create-invalid-params.js")
+                       "shared/hidden-target-create-invalid-params.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetPageEnable,
-                       "sanity/hidden-target-page-enable.js")
+                       "shared/hidden-target-page-enable.js")
 
 // https://crbug.com/378531862
 #if BUILDFLAG(IS_MAC)
@@ -402,8 +402,8 @@ HEADLESS_PROTOCOL_TEST(WindowSizeOnStart, "sanity/window-size-on-start.js")
 HEADLESS_PROTOCOL_TEST(LargeBrowserWindowSize,
                        "shared/large-browser-window-size.js")
 
-HEADLESS_PROTOCOL_TEST(ScreencastBasics, "sanity/screencast-basics.js")
-HEADLESS_PROTOCOL_TEST(ScreencastViewport, "sanity/screencast-viewport.js")
+HEADLESS_PROTOCOL_TEST(ScreencastBasics, "shared/screencast-basics.js")
+HEADLESS_PROTOCOL_TEST(ScreencastViewport, "shared/screencast-viewport.js")
 
 HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 

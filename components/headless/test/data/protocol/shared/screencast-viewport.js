@@ -36,8 +36,8 @@
   }
 
   function saveImageSize(image) {
-    if (lastImageWidth != image.naturalWidth ||
-        lastImageHeight != image.naturalHeight) {
+    if (lastImageWidth !== image.naturalWidth ||
+        lastImageHeight !== image.naturalHeight) {
       lastImageWidth = image.naturalWidth;
       lastImageHeight = image.naturalHeight;
     }
@@ -74,4 +74,4 @@
   dp.Page.bringToFront();
   dp.Emulation.setVisibleSize({width: 640, height: 480});
   dp.Page.startScreencast({format: 'png'});
-})
+});

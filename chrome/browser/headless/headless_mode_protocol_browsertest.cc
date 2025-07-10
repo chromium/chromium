@@ -309,18 +309,27 @@ class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
 
 HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
                               ScreencastBasics,
-                              "sanity/screencast-basics.js")
+                              "shared/screencast-basics.js")
 HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
                               ScreencastViewport,
-                              "sanity/screencast-viewport.js")
+                              "shared/screencast-viewport.js")
 
-HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
-
-HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
-                            "shared/large-browser-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetCreate,
+                            "shared/hidden-target-create.js")
+HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetClose, "shared/hidden-target-close.js")
+HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
+                            "shared/hidden-target-create-invalid-params.js")
+HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetPageEnable,
+                            "shared/hidden-target-page-enable.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowSize, "shared/change-window-size.js")
 HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowState, "shared/change-window-state.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
+HEADLESS_MODE_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
+                            "shared/large-browser-window-size.js")
 
 // These currently fail on Mac, see https://crbug.com/1488010
 #if !BUILDFLAG(IS_MAC)
@@ -466,7 +475,5 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
                             "shared/window-screen-size-orientation.js")
-
-HEADLESS_MODE_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
 
 }  // namespace headless

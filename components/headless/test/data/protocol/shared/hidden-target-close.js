@@ -63,4 +63,4 @@
       `Filtered targets via browser session: `);
 
   testRunner.completeTest();
-})
+});

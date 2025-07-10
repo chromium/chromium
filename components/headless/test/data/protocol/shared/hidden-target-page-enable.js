@@ -32,4 +32,4 @@
   testRunnerLog(await hiddenSession.protocol.Page.enable());
 
   testRunner.completeTest();
-})
+});
