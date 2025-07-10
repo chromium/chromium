@@ -23,7 +23,6 @@
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 #include "components/component_updater/installer_policies/tpcd_metadata_component_installer_policy.h"
-#include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 #include "components/update_client/update_client.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 
@@ -94,20 +93,6 @@ void RegisterComponentsForUpdate(
                   VLOG(1) << "Received Related Website Sets";
                 }),
             base::TaskPriority::BEST_EFFORT));
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewEnableTrustTokensComponent)) {
-    // TODO(crbug.com/40165770): decide if this component is still
-    // needed. Note: We're using a command-line switch because finch features
-    // isn't supported in nonembedded WebView.
-    // After setting this flag, it may be necessary to force restart the
-    // non-embedded process.
-    component_installer_list.push_back(
-        std::make_unique<component_updater::
-                             TrustTokenKeyCommitmentsComponentInstallerPolicy>(
-            /* on_commitments_ready= */ base::BindRepeating(
-                [](const std::string& raw_commitments) { NOTREACHED(); })));
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
