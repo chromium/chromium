@@ -270,10 +270,6 @@ test("gl_tests") {
     "ipc/client/raster_in_process_context_tests.cc",
   ]
 
-  if (is_android) {
-    sources += [ "command_buffer/tests/gl_unittests_android.cc" ]
-  }
-
   # Simply loading the Vulkan driver leaks crbug.com/1134681
   if (use_dawn && !is_lsan) {
     sources += [
