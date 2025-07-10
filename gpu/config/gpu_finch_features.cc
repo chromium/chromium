@@ -908,7 +908,7 @@ bool IsGraphiteContextThreadSafe() {
 
 BASE_FEATURE(kWebGPUCompatibilityMode,
              "WebGPUCompatibilityMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebGPUAndroidOpenGLES,
              "WebGPUAndroidOpenGLES",
