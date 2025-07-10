@@ -37,7 +37,9 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -118,6 +120,14 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @CommandLineFlags.Add({ChromeSwitches.NO_FIRST_RUN})
+    public void testMaybeShow_doesNotShowWhenCommanLineFlagSet() {
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertFalse(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
     }
 
     @Test

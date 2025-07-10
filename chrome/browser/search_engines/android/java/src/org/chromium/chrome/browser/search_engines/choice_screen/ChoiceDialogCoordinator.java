@@ -19,10 +19,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.R;
@@ -120,7 +122,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
         final boolean canShow =
                 searchEngineChoiceService != null
-                        && searchEngineChoiceService.isDeviceChoiceDialogEligible();
+                        && searchEngineChoiceService.isDeviceChoiceDialogEligible()
+                        && !CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_FIRST_RUN);
 
         if (SearchEnginesFeatureUtils.getInstance().isChoiceApisDebugEnabled()) {
             Log.i(TAG, "maybeShow() - Client eligible for the device choice dialog: %b", canShow);
