@@ -1,0 +1,20 @@
+https://crsrc.org/base/lazy_instance.h;l=122
+    (1 hits): [(122, 28)]
+https://crsrc.org/third_party/angle/src/libANGLE/renderer/vulkan/ContextVk.cpp;l=3556
+    (1 hits): [(3556, 30)]
+https://crsrc.org/third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/rsa_bssa_public_metadata_client.cc;l=99
+    (1 hits): [(99, 32)]
+https://crsrc.org/third_party/libjpeg_turbo/jdatasrc.c;l=61
+    (2 hits): [(61, 34), (204, 30)]
+https://crsrc.org/third_party/skia/src/gpu/tessellate/MiddleOutPolygonTriangulator.h;l=93
+    (1 hits): [(93, 20)]
+https://crsrc.org/third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc;l=38
+    (3 hits): [(38, 38), (66, 55), (114, 37)]
+https://crsrc.org/ui/accessibility/platform/ax_platform_node_auralinux.cc;l=552
+    (13 hits): [(552, 30), (724, 30), (761, 30), (814, 30), (915, 30), (941, 30), (993, 30), (1515, 30), (1521, 27), (1522, 30), (1706, 30), (1910, 30), (2053, 30)]
+https://crsrc.org/v8/include/v8-persistent-handle.h;l=493
+    (1 hits): [(493, 26)]
+https://crsrc.org/v8/src/inspector/value-mirror.h;l=60
+    (9 hits): [(60, 30), (60, 55), (63, 30), (63, 44), (64, 12), (64, 28), (67, 30), (67, 44), (67, 60)]
+
+Total Files: 9, Total Hits: 32

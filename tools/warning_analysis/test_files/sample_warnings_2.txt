@@ -1,0 +1,59 @@
+stdout:
+../../third_party/libjpeg_turbo/jdatasrc.c:61:34: warning: unused parameter 'cinfo' [-Wunused-parameter]
+   61 | init_mem_source(j_decompress_ptr cinfo)
+      |                                  ^
+../../third_party/libjpeg_turbo/jdatasrc.c:204:30: warning: unused parameter 'cinfo' [-Wunused-parameter]
+  204 | term_source(j_decompress_ptr cinfo)
+      |                              ^
+2 warnings generated.
+                                                       ^
+In file included from ../../v8/src/inspector/injected-script.cc:56:
+../../v8/src/inspector/value-mirror.h:60:30: warning: unused parameter 'context' [-Wunused-parameter]
+   60 |       v8::Local<v8::Context> context, const String16& name,
+      |                              ^
+../../v8/src/inspector/value-mirror.h:60:55: warning: unused parameter 'name' [-Wunused-parameter]
+   60 |       v8::Local<v8::Context> context, const String16& name,
+      |                                                       ^
+../../v8/src/inspector/value-mirror.h:63:30: warning: unused parameter 'context' [-Wunused-parameter]
+   63 |       v8::Local<v8::Context> context, bool generatePreviewForTable,
+      |                              ^
+../../v8/src/inspector/value-mirror.h:63:44: warning: unused parameter 'generatePreviewForTable' [-Wunused-parameter]
+   63 |       v8::Local<v8::Context> context, bool generatePreviewForTable,
+      |                                            ^
+../../v8/src/inspector/value-mirror.h:64:12: warning: unused parameter 'nameLimit' [-Wunused-parameter]
+   64 |       int* nameLimit, int* indexLimit,
+      |            ^
+../../v8/src/inspector/value-mirror.h:64:28: warning: unused parameter 'indexLimit' [-Wunused-parameter]
+   64 |       int* nameLimit, int* indexLimit,
+      |                            ^
+../../v8/src/inspector/value-mirror.h:67:30: warning: unused parameter 'context' [-Wunused-parameter]
+   67 |       v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,
+      |                              ^
+../../v8/src/inspector/value-mirror.h:67:44: warning: unused parameter 'nameLimit' [-Wunused-parameter]
+   67 |       v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,
+      |                                            ^
+../../v8/src/inspector/value-mirror.h:67:60: warning: unused parameter 'indexLimit' [-Wunused-parameter]
+   67 |       v8::Local<v8::Context> context, int* nameLimit, int* indexLimit,
+      |                                                            ^
+In file included from ../../v8/src/inspector/injected-script.cc:31:
+In file included from ../../v8/src/inspector/injected-script.h:38:
+In file included from ../../v8/include/v8-exception.h:11:
+In file included from ../../v8/include/v8-object.h:11:
+../../v8/include/v8-persistent-handle.h:493:26: warning: cast from 'typename WeakCallbackInfo<long>::Callback' (aka 'void (*)(const WeakCallbackInfo<long> &)') to 'Callback' (aka 'void (*)(const WeakCallbackInfo<void> &)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  493 |                          reinterpret_cast<Callback>(callback), type);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../v8/src/inspector/injected-script.cc:224:24: note: in instantiation of function template specialization 'v8::PersistentBase<v8::Promise>::SetWeak<long>' requested here
+  224 |     m_evaluationResult.SetWeak(reinterpret_cast<PromiseHandlerTracker::Id*>(id),
+      |                        ^
+# Included in both files to make sure it's not duplicated
+stdout:
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:38:38: warning: unused parameter 'alignment_hint' [-Wunused-parameter]
+   38 |   void* Allocate(size_t size, size_t alignment_hint) override {
+      |                                      ^
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:66:55: warning: missing field 'dims' initializer [-Wmissing-field-initializers]
+   66 |     OpSignatureTensorSpec tensor_spec = {kTfLiteNoType};
+      |                                                       ^
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:114:37: warning: missing field 'inputs' initializer [-Wmissing-field-initializers]
+  114 |   OpSignature op_sig = {builtin_code};
+      |                                     ^
+3 warnings generated.

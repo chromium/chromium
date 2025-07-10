@@ -1,0 +1,21 @@
+stdout:
+In file included from ../../third_party/skia/src/gpu/graphite/render/TessellateStrokesRenderStep.cpp:33:
+In file included from ../../third_party/skia/src/gpu/tessellate/PatchWriter.h:23:
+../../third_party/skia/src/gpu/tessellate/MiddleOutPolygonTriangulator.h(93,20): warning: first argument in call to 'memcpy' is a pointer to non-trivially copyable type 'skgpu::tess::MiddleOutPolygonTriangulator::PoppedTriangleStack' [-Wnontrivial-memcall]
+   93 |             memcpy(this, &that, sizeof(*this));
+      |                    ^
+../../third_party/skia/src/gpu/tessellate/MiddleOutPolygonTriangulator.h(93,20): note: explicitly cast the pointer to silence this warning
+   93 |             memcpy(this, &that, sizeof(*this));
+      |                    ^
+      |                    (void*)
+Note: including file:  ../../third_party/libc++/src/include/math.h
+1 warning generated.
+stdout:
+../../third_party/angle/src/libANGLE/renderer/vulkan/ContextVk.cpp(3556,30): warning: first argument in call to 'memset' is a pointer to non-trivially copyable type 'rx::CacheStats' [-Wnontrivial-memcall]
+ 3556 |     memset(mVulkanCacheStats.data(), 0, sizeof(CacheStats) * mVulkanCacheStats.size());
+      |                              ^
+../../third_party/angle/src/libANGLE/renderer/vulkan/ContextVk.cpp(3556,30): note: explicitly cast the pointer to silence this warning
+ 3556 |     memset(mVulkanCacheStats.data(), 0, sizeof(CacheStats) * mVulkanCacheStats.size());
+      |                              ^
+      |            (void*)
+1 warning generated.

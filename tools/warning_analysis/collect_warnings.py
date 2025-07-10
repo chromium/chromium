@@ -81,8 +81,7 @@ def parse_args(args):
     return parsed_args
 
 
-_TARGET_RE = re.compile('([^:(]+)(?:[:(])([0-9]+)(?::|, ?)([0-9]+)\)?:')
-
+_TARGET_RE = re.compile(r'([^:(]+)(?:[:(])([0-9]+)(?::|, ?)([0-9]+)\)?:')
 
 def make_codesearch_link(file, line):
     """

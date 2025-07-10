@@ -1,0 +1,65 @@
+In file included from ../../ui/accessibility/platform/ax_platform_node_auralinux.cc:5:
+In file included from ../../ui/accessibility/platform/ax_platform_node_auralinux.h:20:
+In file included from ../../ui/accessibility/platform/ax_platform_node_base.h:22:
+In file included from ../../ui/accessibility/platform/ax_platform_node.h:13:
+../../base/lazy_instance.h:122:28: warning: unused parameter 'instance' [-Wunused-parameter]
+  122 |   static void Delete(Type* instance) {}
+      |                            ^
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:552:30: warning: cast from 'void (*)(AtkComponentIface *)' (aka 'void (*)(_AtkComponentIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  552 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:724:30: warning: cast from 'void (*)(AtkActionIface *)' (aka 'void (*)(_AtkActionIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  724 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:761:30: warning: cast from 'void (*)(AtkDocumentIface *)' (aka 'void (*)(_AtkDocumentIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  761 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:814:30: warning: cast from 'void (*)(AtkImageIface *)' (aka 'void (*)(_AtkImageIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  814 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:915:30: warning: cast from 'void (*)(AtkValueIface *)' (aka 'void (*)(_AtkValueIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  915 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:941:30: warning: cast from 'void (*)(AtkHyperlinkImplIface *)' (aka 'void (*)(_AtkHyperlinkImplIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  941 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:993:30: warning: cast from 'void (*)(AtkHypertextIface *)' (aka 'void (*)(_AtkHypertextIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  993 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:1515:30: warning: cast from 'void (*)(AtkTextIface *)' (aka 'void (*)(_AtkTextIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  1515 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:1521:27: warning: unused parameter 'iface' [-Wunused-parameter]
+  1521 | void Init(AtkWindowIface* iface) {}
+      |                           ^
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:1522:30: warning: cast from 'void (*)(AtkWindowIface *)' (aka 'void (*)(_AtkWindowIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  1522 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:1706:30: warning: cast from 'void (*)(AtkSelectionIface *)' (aka 'void (*)(_AtkSelectionIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  1706 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:1910:30: warning: cast from 'void (*)(AtkTableIface *)' (aka 'void (*)(_AtkTableIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  1910 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../ui/accessibility/platform/ax_platform_node_auralinux.cc:2053:30: warning: cast from 'void (*)(AtkTableCellIface *)' (aka 'void (*)(_AtkTableCellIface *)') to 'GInterfaceInitFunc' (aka 'void (*)(void *, void *)') converts to incompatible function type [-Wcast-function-type-mismatch]
+  2053 | const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+149 warnings generated.
+
+stdout:
+../../third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/rsa_bssa_public_metadata_client.cc:99:32: warning: missing field 'authenticator' initializer [-Wmissing-field-initializers]
+   99 |             /*context=*/context};
+      |                                ^
+1 warning generated.
+# Included in both files to make sure it's not duplicated
+stdout:
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:38:38: warning: unused parameter 'alignment_hint' [-Wunused-parameter]
+   38 |   void* Allocate(size_t size, size_t alignment_hint) override {
+      |                                      ^
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:66:55: warning: missing field 'dims' initializer [-Wmissing-field-initializers]
+   66 |     OpSignatureTensorSpec tensor_spec = {kTfLiteNoType};
+      |                                                       ^
+../../third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc:114:37: warning: missing field 'inputs' initializer [-Wmissing-field-initializers]
+  114 |   OpSignature op_sig = {builtin_code};
+      |                                     ^
+3 warnings generated.
