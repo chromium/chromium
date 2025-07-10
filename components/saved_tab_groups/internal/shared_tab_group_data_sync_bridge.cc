@@ -1034,6 +1034,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
   if (!IsReadyToSync()) {
     // Ignore any changes before the model is successfully initialized.
     DVLOG(2) << "SavedTabGroupRemovedLocally called while not initialized";
+    std::erase(tab_groups_waiting_for_commit_, removed_group.saved_guid());
     return;
   }
 
@@ -1557,7 +1558,13 @@ bool SharedTabGroupDataSyncBridge::IsReadyToSync() const {
 void SharedTabGroupDataSyncBridge::ProcessCommittedTabGroups() {
   for (const base::Uuid& group_guid : tab_groups_waiting_for_commit_) {
     const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
-    CHECK(group);
+    if (!group) {
+      // The group is somehow erased. Cleanup from other relevant in-memory
+      // lists.
+      std::erase(tab_groups_waiting_for_commit_, group_guid);
+      continue;
+    }
+
     CHECK(group->is_shared_tab_group());
 
     if (change_processor()->IsEntityUnsynced(StorageKeyForGroup(*group))) {
