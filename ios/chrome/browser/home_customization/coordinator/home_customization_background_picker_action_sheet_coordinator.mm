@@ -42,7 +42,8 @@ CGFloat const kSheetCornerRadius = 30;
 @interface HomeCustomizationBackgroundPickerActionSheetCoordinator () <
     UIAdaptivePresentationControllerDelegate,
     HomeCustomizationLogoVendorProvider,
-    HomeCustomizationBackgroundPickerActionSheetPresentationDelegate> {
+    HomeCustomizationBackgroundPickerActionSheetPresentationDelegate,
+    HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate> {
   // The mediator of the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetMediator* _mediator;
 
@@ -161,6 +162,20 @@ CGFloat const kSheetCornerRadius = 30;
   [self dismissMenu];
 }
 
+#pragma mark - HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate
+
+- (void)photoPickerCoordinatorDidCancel:
+    (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
+  [_photoPickerCoordinator stop];
+  _photoPickerCoordinator = nil;
+}
+
+- (void)photoPickerCoordinatorDidFinish:
+    (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
+  [_photoPickerCoordinator stop];
+  _photoPickerCoordinator = nil;
+}
+
 #pragma mark - Private functions
 
 // Presents the background customization picker based on the given type.
@@ -260,6 +275,8 @@ CGFloat const kSheetCornerRadius = 30;
       [[HomeCustomizationBackgroundPhotoPickerCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
+
+  _photoPickerCoordinator.delegate = self;
   [_photoPickerCoordinator start];
 }
 

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -333,10 +335,42 @@ const CGFloat kCenterStackSpacing = 4.0;
   [self.delegate imageFramingViewControllerDidCancel:self];
 }
 
-// Handles save button tap functionality.
 - (void)saveButtonTapped {
-  // TODO(crbug.com/421925583): Implement save button and integrate with
-  // services.
+  if (!_mutator) {
+    [self.delegate imageFramingViewControllerDidCancel:self];
+    return;
+  }
+  HomeCustomizationFramingCoordinates* framingCoordinates =
+      [self calculateFramingCoordinates];
+
+  [_mutator saveImageWithFramingCoordinates:_originalImage
+                                coordinates:framingCoordinates];
+}
+
+// Calculates the center point of the visible area in content coordinates.
+- (HomeCustomizationFramingCoordinates*)calculateFramingCoordinates {
+  // Get the visible area in scroll view content coordinates.
+  CGRect visibleContentRect =
+      CGRectMake(_scrollView.contentOffset.x, _scrollView.contentOffset.y,
+                 _scrollView.bounds.size.width, _scrollView.bounds.size.height);
+
+  // Convert from scroll view content coordinates to original image coordinates.
+  CGFloat scaleX = _originalImage.size.width / _imageView.frame.size.width;
+  CGFloat scaleY = _originalImage.size.height / _imageView.frame.size.height;
+
+  CGRect visibleRectInOriginal =
+      CGRectMake(visibleContentRect.origin.x * scaleX,
+                 visibleContentRect.origin.y * scaleY,
+                 visibleContentRect.size.width * scaleX,
+                 visibleContentRect.size.height * scaleY);
+
+  // Clamp the rectangle to image bounds.
+  CGRect imageBounds =
+      CGRectMake(0, 0, _originalImage.size.width, _originalImage.size.height);
+  CGRect clampedRect = CGRectIntersection(visibleRectInOriginal, imageBounds);
+
+  return [[HomeCustomizationFramingCoordinates alloc]
+      initWithVisibleRect:clampedRect];
 }
 
 @end

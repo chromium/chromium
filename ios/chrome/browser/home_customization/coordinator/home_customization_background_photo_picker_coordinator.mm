@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 
 #import "base/check.h"
+#import "base/values.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -19,6 +22,8 @@
 @implementation HomeCustomizationBackgroundPhotoPickerCoordinator {
   // Strong reference to the framing view controller while it's being presented.
   HomeCustomizationImageFramingViewController* _framingViewController;
+  // Mediator for handling background photo framing.
+  HomeCustomizationBackgroundPhotoFramingMediator* _mediator;
 }
 
 - (void)start {
@@ -26,12 +31,11 @@
 }
 
 - (void)stop {
-  // Dismiss any presented picker if it's still showing.
-  if (self.baseViewController.presentedViewController) {
-    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  // Dismiss the framing view controller if it's presented.
+  if (_framingViewController) {
+    [_framingViewController dismissViewControllerAnimated:YES completion:nil];
+    _framingViewController = nil;
   }
-
-  _framingViewController = nil;
 
   [super stop];
 }
@@ -88,16 +92,29 @@
 
 // Handles the selected image and presents the framing view.
 - (void)handleSelectedImage:(UIImage*)image {
+  if (!_mediator) {
+    _mediator = [[HomeCustomizationBackgroundPhotoFramingMediator alloc]
+        initWithFilePath:self.profile->GetStatePath()];
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  PhotoSelectionFinishedCommand completionCommand = ^{
+    // Directly notify delegate when save completes.
+    [weakSelf.delegate photoPickerCoordinatorDidFinish:weakSelf];
+  };
+
+  [_mediator setCompletionCommand:completionCommand];
+
   // Create the logo vendor
   id<LogoVendor> logoVendor = ios::provider::CreateLogoVendor(
       self.browser, self.browser->GetWebStateList()->GetActiveWebState());
 
-  // Create the framing view controller with both image and logo vendor
+  // Create the framing view controller.
   _framingViewController = [[HomeCustomizationImageFramingViewController alloc]
       initWithImage:image
          logoVendor:logoVendor];
 
-  // Set the delegate to handle the framed image.
+  _framingViewController.mutator = _mediator;
   _framingViewController.delegate = self;
 
   _framingViewController.modalPresentationStyle =
@@ -112,22 +129,6 @@
 }
 
 #pragma mark - HomeCustomizationImageFramingViewControllerDelegate
-
-- (void)imageFramingViewController:
-            (HomeCustomizationImageFramingViewController*)controller
-                didFinishWithImage:(UIImage*)framedImage {
-  // Dismiss the framing view controller.
-  __weak __typeof(self) weakSelf = self;
-  [controller dismissViewControllerAnimated:YES
-                                 completion:^{
-                                   // Pass the framed image to the delegate.
-                                   [weakSelf.delegate
-                                       photoPickerCoordinator:weakSelf
-                                               didSelectImage:framedImage];
-                                 }];
-
-  _framingViewController = nil;
-}
 
 - (void)imageFramingViewControllerDidCancel:
     (HomeCustomizationImageFramingViewController*)controller {

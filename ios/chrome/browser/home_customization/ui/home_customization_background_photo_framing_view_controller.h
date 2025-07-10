@@ -7,16 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/values.h"
+#import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
+
 @protocol LogoVendor;
+@protocol HomeCustomizationBackgroundPhotoFramingMutator;
 @class HomeCustomizationImageFramingViewController;
 
 // Protocol for handling framing results.
 @protocol HomeCustomizationImageFramingViewControllerDelegate <NSObject>
-// Called when the user finishes framing with a resulting image.
-- (void)imageFramingViewController:
-            (HomeCustomizationImageFramingViewController*)controller
-                didFinishWithImage:(UIImage*)framedImage;
-
 // Called when the user cancels the framing operation.
 - (void)imageFramingViewControllerDidCancel:
     (HomeCustomizationImageFramingViewController*)controller;
@@ -29,6 +28,8 @@
 @property(nonatomic, weak)
     id<HomeCustomizationImageFramingViewControllerDelegate>
         delegate;
+@property(nonatomic, weak) id<HomeCustomizationBackgroundPhotoFramingMutator>
+    mutator;
 
 // Initialize with an image to frame and a logo vendor for displaying the Google
 // logo.
