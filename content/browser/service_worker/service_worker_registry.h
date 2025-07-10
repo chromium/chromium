@@ -505,6 +505,9 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void StartRemoteCall(std::unique_ptr<InflightCall> call);
   void FinishRemoteCall(const InflightCall* call);
 
+  void ClearAllInternalCache();
+  void ClearInternalCacheForStorageKey(const blink::StorageKey& storage_key);
+
   storage::ServiceWorkerStorage::StorageSharedBuffer& storage_shared_buffer() {
     // storage_shared_buffer_  always exists.
     return *storage_shared_buffer_;

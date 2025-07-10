@@ -130,17 +130,6 @@ void CheckForClientWriteFailure(
   }
 }
 
-void EraseRegistrationIdCacheEntry(
-    base::LRUCache<std::pair<GURL, blink::StorageKey>, int64_t>&
-        registration_id_cache,
-    const GURL& scope,
-    const blink::StorageKey& key) {
-  auto iter = registration_id_cache.Get(std::make_pair(scope, key));
-  if (iter != registration_id_cache.end()) {
-    registration_id_cache.Erase(iter);
-  }
-}
-
 void FindRegistrationForClientUrlTraceEventBegin(int64_t trace_event_id,
                                                  const GURL& client_url) {
   CHECK(client_url.is_valid());
@@ -664,8 +653,7 @@ void ServiceWorkerRegistry::StoreRegistration(
   }
   data->resources_total_size_bytes = resources_total_size_bytes;
 
-  EraseRegistrationIdCacheEntry(registration_id_cache_, registration->scope(),
-                                registration->key());
+  ClearInternalCacheForStorageKey(registration->key());
 
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::StoreRegistration,
@@ -690,8 +678,7 @@ void ServiceWorkerRegistry::DeleteRegistration(
   DCHECK(!registration->is_deleted())
       << "attempt to delete a registration twice";
 
-  EraseRegistrationIdCacheEntry(registration_id_cache_, registration->scope(),
-                                registration->key());
+  ClearInternalCacheForStorageKey(registration->key());
 
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::DeleteRegistration,
@@ -1333,19 +1320,15 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
     DCHECK(!scopes);
-    auto it = registration_scope_cache_.Peek(key);
-    if (it != registration_scope_cache_.end()) {
-      registration_scope_cache_.Erase(it);
-    }
+    // The following `ScheduleDeleteAndStartOver()` calls
+    // `ClearAllInternalCache()`. Therefore, no need to call
+    // `ClearInternalCacheForStorageKey()` here.
     ScheduleDeleteAndStartOver();
   } else if (scopes && !scopes->empty()) {
     registration_scope_cache_.Put(
         key, std::set<GURL>(scopes->begin(), scopes->end()));
   } else {
-    auto it = registration_scope_cache_.Peek(key);
-    if (it != registration_scope_cache_.end()) {
-      registration_scope_cache_.Erase(it);
-    }
+    ClearInternalCacheForStorageKey(key);
   }
 
   const bool kServiceWorkerMergeFindRegistrationForClientUrlEnabled =
@@ -1711,15 +1694,6 @@ void ServiceWorkerRegistry::NotifyRegistrationStored(
   context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key,
                                      stored_resources_total_size_bytes);
 
-  auto iter = registration_scope_cache_.Get(key);
-  if (iter != registration_scope_cache_.end()) {
-    std::set<GURL>& scopes = iter->second;
-    scopes.insert(stored_scope);
-    if (scopes.size() > storage::kMaxServiceWorkerScopeUrlCountPerStorageKey) {
-      registration_scope_cache_.Erase(iter);
-    }
-  }
-
   if (storage_policy_observer_) {
     storage_policy_observer_->StartTrackingOrigin(key.origin());
   }
@@ -1782,16 +1756,6 @@ void ServiceWorkerRegistry::NotifyRegistrationDeletedForStorageKey(
     context_->NotifyAllRegistrationsDeletedForStorageKey(key);
     if (storage_policy_observer_)
       storage_policy_observer_->StopTrackingOrigin(key.origin());
-    auto it = registration_scope_cache_.Peek(key);
-    if (it != registration_scope_cache_.end()) {
-      registration_scope_cache_.Erase(it);
-    }
-  } else {
-    auto iter = registration_scope_cache_.Peek(key);
-    if (iter != registration_scope_cache_.end()) {
-      iter->second.erase(stored_scope);
-      DCHECK(!iter->second.empty());
-    }
   }
 
   // For all other blink::ServiceWorkerStatusCode entries,
@@ -1938,6 +1902,7 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
 
 void ServiceWorkerRegistry::ScheduleDeleteAndStartOver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ClearAllInternalCache();
   if (!should_schedule_delete_and_start_over_) {
     // Recovery process has already been scheduled.
     return;
@@ -1958,6 +1923,7 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   remote_storage_control_.reset();
+  ClearAllInternalCache();
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
 }
 
@@ -2083,6 +2049,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   remote_storage_control_.reset();
+  ClearAllInternalCache();
 
   if (is_storage_disabled_) {
     // When the storage is disabled a storage error recovery process is ongoing
@@ -2137,6 +2104,33 @@ void ServiceWorkerRegistry::StartRemoteCall(
 void ServiceWorkerRegistry::FinishRemoteCall(const InflightCall* call) {
   DCHECK(base::Contains(inflight_calls_, call));
   inflight_calls_.erase(call);
+}
+
+void ServiceWorkerRegistry::ClearAllInternalCache() {
+  registration_scope_cache_.Clear();
+  registration_id_cache_.Clear();
+}
+
+void ServiceWorkerRegistry::ClearInternalCacheForStorageKey(
+    const blink::StorageKey& storage_key) {
+  {
+    auto it = registration_scope_cache_.Peek(storage_key);
+    if (it != registration_scope_cache_.end()) {
+      registration_scope_cache_.Erase(it);
+    }
+  }
+
+  // When `registration_scope_cache_` doesn't have an entry for the given
+  // `storage_key`, `registration_id_cache_` is not used for the `storage_key`.
+  // Therefore we remove them all.
+  for (auto it = registration_id_cache_.begin();
+       it != registration_id_cache_.end();) {
+    if (it->first.second == storage_key) {
+      it = registration_id_cache_.Erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 namespace {
