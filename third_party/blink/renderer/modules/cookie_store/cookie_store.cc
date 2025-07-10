@@ -83,6 +83,10 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
         "Cookie name and value both cannot be empty");
     return nullptr;
   }
+  if (name.Contains('=')) {
+    exception_state.ThrowTypeError("Cookie name cannot contain '='");
+    return nullptr;
+  }
 
   base::Time expires = options->hasExpiresNonNull()
                            ? base::Time::FromMillisecondsSinceUnixEpoch(

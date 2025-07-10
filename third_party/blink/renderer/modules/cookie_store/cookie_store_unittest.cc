@@ -172,6 +172,29 @@ TEST_F(CookieStoreTest, SetByName) {
   EXPECT_EQ("cookie-value", got[0].Value());
 }
 
+TEST_F(CookieStoreTest, SetByName_DisallowEqualsInName) {
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  std::vector<net::CanonicalCookie> got = GetAllCookies();
+  EXPECT_TRUE(got.empty());
+
+  ScriptPromise<IDLUndefined> promise = cookie_store->set(
+      script_state, "cookie=name", "cookie-value", exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ("Cookie name cannot contain '='", exception_state.Message());
+  EXPECT_TRUE(promise_tester.IsRejected());
+
+  got = GetAllCookies();
+  EXPECT_TRUE(got.empty());
+}
+
 TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
   V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
   CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
