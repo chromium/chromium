@@ -11,6 +11,7 @@
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #import "components/policy/core/common/cloud/dm_token.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/scheme_host_port.h"
 
@@ -55,11 +57,20 @@ TriggeredRuleInfo MakeTriggeredRuleInfo(TriggeredRuleInfo::Action action,
 
 }  // namespace
 
-class IOSReportingEventRouterTest : public PlatformTest {
+class IOSReportingEventRouterTest : public PlatformTest,
+                                    public testing::WithParamInterface<bool> {
  public:
   IOSReportingEventRouterTest() {}
   void SetUp() override {
     PlatformTest::SetUp();
+
+    if (use_proto_format()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    }
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -97,9 +108,20 @@ class IOSReportingEventRouterTest : public PlatformTest {
     return profile_->GetStatePath().AsUTF8Unsafe();
   }
 
+  bool use_proto_format() { return GetParam(); }
+
   void EnableEnhancedFieldsForSecOps() {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kEnhancedFieldsForSecOps);
+    scoped_feature_list_.Reset();
+    if (use_proto_format()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{policy::
+                                    kUploadRealtimeReportingEventsUsingProto,
+                                safe_browsing::kEnhancedFieldsForSecOps},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kEnhancedFieldsForSecOps);
+    }
   }
 
  protected:
@@ -117,7 +139,7 @@ class IOSReportingEventRouterTest : public PlatformTest {
 };
 
 // Tests that the event reporting is not enabled for a given event.
-TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
+TEST_P(IOSReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
   test::SetOnSecurityEventReporting(profile_->GetTestingPrefService(),
                                     /*enabled=*/false,
                                     /*enabled_event_names=*/{},
@@ -127,7 +149,7 @@ TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsFalse) {
 }
 
 // Tests that the event reporting is enabled for a given event.
-TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
+TEST_P(IOSReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
@@ -137,16 +159,28 @@ TEST_F(IOSReportingEventRouterTest, CheckEventEnabledReturnsTrue) {
 }
 
 // Tests that the login events are reported as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnLoginEvent) {
+TEST_P(IOSReportingEventRouterTest, TestOnLoginEvent) {
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileName(), GetProfileIdentifier(),
-                             u"*****");
+  chrome::cros::reporting::proto::LoginEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://www.example.com/");
+    expected_event.set_is_federated(false);
+    expected_event.set_profile_user_name(profile_->GetProfileName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_login_user_name("*****");
+
+    validator.ExpectLoginEvent(std::move(expected_event));
+  } else {
+    validator.ExpectLoginEvent("https://www.example.com/", false, "",
+                               profile_->GetProfileName(),
+                               GetProfileIdentifier(), u"*****");
+  }
 
   reporting_event_router_->OnLoginEvent(GURL("https://www.example.com/"),
                                         url::SchemeHostPort().IsValid(),
@@ -154,7 +188,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEvent) {
 }
 
 // Tests that no matchting Url pattern for login events reporting.
-TEST_F(IOSReportingEventRouterTest, TestOnLoginEventNoMatchingUrlPattern) {
+TEST_P(IOSReportingEventRouterTest, TestOnLoginEventNoMatchingUrlPattern) {
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -169,16 +203,28 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventNoMatchingUrlPattern) {
 }
 
 // Tests that the login event reports the user name as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
+TEST_P(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileName(), GetProfileIdentifier(),
-                             u"*****@example.com");
+  chrome::cros::reporting::proto::LoginEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://www.example.com/");
+    expected_event.set_is_federated(false);
+    expected_event.set_profile_user_name(profile_->GetProfileName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_login_user_name("*****@example.com");
+
+    validator.ExpectLoginEvent(std::move(expected_event));
+  } else {
+    validator.ExpectLoginEvent("https://www.example.com/", false, "",
+                               profile_->GetProfileName(),
+                               GetProfileIdentifier(), u"*****@example.com");
+  }
 
   reporting_event_router_->OnLoginEvent(
       GURL("https://www.example.com/"), url::SchemeHostPort().IsValid(),
@@ -186,16 +232,29 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
 }
 
 // Tests that the login events on federated login are reported as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
+TEST_P(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectLoginEvent(
-      "https://www.example.com/", true, "https://www.google.com",
-      profile_->GetProfileName(), GetProfileIdentifier(), u"*****");
+  chrome::cros::reporting::proto::LoginEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://www.example.com/");
+    expected_event.set_is_federated(true);
+    expected_event.set_federated_origin("https://www.google.com");
+    expected_event.set_profile_user_name(profile_->GetProfileName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_login_user_name("*****");
+
+    validator.ExpectLoginEvent(std::move(expected_event));
+  } else {
+    validator.ExpectLoginEvent(
+        "https://www.example.com/", true, "https://www.google.com",
+        profile_->GetProfileName(), GetProfileIdentifier(), u"*****");
+  }
 
   url::SchemeHostPort federated_origin =
       url::SchemeHostPort(GURL("https://www.google.com"));
@@ -206,7 +265,12 @@ TEST_F(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
 }
 
 // Tests that the password breaching events are reported as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreach) {
+TEST_P(IOSReportingEventRouterTest, TestOnPasswordBreach) {
+  // TODO(crbug.com/430603698): Add test path for password_breach event in proto
+  // format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -230,7 +294,12 @@ TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreach) {
 }
 
 // Tests that the password breaching events with no matching url pattern.
-TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
+TEST_P(IOSReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
+  // TODO(crbug.com/430603698): Add test path for password_breach event in proto
+  // format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -249,8 +318,13 @@ TEST_F(IOSReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
 }
 
 // Test that the password breaching events with partial mathcing url pattern.
-TEST_F(IOSReportingEventRouterTest,
+TEST_P(IOSReportingEventRouterTest,
        TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
+  // TODO(crbug.com/430603698): Add test path for password_breach event in proto
+  // format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -276,7 +350,12 @@ TEST_F(IOSReportingEventRouterTest,
 }
 
 // Test that the url filtering reporting events are blocked as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
+TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
+  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
+  // event in proto format.
+  if (use_proto_format()) {
+    return;
+  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -314,7 +393,12 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 }
 
 // Test that the url filtering reporting events are warned as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
+TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
+  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
+  // event in proto format.
+  if (use_proto_format()) {
+    return;
+  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -352,7 +436,12 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 }
 
 // Test that the url filtering reporting events are bypassed as expected.
-TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
+TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
+  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
+  // event in proto format.
+  if (use_proto_format()) {
+    return;
+  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -391,8 +480,13 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 
 // Test that the url filtering reporting events with unknown action taken by
 // chrome as expected.
-TEST_F(IOSReportingEventRouterTest,
+TEST_P(IOSReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
+  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
+  // event in proto format.
+  if (use_proto_format()) {
+    return;
+  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -427,7 +521,12 @@ TEST_F(IOSReportingEventRouterTest,
 }
 
 // Tests that interstitial reporting events are warned as expected.
-TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
+TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
+  // TODO(crbug.com/430603698): Add test path for interstitial_warned event in
+  // proto format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -444,7 +543,12 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
 }
 
 // Tests that interstitial reporting events blocked as expected.
-TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
+TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
+  // TODO(crbug.com/430603698): Add test path for interstitial_showed event in
+  // proto format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -461,7 +565,12 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
 }
 
 // Tests that interstitial reporting events bypassed as expected.
-TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
+TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
+  // TODO(crbug.com/430603698): Add test path for interstitial_proceeded event
+  // in proto format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -478,7 +587,12 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
 }
 
 // Tests that password reuse reporting events warned as expected.
-TEST_F(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
+TEST_P(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
+  // TODO(crbug.com/430603698): Add test path for password_reuse event in proto
+  // format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
@@ -494,7 +608,12 @@ TEST_F(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
 }
 
 // Tests that password reuse reporting events allowed as expected.
-TEST_F(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
+TEST_P(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
+  // TODO(crbug.com/430603698): Add test path for password_reuse event in proto
+  // format.
+  if (use_proto_format()) {
+    return;
+  }
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyPasswordReuseEvent},
@@ -508,5 +627,9 @@ TEST_F(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
       GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
       /*warning_shown*/ false);
 }
+
+INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
+                         IOSReportingEventRouterTest,
+                         /* is_profile_reporting */ testing::Bool());
 
 }  // namespace enterprise_connectors
