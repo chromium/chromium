@@ -238,9 +238,15 @@ export async function fedcm_select_account_promise(t, account_index) {
   await window.test_driver.select_fedcm_account(account_index);
 }
 
-export function fedcm_get_and_select_first_account(t, options) {
+export async function fedcm_get_and_select_first_account(t, options) {
   const credentialPromise = navigator.credentials.get(options);
-  fedcm_select_account_promise(t, 0);
+  let type = await fedcm_expect_dialog(
+    credentialPromise,
+    fedcm_get_dialog_type_promise(t)
+  );
+  if (type != "AccountChooser")
+    throw "Incorrect dialog type: " + type;
+  await window.test_driver.select_fedcm_account(0);
   return credentialPromise;
 }
 
