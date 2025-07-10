@@ -74,11 +74,4 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 
 }  // namespace perfetto
 
-// This macro is still used in some components even when base tracing is
-// disabled.
-// TODO(crbug/336718643): Make sure no code affected by
-// enable_base_tracing=false includes this file directly, then move the define
-// to trace_event_stub.h.
-#define TRACE_DISABLED_BY_DEFAULT(name) "disabled-by-default-" name
-
 #endif  // BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
