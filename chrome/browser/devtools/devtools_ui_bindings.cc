@@ -2504,8 +2504,7 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
 }
 
 void DevToolsUIBindings::AidaCodeComplete(DispatchCallback callback,
-                                          const std::string& request,
-                                          int stream_id) {
+                                          const std::string& request) {
   if (!EnsureAidaClientAvailable()) {
     HandleAidaClientUnavailable(std::move(callback));
     return;

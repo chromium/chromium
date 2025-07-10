@@ -246,8 +246,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                           const std::string& request,
                           int stream_id) override;
   void AidaCodeComplete(DispatchCallback callback,
-                        const std::string& request,
-                        int stream_id) override;
+                        const std::string& request) override;
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
 
