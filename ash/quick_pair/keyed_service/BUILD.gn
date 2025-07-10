@@ -42,6 +42,10 @@ static_library("keyed_service") {
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -109,4 +113,8 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -53,6 +53,10 @@ source_set("fast_pair_handshake") {
     "//device/bluetooth",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -109,6 +113,10 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("fast_pair_encryption_fuzzer") {
