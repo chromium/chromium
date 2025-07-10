@@ -57,7 +57,16 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   // to <form>-less forms.
   if (parsed_form->form_data.renderer_id() &&
       parsed_form->username_element_renderer_id) {
-    return;
+    auto username_element =
+        std::ranges::find(parsed_form->form_data.fields(),
+                          parsed_form->username_element_renderer_id,
+                          &autofill::FormFieldData::renderer_id);
+    CHECK(username_element != parsed_form->form_data.fields().end());
+    // Username must be focusable, otherwise it's hidden or non-editable which
+    // isn't an issue.
+    if (username_element->is_focusable()) {
+      return;
+    }
   }
 
   // New password field must be present in a change password form.
