@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.picture_in_picture;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -23,29 +24,31 @@ public class AutoPiPTabModelObserverHelperTestUtils {
                                 .initialize(webContents, callback));
     }
 
-    public static void startObserving(WebContents webContents) {
+    public static void startObserving() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().startObserving(webContents));
+                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().startObserving());
     }
 
-    public static void stopObserving(WebContents webContents) {
+    public static void stopObserving() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().stopObserving(webContents));
+                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().stopObserving());
     }
 
-    public static void destroy(WebContents webContents) {
+    public static void destroy() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().destroy(webContents));
+                () -> AutoPiPTabModelObserverHelperTestUtilsJni.get().destroy());
     }
 
     @NativeMethods
     interface Natives {
-        void initialize(WebContents webContents, Callback<Boolean> onActivationChanged);
+        void initialize(
+                @JniType("content::WebContents*") WebContents webContents,
+                Callback<Boolean> onActivationChanged);
 
-        void startObserving(WebContents webContents);
+        void startObserving();
 
-        void stopObserving(WebContents webContents);
+        void stopObserving();
 
-        void destroy(WebContents webContents);
+        void destroy();
     }
 }

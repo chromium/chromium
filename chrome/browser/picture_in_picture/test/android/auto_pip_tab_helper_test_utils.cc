@@ -5,26 +5,22 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
-#include "chrome/browser/picture_in_picture/test/jni_headers/AutoPictureInPictureTabHelperTestUtils_jni.h"
 #include "content/public/browser/web_contents.h"
 
-using base::android::JavaParamRef;
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/picture_in_picture/test/jni_headers/AutoPictureInPictureTabHelperTestUtils_jni.h"
 
 namespace picture_in_picture {
 
 void JNI_AutoPictureInPictureTabHelperTestUtils_InitializeForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+    content::WebContents* web_contents) {
   AutoPictureInPictureTabHelper::GetOrCreateForWebContents(web_contents);
 }
 
 jboolean JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+    content::WebContents* web_contents) {
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
@@ -34,9 +30,7 @@ jboolean JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(
 jboolean
 JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+    content::WebContents* web_contents) {
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
@@ -45,10 +39,8 @@ JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered
 
 void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents,
+    content::WebContents* web_contents,
     jboolean has_high_engagement) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
@@ -57,10 +49,8 @@ void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
 
 void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasAudioFocusForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents,
+    content::WebContents* web_contents,
     jboolean has_focus) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);

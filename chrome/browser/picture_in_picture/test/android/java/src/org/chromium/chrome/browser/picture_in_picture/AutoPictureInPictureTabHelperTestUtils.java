@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.picture_in_picture;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -87,14 +88,18 @@ public class AutoPictureInPictureTabHelperTestUtils {
 
     @NativeMethods
     interface Natives {
-        void initializeForTesting(WebContents webContents);
+        void initializeForTesting(@JniType("content::WebContents*") WebContents webContents);
 
-        boolean isInAutoPictureInPicture(WebContents webContents);
+        boolean isInAutoPictureInPicture(@JniType("content::WebContents*") WebContents webContents);
 
-        boolean hasAutoPictureInPictureBeenRegistered(WebContents webContents);
+        boolean hasAutoPictureInPictureBeenRegistered(
+                @JniType("content::WebContents*") WebContents webContents);
 
-        void setHasHighMediaEngagement(WebContents webContents, boolean hasHighEngagement);
+        void setHasHighMediaEngagement(
+                @JniType("content::WebContents*") WebContents webContents,
+                boolean hasHighEngagement);
 
-        void setHasAudioFocusForTesting(WebContents webContents, boolean hasFocus);
+        void setHasAudioFocusForTesting(
+                @JniType("content::WebContents*") WebContents webContents, boolean hasFocus);
     }
 }
