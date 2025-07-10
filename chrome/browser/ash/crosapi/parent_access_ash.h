@@ -69,6 +69,7 @@ class ParentAccessAsh : public mojom::ParentAccess {
   // callback:  The crosapi callback to call with the result.
   // result: The result returned from the dialog.
   void OnParentAccessDialogClosed(
+      ParentAccessCallback callback,
       std::unique_ptr<ash::ParentAccessDialog::Result> result);
 
   // The returned object is lazy initialized.
@@ -76,7 +77,6 @@ class ParentAccessAsh : public mojom::ParentAccess {
 
   mojo::ReceiverSet<mojom::ParentAccess> receivers_;
   std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider_;
-  ParentAccessCallback callback_;
 };
 
 }  // namespace crosapi

@@ -69,6 +69,12 @@ class SupervisedUserExtensionsDelegateImpl
   void RemoveExtensionApproval(const extensions::Extension& extension) override;
   void RecordExtensionEnablementUmaMetrics(bool enabled) const override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Inject test instance for testing.
+  void SetParentAccessExtensionApprovalsManagerForTesting(
+      std::unique_ptr<ParentAccessExtensionApprovalsManager> manager);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   // Shows a ParentPermissionDialog for |extension| and calls
   // |done_callback| when it completes. Called for non-ChromeOS desktop
@@ -126,7 +132,7 @@ class SupervisedUserExtensionsDelegateImpl
   // is created or this delegate is destroyed.
   std::unique_ptr<ParentAccessExtensionApprovalsManager>
       extension_approvals_manager_;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   SupervisedUserExtensionsManager extensions_manager_;
 };
 

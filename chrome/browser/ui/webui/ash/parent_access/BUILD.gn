@@ -68,6 +68,17 @@ static_library("parent_access") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_parent_access_dialog.cc",
+    "fake_parent_access_dialog.h",
+  ]
+
+  deps = [ ":parent_access" ]
+}
+
 source_set("browser_tests") {
   testonly = true
 

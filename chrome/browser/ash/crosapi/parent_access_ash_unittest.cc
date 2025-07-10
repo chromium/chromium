@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
@@ -28,34 +29,7 @@
 
 using crosapi::mojom::ParentAccessResultPtr;
 
-class FakeParentAccessDialogProvider : public ash::ParentAccessDialogProvider {
- public:
-  ParentAccessDialogProvider::ShowError Show(
-      parent_access_ui::mojom::ParentAccessParamsPtr params,
-      ash::ParentAccessDialog::Callback callback) override {
-    callback_ = std::move(callback);
-    last_params_received_ = std::move(params);
-    return next_show_error_;
-  }
-
-  void SetNextShowError(ash::ParentAccessDialogProvider::ShowError error) {
-    next_show_error_ = error;
-  }
-
-  parent_access_ui::mojom::ParentAccessParamsPtr GetLastParamsReceived() {
-    return std::move(last_params_received_);
-  }
-
-  void TriggerCallbackWithResult(
-      std::unique_ptr<ash::ParentAccessDialog::Result> result) {
-    std::move(callback_).Run(std::move(result));
-  }
-
- private:
-  ash::ParentAccessDialog::Callback callback_;
-  parent_access_ui::mojom::ParentAccessParamsPtr last_params_received_;
-  ash::ParentAccessDialogProvider::ShowError next_show_error_;
-};
+using Action = ash::FakeParentAccessDialogProvider::Action;
 
 namespace {
 constexpr char test_url[] = "http://example.com";
@@ -74,28 +48,33 @@ class ParentAccessAshTest : public testing::Test {
     parent_access_ash_ = std::make_unique<crosapi::ParentAccessAsh>();
     parent_access_ash_->BindReceiver(
         parent_access_remote_.BindNewPipeAndPassReceiver());
-    dialog_provider_ = static_cast<FakeParentAccessDialogProvider*>(
-        parent_access_ash_->SetDialogProviderForTest(
-            std::make_unique<FakeParentAccessDialogProvider>()));
+    auto dialog_provider =
+        std::make_unique<ash::FakeParentAccessDialogProvider>();
+    dialog_provider_ = dialog_provider.get();
+    parent_access_ash_->SetDialogProviderForTest(std::move(dialog_provider));
   }
 
-  void TearDown() override { parent_access_ash_.reset(); }
+  void TearDown() override {
+    dialog_provider_ = nullptr;
+    parent_access_ash_.reset();
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<crosapi::mojom::ParentAccess> parent_access_remote_;
   std::unique_ptr<crosapi::ParentAccessAsh> parent_access_ash_;
-  raw_ptr<FakeParentAccessDialogProvider, DanglingUntriaged> dialog_provider_;
+  raw_ptr<ash::FakeParentAccessDialogProvider> dialog_provider_;
 };
 
 // Tests that the correct parameters were passed through to the dialog for
 // the GetWebsiteParentApproval method.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApprovalParams) {
+  dialog_provider_->SetNextAction(Action::CaptureCallback(base::DoNothing()));
   parent_access_ash_->GetWebsiteParentApproval(
       GURL(test_url), test_child_display_name, test_favicon, base::DoNothing());
 
   parent_access_ui::mojom::ParentAccessParamsPtr params =
-      dialog_provider_->GetLastParamsReceived();
+      dialog_provider_->TakeLastParams();
 
   // Check for the correct flow type.
   EXPECT_EQ(
@@ -119,13 +98,14 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApprovalParams) {
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApprovalParams) {
+  dialog_provider_->SetNextAction(Action::CaptureCallback(base::DoNothing()));
   parent_access_ash_->GetExtensionParentApproval(
       test_extension_name, test_child_display_name,
       extensions::util::GetDefaultExtensionIcon(), {}, false,
       base::DoNothing());
 
   parent_access_ui::mojom::ParentAccessParamsPtr params =
-      dialog_provider_->GetLastParamsReceived();
+      dialog_provider_->TakeLastParams();
 
   // Verify request params.
   EXPECT_EQ(
@@ -147,12 +127,13 @@ TEST_F(ParentAccessAshTest, GetExtensionParentApprovalParams) {
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionApprovalParamsForExtensionDisabled) {
+  dialog_provider_->SetNextAction(Action::CaptureCallback(base::DoNothing()));
   parent_access_ash_->GetExtensionParentApproval(
       test_extension_name, test_child_display_name,
       extensions::util::GetDefaultExtensionIcon(), {}, true, base::DoNothing());
 
   parent_access_ui::mojom::ParentAccessParamsPtr params =
-      dialog_provider_->GetLastParamsReceived();
+      dialog_provider_->TakeLastParams();
 
   // Verify request params.
   EXPECT_EQ(
@@ -164,17 +145,17 @@ TEST_F(ParentAccessAshTest, GetExtensionApprovalParamsForExtensionDisabled) {
 // Makes sure the correct result is returned by the crosapi when the request is
 // approved.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
-  base::test::TestFuture<ParentAccessResultPtr> future;
-  parent_access_ash_->GetWebsiteParentApproval(
-      GURL(test_url), test_child_display_name, test_favicon,
-      future.GetCallback());
-
   auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
   dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
   dialog_result->parent_access_token = "ABC123";
   dialog_result->parent_access_token_expire_timestamp =
       base::Time::FromSecondsSinceUnixEpoch(123456UL);
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
+
+  base::test::TestFuture<ParentAccessResultPtr> future;
+  parent_access_ash_->GetWebsiteParentApproval(
+      GURL(test_url), test_child_display_name, test_favicon,
+      future.GetCallback());
 
   const ParentAccessResultPtr result = future.Take();
   ASSERT_TRUE(result->is_approved());
@@ -186,14 +167,14 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
 // Makes sure the correct result is returned by the crosapi when the request
 // is declined.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Declined) {
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
+
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetWebsiteParentApproval(
       GURL(test_url), test_child_display_name, test_favicon,
       future.GetCallback());
-
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   const ParentAccessResultPtr result = future.Take();
   EXPECT_TRUE(result->is_declined());
@@ -202,14 +183,14 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Declined) {
 // Makes sure an cancel result is returned by the crosapi when the request
 // is canceled.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Canceled) {
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
+
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetWebsiteParentApproval(
       GURL(test_url), test_child_display_name, test_favicon,
       future.GetCallback());
-
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   const ParentAccessResultPtr result = future.Take();
   EXPECT_TRUE(result->is_canceled());
@@ -218,14 +199,14 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Canceled) {
 // Makes sure an error result is returned by the crosapi when the request
 // had an error.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Error) {
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
+
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetWebsiteParentApproval(
       GURL(test_url), test_child_display_name, test_favicon,
       future.GetCallback());
-
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   const ParentAccessResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
@@ -235,13 +216,15 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Error) {
 
 // Makes sure only one ParentAccess request can exist at a time..
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
+  base::test::TestFuture<ash::ParentAccessDialog::Callback> dialog_callback;
+  dialog_provider_->SetNextAction(
+      Action::CaptureCallback(dialog_callback.GetCallback()));
   base::test::TestFuture<ParentAccessResultPtr> successful_show_future;
   parent_access_ash_->GetWebsiteParentApproval(
       GURL(test_url), test_child_display_name, test_favicon,
       successful_show_future.GetCallback());
 
-  dialog_provider_->SetNextShowError(
-      ash::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
+  dialog_provider_->SetNextAction(Action::DialogAlreadyVisible());
 
   // Show dialog again, should be blocked because it is already visible.
   base::test::TestFuture<ParentAccessResultPtr> already_visible_future;
@@ -258,7 +241,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
 
   auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
   dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
+  dialog_callback.Take().Run(std::move(dialog_result));
 
   const ParentAccessResultPtr show_result = successful_show_future.Take();
   EXPECT_TRUE(show_result->is_approved());
@@ -266,8 +249,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
 
 // Makes sure regular users can't request parent access.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_NotAChildUser) {
-  dialog_provider_->SetNextShowError(
-      ash::ParentAccessDialogProvider::ShowError::kNotAChildUser);
+  dialog_provider_->SetNextAction(Action::NotAChildUser());
 
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetWebsiteParentApproval(
@@ -281,30 +263,29 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_NotAChildUser) {
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApproval_Canceled) {
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetExtensionParentApproval(
       test_extension_name, test_child_display_name,
       extensions::util::GetDefaultExtensionIcon(), {}, true,
       future.GetCallback());
-
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   const ParentAccessResultPtr result = future.Take();
   EXPECT_TRUE(result->is_canceled());
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApproval_Error) {
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
+  dialog_provider_->SetNextAction(Action::WithResult(std::move(dialog_result)));
+
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetExtensionParentApproval(
       test_extension_name, test_child_display_name,
       extensions::util::GetDefaultExtensionIcon(), {}, true,
       future.GetCallback());
-
-  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
-  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   const ParentAccessResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
@@ -313,14 +294,17 @@ TEST_F(ParentAccessAshTest, GetExtensionParentApproval_Error) {
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApproval_AlreadyVisible) {
+  base::test::TestFuture<ash::ParentAccessDialog::Callback> dialog_callback;
+  dialog_provider_->SetNextAction(
+      Action::CaptureCallback(dialog_callback.GetCallback()));
+
   base::test::TestFuture<ParentAccessResultPtr> successful_show_future;
   parent_access_ash_->GetExtensionParentApproval(
       test_extension_name, test_child_display_name,
       extensions::util::GetDefaultExtensionIcon(), {}, true,
       successful_show_future.GetCallback());
 
-  dialog_provider_->SetNextShowError(
-      ash::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
+  dialog_provider_->SetNextAction(Action::DialogAlreadyVisible());
 
   // Show dialog again, should be blocked because it is already visible.
   base::test::TestFuture<ParentAccessResultPtr> already_visible_future;
@@ -337,15 +321,14 @@ TEST_F(ParentAccessAshTest, GetExtensionParentApproval_AlreadyVisible) {
 
   auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
   dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
-  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
+  dialog_callback.Take().Run(std::move(dialog_result));
 
   const ParentAccessResultPtr show_result = successful_show_future.Take();
   EXPECT_TRUE(show_result->is_approved());
 }
 
 TEST_F(ParentAccessAshTest, GetExtensionParentApproval_NotAChildUser) {
-  dialog_provider_->SetNextShowError(
-      ash::ParentAccessDialogProvider::ShowError::kNotAChildUser);
+  dialog_provider_->SetNextAction(Action::NotAChildUser());
 
   base::test::TestFuture<ParentAccessResultPtr> future;
   parent_access_ash_->GetExtensionParentApproval(

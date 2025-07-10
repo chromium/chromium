@@ -17,6 +17,10 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace ash {
+class ParentAccessDialogProvider;
+}  // namespace ash
+
 namespace extensions {
 
 class Extension;
@@ -24,6 +28,11 @@ class Extension;
 class ParentAccessExtensionApprovalsManager {
  public:
   ParentAccessExtensionApprovalsManager();
+
+  // Injects `dialog_provider` for testing.
+  explicit ParentAccessExtensionApprovalsManager(
+      std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider);
+
   ParentAccessExtensionApprovalsManager(
       const ParentAccessExtensionApprovalsManager&) = delete;
   ParentAccessExtensionApprovalsManager& operator=(
@@ -47,31 +56,16 @@ class ParentAccessExtensionApprovalsManager {
       SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback);
 
  private:
-  void OnParentAccessDialogClosed(crosapi::mojom::ParentAccessResultPtr result);
+  void OnParentAccessDialogClosed(
+      SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback,
+      crosapi::mojom::ParentAccessResultPtr result);
 
-  SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
-      done_callback_;
+  bool dialog_provider_injected_ = false;
 
   base::WeakPtrFactory<ParentAccessExtensionApprovalsManager> weak_ptr_factory_{
       this};
 };
 
-// Observes the creation of the ParentAccessDialog for testing purposes.
-class TestExtensionApprovalsManagerObserver {
- public:
-  explicit TestExtensionApprovalsManagerObserver(
-      TestExtensionApprovalsManagerObserver* observer);
-  ~TestExtensionApprovalsManagerObserver();
-
-  virtual void OnTestParentAccessDialogCreated() = 0;
-
-  void SetParentAccessDialogResult(
-      crosapi::mojom::ParentAccessResultPtr result);
-  crosapi::mojom::ParentAccessResultPtr GetNextResult();
-
- private:
-  crosapi::mojom::ParentAccessResultPtr next_result_;
-};
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_PARENT_ACCESS_EXTENSION_APPROVALS_MANAGER_H_

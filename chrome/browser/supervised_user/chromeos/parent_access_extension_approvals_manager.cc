@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,17 +26,31 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace {
-extensions::TestExtensionApprovalsManagerObserver* test_observer = nullptr;
-}  // namespace
-
 namespace extensions {
 
-ParentAccessExtensionApprovalsManager::ParentAccessExtensionApprovalsManager() =
-    default;
+ParentAccessExtensionApprovalsManager::ParentAccessExtensionApprovalsManager()
+    : ParentAccessExtensionApprovalsManager(nullptr) {}
+
+ParentAccessExtensionApprovalsManager::ParentAccessExtensionApprovalsManager(
+    std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider) {
+  if (dialog_provider) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->parent_access_ash()
+        ->SetDialogProviderForTest(std::move(dialog_provider));  // IN-TEST
+    dialog_provider_injected_ = true;
+  }
+}
 
 ParentAccessExtensionApprovalsManager::
-    ~ParentAccessExtensionApprovalsManager() = default;
+    ~ParentAccessExtensionApprovalsManager() {
+  if (dialog_provider_injected_) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->parent_access_ash()
+        ->SetDialogProviderForTest(nullptr);  // IN-TEST
+  }
+}
 
 void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
     const Extension& extension,
@@ -62,14 +79,6 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
     extension_permissions.push_back(std::move(permission));
   }
 
-  done_callback_ = std::move(callback);
-
-  if (test_observer) {
-    test_observer->OnTestParentAccessDialogCreated();
-    OnParentAccessDialogClosed(test_observer->GetNextResult());
-    return;
-  }
-
   crosapi::mojom::ParentAccess* parent_access =
       supervised_user::GetParentAccessApi();
   CHECK(parent_access);
@@ -81,59 +90,36 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
           ExtensionInstallMode::kInstallationDenied,
       base::BindOnce(
           &ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
+    SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback,
     crosapi::mojom::ParentAccessResultPtr result) {
   switch (result->which()) {
     case crosapi::mojom::ParentAccessResult::Tag::kApproved:
-      std::move(done_callback_)
-          .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-                   kApproved);
+      std::move(callback).Run(
+          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
       break;
 
     case crosapi::mojom::ParentAccessResult::Tag::kDeclined:
     case crosapi::mojom::ParentAccessResult::Tag::kCanceled:
-      std::move(done_callback_)
-          .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-                   kCanceled);
+      std::move(callback).Run(
+          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled);
       break;
 
     case crosapi::mojom::ParentAccessResult::Tag::kError:
-      std::move(done_callback_)
-          .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-                   kFailed);
+      std::move(callback).Run(
+          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed);
       break;
     case crosapi::mojom::ParentAccessResult::Tag::kDisabled:
       SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
           SupervisedUserExtensionsMetricsRecorder::EnablementState::
               kFailedToEnable);
-      std::move(done_callback_)
-          .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-                   kBlocked);
+      std::move(callback).Run(
+          SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked);
       break;
   }
-}
-
-TestExtensionApprovalsManagerObserver::TestExtensionApprovalsManagerObserver(
-    TestExtensionApprovalsManagerObserver* observer) {
-  test_observer = observer;
-}
-
-TestExtensionApprovalsManagerObserver::
-    ~TestExtensionApprovalsManagerObserver() {
-  test_observer = nullptr;
-}
-
-void TestExtensionApprovalsManagerObserver::SetParentAccessDialogResult(
-    crosapi::mojom::ParentAccessResultPtr result) {
-  next_result_ = std::move(result);
-}
-
-crosapi::mojom::ParentAccessResultPtr
-TestExtensionApprovalsManagerObserver::GetNextResult() {
-  return std::move(next_result_);
 }
 
 }  // namespace extensions

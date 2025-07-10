@@ -154,24 +154,19 @@ ash::ParentAccessDialogProvider* ParentAccessAsh::GetDialogProvider() {
 void ParentAccessAsh::ShowParentAccessDialog(
     parent_access_ui::mojom::ParentAccessParamsPtr params,
     ParentAccessAsh::ParentAccessCallback callback) {
+  auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
+
   ash::ParentAccessDialogProvider::ShowError show_error =
       GetDialogProvider()->Show(
           std::move(params),
           base::BindOnce(&ParentAccessAsh::OnParentAccessDialogClosed,
-                         base::Unretained(this)));
+                         base::Unretained(this), std::move(callback1)));
 
   crosapi::mojom::ParentAccessResultPtr show_error_result =
       ShowErrorToParentAccessResultError(show_error);
-
   if (show_error_result) {
     // This result indicates basic errors that can occur synchronously.
-    std::move(callback).Run(std::move(show_error_result));
-    return;
-  } else {
-    // No show-error, so save the callback so we can use it to respond when the
-    // dialog completes.
-    DCHECK(!callback_);
-    callback_ = std::move(callback);
+    std::move(callback2).Run(std::move(show_error_result));
   }
 }
 
@@ -182,9 +177,10 @@ ash::ParentAccessDialogProvider* ParentAccessAsh::SetDialogProviderForTest(
 }
 
 void ParentAccessAsh::OnParentAccessDialogClosed(
+    ParentAccessCallback callback,
     std::unique_ptr<ash::ParentAccessDialog::Result> result) {
-  if (callback_) {
-    std::move(callback_).Run(
+  if (callback) {
+    std::move(callback).Run(
         DialogResultToParentAccessResult(std::move(result)));
   }
 }

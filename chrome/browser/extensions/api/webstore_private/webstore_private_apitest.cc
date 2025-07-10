@@ -64,6 +64,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
+#include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -314,9 +315,6 @@ static constexpr char kTestAppVersion[] = "0.1";
 // Test fixture for various cases of installation for child accounts.
 class SupervisedUserExtensionWebstorePrivateApiTest
     : public ExtensionWebstorePrivateApiTest,
-#if BUILDFLAG(IS_CHROMEOS)
-      public TestExtensionApprovalsManagerObserver,
-#endif
       public TestParentPermissionDialogViewObserver {
  public:
   // The next dialog action to take.
@@ -326,11 +324,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
   };
 
   SupervisedUserExtensionWebstorePrivateApiTest()
-      :
-#if BUILDFLAG(IS_CHROMEOS)
-        TestExtensionApprovalsManagerObserver(this),
-#endif
-        TestParentPermissionDialogViewObserver(this),
+      : TestParentPermissionDialogViewObserver(this),
         embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         supervision_mixin_(
             mixin_host_,
@@ -340,8 +334,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
                 .consent_level = signin::ConsentLevel::kSignin,
                 .sign_in_mode =
                     supervised_user::SupervisionMixin::SignInMode::kSupervised,
-            }) {
-  }
+            }) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionWebstorePrivateApiTest::SetUpCommandLine(command_line);
@@ -360,6 +353,15 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     extensions_delegate_ =
         std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
 
+#if BUILDFLAG(IS_CHROMEOS)
+    auto dialog_provider =
+        std::make_unique<ash::FakeParentAccessDialogProvider>();
+    fake_parent_access_dialog_provider_ = dialog_provider.get();
+    extensions_delegate_->SetParentAccessExtensionApprovalsManagerForTesting(
+        std::make_unique<extensions::ParentAccessExtensionApprovalsManager>(
+            std::move(dialog_provider)));
+#endif
+
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
@@ -367,6 +369,9 @@ class SupervisedUserExtensionWebstorePrivateApiTest
   }
 
   void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    fake_parent_access_dialog_provider_ = nullptr;
+#endif
     extensions_delegate_.reset();
     ExtensionWebstorePrivateApiTest::TearDownOnMainThread();
   }
@@ -400,42 +405,50 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     }
   }
 
+  bool IsParentPermissionDialogAppeared() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // TestExtensionApprovalsManagerObserver override:
-  void OnTestParentAccessDialogCreated() override {
-    parent_permission_dialog_appeared_ = true;
-    if (next_dialog_action_) {
-      switch (next_dialog_action_.value()) {
-        case NextDialogAction::kCancel:
-          SetParentAccessDialogResult(
-              crosapi::mojom::ParentAccessResult::NewCanceled(
-                  crosapi::mojom::ParentAccessCanceledResult::New()));
-          break;
-        case NextDialogAction::kAccept:
-          SetParentAccessDialogResult(
-              crosapi::mojom::ParentAccessResult::NewApproved(
-                  crosapi::mojom::ParentAccessApprovedResult::New(
-                      "test_token",
-                      base::Time::FromSecondsSinceUnixEpoch(123456L))));
-          break;
-      }
-    }
-  }
+    return bool(fake_parent_access_dialog_provider_->TakeLastParams());
+#else
+    return parent_permission_dialog_appeared_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   void set_next_dialog_action(NextDialogAction action) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto result = std::make_unique<ash::ParentAccessDialog::Result>();
+    switch (action) {
+      case NextDialogAction::kCancel:
+        result->status = ash::ParentAccessDialog::Result::Status::kCanceled;
+        break;
+      case NextDialogAction::kAccept:
+        result->status = ash::ParentAccessDialog::Result::Status::kApproved;
+        result->parent_access_token = "test_token";
+        result->parent_access_token_expire_timestamp =
+            base::Time::FromSecondsSinceUnixEpoch(123456L);
+        break;
+    }
+    fake_parent_access_dialog_provider_->SetNextAction(
+        ash::FakeParentAccessDialogProvider::Action::WithResult(
+            std::move(result)));
+#else
     next_dialog_action_ = action;
+#endif
   }
 
  protected:
   std::unique_ptr<SupervisedUserExtensionsDelegateImpl> extensions_delegate_;
-  bool parent_permission_dialog_appeared_ = false;
 
  private:
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
   supervised_user::SupervisionMixin supervision_mixin_;
   std::optional<NextDialogAction> next_dialog_action_;
+
+  bool parent_permission_dialog_appeared_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<ash::FakeParentAccessDialogProvider>
+      fake_parent_access_dialog_provider_;
+#endif
 };
 
 // Tests install for a child when parent permission is granted.
@@ -539,30 +552,29 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
   std::string page = "install_child.html";
   ASSERT_TRUE(RunInstallTest(page, "app.crx"));
 
-    listener.Wait();
-    ASSERT_TRUE(listener.received_success());
-    ASSERT_EQ(kTestAppId, listener.id());
+  listener.Wait();
+  ASSERT_TRUE(listener.received_success());
+  ASSERT_EQ(kTestAppId, listener.id());
 
-    scoped_refptr<const Extension> extension =
-        extensions::ExtensionBuilder("test extension")
-            .SetID(kTestAppId)
-            .SetVersion(kTestAppVersion)
-            .Build();
-    ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
+  scoped_refptr<const Extension> extension =
+      extensions::ExtensionBuilder("test extension")
+          .SetID(kTestAppId)
+          .SetVersion(kTestAppVersion)
+          .Build();
+  ASSERT_TRUE(extensions_delegate_->IsExtensionAllowedByParent(*extension));
 
-    int expected_count_failed = 0;
-    histogram_tester.ExpectUniqueSample(
-        SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-        SupervisedUserExtensionsMetricsRecorder::EnablementState::
-            kFailedToEnable,
-        expected_count_failed);
-    histogram_tester.ExpectTotalCount(
-        SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-        expected_count_failed);
-    EXPECT_EQ(expected_count_failed,
-              user_action_tester.GetActionCount(
-                  SupervisedUserExtensionsMetricsRecorder::
-                      kFailedToEnableActionName));
+  int expected_count_failed = 0;
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
+      expected_count_failed);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      expected_count_failed);
+  EXPECT_EQ(
+      expected_count_failed,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
 }
 
 // Tests a successful install for a child when parent permission can be skipped
@@ -586,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionWebstorePrivateApiTest,
   ASSERT_TRUE(listener.received_success());
   ASSERT_EQ(kTestAppId, listener.id());
 
-  EXPECT_FALSE(parent_permission_dialog_appeared_);
+  EXPECT_FALSE(IsParentPermissionDialogAppeared());
 
   scoped_refptr<const Extension> extension =
       extensions::ExtensionBuilder("test extension")
