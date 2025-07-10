@@ -313,8 +313,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   const bool status_code_qualifies_for_ntp_most_visited =
       !(base::FeatureList::IsEnabled(
             blink::features::kVisitedLinksOnErrorNavigation) &&
-        status_code_is_error) &&
-      http_response_code != 0;
+        status_code_is_error);
   const bool should_consider_for_ntp_most_visited =
       status_code_qualifies_for_ntp_most_visited &&
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle);
