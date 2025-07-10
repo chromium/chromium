@@ -257,6 +257,11 @@ public class GURL {
         return getNatives().domainIs(this, domain);
     }
 
+    /** See native GURL::EqualsIgnoringRef(). */
+    public boolean equalsIgnoringRef(GURL other) {
+        return getNatives().equalsIgnoringRef(this, other);
+    }
+
     /**
      * Returns a copy of the URL with components replaced. See native GURL::ReplaceComponents().
      *
@@ -431,6 +436,9 @@ public class GURL {
 
         /** Reconstructs the native GURL for this Java GURL, and calls GURL.DomainIs. */
         boolean domainIs(@JniType("GURL") GURL self, @JniType("std::string") String domain);
+
+        /** Reconstructs the native GURL for this Java GURL, and calls GURL.EqualsIgnoringRef. */
+        boolean equalsIgnoringRef(@JniType("GURL") GURL self, @JniType("GURL") GURL other);
 
         /** Reconstructs the native GURL for this Java GURL, assigning it to nativeGurl. */
         void initNative(

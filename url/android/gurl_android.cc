@@ -88,6 +88,12 @@ static jboolean JNI_GURL_DomainIs(JNIEnv* env,
   return gurl.DomainIs(domain);
 }
 
+static jboolean JNI_GURL_EqualsIgnoringRef(JNIEnv* env,
+                                           GURL& gurl,
+                                           GURL& other) {
+  return gurl.EqualsIgnoringRef(other);
+}
+
 static void JNI_GURL_Init(JNIEnv* env,
                           std::string& spec,
                           const base::android::JavaParamRef<jobject>& target) {

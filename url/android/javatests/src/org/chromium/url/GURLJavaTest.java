@@ -287,6 +287,21 @@ public class GURLJavaTest {
         Assert.assertFalse(url1.domainIs("images.google.com"));
     }
 
+    // Test that equalsIgnoringRef is hooked up correctly.
+    @SmallTest
+    @Test
+    public void testEqualsIgnoringRef() {
+        GURL url1 = new GURL("https://www.google.com#ref1");
+        GURL url2 = new GURL("https://www.google.com#ref2");
+        GURL url3 = new GURL("https://www.google.com");
+        GURL url4 = new GURL("https://www.notgoogle.com");
+
+        Assert.assertTrue(url1.equalsIgnoringRef(url2));
+        Assert.assertTrue(url1.equalsIgnoringRef(url3));
+        Assert.assertTrue(url2.equalsIgnoringRef(url3));
+        Assert.assertFalse(url1.equalsIgnoringRef(url4));
+    }
+
     // Test that replaceComponents is hooked up correctly.
     @SmallTest
     @Test
