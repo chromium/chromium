@@ -49,6 +49,7 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
     PaintControllerPaintTestBase::TearDown();
     SharedGpuContext::Reset();
     accelerated_compositing_scope_ = nullptr;
+    CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
   }
 
   FrameSettingOverrideFunction SettingOverrider() const override {
@@ -70,24 +71,27 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
 };
 
 TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
-  // Insert a <canvas> and force it into accelerated mode.
-  // Not using SetBodyInnerHTML() because we need to test before document
-  // lifecyle update.
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
-      "<canvas width=300 height=200>");
-  auto* element = To<HTMLCanvasElement>(GetDocument().body()->firstChild());
-  CanvasContextCreationAttributesCore attributes;
-  attributes.alpha = true;
-  CanvasRenderingContext* context =
-      element->GetCanvasRenderingContext("2d", attributes);
-  element->GetOrCreateCanvasResourceProviderForCanvas2D();
-  ASSERT_EQ(context, element->RenderingContext());
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML("<canvas id='c' width='10' height='20'></canvas>");
 
-  // Force the page to paint.
-  element->PreFinalizeFrame();
-  context->FinalizeFrame(FlushReason::kTesting);
-  element->PostFinalizeFrame(FlushReason::kTesting);
-  UpdateAllLifecyclePhasesForTest();
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('c');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, 10, 10);
+    ctx.getImageData(0, 0, 1, 1);  // Force a frame to be rendered.
+
+    canvas.width = 10;
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 5, 5);
+  )JS");
+  GetDocument().body()->appendChild(script);
+  RunDocumentLifecycle();
+
+  auto* element = To<HTMLCanvasElement>(GetDocument().body()->firstChild());
+  CanvasRenderingContext* context = element->RenderingContext();
 
   ASSERT_TRUE(context->IsComposited());
   ASSERT_TRUE(element->IsAccelerated());
@@ -97,7 +101,7 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   const cc::Layer* layer = context->CcLayer();
   ASSERT_TRUE(layer);
   EXPECT_TRUE(HasLayerAttached(*layer));
-  EXPECT_EQ(gfx::Size(300, 200), layer->bounds());
+  EXPECT_EQ(gfx::Size(10, 20), layer->bounds());
 }
 
 }  // namespace blink
