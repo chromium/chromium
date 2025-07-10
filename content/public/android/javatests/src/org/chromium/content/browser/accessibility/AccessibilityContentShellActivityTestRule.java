@@ -262,13 +262,13 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            findNodeMatching(View.NO_ID, matcher, element),
+                            findNodeMatching(mWcax.getRootIdForTesting(), matcher, element),
                             Matchers.not(View.NO_ID));
                 });
 
         int virtualViewId =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> findNodeMatching(View.NO_ID, matcher, element));
+                        () -> findNodeMatching(mWcax.getRootIdForTesting(), matcher, element));
         Assert.assertNotEquals(View.NO_ID, virtualViewId);
         return virtualViewId;
     }

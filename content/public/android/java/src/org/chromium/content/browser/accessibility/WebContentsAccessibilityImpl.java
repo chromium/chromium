@@ -539,6 +539,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 .setMaxContentChangedEventsToFireForTesting(mNativeObj, maxEvents);
     }
 
+    public int @Nullable [] getChildIdsForTesting(int virtualViewId) {
+        if (!isNativeInitialized()) return null;
+        assert isRootManagerConnected()
+                : "Accessibility root manager should be connected when the native object is"
+                + " initialized.";
+        return WebContentsAccessibilityImplJni.get()
+                .getChildIdsForTesting(mNativeObj, virtualViewId);
+    }
+
+    public int getRootIdForTesting() {
+        assert isNativeInitialized() : "native object is not initialized";
+        assert isRootManagerConnected()
+                : "Accessibility root manager should be connected when the native object is"
+                + " initialized.";
+        return WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
+    }
+
     public int getMaxContentChangedEventsToFireForTesting() {
         return WebContentsAccessibilityImplJni.get()
                 .getMaxContentChangedEventsToFireForTesting(mNativeObj);
@@ -2090,20 +2107,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return WebContentsAccessibilityImplJni.get()
                 .getCharacterBoundingBoxes(
                         mNativeObj, virtualViewId, positionInfoStartIndex, positionInfoLength);
-    }
-
-    public int @Nullable [] getChildIdsForTesting(int virtualViewId) {
-        if (!isNativeInitialized()) return null;
-        assert isRootManagerConnected()
-                : "Accessibility root manager should be connected when the native object is"
-                        + " initialized.";
-        if (virtualViewId == View.NO_ID) {
-            int rootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
-            return new int[] {rootId};
-        } else {
-            return WebContentsAccessibilityImplJni.get()
-                    .getChildIdsForTesting(mNativeObj, virtualViewId);
-        }
     }
 
     protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
