@@ -1416,12 +1416,6 @@
       status: "experimental",
     },
     {
-      // Enables the :open pseudo-selector.
-      // https://chromestatus.com/feature/5085419215781888
-      name: "CSSPseudoOpen",
-      status: "stable",
-    },
-    {
       // When an audio, video, or similar resource is "playing"
       // or "paused".
       // https://www.w3.org/TR/selectors-4/#video-state
