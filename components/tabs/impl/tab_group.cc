@@ -96,6 +96,10 @@ tabs::TabInterface* TabGroup::GetLastTab() const {
   return tabs.at(tabs.size() - 1);
 }
 
+tabs::TabCollection::Handle TabGroup::GetCollectionHandle() const {
+  return collection_->GetHandle();
+}
+
 gfx::Range TabGroup::ListTabs() const {
   tabs::TabInterface* maybe_first_tab = GetFirstTab();
   if (!maybe_first_tab) {

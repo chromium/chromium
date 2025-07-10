@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "ui/gfx/range/range.h"
 
 class Profile;
@@ -82,6 +83,9 @@ class TabGroup {
   // Get the last tab in the Tab Group or nullptr if the group is currently
   // empty.
   tabs::TabInterface* GetLastTab() const;
+
+  // Returns the TabCollection handle associated with this group.
+  tabs::TabCollection::Handle GetCollectionHandle() const;
 
   // Returns the range of tab model indices this group contains. Notably
   // does not rely on the TabGroup's internal metadata, but rather
