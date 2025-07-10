@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
@@ -282,8 +283,9 @@ bool ScaleLine(bool is_grow,
 //
 // `NOINLINE` prevents the size growth in the fuchsia-binary-size bot.
 NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
-  LayoutUnit epsilon =
-      LayoutUnit(2.0 * node.GetDocument().GetFrame()->DevicePixelRatio());
+  const double device_pixel_ratio =
+      node.GetDocument().GetFrame()->DevicePixelRatio();
+  LayoutUnit epsilon = LayoutUnit(2.0 * device_pixel_ratio);
   LayoutUnit original_width = line_info.Width();
   LayoutUnit container_width = line_info.AvailableWidth();
   LayoutUnit diff = container_width - original_width;
@@ -314,8 +316,14 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
   float scale_factor =
       (container_width - static_total_size) / flexible_total_size;
   auto limit = fit_text.SizeLimit();
-  // TODO(crbug.com/417306102): Needs to refer to the minimum font-size if
-  // !is_grow.
+  if (!is_grow) {
+    if (const auto* settings = node.GetDocument().GetSettings()) {
+      if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
+        float physical_min = min_size * device_pixel_ratio;
+        limit = limit ? std::max(*limit, physical_min) : physical_min;
+      }
+    }
+  }
 
   switch (fit_text.Method()) {
     case FitTextMethod::kScale:

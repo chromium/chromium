@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<link rel="match" href="text-shrink-per-line-scale-ref.html">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+.target {
+  text-shrink: per-line scale;
+  white-space: pre;
+  width: 100px;
+  font: 20px/normal Ahem;
+  border: 1px solid green;
+}
+</style>
+<body>
+<div class="target" style="">ABCDEABCDE</div>
+
+<div class="target" style="text-shrink: per-line scale 15px">ABCDEABCDE</div>
+
+</body>
