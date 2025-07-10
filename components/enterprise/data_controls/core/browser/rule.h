@@ -28,6 +28,7 @@ inline constexpr char kRestrictionPrinting[] = "PRINTING";
 inline constexpr char kRestrictionPrivacyScreen[] = "PRIVACY_SCREEN";
 inline constexpr char kRestrictionScreenShare[] = "SCREEN_SHARE";
 inline constexpr char kRestrictionFiles[] = "FILES";
+inline constexpr char kRestrictionFileDownload[] = "FILE_DOWNLOAD";
 
 inline constexpr char kLevelAllow[] = "ALLOW";
 inline constexpr char kLevelBlock[] = "BLOCK";
@@ -72,7 +73,8 @@ class Rule {
                          // through 3P extensions/websites.
     kFiles = 6,          // Restricts file operations, like copying, uploading
                          // or opening in an app.
-    kMaxValue = kFiles
+    kFileDownload = 7,   // Restricts downloading files.
+    kMaxValue = kFileDownload
   };
 
   // The enforcement level of the restriction set by Data Controls.

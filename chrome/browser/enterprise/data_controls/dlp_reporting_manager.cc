@@ -60,6 +60,7 @@ DlpPolicyEvent_Restriction RuleRestriction2DlpEventRestriction(
     case Rule::Restriction::kFiles:
       return DlpPolicyEvent_Restriction_FILES;
     case Rule::Restriction::kUnknownRestriction:
+    case Rule::Restriction::kFileDownload:
       return DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION;
   }
 }

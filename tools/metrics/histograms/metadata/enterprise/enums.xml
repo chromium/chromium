@@ -603,6 +603,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Privacy Screen"/>
   <int value="5" label="Screenshare"/>
   <int value="6" label="Files"/>
+  <int value="7" label="File download"/>
 </enum>
 
 <enum name="EnterpriseEnrollmentType">

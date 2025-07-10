@@ -100,6 +100,7 @@ const std::optional<std::string> RestrictionToWarnProceededUMASuffix(
     case DlpRulesManager::Restriction::kClipboard:
     case DlpRulesManager::Restriction::kPrivacyScreen:
     case DlpRulesManager::Restriction::kFiles:
+    case DlpRulesManager::Restriction::kFileDownload:
       NOTREACHED();
   }
 }
