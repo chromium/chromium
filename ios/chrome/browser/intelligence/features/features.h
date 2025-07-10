@@ -38,12 +38,15 @@ enum class BWGPromoConsentVariations {
   kSinglePage = 1,
   kDoublePage = 2,
   kSkipConsent = 3,
-  kForceConsent = 4,
+  kForceFRE = 4,
 };
 extern const char kBWGPromoConsentParams[];
 
 // Returns the variation of the BWG Promo Consent flow.
 BWGPromoConsentVariations BWGPromoConsentVariationsParam();
+
+// Returns YES if the promo should be forced.
+bool ShouldForceBWGPromo();
 
 // Feature flag to enable BWG Promo Consent.
 BASE_DECLARE_FEATURE(kBWGPromoConsent);

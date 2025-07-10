@@ -62,9 +62,14 @@ BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
     return BWGPromoConsentVariations::kSkipConsent;
   }
   if (param == 4) {
-    return BWGPromoConsentVariations::kForceConsent;
+    return BWGPromoConsentVariations::kForceFRE;
   }
   return BWGPromoConsentVariations::kDisabled;
+}
+
+bool ShouldForceBWGPromo() {
+  return BWGPromoConsentVariationsParam() ==
+         BWGPromoConsentVariations::kForceFRE;
 }
 
 BASE_FEATURE(kBWGPromoConsent,

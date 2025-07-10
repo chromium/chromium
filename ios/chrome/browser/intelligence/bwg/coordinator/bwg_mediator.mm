@@ -57,7 +57,7 @@
     case BWGPromoConsentVariations::kSkipConsent:
       [self prepareBWGOverlay];
       return;
-    case BWGPromoConsentVariations::kForceConsent:
+    case BWGPromoConsentVariations::kForceFRE:
       // Resetting the consent pref will allow the BWG flow to act as if consent
       // was never given.
       _prefService->SetBoolean(prefs::kIOSBwgConsent, NO);

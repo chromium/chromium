@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_navigation_controller.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -184,11 +185,12 @@
 // If YES, BWG Promo should be shown.
 - (BOOL)shouldShowBWGPromo {
   BOOL promoShownManually = _prefService->GetBoolean(prefs::kIOSBWGManualPromo);
+  BOOL forcePromo = ShouldForceBWGPromo();
   BOOL promoTriggered = _tracker->HasEverTriggered(
       feature_engagement::kIPHIOSBWGPromoFeature, true);
   BOOL isPromoEntry = _entryPoint == bwg::EntryPointPromo;
 
-  return isPromoEntry || (!promoTriggered && !promoShownManually);
+  return isPromoEntry || (!promoTriggered && !promoShownManually) || forcePromo;
 }
 
 // Presents the page action menu IPH.

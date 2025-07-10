@@ -1331,7 +1331,7 @@ const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "2"}};
 const FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "3"}};
-const FeatureEntry::FeatureParam kForceBWGPromoConsent[] = {
+const FeatureEntry::FeatureParam kForceBWGFirstTimeRun[] = {
     {kBWGPromoConsentParams, "4"}};
 
 const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
@@ -1343,7 +1343,7 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
      std::size(kDoubleScreenForBWGPromoConsent), nullptr},
     {"Skip FRE", kSkipBWGPromoConsent, std::size(kSkipBWGPromoConsent),
      nullptr},
-    {"Force Consent", kForceBWGPromoConsent, std::size(kForceBWGPromoConsent),
+    {"Force FRE", kForceBWGFirstTimeRun, std::size(kForceBWGFirstTimeRun),
      nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
