@@ -646,6 +646,21 @@
             ]
         }
     ],
+    "AndroidDesktopWebPrefsLargeDisplays": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopWebPrefsLargeDisplays"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDeviceContentFilters": [
         {
             "platforms": [
