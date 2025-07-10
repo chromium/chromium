@@ -113,7 +113,12 @@ public class ReaderModeActionProviderTest {
     private void setReaderModeBackendSignal(boolean isDistillable) {
         TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(mMockTab);
-        tabDistillabilityProvider.onIsPageDistillableResult(isDistillable, true, false, false);
+        tabDistillabilityProvider.onIsPageDistillableResult(
+                mMockTab.getUrl(),
+                isDistillable,
+                /* isLast= */ true,
+                /* isLongArticle= */ false,
+                /* isMobileOptimized= */ false);
     }
 
     @Test

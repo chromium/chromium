@@ -174,12 +174,12 @@ public class TabDistillabilityProvider extends EmptyTabObserver
 
     @Override
     public void onIsPageDistillableResult(
+            GURL url,
             boolean isDistillable,
             boolean isLast,
             boolean isLongArticle,
             boolean isMobileOptimized) {
-        // TODO(crbug.com/428168653): Plumb the url through this callback.
-        mDistillationResultUrl = mTab.getUrl();
+        mDistillationResultUrl = url;
         mIsDistillable = isDistillable;
         mIsLast = isLast;
         mIsLongArticle = isLongArticle;

@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** Provides access to the native dom_distiller::IsPageDistillable function. */
 @JNINamespace("dom_distiller::android")
@@ -21,13 +22,16 @@ public final class DistillablePageUtils {
     public interface PageDistillableDelegate {
         /**
          * Called when the distillability status changes.
+         *
+         * @param url The url for the result.
          * @param isDistillable Whether the page is distillable.
          * @param isLast Whether the update is the last one for this page.
          * @param isLongArticle Whether the page is a long article.
-         * @param isMobileOptimized Whether the page is optimized for mobile. Only valid when
-         *                         the heuristics is ADABOOST_MODEL or ALL_ARTICLES.
+         * @param isMobileOptimized Whether the page is optimized for mobile. Only valid when the
+         *     heuristics is ADABOOST_MODEL or ALL_ARTICLES.
          */
         void onIsPageDistillableResult(
+                GURL url,
                 boolean isDistillable,
                 boolean isLast,
                 boolean isLongArticle,
@@ -41,13 +45,14 @@ public final class DistillablePageUtils {
     @CalledByNative
     private static void callOnIsPageDistillableUpdate(
             PageDistillableDelegate delegate,
+            GURL url,
             boolean isDistillable,
             boolean isLast,
             boolean isLongArticle,
             boolean isMobileOptimized) {
         if (delegate != null) {
             delegate.onIsPageDistillableResult(
-                    isDistillable, isLast, isLongArticle, isMobileOptimized);
+                    url, isDistillable, isLast, isLongArticle, isMobileOptimized);
         }
     }
 

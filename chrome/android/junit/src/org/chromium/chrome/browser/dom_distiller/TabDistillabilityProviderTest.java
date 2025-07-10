@@ -65,6 +65,7 @@ public class TabDistillabilityProviderTest {
     public void finishNavigationWithSameUrlDoesNothing() {
         // Setup the distillation result, and verify loading the same page is a no-op.
         mProvider.onIsPageDistillableResult(
+                /* url= */ URL_1,
                 /* isDistillable= */ true,
                 /* isLast= */ true,
                 /* isLongArticle= */ false,
@@ -79,6 +80,7 @@ public class TabDistillabilityProviderTest {
     public void finishNavigationOnUrlWithDifferentResult() {
         // Setup the distillation result, and verify loading the different page invalidates.
         mProvider.onIsPageDistillableResult(
+                /* url= */ URL_1,
                 /* isDistillable= */ true,
                 /* isLast= */ true,
                 /* isLongArticle= */ false,
