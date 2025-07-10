@@ -397,9 +397,6 @@ constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
 constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
 
-constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
-    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", true};
-
 constexpr base::FeatureParam<bool> kShowUploadProgressBar{
     &kLensOverlayContextualSearchbox, "show-upload-progress-bar", true};
 
@@ -1084,10 +1081,6 @@ bool GetVisualSelectionUpdatesHideCsbEllipsis() {
 bool GetVisualSelectionUpdatesEnableCloseButtonTweaks() {
   return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesCloseButtonTweaks.Get();
-}
-
-bool PageContentUploadRequestIdFixEnabled() {
-  return kPageContentUploadRequestIdFix.Get();
 }
 
 bool UpdateViewportEachQueryEnabled() {

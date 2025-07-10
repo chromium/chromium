@@ -44,21 +44,12 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
       update_mode == RequestIdUpdateMode::kInitialRequest;
   bool increment_sequence = update_mode != RequestIdUpdateMode::kOpenInNewTab;
   bool increment_long_context =
-      lens::features::PageContentUploadRequestIdFixEnabled() &&
-      (update_mode == RequestIdUpdateMode::kPageContentRequest ||
-       update_mode == RequestIdUpdateMode::kInitialRequest);
+      update_mode == RequestIdUpdateMode::kPageContentRequest ||
+      update_mode == RequestIdUpdateMode::kInitialRequest;
   bool create_analytics_id =
       update_mode != RequestIdUpdateMode::kSearchUrl &&
       update_mode != RequestIdUpdateMode::kPartialPageContentRequest;
   bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
-
-  // The server currently expects the image sequence id to be incremented for
-  // every page content request. This is a temporary fix until the server
-  // changes to index by sequence id instead of image sequence id.
-  if (!lens::features::PageContentUploadRequestIdFixEnabled() &&
-      update_mode == RequestIdUpdateMode::kPageContentRequest) {
-    increment_image_sequence = true;
-  }
 
   if (increment_image_sequence) {
     image_sequence_id_++;

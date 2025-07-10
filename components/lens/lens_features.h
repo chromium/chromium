@@ -832,12 +832,6 @@ extern bool GetVisualSelectionUpdatesHideCsbEllipsis();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCloseButtonTweaks();
 
-// Whether to fix the request id for page content upload requests. When enabled,
-// this will not increment the image upload request ID when the page content
-// upload request is sent.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool PageContentUploadRequestIdFixEnabled();
-
 // Whether to update the viewport on each contextual query.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UpdateViewportEachQueryEnabled();
