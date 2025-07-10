@@ -126,7 +126,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2490684707762498678">Spravováno aplikací <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Nápověda a zpětná vazba</translation>
 <translation id="2501278716633472235">Zpět</translation>
-<translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
+<translation id="2546283357679194313">Soubory cookie a data webů</translation>
 <translation id="2570922361219980984">Přístup k poloze je vypnut také v tomto zařízení. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -153,7 +153,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2814830417943086299">Chrome teď zobrazuje vaše nedávné karty v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
-<translation id="2870560284913253234">Stránky</translation>
+<translation id="2870560284913253234">Weby</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2891975107962658722">Blokovat webu ukládání dat do zařízení</translation>
 <translation id="2903493209154104877">Adresy</translation>
@@ -563,7 +563,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8113501330600751161">{DAYS,plural, =1{Zítra Chrome soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8117244575099414087">Když je tato možnost zapnutá, weby mohou používat senzory zařízení. Když je vypnutá, weby senzory používat nemohou.</translation>
-<translation id="813082847718468539">Zobrazit informace o stránkách</translation>
+<translation id="813082847718468539">Zobrazit informace o webu</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="818487310457576362">Přetažením ze strany obrazovky ukončíte celou obrazovku.</translation>

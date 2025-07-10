@@ -931,7 +931,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2544644783021658368">Jeden dokument</translation>
 <translation id="254524874071906077">Nastavit Chrome jako výchozí prohlížeč</translation>
 <translation id="2545721997179863249">Byla vybrána možnost Vyplnit vše</translation>
-<translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
+<translation id="2546283357679194313">Soubory cookie a data webů</translation>
 <translation id="254947805923345898">Hodnota zásady není platná.</translation>
 <translation id="2549836668759467704">Poradenské a kontraktační služby v oblasti stavebnictví</translation>
 <translation id="255002559098805027">Web <ph name="HOST_NAME" /> vrátil neplatnou odpověď.</translation>
@@ -2026,7 +2026,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4412074349188076601">Tato konfigurace je označena jako instalovatelná, ale pro tuto architekturu není k dispozici žádný obraz, takže ji nelze nainstalovat.</translation>
 <translation id="4412377069090572315">Co říkají ostatní</translation>
 <translation id="4414452699610169758">Používat Správce hesel Google a automatické vyplňování Chromu k ukládání a vyplňování hesel, platebních metod a adres</translation>
-<translation id="4414515549596849729">soubory cookie a data webu</translation>
+<translation id="4414515549596849729">soubory cookie a data webů</translation>
 <translation id="4415156962929755728">Plast (vysoký lesk)</translation>
 <translation id="4415426530740016218">Adresa vyzvednutí</translation>
 <translation id="4424024547088906515">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chrome jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
