@@ -979,6 +979,17 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceBaseModelIdleDisconnect"
+    enum="Boolean" expires_after="2026-07-07">
+  <owner>cduvall@chromium.org</owner>
+  <owner>holte@chromium.org</owner>
+  <summary>
+    Records whether a model disconnect was from the model idle timeout. Recorded
+    each time the base model disconnects.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult"
     enum="LoadPlatformModelStatus" expires_after="2025-10-12">
   <owner>rajendrant@chromium.org</owner>

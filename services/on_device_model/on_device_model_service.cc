@@ -31,9 +31,16 @@
 namespace on_device_model {
 namespace {
 
+constexpr char kIdleDisconnectReason[] = "Disconnected due to idle timeout.";
+
 const base::FeatureParam<bool> kForceFastestInference{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_force_fastest_inference", false};
+
+// The amount of time a session can remain inactive before the model unloads.
+const base::FeatureParam<base::TimeDelta> kModelIdleTimeout{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_active_session_idle_timeout", kDefaultModelIdleTimeout};
 
 class ModelWrapper;
 
@@ -129,6 +136,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
         std::unique_ptr<ml::OnDeviceModelExecutor::ScopedAdaptation>());
     receivers_.set_disconnect_handler(base::BindRepeating(
         &ModelWrapper::ModelDisconnected, weak_ptr_factory_.GetWeakPtr()));
+    RestartIdleTimer();
   }
   ~ModelWrapper() override = default;
 
@@ -152,6 +160,10 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void StartSession(mojo::PendingReceiver<mojom::Session> session,
                     mojom::SessionParamsPtr params) override {
+    // If the idle timer is active (no ongoing request), restart the timer.
+    if (idle_timer_) {
+      RestartIdleTimer();
+    }
     AddSession(std::move(session),
                model_->CreateSession(receivers_.current_context().get(),
                                      std::move(params)),
@@ -233,6 +245,8 @@ class ModelWrapper final : public mojom::OnDeviceModel {
     }
 
     if (pending_tasks_.empty()) {
+      // If the queue is empty, make sure the idle timer is running.
+      RestartIdleTimer();
       return;
     }
 
@@ -259,12 +273,33 @@ class ModelWrapper final : public mojom::OnDeviceModel {
         base::TimeTicks::Now() - pending_task->start);
 
     is_running_ = true;
+    idle_timer_ = std::nullopt;
     std::move(pending_task->task).Run();
   }
 
   void TaskFinished() {
     is_running_ = false;
     RunTaskIfPossible();
+  }
+
+  void RestartIdleTimer() {
+    idle_timer_.emplace();
+    idle_timer_->Start(
+        FROM_HERE, kModelIdleTimeout.Get(),
+        base::BindOnce(&ModelWrapper::OnIdleTimeout, base::Unretained(this)));
+  }
+
+  void OnIdleTimeout() {
+    for (auto& session : sessions_) {
+      session->receiver().ResetWithReason(
+          static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown),
+          kIdleDisconnectReason);
+    }
+    sessions_.clear();
+    receivers_.ClearWithReason(
+        static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown),
+        kIdleDisconnectReason);
+    ModelDisconnected();
   }
 
   std::unique_ptr<ml::OnDeviceModelExecutor> model_;
@@ -278,6 +313,11 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   std::list<PendingTask> pending_tasks_;
   bool is_running_ = false;
   bool force_queueing_for_testing_ = false;
+
+  // This timer is active if there are no pending tasks. If the timer triggers,
+  // the model remote will be reset.
+  std::optional<base::OneShotTimer> idle_timer_;
+
   base::WeakPtrFactory<ModelWrapper> weak_ptr_factory_{this};
 };
 

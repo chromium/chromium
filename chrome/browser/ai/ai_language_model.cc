@@ -213,10 +213,14 @@ class AILanguageModel::PromptState
   bool IsValid() const { return !!responder_; }
 
   mojo::Remote<on_device_model::mojom::Session> TakeSession() {
+    // Clear disconnect handler to avoid referencing `this`.
+    session_.set_disconnect_handler(base::DoNothing());
     return std::move(session_);
   }
 
   mojo::Remote<blink::mojom::ModelStreamingResponder> TakeResponder() {
+    // Clear disconnect handler to avoid referencing `this`.
+    responder_.set_disconnect_handler(base::DoNothing());
     return std::move(responder_);
   }
 
@@ -601,6 +605,7 @@ void AILanguageModel::Destroy() {
 void AILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     MeasureInputUsageCallback callback) {
+  EnsureSessionConnected();
   auto input = ConvertToInputForExecute(std::move(prompts),
                                         session_params_->capabilities);
   if (!input) {
@@ -729,6 +734,7 @@ void AILanguageModel::InitializeSafetyChecksComplete(
     return;
   }
   if (input) {
+    initial_input_ = input.Clone();
     // No ContextClient is passed here since this operation should never be
     // cancelled unless the session is destroyed.
     initial_session_->Append(MakeAppendOptions(std::move(input)), {});
@@ -965,6 +971,20 @@ void AILanguageModel::GetSizeInTokens(
                                                       std::nullopt)));
 }
 
+void AILanguageModel::EnsureSessionConnected() {
+  if (!model_client_ || initial_session_) {
+    return;
+  }
+  model_client_->solution().CreateSession(
+      initial_session_.BindNewPipeAndPassReceiver(), session_params_.Clone());
+  initial_session_.reset_on_disconnect();
+  initial_session_->SetPriority(context_bound_object_set_->priority());
+  if (initial_input_) {
+    initial_session_->Append(MakeAppendOptions(initial_input_.Clone()), {});
+  }
+  HandleOverflow();
+}
+
 void AILanguageModel::AddToQueue(QueueCallback task) {
   queue_.push(std::move(task));
   RunNext();
@@ -986,6 +1006,8 @@ void AILanguageModel::RunNext() {
   task_running_ = true;
   auto task = std::move(queue_.front());
   queue_.pop();
+  // Make sure the session is active before running the next task.
+  EnsureSessionConnected();
   // Wrap the completion callback in a default invoke to allow tasks to avoid
   // having to explicitly call in every error code path.
   std::move(task).Run(

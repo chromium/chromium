@@ -544,7 +544,7 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
           },
           weak_ptr_factory_.GetWeakPtr(),
           remote_.BindNewPipeAndPassReceiver()));
-  remote_.set_disconnect_handler(base::BindOnce(
+  remote_.set_disconnect_with_reason_handler(base::BindOnce(
       &BaseModelController::OnDisconnect, base::Unretained(this)));
   // By default the model will be reset immediately when idle. If a feature is
   // going using the base model, the idle handler will be set explicitly there.
@@ -592,9 +592,20 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   controller_->service_client_.RemovePendingUsage();
 }
 
-void OnDeviceModelServiceController::BaseModelController::OnDisconnect() {
-  LOG(ERROR) << "Base model disconnected unexpectedly.";
+void OnDeviceModelServiceController::BaseModelController::OnDisconnect(
+    uint32_t reason,
+    const std::string& description) {
   remote_.reset();
+  const bool is_idle =
+      reason == static_cast<uint32_t>(
+                    on_device_model::ModelDisconnectReason::kIdleShutdown);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelExecution.OnDeviceBaseModelIdleDisconnect",
+      is_idle);
+  if (is_idle) {
+    return;
+  }
+  LOG(ERROR) << "Base model disconnected unexpectedly.";
   base::TimeDelta delay =
       access_controller().OnDisconnectedFromRemote() - base::Time::Now();
   if (delay.is_positive()) {

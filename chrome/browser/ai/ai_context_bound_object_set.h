@@ -30,6 +30,8 @@ class AIContextBoundObjectSet {
   // Sets the priority for all objects owned by this.
   void SetPriority(on_device_model::mojom::Priority priority);
 
+  on_device_model::mojom::Priority priority() const { return priority_; }
+
  protected:
   on_device_model::mojom::Priority priority_;
   base::flat_set<std::unique_ptr<AIContextBoundObject>,

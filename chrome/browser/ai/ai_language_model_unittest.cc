@@ -1210,6 +1210,54 @@ TEST_F(AILanguageModelTest, ServiceCrash) {
 }
 
 // TODO(crbug.com/414632884): This test is flaky on Linux TSAN.
+#if !BUILDFLAG(IS_LINUX) || !defined(THREAD_SANITIZER)
+TEST_F(AILanguageModelTest, CrashRecovery) {
+  auto session = CreateSession();
+  Append(*session, MakeInput("foo"));
+
+  fake_broker_.CrashService();
+
+  EXPECT_THAT(Prompt(*session, MakeInput("bar")),
+              ElementsAre("UfooE", "UbarEM"));
+}
+
+TEST_F(AILanguageModelTest, CrashRecoveryWithMultipleCrashes) {
+  auto session = CreateSession();
+  Append(*session, MakeInput("foo"));
+  fake_broker_.CrashService();
+
+  Append(*session, MakeInput("bar"));
+  fake_broker_.CrashService();
+
+  EXPECT_THAT(Prompt(*session, MakeInput("baz")),
+              ElementsAre("UfooEUbarE", "UbazEM"));
+}
+
+TEST_F(AILanguageModelTest, CrashRecoveryWithInitialPrompts) {
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->initial_prompts.push_back(MakePrompt(Role::kSystem, "hi"));
+  auto session = CreateSession(std::move(options));
+  Append(*session, MakeInput("foo"));
+
+  fake_broker_.CrashService();
+
+  EXPECT_THAT(Prompt(*session, MakeInput("bar")),
+              ElementsAre("ShiE", "UfooE", "UbarEM"));
+}
+
+TEST_F(AILanguageModelTest, CrashRecoveryMeasureInputUsage) {
+  auto session = CreateSession();
+  Append(*session, MakeInput("foo"));
+
+  fake_broker_.CrashService();
+
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
+}
+#endif
+
+// TODO(crbug.com/414632884): This test is flaky on Linux TSAN.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CanCreate_WaitsForEligibility \
   DISABLED_CanCreate_WaitsForEligibility

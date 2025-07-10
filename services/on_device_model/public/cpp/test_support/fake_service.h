@@ -50,7 +50,7 @@ struct FakeOnDeviceServiceSettings final {
 
   std::optional<ServiceDisconnectReason> service_disconnect_reason;
 
-  bool drop_connection_request = false;
+  std::optional<ModelDisconnectReason> drop_connection_request;
 
   void set_execute_delay(base::TimeDelta delay) { execute_delay = delay; }
 
@@ -62,7 +62,7 @@ struct FakeOnDeviceServiceSettings final {
     model_execute_result = result;
   }
 
-  void set_drop_connection_request(bool value) {
+  void set_drop_connection_request(std::optional<ModelDisconnectReason> value) {
     drop_connection_request = value;
   }
 };

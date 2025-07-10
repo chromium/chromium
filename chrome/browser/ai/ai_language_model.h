@@ -189,6 +189,7 @@ class AILanguageModel : public AIContextBoundObject,
   void GetSizeInTokens(
       on_device_model::mojom::InputPtr input,
       base::OnceCallback<void(std::optional<uint32_t>)> callback);
+  void EnsureSessionConnected();
 
   // These methods are used for implementing queueing.
   using QueueCallback = base::OnceCallback<void(base::OnceClosure)>;
@@ -201,6 +202,7 @@ class AILanguageModel : public AIContextBoundObject,
   // also be assumed to be valid, as any disconnects should apply to both
   // remotes (e.g. a service crash).
   mojo::Remote<on_device_model::mojom::Session> initial_session_;
+  on_device_model::mojom::InputPtr initial_input_;
 
   // Contains the current committed session state. This will be replaced after a
   // successful prompt with the latest session state.

@@ -15,6 +15,7 @@
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -171,12 +172,48 @@ class OnDeviceModelServiceTest : public testing::Test {
   void FlushService() { service_.FlushForTesting(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   mojo::Remote<mojom::OnDeviceModelService> service_;
   OnDeviceModelService service_impl_;
 };
+
+TEST_F(OnDeviceModelServiceTest, IdleTimeout) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  base::test::TestFuture<uint32_t, const std::string&> model_future;
+  base::test::TestFuture<uint32_t, const std::string&> session_future;
+  model.set_disconnect_with_reason_handler(model_future.GetCallback());
+  session.set_disconnect_with_reason_handler(session_future.GetCallback());
+
+  session->Append(MakeInput("foo"), {});
+  task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
+  EXPECT_FALSE(model_future.IsReady());
+  EXPECT_FALSE(session_future.IsReady());
+
+  // Another call to the session should reset timeout.
+  session->Append(MakeInput("bar"), {});
+  task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
+  EXPECT_FALSE(model_future.IsReady());
+  EXPECT_FALSE(session_future.IsReady());
+
+  // A new session should reset timeout.
+  mojo::Remote<mojom::Session> session2;
+  model->StartSession(session2.BindNewPipeAndPassReceiver(), nullptr);
+  task_environment_.FastForwardBy(kDefaultModelIdleTimeout - base::Seconds(1));
+  EXPECT_FALSE(model_future.IsReady());
+  EXPECT_FALSE(session_future.IsReady());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(std::get<0>(model_future.Get()),
+            static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
+  EXPECT_EQ(std::get<0>(session_future.Get()),
+            static_cast<uint32_t>(ModelDisconnectReason::kIdleShutdown));
+}
 
 TEST_F(OnDeviceModelServiceTest, Responds) {
   auto model = LoadModel();

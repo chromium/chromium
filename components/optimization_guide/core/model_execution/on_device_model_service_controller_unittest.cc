@@ -1678,7 +1678,8 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   Initialize(standard_assets_);
   // Start a session.
-  fake_settings_.set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kUnspecified);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
     EXPECT_TRUE(CreateSession()) << i;
@@ -1688,9 +1689,23 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, IdleTimeoutNotCountedAsCrash) {
+  Initialize(standard_assets_);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kIdleShutdown);
+  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
+       ++i) {
+    EXPECT_TRUE(CreateSession()) << i;
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_TRUE(CreateSession());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, AllowsConnectingAfterBackoffPeriod) {
   Initialize(standard_assets_);
-  fake_settings_.set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kUnspecified);
 
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
@@ -1724,7 +1739,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AllowsConnectingAfterBackoffPeriod) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ClearsCrashDataOnSuccessAfterBackoff) {
   Initialize(standard_assets_);
-  fake_settings_.set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kUnspecified);
 
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
@@ -1736,7 +1752,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   ExpectFailedSession(OnDeviceModelEligibilityReason::kTooManyRecentCrashes);
 
   // Fast forward by backoff time and starting a session should succeed.
-  fake_settings_.set_drop_connection_request(false);
+  fake_settings_.set_drop_connection_request(std::nullopt);
   task_environment_.FastForwardBy(
       features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
   EXPECT_TRUE(CreateSession());
@@ -1746,7 +1762,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(CreateSession());
 
   // Single crash should not disable sessions.
-  fake_settings_.set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kUnspecified);
   EXPECT_TRUE(CreateSession());
   task_environment_.RunUntilIdle();
 
@@ -1757,7 +1774,10 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
   Initialize(standard_assets_);
   // Start a session.
   for (int i = 0; i < 10; ++i) {
-    fake_settings_.set_drop_connection_request(i % 2 == 1);
+    fake_settings_.set_drop_connection_request(
+        i % 2 == 1 ? std::make_optional(
+                         on_device_model::ModelDisconnectReason::kUnspecified)
+                   : std::nullopt);
     EXPECT_TRUE(CreateSession()) << i;
     task_environment_.RunUntilIdle();
   }
@@ -1767,7 +1787,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
        MultipleDisconnectsThenVersionChangeRetries) {
   Initialize(standard_assets_);
   // Create enough sessions that fail to trigger no longer creating a session.
-  fake_settings_.set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(
+      on_device_model::ModelDisconnectReason::kUnspecified);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
     EXPECT_TRUE(CreateSession()) << i;
