@@ -48,6 +48,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
@@ -87,8 +88,9 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   static base::TimeTicks GetAnimatedIdentityLastShown(Profile* profile) {
     DCHECK(profile);
     AvatarButtonUserData* data = GetForProfile(profile);
-    if (!data)
+    if (!data) {
       return base::TimeTicks();
+    }
     return data->animated_identity_last_shown_;
   }
 
@@ -111,8 +113,9 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   static AvatarButtonUserData* GetOrCreateForProfile(Profile* profile) {
     DCHECK(profile);
     AvatarButtonUserData* existing_data = GetForProfile(profile);
-    if (existing_data)
+    if (existing_data) {
       return existing_data;
+    }
 
     auto new_data = std::make_unique<AvatarButtonUserData>();
     auto* new_data_ptr = new_data.get();
@@ -128,8 +131,9 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
 SigninUiDelegate* g_signin_ui_delegate_for_testing = nullptr;
 
 SigninUiDelegate* GetSigninUiDelegate() {
-  if (g_signin_ui_delegate_for_testing)
+  if (g_signin_ui_delegate_for_testing) {
     return g_signin_ui_delegate_for_testing;
+  }
 
   static SigninUiDelegateImplDice delegate;
   return &delegate;
@@ -143,17 +147,18 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);
   std::string user_display_name;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     user_display_name =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email;
 #if BUILDFLAG(IS_CHROMEOS)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile);
     // |user| may be null in tests.
-    if (user)
+    if (user) {
       user_display_name = user->GetDisplayEmail();
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -208,8 +213,9 @@ void ShowExtensionSigninPrompt(Profile* profile,
   NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // There is no sign-in flow for guest or system profile.
-  if (profile->IsGuestSession() || profile->IsSystemProfile())
+  if (profile->IsGuestSession() || profile->IsSystemProfile()) {
     return;
+  }
   // Locked profile should be unlocked with UserManager only.
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -325,6 +331,11 @@ void EnableSyncFromSingleAccountPromo(
     Profile* profile,
     const CoreAccountInfo& account,
     signin_metrics::AccessPoint access_point) {
+  // TODO(crbug.com/417950948): Delete this function when removing the Sync
+  // feature.
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos));
+
   EnableSyncFromMultiAccountPromo(profile, account, access_point,
                                   /*is_default_promo_account=*/true);
 }
@@ -333,6 +344,11 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
+  // TODO(crbug.com/417950948): Delete this function when removing the Sync
+  // feature.
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos));
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK_NE(signin_metrics::AccessPoint::kUnknown, access_point);
   DCHECK(!profile->IsOffTheRecord());
@@ -476,8 +492,9 @@ AccountInfo GetSingleAccountForPromos(
     const signin::IdentityManager* identity_manager) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
       identity_manager, /*restrict_to_accounts_eligible_for_sync=*/true);
-  if (!accounts.empty())
+  if (!accounts.empty()) {
     return accounts[0];
+  }
   return AccountInfo();
 }
 
@@ -514,15 +531,17 @@ std::u16string GetShortProfileIdentityToDisplay(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   // If there's no unconsented primary account, simply return the name of the
   // profile according to profile attributes.
-  if (core_info.IsEmpty())
+  if (core_info.IsEmpty()) {
     return profile_attributes_entry.GetName();
+  }
 
   AccountInfo extended_info =
       identity_manager->FindExtendedAccountInfoByAccountId(
           core_info.account_id);
   // If there's no given name available, return the user email.
-  if (extended_info.given_name.empty())
+  if (extended_info.given_name.empty()) {
     return base::UTF8ToUTF16(core_info.email);
+  }
 
   return base::UTF8ToUTF16(extended_info.given_name);
 }
@@ -532,24 +551,28 @@ std::string GetAllowedDomain(std::string signin_pattern) {
       signin_pattern, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // There are more than one '@'s in the pattern.
-  if (splitted_signin_pattern.size() != 2)
+  if (splitted_signin_pattern.size() != 2) {
     return std::string();
+  }
 
   std::string domain = splitted_signin_pattern[1];
 
   // Trims tailing '$' if existed.
-  if (!domain.empty() && domain.back() == '$')
+  if (!domain.empty() && domain.back() == '$') {
     domain.pop_back();
+  }
 
   // Trims tailing '\E' if existed.
   if (domain.size() > 1 &&
-      base::EndsWith(domain, "\\E", base::CompareCase::SENSITIVE))
+      base::EndsWith(domain, "\\E", base::CompareCase::SENSITIVE)) {
     domain.erase(domain.size() - 2);
+  }
 
   // Check if there is any special character in the domain. Note that
   // jsmith@[192.168.2.1] is not supported.
-  if (!re2::RE2::FullMatch(domain, "[a-zA-Z0-9\\-.]+"))
+  if (!re2::RE2::FullMatch(domain, "[a-zA-Z0-9\\-.]+")) {
     return std::string();
+  }
 
   return domain;
 }

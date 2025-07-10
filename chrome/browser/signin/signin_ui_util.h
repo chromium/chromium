@@ -31,7 +31,7 @@ namespace signin_ui_util {
 class SigninUiDelegate;
 
 // Returns the username of the primary account or an empty string if there is
-// no primary account or the account has not consented to browser sync.
+// no primary account.
 std::u16string GetAuthenticatedUsername(Profile* profile);
 
 // Shows a learn more page for signin errors.
