@@ -118,6 +118,10 @@ export class Panel implements PanelInterface {
         () => this.disableErrorMsgForTest_());
     BridgeHelper.registerHandler(
         BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.DISABLE_TUTORIAL_RESTART_NUDGES,
+        () => this.disableTutorialRestartNudgesForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.FIRE_MOCK_EVENT,
         (key: string) => this.fireMockEventForTest_(key));
     BridgeHelper.registerHandler(
@@ -134,12 +138,60 @@ export class Panel implements PanelInterface {
         () => this.getActiveSearchMenuDataForTest_());
     BridgeHelper.registerHandler(
         BridgeConstants.PanelTest.TARGET,
-        BridgeConstants.PanelTest.Action.REPLACE_MENU_MANAGER,
-        () => this.replaceMenuManager_());
+        BridgeConstants.PanelTest.Action.GET_TUTORIAL_ACTIVE_LESSON_INDEX,
+        () => this.getTutorialActiveLessonIndexForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_TUTORIAL_ACTIVE_SCREEN,
+        () => this.getTutorialActiveScreenForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_TUTORIAL_INTERACTIVE_MODE,
+        () => this.getTutorialInteractiveModeForTest_());
     BridgeHelper.registerHandler(
         BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.GET_TUTORIAL_READY,
         () => this.tutorialReadyForTesting_);
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GIVE_TUTORIAL_NUDGE,
+        () => this.giveTutorialNudgeForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.INITIALIZE_TUTORIAL_NUDGES,
+        (context: string) => this.initializeTutorialNudgesForTest_(context));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.REPLACE_MENU_MANAGER,
+        () => this.replaceMenuManager_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.RESTART_TUTORIAL_NUDGES,
+        () => this.restartTutorialNudgesForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SET_TUTORIAL_CURRICULUM,
+        (curriculum: string) => this.setTutorialCurriculumForTest_(curriculum));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SET_TUTORIAL_MEDIUM,
+        (medium: string) => this.setTutorialMediumForTest_(medium));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SHOW_TUTORIAL_LESSON,
+        (lessonNum: number) => this.showTutorialLessonForTest_(lessonNum));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SHOW_TUTORIAL_LESSON_MENU,
+        () => this.showTutorialLessonMenuForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SHOW_TUTORIAL_MAIN_MENU,
+        () => this.showTutorialMainMenuForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SHOW_TUTORIAL_NEXT_LESSON,
+        () => this.showTutorialNextLessonForTest_());
   }
 
   /** Initialize the panel. */
@@ -210,6 +262,13 @@ export class Panel implements PanelInterface {
     MenuManager.disableMissingMsgsErrorsForTesting = true;
   }
 
+  private disableTutorialRestartNudgesForTest_(): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {restartNudges: (() => void) | null}).restartNudges =
+          null;
+    }
+  }
+
   private fireMockEventForTest_(key: string): void {
     // @ts-ignore: Mocked KeyboardEvent.
     const obj: KeyboardEvent = {key};
@@ -240,8 +299,89 @@ export class Panel implements PanelInterface {
     return {};
   }
 
+  private getTutorialActiveLessonIndexForTest_(): number {
+    if (this.tutorial_) {
+      return (this.tutorial_ as {activeLessonIndex: number}).activeLessonIndex;
+    }
+    return -1;
+  }
+
+  private getTutorialActiveScreenForTest_(): string {
+    if (this.tutorial_) {
+      return (this.tutorial_ as {activeScreen: string}).activeScreen;
+    }
+    return '';
+  }
+
+  private getTutorialInteractiveModeForTest_(): boolean {
+    if (this.tutorial_) {
+      return (this.tutorial_ as {interactiveMode_: boolean}).interactiveMode_;
+    }
+    return false;
+  }
+
+  private giveTutorialNudgeForTest_(): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {giveNudge: () => void}).giveNudge();
+    }
+  }
+
+  private initializeTutorialNudgesForTest_(context: string): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {
+        initializeNudges: (context: string) => void
+      }).initializeNudges(context);
+    }
+  }
+
   private replaceMenuManager_() {
     this.menuManager_ = new MenuManagerWithTestEndpoints();
+  }
+
+  private restartTutorialNudgesForTest_(): Promise<void> {
+    return new Promise(resolve => {
+      if (this.tutorial_) {
+        (this.tutorial_ as {restartNudges: () => void}).restartNudges = resolve;
+      }
+    });
+  }
+
+  private setTutorialCurriculumForTest_(curriculum: string): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {curriculum: string}).curriculum = curriculum;
+    }
+  }
+
+  private setTutorialMediumForTest_(medium: string): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {medium: string}).medium = medium;
+    }
+  }
+
+  private showTutorialLessonForTest_(lessonNum: number): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {
+        showLesson_: (lesson: number) => void
+      }).showLesson_(lessonNum);
+    }
+  }
+
+  private showTutorialLessonMenuForTest_(): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {showLessonMenu_: () => void}).showLessonMenu_();
+    }
+  }
+
+  private showTutorialMainMenuForTest_(): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {showMainMenu_: () => void}).showMainMenu_();
+    }
+  }
+
+  private showTutorialNextLessonForTest_(): void {
+    if (this.tutorial_) {
+      (this.tutorial_ as {showNextLesson: () => void}).showNextLesson();
+    }
   }
 
 

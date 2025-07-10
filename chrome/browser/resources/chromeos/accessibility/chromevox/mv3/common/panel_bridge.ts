@@ -37,7 +37,6 @@ export class PanelBridge {
         {type: panelCommand.type, data: panelCommand.data});
   }
 
-
   static braillePanLeftForTest(): Promise<void> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.BRAILLE_PAN_LEFT);
@@ -45,12 +44,17 @@ export class PanelBridge {
 
   static braillePanRightForTest(): Promise<void> {
     return BridgeHelper.sendMessage(
-        PanelTestTarget, PanelTestAction.BRAILLE_PAN_RIGHT)
+        PanelTestTarget, PanelTestAction.BRAILLE_PAN_RIGHT);
   }
 
   static disableMessagesForTest(): Promise<void> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.DISABLE_ERROR_MSG);
+  }
+
+  static disableTutorialRestartNudges(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.DISABLE_TUTORIAL_RESTART_NUDGES);
   }
 
   static fireMockEventForTest(key: string): Promise<void> {
@@ -73,9 +77,69 @@ export class PanelBridge {
         PanelTestTarget, PanelTestAction.GET_ACTIVE_SEARCH_MENU_DATA);
   }
 
+  static getTutorialActiveLessonIndex(): Promise<number> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_TUTORIAL_ACTIVE_LESSON_INDEX);
+  }
+
+  static getTutorialActiveScreen(): Promise<string> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_TUTORIAL_ACTIVE_SCREEN);
+  }
+
+  static getTutorialInteractiveMode(): Promise<boolean> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_TUTORIAL_INTERACTIVE_MODE);
+  }
+
   static getTutorialReadyForTest(): Promise<boolean> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.GET_TUTORIAL_READY);
+  }
+
+  static giveTutorialNudge(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GIVE_TUTORIAL_NUDGE);
+  }
+
+  static initializeTutorialNudges(context: string): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.INITIALIZE_TUTORIAL_NUDGES, context);
+  }
+
+  static restartTutorialNudges(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.RESTART_TUTORIAL_NUDGES);
+  }
+
+  static setTutorialCurriculum(curriculum: string): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SET_TUTORIAL_CURRICULUM, curriculum);
+  }
+
+  static setTutorialMedium(medium: string): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SET_TUTORIAL_MEDIUM, medium);
+  }
+
+  static showTutorialLesson(lessonNum: number): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SHOW_TUTORIAL_LESSON, lessonNum);
+  }
+
+  static showTutorialLessonMenu(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SHOW_TUTORIAL_LESSON_MENU);
+  }
+
+  static showTutorialMainMenu(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SHOW_TUTORIAL_MAIN_MENU);
+  }
+
+  static showTutorialNextLesson(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SHOW_TUTORIAL_NEXT_LESSON);
   }
 }
 
