@@ -2486,7 +2486,7 @@ deps = {
     Var('chromium_git') + '/webm/libwebm.git' + '@' + 'f2a982d748b80586ae53b89a2e6ebbc305848b8c',
 
   'src/third_party/libwebp/src':
-    Var('chromium_git') + '/webm/libwebp.git' + '@' +  '2af6c034ac871c967e04c8c9f8bf2dbc2e271b18',
+    Var('chromium_git') + '/webm/libwebp.git' + '@' +  '4fa21912338357f89e4fd51cf2368325b59e9bd9',
 
   'src/third_party/libyuv':
     Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '96134e95a7468af63ff2ea74a85b0d6db2d2c25e',

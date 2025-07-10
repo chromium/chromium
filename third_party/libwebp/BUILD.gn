@@ -182,6 +182,7 @@ static_library("libwebp_dsp") {
   public_configs = [ ":libwebp_public_config" ]
   deps = [
     ":libwebp_dec",
+    ":libwebp_dsp_avx2",
     ":libwebp_dsp_sse2",
     ":libwebp_dsp_sse41",
     ":libwebp_enc",
@@ -199,6 +200,7 @@ static_library("libwebp_dsp") {
     defines = [
       "WEBP_HAVE_SSE2",
       "WEBP_HAVE_SSE41",
+      "WEBP_HAVE_AVX2",
     ]
   }
   allow_circular_includes_from = [
@@ -209,6 +211,33 @@ static_library("libwebp_dsp") {
   if (use_dsp_neon) {
     allow_circular_includes_from += [ ":libwebp_dsp_neon" ]
   }
+}
+
+static_library("libwebp_dsp_avx2") {
+  sources = [
+    "src/src/dsp/lossless_avx2.c",
+    "src/src/dsp/lossless_enc_avx2.c",
+  ]
+  configs += [ ":libwebp_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  public_configs = [ ":libwebp_public_config" ]
+  if (!is_msan) {
+    if ((current_cpu == "x86" || current_cpu == "x64") &&
+        (!is_win || is_clang)) {
+      cflags = [ "-mavx2" ]
+    }
+  }
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_utils",
+    ":libwebp_webp",
+  ]
 }
 
 static_library("libwebp_dsp_sse41") {
@@ -237,7 +266,10 @@ static_library("libwebp_dsp_sse41") {
       cflags = [ "-msse4.1" ]
     }
   }
-  deps = [ ":libwebp_dsp_sse2" ]
+  deps = [
+    ":libwebp_dsp_sse2",
+    ":libwebp_webp",
+  ]
 }
 
 static_library("libwebp_dsp_sse2") {
@@ -276,6 +308,7 @@ static_library("libwebp_dsp_sse2") {
     ":libwebp_enc",
     ":libwebp_utils",
   ]
+  deps = [ ":libwebp_webp" ]
 }
 
 if (use_dsp_neon) {
@@ -298,6 +331,7 @@ if (use_dsp_neon) {
       ":libwebp_dsp_headers",
       ":libwebp_enc",
       ":libwebp_utils",
+      ":libwebp_webp",
     ]
 
     configs += [ ":libwebp_config" ]
@@ -489,6 +523,7 @@ static_library("libwebp_sharpyuv_sse2") {
     ":libwebp_dsp_headers",
     ":libwebp_sharpyuv_dsp_headers",
   ]
+  deps = [ ":libwebp_webp" ]
 }
 
 static_library("libwebp_utils") {
