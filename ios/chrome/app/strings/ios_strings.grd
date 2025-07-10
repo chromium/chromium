@@ -6834,6 +6834,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_BUTTON" desc="Title of the button in the activity summary in a shared tab group.">
         Activity
       </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_CLOSE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label of the button to close the recent activity summary. Read by text-to-speech.">
+        Close recent activity summary
+      </message>
       <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_REMOVED_ONLY_TEXT" desc="Text of the activity summary in a shared tab group for the number tabs closed.">
           {count, plural,
             =1 {{count} closed tab}

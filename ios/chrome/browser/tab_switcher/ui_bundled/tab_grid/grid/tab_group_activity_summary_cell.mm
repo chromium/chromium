@@ -113,12 +113,9 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
 
     [self updateConstraintsForContentSizeCategory];
 
-    if (@available(iOS 17, *)) {
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+    [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
                        withAction:@selector
                        (updateConstraintsForContentSizeCategory)];
-    }
   }
 
   return self;
@@ -138,20 +135,6 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   _text = [text copy];
   _textLabel.text = _text;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateConstraintsForContentSizeCategory];
-  }
-}
-#endif
 
 #pragma mark - Private
 
@@ -219,6 +202,8 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   button.accessibilityIdentifier =
       kActivitySummaryGridCellCloseButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
   return button;
 }
 
