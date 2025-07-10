@@ -71,7 +71,9 @@ declare_args() {
 
   # Enables AC3/EAC3 audio handling in chromium. This includes demuxing,
   # on-device decoding and bitstream passthrough as supported by device.
-  enable_platform_ac3_eac3_audio = proprietary_codecs && is_cast_media_device
+  enable_platform_ac3_eac3_audio =
+      proprietary_codecs &&
+      (is_cast_media_device || (is_ios && target_platform == "tvos"))
 
   # Enables AC4 audio handling in chromium. This includes demuxing,
   # on-device decoding and bitstream passthrough as supported by device.
