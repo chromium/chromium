@@ -129,6 +129,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
   // Whether MIA is allowed by policy.
   BOOL _MIAAllowedByPolicy;
+  // The logo for the default search engine. This is owned by the caching system
+  // backing this logo.
+  __weak UIImage* _dseLogo;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -468,6 +471,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
+  if (_dseLogo) {
+    [self.headerView setDefaultSearchEngineLogo:_dseLogo];
+  }
 
   UIIndirectScribbleInteraction* scribbleInteraction =
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
@@ -854,6 +860,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)setDefaultSearchEngineImage:(UIImage*)image {
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  // The header view might not be created yet. Store the logo image until it is
+  // consumed.
+  if (!self.headerView) {
+    _dseLogo = image;
+    return;
+  }
+
   [self.headerView setDefaultSearchEngineLogo:image];
 }
 
