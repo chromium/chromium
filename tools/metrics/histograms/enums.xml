@@ -24603,12 +24603,16 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Notification interaction"/>
 </enum>
 
+<!-- LINT.IfChange(SiteInstanceProcessAssignment) -->
+
 <enum name="SiteInstanceProcessAssignment">
   <int value="0" label="Unknown"/>
   <int value="1" label="Reused existing render process"/>
   <int value="2" label="Used spare process"/>
   <int value="3" label="Created new process"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/public/browser/site_instance_process_assignment.h:SiteInstanceProcessAssignment) -->
 
 <enum name="SiteIsolatedCodeCacheJSBehaviour">
   <int value="0" label="Hit">Available in code cache</int>

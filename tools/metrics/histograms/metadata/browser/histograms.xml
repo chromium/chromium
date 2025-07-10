@@ -1334,6 +1334,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SiteInstanceRenderProcessAssignment"
+    enum="SiteInstanceProcessAssignment" expires_after="2026-07-04">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records how the main frame's SiteInstance was assigned a renderer process.
+    Recorded when RenderProcessHostImpl::GetProcessHostForSiteInstance is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareCount" units="spares"
     expires_after="2025-08-24">
   <owner>pmonette@chromium.org</owner>

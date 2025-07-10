@@ -5004,6 +5004,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       browser_context->GetStoragePartition(site_instance,
                                            false /* can_create */)));
 
+  base::UmaHistogramEnumeration(
+      "BrowserRenderProcessHost.SiteInstanceRenderProcessAssignment",
+      site_instance->GetLastProcessAssignmentOutcome());
   MAYBEVLOG(2) << __func__ << "(" << site_info << ") selected process host "
                << render_process_host->GetDeprecatedID()
                << " using assignment \""
