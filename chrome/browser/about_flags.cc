@@ -12617,9 +12617,11 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrasOutputPluginProcessor")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
     {"web-app-installation-api", flag_descriptions::kWebAppInstallationApiName,
-     flag_descriptions::kWebAppInstallationApiDescription, kOsAll,
+     flag_descriptions::kWebAppInstallationApiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kWebAppInstallation)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

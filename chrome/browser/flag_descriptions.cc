@@ -4424,10 +4424,12 @@ const char kWallpaperSearchSettingsVisibilityName[] =
 const char kWallpaperSearchSettingsVisibilityDescription[] =
     "Shows wallpaper search settings in settings UI.";
 
+#if !BUILDFLAG(IS_ANDROID)
 const char kWebAppInstallationApiName[] = "Web App Installation API";
 const char kWebAppInstallationApiDescription[] =
     "Enables the Web App Installation API which allows web apps to be "
     "installed programmatically using navigator.install().";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =

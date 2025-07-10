@@ -5167,8 +5167,9 @@
       name: "WarnOnContentVisibilityRenderAccess",
     },
     {
+      // https://chromestatus.com/feature/5183481574850560
       name: "WebAppInstallation",
-      status: "experimental",
+      status: {"Android": "", "default": "test"},
     },
     {
       name: "WebAppLaunchQueue",

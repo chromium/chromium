@@ -6476,7 +6476,6 @@ interface Navigator
     method getBattery
     method getGamepads
     method getUserMedia
-    method install
     method javaEnabled
     method queryHandwritingRecognizer
     method requestMIDIAccess

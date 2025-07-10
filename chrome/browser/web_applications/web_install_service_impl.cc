@@ -337,9 +337,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
   content::BrowserContext* const browser_context =
       render_frame_host().GetBrowserContext();
   if (!browser_context) {
-    // TODO(crbug.com/381282538): Technically this isn't correct since
-    // permission wasn't denied. Same for the if check below. Update to a more
-    // appropriate error.
     std::move(callback).Run(
         std::vector<PermissionStatus>({PermissionStatus::DENIED}));
     return;
