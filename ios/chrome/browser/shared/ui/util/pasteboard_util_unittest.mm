@@ -96,4 +96,18 @@ TEST_F(PasteboardUtilTest, ClearPasteboardWorks) {
   EXPECT_FALSE(UIPasteboard.generalPasteboard.hasStrings);
 }
 
+// Test for crbug.com/426647790, that trying to store a valid GURL that converts
+// to an invalid NSURL does not crash.
+TEST_F(PasteboardUtilTest, StoreInvalidNSURL) {
+  NSString* test_text = base::SysUTF8ToNSString(kTestText);
+  GURL valid_gurl_but_invalid_nsurl("http://{domain}/");
+  base::RunLoop store_run_loop;
+  // This line would crash due to the bug.
+  StoreInPasteboard(test_text, valid_gurl_but_invalid_nsurl,
+                    store_run_loop.QuitClosure());
+  store_run_loop.Run();
+
+  EXPECT_FALSE(UIPasteboard.generalPasteboard.hasURLs);
+}
+
 }  // namespace
