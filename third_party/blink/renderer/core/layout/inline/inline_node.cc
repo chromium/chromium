@@ -2258,9 +2258,9 @@ const HeapVector<SvgTextContentRange>& InlineNode::SvgTextPathRangeList()
 
 const Font& InlineNode::FontForTab() const {
   const Node* layout_box_node = GetDOMNode();
-  const bool is_first_letter_pceudo_element =
+  const bool is_first_letter_pseudo_element =
       layout_box_node && layout_box_node->IsFirstLetterPseudoElement();
-  const Font* font = is_first_letter_pceudo_element ? Style().ContainerFont()
+  const Font* font = is_first_letter_pseudo_element ? Style().ContainerFont()
                                                     : Style().GetFont();
   DCHECK(font);
   return *font;
