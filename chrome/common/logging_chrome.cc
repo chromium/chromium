@@ -20,7 +20,6 @@
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
   content::RegisterIPCLogger(msg_id, logger)
-#include "chrome/common/all_messages.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
