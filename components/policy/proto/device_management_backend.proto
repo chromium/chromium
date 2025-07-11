@@ -2386,6 +2386,12 @@ enum SettingValue {
   ENABLED = 2;
 }
 
+// Agents installed on a device.
+enum Agent {
+  UNKNOWN_AGENT = 0;
+  CROWDSTRIKE_FALCON = 1;
+}
+
 // Report Operating system related information.
 message OSReport {
   // A string contains OS name.
@@ -2454,6 +2460,9 @@ message OSReport {
   // A string contains the Windows domain that the current OS user has joined.
   // Windows only.
   optional string windows_user_domain = 18;
+
+  // List of enums that represents agents installed on a device.
+  repeated Agent detected_agents = 19;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.
