@@ -110,7 +110,6 @@ component("media") {
   deps = [
     "//components/viz/common",
     "//media:media_buildflags",
-    "//media:shared_memory_support",
     "//media/learning/mojo/public/cpp",
     "//net",
     "//services/network/public/cpp",

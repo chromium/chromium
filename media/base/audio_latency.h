@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_AUDIO_LATENCY_H_
 #define MEDIA_BASE_AUDIO_LATENCY_H_
 
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace base {
 class TimeDelta;
@@ -13,7 +13,7 @@ class TimeDelta;
 
 namespace media {
 
-class MEDIA_SHMEM_EXPORT AudioLatency {
+class MEDIA_EXPORT AudioLatency {
  public:
   // Categories of expected latencies for input/output audio. Do not change
   // existing values, they are used for UMA histogram reporting.

@@ -35,7 +35,6 @@ source_set("media_router") {
     "//components/media_router/common",
     "//content/public/browser",
     "//media",
-    "//media:shared_memory_support",
     "//url",
   ]
 }

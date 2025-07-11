@@ -16,6 +16,5 @@ cast_source_set("decoder") {
     "//chromecast/media/api",
     "//chromecast/media/cma/base",
     "//media",
-    "//media:shared_memory_support",
   ]
 }

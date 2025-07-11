@@ -47,7 +47,6 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
-#include "media/base/mac/audio_latency_mac.h"
 #include "media/base/media_switches.h"
 
 namespace media {
@@ -1483,6 +1482,23 @@ AudioDeviceID AudioManagerMac::FindFirstOutputSubdevice(
   }
 
   return kAudioObjectUnknown;
+}
+
+// static
+int AudioManagerMac::GetMinAudioBufferSizeMacOS(int min_buffer_size,
+                                                int sample_rate) {
+  int buffer_size = min_buffer_size;
+  if (sample_rate > 48000) {
+    // The default buffer size is too small for higher sample rates and may lead
+    // to glitching.  Adjust upwards by multiples of the default size.
+    if (sample_rate <= 96000) {
+      buffer_size = 2 * limits::kMinAudioBufferSize;
+    } else if (sample_rate <= 192000) {
+      buffer_size = 4 * limits::kMinAudioBufferSize;
+    }
+  }
+  DCHECK_EQ(limits::kMaxWebAudioBufferSize % buffer_size, 0);
+  return buffer_size;
 }
 
 OSStatus AudioManagerMac::GetInputDeviceStreamFormat(

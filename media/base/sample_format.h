@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_SAMPLE_FORMAT_H_
 #define MEDIA_BASE_SAMPLE_FORMAT_H_
 
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -38,21 +38,20 @@ enum SampleFormat {
 
 // Returns the number of bytes used per channel for the specified
 // |sample_format|.
-MEDIA_SHMEM_EXPORT int SampleFormatToBytesPerChannel(
-    SampleFormat sample_format);
-MEDIA_SHMEM_EXPORT int SampleFormatToBitsPerChannel(SampleFormat sample_format);
+MEDIA_EXPORT int SampleFormatToBytesPerChannel(SampleFormat sample_format);
+MEDIA_EXPORT int SampleFormatToBitsPerChannel(SampleFormat sample_format);
 
 // Returns the name of the sample format as a string
-MEDIA_SHMEM_EXPORT const char* SampleFormatToString(SampleFormat sample_format);
+MEDIA_EXPORT const char* SampleFormatToString(SampleFormat sample_format);
 
 // Returns true if |sample_format| is planar, false otherwise.
-MEDIA_SHMEM_EXPORT bool IsPlanar(SampleFormat sample_format);
+MEDIA_EXPORT bool IsPlanar(SampleFormat sample_format);
 
 // Returns true if |sample_format| is interleaved, false otherwise.
-MEDIA_SHMEM_EXPORT bool IsInterleaved(SampleFormat sample_format);
+MEDIA_EXPORT bool IsInterleaved(SampleFormat sample_format);
 
 // Returns true if |sample_format| is compressed bitstream, false otherwise.
-MEDIA_SHMEM_EXPORT bool IsBitstream(SampleFormat sample_format);
+MEDIA_EXPORT bool IsBitstream(SampleFormat sample_format);
 
 }  // namespace media
 

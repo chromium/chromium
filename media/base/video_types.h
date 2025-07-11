@@ -6,11 +6,12 @@
 #define MEDIA_BASE_VIDEO_TYPES_H_
 
 #include <stdint.h>
+
 #include <iosfwd>
 #include <string>
 
 #include "build/build_config.h"
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -125,39 +126,38 @@ enum class VideoChromaSampling : uint8_t {
 };
 
 // Return the name of chroma sampling format as a string.
-MEDIA_SHMEM_EXPORT std::string VideoChromaSamplingToString(
+MEDIA_EXPORT std::string VideoChromaSamplingToString(
     VideoChromaSampling chroma_sampling);
 
 // Returns the name of a Format as a string.
-MEDIA_SHMEM_EXPORT std::string VideoPixelFormatToString(
-    VideoPixelFormat format);
+MEDIA_EXPORT std::string VideoPixelFormatToString(VideoPixelFormat format);
 
 // Stream operator of Format for logging etc.
-MEDIA_SHMEM_EXPORT std::ostream& operator<<(std::ostream& os,
-                                            VideoPixelFormat format);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      VideoPixelFormat format);
 
 // Returns human readable fourcc string.
 // If any of the four characters is non-printable, it outputs
 // "0x<32-bit integer in hex>", e.g. FourccToString(0x66616b00) returns
 // "0x66616b00".
-MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
+MEDIA_EXPORT std::string FourccToString(uint32_t fourcc);
 
 // Returns the VideoChromaSampling corresponding to the VideoPixelFormat passed
 // in.
-MEDIA_SHMEM_EXPORT VideoChromaSampling
+MEDIA_EXPORT VideoChromaSampling
 VideoPixelFormatToChromaSampling(VideoPixelFormat format);
 
 // Returns true if |format| is a YUV format with multiple planes.
-MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
+MEDIA_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
 
 // Returns true if |format| is an RGB format.
-MEDIA_SHMEM_EXPORT bool IsRGB(VideoPixelFormat format);
+MEDIA_EXPORT bool IsRGB(VideoPixelFormat format);
 
 // Returns true if |format| has no Alpha channel (hence is always opaque).
-MEDIA_SHMEM_EXPORT bool IsOpaque(VideoPixelFormat format);
+MEDIA_EXPORT bool IsOpaque(VideoPixelFormat format);
 
 // Returns the number of significant bits per channel.
-MEDIA_SHMEM_EXPORT size_t BitDepth(VideoPixelFormat format);
+MEDIA_EXPORT size_t BitDepth(VideoPixelFormat format);
 
 }  // namespace media
 

@@ -27,7 +27,6 @@ component("webrtc") {
     "//base",
     "//build:chromecast_buildflags",
     "//media",
-    "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

@@ -44,7 +44,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
-#include "media/base/mac/audio_latency_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -609,9 +608,10 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 #if BUILDFLAG(IS_MAC)
   // On OSX the preferred output buffer size is higher than the minimum
   // but users may request the minimum size explicitly.
-  ASSERT_GT(default_params.frames_per_buffer(),
-            GetMinAudioBufferSizeMacOS(media::limits::kMinAudioBufferSize,
-                                       default_params.sample_rate()));
+  ASSERT_GT(
+      default_params.frames_per_buffer(),
+      AudioManagerMac::GetMinAudioBufferSizeMacOS(
+          media::limits::kMinAudioBufferSize, default_params.sample_rate()));
 #else
   static_assert(BUILDFLAG(USE_CRAS));
   // On CRAS the preferred output buffer size varies per board and may be as low

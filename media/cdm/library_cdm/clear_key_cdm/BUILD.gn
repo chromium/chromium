@@ -31,7 +31,6 @@ loadable_module("clear_key_cdm_bin") {
     "//base",
     "//media",
     "//media:media_buildflags",
-    "//media:shared_memory_support",  # For media::AudioBus.
     "//media/cdm:cdm_api",  # For content_decryption_module.h
     "//media/cdm/library_cdm:cdm_host_proxy",
     "//third_party/libyuv",

@@ -177,7 +177,6 @@ cast_source_set("for_mixer_audio") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",
-    "//media:shared_memory_support",
   ]
 
   if (mixer_in_cast_shell) {

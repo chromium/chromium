@@ -230,7 +230,6 @@ source_set("common") {
     "//gpu/skia_bindings",
     "//ipc",
     "//media",
-    "//media:shared_memory_support",
     "//media/base/ipc",
     "//media/capture",
     "//media/gpu:buildflags",

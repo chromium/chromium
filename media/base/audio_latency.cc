@@ -20,10 +20,6 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "media/base/mac/audio_latency_mac.h"
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scheduler.h"
 #endif

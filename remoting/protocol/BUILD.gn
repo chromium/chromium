@@ -313,7 +313,6 @@ static_library("protocol") {
 
     deps += [
       "//media:media",
-      "//media:shared_memory_support",
       "//remoting/codec:encoder",
     ]
   }

@@ -99,7 +99,6 @@ component("services") {
   deps = [
     "//gpu/ipc/service",
     "//media",
-    "//media:shared_memory_support",
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/service",

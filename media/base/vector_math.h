@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace media::vector_math {
 
@@ -17,21 +17,20 @@ enum { kRequiredAlignment = 16 };
 
 // Multiply each element of `src` by `scale` and add to `dest`.
 // `src` and `dest` must be aligned by `kRequiredAlignment`.
-MEDIA_SHMEM_EXPORT void FMAC(base::span<const float> src,
-                             float scale,
-                             base::span<float> dest);
+MEDIA_EXPORT void FMAC(base::span<const float> src,
+                       float scale,
+                       base::span<float> dest);
 
 // Multiply each element of `src` by `scale` and store in `dest`.
 // `src` and `dest` must be aligned by `kRequiredAlignment`.
-MEDIA_SHMEM_EXPORT void FMUL(base::span<const float> src,
-                             float scale,
-                             base::span<float> dest);
+MEDIA_EXPORT void FMUL(base::span<const float> src,
+                       float scale,
+                       base::span<float> dest);
 
 // Clamps each element in `src` to the [-1.0, +1.0] range and store in `dest`.
 // replacing NaNs with 0s (silence).
 // `src` and `dest` must be aligned by `kRequiredAlignment`.
-MEDIA_SHMEM_EXPORT void FCLAMP(base::span<const float> src,
-                               base::span<float> dest);
+MEDIA_EXPORT void FCLAMP(base::span<const float> src, base::span<float> dest);
 
 // Computes the exponentially-weighted moving average power of a signal by
 // iterating the recurrence:
@@ -40,7 +39,7 @@ MEDIA_SHMEM_EXPORT void FCLAMP(base::span<const float> src,
 //   y[n] = smoothing_factor * src[n]^2 + (1-smoothing_factor) * y[n-1]
 //
 // Returns the final average power and the maximum squared element value.
-MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower(
+MEDIA_EXPORT std::pair<float, float> EWMAAndMaxPower(
     float initial_value,
     base::span<const float> src,
     float smoothing_factor);

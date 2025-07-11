@@ -171,7 +171,6 @@ cast_source_set("audio") {
     "//chromecast/media/cma/base",
     "//chromecast/public/media",
     "//media",
-    "//media:shared_memory_support",
   ]
 
   if (use_alsa) {

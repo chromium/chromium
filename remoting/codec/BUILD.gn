@@ -66,10 +66,7 @@ source_set("encoder") {
       "audio_encoder_opus.cc",
       "audio_encoder_opus.h",
     ]
-    deps += [
-      "//media",
-      "//media:shared_memory_support",
-    ]
+    deps += [ "//media" ]
   }
 }
 

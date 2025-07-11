@@ -150,7 +150,6 @@ component("media") {
   public_deps = media_subcomponent_deps
   public_deps += [
     ":media_buildflags",
-    ":shared_memory_support",
     "//ui/gfx:color_space",
   ]
 
@@ -305,58 +304,6 @@ test("media_perftests") {
                              is_win || is_android)) {
     data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
   }
-}
-
-# Note: Most external components should just depend on //media unless they
-# specifically need this pared own target (NaCl, PPAPI, etc). Internal targets
-# should just depend on //media/base which will propagate this target to them.
-component("shared_memory_support") {
-  sources = [
-    "base/audio_bus.cc",
-    "base/audio_bus.h",
-    "base/audio_codecs.h",
-    "base/audio_latency.cc",
-    "base/audio_latency.h",
-    "base/audio_parameters.cc",
-    "base/audio_parameters.h",
-    "base/audio_point.cc",
-    "base/audio_point.h",
-    "base/audio_sample_types.h",
-    "base/channel_layout.cc",
-    "base/channel_layout.h",
-    "base/limits.h",
-    "base/media_export.h",
-    "base/media_shmem_export.h",
-    "base/sample_format.cc",
-    "base/sample_format.h",
-    "base/vector_math.cc",
-    "base/vector_math.h",
-    "base/vector_math_testing.h",
-    "base/video_types.cc",
-    "base/video_types.h",
-  ]
-  if (is_mac) {
-    # These need to be included here because audio_latency.cc depends on them.
-    sources += [
-      "base/mac/audio_latency_mac.cc",
-      "base/mac/audio_latency_mac.h",
-    ]
-  }
-
-  # Do not use "subcomponent_config" here since these files are in their own
-  # component target and thus can't share the standard export macros.
-  configs += [ ":media_config" ]
-  defines = [ "MEDIA_SHMEM_IMPLEMENTATION" ]
-
-  if (!is_debug) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_max" ]
-  }
-  deps = [
-    "//base",
-    "//media:media_buildflags",
-    "//ui/gfx/geometry",
-  ]
 }
 
 # TODO(watk): Refactor tests that could be made to run on Android. See

@@ -25,7 +25,6 @@
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
-#include "media/base/mac/audio_latency_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

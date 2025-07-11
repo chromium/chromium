@@ -107,7 +107,6 @@ cast_source_set("mixer") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",
-    "//media:shared_memory_support",
   ]
 
   if (use_alsa) {
@@ -179,7 +178,6 @@ cast_source_set("unittests") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",
-    "//media:shared_memory_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",

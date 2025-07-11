@@ -50,8 +50,7 @@ component("capture_base") {
   deps = [
     "//base",
     "//base:i18n",
-    "//media:shared_memory_support",
-    "//media/base:video_facing",
+    "//media",
     "//ui/gfx",
   ]
 }
