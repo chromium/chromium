@@ -508,7 +508,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoFocusWithin:
     case CSSSelector::kPseudoFullPageMedia:
     case CSSSelector::kPseudoHasInterest:
-    case CSSSelector::kPseudoHasPartialInterest:
     case CSSSelector::kPseudoHasSlotted:
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoHover:
@@ -559,7 +558,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoState:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoTargetOfInterest:
-    case CSSSelector::kPseudoTargetOfPartialInterest:
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoUnparsed:
     case CSSSelector::kPseudoUserInvalid:
@@ -2135,13 +2133,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() != Element::InterestState::kNoInterest;
-    case CSSSelector::kPseudoHasPartialInterest:
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element.GetDocument().GetExecutionContext()));
-      return element.GetInterestState() ==
-                 Element::InterestState::kPartialInterest ||
-             element.GetInterestState() ==
-                 Element::InterestState::kPotentialPartialInterest;
     case CSSSelector::kPseudoTargetOfInterest: {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
@@ -2149,17 +2140,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(!invoker || invoker->GetInterestState() !=
                              Element::InterestState::kNoInterest);
       return invoker;
-    }
-    case CSSSelector::kPseudoTargetOfPartialInterest: {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element.GetDocument().GetExecutionContext()));
-      Element* invoker = element.GetInterestInvoker();
-      DCHECK(!invoker || invoker->GetInterestState() !=
-                             Element::InterestState::kNoInterest);
-      return invoker && (invoker->GetInterestState() ==
-                             Element::InterestState::kPartialInterest ||
-                         invoker->GetInterestState() ==
-                             Element::InterestState::kPotentialPartialInterest);
     }
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());

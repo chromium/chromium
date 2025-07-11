@@ -1170,18 +1170,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   enum class InterestState {
     // No interest.
     kNoInterest,
-    // This is a transient interest state, used for an interest invoker pointing
-    // to a popover that has been activated via keyboard focus. It potentially
-    // has partial interest, but that can only be determined once the popover
-    // actually opens, so that focusability can be tested. Once the popover is
-    // open, the invoker's interest_state will be updated to one of the other
-    // states. It can actually get to any of the states:
-    //  - partial interest if there are focusable elements
-    //  - full interest otherwise
-    //  - no interest if the showPopover is cancelled for any reason
-    kPotentialPartialInterest,
-    // Invoker has partial interest (for sure).
-    kPartialInterest,
     // Invoker has full interest.
     kFullInterest,
   };
@@ -1203,10 +1191,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns the current state of "interest" in an element that is an interest
   // invoker.
   InterestState GetInterestState();
-  // Returns true if this element is (inclusively) contained within an open
-  // popover that is the target of an interest invoker that has partial
-  // interest.
-  bool IsInPartialInterestPopover() const;
   // Used in some situations (e.g. mobile device context menu activation) to
   // immediately show interest in an element, ignoring any show delays that may
   // be set on the element. If the element is not an interest invoker, nothing
@@ -1694,7 +1678,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
-  static String GetPartialInterestForActivationHotkey();
 
   void DefaultEventHandler(Event&) override;
 

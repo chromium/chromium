@@ -3188,11 +3188,6 @@ const CSSValue* ParseContentValue(CSSParserTokenStream& stream,
           stream.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
-  if (context.GetMode() == kUASheetMode &&
-      css_parsing_utils::IdentMatches<
-          CSSValueID::kInternalPartialInterestContent>(stream.Peek().Id())) {
-    return css_parsing_utils::ConsumeIdent(stream);
-  }
 
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   CSSValueList* outer_list = CSSValueList::CreateSlashSeparated();
@@ -3342,23 +3337,9 @@ void Content::ApplyValue(StyleResolverState& state,
   ComputedStyleBuilder& builder = state.StyleBuilder();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal ||
-           identifier_value->GetValueID() == CSSValueID::kNone ||
-           identifier_value->GetValueID() ==
-               CSSValueID::kInternalPartialInterestContent);
+           identifier_value->GetValueID() == CSSValueID::kNone);
     if (identifier_value->GetValueID() == CSSValueID::kNone) {
       builder.SetContent(MakeGarbageCollected<NoneContentData>());
-    } else if (identifier_value->GetValueID() ==
-                   CSSValueID::kInternalPartialInterestContent &&
-               RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-                   state.GetDocument().GetExecutionContext())) {
-      String hint_text = state.GetDocument().GetCachedLocale().QueryString(
-          IDS_PARTIAL_INTEREST_TARGET_ACTIVATION_HINT,
-          Element::GetPartialInterestForActivationHotkey());
-      auto* content =
-          MakeGarbageCollected<TextContentData>(StrCat({"{", hint_text, "}"}));
-      auto* alt_content = MakeGarbageCollected<AltTextContentData>(hint_text);
-      content->SetNext(alt_content);
-      builder.SetContent(content);
     } else {
       builder.SetContent(nullptr);
     }

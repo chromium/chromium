@@ -179,9 +179,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:
     case CSSSelector::kPseudoHasInterest:
-    case CSSSelector::kPseudoHasPartialInterest:
     case CSSSelector::kPseudoTargetOfInterest:
-    case CSSSelector::kPseudoTargetOfPartialInterest:
     case CSSSelector::kPseudoHasSlotted:
       return true;
     case CSSSelector::kPseudoUnknown:
@@ -1668,9 +1666,7 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoActiveViewTransition:
       case CSSSelector::kPseudoActiveViewTransitionType:
       case CSSSelector::kPseudoHasInterest:
-      case CSSSelector::kPseudoHasPartialInterest:
       case CSSSelector::kPseudoTargetOfInterest:
-      case CSSSelector::kPseudoTargetOfPartialInterest:
       case CSSSelector::kPseudoHasSlotted:
         return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                            position, in_nth_child);

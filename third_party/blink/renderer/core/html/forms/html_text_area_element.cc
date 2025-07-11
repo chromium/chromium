@@ -319,12 +319,6 @@ bool HTMLTextAreaElement::HasCustomFocusLogic() const {
 
 bool HTMLTextAreaElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  // Interest invoker targets with partial interest aren't keyboard focusable.
-  if (IsInPartialInterestPopover()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    return false;
-  }
   // If a given text area can be focused at all, then it will always be keyboard
   // focusable, unless it has a negative tabindex set.
   return IsFocusable(update_behavior) && tabIndex() >= 0;

@@ -1456,17 +1456,6 @@ void HTMLElement::showPopover(ShowPopoverOptions* options,
 
 void HTMLElement::ShowPopoverInternal(Element* invoker,
                                       ExceptionState* exception_state) {
-  auto is_potential_partial_interest = [](Element* invoker) {
-    return invoker && invoker->GetInvokerData() &&
-           invoker->GetInvokerData()->GetInterestState() ==
-               InterestState::kPotentialPartialInterest;
-  };
-  auto abandon_partial_interest = [this, &invoker,
-                                   &is_potential_partial_interest]() {
-    if (is_potential_partial_interest(invoker)) {
-      invoker->ChangeInterestState(this, InterestState::kNoInterest);
-    }
-  };
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
                       /*include_event_handler_text=*/false,
                       /*document=*/nullptr)) {
@@ -1474,7 +1463,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
         << " Callers which aren't supposed to throw exceptions should not call "
            "ShowPopoverInternal when the Popover isn't in a valid state to be "
            "shown.";
-    abandon_partial_interest();
     return;
   }
 
@@ -1499,7 +1487,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK_EQ(event->newState(), "open");
   event->SetTarget(this);
   if (DispatchEvent(*event) != DispatchEventResult::kNotCanceled) {
-    abandon_partial_interest();
     return;
   }
 
@@ -1509,7 +1496,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
                       /*include_event_handler_text=*/true,
                       &original_document)) {
-    abandon_partial_interest();
     return;
   }
 
@@ -1576,13 +1562,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
             "The value of the popover attribute was changed while hiding the "
             "popover.");
       }
-      abandon_partial_interest();
       return;
     }
     if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
                         /*include_event_handler_text=*/true,
                         &original_document)) {
-      abandon_partial_interest();
       return;
     }
 
@@ -1637,19 +1621,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   // Store the element to focus when this popover closes.
   if (should_restore_focus && IsPopover()) {
     GetPopoverData()->setPreviouslyFocusedElement(originally_focused_element);
-  }
-
-  // Now that the popover has been shown, we can check the focusability of its
-  // contents, to evaluate whether we need partial interest, or should go
-  // directly to full interest.
-  if (is_potential_partial_interest(invoker)) {
-    bool is_focusable =
-        IsKeyboardFocusableSlow(UpdateBehavior::kAssertNoLayoutUpdates) ||
-        ContainsKeyboardFocusableElementsSlow(
-            UpdateBehavior::kAssertNoLayoutUpdates);
-    invoker->ChangeInterestState(this, is_focusable
-                                           ? InterestState::kPartialInterest
-                                           : InterestState::kFullInterest);
   }
 
   // Queue the "opening" toggle event.

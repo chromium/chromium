@@ -2561,15 +2561,6 @@
       status: "stable",
       depends_on: ["HTMLInterestForAttribute"],
     },
-    // If this flag is enabled, the "partial interest" concept for the
-    // `interestfor` API is not used. When an interest invoker is focused,
-    // the target immediately gets full interest, regardless of whether it
-    // contains focusable content. This is primarily to test the behavior with
-    // users, to see which is the best.
-    {
-      name: "HTMLInterestForNoPartialInterest",
-      depends_on: ["HTMLInterestForAttribute"],
-    },
     {
       // Prevents the HTMLLinkElement processing model from being invoked when
       // attributes are processed but their value doesn't change. See

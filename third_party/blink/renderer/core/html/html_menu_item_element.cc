@@ -175,12 +175,6 @@ FocusableState HTMLMenuItemElement::SupportsFocus(UpdateBehavior) const {
 
 bool HTMLMenuItemElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  // Interest invoker targets with partial interest aren't keyboard focusable.
-  if (IsInPartialInterestPopover()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    return false;
-  }
   // Menuitems are keyboard focusable if they are focusable and don't have a
   // negative tabindex set.
   return IsFocusable(update_behavior) && tabIndex() >= 0;

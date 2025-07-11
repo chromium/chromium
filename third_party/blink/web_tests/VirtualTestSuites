@@ -1673,24 +1673,6 @@
     "expires": "never"
   },
   {
-    "prefix": "interest-for-no-partial-interest",
-    "owners": [
-      "masonf@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/the-button-element/interest-for"
-    ],
-    "args": [
-      "--enable-blink-features=HTMLInterestForNoPartialInterest,HTMLInterestForAttribute"
-    ],
-    "expires": "Dec 1, 2025"
-  },
-  {
     "prefix": "isolated-context",
     "platforms": [
       "Linux",
