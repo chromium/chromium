@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_UI_CONTEXT_MENU_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_UI_CONTEXT_MENU_VIEW_H_
 
 #include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/download/download_shelf_context_menu.h"
+#include "chrome/browser/download/download_ui_context_menu.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class DownloadItemView;
@@ -26,19 +26,19 @@ class Widget;
 
 class DownloadBubbleUIController;
 
-class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
+class DownloadUiContextMenuView : public DownloadUiContextMenu {
  public:
   // TODO(crbug.com/40756678): Remove dependency on DownloadItemView.
-  explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
-  explicit DownloadShelfContextMenuView(
+  explicit DownloadUiContextMenuView(DownloadItemView* download_item_view);
+  explicit DownloadUiContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
-  DownloadShelfContextMenuView(
+  DownloadUiContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller);
-  DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
-  DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
+  DownloadUiContextMenuView(const DownloadUiContextMenuView&) = delete;
+  DownloadUiContextMenuView& operator=(const DownloadUiContextMenuView&) =
       delete;
-  ~DownloadShelfContextMenuView() override;
+  ~DownloadUiContextMenuView() override;
 
   base::TimeTicks close_time() const { return close_time_; }
 
@@ -77,4 +77,4 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
       download_commands_executed_recorded_{false};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_UI_CONTEXT_MENU_VIEW_H_

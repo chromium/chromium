@@ -32,8 +32,6 @@ source_set("download") {
     "download_in_progress_dialog_view.h",
     "download_item_view.cc",
     "download_item_view.h",
-    "download_shelf_context_menu_view.cc",
-    "download_shelf_context_menu_view.h",
     "download_shelf_started_animation_views.cc",
     "download_shelf_started_animation_views.h",
     "download_shelf_view.cc",
@@ -41,6 +39,8 @@ source_set("download") {
     "download_started_animation.cc",
     "download_started_animation_views.cc",
     "download_started_animation_views.h",
+    "download_ui_context_menu_view.cc",
+    "download_ui_context_menu_view.h",
   ]
   public_deps = [
     "//base",

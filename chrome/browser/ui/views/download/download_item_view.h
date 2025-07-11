@@ -23,7 +23,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
-#include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "chrome/browser/ui/views/download/download_ui_context_menu_view.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -289,7 +289,7 @@ class DownloadItemView : public views::View,
   // Whether the dropdown is currently pressed.
   bool dropdown_pressed_ = false;
 
-  DownloadShelfContextMenuView context_menu_{this};
+  DownloadUiContextMenuView context_menu_{this};
 
   base::RepeatingTimer indeterminate_progress_timer_;
 
@@ -319,14 +319,6 @@ class DownloadItemView : public views::View,
   bool announce_accessible_alert_soon_ = false;
 
   float current_scale_;
-
-  // Whether or not a histogram has been emitted recording that the dropdown
-  // button shown.
-  bool dropdown_button_shown_recorded_ = false;
-
-  // Whether or not a histogram has been emitted recording that the dropdown
-  // button was pressed.
-  bool dropdown_button_pressed_recorded_ = false;
 
   // Whether the download's completion has already been logged. This is used to
   // avoid inaccurate repeated logging.

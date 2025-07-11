@@ -40,7 +40,7 @@ class FlexLayoutView;
 class InkDropContainerView;
 }  // namespace views
 
-class DownloadShelfContextMenuView;
+class DownloadUiContextMenuView;
 class DownloadBubbleUIController;
 
 class DownloadBubbleRowView : public views::View,
@@ -203,8 +203,8 @@ class DownloadBubbleRowView : public views::View,
   // The model controlling this object's state.
   raw_ref<const DownloadBubbleRowViewInfo> info_;
 
-  // Reuse the download shelf context menu in the bubble.
-  std::unique_ptr<DownloadShelfContextMenuView> context_menu_;
+  // Context menu offering additional actions for a particular download.
+  std::unique_ptr<DownloadUiContextMenuView> context_menu_;
 
   // Controller for keeping track of downloads.
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;

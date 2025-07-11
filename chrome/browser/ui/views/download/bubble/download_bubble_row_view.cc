@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
-#include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "chrome/browser/ui/views/download/download_ui_context_menu_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"
@@ -327,7 +327,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     base::WeakPtr<Browser> browser,
     int fixed_width)
     : info_(info),
-      context_menu_(std::make_unique<DownloadShelfContextMenuView>(
+      context_menu_(std::make_unique<DownloadUiContextMenuView>(
           info_->model()->GetWeakPtr(),
           bubble_controller)),
       bubble_controller_(std::move(bubble_controller)),

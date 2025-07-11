@@ -897,12 +897,6 @@ void DownloadItemView::UpdateButtons() {
   }
 
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
-  if (dropdown_button_->GetVisible() && !dropdown_button_shown_recorded_) {
-    dropdown_button_shown_recorded_ = true;
-    base::UmaHistogramEnumeration(
-        "Download.ShelfContextMenuAction",
-        DownloadShelfContextMenuAction::kDropDownShown);
-  }
 }
 
 void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
@@ -1232,12 +1226,6 @@ void DownloadItemView::OpenButtonPressed() {
 void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
   SetDropdownPressed(true);
 
-  if (!dropdown_button_pressed_recorded_) {
-    base::UmaHistogramEnumeration(
-        "Download.ShelfContextMenuAction",
-        DownloadShelfContextMenuAction::kDropDownPressed);
-    dropdown_button_pressed_recorded_ = true;
-  }
   // It is possible for ShowContextMenuImpl to delete |this| causing
   // a heap use after free error. To avoid this, do not
   // place any code referencing the DownloadItemView object

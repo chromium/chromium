@@ -156,8 +156,8 @@ void RecordDownloadStartPerProfileType(Profile* profile);
 void RecordDownloadPromptStatus(DownloadPromptStatus status);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-enum class DownloadShelfContextMenuAction {
-  // Drop down button for download shelf context menu is visible
+enum class DownloadUiContextMenuAction {
+  // Drop down button for download UI context menu is visible
   kDropDownShown = 0,
   // Drop down button was pressed
   kDropDownPressed = 1,
@@ -199,7 +199,7 @@ enum class DownloadShelfContextMenuAction {
   kMaxValue = kNotReached
 };
 
-DownloadShelfContextMenuAction DownloadCommandToShelfAction(
+DownloadUiContextMenuAction DownloadCommandToContextMenuAction(
     DownloadCommands::Command download_command,
     bool clicked);
 

@@ -1,7 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/download/download_shelf_context_menu.h"
+
+#include "chrome/browser/download/download_ui_context_menu.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -13,26 +14,26 @@
 using testing::NiceMock;
 using testing::Return;
 
-class DownloadShelfContextMenuTest : public testing::Test {
+class DownloadUiContextMenuTest : public testing::Test {
  public:
-  DownloadShelfContextMenuTest() = default;
+  DownloadUiContextMenuTest() = default;
 
-  DownloadShelfContextMenu* menu() { return context_menu_.get(); }
+  DownloadUiContextMenu* menu() { return context_menu_.get(); }
 
   void MakeContextMenu(DownloadUIModel* download) {
     // Don't use std::make_unique because it needs friend.
     context_menu_ =
-        base::WrapUnique(new DownloadShelfContextMenu(download->GetWeakPtr()));
+        base::WrapUnique(new DownloadUiContextMenu(download->GetWeakPtr()));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<DownloadShelfContextMenu> context_menu_;
+  std::unique_ptr<DownloadUiContextMenu> context_menu_;
 };
 
-TEST_F(DownloadShelfContextMenuTest, InvalidDownloadWontCrashContextMenu) {
+TEST_F(DownloadUiContextMenuTest, InvalidDownloadWontCrashContextMenu) {
   std::unique_ptr<download::MockDownloadItem> item =
       std::make_unique<NiceMock<download::MockDownloadItem>>();
   auto download_ui_model = DownloadItemModel::Wrap(item.get());
@@ -58,7 +59,7 @@ TEST_F(DownloadShelfContextMenuTest, InvalidDownloadWontCrashContextMenu) {
   menu()->ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE, 0);
 }
 
-TEST_F(DownloadShelfContextMenuTest, RecordCommandsEnabled) {
+TEST_F(DownloadUiContextMenuTest, RecordCommandsEnabled) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<download::MockDownloadItem> item =
       std::make_unique<NiceMock<download::MockDownloadItem>>();
@@ -72,11 +73,11 @@ TEST_F(DownloadShelfContextMenuTest, RecordCommandsEnabled) {
   EXPECT_TRUE(menu()->IsCommandIdEnabled(DownloadCommands::KEEP));
 
   menu()->RecordCommandsEnabled(menu()->GetMenuModel());
+  histogram_tester.ExpectBucketCount("Download.ContextMenuAction",
+                                     DownloadUiContextMenuAction::kKeepEnabled,
+                                     1);
   histogram_tester.ExpectBucketCount(
-      "Download.ShelfContextMenuAction",
-      DownloadShelfContextMenuAction::kKeepEnabled, 1);
-  histogram_tester.ExpectBucketCount(
-      "Download.ShelfContextMenuAction",
-      DownloadShelfContextMenuAction::kLearnMoreInsecureDownloadEnabled, 1);
-  histogram_tester.ExpectTotalCount("Download.ShelfContextMenuAction", 2);
+      "Download.ContextMenuAction",
+      DownloadUiContextMenuAction::kLearnMoreInsecureDownloadEnabled, 1);
+  histogram_tester.ExpectTotalCount("Download.ContextMenuAction", 2);
 }

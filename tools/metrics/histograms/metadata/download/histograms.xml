@@ -327,6 +327,20 @@ chromium-metrics-reviews@google.com.
   <summary>Types of video files that are downloaded.</summary>
 </histogram>
 
+<histogram name="Download.ContextMenuAction" enum="DownloadUiContextMenuAction"
+    expires_after="2025-10-26">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This histogram is used to record the different actions and events associated
+    with the download UI context menu on desktop platforms, which can be shown
+    through interacting with the download bubble. This metric records when the
+    dropdown button was clicked as well when DownloadCommands were enabled or
+    executed. Each action or enable event is only emitted once; as a result, it
+    is safe to compute a ratio by dividing enabled events by clicked events.
+  </summary>
+</histogram>
+
 <histogram name="Download.Counts.{ParallelizableDownload}"
     enum="DownloadCountType" expires_after="2025-11-16">
   <owner>shaktisahu@chromium.org</owner>
@@ -1110,20 +1124,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     This tracks drag events on a complete download on the shelf, and also
     general download completion on the shelf as a point of reference.
-  </summary>
-</histogram>
-
-<histogram name="Download.ShelfContextMenuAction"
-    enum="DownloadShelfContextMenuAction" expires_after="2025-10-26">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    This histogram is used to record the different actions and events associated
-    with the download shelf context menu on Linux, MacOS, and Windows. The menu
-    may also be shown on the download bubble. Specifically, it records when the
-    dropdown button was clicked as well when DownloadCommands were enabled or
-    executed. Each action or enable event is only emitted once; as a result, it
-    is safe to compute a ratio by dividing enabled events by clicked events.
   </summary>
 </histogram>
 
