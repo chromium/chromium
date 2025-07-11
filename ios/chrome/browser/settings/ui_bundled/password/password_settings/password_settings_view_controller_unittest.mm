@@ -98,6 +98,27 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 };
 
+TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
+  // Ensure all sections are visible.
+  [controller() setCanBulkMove:YES localPasswordsCount:2];
+  [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
+  [controller() setSavingPasskeysEnabled:YES];
+  [controller() setCanChangeGPMPin:YES];
+  [controller() setOnDeviceEncryptionState:
+                    PasswordSettingsOnDeviceEncryptionStateOptedIn];
+  [controller() setCanExportPasswords:YES];
+  [controller() setCanDeleteAllCredentials:YES];
+
+  // Verify the order.
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierSavePasswordsSwitch), 0);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierBulkMovePasswordsToAccount), 1);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierPasswordsInOtherApps), 2);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierGooglePasswordManagerPin), 3);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierOnDeviceEncryption), 4);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierExportPasswordsButton), 5);
+  EXPECT_EQ(GetSectionIndex(SectionIdentifierDeleteCredentialsButton), 6);
+}
+
 TEST_F(PasswordSettingsViewControllerTest, DisplaysOfferToSavePasswords) {
   TableViewSwitchItem* savePasswordsItem = static_cast<TableViewSwitchItem*>(
       GetTableViewItem(SectionIdentifierSavePasswordsSwitch, /*item=*/0));

@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//components/webauthn/core/browser:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider/model:features",
+    "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
