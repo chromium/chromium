@@ -1091,7 +1091,7 @@ template("test") {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
-  } else if (!is_nacl) {
+  } else {
     if (is_mac || is_win) {
       assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
     }
@@ -1162,29 +1162,6 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
-
-      if (!defined(data_deps)) {
-        data_deps = []
-      }
-
-      data_deps += [ "//testing:test_scripts_shared" ]
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
-    }
-  } else {
-    # This is a catch-all clause for NaCl toolchains and other random
-    # configurations that might define tests; test() in these configs
-    # will just define the underlying executables.
-    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
-           "use_xvfb should not be defined for a non-linux configuration")
-    mixed_test(target_name) {
-      target_type = "executable"
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, [ "visibility" ])
-      if (!defined(deps)) {
-        deps = []
-      }
 
       if (!defined(data_deps)) {
         data_deps = []

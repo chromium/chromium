@@ -28,11 +28,11 @@ source_set("traced_process") {
   ]
 }
 
-# On IOS and NACL we don't support tracing so we only include the minimum needed
+# On iOS we don't support tracing so we only include the minimum needed
 # to support a fake typed TRACE_EVENT macro. However this means we don't have
-# any .cc files and thus on iOS and NaCl it needs to be a source_set and not a
+# any .cc files and thus on iOS it needs to be a source_set and not a
 # component. |tracing_lib_type| decides which version to build.
-if (!is_nacl && use_blink) {
+if (use_blink) {
   tracing_lib_type = "component"
 } else {
   tracing_lib_type = "source_set"
@@ -56,7 +56,7 @@ target(tracing_lib_type, "cpp") {
 
   all_dependent_configs = []
 
-  if (!is_nacl && use_blink) {
+  if (use_blink) {
     sources += [
       "perfetto/custom_event_recorder.cc",
       "perfetto/custom_event_recorder.h",
@@ -174,5 +174,5 @@ target(tracing_lib_type, "cpp") {
     if (is_chromeos) {
       deps += [ "//chromeos/dbus/constants" ]
     }
-  }  # !is_ios && !is_nacl
+  }  # !is_ios
 }

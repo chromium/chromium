@@ -22,7 +22,7 @@ mojom_component("mojom") {
     "//sandbox/policy/mojom",
   ]
 
-  if (!is_nacl && use_blink) {
+  if (use_blink) {
     enabled_features += [ "is_perfetto_supported_os" ]
     sources += [
       "constants.mojom",

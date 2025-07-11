@@ -41,17 +41,13 @@ if (current_cpu == "x86") {
   cpu_arch_full = current_cpu
 }
 
-if (is_nacl) {
-  platform_include_dir = "source/config/linux/generic"
-} else {
-  if (is_posix || is_fuchsia) {
-    # Should cover linux, fuchsia, mac, and ios.
-    os_category = "linux"
-  } else {  # This should only match windows.
-    os_category = current_os
-  }
-  platform_include_dir = "source/config/$os_category/$cpu_arch_full"
+if (is_posix || is_fuchsia) {
+  # Should cover linux, fuchsia, mac, and ios.
+  os_category = "linux"
+} else {  # This should only match windows.
+  os_category = current_os
 }
+platform_include_dir = "source/config/$os_category/$cpu_arch_full"
 
 libaom_include_dirs = [
   "source/config",

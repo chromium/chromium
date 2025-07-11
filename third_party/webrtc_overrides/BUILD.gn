@@ -248,7 +248,7 @@ source_set("field_trial") {
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
 
-  if (!is_castos && !is_cast_android && !is_nacl) {
+  if (!is_castos && !is_cast_android) {
     sources += [ "field_trial_legacy.cc" ]
   }
 }
