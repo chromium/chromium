@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+
+<script>
+  test(
+    () =>
+      assert_selection(
+        [
+          '<div contenteditable style="width: 3ch; white-space: pre-wrap;">',
+          '<bdo style="font-family: monospace; width: 3ch; white-space: pre-wrap;">',
+          " ABC| BC DEF GHI</bdo></div>",
+        ].join(" "),
+        (selection) => {
+          selection.modify("extend", "forward", "line");
+          selection.modify("extend", "forward", "line");
+        },
+        [
+          '<div contenteditable style="width: 3ch; white-space: pre-wrap;">',
+          '<bdo style="font-family: monospace; width: 3ch; white-space: pre-wrap;">',
+          " ABC^ BC DEF| GHI</bdo></div>",
+        ].join(" ")
+      ),
+    "Extend selection twice by line in a white space wrapped paragraph."
+  );
+</script>
