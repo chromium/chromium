@@ -166,3 +166,16 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "kiosk_app_level_logs_browsertest.cc" ]
+  deps = [
+    ":app_mode",
+    "//chrome/browser/ash/app_mode/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

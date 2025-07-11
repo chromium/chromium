@@ -229,7 +229,7 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
   KioskApp app = std::move(app_maybe).value_or(EmptyKioskApp(app_id));
 
   kiosk_log_manager_wrapper_ =
-      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>();
+      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(app_id);
 
   launch_controller_ = std::make_unique<KioskLaunchController>(
       host,
@@ -256,7 +256,7 @@ void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
   }
 
   kiosk_log_manager_wrapper_ =
-      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(profile);
+      std::make_unique<chromeos::KioskAppLevelLogsManagerWrapper>(profile, app);
 
   crash_recovery_launcher_ =
       std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,12 +16,16 @@
 
 namespace chromeos {
 
-KioskAppLevelLogsManagerWrapper::KioskAppLevelLogsManagerWrapper() {
+KioskAppLevelLogsManagerWrapper::KioskAppLevelLogsManagerWrapper(
+    ash::KioskAppId app_id)
+    : app_id_(app_id) {
   profile_manager_observer_.Observe(g_browser_process->profile_manager());
 }
 
 KioskAppLevelLogsManagerWrapper::KioskAppLevelLogsManagerWrapper(
-    Profile* profile) {
+    Profile* profile,
+    ash::KioskAppId app_id)
+    : app_id_(app_id) {
   Init(profile);
 }
 
@@ -47,7 +52,7 @@ void KioskAppLevelLogsManagerWrapper::Init(Profile* profile) {
 }
 
 void KioskAppLevelLogsManagerWrapper::EnableLogging() {
-  logs_manager_ = std::make_unique<KioskAppLevelLogsManager>(profile_);
+  logs_manager_ = std::make_unique<KioskAppLevelLogsManager>(profile_, app_id_);
 }
 
 void KioskAppLevelLogsManagerWrapper::DisableLogging() {
