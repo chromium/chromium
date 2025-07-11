@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deli <ph name="TABS_COUNT_ONE" /> izbran zavihek}one{Deli <ph name="TABS_COUNT_MANY" /> izbran zavihek}two{Deli <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Deli <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Deli <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Posodobljeno pred <ph name="NUM_YEARS_ONE" /> letom}one{Posodobljeno pred <ph name="NUM_YEARS_MANY" /> letom}two{Posodobljeno pred <ph name="NUM_YEARS_MANY" /> letoma}few{Posodobljeno pred <ph name="NUM_YEARS_MANY" /> leti}other{Posodobljeno pred <ph name="NUM_YEARS_MANY" /> leti}}</translation>
 <translation id="7773714564112603605">Odstrani zavihek in izbriši skupino</translation>
+<translation id="7774428938729954687">Obnovitev in odpiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Pregled predlogov.</translation>
 <translation id="7792860826279960128">Obvestilo o spremembah deljene skupine zavihkov pri polovični višini</translation>
 <translation id="7825973332242257878">Skupine zavihkov</translation>

@@ -5,6 +5,7 @@
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abra um novo separador no Chrome</translation>
+<translation id="1158134713295836892">Gemini no Chrome</translation>
 <translation id="1166460004393506534">Elimine os dados de navegação no Chrome</translation>
 <translation id="1179527450541388808">Aceda ao Chrome mais rapidamente a partir da dock do ecrã principal do iPad.</translation>
 <translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
@@ -70,7 +71,6 @@ Aspetos a considerar:
 <translation id="2576431527583832481">O Chrome ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="257708665678654955">Quer que o Google Chrome se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
 <translation id="2668242166988961773">Pesquise com a voz no Chrome.</translation>
-<translation id="2671426118752779020">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPhone.</translation>
 <translation id="2689064829982324496">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">O Chrome não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>
 <translation id="2703746758996815929">Para receber sugestões úteis do Chrome, ative as notificações nas definições do iOS.</translation>
@@ -240,7 +240,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7175129790242719365">Sugestão do Chrome: inicie sessão no Chrome</translation>
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="7200524487407690471">O Chrome executa automaticamente a verificação de segurança todos os dias para lhe oferecer proteção contra violações de dados, Websites inseguros e muito mais. Pode encontrar mais informações sobre a verificação de segurança nas Definições.</translation>
-<translation id="72119412072970160">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPad.</translation>
 <translation id="7214019116829172458">Abra um separador de navegação anónima no Chrome</translation>
 <translation id="722167379782941918">O Chrome recomenda a Proteção melhorada</translation>
 <translation id="723787869754590019">Use o Chrome para o preenchimento automático</translation>

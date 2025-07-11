@@ -1118,6 +1118,7 @@
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Страницата не е на <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Организацията ви ограничава възможността ви да споделяте</translation>
 <translation id="2905107382358353958">Сигнал за нова настройка за плащане</translation>
 <translation id="2909946352844186028">Установена бе промяна в мрежата.</translation>
 <translation id="2911255567212929079">Машинно обучение и изкуствен интелект</translation>
@@ -4709,6 +4710,7 @@
 <translation id="8975263830901772334">Имената на отпечатваните от вас файлове</translation>
 <translation id="8982884016487650216">Зареждането на PDF файла завърши</translation>
 <translation id="8983369100812962543">Вече можете да преоразмерявате приложението</translation>
+<translation id="8984785270737450103">Понастоящем споделянето е изключено</translation>
 <translation id="8985112471026018799">Запазване на картата с цел по-бързо плащане</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да прегледате историята си на сърфиране в Chrome</translation>
 <translation id="8987663052629670333">Услуги за отпечатване на снимки</translation>

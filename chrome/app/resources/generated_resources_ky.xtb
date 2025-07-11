@@ -3878,7 +3878,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3694590407685276748">Тексттин курсорун бөлүп көрсөтүү</translation>
 <translation id="369489984217678710">Сырсөз жана башка кирүү дайындары</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Коопсуздук текшерилди. Маалыматыңыз жүктөлүп берилет.}=1{Коопсуздук текшерилди. Файлыңыз жүктөлүп берилет.}other{Коопсуздук текшерилди. Файлдарыңыз жүктөлүп берилет.}}</translation>
-<translation id="3695339288331169103">Кайдан: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="3696309329332791122">Сырсөзүңүздү текшериңиз</translation>
 <translation id="369736917241079046">жүргүзгүч + солго жебе</translation>
 <translation id="3697716475445175867">акыркы жолу ачылган</translation>

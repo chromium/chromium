@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">الفتح في…</translation>
 <translation id="2120553909046681540">أوقفت مؤسستك ميزة "التصفُّح بخصوصية تامّة".</translation>
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">‏يُرجى العِلم بأنّنا لن نستخدم محادثات مؤسستك لتحسين نماذجنا، وننصحك بالتحقّق من ردود Gemini لأنّه قد يعرض معلومات غير دقيقة، بما فيها تلك المتعلّقة بالأشخاص. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
 <translation id="2148799636999124959">يمكنك تسجيل الدخول بسرعة إلى المواقع الإلكترونية والتطبيقات باستخدام كلمات المرور المحفوظة.</translation>
@@ -382,6 +383,7 @@
 <translation id="2468444275314013497">متصفّحك يبدو آمنًا</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="247430852844518481">يمكنك ضبط تذكير للرجوع إلى هذه الصفحة لاحقًا</translation>
+<translation id="2478246185006364308">‏بنود خدمة Google</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484459871750294497">كيف يمكنني تفعيل هذه الميزة؟</translation>
@@ -1149,6 +1151,7 @@
 <translation id="5656431592348714536">‏"تقويم Google" المحسَّن</translation>
 <translation id="5657156137487675418">السماح بملفّات تعريف الارتباط كلّها</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
+<translation id="5665739277590037307">‏تسري <ph name="GOOGLE_TERMS" /> و<ph name="GEMINI_APPS_PRIVACY" />. قد يعرض Gemini معلومات خاطئة، لذا ننصحك بالتحقّق من ردوده.</translation>
 <translation id="5666313630530585305">سجِّل الدخول إلى موقع إلكتروني.</translation>
 <translation id="5669335982068190158">‏تم تسجيل خروجك كجزء من عملية إعادة ضبط هاتف iPhone. انقر على زر المتابعة أدناه لتسجيل الدخول.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1322,6 +1325,7 @@
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
 <translation id="6335744088476213315">تعرض هذه البطاقة المنتجات التي اطّلعت عليها مؤخرًا والتي قد يهمّك تتبُّعها لتلقّي تنبيهات بشأن انخفاض أسعارها</translation>
 <translation id="6337234675334993532">التشفير</translation>
+<translation id="6337313937331295309">‏إشعار الخصوصية في "تطبيقات Gemini"</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>
 <translation id="6339793034470834130">‏لاستخدام "أداة فحص الويب" (Web Inspector)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة "تطوير" (Develop). يمكنك تفعيل هذه القائمة من خلال القسم "إعدادات متقدّمة" (Advanced) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6340285871011301182">خيار الترجمة الجزئية غير متاح.</translation>
@@ -1347,7 +1351,6 @@
 <translation id="6404422529625928907">‏فتح في Google Drive</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406506848690869874">المزامنة</translation>
-<translation id="6410005280995367944">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="6410390304316730527">يحميك "التصفُّح الآمن" من المهاجمين الذين قد يحاولون خداعك لاتّخاذ إجراءات خطيرة، مثل تثبيت البرامج الضارة أو الكشف عن معلومات شخصية، مثل كلمات المرور أو أرقام الهواتف أو بطاقات الائتمان. وفي حال إيقاف "التصفُّح الآمن"، ننصحك بتوخّي الحذر عند تصفُّح مواقع إلكترونية غير مألوفة أو غير آمنة.</translation>
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6416807286621280684">تعرَّف على آخر المعلومات بشأن الطرود التي يتم تتبُّعها وموعد التسليم.</translation>
@@ -1421,7 +1424,6 @@
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
 <translation id="6641465290890659327">شارِك نسخة من كلمة مرورك</translation>
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
-<translation id="6644512095122093795">اقتراح حفظ كلمات المرور</translation>
 <translation id="664573288952458293">شبكة علامات التبويب العادية</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
@@ -1568,6 +1570,7 @@
 <translation id="7266578100016339897">يساعدك هذا الإجراء في الحفاظ على تنظيم علامات التبويب. ويمكنك تغيير ذلك في الإعدادات متى شئت.</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
 <translation id="728025568708172005">بدء جولة إرشادية</translation>
+<translation id="7281202269687163394">‏خصوصيتك وGemini</translation>
 <translation id="7293429513719260019">اختيار لغة</translation>
 <translation id="7300448350764260141">يمكنك إضافة طبقة حماية إضافية من التهديدات على الإنترنت.</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
@@ -1632,7 +1635,6 @@
 <translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
-<translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمات المرور).</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>

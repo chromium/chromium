@@ -5,6 +5,7 @@
 <translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
 <translation id="1143896152279775643">Лозика се чува у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отварање нове картице у Chrome-у</translation>
+<translation id="1158134713295836892">Gemini у Chrome-у</translation>
 <translation id="1166460004393506534">Брисање података прегледања у Chrome-у</translation>
 <translation id="1179527450541388808">Брже приступајте Chrome-у са траке с апликацијама на почетном екрану iPad-а.</translation>
 <translation id="1180362651362502943">Наставите да користите Chrome податке на Google налогу.</translation>
@@ -70,7 +71,6 @@
 <translation id="2576431527583832481">Chrome је управо постао бољи! Доступна је нова верзија.</translation>
 <translation id="257708665678654955">Желите ли да Google Chrome следећи пут понуди да преведе странице са овог сајта чији је језик <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2668242166988961773">Претражујте гласом у Chrome-у.</translation>
-<translation id="2671426118752779020">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPhone-у.</translation>
 <translation id="2689064829982324496">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не може да тражи ажурирања. Пробајте поново касније.</translation>
 <translation id="2703746758996815929">Да бисте добијали корисне савете за Chrome, укључите обавештења у подешавањима iOS-а.</translation>
@@ -240,7 +240,6 @@
 <translation id="7175129790242719365">Савет за Chrome: Пријавите се у Chrome</translation>
 <translation id="7187993566681480880">Штити вас у Chrome-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени.</translation>
 <translation id="7200524487407690471">Chrome аутоматски покреће Проверу безбедности сваког дана да би вас заштитио од повреде података, небезбедних веб-сајтова и другог. Више о Провери безбедности можете да пронађете у Подешавањима.</translation>
-<translation id="72119412072970160">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPad-у.</translation>
 <translation id="7214019116829172458">Отварање Chrome картице без архивирања</translation>
 <translation id="722167379782941918">Chrome препоручује побољшану заштиту</translation>
 <translation id="723787869754590019">Користите Chrome за аутоматско попуњавање</translation>

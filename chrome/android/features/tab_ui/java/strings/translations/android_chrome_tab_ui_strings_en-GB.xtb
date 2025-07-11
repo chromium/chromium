@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Share <ph name="TABS_COUNT_ONE" /> selected tab}other{Share <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Updated <ph name="NUM_YEARS_ONE" /> year ago}other{Updated <ph name="NUM_YEARS_MANY" /> years ago}}</translation>
 <translation id="7773714564112603605">Remove tab and delete group</translation>
+<translation id="7774428938729954687">Restore and open <ph name="TAB_TITLE" /> tab</translation>
 <translation id="7792771145871471484">Review the suggestions.</translation>
 <translation id="7792860826279960128">Notice about shared tab group changes at half-height</translation>
 <translation id="7825973332242257878">Tab groups</translation>

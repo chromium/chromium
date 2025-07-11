@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Compartir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Se actualizó hace <ph name="NUM_YEARS_ONE" /> año}other{Se actualizó hace <ph name="NUM_YEARS_MANY" /> años}}</translation>
 <translation id="7773714564112603605">Quitar pestaña y borrar grupo</translation>
+<translation id="7774428938729954687">Restablecer y abrir la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Revisa las sugerencias.</translation>
 <translation id="7792860826279960128">Aviso sobre los cambios en el grupo de pestañas compartido a media altura</translation>
 <translation id="7825973332242257878">Grupos de pestañas</translation>

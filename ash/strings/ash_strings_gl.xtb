@@ -584,7 +584,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Queres activar o acceso ao micrófono?</translation>
 <translation id="296762781903199866">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" /></translation>
-<translation id="2968761508099987738">Nestes momentos, non se admite a túa localización actual.</translation>
+<translation id="2968761508099987738">Nestes momentos, a túa localización actual non está dispoñible.</translation>
 <translation id="2970920913501714344">Instalar aplicacións, extensións e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2980700224869191055">Emoticona de <ph name="EMOTICON_NAME" /></translation>
@@ -2374,7 +2374,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8751299148074971734">Sigue así!</translation>
-<translation id="8753368202781196133">Nestes momentos, non se admite este idioma.</translation>
+<translation id="8753368202781196133">Nestes momentos, este idioma non está dispoñible.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
 <translation id="8756799553341497810">En canto saias desta vista, poderás comezar a personalizar o deseño da túa aplicación.</translation>

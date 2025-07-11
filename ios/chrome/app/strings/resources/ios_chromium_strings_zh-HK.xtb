@@ -245,7 +245,6 @@
 <translation id="6852799557929001644">在此裝置的其他應用程式中使用你的 Chromium 密碼和其他資料。</translation>
 <translation id="6887138405044152640">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chromium。</translation>
 <translation id="6911341667534646387">繼續使用 Google 帳戶中的 Chromium 資料</translation>
-<translation id="7006920032187763988">您可在 iPad 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7055269218854630176">你的機構 (<ph name="DOMAIN" />) 會管理你正在登入的帳戶和可以使用 Chromium 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
@@ -300,7 +299,6 @@
 <translation id="8390323835464055390">透過 Chromium 的自動填入功能，使用任何應用程式已儲存的密碼和密鑰登入</translation>
 <translation id="8409374867500149834">Chromium 最強大的安全功能可協助防範有害網站</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}}</translation>
-<translation id="858114650497379505">您可在 iPhone 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8602103377623855616">Chromium 頁面</translation>
 <translation id="865600487977764604">確保您登入使用 Chromium 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>

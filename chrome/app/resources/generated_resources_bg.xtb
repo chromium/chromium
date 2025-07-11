@@ -3874,7 +3874,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3694590407685276748">Открояване на текстовия курсор</translation>
 <translation id="369489984217678710">Пароли и други данни за вход</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Проверките на сигурността завършиха. Данните ви ще бъдат качени.}=1{Проверките на сигурността завършиха. Файлът ви ще бъде качен.}other{Проверките на сигурността завършиха. Файловете ви ще бъдат качени.}}</translation>
-<translation id="3695339288331169103">От <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="3696309329332791122">Проверка на паролата ви</translation>
 <translation id="369736917241079046">клавиша „стартов панел“ + стрелката за наляво</translation>
 <translation id="3697716475445175867">последно отворени</translation>
@@ -10363,6 +10362,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8283802069507225582">За да продължите оттам, откъдето сте прекъснали на други устройства, синхронизирайте историята и разделите си с(ъс) <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="8284326494547611709">Надписи</translation>
+<translation id="8285625579699113397">Вашият профил</translation>
 <translation id="8286036467436129157">Вход</translation>
 <translation id="8286227656784970313">Да се използва системният речник</translation>
 <translation id="828642162569365647">Паролата или ПИН кодът защитават данните ви на това устройство <ph name="DEVICE_TYPE" />, включително информацията, до която осъществявате достъп от телефона си. Ще трябва да отключвате всеки път, когато <ph name="DEVICE_TYPE" /> излезе от спящ режим.</translation>

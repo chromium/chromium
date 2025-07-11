@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Open in…</translation>
 <translation id="2120553909046681540">Your organisation turned off private browsing.</translation>
 <translation id="2122754583996902531">Your browser is managed. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Your organisation's chats aren't used to improve our models. Gemini may display inaccurate info, including about people, so double-check it. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="2147127444698817042">Only available on iPhone</translation>
 <translation id="2148799636999124959">Quickly sign in to sites and apps with your saved passwords.</translation>
@@ -382,6 +383,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2468444275314013497">Your browser looks good</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">You can set a reminder to revisit this page later</translation>
+<translation id="2478246185006364308">Google Terms</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">How do I enable this feature?</translation>
@@ -518,6 +520,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="3059270601560379555">New search</translation>
 <translation id="3064547930554042309">Manage downloads</translation>
 <translation id="3072279342064724558">Password already exists</translation>
+<translation id="3073633853887034268">Got it</translation>
 <translation id="3076846064362030967">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
 
 
@@ -979,6 +982,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4949302115427722371">Manage settings…</translation>
 <translation id="4958444002117714549">Expand list</translation>
 <translation id="496392417432935267">Opened elsewhere</translation>
+<translation id="4970724460420203313">Using Chrome with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="4979397965658815378">Sign in with your Google Account to get your bookmarks, passwords, history and other settings on all your devices</translation>
 <translation id="4985921635659180565">Once a file is scheduled to be deleted, it can't be cancelled.</translation>
@@ -1149,6 +1153,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5656431592348714536">Enhanced calendar</translation>
 <translation id="5657156137487675418">Allow all cookies</translation>
 <translation id="5659593005791499971">Email</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> and the <ph name="GEMINI_APPS_PRIVACY" /> apply. Gemini can make mistakes, so double-check it.</translation>
 <translation id="5666313630530585305">Sign in to a website.</translation>
 <translation id="5669335982068190158">You were signed out as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1322,6 +1327,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6331836477476466332">A safer, more powerful browser for you</translation>
 <translation id="6335744088476213315">This card shows products that you've recently viewed and may be interested in tracking to get price drop alerts</translation>
 <translation id="6337234675334993532">Encryption</translation>
+<translation id="6337313937331295309">Gemini Apps Privacy Notice</translation>
 <translation id="633809752005859102">Something went really wrong. We'll work on that.</translation>
 <translation id="6339793034470834130">To use the Web Inspector, connect to Safari on your computer using a cable and access your iPhone from the Develop menu. You can enable the Develop menu in the Advanced section of Safari settings on your computer.</translation>
 <translation id="6340285871011301182">Partial translation not available.</translation>
@@ -1347,7 +1353,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6404422529625928907">Open in Google Drive</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6406506848690869874">Sync</translation>
-<translation id="6410005280995367944">Passwords in other apps</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="6416807286621280684">Your tracked parcels and delivery updates.</translation>
@@ -1421,7 +1426,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6640268266988685324">Open tab</translation>
 <translation id="6641465290890659327">Share a copy of your password</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>
-<translation id="6644512095122093795">Offer to save passwords</translation>
 <translation id="664573288952458293">Regular tab grid</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
@@ -1568,6 +1572,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="728025568708172005">Show me around</translation>
+<translation id="7281202269687163394">Your privacy and Gemini.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
 <translation id="7311244614769792472">No results found</translation>
@@ -1632,7 +1637,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
-<translation id="7553234618121028547">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Password options.</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561982940498449837">Close menu</translation>

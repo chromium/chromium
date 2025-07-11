@@ -2657,6 +2657,13 @@ El informe contiene datos de uso y estado del perfil, incluidas, sin limitacione
 Esta política solo se puede establecer como política del usuario basada en la nube.</translation>
 <translation id="2846689894646472396">Tasa de revisión de eventos de red en milisegundos</translation>
 <translation id="2847788524147474533">Priorizar las políticas de máquina de la plataforma sobre las políticas de máquina en la nube</translation>
+<translation id="284877670305984807">Esta política permite que los usuarios inicien actualizaciones de firmware para la máquina local en lugar de los periféricos.
+
+      Si habilitas la política, los usuarios, como el propietario del dispositivo, podrán iniciar actualizaciones de firmware.
+
+      Si la inhabilitas o no la estableces, los usuarios no podrán aplicar actualizaciones de firmware.
+
+      Esta política se aplica al firmware para actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_FLEX_NAME" />. Esta política no afecta las actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2849051159985119151">Permitir Generative AI Photo Editing sin mejorar los modelos de IA.</translation>
 <translation id="2849275596224278787">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
 <translation id="2853649500575897584">No bloquear los puntos de extensiones heredados del proceso del navegador</translation>
@@ -4621,6 +4628,7 @@ Obsoleta: La función Seguimiento de paquetes está inhabilitada desde la versi�
 <translation id="4192388905594723944">URL para la validación del token de autenticación del cliente de acceso remoto</translation>
 <translation id="4195119404667420672">La carga previa de SpeculationRules se puede enviar a las URLs controladas por ServiceWorker.</translation>
 <translation id="4195698007674066525">Mostrar un teclado numérico de forma predeterminada para ingresar la contraseña</translation>
+<translation id="4198531346233984110">Usuario-agente reducido.</translation>
 <translation id="4203055629055264833">Si habilitas la política o no la estableces, los usuarios podrán obtener la página de resultados más reciente del motor de búsqueda predeterminado en un panel lateral que podrán activar o desactivar mediante un ícono de la barra de herramientas.
 
       Si inhabilitas la política, se quitará el ícono de la barra de herramientas que abre el panel lateral con la página de resultados del motor de búsqueda predeterminado.</translation>
@@ -5535,7 +5543,6 @@ Esta política es temporal y se quitará en 2026.</translation>
 
       Si se establece la política como falsa o no se establece, no se enviará el informe con las actualizaciones del SO. Si se establece como verdadera, se enviará el informe con esos datos.</translation>
 <translation id="4857223512478723171">No permitir el modo de pantalla completa</translation>
-<translation id="4857888176748302062">Permitir que los orígenes consulten atributos del dispositivo</translation>
 <translation id="4858735034935305895">Permitir el modo de pantalla completa</translation>
 <translation id="4860900625632464759">Permitir que los usuarios sincronicen mensajes SMS entre su teléfono y su Chromebook</translation>
 <translation id="486146220825734683">No permitir que los usuarios recuerden las contraseñas de Kerberos</translation>
@@ -6099,6 +6106,8 @@ política mientras se esté ejecutando el navegador.</translation>
       Si inhabilitas la política, no se solicitará a los usuarios una contraseña para desbloquear el dispositivo.
 
       Si no la estableces, los usuarios podrán elegir si reciben una solicitud de contraseña para desbloquear el dispositivo.</translation>
+<translation id="5194337341464164678">El encabezado de la solicitud HTTP de <ph name="USER_AGENT_HEADER_NAME" /> se redujo de forma predeterminada desde Chrome 110 y la prueba de baja finalizó después de Chrome 113. Para seguir recibiendo información detallada de la plataforma, migra a User-Agent Client Hints, que sirve como reemplazo del encabezado de usuario-agente detallado obsoleto: https://web.dev/articles/migrate-to-ua-ch
+      </translation>
 <translation id="5194683382395300627">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web, p. ej., para habilitar el cambio automático de contraseñas</translation>
 <translation id="5196630732055960309">Permitir la API de File Handling en esas aplicaciones web</translation>
 <translation id="5205352023880027050">No habilitar la función EphemeralNetworkPolicies</translation>
@@ -7851,11 +7860,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="6282524907402492171">Muestra las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o rechazar la captura de audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
-<translation id="6286082501885452957">Si estableces la política, los orígenes enumerados podrán obtener los atributos del dispositivo (p. ej., el número de serie o nombre de host) con la API de Device Attributes.
-
-Los orígenes deben corresponder a las aplicaciones web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125) o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.
-
-Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos (desde la versión 127), consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6287128640500683781">Permitir que acceda cualquier usuario</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio de <ph name="PRODUCT_NAME" /> y abrir el escritorio remoto al acceder</translation>
@@ -9876,6 +9880,7 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />, anulará esta política.</translation>
 <translation id="7630403270894231662">Usa WeeklyTimeChecked en el código nuevo.</translation>
+<translation id="7631736894032434210">Permitir que los usuarios inicien actualizaciones de firmware internas</translation>
 <translation id="7632147323011514740">Los intervalos cuando se puede iniciar el proceso de actualización de instantáneas de los datos de ARC en sesiones de invitados administrados</translation>
 <translation id="7632724434767231364">Nombre de la biblioteca GSSAPI</translation>
 <translation id="7635106595080609261">Si habilitas la política o no la estableces, Chrome podrá mostrar diálogos de selección de archivos, y los usuarios podrán abrirlos.
@@ -10575,6 +10580,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8168359201203671567">Color arcoíris para la retroiluminación del teclado</translation>
 <translation id="8169452762291746260">Inhabilitar la supervisión de estado de los dispositivos</translation>
 <translation id="8170359860920320269">Aplicar filtros de contenido para adultos a los sitios</translation>
+<translation id="8170672421195760161">Usuario-agente completo (heredado).</translation>
 <translation id="8171262216089271568">Habilitar el cursor grande en la pantalla de acceso</translation>
 <translation id="8171924760436219650">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso</translation>
 <translation id="81724933026241365">Permitir que los usuarios desactiven el dispositivo con el ícono de apagado o el botón de encendido físico</translation>

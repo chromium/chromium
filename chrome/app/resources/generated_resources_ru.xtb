@@ -876,7 +876,7 @@
 <translation id="1596709061955594992">Bluetooth выключен. Включите его, чтобы увидеть доступные устройства.</translation>
 <translation id="1596780725094407793">и субдомены</translation>
 <translation id="1597806446183714225">Улучшает качество звука: голоса будут звучать естественно и четко</translation>
-<translation id="1598163867407640634">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1598163867407640634">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Функция обновления отключена администратором.</translation>
 <translation id="1600857548979126453">Доступ к работе отладчика страниц</translation>
 <translation id="1601481906560916994">Исключить сайт</translation>
@@ -3867,7 +3867,6 @@
 <translation id="3694590407685276748">Выделять текстовый курсор</translation>
 <translation id="369489984217678710">Пароли и другие данные для входа</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Проверка безопасности выполнена. Данные будут загружены.}=1{Проверка безопасности выполнена. Файл будет загружен.}one{Проверка безопасности выполнена. Файлы будут загружены.}few{Проверка безопасности выполнена. Файлы будут загружены.}many{Проверка безопасности выполнена. Файлы будут загружены.}other{Проверка безопасности выполнена. Файлы будут загружены.}}</translation>
-<translation id="3695339288331169103">Источник: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="3696309329332791122">Проверить пароль</translation>
 <translation id="369736917241079046">Клавиша панели запуска + Стрелка влево</translation>
 <translation id="3697716475445175867">по дате использования</translation>
@@ -10542,7 +10541,7 @@
 <translation id="8412136526970428322">Предоставлены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Защита от сайтов, расширений и скачанных файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через сервер обеспечения конфиденциальности, который скрывает ваш IP-адрес. Если сайт делает что-то подозрительное, передается полный URL и части контента со страницы.</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
-<translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417065541337558100">Предварительный просмотр изображения с вашей камеры</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>

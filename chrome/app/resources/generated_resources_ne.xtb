@@ -3861,7 +3861,6 @@
 <translation id="3694590407685276748">टेक्स्ट कर्सर हाइलाइट गर्नुहोस्</translation>
 <translation id="369489984217678710">पासवर्ड र साइन इनसम्बन्धी अन्य डेटा</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{सुरक्षासम्बन्धी जाँचहरू गरिए। तपाईंको डेटा अपलोड हुने छ।}=1{सुरक्षासम्बन्धी जाँचहरू गरिए। तपाईंको फाइल अपलोड हुने छ।}other{सुरक्षासम्बन्धी जाँचहरू गरिए। तपाईंका फाइलहरू अपलोड हुने छन्।}}</translation>
-<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> बाट</translation>
 <translation id="3696309329332791122">आफ्नो पासवर्ड सही छ कि छैन जाँच्नुहोस्</translation>
 <translation id="369736917241079046">लन्चर + लेफ्ट एरो</translation>
 <translation id="3697716475445175867">पछिल्लो पटक खोलिएको</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metall (brillant)</translation>
 <translation id="1070901266639972381">Nit</translation>
 <translation id="1073690811593784042">Vidre (en color)</translation>
+<translation id="1074287282535157335">Paga en 4 terminis o mensualment (subjecte a idoneïtat)</translation>
 <translation id="1074497978438210769">No segur</translation>
 <translation id="1074779248866616641">Resultat</translation>
 <translation id="1075364221219156102">Utilitza una clau d'accés</translation>
@@ -657,6 +658,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2102134110707549001">Suggereix una contrasenya segura…</translation>
 <translation id="2102495993840063010">Aplicacions per a Android</translation>
 <translation id="2102519472192754194">Navegadors web</translation>
+<translation id="2103210856015238101">Les targetes de fidelització que es poden emplenar amb un toc s'han obert a alçada completa.</translation>
 <translation id="2105838220373099643">Jocs de rol</translation>
 <translation id="2107021941795971877">Suports d'impressió</translation>
 <translation id="2108755909498034140">Reinicia l'ordinador</translation>
@@ -1118,6 +1120,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="290376772003165898">La pàgina no està en <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">La teva organització limita el que pots compartir</translation>
 <translation id="2905107382358353958">Alerta sobre la nova opció de configuració de pagament</translation>
 <translation id="2909946352844186028">S'ha detectat un canvi a la xarxa.</translation>
 <translation id="2911255567212929079">Intel·ligència artificial i aprenentatge automàtic</translation>
@@ -1296,6 +1299,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
 <translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vol emmagatzemar dades al dispositiu de manera permanent</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> a <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pot demanar permís per saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="3201482403106004262">S'ha produït un error amb l'enquesta.</translation>
@@ -1772,6 +1776,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3963721102035795474">Mode de lector</translation>
 <translation id="3965672182149944205">Vols desar l'adreça?</translation>
 <translation id="3966044442021752214">Seguretat del producte</translation>
+<translation id="396761677631735618">Les targetes de fidelització que es poden emplenar amb un toc s'han obert a mitja alçada.</translation>
 <translation id="3969869202926863008">Accés a la xarxa local</translation>
 <translation id="3970239200223030389">Data d’emissió</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
@@ -1892,6 +1897,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4169189393773057143">Gestiona les targetes de fidelització o desactiva aquests suggeriments a Google Wallet</translation>
 <translation id="4169535189173047238">No permetis</translation>
+<translation id="4170851022123611628">La llista de targetes de fidelització està tancada.</translation>
 <translation id="4171400957073367226">La signatura de verificació és incorrecta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Cadenats i cadenes</translation>
@@ -2095,6 +2101,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
 <translation id="4493480324863638523">L'URL no és vàlid. Ha de tenir un esquema estàndard, com ara "http://example.com" o "https://example.com".</translation>
 <translation id="4494323206460475851">Pots veure els temes d'anunci a la configuració i bloquejar els que no vulguis que es comparteixin amb els llocs web. Chrome també suprimeix automàticament els temes d'anunci que tenen més de 4 setmanes.</translation>
+<translation id="4497010149473852018">Hi ha targetes de fidelització que es poden emplenar amb un toc. El teclat està amagat.</translation>
 <translation id="4500587658229086076">contingut no segur</translation>
 <translation id="4504850595255879616">Persones de <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">És possible que revisors qualificats vegin les dades per millorar aquesta funció</translation>
@@ -4709,6 +4716,7 @@ Detalls addicionals:
 <translation id="8975263830901772334">Noms de fitxers que imprimeixes</translation>
 <translation id="8982884016487650216">S'ha acabat de carregar el PDF</translation>
 <translation id="8983369100812962543">Ara pots canviar la mida de l'aplicació</translation>
+<translation id="8984785270737450103">Actualment, la compartició està desactivada</translation>
 <translation id="8985112471026018799">Desa la targeta per tramitar compres més ràpidament</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per veure l'historial de navegació a Chrome</translation>
 <translation id="8987663052629670333">Serveis d'impressió de fotos</translation>

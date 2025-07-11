@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Del <ph name="TABS_COUNT_ONE" /> valgt fane}one{Del <ph name="TABS_COUNT_MANY" /> valgt fane}other{Del <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Opdateret for <ph name="NUM_YEARS_ONE" /> år siden}one{Opdateret for <ph name="NUM_YEARS_MANY" /> år siden}other{Opdateret for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="7773714564112603605">Fjern fane, og slet gruppe</translation>
+<translation id="7774428938729954687">Gendan og åbn fanen <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Gennemgå forslagene.</translation>
 <translation id="7792860826279960128">Meddelelse om ændringer af en delt fanegruppe er åbnet i halv højde</translation>
 <translation id="7825973332242257878">Fanegrupper</translation>

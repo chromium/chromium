@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Udostępnij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Udostępnij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Udostępnij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Udostępnij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Zaktualizowano <ph name="NUM_YEARS_ONE" /> rok temu}few{Zaktualizowano <ph name="NUM_YEARS_MANY" /> lata temu}many{Zaktualizowano <ph name="NUM_YEARS_MANY" /> lat temu}other{Zaktualizowano <ph name="NUM_YEARS_MANY" /> roku temu}}</translation>
 <translation id="7773714564112603605">Usuń kartę i grupę</translation>
+<translation id="7774428938729954687">Przywróć i otwórz kartę <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Sprawdź sugestie.</translation>
 <translation id="7792860826279960128">Powiadomienie o zmianach w udostępnionej grupie kart otwarte na połowę wysokości</translation>
 <translation id="7825973332242257878">Grupy kart</translation>

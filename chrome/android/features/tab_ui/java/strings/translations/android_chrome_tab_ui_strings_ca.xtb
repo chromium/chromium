@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Comparteix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Comparteix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{S'ha actualitzat fa <ph name="NUM_YEARS_ONE" /> any}other{S'ha actualitzat fa <ph name="NUM_YEARS_MANY" /> anys}}</translation>
 <translation id="7773714564112603605">Suprimeix la pestanya i el grup</translation>
+<translation id="7774428938729954687">Restaura i obre la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Revisa els suggeriments.</translation>
 <translation id="7792860826279960128">Avís sobre els canvis en el grup de pestanyes compartit obert a mitja alçada</translation>
 <translation id="7825973332242257878">Grups de pestanyes</translation>

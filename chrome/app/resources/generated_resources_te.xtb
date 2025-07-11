@@ -3876,7 +3876,6 @@
 <translation id="3694590407685276748">టెక్స్ట్ కర్సర్‌ను హైలైట్ చేయండి</translation>
 <translation id="369489984217678710">పాస్‌వర్డ్‌లు మరియు ఇతర సైన్-ఇన్ డేటా</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{భద్రతా తనిఖీలు పూర్తయ్యాయి. మీ డేటా అప్‌లోడ్ చేయబడుతుంది.}=1{భద్రతా తనిఖీలు పూర్తయ్యాయి. మీ ఫైల్ అప్‌లోడ్ చేయబడుతుంది.}other{భద్రతా తనిఖీలు పూర్తయ్యాయి. మీ ఫైల్స్ అప్‌లోడ్ చేయబడతాయి.}}</translation>
-<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> నుండి</translation>
 <translation id="3696309329332791122">మీ పాస్‌వర్డ్‌ను చెక్ చేసుకోండి</translation>
 <translation id="369736917241079046">లాంచర్ + ఎడమ వైపు బాణం</translation>
 <translation id="3697716475445175867">చివరిగా తెరిచినది</translation>

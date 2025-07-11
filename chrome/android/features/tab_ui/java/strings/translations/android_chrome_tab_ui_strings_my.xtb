@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခု မျှဝေရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခု မျှဝေရန်}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_YEARS_ONE" /> နှစ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_YEARS_MANY" /> နှစ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="7773714564112603605">တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်ရန်</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> တဘ်ကို ပြန်ပြောင်းပြီး ဖွင့်ရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
 <translation id="7792860826279960128">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="7825973332242257878">တဘ်အုပ်စု</translation>

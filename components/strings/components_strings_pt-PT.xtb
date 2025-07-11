@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (brilhante)</translation>
 <translation id="1070901266639972381">Noite</translation>
 <translation id="1073690811593784042">Vidro (colorido)</translation>
+<translation id="1074287282535157335">Pague em 4 prestações ou mensalmente (sujeito a elegibilidade)</translation>
 <translation id="1074497978438210769">Inseguro</translation>
 <translation id="1074779248866616641">Resultado</translation>
 <translation id="1075364221219156102">Usar uma chave de acesso</translation>
@@ -657,6 +658,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2102134110707549001">Sugerir palavra-passe forte…</translation>
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2102519472192754194">Navegadores de Internet</translation>
+<translation id="2103210856015238101">Cartões de fidelidade disponíveis para preenchimento com o toque abertos à altura total.</translation>
 <translation id="2105838220373099643">Jogos RPG</translation>
 <translation id="2107021941795971877">Suportes de impressão</translation>
 <translation id="2108755909498034140">Reiniciar o computador</translation>
@@ -1297,6 +1299,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente dados no seu dispositivo.</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
 <translation id="3201482403106004262">Ocorreu um erro com o inquérito.</translation>
@@ -1773,6 +1776,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3963721102035795474">Modo de leitor</translation>
 <translation id="3965672182149944205">Guardar a morada?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
+<translation id="396761677631735618">Cartões de fidelidade disponíveis para preenchimento com o toque abertos a meia altura.</translation>
 <translation id="3969869202926863008">Acesso à rede local</translation>
 <translation id="3970239200223030389">Data de emissão</translation>
 <translation id="397105322502079400">A calcular...</translation>
@@ -1893,6 +1897,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4165986682804962316">Definições de sites</translation>
 <translation id="4169189393773057143">Faça a gestão de cartões de fidelidade ou desative estas sugestões na Carteira do Google</translation>
 <translation id="4169535189173047238">Não permitir</translation>
+<translation id="4170851022123611628">A lista de cartões de fidelidade está fechada.</translation>
 <translation id="4171400957073367226">Assinatura de verificação incorreta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Fechaduras e serralheiros</translation>
@@ -2096,6 +2101,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
 <translation id="4493480324863638523">URL inválido. Tem de ser um URL com um esquema padrão, por exemplo, http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Pode ver tópicos dos anúncios nas definições e bloquear os que não quer partilhar com os sites. O Chrome também elimina automaticamente os tópicos de anúncios com mais de 4 semanas.</translation>
+<translation id="4497010149473852018">Cartões de fidelidade disponíveis para preenchimento com o toque. Teclado oculto.</translation>
 <translation id="4500587658229086076">conteúdo inseguro</translation>
 <translation id="4504850595255879616">Pessoas do <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Os dados podem ser vistos por revisores com formação para melhorar esta funcionalidade</translation>

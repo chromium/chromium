@@ -3862,7 +3862,6 @@
 <translation id="3694590407685276748">醒目顯示文字游標</translation>
 <translation id="369489984217678710">密碼和其他登入資料</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全性檢查。系統將上傳你的資料。}=1{已完成安全性檢查。系統將上傳你的檔案。}other{已完成安全性檢查。系統將上傳你的檔案。}}</translation>
-<translation id="3695339288331169103">來自「<ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" />」</translation>
 <translation id="3696309329332791122">檢查密碼</translation>
 <translation id="369736917241079046">啟動鍵 + 向左鍵</translation>
 <translation id="3697716475445175867">上次開啟時間</translation>

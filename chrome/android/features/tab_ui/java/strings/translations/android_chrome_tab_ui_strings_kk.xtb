@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны бөлісу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны бөлісу}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жыл бұрын жаңартылды.}other{<ph name="NUM_YEARS_MANY" /> жыл бұрын жаңартылды.}}</translation>
 <translation id="7773714564112603605">Қойындыны өшіру және топты жою</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> қойындысын қалпына келтіру және ашу</translation>
 <translation id="7792771145871471484">Ұсыныстарды көріңіз.</translation>
 <translation id="7792860826279960128">Ортақ қойындылар тобының өзгерістері туралы ескерту жартылай ашылды.</translation>
 <translation id="7825973332242257878">Қойындылар топтары</translation>

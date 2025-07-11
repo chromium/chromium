@@ -1118,6 +1118,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2902312830803030883">Más acciones</translation>
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="290376772003165898">¿La página no está en <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Tu organización limita lo que puedes compartir</translation>
 <translation id="2905107382358353958">Alerta sobre la nueva configuración de pagos</translation>
 <translation id="2909946352844186028">Se detectó un cambio de red.</translation>
 <translation id="2911255567212929079">Inteligencia Artificial y aprendizaje automático</translation>
@@ -4711,6 +4712,7 @@ Detalles adicionales:
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
 <translation id="8982884016487650216">Se terminó de cargar el PDF</translation>
 <translation id="8983369100812962543">Ahora puedes cambiar el tamaño de la app.</translation>
+<translation id="8984785270737450103">El uso compartido está desactivado en este momento</translation>
 <translation id="8985112471026018799">Guardar tarjeta para agilizar la confirmación de compra</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para ver tu historial de navegación en Chrome</translation>
 <translation id="8987663052629670333">Servicios de impresión de fotos</translation>

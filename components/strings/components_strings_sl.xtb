@@ -1118,6 +1118,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2902312830803030883">Več dejanj</translation>
 <translation id="2903493209154104877">Naslovi</translation>
 <translation id="290376772003165898">Stran ni v jeziku <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Vaša organizacija omejuje, kaj je mogoče deliti</translation>
 <translation id="2905107382358353958">Opozorilo o novi nastavitvi plačil</translation>
 <translation id="2909946352844186028">Zaznana je bila sprememba omrežja.</translation>
 <translation id="2911255567212929079">Strojno učenje in umetna inteligenca</translation>
@@ -4709,6 +4710,7 @@ Dodatne podrobnosti:
 <translation id="8975263830901772334">Imena datotek, ki jih natisnete</translation>
 <translation id="8982884016487650216">Nalaganje PDF-ja je končano</translation>
 <translation id="8983369100812962543">Zdaj lahko spreminjate velikost aplikacije</translation>
+<translation id="8984785270737450103">Deljenje je trenutno izklopljeno</translation>
 <translation id="8985112471026018799">Shranite kartico za hitrejši zaključek nakupa</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če si želite ogledati zgodovino brskanja v Chromu</translation>
 <translation id="8987663052629670333">Storitve tiskanja fotografij</translation>

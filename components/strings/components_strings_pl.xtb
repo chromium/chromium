@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (błyszczący)</translation>
 <translation id="1070901266639972381">Noc</translation>
 <translation id="1073690811593784042">Szkło (kolorowe)</translation>
+<translation id="1074287282535157335">Płać w 4 ratach lub miesięcznie (jeśli spełniasz wymagania)</translation>
 <translation id="1074497978438210769">Niezabezpieczona</translation>
 <translation id="1074779248866616641">Wynik</translation>
 <translation id="1075364221219156102">Użyj klucza dostępu</translation>
@@ -657,6 +658,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2102134110707549001">Zaproponuj silne hasło…</translation>
 <translation id="2102495993840063010">Aplikacje na Androida</translation>
 <translation id="2102519472192754194">Przeglądarki</translation>
+<translation id="2103210856015238101">Karty lojalnościowe dostępne do uzupełnienia kliknięciem są otwarte na całą wysokość.</translation>
 <translation id="2105838220373099643">Gry RPG</translation>
 <translation id="2107021941795971877">Elementy pomocnicze drukowania</translation>
 <translation id="2108755909498034140">Uruchom ponownie komputer</translation>
@@ -1118,6 +1120,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2902312830803030883">Więcej czynności</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="290376772003165898">Język tej strony to nie <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Twoja organizacja nie pozwala na udostępnianie niektórych typów danych</translation>
 <translation id="2905107382358353958">Alert o nowych ustawieniach płatności</translation>
 <translation id="2909946352844186028">Wykryto zmianę sieci.</translation>
 <translation id="2911255567212929079">Uczenie maszynowe i sztuczna inteligencja</translation>
@@ -1296,6 +1299,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3187472288455401631">Pomiar skuteczności reklam</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce na stałe przechowywać dane na Twoim urządzeniu</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serwerze <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Może prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="3201482403106004262">Wystąpił błąd dotyczący ankiety.</translation>
@@ -1772,6 +1776,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>
 <translation id="3965672182149944205">Zapisać adres?</translation>
 <translation id="3966044442021752214">Bezpieczeństwo produktu</translation>
+<translation id="396761677631735618">Karty lojalnościowe dostępne do uzupełnienia kliknięciem są otwarte do połowy wysokości.</translation>
 <translation id="3969869202926863008">Dostęp przez sieć lokalną</translation>
 <translation id="3970239200223030389">Data wystawienia</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
@@ -1892,6 +1897,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4169189393773057143">Zarządzaj kartami lojalnościowymi lub wyłącz te sugestie w Portfelu Google</translation>
 <translation id="4169535189173047238">Nie zezwalaj</translation>
+<translation id="4170851022123611628">Lista kart lojalnościowych jest zamknięta.</translation>
 <translation id="4171400957073367226">Nieprawidłowy podpis weryfikujący</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Zamki i ślusarze</translation>
@@ -2095,6 +2101,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="449126573531210296">Szyfruj synchronizowane hasła, używając danych konta Google</translation>
 <translation id="4493480324863638523">Nieprawidłowy URL. URL musi być zgodny ze schematem standardowym, np. http://example.com lub https://example.com</translation>
 <translation id="4494323206460475851">W ustawieniach możesz wyświetlać tematy reklam i blokować te, których nie chcesz udostępniać witrynom. Chrome automatycznie usuwa też tematy reklam, które mają ponad 4 tygodnie.</translation>
+<translation id="4497010149473852018">Karty lojalnościowe dostępne do uzupełnienia kliknięciem. Klawiatura jest ukryta.</translation>
 <translation id="4500587658229086076">treść niezabezpieczona</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> – osoby</translation>
 <translation id="450602096898954067">Dane mogą być widoczne dla przeszkolonych weryfikatorów, którzy pracują nad ulepszaniem tej funkcji</translation>
@@ -4709,6 +4716,7 @@ Dodatkowe informacje:
 <translation id="8975263830901772334">Nazwy drukowanych plików</translation>
 <translation id="8982884016487650216">PDF został wczytany</translation>
 <translation id="8983369100812962543">Teraz możesz zmienić rozmiar aplikacji</translation>
+<translation id="8984785270737450103">Udostępnianie jest obecnie wyłączone</translation>
 <translation id="8985112471026018799">Zapisz kartę, aby szybciej płacić</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby wyświetlić historię przeglądania w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="8987663052629670333">Usługi wywoływania zdjęć</translation>

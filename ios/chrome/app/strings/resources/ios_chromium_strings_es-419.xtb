@@ -245,7 +245,6 @@ Aspectos que debes tener en cuenta:
 <translation id="6852799557929001644">Accede a tus contraseñas de Chromium y más en otras apps de este dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar esta pestaña a otro dispositivo, accede a Chromium allí.</translation>
 <translation id="6911341667534646387">Sigue usando los datos de Chromium en tu Cuenta de Google</translation>
-<translation id="7006920032187763988">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPad.</translation>
 <translation id="7018284295775193585">No se puede actualizar Chromium</translation>
 <translation id="7055269218854630176">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chromium. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="7099326575020694068">Chromium no puede usar tu cámara en el modo de vista dividida</translation>
@@ -300,7 +299,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8390323835464055390">Accede con tus contraseñas y llaves de acceso guardadas desde cualquier app con Autocompletar en Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
-<translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8602103377623855616">Página de Chromium</translation>
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>

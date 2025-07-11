@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (sjajni)</translation>
 <translation id="1070901266639972381">Noć</translation>
 <translation id="1073690811593784042">Staklo (u boji)</translation>
+<translation id="1074287282535157335">Plaćajte u 4 rate ili mesečno (ako ispunjavate uslove)</translation>
 <translation id="1074497978438210769">Nije bezbedno</translation>
 <translation id="1074779248866616641">Rezultat</translation>
 <translation id="1075364221219156102">Koristite pristupni ključ</translation>
@@ -657,6 +658,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2102134110707549001">Predloži jaku lozinku…</translation>
 <translation id="2102495993840063010">Android aplikacije</translation>
 <translation id="2102519472192754194">Veb-pregledači</translation>
+<translation id="2103210856015238101">Kartice lojalnosti dostupne za unos dodirom otvorene su u punoj visini.</translation>
 <translation id="2105838220373099643">Igre uloga</translation>
 <translation id="2107021941795971877">Podrška za štampanje</translation>
 <translation id="2108755909498034140">Ponovo pokrenite računar</translation>
@@ -1296,6 +1298,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3187472288455401631">Merenje oglasa</translation>
 <translation id="3190736958609431397">Opozovi praćenje</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može da traži da zna kada aktivno koristite uređaj</translation>
 <translation id="3201482403106004262">Došlo je do greške sa anketom.</translation>
@@ -1772,6 +1775,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3963721102035795474">Režim čitaoca</translation>
 <translation id="3965672182149944205">Želite da sačuvate adresu?</translation>
 <translation id="3966044442021752214">Bezbednost proizvoda</translation>
+<translation id="396761677631735618">Kartice lojalnosti dostupne za unos dodirom otvorene su do pola visine.</translation>
 <translation id="3969869202926863008">Pristup lokalnoj mreži</translation>
 <translation id="3970239200223030389">Datum izdavanja</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
@@ -1892,6 +1896,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4165986682804962316">Podešavanja sajta</translation>
 <translation id="4169189393773057143">Upravljajte karticama lojalnosti ili isključite ove predloge u Google novčaniku</translation>
 <translation id="4169535189173047238">Ne dozvoli</translation>
+<translation id="4170851022123611628">Lista kartica lojalnosti je zatvorena.</translation>
 <translation id="4171400957073367226">Neispravan potpis za verifikaciju</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Brave i bravari</translation>
@@ -2095,6 +2100,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
 <translation id="4493480324863638523">URL je nevažeći. URL mora da ima standardnu šemu, npr. http://example.com ili https://example.com.</translation>
 <translation id="4494323206460475851">Možete da vidite teme oglasa u podešavanjima i da blokirate one za koje ne želite da se dele sa sajtovima. Chrome automatski briše i teme oglasa starije od 4 nedelje.</translation>
+<translation id="4497010149473852018">Kartice lojalnosti su dostupne za popunjavanje na dodir. Tastatura je sakrivena.</translation>
 <translation id="4500587658229086076">nebezbedan sadržaj</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> osobe</translation>
 <translation id="450602096898954067">Obučeni pregledači mogu da vide podatke radi poboljšanja ove funkcije</translation>

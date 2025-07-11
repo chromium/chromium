@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{แชร์แท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{แชร์แท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{อัปเดตเมื่อ <ph name="NUM_YEARS_ONE" /> ปีที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_YEARS_MANY" /> ปีที่ผ่านมา}}</translation>
 <translation id="7773714564112603605">นำแท็บออกและลบกลุ่ม</translation>
+<translation id="7774428938729954687">คืนค่าและเปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">ดูคำแนะนำ</translation>
 <translation id="7792860826279960128">ประกาศเกี่ยวกับการเปลี่ยนแปลงกลุ่มแท็บที่แชร์ไว้ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="7825973332242257878">กลุ่มแท็บ</translation>

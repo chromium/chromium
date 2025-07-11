@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 공유}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 공유}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" />년 전에 업데이트됨}other{<ph name="NUM_YEARS_MANY" />년 전에 업데이트됨}}</translation>
 <translation id="7773714564112603605">탭 삭제 및 그룹 삭제</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> 탭 복구 및 열기</translation>
 <translation id="7792771145871471484">추천을 검토합니다.</translation>
 <translation id="7792860826279960128">공유 탭 그룹 변경사항의 알림이 절반 높이로 열림</translation>
 <translation id="7825973332242257878">탭 그룹</translation>

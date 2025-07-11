@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{مشاركة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدَّدة}zero{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{مشاركة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدَّدتَين}few{مشاركة <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{تمّ تعديل المجموعة قبل سنة واحدة (<ph name="NUM_YEARS_ONE" />)}zero{تم تعديل المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}two{تم تعديل المجموعة قبل سنتَين (<ph name="NUM_YEARS_MANY" />)}few{تم تعديل المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنوات}many{تم تعديل المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنةً}other{تم تعديل المجموعة قبل <ph name="NUM_YEARS_MANY" /> سنة}}</translation>
 <translation id="7773714564112603605">إزالة علامة التبويب وحذف المجموعة</translation>
+<translation id="7774428938729954687">استعادة علامة التبويب "<ph name="TAB_TITLE" />" وفتحها</translation>
 <translation id="7792771145871471484">مراجعة الاقتراحات</translation>
 <translation id="7792860826279960128">إشعار بشأن التغييرات التي تمت على مجموعة علامات التبويب المشتركة يظهر عند فتح البطاقة السفلية في نصف الشاشة</translation>
 <translation id="7825973332242257878">مجموعات علامات التبويب</translation>

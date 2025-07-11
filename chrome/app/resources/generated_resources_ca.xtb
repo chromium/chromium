@@ -2922,6 +2922,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3008142279736625920">Pastís de formatge</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi avui per baixar una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}other{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi i que baixis una actualització abans del termini establert. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}}</translation>
+<translation id="3008923556848076408">Gemini continuarà treballant en la teva tasca</translation>
 <translation id="3009178788565917040">Sortida</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
@@ -3863,7 +3864,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3694590407685276748">Marca el cursor de text</translation>
 <translation id="369489984217678710">Contrasenyes i altres dades d'inici de sessió</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Les comprovacions de seguretat han finalitzat. Les dades es penjaran.}=1{Les comprovacions de seguretat han finalitzat. El fitxer es penjarà.}other{Les comprovacions de seguretat han finalitzat. Els fitxers es penjaran.}}</translation>
-<translation id="3695339288331169103">Des de <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="3696309329332791122">Comprova la contrasenya</translation>
 <translation id="369736917241079046">menú d'aplicacions+fletxa esquerra</translation>
 <translation id="3697716475445175867">oberta per darrera vegada</translation>
@@ -4755,6 +4755,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4291265871880246274">Quadre de diàleg d'inici de sessió</translation>
 <translation id="4292613336957320546">Acceleració</translation>
 <translation id="429312253194641664">Un lloc web està reproduint contingut multimèdia</translation>
+<translation id="4293219510510666933">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. També pots fer preguntes i obtenir respostes basades en el teu historial de navegació. Aquesta opció de configuració està activada.</translation>
 <translation id="4294392694389031609">S'ha suprimit <ph name="FILE_NAME" /> de l'historial de baixades, però encara és al dispositiu</translation>
 <translation id="4295072614469448764">L'aplicació està disponible al terminal. També pot haver-hi una icona al menú d'aplicacions.</translation>
 <translation id="4295979599050707005">Torna a iniciar la sessió per confirmar que el compte <ph name="USER_EMAIL" /> es pot utilitzar amb llocs web, aplicacions i extensions de Chrome i Google Play. També pots suprimir el compte. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -6124,6 +6125,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5280064835262749532">Actualitza les credencials per a <ph name="SHARE_PATH" /></translation>
 <translation id="5280303168922585051">La teva organització ha configurat aquesta opció de configuració. Confirmes que vols suprimir aquest motor de cerca?</translation>
 <translation id="5280426389926346830">Vols crear una drecera?</translation>
+<translation id="5280966903879030278">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. Aquesta opció de configuració està desactivada.</translation>
 <translation id="5281013262333731149">S'obre a <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Per baixar i utilitzar les aplicacions d'Android, primer has d'instal·lar aquesta actualització obligatòria. Mentre el dispositiu <ph name="DEVICE_TYPE" /> s'estigui actualitzant, no el podràs fer servir. Un cop finalitzada la instal·lació, <ph name="DEVICE_TYPE" /> es reiniciarà.</translation>
 <translation id="5283677936944177147">El sistema no ha pogut determinar el model ni el número de sèrie del dispositiu.</translation>
@@ -6823,6 +6825,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5800703268655655701">Selecciona el tema clar o fosc</translation>
 <translation id="5801051031414037185">Configura el telèfon</translation>
 <translation id="5801568494490449797">Preferències</translation>
+<translation id="5801848377610914194">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. Aquesta opció de configuració està activada.</translation>
 <translation id="5803689677801500549">Les contrasenyes desades es mostraran aquí. Per importar contrasenyes a <ph name="BRAND" /> per a <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />selecciona un fitxer CSV<ph name="END_LINK" />.</translation>
 <translation id="5804198298544152115">Els llocs web solen fer un seguiment de les teves mans i dels teus dits per augmentar les experiències immersives</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -9272,6 +9275,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Activa el volum</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
+<translation id="7563576896417108627">Personalitza i controla <ph name="APP_NAME" />. Hi ha una actualització disponible.</translation>
 <translation id="756445078718366910">Obre una finestra del navegador</translation>
 <translation id="7564847347806291057">Finalitza el procés</translation>
 <translation id="756503097602602175">A <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" /> pots gestionar els Comptes de Google en què tens la sessió iniciada. És possible que els permisos que hagis concedit a llocs web i aplicacions s'apliquin a tots els comptes. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, pots iniciar la sessió al <ph name="DEVICE_TYPE" /> com a convidat o navegar pel web en una <ph name="LINK_2_BEGIN" />finestra d'incògnit<ph name="LINK_2_END" />.</translation>
@@ -10031,6 +10035,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">Utilitza la IA de Google per augmentar la teva creativitat i productivitat</translation>
 <translation id="8066444921260601116">Quadre de diàleg de connexió</translation>
+<translation id="8068904756674285749">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. També pots fer preguntes i obtenir respostes basades en el teu historial de navegació. L'opció de configuració està desactivada.</translation>
 <translation id="8070572887926783747">Permís d'accés a la ubicació per a <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Resposta hàptica</translation>
 <translation id="8071033114691184017">Utilitza aquesta contrasenya a l'iPhone</translation>
@@ -10657,6 +10662,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8499083585497694743">Deixa de silenciar el micròfon</translation>
 <translation id="8500044868721690197">No es permet que aquest lloc web controli ni reprogrami els teus dispositius MIDI</translation>
 <translation id="8500123638242682652">La finestra s'ha mogut cap amunt</translation>
+<translation id="8500132602331251964">Actualització de l'aplicació disponible</translation>
 <translation id="8502536196501630039">Per poder utilitzar aplicacions de Google Play, primer has de restaurar les teves aplicacions. És possible que algunes dades s'hagin perdut.</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="850382998924680137">Vist avui</translation>
