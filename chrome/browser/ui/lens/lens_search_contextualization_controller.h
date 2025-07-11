@@ -122,8 +122,8 @@ class LensSearchContextualizationController {
 
   // Records the UMA for the metrics relating to the document where the
   // contextual search box was shown. If this is a webpage, records the size of
-  // the innerHtml and the innerText. If this is a PDF, records the byte size of
-  // the PDF and the number of pages. `pdf_page_count` is only used for PDFs.
+  // the innerText. If this is a PDF, records the byte size of the PDF and the
+  // number of pages. `pdf_page_count` is only used for PDFs.
   void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
 
   // Posts a task to the background thread to calculate the OCR DOM similarity
@@ -171,19 +171,6 @@ class LensSearchContextualizationController {
       std::optional<uint32_t> pdf_page_count,
       const SkBitmap& bitmap,
       std::optional<uint32_t> pdf_current_page);
-
-  // Gets the inner HTML for contextualization if flag enabled. Otherwise skip
-  // to MaybeGetInnerText().
-  void MaybeGetInnerHtml(std::vector<lens::PageContent> page_contents,
-                         content::RenderFrameHost* render_frame_host,
-                         PageContentRetrievedCallback callback);
-
-  // Callback for when the inner HTML is retrieved from the underlying page.
-  // Calls MaybeGetInnerText().
-  void OnInnerHtmlReceived(std::vector<lens::PageContent> page_contents,
-                           content::RenderFrameHost* render_frame_host,
-                           PageContentRetrievedCallback callback,
-                           const std::optional<std::string>& result);
 
   // Gets the inner text for contextualization if flag enabled. Otherwise skip
   // to MaybeGetAnnotatedPageContent().
@@ -276,9 +263,6 @@ class LensSearchContextualizationController {
   // Callback to record the size of the innerText once it is fetched.
   void RecordInnerTextSize(
       std::unique_ptr<content_extraction::InnerTextResult> result);
-
-  // Callback to record the size of the innerHtml once it is fetched.
-  void RecordInnerHtmlSize(const std::optional<std::string>& result);
 
   float GetUiScaleFactor();
 

@@ -429,12 +429,6 @@ extern int GetScannedPdfCharacterPerPageHeuristic();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerTextAsContext();
 
-// Returns whether to include the inner html from the underlying page in the
-// request to be used as page context. Must have UseUpdatedContextFields enabled
-// when combined with other page content types.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseInnerHtmlAsContext();
-
 // Returns whether to include the Annotated Page Content from the underlying
 // page in the inner HTML requests used as page context. Must have
 // UseUpdatedContextFields enabled when combined with other page content types.

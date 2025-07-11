@@ -764,7 +764,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           {
               {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "false"},
               {"update-viewport-each-query", "true"},
           }},
          {lens::features::kLensOverlayLatencyOptimizations,
@@ -5177,7 +5176,6 @@ class LensOverlayControllerBrowserStartQueryFlowOptimization
          {lens::features::kLensOverlayContextualSearchbox,
           {
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "false"},
               {"use-webpage-vit-param", "true"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
@@ -6722,15 +6720,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // testing on is so small it rounds to 0 KB.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount(
-               "Lens.Overlay.ByPageContentType.Html.DocumentSize2", 0) == 2;
+               "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2", 0) ==
+           2;
   }));
 
   // Verify the size histograms recorded the new bytes.
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
-      /*expected_count=*/2);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
@@ -6870,9 +6866,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
       /*expected_count=*/1);
 
   // Verify UKM metrics were recorded.
@@ -7786,21 +7779,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ProtectedPageShows) {
                                      /*expected_count=*/1);
 }
 
-class LensOverlayControllerInnerHtmlEnabledTest
-    : public LensOverlayControllerBrowserTest {
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {
-            {"send-page-url-for-contextualization", "true"},
-            {"use-inner-text-as-context", "false"},
-            {"use-inner-html-as-context", "true"},
-            {"use-apc-as-context", "false"},
-        });
-  }
-};
-
 class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
     : public LensOverlayControllerBrowserTest {
  protected:
@@ -7809,7 +7787,6 @@ class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
         lens::features::kLensOverlayContextualSearchbox,
         {
             {"use-inner-text-as-context", "true"},
-            {"use-inner-html-as-context", "false"},
             {"use-apc-as-context", "false"},
             {"file-upload-limit-bytes", "10"},
         });
@@ -7862,94 +7839,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
       /*expected_bucket_count=*/1);
 }
 
-class LensOverlayControllerInnerHtmlEnabledSmallByteLimitTest
-    : public LensOverlayControllerBrowserTest {
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {
-            {"use-inner-html-as-context", "true"},
-            {"use-apc-as-context", "true"},
-            {"use-inner-text-as-context", "false"},
-            {"file-upload-limit-bytes", "10"},
-        });
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledSmallByteLimitTest,
-                       InnerHtmlOverLimitNotIncludedInRequest) {
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify inner HTML bytes were not included in the query.
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
-  EXPECT_THAT(
-      lens::Payload(),
-      EqualsProto(fake_query_controller->last_sent_page_content_payload()));
-
-  // Verify the searchbox was hidden.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  EXPECT_FALSE(fake_controller->fake_overlay_page_
-                   .last_received_should_show_contextual_searchbox_);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
-                       InnerHtmlBytesInRequest) {
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify inner HTML was included as bytes in the the query.
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->last_sent_page_content_payload()
-               .content()
-               .content_data()
-               .size() == 1;
-  }));
-  auto content_data = fake_query_controller->last_sent_page_content_payload()
-                          .content()
-                          .content_data();
-
-  // Verify the bytes are actually what we expect them to be.
-  ASSERT_EQ(
-      "<body>\n  <h1>The below are non-ascii characters.</h1>\n  <p>こんにちは "
-      "thêrē 🐶 ©</p>\n\n</body>",
-      std::string(content_data[0].data().begin(),
-                  content_data[0].data().end()));
-
-  // Verify the searchbox was shown.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(fake_controller->fake_overlay_page_
-                  .last_received_should_show_contextual_searchbox_);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PageUrlIncludedInRequest) {
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
@@ -7974,153 +7864,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
-                       RecordContextualZpsSessionHistograms) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
+class LensOverlayControllerApcOnlyTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlayContextualSearchbox,
+        {
+            {"use-inner-text-as-context", "false"},
+            {"use-apc-as-context", "true"},
+        });
+  }
+};
 
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify inner HTML was included as bytes in the the query.
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->last_sent_page_content_payload()
-               .content()
-               .content_data()
-               .size() == 1;
-  }));
-  ASSERT_EQ(fake_query_controller->last_sent_page_content_payload()
-                .content()
-                .content_data()[0]
-                .content_type(),
-            lens::ContentData::CONTENT_TYPE_INNER_HTML);
-
-  controller->OnZeroSuggestShownForTesting();
-
-  // Simulate a zero suggest suggestion being chosen.
-  controller->IssueSearchBoxRequestForTesting(
-      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
-      /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
-
-  // Issuing a search from the overlay state can only be done through the
-  // contextual searchbox and should result in a live page with results.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
-
-  // Close the overlay and assert that the histogram was recorded once and
-  // that zps was shown in the session.
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
-
-  // Assert zps shown in session metrics get recorded.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession", true,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.Html."
-      "ShownInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.Html."
-      "ShownInSession",
-      true, /*expected_count=*/1);
-  auto entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0].get();
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kShownInSessionName,
-      true);
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
-          kPageContentTypeName,
-      static_cast<int64_t>(lens::MimeType::kHtml));
-
-  // Assert zps used in session metrics get recorded.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession", true,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.Html."
-      "SuggestionUsedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.Html."
-      "SuggestionUsedInSession",
-      true, /*expected_count=*/1);
-  entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::
-          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  entry = entries[0].get();
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::
-          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kSuggestionUsedInSessionName,
-      true);
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::
-          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
-              kPageContentTypeName,
-      static_cast<int64_t>(lens::MimeType::kHtml));
-
-  // Assert query issued in session metrics get recorded.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession", true,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ByPageContentType.Html."
-      "QueryIssuedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ByPageContentType.Html."
-      "QueryIssuedInSession",
-      true, /*expected_count=*/1);
-  entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  entry = entries[0].get();
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kQueryIssuedInSessionName,
-      true);
-  test_ukm_recorder.ExpectEntryMetric(
-      entry,
-      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
-          kPageContentTypeName,
-      static_cast<int64_t>(lens::MimeType::kHtml));
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerApcOnlyTest,
                        RecordSearchboxShownInSessionHistogramsByDocumentType) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
@@ -8182,7 +7939,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordSearchboxFocusHistograms) {
   base::HistogramTester histogram_tester;
 
@@ -8202,14 +7959,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
 
   // Verify histogram was recorded.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
       "TimeFromInvocationToFirstFocus",
       /*expected_count=*/1);
 
   // Focusing the searchbox again should not record another histogram.
   fake_controller->OnFocusChangedForTesting(/*focused=*/true);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
       "TimeFromInvocationToFirstFocus",
       /*expected_count=*/1);
 
@@ -8229,14 +7986,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   // Focus the searchbox again and verify histogram was recorded.
   fake_controller->OnFocusChangedForTesting(/*focused=*/true);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
       "TimeFromNavigationToFirstFocus",
       /*expected_count=*/1);
 
   // Focusing the searchbox again should not record another histogram.
   fake_controller->OnFocusChangedForTesting(/*focused=*/true);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
       "TimeFromNavigationToFirstFocus",
       /*expected_count=*/1);
 
@@ -8244,12 +8001,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   WaitForPaint(kImageFile);
   fake_controller->OnFocusChangedForTesting(/*focused=*/true);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.AnnotatedPageContent."
       "TimeFromNavigationToFirstFocus",
       /*expected_count=*/2);
 }
 
-class LensOverlayControllerInnerHtmlWithInnerTextAndApc
+class LensOverlayControllerInnerTextAndApc
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
@@ -8258,7 +8015,6 @@ class LensOverlayControllerInnerHtmlWithInnerTextAndApc
           {
               {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "true"},
               {"use-apc-as-context", "true"},
               {"use-updated-content-fields", "true"},
           }},
@@ -8267,7 +8023,7 @@ class LensOverlayControllerInnerHtmlWithInnerTextAndApc
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
                        AllBytesInRequest) {
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
@@ -8290,7 +8046,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
     return fake_query_controller->last_sent_page_content_payload()
                .content()
                .content_data()
-               .size() == 3;
+               .size() == 2;
   }));
 
   // Expect the old content data fields to be empty.
@@ -8301,32 +8057,23 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
                   .content_type()
                   .empty());
 
-  // There should be 3 fields of content data.
+  // There should be 2 fields of content data.
   const auto last_sent_content =
       fake_query_controller->last_sent_page_content_payload().content();
-  ASSERT_EQ(last_sent_content.content_data().size(), 3);
-
-  // Verify innerHtml is what we expect it to be.
-  EXPECT_EQ(lens::ContentData::CONTENT_TYPE_INNER_HTML,
-            last_sent_content.content_data(0).content_type());
-  const auto last_sent_html_bytes = last_sent_content.content_data(0).data();
-  ASSERT_EQ(
-      "<body>\n  <h1>The below are non-ascii characters.</h1>\n  <p>こんにちは "
-      "thêrē 🐶 ©</p>\n\n</body>",
-      std::string(last_sent_html_bytes.begin(), last_sent_html_bytes.end()));
+  ASSERT_EQ(last_sent_content.content_data().size(), 2);
 
   // Verify innerText is what we expect it to be.
   EXPECT_EQ(lens::ContentData::CONTENT_TYPE_INNER_TEXT,
-            last_sent_content.content_data(1).content_type());
-  const auto last_sent_text_bytes = last_sent_content.content_data(1).data();
+            last_sent_content.content_data(0).content_type());
+  const auto last_sent_text_bytes = last_sent_content.content_data(0).data();
   ASSERT_EQ(
       "The below are non-ascii characters.\n\nこんにちは thêrē 🐶 ©",
       std::string(last_sent_text_bytes.begin(), last_sent_text_bytes.end()));
 
   // Verify APC is what we expect it to be.
   EXPECT_EQ(lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT,
-            last_sent_content.content_data(2).content_type());
-  const auto last_sent_apc_bytes = last_sent_content.content_data(2).data();
+            last_sent_content.content_data(1).content_type());
+  const auto last_sent_apc_bytes = last_sent_content.content_data(1).data();
   optimization_guide::proto::AnnotatedPageContent apc;
   ASSERT_TRUE(apc.ParseFromString(
       std::string(last_sent_apc_bytes.begin(), last_sent_apc_bytes.end())));
@@ -8356,7 +8103,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
 #else
 #define MAYBE_PageContentTypeHistograms PageContentTypeHistograms
 #endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
                        MAYBE_PageContentTypeHistograms) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
@@ -8416,9 +8163,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
-      /*expected_count=*/1);
 
   // Verify UKM metrics were recorded.
   auto entries = test_ukm_recorder.GetEntriesByName(
@@ -8444,7 +8188,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
                        PageNotContextEligibleError) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
@@ -8988,7 +8732,6 @@ class LensOverlayControllerBrowserSimplifiedSelectionTest
           {
               {"send-page-url-for-contextualization", "true"},
               {"use-inner-text-as-context", "true"},
-              {"use-inner-html-as-context", "false"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}},

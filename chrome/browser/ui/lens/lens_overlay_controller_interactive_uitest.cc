@@ -82,7 +82,6 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                               {media::kContextMenuSearchForVideoFrame, {}},
                               {lens::features::kLensOverlayContextualSearchbox,
                                {{"use-pdfs-as-context", "true"},
-                                {"use-inner-html-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
         /*disabled_features=*/{
             lens::features::kLensOverlaySimplifiedSelection});
@@ -961,7 +960,6 @@ class LensOverlayControllerSimplifiedSelectionCUJTest
                                {}},
                               {lens::features::kLensOverlayContextualSearchbox,
                                {{"use-pdfs-as-context", "true"},
-                                {"use-inner-html-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
         /*disabled_features=*/{lens::features::kLensOverlayTranslateButton});
   }

@@ -326,9 +326,6 @@ constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-text-as-context", true};
 
-constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
-    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
-
 constexpr base::FeatureParam<bool> kUseApcAsContext{
     &kLensOverlayContextualSearchbox, "use-apc-as-context", true};
 
@@ -743,10 +740,6 @@ bool UseInnerTextAsContext() {
 
 int GetLensOverlayPageContentRequestTimeoutMs() {
   return kLensOverlayPageContentRequestTimeoutMs.Get();
-}
-
-bool UseInnerHtmlAsContext() {
-  return kUseInnerHtmlAsContext.Get();
 }
 
 bool UseApcAsContext() {
