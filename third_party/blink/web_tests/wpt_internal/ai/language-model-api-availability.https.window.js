@@ -16,6 +16,12 @@ promise_test(async () => {
   assert_in_array(availability, kValidAvailabilities);
 }, 'LanguageModel.availability() returns a valid value with no options');
 
+promise_test(async (t) => {
+  return promise_rejects_js(t, RangeError, LanguageModel.availability({
+    expectedInputs: [{type: 'text', languages: ['en-abc-invalid']}]
+  }));
+}, 'LanguageModel.availability() rejects when given invalid language tags');
+
 promise_test(async () => {
   // An array of plausible test option values.
   const kCreateOptionsSpec = [

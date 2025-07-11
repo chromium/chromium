@@ -267,50 +267,63 @@ TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
 
 class AIManagerIsLanguagesSupportedTest : public AITestUtils::AITestBase {
  protected:
-  static constexpr char kValidLanguageCode[] = "en";
-  static constexpr char kInvalidLanguageCode[] = "ja";
+  static constexpr char kSupportedLanguageCode[] = "en";
+  static constexpr char kUnsupportedLanguageCode[] = "fr";
+
+  base::flat_set<std::string_view> DefaultSupportedBaseLanguages() {
+    static constexpr auto kDefaultSupportedBaseLanguages =
+        base::MakeFixedFlatSet<std::string_view>({"en"});
+    return base::MakeFlatSet<std::string_view>(kDefaultSupportedBaseLanguages);
+  }
 
   std::vector<blink::mojom::AILanguageCodePtr> valid_language_codes() {
     std::vector<blink::mojom::AILanguageCodePtr> languages;
     languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kValidLanguageCode));
+        blink::mojom::AILanguageCode::New(kSupportedLanguageCode));
     return languages;
   }
 
   std::vector<blink::mojom::AILanguageCodePtr> invalid_language_codes() {
     std::vector<blink::mojom::AILanguageCodePtr> languages;
     languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kInvalidLanguageCode));
+        blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode));
     return languages;
   }
 
   std::vector<blink::mojom::AILanguageCodePtr> mixed_language_codes() {
     std::vector<blink::mojom::AILanguageCodePtr> languages;
     languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kValidLanguageCode));
+        blink::mojom::AILanguageCode::New(kSupportedLanguageCode));
     languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kInvalidLanguageCode));
+        blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode));
     return languages;
   }
 };
 
 TEST_F(AIManagerIsLanguagesSupportedTest, OneVector) {
-  EXPECT_TRUE(AIManager::IsLanguagesSupported(valid_language_codes()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(invalid_language_codes()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(mixed_language_codes()));
+  EXPECT_TRUE(AIManager::IsLanguagesSupported(valid_language_codes(),
+                                              DefaultSupportedBaseLanguages()));
+  EXPECT_FALSE(AIManager::IsLanguagesSupported(
+      invalid_language_codes(), DefaultSupportedBaseLanguages()));
+  EXPECT_FALSE(AIManager::IsLanguagesSupported(
+      mixed_language_codes(), DefaultSupportedBaseLanguages()));
 }
 
 TEST_F(AIManagerIsLanguagesSupportedTest, TwoVectorsAndOneCode) {
   EXPECT_TRUE(AIManager::IsLanguagesSupported(
       valid_language_codes(), valid_language_codes(),
-      blink::mojom::AILanguageCode::New(kValidLanguageCode)));
+      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
+      DefaultSupportedBaseLanguages()));
   EXPECT_FALSE(AIManager::IsLanguagesSupported(
       valid_language_codes(), invalid_language_codes(),
-      blink::mojom::AILanguageCode::New(kValidLanguageCode)));
+      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
+      DefaultSupportedBaseLanguages()));
   EXPECT_FALSE(AIManager::IsLanguagesSupported(
       invalid_language_codes(), mixed_language_codes(),
-      blink::mojom::AILanguageCode::New(kValidLanguageCode)));
+      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
+      DefaultSupportedBaseLanguages()));
   EXPECT_FALSE(AIManager::IsLanguagesSupported(
       valid_language_codes(), valid_language_codes(),
-      blink::mojom::AILanguageCode::New(kInvalidLanguageCode)));
+      blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode),
+      DefaultSupportedBaseLanguages()));
 }

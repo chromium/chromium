@@ -834,25 +834,90 @@ TEST_F(AILanguageModelTest, DestroyWithActivePrompt) {
   EXPECT_FALSE(responder.WaitForCompletion());
 }
 
-TEST_F(AILanguageModelTest, UnsupportedLanguage) {
-  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
+struct LanguageParams {
+  std::string enabled_languages;
+  std::vector<std::string> expected_input_language;
+  bool expect_error;
+};
+
+std::ostream& operator<<(std::ostream& os, const LanguageParams& params) {
+  // Print the desired data members of params to the output stream (os)
+  os << "enabled_languages:" << params.enabled_languages
+     << ", expected_input_language:"
+     << base::JoinString(params.expected_input_language, ", ")
+     << ", expect_error:" << params.expect_error;
+  return os;  // Return the ostream reference for chaining
+}
+
+class AILanguageModelTestWithLanguageParams
+    : public AILanguageModelTest,
+      public testing::WithParamInterface<LanguageParams> {
+ public:
+  AILanguageModelTestWithLanguageParams() {
+    features_.InitWithFeaturesAndParameters(
+        {{blink::features::kAIPromptAPI,
+          {{"langs", GetParam().enabled_languages}}}},
+        {});
+  }
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(AILanguageModelTestWithLanguageParams, PromptWithEnabledLanguages) {
+  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> error_future;
+  base::test::TestFuture<mojo::Remote<blink::mojom::AILanguageModel>>
+      result_future;
+
   AITestUtils::MockCreateLanguageModelClient language_model_client;
-  EXPECT_CALL(language_model_client, OnError(_, _))
-      .WillOnce(
-          [&](auto error, auto quota_error_info) { future.SetValue(error); });
+  if (GetParam().expect_error) {
+    EXPECT_CALL(language_model_client, OnResult(_, _)).Times(0);
+
+    EXPECT_CALL(language_model_client, OnError(_, _))
+        .WillOnce([&](auto error, auto quota_error_info) {
+          error_future.SetValue(error);
+        });
+  } else {
+    EXPECT_CALL(language_model_client, OnResult(_, _))
+        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
+                          language_model,
+                      blink::mojom::AILanguageModelInstanceInfoPtr info) {
+          result_future.SetValue(mojo::Remote<blink::mojom::AILanguageModel>(
+              std::move(language_model)));
+        });
+    EXPECT_CALL(language_model_client, OnError(_, _)).Times(0);
+  }
 
   auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->languages.emplace();
-  expected_input->languages->push_back(blink::mojom::AILanguageCode::New("ja"));
+  for (const auto& language : GetParam().expected_input_language) {
+    expected_input->languages->push_back(
+        blink::mojom::AILanguageCode::New(language));
+  }
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_inputs.emplace();
   options->expected_inputs->push_back(std::move(expected_input));
   GetAIManagerRemote()->CreateLanguageModel(
       language_model_client.BindNewPipeAndPassRemote(), std::move(options));
-  EXPECT_EQ(future.Take(),
-            blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+  if (GetParam().expect_error) {
+    EXPECT_EQ(error_future.Take(),
+              blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+  } else {
+    EXPECT_TRUE(result_future.Wait());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    AILanguageModelTestWithLanguageParams,
+    ::testing::Values(LanguageParams{"en,es,ja", {"en"}, false},
+                      LanguageParams{"*", {"en"}, false},
+                      LanguageParams{"*", {"fr"}, true},
+                      LanguageParams{"", {"en"}, true},
+                      LanguageParams{"", {"fr"}, true},
+                      LanguageParams{"es,ja", {"es"}, false},
+                      LanguageParams{"en,es,ja", {"ja"}, false},
+                      LanguageParams{"en,es,ja", {"ja", "es"}, false},
+                      LanguageParams{"en,es,ja", {"ja", "fr"}, true}));
 
 TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
   ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
@@ -1319,7 +1384,7 @@ TEST_F(AILanguageModelTest, CanCreate_UnsupportedInputLanguages) {
   options->expected_inputs->push_back(
       blink::mojom::AILanguageModelExpected::New(
           blink::mojom::AILanguageModelPromptType::kText,
-          AITestUtils::ToMojoLanguageCodes({"ja"})));
+          AITestUtils::ToMojoLanguageCodes({"fr"})));
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
                                                   callback.Get());
 }
@@ -1333,7 +1398,7 @@ TEST_F(AILanguageModelTest, CanCreate_UnsupportedOutputLanguages) {
   options->expected_outputs->push_back(
       blink::mojom::AILanguageModelExpected::New(
           blink::mojom::AILanguageModelPromptType::kText,
-          AITestUtils::ToMojoLanguageCodes({"ja"})));
+          AITestUtils::ToMojoLanguageCodes({"fr"})));
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
                                                   callback.Get());
 }

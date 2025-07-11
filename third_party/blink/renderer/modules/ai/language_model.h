@@ -62,7 +62,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       ExceptionState& exception_state);
   static ScriptPromise<V8Availability> availability(
       ScriptState* script_state,
-      const LanguageModelCreateCoreOptions* options,
+      LanguageModelCreateCoreOptions* options,
       ExceptionState& exception_state);
   static ScriptPromise<IDLNullable<LanguageModelParams>> params(
       ScriptState* script_state,

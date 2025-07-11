@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ai/ai_summarizer.h"
 
+#include <algorithm>
+
+#include "base/containers/fixed_flat_set.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
@@ -11,6 +15,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
@@ -94,6 +99,21 @@ std::string AISummarizer::CombineContexts(std::string_view shared,
                            ? base::JoinString({shared, input}, " ")
                            : std::string(shared.empty() ? input : shared);
   return result.empty() ? result : base::StrCat({result, "\n"});
+}
+
+// static
+base::flat_set<std::string_view> AISummarizer::GetSupportedLanguageBaseCodes() {
+  // Comma-separated list of languages that are enabled for the Summarizer API.
+  const base::FeatureParam<std::string> kAISummarizationAPILanguagesEnabled{
+      &blink::features::kAISummarizationAPI, "langs", /*default_value=*/"en"};
+  auto kSupportedBaseLanguages =
+      base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
+
+  // TODO(crbug.com/394841624): Using the model execution config instead
+  // of using the hardcoded list.
+  return AIUtils::RestrictSupportedLanguagesForFeature(
+      base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
+      kAISummarizationAPILanguagesEnabled);
 }
 
 void AISummarizer::Summarize(

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ai/ai_language_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
@@ -495,6 +497,23 @@ uint32_t GetMaxTokens(optimization_guide::ModelClient* model_client) {
     LOG(ERROR) << "Prompt API max tokens is 0.";
   }
   return result;
+}
+
+// static
+base::flat_set<std::string_view>
+AILanguageModel::GetSupportedLanguageBaseCodes() {
+  // Comma-separated list of languages that are enabled for the Prompt API.
+  // Specify "*" to enable all supported languages.
+  const base::FeatureParam<std::string> kAIPromptAPILanguagesEnabled{
+      &blink::features::kAIPromptAPI, "langs", /*default_value=*/"en"};
+  auto kSupportedBaseLanguages =
+      base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
+
+  // TODO(crbug.com/394841624): Using the model execution config instead
+  // of using the hardcoded list.
+  return AIUtils::RestrictSupportedLanguagesForFeature(
+      base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
+      kAIPromptAPILanguagesEnabled);
 }
 
 AILanguageModel::AILanguageModel(

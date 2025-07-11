@@ -107,3 +107,15 @@ promise_test(async t => {
   });
   await promise_rejects_js(t, TypeError, result);
 }, 'Create multiple system role entries should fail');
+
+promise_test(async (t) => {
+  return promise_rejects_js(t, RangeError, LanguageModel.create({
+    expectedInputs: [{type: 'text', languages: ['en-abc-invalid']}]
+  }));
+}, 'LanguageModel.create() rejects when given invalid language tags');
+
+promise_test(async (t) => {
+  let session = await LanguageModel.create(
+      {expectedInputs: [{type: 'text', languages: ['EN']}]});
+  assert_true(!!session);
+}, 'LanguageModel.create() canonicalizes language tags');

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AI_AI_SUMMARIZER_H_
 #define CHROME_BROWSER_AI_AI_SUMMARIZER_H_
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
@@ -48,6 +49,8 @@ class AISummarizer : public AIContextBoundObject,
   // Joins `shared` and `input` contexts with a space and newline as needed.
   static std::string CombineContexts(std::string_view shared,
                                      std::string_view input);
+  // Returns a set of (base) language codes that are supported and enabled.
+  static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
 
  private:
   friend class AITestUtils;

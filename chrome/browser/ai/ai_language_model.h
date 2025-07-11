@@ -8,6 +8,7 @@
 #include <deque>
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -115,6 +116,9 @@ class AILanguageModel : public AIContextBoundObject,
   // Returns the the metadata parsed to the `PromptApiMetadata` from `any`.
   static PromptApiMetadata ParseMetadata(
       const optimization_guide::proto::Any& any);
+
+  // Returns a set of (base) language codes that are supported and enabled.
+  static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
 
   // Format the initial prompts, gets the token count, updates the session,
   // and reports to `create_client`.
