@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -134,7 +135,7 @@ public class ButtonVisibilityRule {
      * @param visible {@code true} if the button is to be visible.
      */
     public void addButton(int index, View view, boolean visible) {
-        addButtonForCustomAction(index, view, visible, ButtonType.OTHER);
+        addButtonInternal(index, view, visible, ButtonType.OTHER, null);
     }
 
     /**
@@ -148,10 +149,7 @@ public class ButtonVisibilityRule {
      */
     public void addButtonForCustomAction(
             int index, View view, boolean visible, @ButtonType int customType) {
-        if (!mActivated) return;
-
-        mButtons.put(index, new Button(view, visible, customType, null));
-        if (mToolbarWidth > 0 && visible) refresh();
+        addButtonInternal(index, view, visible, customType, null);
     }
 
     /**
@@ -164,11 +162,40 @@ public class ButtonVisibilityRule {
      *     is applied.
      */
     public void addButtonWithCallback(
-            int index, View view, boolean visible, Callback<Boolean> callback) {
+            int index, View view, boolean visible, @Nullable Callback<Boolean> callback) {
+        addButtonInternal(index, view, visible, ButtonType.OTHER, callback);
+    }
+
+    private static int getViewWidth(View view) {
+        int width = view.getLayoutParams().width;
+        return width > 0 ? width : view.getMeasuredWidth();
+    }
+
+    private void addButtonInternal(
+            int index,
+            View view,
+            boolean visible,
+            @ButtonType int customType,
+            @Nullable Callback<Boolean> callback) {
         if (!mActivated) return;
 
-        mButtons.put(index, new Button(view, visible, ButtonType.OTHER, callback));
-        if (mToolbarWidth > 0 && visible) refresh();
+        mButtons.put(index, new Button(view, visible, customType, callback));
+        if (mToolbarWidth > 0 && visible) {
+            if (getViewWidth(view) > 0) {
+                refresh();
+            } else {
+                view.getViewTreeObserver()
+                        .addOnPreDrawListener(
+                                new ViewTreeObserver.OnPreDrawListener() {
+                                    @Override
+                                    public boolean onPreDraw() {
+                                        view.getViewTreeObserver().removeOnPreDrawListener(this);
+                                        refresh();
+                                        return true;
+                                    }
+                                });
+            }
+        }
     }
 
     /**
@@ -203,7 +230,7 @@ public class ButtonVisibilityRule {
 
     /** Refresh visibility of buttons with the state updated so far. */
     public void refresh() {
-        if (!mActivated) return;
+        if (!mActivated || !allViewsHaveSize()) return;
 
         int urlBarWidth = getUrlBarWidth();
         // Loop through visible buttons, and see if the title/url bar width can stay above 68dp.
@@ -222,6 +249,15 @@ public class ButtonVisibilityRule {
         adjustMinimizeButtonPriority();
         assert urlBarWidth >= mMinUrlWidthPx || isAllButtonHidden()
                 : "There is not enough space for URL bar!!!!";
+    }
+
+    private boolean allViewsHaveSize() {
+        for (@ButtonId int i = 0; i <= ButtonId.MAX_ID; ++i) {
+            Button button = mButtons.get(i);
+            if (button == null || !button.mVisible) continue;
+            if (getViewWidth(button.mView) == 0) return false;
+        }
+        return true;
     }
 
     private void adjustMinimizeButtonPriority() {
@@ -267,7 +303,7 @@ public class ButtonVisibilityRule {
      * visible again if the width allows.
      */
     private void refreshOnExpandedToolbar() {
-        if (!mActivated) return;
+        if (!mActivated || !allViewsHaveSize()) return;
 
         int urlBarWidth = getUrlBarWidth();
         @ButtonId int buttonToShow = 0;
@@ -298,9 +334,9 @@ public class ButtonVisibilityRule {
         for (@ButtonId int i = 0; i <= ButtonId.MAX_ID; ++i) {
             Button button = mButtons.get(i);
             if (button == null || !button.mVisible) continue;
-            assert button.mView.getLayoutParams().width > 0
-                    : "Button#LayoutParams must contain the actual width.";
-            buttonsWidth += button.mView.getLayoutParams().width;
+            int width = getViewWidth(button.mView);
+            assert width > 0 : "All views must have the size ready.";
+            buttonsWidth += width;
         }
         return mToolbarWidth - buttonsWidth;
     }
