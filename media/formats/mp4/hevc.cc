@@ -395,7 +395,8 @@ bool HEVC::InsertParamSetsAnnexB(
   if (subsamples && !subsamples->empty()) {
     int subsample_index = AVC::FindSubsampleIndex(*buffer, subsamples,
                                                   &(*config_insert_point));
-    // Update the size of the subsample where VPS/SPS/PPS is to be inserted.
+    // Update the size of the subsample where VPS/SPS/PPS and SEI messages are
+    // to be inserted.
     (*subsamples)[subsample_index].clear_bytes += param_sets.size();
   }
 

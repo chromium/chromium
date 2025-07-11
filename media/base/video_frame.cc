@@ -1603,7 +1603,9 @@ std::string VideoFrame::AsHumanReadableString() const {
   std::ostringstream s;
   s << ConfigToString(format(), storage_type_, coded_size(), visible_rect_,
                       natural_size_)
-    << " timestamp:" << timestamp_.InMicroseconds();
+    << " timestamp:" << timestamp_.InMicroseconds()
+    << " color_space: " << ColorSpace().ToString() << " hdr_metadata: "
+    << (hdr_metadata_ ? hdr_metadata_->ToString() : "unset");
   if (HasSharedImage()) {
     s << " shared_image: true";
   }
