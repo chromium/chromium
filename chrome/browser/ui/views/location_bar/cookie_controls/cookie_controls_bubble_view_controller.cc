@@ -328,7 +328,13 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   if (IsReloadingState() || !web_contents_) {
     return;
   }
-  // TODO(crbug.com/388294499): Add metrics for ACT actions.
+  if (controls_state_ == CookieControlsState::kActiveTp) {
+    base::RecordAction(base::UserMetricsAction(
+        "TrackingProtections.Bubble.PausedProtections"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "TrackingProtections.Bubble.ReenabledProtections"));
+  }
   controller_->SetStateChangedViaBypass(true);
   SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();

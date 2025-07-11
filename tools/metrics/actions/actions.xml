@@ -46479,6 +46479,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TrackingProtections.Bubble.PausedProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Protections are paused via user bypass.</description>
+</action>
+
 <action name="TrackingProtections.Bubble.ProtectionsActive.Opened">
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
@@ -46493,6 +46499,12 @@ should be able to be added at any place in this file.
   <description>
     User bypass is opened when tracking protections are paused.
   </description>
+</action>
+
+<action name="TrackingProtections.Bubble.ReenabledProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Protections are reenabled via user bypass.</description>
 </action>
 
 <action name="TrackingProtections.Bubble.ReloadingTimeout">
