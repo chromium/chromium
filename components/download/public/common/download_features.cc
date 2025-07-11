@@ -42,6 +42,10 @@ BASE_FEATURE(kRefreshExpirationDate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kDisplayInitiatorOrigin,
+             "DownloadsDisplayInitiatorOrigin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDownloadNotificationServiceUnifiedAPI,
              "DownloadNotificationServiceUnifiedAPI",
 #if BUILDFLAG(IS_ANDROID)
