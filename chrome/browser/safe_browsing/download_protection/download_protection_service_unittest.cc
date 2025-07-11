@@ -2907,6 +2907,8 @@ TEST_F(DownloadProtectionServiceTest,
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectDangerousDownloadEvent(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
@@ -2934,6 +2936,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
+  run_loop.Run();
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -2976,6 +2979,8 @@ TEST_F(DownloadProtectionServiceTest,
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
@@ -2996,6 +3001,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
+  run_loop.Run();
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -3032,6 +3038,8 @@ TEST_F(DownloadProtectionServiceTest,
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectDangerousDownloadEvent(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
@@ -3050,6 +3058,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
+  run_loop.Run();
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -3095,6 +3104,8 @@ TEST_F(DownloadProtectionServiceTest,
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
@@ -3115,6 +3126,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING);
+  run_loop.Run();
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -3160,6 +3172,8 @@ TEST_F(DownloadProtectionServiceTest,
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
@@ -3180,6 +3194,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK);
+  run_loop.Run();
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
@@ -365,8 +366,9 @@ class ChromePasswordProtectionServiceTest
     base::RunLoop().RunUntilIdle();
     service_.reset();
     request_ = nullptr;
-    if (account_password_store_)
+    if (account_password_store_) {
       account_password_store_->ShutdownOnUIThread();
+    }
     password_store_->ShutdownOnUIThread();
     identity_test_env_profile_adaptor_.reset();
     cache_manager_.reset();
@@ -1410,13 +1412,16 @@ TEST_F(ChromePasswordProtectionServiceTest,
   PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                  PasswordType::SAVED_PASSWORD,
                  /*is_warning_showing=*/false);
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   service_->MaybeReportPasswordReuseDetected(
       web_contents()->GetLastCommittedURL(), kUserName,
       PasswordType::ENTERPRISE_PASSWORD,
       /*is_phishing_url =*/true,
       /*warning_shown =*/true);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1437,7 +1442,6 @@ TEST_F(ChromePasswordProtectionServiceTest,
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,
       /*warning_shown =*/true);
-  base::RunLoop().RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1465,7 +1469,6 @@ TEST_F(ChromePasswordProtectionServiceTest,
                                              PasswordType::OTHER_GAIA_PASSWORD,
                                              /*is_phishing_url =*/true,
                                              /*warning_shown =*/true);
-  base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1473,12 +1476,15 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // If the reused password is not Enterprise password but the account is
   // GSuite, event should be sent.
   service_->SetAccountInfo(kUserName, "example.com");
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .Times(1)
+      .WillOnce(base::test::RunOnceClosure(run_loop2.QuitClosure()));
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,
       /*warning_shown =*/true);
-  base::RunLoop().RunUntilIdle();
+  run_loop2.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(2, test_event_router_->GetEventCount(

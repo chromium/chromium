@@ -834,6 +834,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -861,6 +863,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
@@ -911,6 +914,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -938,6 +943,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::POTENTIALLY_UNWANTED, last_result_);
   }
@@ -980,6 +986,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1005,6 +1013,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
   }
@@ -1047,6 +1056,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1072,6 +1083,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_WARNING, last_result_);
   }
@@ -1118,6 +1130,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1143,6 +1157,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
   }
@@ -1180,6 +1195,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1204,6 +1221,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
   }
@@ -1241,6 +1259,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1265,6 +1285,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
   }
@@ -1312,6 +1333,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
                                // always ALLOW
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1340,6 +1363,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
@@ -1598,6 +1622,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1621,6 +1647,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
 
     request.Start();
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
@@ -1698,6 +1725,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -1737,6 +1766,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
 
     request.Start();
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
@@ -1771,6 +1801,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
       enterprise_connectors::ContentAnalysisResponse());
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
       /*tab_url*/ "https://example.com/",
@@ -1795,6 +1827,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
   request.Start();
 
   run_loop.Run();
+  validator_run_loop.Run();
 
   EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
 }
@@ -1985,6 +2018,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         ->SetExpectedFinalAction(expected_final_action());
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -2010,6 +2045,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
@@ -2051,6 +2087,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -2076,6 +2114,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::POTENTIALLY_UNWANTED, last_result_);
   }
@@ -2109,6 +2148,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -2133,6 +2174,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
   }
@@ -2172,6 +2214,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
 
     enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
         /*tab_url*/ "https://example.com/",
@@ -2196,6 +2240,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     request.Start();
 
     run_loop.Run();
+    validator_run_loop.Run();
 
     EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
