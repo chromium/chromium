@@ -59,7 +59,4 @@
 -ProfileHelperTest.OpenNewWindowForProfile
 -SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
 
-# TODO(crbug.com/417430921) Test crashes frequently
--ServiceWorkerSubScopeWorkerTrackingBrowserTest.StoppingSubScopeWorkerDoesNotAffectExtensionWorker
-
 -TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
