@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -25,8 +24,10 @@ class Image;
 class ImagePaintTimingDetector;
 class ImageResourceContent;
 class LargestContentfulPaintCalculator;
+class LayoutBoxModelObject;
 class LayoutObject;
 class LocalFrameView;
+class Node;
 class PropertyTreeStateOrAlias;
 class MediaTiming;
 class TextPaintTimingDetector;
