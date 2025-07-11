@@ -106,7 +106,8 @@ class WebStateList::WebStateWrapper {
   web::WebState* web_state() const { return web_state_.get(); }
 
   // Returns ownership of the wrapped WebState.
-  std::unique_ptr<web::WebState> ReleaseWebState();
+  static std::unique_ptr<web::WebState> ReleaseWebState(
+      std::unique_ptr<WebStateWrapper> wrapper);
 
   // Replaces the wrapped WebState and returns the old WebState after forfeiting
   // ownership. The opener is cleared, but the group is kept.
@@ -142,13 +143,11 @@ WebStateList::WebStateWrapper::WebStateWrapper(
 
 WebStateList::WebStateWrapper::~WebStateWrapper() = default;
 
-std::unique_ptr<web::WebState>
-WebStateList::WebStateWrapper::ReleaseWebState() {
-  std::unique_ptr<web::WebState> web_state;
-  std::swap(web_state, web_state_);
-  opener_ = WebStateOpener();
-  group_ = nullptr;
-  return web_state;
+// static
+std::unique_ptr<web::WebState> WebStateList::WebStateWrapper::ReleaseWebState(
+    std::unique_ptr<WebStateWrapper> wrapper) {
+  CHECK(wrapper->web_state_.get());
+  return std::move(wrapper->web_state_);
 }
 
 std::unique_ptr<web::WebState> WebStateList::WebStateWrapper::ReplaceWebState(
@@ -655,11 +654,28 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   CHECK(locked_);
   CHECK(ContainsIndex(index));
 
+  const WebStateWrapper* wrapper = web_state_wrappers_[index].get();
+  const TabGroup* group = wrapper->group();
+
+  // Unless the WebState is detached with DetachReason::kClosed (which is
+  // used before destroying the WebStateList), check whether the delegate
+  // wants to instead insert a new WebState. If this happens, convert the
+  // DetachWebStateAtImpl(...) into a ReplaceWebStateAtImpl(...).
+  if (params.detach_reason != WebStateListChangeDetach::DetachReason::kClosed) {
+    if (ShouldInsertWebState(group)) {
+      std::unique_ptr<web::WebState> web_state_to_insert =
+          groups_delegate_->WebStateToAddToEmptyGroup();
+      CHECK(web_state_to_insert);
+
+      CHECK_EQ(group->range().count(), 1);
+      return ReplaceWebStateAtImpl(index, std::move(web_state_to_insert));
+    }
+  }
+
   const bool is_active_web_state_detached = (index == active_index_);
-  web::WebState* web_state = web_state_wrappers_[index]->web_state();
+  web::WebState* web_state = wrapper->web_state();
   delegate_->WillRemoveWebState(web_state);
 
-  const TabGroup* group = web_state_wrappers_[index]->group();
   const WebStateListChangeDetach detach_change(web_state, index,
                                                params.detach_reason, group);
 
@@ -670,35 +686,26 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
                                             ? GetWebStateAt(new_active_index)
                                             : nullptr;
 
-  int insertion_index = kInvalidIndex;
-  // Do not insert web state when shuting down the app. All tabs are closed.
-  bool is_shutting_down =
-      params.detach_reason == WebStateListChangeDetach::DetachReason::kClosed;
-  if (!is_shutting_down && ShouldInsertWebState(group)) {
-    // In case the group is empty but should be kept, add a new tab in it
-    // to prevent its deletion.
-    std::unique_ptr<web::WebState> web_state_to_insert =
-        groups_delegate_->WebStateToAddToEmptyGroup();
-    CHECK(web_state_to_insert);
-    new_active_web_state = web_state_to_insert.get();
-    insertion_index = InsertWebStateImpl(
-        std::move(web_state_to_insert),
-        WebStateList::InsertionParams::Automatic().InGroup(group));
-    CHECK_GT(insertion_index, index);
-  }
-
   const WebStateListStatus status = {
       .old_active_web_state = old_active_web_state,
-      .new_active_web_state = new_active_web_state};
+      .new_active_web_state = new_active_web_state,
+  };
 
   for (auto& observer : observers_) {
     observer.WebStateListWillChange(this, detach_change, status);
   }
 
   ClearOpenersReferencing(index);
-  std::unique_ptr<web::WebState> detached_web_state =
-      web_state_wrappers_[index]->ReleaseWebState();
+
+  // Past this point the WebState has been removed from the list but is
+  // still owned by detached_wrapper. The variables `group`, `wrapper`,
+  // and `web_state` are still valid.
+  std::unique_ptr<WebStateWrapper> detached_wrapper =
+      std::move(web_state_wrappers_[index]);
   web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
+  CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
+  CHECK_EQ(detached_wrapper->web_state(), web_state);
+  CHECK_EQ(detached_wrapper.get(), wrapper);
 
   // Update the number of pinned tabs if necessary.
   if (index < pinned_tabs_count_) {
@@ -725,13 +732,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     CHECK_GT(active_index_, 0);
     --active_index_;
   }
-  // If a web state is inserted, the newly inserted web state should become the
-  // active one to avoid crash see crbug.com/419042071.
-  if (insertion_index != kInvalidIndex) {
-    // Removes one to `insertion_index`, because the insertion happened before
-    // the removal of the web state.
-    active_index_ = --insertion_index;
-  }
 
   // Check that the active element (if there is one) is valid and expected.
   CHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
@@ -739,7 +739,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   // Inform the delegate that the active WebState changed (it may decide to
   // force its realization, ...).
-  if (is_active_web_state_detached || insertion_index != kInvalidIndex) {
+  if (is_active_web_state_detached) {
     OnActiveWebStateChanged();
   }
 
@@ -750,7 +750,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   // If the group is now empty, delete it.
   DeleteGroupIfEmpty(group);
 
-  return detached_web_state;
+  CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
+  return WebStateWrapper::ReleaseWebState(std::move(detached_wrapper));
 }
 
 bool WebStateList::ShouldInsertWebState(const TabGroup* group) {

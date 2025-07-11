@@ -3474,19 +3474,73 @@ TEST_F(WebStateListTest, GroupDeletedWhenShouldBeDeleted) {
 }
 
 // Ensures when the delegate prevents group deletion, the group remains, and
-// detaching its final tab results in a new tab being added to it.
+// detaching its final tab results in a new tab being added to it (replacing
+// the detached tab).
 TEST_F(WebStateListTest, GroupNotDeletedWhenShouldNotBeDeleted) {
   WebStateListBuilderFromDescription builder(&web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
   const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
 
+  ASSERT_EQ(web_state_list_.count(), 1);
+  const web::WebStateID old_web_state_id =
+      web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier();
+
   observer_.ResetStatistics();
   groups_delegate_.SetShouldDeleteGroup(false);
   web_state_list_.DetachWebStateAt(0);
 
-  EXPECT_NE("| [ 0 a ]", builder.GetWebStateListDescription());
+  // The WebState is going to be replaced by a new WebState, so
+  // WebStateListBuilderFromDescription reuse the identifer for
+  // the new WebState. The identifier should be different though.
+  EXPECT_EQ("| [ 0 a ]", builder.GetWebStateListDescription());
+  ASSERT_EQ(web_state_list_.count(), 1);
+  EXPECT_NE(old_web_state_id,
+            web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier());
   EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
-  EXPECT_TRUE(observer_.web_state_detached());
-  EXPECT_TRUE(observer_.web_state_inserted());
+  EXPECT_TRUE(observer_.web_state_replaced());
   EXPECT_EQ(1, group_0->range().count());
+}
+
+// Ensures when the delegate prevents group deletion, the group remains, and
+// detaching its final tab results in a new tab being added to it (replacing
+// the detached tab).
+TEST_F(WebStateListTest, GroupNotDeletedWhenShouldNotBeDeleted_UserAction) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  ASSERT_EQ(web_state_list_.count(), 1);
+  const web::WebStateID old_web_state_id =
+      web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier();
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
+
+  // The WebState is going to be replaced by a new WebState, so
+  // WebStateListBuilderFromDescription reuse the identifer for
+  // the new WebState. The identifier should be different though.
+  EXPECT_EQ("| [ 0 a ]", builder.GetWebStateListDescription());
+  ASSERT_EQ(web_state_list_.count(), 1);
+  EXPECT_NE(old_web_state_id,
+            web_state_list_.GetWebStateAt(0)->GetUniqueIdentifier());
+  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
+  EXPECT_TRUE(observer_.web_state_replaced());
+  EXPECT_EQ(1, group_0->range().count());
+}
+
+// Ensures when the delegate cannot prevent when closing the last tab in a
+// group if the WebStateList determines the close action is part of the app
+// shutdown.
+TEST_F(WebStateListTest, GroupDeletedEvenIfShouldNotBeDeletedAtAppShutdown) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kDefault);
+
+  EXPECT_EQ("|", builder.GetWebStateListDescription());
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(web_state_list_.empty());
 }
