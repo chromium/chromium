@@ -6,10 +6,12 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_DATA_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/values.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/resolvers/permission_resolver.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -92,7 +94,7 @@ struct PermissionRequestData {
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
 
-  base::Value prompt_options;
+  PromptOptions prompt_options = std::monostate();
 };
 
 }  // namespace permissions

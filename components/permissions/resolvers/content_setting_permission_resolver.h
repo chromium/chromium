@@ -26,7 +26,7 @@ class ContentSettingPermissionResolver : public PermissionResolver {
   PermissionSetting ComputePermissionDecisionResult(
       const PermissionSetting& previous_setting,
       PermissionDecision decision,
-      const base::Value& prompt_options) const override;
+      PromptOptions prompt_options) const override;
 
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;

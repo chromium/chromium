@@ -5,6 +5,7 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -68,15 +69,15 @@ TEST_P(ContentSettingPermissionResolverTest,
   ContentSetting previous_setting(CONTENT_SETTING_DEFAULT);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kAllow, base::Value()),
+                previous_setting, PermissionDecision::kAllow, std::monostate()),
             PermissionSetting(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kDeny, base::Value()),
+                previous_setting, PermissionDecision::kDeny, std::monostate()),
             PermissionSetting(CONTENT_SETTING_BLOCK));
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kNone, base::Value()),
+                previous_setting, PermissionDecision::kNone, std::monostate()),
 
             PermissionSetting(CONTENT_SETTING_ASK));
 }

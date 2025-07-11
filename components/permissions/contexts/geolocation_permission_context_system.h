@@ -39,7 +39,7 @@ class GeolocationPermissionContextSystem
 
  private:
   // GeolocationPermissionContext:
-  ContentSetting GetContentSettingStatusInternal(
+  PermissionSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;

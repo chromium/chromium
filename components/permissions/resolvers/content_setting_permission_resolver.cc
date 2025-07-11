@@ -15,6 +15,7 @@
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 
 namespace permissions {
 
@@ -46,7 +47,7 @@ PermissionSetting
 ContentSettingPermissionResolver::ComputePermissionDecisionResult(
     const PermissionSetting& previous_setting,
     PermissionDecision decision,
-    const base::Value& prompt_options) const {
+    PromptOptions prompt_options) const {
   return PermissionUtil::PermissionDecisionToContentSetting(decision);
 }
 
