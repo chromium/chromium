@@ -489,8 +489,8 @@ class BookmarkManagerMediator
                         mBookmarkModel,
                         bookmarkUiPrefs,
                         mShoppingService,
-                        /* rootFolderForceVisibleMask= */ BookmarkBarUtils.isFeatureEnabled(
-                                        mContext)
+                        /* rootFolderForceVisibleMask= */ BookmarkBarUtils
+                                        .isDeviceBookmarkBarCompatible(mContext)
                                 ? BookmarkNodeMaskBit.ACCOUNT_AND_LOCAL_BOOKMARK_BAR
                                 : BookmarkNodeMaskBit.NONE);
 

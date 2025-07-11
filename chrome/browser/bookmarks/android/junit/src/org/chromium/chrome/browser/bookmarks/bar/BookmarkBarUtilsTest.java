@@ -120,28 +120,36 @@ public class BookmarkBarUtilsTest {
 
     @Test
     @SmallTest
-    public void testIsFeatureAllowed() {
+    public void testIsActivityStateBookmarkBarCompatible() {
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
                         activity -> {
                             // Case: Below "w412dp" threshold w/ feature disabled.
                             RuntimeEnvironment.setQualifiers("w411dp");
-                            BookmarkBarUtils.setFeatureEnabledForTesting(false);
-                            assertFalse(BookmarkBarUtils.isFeatureAllowed(activity));
+                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
+                            assertFalse(
+                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
+                                            activity));
 
                             // Case: Below "w412dp" threshold w/ feature enabled.
-                            BookmarkBarUtils.setFeatureEnabledForTesting(true);
-                            assertFalse(BookmarkBarUtils.isFeatureAllowed(activity));
+                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+                            assertFalse(
+                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
+                                            activity));
 
                             // Case: At "w412dp" threshold w/ feature disabled.
                             RuntimeEnvironment.setQualifiers("w412dp");
-                            BookmarkBarUtils.setFeatureEnabledForTesting(false);
-                            assertFalse(BookmarkBarUtils.isFeatureAllowed(activity));
+                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
+                            assertFalse(
+                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
+                                            activity));
 
                             // Case: At "w412dp" threshold w/ feature enabled.
-                            BookmarkBarUtils.setFeatureEnabledForTesting(true);
-                            assertTrue(BookmarkBarUtils.isFeatureAllowed(activity));
+                            BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+                            assertTrue(
+                                    BookmarkBarUtils.isActivityStateBookmarkBarCompatible(
+                                            activity));
                         });
     }
 
@@ -152,7 +160,10 @@ public class BookmarkBarUtilsTest {
     public void testIsFeatureEnabledWhenFlagIsDisabledOnPhone() {
         mActivityScenarioRule
                 .getScenario()
-                .onActivity(activity -> assertFalse(BookmarkBarUtils.isFeatureEnabled(activity)));
+                .onActivity(
+                        activity ->
+                                assertFalse(
+                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
     }
 
     @Test
@@ -162,7 +173,10 @@ public class BookmarkBarUtilsTest {
     public void testIsFeatureEnabledWhenFlagIsEnabledOnPhone() {
         mActivityScenarioRule
                 .getScenario()
-                .onActivity(activity -> assertFalse(BookmarkBarUtils.isFeatureEnabled(activity)));
+                .onActivity(
+                        activity ->
+                                assertFalse(
+                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
     }
 
     @Test
@@ -172,7 +186,10 @@ public class BookmarkBarUtilsTest {
     public void testIsFeatureEnabledWhenFlagIsDisabledOnTablet() {
         mActivityScenarioRule
                 .getScenario()
-                .onActivity(activity -> assertFalse(BookmarkBarUtils.isFeatureEnabled(activity)));
+                .onActivity(
+                        activity ->
+                                assertFalse(
+                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
     }
 
     @Test
@@ -182,33 +199,36 @@ public class BookmarkBarUtilsTest {
     public void testIsFeatureEnabledWhenFlagIsEnabledOnTablet() {
         mActivityScenarioRule
                 .getScenario()
-                .onActivity(activity -> assertTrue(BookmarkBarUtils.isFeatureEnabled(activity)));
+                .onActivity(
+                        activity ->
+                                assertTrue(
+                                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(activity)));
     }
 
     @Test
     @SmallTest
-    public void testIsFeatureVisible() {
+    public void testIsBookmarkBarVisible() {
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
                         activity -> {
                             // Case: feature disallowed and setting disabled.
-                            BookmarkBarUtils.setFeatureAllowedForTesting(false);
+                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
                             BookmarkBarUtils.setSettingEnabledForTesting(false);
-                            assertFalse(BookmarkBarUtils.isFeatureVisible(activity, mProfile));
+                            assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
 
                             // Case: feature disallowed and setting enabled.
                             BookmarkBarUtils.setSettingEnabledForTesting(true);
-                            assertFalse(BookmarkBarUtils.isFeatureVisible(activity, mProfile));
+                            assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
 
                             // Case: feature allowed and setting disabled.
-                            BookmarkBarUtils.setFeatureAllowedForTesting(true);
+                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
                             BookmarkBarUtils.setSettingEnabledForTesting(false);
-                            assertFalse(BookmarkBarUtils.isFeatureVisible(activity, mProfile));
+                            assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
 
                             // Case feature allowed and setting enabled.
                             BookmarkBarUtils.setSettingEnabledForTesting(true);
-                            assertTrue(BookmarkBarUtils.isFeatureVisible(activity, mProfile));
+                            assertTrue(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
                         });
     }
 

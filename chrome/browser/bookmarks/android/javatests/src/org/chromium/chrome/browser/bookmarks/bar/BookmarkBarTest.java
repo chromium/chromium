@@ -98,7 +98,7 @@ public class BookmarkBarTest {
     public void setUp() {
         mCtaTestRule.startOnBlankPage();
 
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ true));
         waitForBookmarkBarVisibility(/* visible= */ true);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -150,7 +150,7 @@ public class BookmarkBarTest {
         waitForBookmarkBarVisibility(/* visible= */ false);
 
         // Case: Toggle w/ feature disallowed.
-        BookmarkBarUtils.setFeatureAllowedForTesting(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
         waitForBookmarkBarVisibility(/* visible= */ false);
     }
@@ -232,12 +232,12 @@ public class BookmarkBarTest {
         waitForBookmarkBarVisibility(/* visible= */ true);
 
         // Case: Configuration changed to disallow feature.
-        BookmarkBarUtils.setFeatureAllowedForTesting(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(this::notifyConfigurationChanged);
         waitForBookmarkBarVisibility(/* visible= */ false);
 
         // Case: Configuration changed to allow feature.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(this::notifyConfigurationChanged);
         waitForBookmarkBarVisibility(/* visible= */ true);
     }

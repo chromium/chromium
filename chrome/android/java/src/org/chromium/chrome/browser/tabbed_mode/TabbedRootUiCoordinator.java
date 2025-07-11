@@ -931,7 +931,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
-        if (BookmarkBarUtils.isFeatureEnabled(mActivity)) {
+        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
             mBookmarkBarVisibilityProvider =
                     new BookmarkBarVisibilityProvider(
                             mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
@@ -1870,7 +1870,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
-            if (BookmarkBarUtils.isFeatureAllowed(mActivity)) {
+            if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 BookmarkBarUtils.toggleSettingEnabled(mProfileSupplier.get());
                 return true;
             }

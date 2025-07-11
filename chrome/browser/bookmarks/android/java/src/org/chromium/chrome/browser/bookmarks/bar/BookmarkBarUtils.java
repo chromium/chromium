@@ -46,13 +46,13 @@ public class BookmarkBarUtils {
     }
 
     /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
-    private static @Nullable Boolean sFeatureAllowedForTesting;
+    private static @Nullable Boolean sActivityStateBookmarkBarCompatibleForTesting;
 
     /** Whether the bookmark bar feature is forcibly enabled/disabled for testing. */
-    private static @Nullable Boolean sFeatureEnabledForTesting;
+    private static @Nullable Boolean sDeviceBookmarkBarCompatibleForTesting;
 
     /** Whether the bookmark bar feature is forcibly visible/invisible for testing. */
-    private static @Nullable Boolean sFeatureVisibleForTesting;
+    private static @Nullable Boolean sBookmarkBarVisibleForTesting;
 
     /** Whether the bookmark bar user setting is forcibly enabled/disabled for testing. */
     private static @Nullable Boolean sSettingEnabledForTesting;
@@ -63,50 +63,66 @@ public class BookmarkBarUtils {
     private BookmarkBarUtils() {}
 
     /**
-     * Returns whether the bookmark bar feature is currently allowed. Note that even when the
-     * associated feature flag is enabled and device form factor restrictions are satisified, the
-     * feature may still not be allowed in certain device configurations.
+     * Returns true if the current state is compatible with the Bookmark Bar. The Bookmark Bar
+     * requires certain device types, as well as certain activity states, e.g. window sizes. It may
+     * be true that a device supports the Bookmark Bar and so the feature is exposed to the user for
+     * this session, but, the user could be in a state where interaction with, or parts of, the
+     * Bookmark Bar should be disabled.
      *
-     * @param context The context in which feature eligibility should be assessed.
-     * @return Whether the feature is currently allowed.
+     * <p>Check this value in cases such as responding to user actions that interact with the
+     * Bookmark Bar.
+     *
+     * <p>See {@link #isDeviceBookmarkBarCompatible(Context)} and {@link
+     * #isWindowBookmarkBarCompatible(Context)}.
+     *
+     * @param context The context in which activity state compatibility should be assessed.
+     * @return Whether the current activity state supports the Bookmark Bar.
      */
-    public static boolean isFeatureAllowed(Context context) {
-        if (sFeatureAllowedForTesting != null) {
-            return sFeatureAllowedForTesting;
+    public static boolean isActivityStateBookmarkBarCompatible(Context context) {
+        if (sActivityStateBookmarkBarCompatibleForTesting != null) {
+            return sActivityStateBookmarkBarCompatibleForTesting;
         }
-        return isFeatureEnabled(context)
-                && context.getResources().getBoolean(R.bool.bookmark_bar_allowed);
+        return isDeviceBookmarkBarCompatible(context) && isWindowBookmarkBarCompatible(context);
     }
 
     /**
-     * Returns whether the bookmark bar feature is currently enabled. The feature is considered to
-     * be enabled when its associated feature flag is enabled and device form factor restrictions
-     * are satisfied.
+     * Returns true if the device is compatible with, and can support, the Bookmark Bar, and
+     * therefore if the feature should be exposed to the user. If true, user flows such as keyboard
+     * shortcuts, IPH, settings toggles, device policies, etc should be present. This value should
+     * always return the same value for a device.
      *
-     * @param context The context in which feature enablement should be assessed.
-     * @return Whether the feature is currently enabled.
+     * <p>Check this value when determining which user actions to expose to users for the Bookmark
+     * Bar.
+     *
+     * <p>See {@link #isWindowBookmarkBarCompatible(Context)} and {@link
+     * #isActivityStateBookmarkBarCompatible(Context)}.
+     *
+     * <p>Note: This also checks the feature flag for simplicity for clients.
+     *
+     * @param context The context in which device compatibility should be assessed.
+     * @return Whether the device supports the Bookmark Bar.
      */
-    public static boolean isFeatureEnabled(Context context) {
-        if (sFeatureEnabledForTesting != null) {
-            return sFeatureEnabledForTesting;
+    public static boolean isDeviceBookmarkBarCompatible(Context context) {
+        if (sDeviceBookmarkBarCompatibleForTesting != null) {
+            return sDeviceBookmarkBarCompatibleForTesting;
         }
         return ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
-     * Returns whether the bookmark bar feature is currently visible. The feature is visible when it
-     * is allowed in the given context and the user setting for the given profile is enabled.
+     * Returns true if the Bookmark Bar currently visible. The feature is visible when it is allowed
+     * in the given context and the user setting for the given profile is enabled.
      *
-     * @param context The context in which feature eligibility should be assessed.
+     * @param context The context in which compatibility should be assessed.
      * @param profile The profile for which the user setting should be assessed.
-     * @return Whether the feature is currently visible.
+     * @return Whether the Bookmark Bar is currently visible.
      */
-    public static boolean isFeatureVisible(Context context, @Nullable Profile profile) {
-        if (sFeatureVisibleForTesting != null) {
-            return sFeatureVisibleForTesting;
+    public static boolean isBookmarkBarVisible(Context context, @Nullable Profile profile) {
+        if (sBookmarkBarVisibleForTesting != null) {
+            return sBookmarkBarVisibleForTesting;
         }
-        return isFeatureAllowed(context) && isSettingEnabled(profile);
+        return isActivityStateBookmarkBarCompatible(context) && isSettingEnabled(profile);
     }
 
     /**
@@ -141,6 +157,22 @@ public class BookmarkBarUtils {
         final var prefService = getPrefService(profile);
         prefService.setBoolean(
                 Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
+    }
+
+    /**
+     * Returns true if the current activity window is compatible with the Bookmark Bar. The Bookmark
+     * Bar is disabled for narrow windows, so the window size needs to be of sufficient width for
+     * the Bookmark Bar to be displayed. The current requirement is a width >= 412dp, see {@link
+     * //chrome/android/java/res/values-w412dp/bools.xml}. This value is not constant for a device,
+     * and can change based on user interactions.
+     *
+     * <p>Note: There is no reasonable use-case to check this in isolation, so it is private.
+     *
+     * @param context The context in which window compatibility should be assessed.
+     * @return Whether the window supports the Bookmark Bar.
+     */
+    private static boolean isWindowBookmarkBarCompatible(Context context) {
+        return context.getResources().getBoolean(R.bool.bookmark_bar_allowed);
     }
 
     /**
@@ -201,9 +233,9 @@ public class BookmarkBarUtils {
      *
      * @param allowed Whether the feature is forcibly allowed/disallowed.
      */
-    public static void setFeatureAllowedForTesting(@Nullable Boolean allowed) {
-        sFeatureAllowedForTesting = allowed;
-        ResettersForTesting.register(() -> sFeatureAllowedForTesting = null);
+    public static void setActivityStateBookmarkBarCompatibleForTesting(@Nullable Boolean allowed) {
+        sActivityStateBookmarkBarCompatibleForTesting = allowed;
+        ResettersForTesting.register(() -> sActivityStateBookmarkBarCompatibleForTesting = null);
     }
 
     /**
@@ -211,9 +243,9 @@ public class BookmarkBarUtils {
      *
      * @param enabled Whether the feature is forcibly enabled/disabled.
      */
-    public static void setFeatureEnabledForTesting(@Nullable Boolean enabled) {
-        sFeatureEnabledForTesting = enabled;
-        ResettersForTesting.register(() -> sFeatureEnabledForTesting = null);
+    public static void setDeviceBookmarkBarCompatibleForTesting(@Nullable Boolean enabled) {
+        sDeviceBookmarkBarCompatibleForTesting = enabled;
+        ResettersForTesting.register(() -> sDeviceBookmarkBarCompatibleForTesting = null);
     }
 
     /**
@@ -221,9 +253,9 @@ public class BookmarkBarUtils {
      *
      * @param visible Whether the feature is forcibly visible/invisible.
      */
-    public static void setFeatureVisibleForTesting(@Nullable Boolean visible) {
-        sFeatureVisibleForTesting = visible;
-        ResettersForTesting.register(() -> sFeatureVisibleForTesting = null);
+    public static void setBookmarkBarVisibleForTesting(@Nullable Boolean visible) {
+        sBookmarkBarVisibleForTesting = visible;
+        ResettersForTesting.register(() -> sBookmarkBarVisibleForTesting = null);
     }
 
     /**

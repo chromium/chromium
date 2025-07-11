@@ -124,7 +124,8 @@ public class BookmarkBarVisibilityProvider {
     }
 
     private void notifyVisibilityChange() {
-        boolean visibility = BookmarkBarUtils.isFeatureVisible(mActivity, mProfileSupplier.get());
+        boolean visibility =
+                BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfileSupplier.get());
         for (BookmarkBarVisibilityObserver observer : mObservers) {
             observer.onVisibilityChanged(visibility);
         }

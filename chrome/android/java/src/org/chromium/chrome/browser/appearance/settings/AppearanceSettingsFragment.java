@@ -87,7 +87,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     // Private methods.
 
     private void initBookmarkBarPref() {
-        if (!BookmarkBarUtils.isFeatureEnabled(getContext())) {
+        if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
             removePreference(PREF_BOOKMARK_BAR);
             return;
         }
@@ -142,7 +142,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void updateBookmarkBarPref() {
-        if (BookmarkBarUtils.isFeatureEnabled(getContext())) {
+        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
             ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                     .setChecked(BookmarkBarUtils.isSettingEnabled(getProfile()));
         }

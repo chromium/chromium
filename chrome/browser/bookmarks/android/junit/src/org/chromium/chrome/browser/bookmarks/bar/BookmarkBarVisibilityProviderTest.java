@@ -104,7 +104,7 @@ public class BookmarkBarVisibilityProviderTest {
     @SmallTest
     public void testConstructAndDestroy() {
         // Case: Construct w/ feature disallowed and setting disabled.
-        BookmarkBarUtils.setFeatureAllowedForTesting(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
@@ -131,7 +131,7 @@ public class BookmarkBarVisibilityProviderTest {
         verify(mObserver, never()).onMaxWidthChanged(anyInt());
 
         // Case: Construct w/ feature allowed and setting disabled.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
@@ -162,20 +162,20 @@ public class BookmarkBarVisibilityProviderTest {
     @SmallTest
     public void testConfigurationChange() {
         // Set up.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
 
         // Case: Configuration changed to disallow feature.
-        BookmarkBarUtils.setFeatureAllowedForTesting(false);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(false);
         verify(mObserver, times(1)).onMaxWidthChanged(12);
         clearInvocations(mObserver);
 
         // Case: Configuration changed to allow feature.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(true);
         verify(mObserver, times(1)).onMaxWidthChanged(12);
@@ -188,7 +188,7 @@ public class BookmarkBarVisibilityProviderTest {
     @SmallTest
     public void testPrefChange() {
         // Set up.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
@@ -214,7 +214,7 @@ public class BookmarkBarVisibilityProviderTest {
     @SmallTest
     public void testProfileChange() {
         // Set up.
-        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();

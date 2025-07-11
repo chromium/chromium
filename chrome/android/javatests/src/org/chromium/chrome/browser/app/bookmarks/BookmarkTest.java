@@ -1255,7 +1255,8 @@ public class BookmarkTest {
         onViewWaiting(allOf(withText("Reading list"), isDisplayed()));
         onView(withText("Bookmarks bar"))
                 .check(
-                        BookmarkBarUtils.isFeatureEnabled(mActivityTestRule.getActivity())
+                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(
+                                        mActivityTestRule.getActivity())
                                 ? matches(isDisplayed())
                                 : doesNotExist());
     }
@@ -1286,7 +1287,7 @@ public class BookmarkTest {
         final List<String> expectedTopLevelFolders =
                 new ArrayList<>(List.of("Mobile bookmarks", "Other bookmarks", "Reading list"));
 
-        if (BookmarkBarUtils.isFeatureEnabled(mActivityTestRule.getActivity())) {
+        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivityTestRule.getActivity())) {
             expectedTopLevelFolders.add(1, "Bookmarks bar");
         }
 

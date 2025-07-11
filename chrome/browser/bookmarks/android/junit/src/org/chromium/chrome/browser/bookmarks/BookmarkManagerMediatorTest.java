@@ -673,7 +673,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mBookmarkModel.getRootFolderId());
         verify(mBookmarkModel, times(1))
                 .getTopLevelFolderIds(
-                        BookmarkBarUtils.isFeatureEnabled(mActivity)
+                        BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)
                                 ? BookmarkNodeMaskBit.ACCOUNT_AND_LOCAL_BOOKMARK_BAR
                                 : BookmarkNodeMaskBit.NONE);
     }

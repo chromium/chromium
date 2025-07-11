@@ -118,7 +118,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     public void testBookmarkBarPreferenceIsAbsentWhenDisabled() {
-        BookmarkBarUtils.setFeatureEnabledForTesting(false);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
         launchSettings();
         Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR));
     }
@@ -126,7 +126,7 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     public void testBookmarkBarPreferenceIsPresentWhenEnabled() {
-        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
         assertSwitchExists(PREF_BOOKMARK_BAR);
     }
@@ -135,7 +135,7 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
-        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
         final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
@@ -154,7 +154,7 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
-        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
         final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
