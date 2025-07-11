@@ -144,8 +144,12 @@ const CGFloat kSymbolSize = 15;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  CGFloat tableViewScrollableHeight =
+      self.tableView.contentSize.height +
+      self.tableView.adjustedContentInset.top +
+      self.tableView.adjustedContentInset.bottom;
   self.tableView.scrollEnabled =
-      self.tableView.contentSize.height > self.view.frame.size.height;
+      tableViewScrollableHeight > self.view.frame.size.height;
 }
 
 #pragma mark - TableViewModel
