@@ -23,8 +23,5 @@ public interface WebViewStartUpConfigBoundaryInterface {
      *
      * @return A set of profile names, which may include the default profile.
      */
-    @Nullable
-    default Set<String> getProfileNamesToLoad() {
-        return null;
-    }
+    @Nullable Set<String> getProfileNamesToLoad();
 }
