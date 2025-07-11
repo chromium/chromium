@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -40,7 +42,7 @@ var TESTING_TIRAMISU_FILE = Object.freeze({
  * @param {function(string)} onError Error callback with an error code.
  */
 function onReadDirectoryRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -62,19 +64,19 @@ function onReadDirectoryRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_HELLO_DIR.name] =
+  testUtil.defaultMetadata['/' + TESTING_HELLO_DIR.name] =
       TESTING_HELLO_DIR;
-  test_util.defaultMetadata['/' + TESTING_HELLO_DIR.name + '/' +
+  testUtil.defaultMetadata['/' + TESTING_HELLO_DIR.name + '/' +
         TESTING_TIRAMISU_FILE.name] = TESTING_TIRAMISU_FILE;
-  test_util.defaultMetadata['/' + TESTING_HELLO_DIR.name + '/' +
+  testUtil.defaultMetadata['/' + TESTING_HELLO_DIR.name + '/' +
       TESTING_CANDIES_DIR.name] = TESTING_CANDIES_DIR;
 
   chrome.fileSystemProvider.onReadDirectoryRequested.addListener(
       onReadDirectoryRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -85,7 +87,7 @@ function runTests() {
     // Read contents of the /hello directory. This directory exists, so it
     // should succeed.
     function readEntriesSuccess() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           'hello',
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
@@ -122,7 +124,7 @@ function runTests() {
     // Read contents of a directory which does not exist, what should return an
     // error.
     function readEntriesError() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           'cranberries',
           {create: false},
           function(dirEntry) {
@@ -135,5 +137,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

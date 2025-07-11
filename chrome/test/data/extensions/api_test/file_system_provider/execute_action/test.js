@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -35,12 +37,12 @@ var TESTING_UNKNOWN_ACTION_ID = "testing-unknown-action";
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
       TESTING_ACTIONS_DIR;
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -52,7 +54,7 @@ function runTests() {
     function executeActionSuccess() {
       var onExecuteActionRequested = chrome.test.callbackPass(
           function(options, onSuccess, onError) {
-            chrome.test.assertEq(test_util.FILE_SYSTEM_ID,
+            chrome.test.assertEq(testUtil.FILE_SYSTEM_ID,
                 options.fileSystemId);
             chrome.test.assertEq(1, options.entryPaths.length);
             chrome.test.assertEq('/' + TESTING_ACTIONS_DIR.name,
@@ -64,7 +66,7 @@ function runTests() {
           });
       chrome.fileSystemProvider.onExecuteActionRequested.addListener(
           onExecuteActionRequested);
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_ACTIONS_DIR.name,
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
@@ -82,7 +84,7 @@ function runTests() {
     function executeNonExistingActionFailure() {
       var onExecuteActionRequested = chrome.test.callbackPass(
           function(options, onSuccess, onError) {
-            chrome.test.assertEq(test_util.FILE_SYSTEM_ID,
+            chrome.test.assertEq(testUtil.FILE_SYSTEM_ID,
                 options.fileSystemId);
             chrome.test.assertEq(1, options.entryPaths.length);
             chrome.test.assertEq('/' + TESTING_ACTIONS_DIR.name,
@@ -94,7 +96,7 @@ function runTests() {
           });
       chrome.fileSystemProvider.onExecuteActionRequested.addListener(
           onExecuteActionRequested);
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_ACTIONS_DIR.name,
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
@@ -111,5 +113,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

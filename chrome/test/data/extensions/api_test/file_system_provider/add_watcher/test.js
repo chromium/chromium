@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -34,7 +36,7 @@ var TESTING_BROKEN_FILE = Object.freeze({
  * @param {function(string)} onError Error callback with an error code.
  */
 function onAddWatcherRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -60,16 +62,16 @@ function onAddWatcherRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
-  test_util.defaultMetadata['/' + TESTING_BROKEN_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_FILE.name] = TESTING_FILE;
+  testUtil.defaultMetadata['/' + TESTING_BROKEN_FILE.name] =
       TESTING_BROKEN_FILE;
 
   chrome.fileSystemProvider.onAddWatcherRequested.addListener(
       onAddWatcherRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -80,7 +82,7 @@ function runTests() {
 
     // Add an entry watcher on an existing file.
     function addWatcher() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -109,7 +111,7 @@ function runTests() {
     // Add an entry watcher on a file which is already watched, what should
     // fail.
     function addExistingFileWatcher() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -133,7 +135,7 @@ function runTests() {
 
     // Add an entry watcher on a broken file, what should fail.
     function addBrokenFileWatcher() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_BROKEN_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -157,5 +159,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

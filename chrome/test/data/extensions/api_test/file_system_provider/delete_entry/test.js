@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -45,7 +47,7 @@ var TESTING_C_FILE = Object.freeze({
  * @param {function(string)} onError Error callback with an error code.
  */
 function onDeleteEntryRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -81,19 +83,19 @@ function onDeleteEntryRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_A_DIRECTORY.name] =
+  testUtil.defaultMetadata['/' + TESTING_A_DIRECTORY.name] =
       TESTING_A_DIRECTORY;
-  test_util.defaultMetadata['/' + TESTING_A_DIRECTORY.name + '/' +
+  testUtil.defaultMetadata['/' + TESTING_A_DIRECTORY.name + '/' +
       TESTING_B_DIRECTORY.name] = TESTING_B_DIRECTORY;
-  test_util.defaultMetadata['/' + TESTING_C_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_C_FILE.name] =
       TESTING_C_FILE;
 
   chrome.fileSystemProvider.onDeleteEntryRequested.addListener(
       onDeleteEntryRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -103,7 +105,7 @@ function runTests() {
   chrome.test.runTests([
     // Delete a file. Should succeed.
     function deleteDirectorySuccessSimple() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_C_FILE.name, {create: false},
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_C_FILE.name, entry.name);
@@ -117,7 +119,7 @@ function runTests() {
     },
     // Delete a directory which has contents, non-recursively. Should fail.
     function deleteDirectoryErrorNotEmpty() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_A_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_A_DIRECTORY.name, entry.name);
@@ -131,7 +133,7 @@ function runTests() {
     },
     // Delete a directory which has contents, recursively. Should succeed.
     function deleteDirectoryRecursively() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_A_DIRECTORY.name, {create: false},
           chrome.test.callbackPass(function(entry) {
             chrome.test.assertEq(TESTING_A_DIRECTORY.name, entry.name);
@@ -148,5 +150,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

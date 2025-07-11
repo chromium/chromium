@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {DOMFileSystem}
  */
@@ -49,7 +51,7 @@ var TESTING_6GB_FILE = Object.freeze({
  * @param {function(string)} onError Error callback.
  */
 function onOpenFileRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
@@ -76,7 +78,7 @@ function onOpenFileRequested(options, onSuccess, onError) {
  * @param {function(string)} onError Error callback.
  */
 function onCloseFileRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID ||
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID ||
       !openedFiles[options.openRequestId]) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
@@ -97,7 +99,7 @@ function onCloseFileRequested(options, onSuccess, onError) {
  */
 function onReadFileRequested(options, onSuccess, onError) {
   var filePath = openedFiles[options.openRequestId];
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID || !filePath) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID || !filePath) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
@@ -131,9 +133,9 @@ function onReadFileRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_6GB_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_6GB_FILE.name] =
       TESTING_6GB_FILE;
 
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
@@ -143,7 +145,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onCloseFileRequested.addListener(
       onCloseFileRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -157,7 +159,7 @@ function runTests() {
     // next one would be 64bit. File System Provider API should support files
     // with size greater or equal to 2^53.
     function readBigFileSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_6GB_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -187,5 +189,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

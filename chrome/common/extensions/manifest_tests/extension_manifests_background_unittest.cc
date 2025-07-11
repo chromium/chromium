@@ -45,11 +45,13 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess(ManifestData(manifest->Clone(), "")));
   ASSERT_TRUE(extension.get());
-  const std::vector<std::string>& background_scripts =
+  const std::vector<ExtensionResource>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(extension.get());
   ASSERT_EQ(2u, background_scripts.size());
-  EXPECT_EQ("foo.js", background_scripts[0u]);
-  EXPECT_EQ("bar/baz.js", background_scripts[1u]);
+  EXPECT_EQ(FILE_PATH_LITERAL("foo.js"),
+            background_scripts[0u].relative_path().value());
+  EXPECT_EQ(FILE_PATH_LITERAL("bar/baz.js"),
+            background_scripts[1u].relative_path().value());
 
   EXPECT_TRUE(BackgroundInfo::HasBackgroundPage(extension.get()));
   EXPECT_EQ(

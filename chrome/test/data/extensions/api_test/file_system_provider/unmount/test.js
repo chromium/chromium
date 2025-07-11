@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {string}
  * @const
@@ -91,7 +93,7 @@ function runTests() {
       chrome.fileSystemProvider.onUnmountRequested.addListener(
           onUnmountRequested);
 
-      test_util.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
+      testUtil.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
         chrome.test.assertTrue(!!volumeInfo);
         chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId, () => {
           chrome.test.assertNoLastError();
@@ -136,7 +138,7 @@ function runTests() {
           onUnmountRequested);
       chrome.fileManagerPrivate.onMountCompleted.addListener(onMountCompleted);
 
-      test_util.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
+      testUtil.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
         chrome.test.assertTrue(!!volumeInfo);
         chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId, () => {
           chrome.test.assertNoLastError();
@@ -146,5 +148,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

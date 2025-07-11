@@ -118,10 +118,10 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
     result->canonical_browser_image_paths.insert(canonicalize_path(path));
   }
 
-  for (const std::string& script :
+  for (const ExtensionResource& script :
        BackgroundInfo::GetBackgroundScripts(extension)) {
     result->canonical_background_scripts_paths.insert(
-        canonicalize_path(extension->GetResource(script).relative_path()));
+        canonicalize_path(script.relative_path()));
   }
 
   if (BackgroundInfo::HasBackgroundPage(extension)) {

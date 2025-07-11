@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -64,7 +66,7 @@ var TESTING_WITH_INVALID_THUMBNAIL_FILE = Object.freeze({
  * @param {function(string)} onError Error callback with an error code.
  */
 function onGetMetadataRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -120,7 +122,7 @@ function onGetMetadataRequested(options, onSuccess, onError) {
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
       onGetMetadataRequested);
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -131,7 +133,7 @@ function runTests() {
     // Test if providers are notified that no thumbnail is requested when normal
     // metadata is requested.
     function notRequestedAndNotProvidedThumbnailSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_WITH_VALID_THUMBNAIL_FILE.name,
           {create: false},
           chrome.test.callbackPass(),
@@ -143,7 +145,7 @@ function runTests() {
     // If providers return a thumbnail data despite not being requested for
     // that, then the operation must fail.
     function notRequestedButProvidedThumbnailError() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_ALWAYS_WITH_THUMBNAIL_FILE.name,
           {create: false},
           function(fileEntry) {
@@ -157,7 +159,7 @@ function runTests() {
 
     // Thumbnails should be returned when available for private API request.
     function getEntryPropertiesWithThumbnailSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_WITH_VALID_THUMBNAIL_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -185,7 +187,7 @@ function runTests() {
     // Confirm that extensions are not able to pass an invalid thumbnail url,
     // including evil urls.
     function getEntryPropertiesWithInvalidThumbnail() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_WITH_INVALID_THUMBNAIL_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -207,7 +209,7 @@ function runTests() {
 
     // Confirm that the thumbnail is not requested when not needed.
     function getEntryPropertiesWithoutThumbnail() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_WITH_VALID_THUMBNAIL_FILE.name,
           {create: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -230,5 +232,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

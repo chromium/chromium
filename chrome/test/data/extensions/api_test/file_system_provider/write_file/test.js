@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * Map from a file path to contents of the file.
  * @type {Object<string, string>}
@@ -63,22 +65,22 @@ var writeFileRequestedCallbacks = [];
  * @param {function(string)} onError Error callback.
  */
 function onWriteFileRequested(options, onSuccess, onError) {
-  var filePath = test_util.openedFiles[options.openRequestId];
+  var filePath = testUtil.openedFiles[options.openRequestId];
   writeFileRequestedCallbacks.forEach(function(callback) {
     callback(filePath);
   });
 
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID || !filePath) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID || !filePath) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  if (!(filePath in test_util.defaultMetadata)) {
+  if (!(filePath in testUtil.defaultMetadata)) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
 
-  var metadata = test_util.defaultMetadata[filePath];
+  var metadata = testUtil.defaultMetadata[filePath];
 
   if (filePath === '/' + TESTING_BROKEN_TIRAMISU_FILE_NAME) {
     onError('FAILED');
@@ -119,29 +121,29 @@ function onWriteFileRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
-      test_util.onOpenFileRequested);
+      testUtil.onOpenFileRequested);
   chrome.fileSystemProvider.onCloseFileRequested.addListener(
-      test_util.onCloseFileRequested);
+      testUtil.onCloseFileRequested);
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
-      test_util.onCreateFileRequested);
+      testUtil.onCreateFileRequested);
 
-  test_util.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
     isDirectory: false,
     name: TESTING_TIRAMISU_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
     modificationTime: new Date(2014, 1, 24, 6, 35, 11)
   };
 
-  test_util.defaultMetadata['/' + TESTING_BROKEN_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata['/' + TESTING_BROKEN_TIRAMISU_FILE_NAME] = {
     isDirectory: false,
     name: TESTING_BROKEN_TIRAMISU_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
     modificationTime: new Date(2014, 1, 25, 7, 36, 12)
   };
 
-  test_util.defaultMetadata['/' + TESTING_CHOCOLATE_FILE_NAME] = {
+  testUtil.defaultMetadata['/' + TESTING_CHOCOLATE_FILE_NAME] = {
     isDirectory: false,
     name: TESTING_CHOCOLATE_FILE_NAME,
     size: TESTING_INITIAL_TEXT.length,
@@ -155,7 +157,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onWriteFileRequested.addListener(
       onWriteFileRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -165,7 +167,7 @@ function runTests() {
   chrome.test.runTests([
     // Write contents to a non-existing file. It should succeed.
     function writeNewFileSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_NEW_FILE_NAME,
           {create: true, exclusive: true},
           chrome.test.callbackPass(function(fileEntry) {
@@ -198,7 +200,7 @@ function runTests() {
 
     // Overwrite contents in an existing file. It should succeed.
     function overwriteFileSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TIRAMISU_FILE_NAME,
           {create: true, exclusive: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -230,7 +232,7 @@ function runTests() {
     // Append contents to an existing file. It should succeed.
     function appendFileSuccess() {
       var onTestSuccess = chrome.test.callbackPass();
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TIRAMISU_FILE_NAME,
           {create: false, exclusive: false},
           function(fileEntry) {
@@ -263,7 +265,7 @@ function runTests() {
     // Replace contents in an existing file. It should succeed.
     function replaceFileSuccess() {
       var onTestSuccess = chrome.test.callbackPass();
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TIRAMISU_FILE_NAME,
           {create: false, exclusive: false},
           function(fileEntry) {
@@ -297,7 +299,7 @@ function runTests() {
     // Write bytes to a broken file. This should result in an error.
     function writeBrokenFileError() {
       var onTestSuccess = chrome.test.callbackPass();
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_BROKEN_TIRAMISU_FILE_NAME,
           {create: false, exclusive: false},
           function(fileEntry) {
@@ -340,7 +342,7 @@ function runTests() {
       chrome.fileSystemProvider.onAbortRequested.addListener(
           onAbortRequested);
 
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_CHOCOLATE_FILE_NAME,
           {create: false, exclusive: false},
           function(fileEntry) {
@@ -374,5 +376,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

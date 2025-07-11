@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * Metadata of a healthy file used to read contents from.
  * @type {Object}
@@ -43,13 +45,13 @@ function onReadFileRequested(options, onSuccess, onError) {
  */
 function setUp() {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
-      test_util.onOpenFileRequested);
+      testUtil.onOpenFileRequested);
   chrome.fileSystemProvider.onCloseFileRequested.addListener(
-      test_util.onCloseFileRequested);
+      testUtil.onCloseFileRequested);
 
-  test_util.defaultMetadata['/' + TESTING_TIRAMISU_FILE.name] =
+  testUtil.defaultMetadata['/' + TESTING_TIRAMISU_FILE.name] =
       TESTING_TIRAMISU_FILE;
 
   chrome.fileSystemProvider.onReadFileRequested.addListener(
@@ -63,11 +65,11 @@ function runTests() {
   chrome.test.runTests([
     // Verifies if getAll() returns the mounted file system.
     function mountSuccess() {
-      test_util.mountFileSystem(
+      testUtil.mountFileSystem(
           chrome.test.callbackPass(function() {
             // Start reading a file in order to open it. Note, that there is no
             // way to directly open a file from JavaScript.
-            test_util.fileSystem.root.getFile(
+            testUtil.fileSystem.root.getFile(
                 TESTING_TIRAMISU_FILE.name,
                 {create: false},
                 chrome.test.callbackPass(function(fileEntry) {
@@ -79,10 +81,10 @@ function runTests() {
                               chrome.test.callbackPass(function(fileSystems) {
                                 chrome.test.assertEq(1, fileSystems.length);
                                 chrome.test.assertEq(
-                                    test_util.FILE_SYSTEM_ID,
+                                    testUtil.FILE_SYSTEM_ID,
                                     fileSystems[0].fileSystemId);
                                 chrome.test.assertEq(
-                                    test_util.FILE_SYSTEM_NAME,
+                                    testUtil.FILE_SYSTEM_NAME,
                                     fileSystems[0].displayName);
                                 chrome.test.assertTrue(
                                     fileSystems[0].writable);
@@ -99,13 +101,13 @@ function runTests() {
                               }));
 
                           chrome.fileSystemProvider.get(
-                              test_util.FILE_SYSTEM_ID,
+                              testUtil.FILE_SYSTEM_ID,
                               chrome.test.callbackPass(function(fileSystem) {
                                 chrome.test.assertEq(
-                                    test_util.FILE_SYSTEM_ID,
+                                    testUtil.FILE_SYSTEM_ID,
                                     fileSystem.fileSystemId);
                                 chrome.test.assertEq(
-                                    test_util.FILE_SYSTEM_NAME,
+                                    testUtil.FILE_SYSTEM_NAME,
                                     fileSystem.displayName);
                                 chrome.test.assertTrue(fileSystem.writable);
                                 chrome.test.assertEq(2,
@@ -136,14 +138,14 @@ function runTests() {
     // getAll() list.
     function unmountSuccess() {
       chrome.fileSystemProvider.unmount(
-          {fileSystemId: test_util.FILE_SYSTEM_ID},
+          {fileSystemId: testUtil.FILE_SYSTEM_ID},
           chrome.test.callbackPass(function() {
             chrome.fileSystemProvider.getAll(chrome.test.callbackPass(
                 function(fileSystems) {
                   chrome.test.assertEq(0, fileSystems.length);
                 }));
             chrome.fileSystemProvider.get(
-                test_util.FILE_SYSTEM_ID,
+                testUtil.FILE_SYSTEM_ID,
                 chrome.test.callbackFail('NOT_FOUND'));
           }));
     },
@@ -160,13 +162,20 @@ function runTests() {
               chrome.test.assertEq(0, fileSystems.length);
             }));
         chrome.fileSystemProvider.get(
-            test_util.FILE_SYSTEM_ID,
+            testUtil.FILE_SYSTEM_ID,
             chrome.test.callbackFail('NOT_FOUND'));
       }));
     }
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp();
-runTests();
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp();
+  runTests();
+})();

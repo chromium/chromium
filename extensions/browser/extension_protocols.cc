@@ -151,7 +151,7 @@ void GenerateBackgroundPageContents(const Extension* extension,
   *data = "<!DOCTYPE html>\n<body>\n";
   for (const auto& script : BackgroundInfo::GetBackgroundScripts(extension)) {
     *data += "<script src=\"";
-    *data += script;
+    *data += script.relative_path().AsUTF8Unsafe();
     *data += "\"></script>\n";
   }
 }

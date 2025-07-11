@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {Object}
  * @const
@@ -49,7 +51,7 @@ var TESTING_ACTIONS_DIR_ACTIONS = Object.freeze([
  * @param {function(string)} onError Error callback with an error code.
  */
 function onGetActionsRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -75,17 +77,17 @@ function onGetActionsRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
 
-  test_util.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata['/' + TESTING_ACTIONS_DIR.name] =
       TESTING_ACTIONS_DIR;
-  test_util.defaultMetadata['/' + TESTING_NO_ACTIONS_DIR.name] =
+  testUtil.defaultMetadata['/' + TESTING_NO_ACTIONS_DIR.name] =
       TESTING_NO_ACTIONS_DIR;
 
   chrome.fileSystemProvider.onGetActionsRequested.addListener(
       onGetActionsRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -95,7 +97,7 @@ function runTests() {
   chrome.test.runTests([
     // Get actions for a directory with actions.
     function getActionsSuccess() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_ACTIONS_DIR.name,
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
@@ -120,7 +122,7 @@ function runTests() {
 
     // Get actions for a directory with no actions.
     function getNoActionsSuccess() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_NO_ACTIONS_DIR.name,
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
@@ -137,11 +139,11 @@ function runTests() {
 
     // Get actions for multiple entries.
     function getNoActionsMultipleSuccess() {
-      test_util.fileSystem.root.getDirectory(
+      testUtil.fileSystem.root.getDirectory(
           TESTING_ACTIONS_DIR.name,
           {create: false},
           chrome.test.callbackPass(function(dirEntry) {
-            test_util.fileSystem.root.getDirectory(
+            testUtil.fileSystem.root.getDirectory(
                 TESTING_NO_ACTIONS_DIR.name,
                 {create: false},
                 chrome.test.callbackPass(function(dirEntry2) {
@@ -162,5 +164,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

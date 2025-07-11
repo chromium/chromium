@@ -142,13 +142,8 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   FileSystemProviderApiTest& operator=(const FileSystemProviderApiTest&) =
       delete;
 
-  // Loads a helper testing extension.
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    const extensions::Extension* extension = LoadExtension(
-        test_data_dir_.AppendASCII("file_system_provider/test_util"),
-        {.allow_in_incognito = true});
-    ASSERT_TRUE(extension);
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());

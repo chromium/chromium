@@ -4,6 +4,8 @@
 
 'use strict';
 
+let testUtil;
+
 /**
  * @type {string}
  * @const
@@ -18,17 +20,17 @@ var TESTING_TIRAMISU_FILE_NAME = 'tiramisu.txt';
  * @param {function(string)} onError Error callback.
  */
 function onTruncateRequested(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== testUtil.FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  if (!(options.filePath in test_util.defaultMetadata)) {
+  if (!(options.filePath in testUtil.defaultMetadata)) {
     onError('INVALID_OPERATION');  // enum ProviderError.
     return;
   }
 
-  var metadata = test_util.defaultMetadata[options.filePath];
+  var metadata = testUtil.defaultMetadata[options.filePath];
 
   // Truncating beyond the end of the file.
   if (options.length > metadata.size) {
@@ -48,15 +50,15 @@ function onTruncateRequested(options, onSuccess, onError) {
  */
 function setUp(callback) {
   chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-      test_util.onGetMetadataRequestedDefault);
+      testUtil.onGetMetadataRequestedDefault);
   chrome.fileSystemProvider.onOpenFileRequested.addListener(
-      test_util.onOpenFileRequested);
+      testUtil.onOpenFileRequested);
   chrome.fileSystemProvider.onCloseFileRequested.addListener(
-      test_util.onCloseFileRequested);
+      testUtil.onCloseFileRequested);
   chrome.fileSystemProvider.onCreateFileRequested.addListener(
-      test_util.onCreateFileRequested);
+      testUtil.onCreateFileRequested);
 
-  test_util.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
+  testUtil.defaultMetadata['/' + TESTING_TIRAMISU_FILE_NAME] = {
     isDirectory: false,
     name: TESTING_TIRAMISU_FILE_NAME,
     size: 128,
@@ -66,7 +68,7 @@ function setUp(callback) {
   chrome.fileSystemProvider.onTruncateRequested.addListener(
       onTruncateRequested);
 
-  test_util.mountFileSystem(callback);
+  testUtil.mountFileSystem(callback);
 }
 
 /**
@@ -76,7 +78,7 @@ function runTests() {
   chrome.test.runTests([
     // Truncate a file. It should succeed.
     function truncateFileSuccess() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TIRAMISU_FILE_NAME,
           {create: false, exclusive: true},
           chrome.test.callbackPass(function(fileEntry) {
@@ -89,7 +91,7 @@ function runTests() {
                       return;
                     chrome.test.assertEq(
                         64,
-                        test_util.defaultMetadata[
+                        testUtil.defaultMetadata[
                             '/' + TESTING_TIRAMISU_FILE_NAME].size);
                   });
                   fileWriter.onerror = function(e) {
@@ -109,7 +111,7 @@ function runTests() {
     // Truncate a file to a length larger than size. This should result in an
     // error.
     function truncateBeyondFileError() {
-      test_util.fileSystem.root.getFile(
+      testUtil.fileSystem.root.getFile(
           TESTING_TIRAMISU_FILE_NAME,
           {create: false, exclusive: false},
           chrome.test.callbackPass(function(fileEntry) {
@@ -125,7 +127,7 @@ function runTests() {
                     chrome.test.assertEq(
                         'InvalidModificationError', fileWriter.error.name);
                   });
-                  fileWriter.truncate(test_util.defaultMetadata[
+                  fileWriter.truncate(testUtil.defaultMetadata[
                       '/' + TESTING_TIRAMISU_FILE_NAME].size * 2);
                 }),
                 function(error) {
@@ -139,5 +141,12 @@ function runTests() {
   ]);
 }
 
-// Setup and run all of the test cases.
-setUp(runTests);
+// This works-around that background scripts can't import because they aren't
+// considered modules.
+(async () => {
+  testUtil = await import(
+    '/_test_resources/api_test/file_system_provider/test_util.js');
+
+  // Setup and run all of the test cases.
+  setUp(runTests);
+})();

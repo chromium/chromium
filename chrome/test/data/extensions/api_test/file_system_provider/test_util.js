@@ -4,30 +4,27 @@
 
 'use strict';
 
-// Namespace for testing utilities.
-var test_util = {};
+/**
+ * @type {string}
+ * @const
+ */
+export const FILE_SYSTEM_ID = 'vanilla.txt';
 
 /**
  * @type {string}
  * @const
  */
-test_util.FILE_SYSTEM_ID = 'vanilla.txt';
-
-/**
- * @type {string}
- * @const
- */
-test_util.FILE_SYSTEM_NAME = 'Vanilla';
+export const FILE_SYSTEM_NAME = 'Vanilla';
 
 /**
  * @type {FileSystem}
  */
-test_util.fileSystem = null;
+export let fileSystem = null;
 
 /**
  * @type {?string}
  */
-test_util.volumeId = null;
+export let volumeId = null;
 
 /**
  * Default metadata. Used by onMetadataRequestedDefault(). The key is a full
@@ -35,7 +32,7 @@ test_util.volumeId = null;
  *
  * @type {Object<string, Object>}
  */
-test_util.defaultMetadata = {
+export const defaultMetadata = {
   '/': {
     isDirectory: true,
     name: '',
@@ -50,7 +47,7 @@ test_util.defaultMetadata = {
  *
  * @type {Object<number, string>}
  */
-test_util.openedFiles = {};
+export const openedFiles = {};
 
 /**
  * Gets volume information for the provided file system.
@@ -59,7 +56,7 @@ test_util.openedFiles = {};
  * @param {function(Object)} callback Callback to be called on result, with the
  *     volume information object in case of success, or null if not found.
  */
-test_util.getVolumeInfo = function(fileSystemId, callback) {
+export const getVolumeInfo = function(fileSystemId, callback) {
   chrome.fileManagerPrivate.getVolumeMetadataList(function(volumeList) {
     for (var i = 0; i < volumeList.length; i++) {
       // For extension backed providers, the provider id is equal to extension
@@ -82,10 +79,10 @@ test_util.getVolumeInfo = function(fileSystemId, callback) {
  * @param {function()} callback Success callback.
  * @param {Object=} opt_options Optional extra options.
  */
-test_util.mountFileSystem = function(callback, opt_options) {
+export const mountFileSystem = function(callback, opt_options) {
   var options = {
-    fileSystemId: test_util.FILE_SYSTEM_ID,
-    displayName: test_util.FILE_SYSTEM_NAME,
+    fileSystemId: FILE_SYSTEM_ID,
+    displayName: FILE_SYSTEM_NAME,
     writable: true
   };
 
@@ -104,7 +101,7 @@ test_util.mountFileSystem = function(callback, opt_options) {
         if (chrome.runtime.lastError)
           chrome.test.fail(chrome.runtime.lastError.message);
 
-        test_util.getVolumeInfo(options.fileSystemId, function(volumeInfo) {
+        getVolumeInfo(options.fileSystemId, function(volumeInfo) {
           chrome.test.assertTrue(!!volumeInfo);
           chrome.fileSystem.requestFileSystem(
               {
@@ -113,8 +110,8 @@ test_util.mountFileSystem = function(callback, opt_options) {
               },
               function(inFileSystem) {
                 chrome.test.assertTrue(!!inFileSystem);
-                test_util.fileSystem = inFileSystem;
-                test_util.volumeId = volumeInfo.volumeId;
+                fileSystem = inFileSystem;
+                volumeId = volumeInfo.volumeId;
                 callback();
               });
         });
@@ -129,19 +126,19 @@ test_util.mountFileSystem = function(callback, opt_options) {
  *     an argument.
  * @param {function(string)} onError Error callback with an error code.
  */
-test_util.onGetMetadataRequestedDefault = function(
+export const onGetMetadataRequestedDefault = function(
     options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  if (!(options.entryPath in test_util.defaultMetadata)) {
+  if (!(options.entryPath in defaultMetadata)) {
     onError('NOT_FOUND');
     return;
   }
 
-  onSuccess(test_util.defaultMetadata[options.entryPath]);
+  onSuccess(defaultMetadata[options.entryPath]);
 };
 
 /**
@@ -152,15 +149,15 @@ test_util.onGetMetadataRequestedDefault = function(
  * @param {function()} onSuccess Success callback.
  * @param {function(string)} onError Error callback.
  */
-test_util.onOpenFileRequested = function(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+export const onOpenFileRequested = function(options, onSuccess, onError) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  var metadata = test_util.defaultMetadata[options.filePath];
+  var metadata = defaultMetadata[options.filePath];
   if (metadata && !metadata.is_directory) {
-    test_util.openedFiles[options.requestId] = options.filePath;
+    openedFiles[options.requestId] = options.filePath;
     onSuccess();
   } else {
     onError('NOT_FOUND');  // enum ProviderError.
@@ -175,14 +172,14 @@ test_util.onOpenFileRequested = function(options, onSuccess, onError) {
  * @param {function()} onSuccess Success callback.
  * @param {function(string)} onError Error callback.
  */
-test_util.onCloseFileRequested = function(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID ||
-      !test_util.openedFiles[options.openRequestId]) {
+export const onCloseFileRequested = function(options, onSuccess, onError) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID ||
+      !openedFiles[options.openRequestId]) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  delete test_util.openedFiles[options.openRequestId];
+  delete openedFiles[options.openRequestId];
   onSuccess();
 };
 
@@ -193,8 +190,8 @@ test_util.onCloseFileRequested = function(options, onSuccess, onError) {
  * @param {function(Object)} onSuccess Success callback
  * @param {function(string)} onError Error callback with an error code.
  */
-test_util.onCreateFileRequested = function(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+export const onCreateFileRequested = function(options, onSuccess, onError) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
@@ -204,12 +201,12 @@ test_util.onCreateFileRequested = function(options, onSuccess, onError) {
     return;
   }
 
-  if (options.filePath in test_util.defaultMetadata) {
+  if (options.filePath in defaultMetadata) {
     onError('EXISTS');
     return;
   }
 
-  test_util.defaultMetadata[options.filePath] = {
+  defaultMetadata[options.filePath] = {
     isDirectory: false,
     name: options.filePath.split('/').pop(),
     size: 0,
@@ -226,13 +223,13 @@ test_util.onCreateFileRequested = function(options, onSuccess, onError) {
  * @param {function()} onSuccess Success callback.
  * @param {function(string)} onError Error callback with an error code.
  */
-test_util.onAddWatcherRequested = function(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+export const onAddWatcherRequested = function(options, onSuccess, onError) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  if (options.entryPath in test_util.defaultMetadata) {
+  if (options.entryPath in defaultMetadata) {
     onSuccess();
     return;
   }
@@ -247,13 +244,13 @@ test_util.onAddWatcherRequested = function(options, onSuccess, onError) {
  * @param {function()} onSuccess Success callback.
  * @param {function(string)} onError Error callback with an error code.
  */
-test_util.onRemoveWatcherRequested = function(options, onSuccess, onError) {
-  if (options.fileSystemId !== test_util.FILE_SYSTEM_ID) {
+export const onRemoveWatcherRequested = function(options, onSuccess, onError) {
+  if (options.fileSystemId !== FILE_SYSTEM_ID) {
     onError('SECURITY');  // enum ProviderError.
     return;
   }
 
-  if (options.entryPath in test_util.defaultMetadata) {
+  if (options.entryPath in defaultMetadata) {
     onSuccess();
     return;
   }
@@ -269,7 +266,7 @@ test_util.onRemoveWatcherRequested = function(options, onSuccess, onError) {
  * @return {!Promise.<Entry>} Promise with an external entry, or null in case of
  *     on error.
  */
-test_util.toExternalEntry = function(entry) {
+export const toExternalEntry = function(entry) {
   return new Promise(
       function(fulfill, reject) {
         chrome.fileManagerPrivate.resolveIsolatedEntries(
