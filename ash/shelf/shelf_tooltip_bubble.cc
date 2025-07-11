@@ -8,8 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
-#include "ui/aura/window.h"
-#include "ui/color/color_id.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/corewm/tooltip_view_aura.h"
 #include "ui/views/layout/fill_layout.h"
@@ -22,6 +21,8 @@ ShelfTooltipBubble::ShelfTooltipBubble(
     const std::u16string& text,
     std::optional<views::BubbleBorder::Arrow> arrow_position)
     : ShelfBubble(anchor, alignment, /*for_tooltip=*/true, arrow_position) {
+  // BubbleDialog is used as a transparent container.
+  set_layer_type(ui::LAYER_NOT_DRAWN);
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);
@@ -29,6 +30,7 @@ ShelfTooltipBubble::ShelfTooltipBubble(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   set_margins(gfx::Insets(0));
+  SetPaintToLayer(ui::LAYER_TEXTURED);
   auto* tooltip_view = AddChildView(StyleUtil::CreateAshStyleTooltipView());
   tooltip_view->SetText(text);
 
