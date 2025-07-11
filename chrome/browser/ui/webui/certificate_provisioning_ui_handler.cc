@@ -310,8 +310,21 @@ void CertificateProvisioningUiHandler::
     return;
   }
 
-  if (cert_provisioning_interface_) {
-    cert_provisioning_interface_->UpdateOneProcess(cert_profile_id.GetString());
+  if (user_scheduler_ &&
+      user_scheduler_->UpdateOneWorker(cert_profile_id.GetString())) {
+    return;
+  }
+
+  if (device_scheduler_ &&
+      device_scheduler_->UpdateOneWorker(cert_profile_id.GetString())) {
+    return;
+  }
+
+  if (user_scheduler_ || device_scheduler_) {
+    LOG(ERROR) << "Updating cert_profile_id was not found. id:"
+               << cert_profile_id.GetString()
+               << " user_scheduler:" << bool(user_scheduler_)
+               << " device_scheduler:" << bool(device_scheduler_);
   }
 }
 
@@ -324,8 +337,20 @@ void CertificateProvisioningUiHandler::
     return;
   }
 
-  if (cert_provisioning_interface_) {
-    cert_provisioning_interface_->ResetOneProcess(cert_profile_id.GetString());
+  if (user_scheduler_ &&
+      user_scheduler_->ResetOneWorker(cert_profile_id.GetString())) {
+    return;
+  }
+  if (device_scheduler_ &&
+      device_scheduler_->ResetOneWorker(cert_profile_id.GetString())) {
+    return;
+  }
+
+  if (user_scheduler_ || device_scheduler_) {
+    LOG(ERROR) << "Resetting cert_profile_id was not found. id:"
+               << cert_profile_id.GetString()
+               << " user_scheduler:" << bool(user_scheduler_)
+               << " device_scheduler:" << bool(device_scheduler_);
   }
 }
 

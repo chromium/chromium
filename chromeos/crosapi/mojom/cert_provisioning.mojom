@@ -88,21 +88,11 @@ interface CertProvisioningObserver {
 [Uuid="ff60efaf-bb5c-4aff-903f-72abcb613df6"]
 interface CertProvisioning {
   // GetStatus@1() was removed.
+  // UpdateOneProcess@2 was removed.
+  // ResetOneProcess@3 was removed.
 
   // Adds an observer that will be notified about updates from the certificate
   // provisioning feature.
   AddObserver@0(
     pending_remote<CertProvisioningObserver> observer);
-
-  // Instructs Ash to immediately attempt the next planned step in provisioning
-  // of the certificate with `cert_profile_id`. Specifically, if the process is
-  // waiting for a notification from the server-side, this will make Ash reach
-  // out to the server-side and check for the current status. Otherwise it might
-  // do nothing.
-  UpdateOneProcess@2(string cert_profile_id);
-
-  // Instructs Ash to start over the provisioning of the certificate with
-  //`cert_profile_id`.
-  [MinVersion=2]
-  ResetOneProcess@3(string cert_profile_id);
 };

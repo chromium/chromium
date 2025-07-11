@@ -29,8 +29,6 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   // mojom::CertProvisioning
   void AddObserver(
       mojo::PendingRemote<mojom::CertProvisioningObserver> observer) override;
-  void UpdateOneProcess(const std::string& cert_profile_id) override;
-  void ResetOneProcess(const std::string& cert_profile_id) override;
 
   // Inject schedulers for testing. Passing nullptr simulates that a scheduler
   // is not found / available.

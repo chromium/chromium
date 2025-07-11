@@ -202,38 +202,5 @@ TEST_F(CertProvisioningAshTest, ChangeNotificationsForwarded) {
   }
 }
 
-
-TEST_F(CertProvisioningAshTest, UpdateOneProcess) {
-  service_.InjectForTesting(&user_scheduler_, &device_scheduler_);
-
-  {
-    // The service will try different schedulers until it finds the one that
-    // contains the profile id.
-    EXPECT_CALL(user_scheduler_, UpdateOneWorker("111")).WillOnce(Return(true));
-    EXPECT_CALL(device_scheduler_, UpdateOneWorker).Times(0);
-
-    service_.UpdateOneProcess("111");
-
-    ExecuteAsyncTasks();
-    Mock::VerifyAndClearExpectations(&user_scheduler_);
-    Mock::VerifyAndClearExpectations(&device_scheduler_);
-  }
-
-  {
-    // If the first one reports that it doesn't own the id, the service will try
-    // another one.
-    EXPECT_CALL(user_scheduler_, UpdateOneWorker("222"))
-        .WillOnce(Return(false));
-    EXPECT_CALL(device_scheduler_, UpdateOneWorker("222"))
-        .WillOnce(Return(false));
-
-    service_.UpdateOneProcess("222");
-
-    ExecuteAsyncTasks();
-    Mock::VerifyAndClearExpectations(&user_scheduler_);
-    Mock::VerifyAndClearExpectations(&device_scheduler_);
-  }
-}
-
 }  // namespace
 }  // namespace crosapi
