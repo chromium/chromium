@@ -112,6 +112,9 @@ void PasswordFormCacheImpl::AddObserver(PasswordFormManagerObserver* observer) {
   if (!form_manager_observers_.HasObserver(observer)) {
     form_manager_observers_.AddObserver(observer);
   }
+  for (const std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
+    manager->AddObserver(observer);
+  }
 }
 
 void PasswordFormCacheImpl::RemoveObserver(

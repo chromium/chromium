@@ -276,4 +276,21 @@ TEST_F(PasswordFormCacheTest, ObservationOnFormManager) {
   FastForwardUntilNoTasksRemain();
 }
 
+// Test that the cache adds observers to all existing managers.
+TEST_F(PasswordFormCacheTest, ObservationOnExistingFormManager) {
+  MockPasswordFormManagerObserver observer;
+
+  auto form_manager = std::make_unique<PasswordFormManager>(
+      &client(), driver().AsWeakPtr(), CreateTestPasswordFormData(),
+      &form_fetcher(), std::make_unique<PasswordSaveManagerImpl>(&client()),
+      /*metrics_recorder=*/nullptr);
+  auto* form_manager_ptr = form_manager.get();
+  cache().AddFormManager(std::move(form_manager));
+  static_cast<PasswordFormCache*>(&cache())->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnPasswordFormParsed(form_manager_ptr));
+  form_fetcher().NotifyFetchCompleted();
+  FastForwardUntilNoTasksRemain();
+}
+
 }  // namespace password_manager

@@ -90,6 +90,7 @@ void UndoPasswordChangeController::OnSuggestionsHidden() {
   if (current_state_ == PasswordRecoveryState::kShowProactiveRecovery) {
     current_state_ = PasswordRecoveryState::kIncludeBackup;
   }
+  FinishObserving();
 }
 void UndoPasswordChangeController::ResetFlow() {
   current_state_ = PasswordRecoveryState::kRegularFlow;
@@ -139,7 +140,6 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
             driver_->AsWeakPtr(),
             form_manager->GetParsedObservedForm()
                 ->password_element_renderer_id));
-    FinishObserving();
   }
 }
 
