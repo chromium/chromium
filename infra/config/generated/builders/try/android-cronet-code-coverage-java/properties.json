@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-cronet-code-coverage-native/gn-args.json"
+        "infra/config/generated/builders/try/android-cronet-code-coverage-java/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-cronet-code-coverage-native",
+              "builder": "android-cronet-code-coverage-java",
               "project": "chromium"
             },
             "builder_spec": {
@@ -32,8 +32,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "use_clang_coverage"
+                  "android"
                 ],
                 "config": "chromium"
               }
@@ -44,38 +43,26 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-code-coverage-native",
+          "builder": "android-cronet-code-coverage-java",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-cronet-code-coverage-native",
-          "group": "tryserver.chromium.android"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-code-coverage-native/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-code-coverage-java/targets"
     }
-  },
-  "$build/code_coverage": {
-    "coverage_test_types": [
-      "overall",
-      "unit"
-    ],
-    "export_coverage_to_zoss": true,
-    "use_clang_coverage": true
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 500
+    "output_local_strategy": "greedy",
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -84,6 +71,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.coverage",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

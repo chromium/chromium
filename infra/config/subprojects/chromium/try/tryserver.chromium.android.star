@@ -869,6 +869,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-code-coverage-native",
+    mirrors = ["ci/android-cronet-code-coverage-native"],
+    gn_args = "ci/android-cronet-code-coverage-native",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-code-coverage-java",
+    mirrors = ["ci/android-cronet-code-coverage-java"],
+    gn_args = "ci/android-cronet-code-coverage-java",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg-marshmallow-tests",
     mirrors = [
         "ci/android-cronet-x86-dbg",

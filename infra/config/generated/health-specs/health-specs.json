@@ -6990,7 +6990,7 @@
         ]
       },
       "android-cronet-code-coverage-java": {
-        "contact_team_email": "woa-engprod@google.com",
+        "contact_team_email": "cronet-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -7011,7 +7011,7 @@
         ]
       },
       "android-cronet-code-coverage-native": {
-        "contact_team_email": "woa-engprod@google.com",
+        "contact_team_email": "cronet-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

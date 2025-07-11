@@ -571,6 +571,8 @@
     "android-cronet-arm64-dbg": "try/android-cronet-arm64-dbg/gn-args.json",
     "android-cronet-arm64-rel": "try/android-cronet-arm64-rel/gn-args.json",
     "android-cronet-asan-arm-rel": "try/android-cronet-asan-arm-rel/gn-args.json",
+    "android-cronet-code-coverage-java": "try/android-cronet-code-coverage-java/gn-args.json",
+    "android-cronet-code-coverage-native": "try/android-cronet-code-coverage-native/gn-args.json",
     "android-cronet-riscv64-dbg": "try/android-cronet-riscv64-dbg/gn-args.json",
     "android-cronet-riscv64-rel": "try/android-cronet-riscv64-rel/gn-args.json",
     "android-cronet-x64-dbg": "try/android-cronet-x64-dbg/gn-args.json",
