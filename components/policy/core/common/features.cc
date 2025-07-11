@@ -16,7 +16,11 @@ BASE_FEATURE(kProfileSeparationDomainExceptionListRetroactive,
 
 BASE_FEATURE(kEnhancedSecurityEventFields,
              "EnhancedSecurityEventFields",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+ #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+              base::FEATURE_DISABLED_BY_DEFAULT);
+ #else
+              base::FEATURE_ENABLED_BY_DEFAULT);
+ #endif
 
 BASE_FEATURE(kUseCECFlagInPolicyData,
              "UseCECFlagInPolicyData",

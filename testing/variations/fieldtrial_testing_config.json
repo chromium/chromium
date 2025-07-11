@@ -9589,7 +9589,9 @@
                 "chromeos",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "android",
+                "ios"
             ],
             "experiments": [
                 {

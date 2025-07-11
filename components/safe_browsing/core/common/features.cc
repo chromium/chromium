@@ -146,7 +146,11 @@ constexpr base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
 
 BASE_FEATURE(kEnhancedFieldsForSecOps,
              "EnhancedFieldsForSecOps",
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kEnhancedSafeBrowsingPromo,
              "EnhancedSafeBrowsingPromo",
