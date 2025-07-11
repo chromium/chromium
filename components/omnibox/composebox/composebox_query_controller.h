@@ -90,6 +90,16 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace composebox {
+// Image encoding options for an uploaded image.
+struct ImageEncodingOptions {
+  int max_size;
+  int max_height;
+  int max_width;
+  int compression_quality;
+};
+}  // namespace composebox
+
 // Callback type alias for the OAuth headers created.
 using OAuthHeadersCreatedCallback =
     base::OnceCallback<void(std::vector<std::string>)>;
@@ -224,7 +234,8 @@ class ComposeboxQueryController {
   // internal map. Call after setting the file info fields. Virtual for testing.
   virtual void StartFileUploadFlow(
       std::unique_ptr<FileInfo> file_info,
-      scoped_refptr<base::RefCountedBytes> file_data);
+      scoped_refptr<base::RefCountedBytes> file_data,
+      std::optional<composebox::ImageEncodingOptions> image_options);
 
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
@@ -289,15 +300,18 @@ class ComposeboxQueryController {
 #if !BUILDFLAG(IS_IOS)
   // Handler for when the image from an image file upload is decoded. Creates
   // the request body proto and calls the callback with the request.
-  void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
-                                      RequestBodyProtoCreatedCallback callback,
-                                      const SkBitmap& bitmap);
+  void ProcessDecodedImageAndContinue(
+      lens::LensOverlayRequestId request_id,
+      const composebox::ImageEncodingOptions& options,
+      RequestBodyProtoCreatedCallback callback,
+      const SkBitmap& bitmap);
 #endif  // !BUILDFLAG(IS_IOS)
 
   // Creates the request body proto and calls the callback with the request.
   void CreateFileUploadRequestBodyAndContinue(
       const base::UnguessableToken& file_token,
       scoped_refptr<base::RefCountedBytes> file_data,
+      std::optional<composebox::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback);
 
   // Asynchronous handler for when the file upload request body is ready.

@@ -20,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
+#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/variations/variations_client.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +32,13 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+constexpr int kImageCompressionQuality = 30;
+constexpr int kImageMaxArea = 1000000;
+constexpr int kImageMaxHeight = 1000;
+constexpr int kImageMaxWidth = 1000;
+}  // namespace
 
 class MockQueryController : public TestComposeboxQueryController {
  public:
@@ -55,7 +63,8 @@ class MockQueryController : public TestComposeboxQueryController {
       void,
       StartFileUploadFlow,
       (std::unique_ptr<ComposeboxQueryController::FileInfo> file_info_mojom,
-       scoped_refptr<base::RefCountedBytes> file_data));
+       scoped_refptr<base::RefCountedBytes> file_data,
+       std::optional<composebox::ImageEncodingOptions> image_options));
 
   void NotifySessionStartedBase() {
     TestComposeboxQueryController::NotifySessionStarted();
@@ -112,12 +121,23 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>(),
         std::move(query_controller_ptr), web_contents());
+
+    // Set all the feature params here to keep the test consistent if future
+    // default values are changed.
+    scoped_config_.Get().enabled = true;
+    scoped_config_.Get().downscale_max_image_size = kImageMaxArea;
+    scoped_config_.Get().image_compression_quality = kImageCompressionQuality;
+    scoped_config_.Get().downscale_max_image_height = kImageMaxHeight;
+    scoped_config_.Get().downscale_max_image_width = kImageMaxWidth;
   }
 
   ComposeboxHandler& handler() { return *handler_; }
   MockQueryController& query_controller() { return *query_controller_; }
   TemplateURLService& template_url_service() { return *template_url_service_; }
 
+  ntp_composebox_fieldtrial::FeatureConfig& scoped_config() {
+    return scoped_config_.Get();
+  }
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return TestingProfile::TestingFactory{
         TemplateURLServiceFactory::GetInstance(),
@@ -140,6 +160,7 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockQueryController> query_controller_;
   TestWebContentsDelegate delegate_;
   raw_ptr<TemplateURLService> template_url_service_;
+  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
 };
 
 TEST_F(ComposeboxHandlerTest, NotifySessionStarted) {
@@ -219,13 +240,30 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
   std::unique_ptr<ComposeboxQueryController::FileInfo> controller_file_info;
-  base::UnguessableToken callback_token;
+  std::optional<composebox::ImageEncodingOptions> image_options;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
-      .WillOnce(MoveArg<0>(&controller_file_info));
+      .WillOnce(
+          [&](std::unique_ptr<ComposeboxQueryController::FileInfo>
+                  file_info_arg,
+              auto,
+              std::optional<composebox::ImageEncodingOptions> options_arg) {
+            controller_file_info = std::move(file_info_arg);
+            image_options = std::move(options_arg);
+          });
+  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
+  base::UnguessableToken callback_token;
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+
   handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
 
   EXPECT_EQ(callback_token, controller_file_info->file_token_);
+  EXPECT_TRUE(image_options.has_value());
+  EXPECT_EQ(image_options->max_height,
+            scoped_config().downscale_max_image_height);
+  EXPECT_EQ(image_options->max_size, scoped_config().downscale_max_image_size);
+  EXPECT_EQ(image_options->max_width,
+            scoped_config().downscale_max_image_width);
+  EXPECT_EQ(image_options->compression_quality,
+            scoped_config().image_compression_quality);
 }
