@@ -906,7 +906,7 @@ void NewTabPageHandler::UpdateFooterVisibility() {
 
   auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
   CHECK(footer_controller);
-  OnFooterVisibilityUpdated(footer_controller->GetFooterVisible());
+  OnFooterVisibilityUpdated(footer_controller->GetFooterVisible(web_contents_));
 }
 
 void NewTabPageHandler::MaybeShowFeaturePromo(

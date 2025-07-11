@@ -115,6 +115,10 @@ class MultiContentsView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  std::vector<ContentsContainerView*> contents_container_views() {
+    return contents_container_views_;
+  }
+
   MultiContentsViewDropTargetController& drop_target_controller() {
     return *drop_target_controller_;
   }

@@ -159,11 +159,6 @@ BASE_FEATURE(kSideBySideLinkMenuNewBadge,
              "SideBySideLinkMenuNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsNtpFooterEnabledWithoutSideBySide() {
-  return (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
-          !base::FeatureList::IsEnabled(features::kSideBySide));
-}
-
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);

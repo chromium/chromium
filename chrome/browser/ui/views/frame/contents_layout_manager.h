@@ -18,9 +18,7 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
                         views::View* contents_view,
                         views::View* lens_overlay_view,
                         views::View* border_view = nullptr,
-                        views::View* watermark_view = nullptr,
-                        views::View* new_tab_footer_view_separator = nullptr,
-                        views::View* new_tab_footer_view = nullptr);
+                        views::View* watermark_view = nullptr);
 
   ContentsLayoutManager(const ContentsLayoutManager&) = delete;
   ContentsLayoutManager& operator=(const ContentsLayoutManager&) = delete;
@@ -43,8 +41,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
   const raw_ptr<views::View> lens_overlay_view_;
   const raw_ptr<views::View> border_view_;
   const raw_ptr<views::View> watermark_view_;
-  const raw_ptr<views::View> new_tab_footer_view_separator_;
-  const raw_ptr<views::View> new_tab_footer_view_;
 
   DevToolsContentsResizingStrategy strategy_;
 };

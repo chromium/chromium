@@ -10,7 +10,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class BrowserWindowInterface;
+class ContentsContainerView;
 
 namespace new_tab_footer {
 
@@ -24,42 +24,64 @@ enum FooterNoticeItem {
   kMaxValue = kManagementNotice,
 };
 
-// Class used to manage the state of the new tab footer.
-class NewTabFooterController : public content::WebContentsObserver {
+// Class used to manage the state of new tab footers.
+class NewTabFooterController {
  public:
-  explicit NewTabFooterController(BrowserWindowInterface* browser,
-                                  NewTabFooterWebView* footer);
+  explicit NewTabFooterController(
+      Profile* profile,
+      std::vector<ContentsContainerView*> contents_container_views);
   NewTabFooterController(const NewTabFooterController&) = delete;
   NewTabFooterController& operator=(const NewTabFooterController&) = delete;
-  ~NewTabFooterController() override;
+  ~NewTabFooterController();
 
   void TearDown();
 
-  bool GetFooterVisible() const;
+  bool GetFooterVisible(content::WebContents* contents) const;
 
   void AddObserver(NewTabFooterControllerObserver* observer);
   void RemoveObserver(NewTabFooterControllerObserver* observer);
+
+  // Controls a single NewTabFooterWebView. Updates the footer visibility when
+  // the associated ContentsWebView changes web contents, or if its web contents
+  // navigates.
+  class ContentsViewFooterCotroller : public content::WebContentsObserver {
+   public:
+    ContentsViewFooterCotroller(NewTabFooterController* owner,
+                                ContentsContainerView* contents_container_view);
+    ContentsViewFooterCotroller(const ContentsViewFooterCotroller&) = delete;
+    ContentsViewFooterCotroller& operator=(const ContentsViewFooterCotroller&) =
+        delete;
+
+    void OnWebContentsAttached(views::WebView* web_view);
+    void OnWebContentsDetached(views::WebView* web_view);
+
+    // content::WebContentsObserver:
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
+    void UpdateFooterVisibility(bool log_on_load_metric);
+    bool GetFooterVisible();
+    bool ShouldSkipForErrorPage() const;
+    bool ShouldShowExtensionFooter(const GURL& url);
+    bool ShouldShowManagedFooter(const GURL& url);
+
+   private:
+    raw_ptr<NewTabFooterController> owner_;
+    raw_ptr<NewTabFooterWebView> footer_;
+
+    base::CallbackListSubscription web_contents_attached_subscription_;
+    base::CallbackListSubscription web_contents_detached_subscription_;
+  };
 
   void SkipErrorPageCheckForTesting(bool should_skip_check) {
     skip_error_page_check_for_testing_ = should_skip_check;
   }
 
  private:
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
-  void UpdateFooterVisibility(bool log_on_load_metric);
-  // Callback for active tab changes from BrowserWindowInterface.
-  void OnActiveTabChanged(BrowserWindowInterface* browser);
-  bool ShouldSkipForErrorPage() const;
-  bool ShouldShowExtensionFooter(const GURL& url);
-  bool ShouldShowManagedFooter(const GURL& url);
+  void UpdateFooterVisibilities(bool log_on_load_metric);
 
   bool skip_error_page_check_for_testing_ = false;
-  raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<new_tab_footer::NewTabFooterWebView> footer_;
-  base::CallbackListSubscription tab_activation_subscription_;
+  std::vector<std::unique_ptr<ContentsViewFooterCotroller>> footer_controllers_;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;

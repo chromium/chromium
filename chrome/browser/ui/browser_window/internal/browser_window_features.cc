@@ -474,7 +474,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_controller_ =
         std::make_unique<new_tab_footer::NewTabFooterController>(
-            browser_view->browser(), browser_view->new_tab_footer_web_view());
+            browser_view->browser()->GetProfile(),
+            browser_view->GetContentsContainerViews());
   }
 
 #if BUILDFLAG(IS_WIN)

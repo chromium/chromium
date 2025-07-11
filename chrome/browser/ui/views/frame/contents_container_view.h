@@ -14,6 +14,10 @@ class ContentsWebView;
 class MultiContentsViewMiniToolbar;
 class ScrimView;
 
+namespace new_tab_footer {
+class NewTabFooterWebView;
+}  // namespace new_tab_footer
+
 // ContentsContainerView is owned by MultiContentsView and holds the
 // ContentsWebView and the outlines and minitoolbar when in split view.
 class ContentsContainerView : public views::View, public views::LayoutDelegate {
@@ -27,6 +31,9 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   ContentsWebView* GetContentsView() { return contents_view_; }
   MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
   ScrimView* GetContentsScrimView() { return contents_scrim_view_; }
+  new_tab_footer::NewTabFooterWebView* GetNewTabFooterView() {
+    return new_tab_footer_view_;
+  }
   ScrimView* GetInactiveSplitScrimView() { return inactive_split_scrim_view_; }
 
   void UpdateBorderAndOverlay(bool is_in_split,
@@ -42,6 +49,13 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.
   raw_ptr<ScrimView> contents_scrim_view_;
+
+  // The view that shows a footer at the bottom of the contents
+  // container on new tab pages.
+  raw_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_view_ = nullptr;
+  // Separator between the web contents and the Footer.
+  raw_ptr<views::View> new_tab_footer_view_separator_ = nullptr;
+
   // Scrim view shown on the inactive side of a split view when the omnibox is
   // focused or site permissions dialogs are showing.
   raw_ptr<ScrimView> inactive_split_scrim_view_ = nullptr;

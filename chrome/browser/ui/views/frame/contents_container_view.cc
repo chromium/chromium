@@ -7,12 +7,16 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "components/search/ntp_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -21,12 +25,16 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 constexpr gfx::RoundedCornersF kContentCornerRadius{6};
 constexpr int kContentOutlineCornerRadius = 8;
 constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentPadding = 4;
+
+constexpr int kNewTabFooterSeparatorHeight = 1;
+constexpr int kNewTabFooterHeight = 56;
 }  // namespace
 
 ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
@@ -37,6 +45,18 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    new_tab_footer_view_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+    new_tab_footer_view_separator_->SetProperty(
+        views::kElementIdentifierKey, kFooterWebViewSeparatorElementId);
+
+    new_tab_footer_view_ =
+        AddChildView(std::make_unique<new_tab_footer::NewTabFooterWebView>(
+            browser_view->browser()));
+    new_tab_footer_view_->SetVisible(false);
+  }
 
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     inactive_split_scrim_view_ =
@@ -98,8 +118,32 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   int height = size_bounds.height().value();
   int width = size_bounds.width().value();
 
-  // |contents_view_| should fill the contents bounds.
-  gfx::Rect contents_rect = GetContentsBounds();
+  // |contents_view_| and |new_tab_footer_view_| (if it exists) should fill the
+  // contents bounds.
+  gfx::Rect contents_bounds = GetContentsBounds();
+  gfx::Rect contents_rect = contents_bounds;
+
+  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
+    // Shrink contents rect if the ntp footer is visible.
+    contents_rect.set_height(contents_rect.height() - kNewTabFooterHeight -
+                             kNewTabFooterSeparatorHeight);
+
+    gfx::Rect footer_separator_rect =
+        gfx::Rect(contents_bounds.x(), contents_rect.bottom(),
+                  contents_bounds.width(), kNewTabFooterSeparatorHeight);
+    gfx::Rect footer_rect =
+        gfx::Rect(contents_bounds.x(), footer_separator_rect.bottom(),
+                  contents_bounds.width(), kNewTabFooterHeight);
+
+    layouts.child_layouts.emplace_back(
+        new_tab_footer_view_separator_.get(),
+        new_tab_footer_view_separator_->GetVisible(), footer_separator_rect);
+
+    layouts.child_layouts.emplace_back(new_tab_footer_view_.get(),
+                                       new_tab_footer_view_->GetVisible(),
+                                       footer_rect);
+  }
+
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
 
@@ -108,12 +152,11 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
                                      contents_scrim_view_->GetVisible(),
                                      contents_rect);
 
-  // The scrim view should cover and take up the same space as the contents
-  // view.
+  // The scrim view should cover the entire contents bounds.
   if (inactive_split_scrim_view_) {
     layouts.child_layouts.emplace_back(inactive_split_scrim_view_.get(),
                                        inactive_split_scrim_view_->GetVisible(),
-                                       contents_rect);
+                                       contents_bounds);
   }
 
   if (mini_toolbar_) {

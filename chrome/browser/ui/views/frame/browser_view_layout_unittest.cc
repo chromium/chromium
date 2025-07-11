@@ -26,7 +26,6 @@ namespace {
 
 // Save space for the separator.
 constexpr int kToolbarHeight = 30 - views::Separator::kThickness;
-constexpr int kNewTabFooterHeight = 56;
 constexpr int kBaseWidth = 800;
 
 class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
@@ -167,8 +166,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         infobar_container_(nullptr),
         contents_container_(nullptr),
         contents_web_view_(nullptr),
-        devtools_web_view_(nullptr),
-        new_tab_footer_web_view_(nullptr) {}
+        devtools_web_view_(nullptr) {}
 
   BrowserViewLayoutTest(const BrowserViewLayoutTest&) = delete;
   BrowserViewLayoutTest& operator=(const BrowserViewLayoutTest&) = delete;
@@ -223,9 +221,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     devtools_scrim_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 600)));
     devtools_scrim_view_->SetVisible(false);
-    new_tab_footer_web_view_ = contents_container_->AddChildView(
-        CreateFixedSizeView(gfx::Size(kBaseWidth, kNewTabFooterHeight)));
-    new_tab_footer_web_view_->SetVisible(false);
     contents_web_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 600)));
     contents_scrim_view_ = contents_container_->AddChildView(
@@ -235,9 +230,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     contents_container_->SetLayoutManager(
         std::make_unique<ContentsLayoutManager>(
             devtools_web_view_, devtools_scrim_view_, contents_web_view_,
-            lens_overlay_view_, contents_scrim_view_,
-            /*contents_border_view=*/nullptr, /*watermark_view=*/nullptr,
-            new_tab_footer_web_view_));
+            lens_overlay_view_,
+            /*contents_border_view=*/nullptr, /*watermark_view=*/nullptr));
 
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>(
         immersive_mode_controller_.get());
@@ -281,7 +275,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     devtools_scrim_view_ = nullptr;
     contents_scrim_view_ = nullptr;
     lens_overlay_view_ = nullptr;
-    new_tab_footer_web_view_ = nullptr;
     ChromeViewsTestBase::TearDown();
   }
 
@@ -313,7 +306,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   raw_ptr<views::View> devtools_scrim_view_;
   raw_ptr<views::View> contents_scrim_view_;
   raw_ptr<views::View> lens_overlay_view_;
-  raw_ptr<views::View> new_tab_footer_web_view_;
 
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
 };
