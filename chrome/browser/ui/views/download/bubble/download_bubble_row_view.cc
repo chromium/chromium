@@ -579,9 +579,12 @@ void DownloadBubbleRowView::OnMouseCaptureLost() {
 }
 
 gfx::Size DownloadBubbleRowView::CalculatePreferredSize(
-    const views::SizeBounds& /*available_size*/) const {
-  return {fixed_width_,
-          GetLayoutManager()->GetPreferredHeightForWidth(this, fixed_width_)};
+    const views::SizeBounds& available_size) const {
+  // Use the available width if it's constrained. This is necessary to calculate
+  // the height for cases where the available width is narrowed after setting
+  // the fixed width. (i.e: if the parent view has a scrollbar).
+  const int width = available_size.width().value_or(fixed_width_);
+  return {width, GetLayoutManager()->GetPreferredHeightForWidth(this, width)};
 }
 
 void DownloadBubbleRowView::AddLayerToRegion(ui::Layer* layer,
