@@ -241,7 +241,6 @@ CGFloat SpaceBetweenModules() {
   AddSameConstraints(_backgroundGradientView, self.view);
   [self updateModularHomeBackgroundColorForUserInterfaceStyle:
             self.traitCollection.userInterfaceStyle];
-  self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
     _backgroundImageView = [[UIImageView alloc] init];
@@ -250,6 +249,8 @@ CGFloat SpaceBetweenModules() {
     [self updateBackgroundImageView];
     [self.view addSubview:_backgroundImageView];
     AddSameConstraints(_backgroundImageView, self.view);
+  } else {
+    self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
   }
 
   [self registerNotifications];
@@ -830,6 +831,17 @@ CGFloat SpaceBetweenModules() {
 
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
   [_headerViewController updateBackgroundWithColorPalette:colorPalette];
+
+  if (colorPalette) {
+    self.view.backgroundColor = colorPalette.primaryColor;
+    [_backgroundGradientView setStartColor:colorPalette.secondaryColor
+                                  endColor:colorPalette.primaryColor];
+  } else {
+    self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
+    [_backgroundGradientView
+        setStartColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+             endColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  }
 }
 
 - (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
