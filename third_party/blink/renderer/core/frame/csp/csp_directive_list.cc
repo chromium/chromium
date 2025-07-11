@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -60,6 +61,10 @@ String GetSha256String(const String& content) {
   }
 
   return StrCat({"sha256-", Base64Encode(digest)});
+}
+
+String GetEvalSha256String(const String& content) {
+  return StrCat({"eval-", GetSha256String(content)});
 }
 
 // IntegrityMetadata (from SRI) has base64-encoded digest values, but CSP uses
@@ -196,7 +201,8 @@ void ReportEvalViolation(
     const String& message,
     const KURL& blocked_url,
     const ContentSecurityPolicy::ExceptionStatus exception_status,
-    const String& content) {
+    const String& content,
+    std::optional<String> eval_hash) {
   String report_message = CSPDirectiveListIsReportOnly(csp)
                               ? StrCat({"[Report Only] ", message})
                               : message;
@@ -217,7 +223,8 @@ void ReportEvalViolation(
                           csp.report_endpoints, csp.use_reporting_api,
                           csp.header->header_value, csp.header->type,
                           ContentSecurityPolicyViolationType::kEvalViolation,
-                          nullptr, nullptr, nullptr, content);
+                          nullptr, nullptr, nullptr, content, g_empty_string,
+                          std::nullopt, eval_hash);
 }
 
 void ReportWasmEvalViolation(
@@ -402,11 +409,18 @@ bool CheckEvalAndReportViolation(
 
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
+  std::optional<String> hash;
+  if (base::FeatureList::IsEnabled(
+          network::features::kCSPScriptSrcHashesInV1)) {
+    hash = GetEvalSha256String(content);
+  } else {
+    hash = std::nullopt;
+  }
   ReportEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
       StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
       KURL(), exception_status,
-      directive.source_list->report_sample ? content : g_empty_string);
+      directive.source_list->report_sample ? content : g_empty_string, hash);
   if (!CSPDirectiveListIsReportOnly(csp)) {
     policy->ReportBlockedScriptExecutionToInspector(raw_directive);
     return false;

@@ -1135,7 +1135,8 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
     ContentSecurityPolicyViolationType violation_type,
     SourceLocation* source_location,
     const String& script_source,
-    const String& sample_prefix) {
+    const String& sample_prefix,
+    const std::optional<String> eval_hash) {
   if (effective_type == CSPDirectiveName::FrameAncestors) {
     // If this load was blocked via 'frame-ancestors', then the URL of
     // |document| has not yet been initialized. In this case, we'll set both
@@ -1156,6 +1157,9 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
         break;
       case ContentSecurityPolicyViolationType::kEvalViolation:
         init->setBlockedURI("eval");
+        if (eval_hash.has_value() && !eval_hash->IsNull()) {
+          init->setEvalHash(eval_hash.value());
+        }
         break;
       case ContentSecurityPolicyViolationType::kWasmEvalViolation:
         init->setBlockedURI("wasm-eval");
@@ -1275,7 +1279,8 @@ void ContentSecurityPolicy::ReportViolation(
     Element* element,
     const String& source,
     const String& source_prefix,
-    std::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id,
+    std::optional<String> eval_hash) {
   CHECK(violation_type == kURLViolation || blocked_url.IsEmpty() ||
         violation_type == kSRIViolation);
 
@@ -1308,7 +1313,7 @@ void ContentSecurityPolicy::ReportViolation(
   source_location = GatherSecurityPolicyViolationEventData(
       violation_data, relevant_delegate, directive_text, effective_type,
       blocked_url, header, header_type, violation_type, source_location, source,
-      source_prefix);
+      source_prefix, eval_hash);
 
   // TODO(mkwst): Obviously, we shouldn't hit this check, as extension-loaded
   // resources should be allowed regardless. We apparently do, however, so
@@ -1318,7 +1323,6 @@ void ContentSecurityPolicy::ReportViolation(
       ShouldBypassContentSecurityPolicy(KURL(violation_data->sourceFile()))) {
     return;
   }
-
   PostViolationReport(violation_data, context_frame, report_endpoints,
                       use_reporting_api);
 
@@ -1376,6 +1380,9 @@ void ContentSecurityPolicy::PostViolationReport(
   csp_report->SetInteger("status-code", violation_data->statusCode());
 
   csp_report->SetString("script-sample", violation_data->sample());
+  if (violation_data->hasEvalHash() && !violation_data->evalHash().empty()) {
+    csp_report->SetString("eval-hash", violation_data->evalHash());
+  }
 
   auto report_object = std::make_unique<JSONObject>();
   report_object->SetObject("csp-report", std::move(csp_report));

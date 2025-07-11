@@ -1089,6 +1089,14 @@
       status: "stable",
     },
     {
+      // When enabled, allowlisting script urls and scripts used in eval via
+      // hashes will be supported in script-src. Controlled by the
+      // network::features::kCSPScriptSrcHashesInV1 flag.
+      // See crbug.com/392657736 for details.
+      name: "CSPHashesV1",
+      base_feature: "none",
+    },
+    {
       name: "CSPReportHash",
       status: "stable",
     },
