@@ -9324,9 +9324,6 @@ crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.serviceworker.html?cpu [ Failure Pass ]
 crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
 
-# Gardener 2025-05-01
-crbug.com/411161567 [ Linux ] accessibility/interest-for.html [ Failure Pass ]
-
 # TODO(crbug.com/415223384): `document.requestStorageAccess` is racy when
 # permission has been overridden (e.g. via `test_driver.set_permission`).
 # This is because the RFHI in the browser process may not be aware that the

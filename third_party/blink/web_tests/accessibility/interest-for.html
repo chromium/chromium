@@ -80,15 +80,19 @@ function dumpTree(element) {
 }
 
 const kEscape = '\uE00C';
-function loseInterest(element) {
-  return new test_driver.Actions()
+async function render() {
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+async function loseInterest(element) {
+  await new test_driver.Actions()
     .keyDown(kEscape)
     .keyUp(kEscape)
     .send();
+  await render();
 }
-function showInterest(element) {
+async function showInterest(element) {
   element.focus();
-  return new Promise(resolve => requestAnimationFrame(resolve));
+  await render();
 }
 function assert_true(cond,message) {
   if (!cond) {
