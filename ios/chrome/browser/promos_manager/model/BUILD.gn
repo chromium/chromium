@@ -31,7 +31,6 @@ source_set("factory") {
     ":internal",
     ":model",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]

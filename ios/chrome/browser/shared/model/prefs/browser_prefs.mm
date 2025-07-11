@@ -330,6 +330,29 @@ void MigrateTimePref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
+// Migrates a List pref from source to target PrefService.
+void MigrateListPref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_name);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_name);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetList(
+        pref_name, source_pref_service->GetList(pref_name).Clone());
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_name);
+}
+
 // Helper function migrating the `string` preference from LocalState prefs to
 // Profile prefs.
 void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
@@ -408,6 +431,15 @@ void MigrateBooleanFromUserDefaultsToProfilePrefs(
   [defaults removeObjectForKey:user_defaults_key];
 }
 
+// Helper function migrating the `base::Value::List` preference from LocalState
+// prefs to Profile prefs.
+void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  MigrateListPref(pref_name, profile_pref_service,
+                  GetApplicationContext()->GetLocalState());
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -467,6 +499,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
 
+  // Deprecated 07/2025 (migrated to profile prefs).
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
   registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
   registry->RegisterDictionaryPref(
@@ -868,6 +901,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register MiniMap setting pref.
   registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
+
+  // Register prefs used by PromosManager.
+  registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
+  registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
+  registry->RegisterDictionaryPref(
+      prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
   // Preferences related to Save to Photos settings.
   registry->RegisterStringPref(prefs::kIosSaveToPhotosDefaultGaiaId,
@@ -1339,6 +1378,16 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 07/2025.
   prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
   prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
+
+  // Added 07/2025.
+  // TODO(crbug.com/429521151): Remove migration call below after successfully
+  // migrating from local to profile prefs.
+  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosPromosManagerActivePromos, prefs);
+  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosPromosManagerSingleDisplayActivePromos, prefs);
+  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosPromosManagerSingleDisplayPendingPromos, prefs);
 }
 
 void MigrateObsoleteUserDefault() {
