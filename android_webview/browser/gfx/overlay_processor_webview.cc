@@ -979,7 +979,8 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
       }
       if (frame_interval &&
           frame_interval_inputs.has_only_content_frame_interval_updates) {
-        frame_rate = frame_interval->ToHz();
+        float interval_s = frame_interval->InSecondsF();
+        frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
       }
       constexpr float kEpsilon = 0.005;
       if (std::abs(frame_rate - frame_rate_) > kEpsilon) {
