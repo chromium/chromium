@@ -156,8 +156,6 @@ void ReaderModeMetricsHelper::OnChangeTheme(dom_distiller::mojom::Theme theme) {
 void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {
   base::UmaHistogramEnumeration(kReaderModeCustomizationHistogram,
                                 ReaderModeCustomizationType::kFontScale);
-
-  int doubleToInt = std::floor(scaling * 100);
-  base::UmaHistogramCustomCounts(kReaderModeFontScaleCustomizationHistogram,
-                                 doubleToInt, 1, 200, 25);
+  base::UmaHistogramSparse(kReaderModeFontScaleCustomizationHistogram,
+                           std::floor(scaling * 100));
 }
