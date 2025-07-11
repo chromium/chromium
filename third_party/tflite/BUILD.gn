@@ -267,7 +267,7 @@ copy("mutable_schema_compiler_path") {
 }
 
 source_set("mutable_schema") {
-  deps = [
+  public_deps = [
     ":mutable_schema_compiler_path",
     ":mutable_schema_tflite_path",
   ]
@@ -1332,7 +1332,6 @@ tflite_static_library("tflite") {
   }
 
   deps = [
-    ":mutable_schema",
     "//third_party/abseil-cpp:absl",
     "//third_party/farmhash",
     "//third_party/fft2d",
@@ -1373,6 +1372,7 @@ tflite_static_library("tflite") {
   }
 
   public_deps = [
+    ":mutable_schema",
     ":tflite_compiler_utils",
     ":tflite_kernel_common_headers",
     ":tflite_kernel_internals",
