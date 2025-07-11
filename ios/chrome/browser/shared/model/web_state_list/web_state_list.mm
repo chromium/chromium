@@ -622,9 +622,9 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
 
   ClearOpenersReferencing(index);
 
-  web::WebState* web_state_ptr = web_state.get();
+  WebStateWrapper* wrapper = web_state_wrappers_[index].get();
   std::unique_ptr<web::WebState> replaced_web_state =
-      web_state_wrappers_[index]->ReplaceWebState(std::move(web_state));
+      wrapper->ReplaceWebState(std::move(web_state));
   delegate_->WillRemoveWebState(replaced_web_state.get());
 
   if (index == active_index_) {
@@ -633,7 +633,7 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   }
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
-                                                 web_state_ptr, index);
+                                                 wrapper->web_state(), index);
   const WebStateListStatus status = {
       .old_active_web_state = (index == active_index_)
                                   ? replaced_web_state.get()
