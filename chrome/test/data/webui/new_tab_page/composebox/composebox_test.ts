@@ -366,4 +366,37 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert.
     assertTrue(submitIcon.hasAttribute('disabled'));
   });
+
+  test('keydown submit only works for enter', async () => {
+    createComposeboxElement();
+    // Assert.
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+
+    // Arrange.
+    composeboxElement.$.input.value = 'test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+    const shiftEnterEvent = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    });
+    composeboxElement.$.input.dispatchEvent(shiftEnterEvent);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+
+    const enterEvent = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
+    composeboxElement.$.input.dispatchEvent(enterEvent);
+    await microtasksFinished();
+
+    // Assert call occurs.
+    assertEquals(handler.getCallCount('submitQuery'), 1);
+  });
 });

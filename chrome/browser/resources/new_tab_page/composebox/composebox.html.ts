@@ -23,7 +23,8 @@ export function getHtml(this: ComposeboxElement) {
       </ntp-composebox-file-carousel>
       <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"
-          placeholder="$i18n{composeboxPlaceholderText}"></textarea>
+          placeholder="$i18n{composeboxPlaceholderText}"
+          @keydown="${this.onInputKeydown_}"></textarea>
       <div id="uploadContainer">
         <cr-icon-button
             class="upload-icon no-overlap"

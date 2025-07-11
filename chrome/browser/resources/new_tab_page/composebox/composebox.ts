@@ -168,6 +168,7 @@ export class ComposeboxElement extends CrLitElement {
     this.files_ = newFileMap;
     // Clear the file input.
     input.value = '';
+    this.$.input.focus();
   }
 
   protected openImageUpload_() {
@@ -186,6 +187,12 @@ export class ComposeboxElement extends CrLitElement {
       this.submitEnabled_ = false;
     } else {
       this.notifySessionAbandoned_();
+    }
+  }
+
+  protected onInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey && this.submitEnabled_) {
+      this.onSubmitClick_(e);
     }
   }
 

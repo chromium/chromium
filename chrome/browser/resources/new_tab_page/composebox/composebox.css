@@ -49,7 +49,6 @@
 }
 
 #composebox {
-  align-items: flex-end;
   animation: var(--height-expand-duration) slide-down var(--standard-curve);
   display: flex;
   pointer-events: auto;
@@ -122,6 +121,8 @@
 }
 
 .upload-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-hover-background-color:
       var(--color-new-tab-page-composebox-hover);
