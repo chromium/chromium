@@ -517,6 +517,18 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // run loop (to avoid unloading a profile and destroying all objects in
   // an observer method as this can be dangerous if it destroy the sender).
   base::OneShotTimer _timer;
+
+#if BUILDFLAG(ENABLE_RLZ)
+  // Record whether the RLZTracker has been initialized or not. Calling
+  // any methods of RLZTracker including RLZTracker::CleanupRlz() will
+  // cause the singleton object to be allocated. Creating the singleton
+  // during the application shutdown is problematic (as it will attempt
+  // to create a TaskRunner which is forbidden by this point).
+  //
+  // See https://crbug.com/397149258 for example of failure creating the
+  // singleton during the shutdown creates.
+  BOOL _rlzTrackerInitialized;
+#endif
 }
 
 // Defined by public protocols.
@@ -1280,7 +1292,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 #if BUILDFLAG(ENABLE_RLZ)
-  rlz::RLZTracker::CleanupRlz();
+  if (_rlzTrackerInitialized) {
+    _rlzTrackerInitialized = NO;
+    rlz::RLZTracker::CleanupRlz();
+  }
 #endif
 
   _chromeMain.reset();
@@ -1636,6 +1651,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // will record the installation event.
 - (void)scheduleRLZInitWithProfile:(ProfileIOS*)profile {
 #if BUILDFLAG(ENABLE_RLZ)
+  CHECK(!_rlzTrackerInitialized, base::NotFatalUntil::M160);
+  _rlzTrackerInitialized = YES;
+
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
 
