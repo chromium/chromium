@@ -15,6 +15,8 @@ struct MemoryConsumerTraits {
   enum class SupportsMemoryLimit : uint8_t {
     kYes,
     kNo,
+
+    kMaxValue = kNo,
   };
 
   // Indicates if the memory freed happens inside the process where the consumer
@@ -23,6 +25,8 @@ struct MemoryConsumerTraits {
   enum class InProcess : uint8_t {
     kYes,
     kNo,
+
+    kMaxValue = kNo,
   };
 
   // The approximate scale of how much memory the consumer can manage.
@@ -33,6 +37,8 @@ struct MemoryConsumerTraits {
     kMedium,
     // Hundreds of MBs up to multiple GBs.
     kLarge,
+
+    kMaxValue = kLarge,
   };
 
   // Indicates if the memory this consumer manages is cheap to free. Traversing
@@ -46,6 +52,8 @@ struct MemoryConsumerTraits {
     // Most of the savings are from allocations smaller than the page size, or
     // from larger allocations that are accessed prior to be freed.
     kRequiresTraversal,
+
+    kMaxValue = kRequiresTraversal,
   };
 
   // Indicates if recreating the memory is possible, and if so, if is it
@@ -57,6 +65,8 @@ struct MemoryConsumerTraits {
     kCheap,
     // Recreating the memory is expensive. i.e. Complex decoding of a resource.
     kExpensive,
+
+    kMaxValue = kExpensive,
   };
 
   enum class InformationRetention : uint8_t {
@@ -65,6 +75,8 @@ struct MemoryConsumerTraits {
     // Freeing memory will not result in the loss of user state. I.e. It is a
     // cache, or it can be recalculated from a raw resource.
     kLossless,
+
+    kMaxValue = kLossless,
   };
 
   enum class MemoryReleaseBehavior : uint8_t {
@@ -74,6 +86,8 @@ struct MemoryConsumerTraits {
     // Once OnReleaseMemory() is called once, additional calls will not have any
     // effect.  i.e. Cache clearing.
     kIdempotent,
+
+    kMaxValue = kIdempotent,
   };
 
   // Indicates if freeing memory is an asynchronous operation or a synchronous
@@ -83,6 +97,8 @@ struct MemoryConsumerTraits {
   enum class ExecutionType : uint8_t {
     kSynchronous,
     kAsynchronous,
+
+    kMaxValue = kAsynchronous,
   };
 
   // Indicates if this consumer manages references to the v8 heap. In this case,
@@ -90,17 +106,22 @@ struct MemoryConsumerTraits {
   enum class ReleaseGCReferences : uint8_t {
     kYes,
     kNo,
+
+    kMaxValue = kNo,
   };
 
   // Trait for the v8 garbage collector.
   enum class GarbageCollectsV8Heap : uint8_t {
     kYes,
     kNo,
+
+    kMaxValue = kNo,
   };
 
   friend bool operator==(const MemoryConsumerTraits& lhs,
                          const MemoryConsumerTraits& rhs) = default;
 
+  // LINT.IfChange
   SupportsMemoryLimit supports_memory_limit;
   InProcess in_process;
   EstimatedMemoryUsage estimated_memory_usage;
@@ -111,6 +132,7 @@ struct MemoryConsumerTraits {
   ExecutionType execution_type;
   ReleaseGCReferences release_gc_references;
   GarbageCollectsV8Heap garbage_collects_v8_heap;
+  // LINT.ThenChange(//content/common/memory_coordinator/mojom/memory_coordinator.mojom)
 };
 
 }  // namespace base

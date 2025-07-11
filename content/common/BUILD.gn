@@ -218,6 +218,7 @@ source_set("common") {
     "//components/tracing:tracing_config",
     "//content:content_resources",
     "//content/common/fetch:fetch_api_request_proto",
+    "//content/common/memory_coordinator/mojom",
     "//content/public/common:interfaces",
     "//content/public/common/zygote:buildflags",
     "//device/base/synchronization",

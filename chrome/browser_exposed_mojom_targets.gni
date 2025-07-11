@@ -180,6 +180,7 @@ browser_exposed_mojom_targets = [
   "//content/browser/process_internals:mojo_bindings",
   "//content/browser/tracing/traces_internals:mojo_bindings",
   "//content/browser/xr/webxr_internals/mojom:mojo_bindings",
+  "//content/common/memory_coordinator/mojom:mojom",
   "//content/common:mojo_bindings",
   "//content/public/common:interfaces",
   "//content/public/common:renderer_type",

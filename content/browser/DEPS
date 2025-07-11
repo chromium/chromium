@@ -153,6 +153,9 @@ specific_include_rules = {
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
   ],
+  "browser_memory_consumer_registry_unittest\.cc": [
+    "+content/child/memory_coordinator/child_memory_consumer_registry.h",
+  ],
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
   ],
