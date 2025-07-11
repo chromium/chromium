@@ -60,6 +60,19 @@ void TestWithBrowserView::SetUp() {
 }
 
 void TestWithBrowserView::TearDown() {
+  // Destroy Browsers directly managed by TestWithBrowserView.
+  for (std::unique_ptr<Browser>& browser : additional_browsers_) {
+    // For Browsers created with a corresponding BrowserView, the Browser is
+    // ultimately deleted by its owning NativeWidget. To avoid a double-free
+    // situation we must release the Browser's unique_ptr and request the
+    // NativeWidget close via its BrowserView.
+    // TODO(crbug.com/413168662): Eliminate this once Browser ownership changes
+    // have landed.
+    BrowserView* browser_view = static_cast<BrowserView*>(browser->window());
+    browser.release()->tab_strip_model()->CloseAllTabs();
+    browser_view->GetWidget()->CloseNow();
+  }
+
   // Because CreateBrowserWindow() is overridden to return null, a real
   // BrowserView is created, and BrowserView has a unique_ptr that owns the
   // Browser for which it is the view. This is a problem because
@@ -116,4 +129,12 @@ TestingProfile::TestingFactories TestWithBrowserView::GetTestingFactories() {
       ChromeSigninClientFactory::GetInstance(),
       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                           test_url_loader_factory())}};
+}
+
+Browser* TestWithBrowserView::CreateBrowserWithBrowserView(
+    Profile* profile,
+    Browser::Type browser_type) {
+  additional_browsers_.emplace_back(CreateBrowser(
+      profile, browser_type, /*hosted_app=*/false, /*browser_window=*/nullptr));
+  return additional_browsers_.back().get();
 }
