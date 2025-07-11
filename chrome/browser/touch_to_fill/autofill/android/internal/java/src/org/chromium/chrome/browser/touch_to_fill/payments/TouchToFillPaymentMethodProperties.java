@@ -25,6 +25,8 @@ class TouchToFillPaymentMethodProperties {
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final PropertyModel.WritableIntPropertyKey CURRENT_SCREEN =
             new PropertyModel.WritableIntPropertyKey("current_screen");
+    static final PropertyModel.WritableIntPropertyKey FOCUSED_VIEW_ID_FOR_ACCESSIBILITY =
+            new PropertyModel.WritableIntPropertyKey("focused_view_id_for_accessibility");
     public static final PropertyModel.WritableObjectPropertyKey<ModelList> SHEET_ITEMS =
             new PropertyModel.WritableObjectPropertyKey("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Runnable> BACK_PRESS_HANDLER =
@@ -43,6 +45,7 @@ class TouchToFillPaymentMethodProperties {
     static final PropertyKey[] ALL_KEYS = {
         VISIBLE,
         CURRENT_SCREEN,
+        FOCUSED_VIEW_ID_FOR_ACCESSIBILITY,
         SHEET_ITEMS,
         BACK_PRESS_HANDLER,
         DISMISS_HANDLER,

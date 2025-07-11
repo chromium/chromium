@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FOCUSED_VIEW_ID_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
@@ -119,11 +120,19 @@ class TouchToFillPaymentMethodViewBinder {
                 view.destroy();
             }
         } else if (propertyKey == SHEET_ITEMS) {
-            // SHEET_ITEMS and CURRENT_SCREEN properties are always updated together.
+            // SHEET_ITEMS, CURRENT_SCREEN and FOCUSED_VIEW_ID_FOR_ACCESSIBILITY properties are
+            // always updated together.
             view.setCurrentScreen(model.get(CURRENT_SCREEN));
             TouchToFillPaymentMethodCoordinator.setUpSheetItems(model, view);
             view.updateScreenHeight();
-        } else if (propertyKey == CURRENT_SCREEN) {
+            // Screen readers can automatically determine the initially focused field. Modify the
+            // initially focused field only if the screen was changed (i.e. after the user
+            // interaction).
+            if (model.get(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY) != 0) {
+                view.setFocusedViewIdForAccessibility(model.get(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY));
+            }
+        } else if (propertyKey == CURRENT_SCREEN
+                || propertyKey == FOCUSED_VIEW_ID_FOR_ACCESSIBILITY) {
             // Intentionally ignored.
         } else if (propertyKey == SHEET_CONTENT_DESCRIPTION_ID) {
             view.setSheetContentDescriptionId(model.get(SHEET_CONTENT_DESCRIPTION_ID));

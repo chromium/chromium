@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
@@ -89,6 +90,12 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
         getSheetItemListView()
                 .addItemDecoration(
                         new HorizontalDividerItemDecoration(getContentView().getContext()));
+    }
+
+    void setFocusedViewIdForAccessibility(@IdRes int focusedViewIdForAccessibility) {
+        View view = getContentView().findViewById(focusedViewIdForAccessibility);
+        view.requestFocus();
+        view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     void setBackPressHandler(Runnable backPressHandler) {
