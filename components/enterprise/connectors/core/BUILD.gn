@@ -21,6 +21,8 @@ source_set("core") {
     "connectors_prefs.h",
     "connectors_service_base.cc",
     "connectors_service_base.h",
+    "content_area_user_provider.cc",
+    "content_area_user_provider.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
     "enterprise_interstitial_base.cc",

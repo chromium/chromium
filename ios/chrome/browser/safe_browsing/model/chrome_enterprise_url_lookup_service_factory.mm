@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "components/enterprise/connectors/core/common.h"
+#import "components/enterprise/connectors/core/content_area_user_provider.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -114,9 +115,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       /*is_guest_session=*/false,
       base::BindRepeating(&enterprise_connectors::GetProfileEmail,
                           identity_manager),
-      // TODO(crbug.com/425370101) - Remove the empty IOS content area account email
-      // once IOS is supported.
-      base::BindRepeating([](GURL) { return std::string(); }),
+      base::BindRepeating(&enterprise_connectors::GetActiveContentAreaUser,
+                          IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&IsProfileAffiliated, profile),
       IsCommandLineSwitchEnabled());
 }

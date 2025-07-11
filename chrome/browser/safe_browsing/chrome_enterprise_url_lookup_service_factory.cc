@@ -6,7 +6,6 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -40,18 +41,6 @@ namespace {
 std::string GetProfileEmail(Profile* profile) {
   return enterprise_connectors::GetProfileEmail(profile);
 }
-
-// TODO(crbug.com/425370101) - Remove the Android check once Android is supported.
-#if !BUILDFLAG(IS_ANDROID)
-// Helper function for retrieving the email associated with the content area.
-// Makes it easier to bind a callback to
-// `enterprise_connectors::ContentAreaUserProvider::GetUser` which has multiple
-// overloads, so binding to it would require a cast.
-std::string GetContentAreaAccountEmail(Profile* profile, GURL tab_url) {
-  return enterprise_connectors::ContentAreaUserProvider::GetUser(profile,
-                                                                 tab_url);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if the policy command line switch can be used.
 bool IsCommandLineSwitchSupported() {
@@ -124,12 +113,8 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       policy::ManagementServiceFactory::GetForProfile(profile),
       profile->IsOffTheRecord(), profile->IsGuestSession(),
       base::BindRepeating(&GetProfileEmail, profile),
-  // TODO(crbug.com/425370101) - Remove the Android check once Android is supported.
-#if BUILDFLAG(IS_ANDROID)
-      base::BindRepeating([](GURL) { return std::string(); }),
-#else
-      base::BindRepeating(&GetContentAreaAccountEmail, profile),
-#endif  // BUILDFLAG(IS_ANDROID)
+      base::BindRepeating(&enterprise_connectors::GetActiveContentAreaUser,
+                          IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile),
       /*is_command_line_switch_supported=*/IsCommandLineSwitchSupported());
 }

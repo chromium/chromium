@@ -75,7 +75,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         bool is_off_the_record,
         bool is_guest_session,
         base::RepeatingCallback<std::string()> get_profile_email_callback,
-        base::RepeatingCallback<std::string(GURL)>
+        base::RepeatingCallback<std::string(const GURL&)>
             get_content_area_account_email_callback,
         base::RepeatingCallback<bool()> is_profile_affiliated_callback,
         bool is_command_line_switch_supported)

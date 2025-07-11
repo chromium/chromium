@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -18,55 +19,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace enterprise_connectors {
-
-namespace {
-
-bool IncludeContentAreaAccountEmail(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseActiveUserDetection)) {
-    return false;
-  }
-
-  static constexpr auto kWorkspaceDomains =
-      base::MakeFixedFlatSet<std::string_view>({
-          "mail.google.com",
-          "meet.google.com",
-          "calendar.google.com",
-          "drive.google.com",
-          "docs.google.com",
-          "sites.google.com",
-          "keep.google.com",
-          "script.google.com",
-          "cloudsearch.google.com",
-          "console.cloud.google.com",
-          "datastudio.google.com",
-      });
-
-  for (const auto& domain : kWorkspaceDomains) {
-    if (url.DomainIs(domain)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-std::optional<size_t> GetUserIndex(const GURL& url) {
-  const re2::RE2 kUserPathRegex{"/u/(\\d+)/"};
-
-  int account_id = 0;
-  if (re2::RE2::PartialMatch(url.path_piece(), kUserPathRegex, &account_id)) {
-    return account_id;
-  }
-
-  std::string account_id_str;
-  if (net::GetValueForKeyInQuery(url, "authuser", &account_id_str) &&
-      base::StringToInt(account_id_str, &account_id)) {
-    return account_id;
-  }
-
-  return std::nullopt;
-}
-
-}  // namespace
 
 void ContentAnalysisInfo::InitializeRequest(
     safe_browsing::BinaryUploadService::Request* request,
@@ -120,27 +72,7 @@ void ContentAnalysisInfo::InitializeRequest(
 }
 
 std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
-  if (!IncludeContentAreaAccountEmail(tab_url())) {
-    return "";
-  }
-
-  auto* im = identity_manager();
-  if (!im) {
-    return "";
-  }
-
-  auto accounts = im->GetAccountsInCookieJar();
-
-  if (accounts.GetAllAccounts().size() == 1) {
-    return accounts.GetAllAccounts()[0].email;
-  }
-
-  size_t user_index = GetUserIndex(tab_url()).value_or(0);
-  if (user_index >= accounts.GetAllAccounts().size()) {
-    return "";
-  }
-
-  return accounts.GetAllAccounts()[user_index].email;
+  return GetActiveContentAreaUser(identity_manager(), tab_url());
 }
 
 // static

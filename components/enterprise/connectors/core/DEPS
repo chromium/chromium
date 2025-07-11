@@ -3,4 +3,5 @@ include_rules = [
   "+components/security_interstitials/core",
   "+components/url_matcher",
   "+ui/base/l10n",
+  "+third_party/re2",
 ]

@@ -185,7 +185,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         /*webui_delegate=*/nullptr, identity_test_env_.identity_manager(),
         management_service_.get(), is_off_the_record, is_guest_session,
         base::BindRepeating([]() -> std::string { return kTestProfileEmail; }),
-        base::BindRepeating([](GURL tab_url) -> std::string {
+        base::BindRepeating([](const GURL& tab_url) -> std::string {
           return kContentAreaAccountEmail;
         }),
         base::BindRepeating([] { return true; }),
