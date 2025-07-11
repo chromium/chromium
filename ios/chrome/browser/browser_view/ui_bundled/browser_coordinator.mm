@@ -2783,9 +2783,11 @@ enum class ToolbarKind {
 }
 
 - (void)hideFindUI {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
   if (IsNativeFindInPageAvailable()) {
-    web::WebState* activeWebState = self.activeWebState;
-    DCHECK(activeWebState);
     auto* helper = FindTabHelper::FromWebState(activeWebState);
     helper->DismissFindNavigator();
   } else {
