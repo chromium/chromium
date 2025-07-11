@@ -162,30 +162,24 @@ bool AccessibilityNoOpPredicate(ui::BrowserAccessibility* start,
   return true;
 }
 
-// Getter function for the search key to predicate map and all keys string.
-std::tuple<SearchKeyToPredicateMap&, std::u16string&, PredicateToEnumMap&>
-GetSearchKeyData() {
-  // These are special unofficial strings sent from TalkBack/BrailleBack
-  // to jump to certain categories of web elements.
-  static base::NoDestructor<SearchKeyToPredicateMap>
-      search_key_to_predicate_map;
-  static base::NoDestructor<std::u16string> all_search_keys;
-  static base::NoDestructor<PredicateToEnumMap> predicate_to_enum_map;
-  static bool initialized = false;
+using SearchKeyData =
+    std::tuple<SearchKeyToPredicateMap, PredicateToEnumMap, std::u16string>;
 
-  if (!initialized) {
-    initialized = true;
-    auto add_to_map = [&](const std::u16string& key,
+// Getter function for the search key to predicate map and all keys string.
+const SearchKeyData& GetSearchKeyData() {
+  static base::NoDestructor<SearchKeyData> search_key_data([] {
+    // These are special unofficial strings sent from TalkBack/BrailleBack
+    // to jump to certain categories of web elements.
+    SearchKeyToPredicateMap search_key_to_predicate_map;
+    PredicateToEnumMap predicate_to_enum_map;
+    std::vector<std::u16string> all_search_keys;
+
+    auto add_to_map = [&](std::u16string key,
                           ui::AccessibilityMatchPredicate predicate,
                           AccessibilityPredicateType type) {
-      (*search_key_to_predicate_map)[key] = predicate;
-      (*predicate_to_enum_map)[key] = type;
-
-      // Build the all_search_keys string.
-      if (!all_search_keys->empty()) {
-        *all_search_keys += u",";
-      }
-      *all_search_keys += key;
+      search_key_to_predicate_map[key] = std::move(predicate);
+      predicate_to_enum_map[key] = type;
+      all_search_keys.emplace_back(std::move(key));
     };
 
     add_to_map(u"ARTICLE", ui::AccessibilityArticlePredicate,
@@ -277,20 +271,24 @@ GetSearchKeyData() {
                AccessibilityPredicateType::kTableBounds);
 
     // These do not have search predicates and are for metrics tracking.
-    (*predicate_to_enum_map)[u"UNKNOWN"] = AccessibilityPredicateType::kUnknown;
-    (*predicate_to_enum_map)[u"DEFAULT"] = AccessibilityPredicateType::kDefault;
-  }
-  return std::make_tuple(std::ref(*search_key_to_predicate_map),
-                         std::ref(*all_search_keys),
-                         std::ref(*predicate_to_enum_map));
+    predicate_to_enum_map[u"UNKNOWN"] = AccessibilityPredicateType::kUnknown;
+    predicate_to_enum_map[u"DEFAULT"] = AccessibilityPredicateType::kDefault;
+
+    return std::make_tuple(std::move(search_key_to_predicate_map),
+                           std::move(predicate_to_enum_map),
+                           base::JoinString(std::move(all_search_keys), u","));
+  }());
+
+  return *search_key_data;
 }
 
 ui::AccessibilityMatchPredicate PredicateForSearchKey(
     std::u16string& element_type) {
-  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
-  const auto& iter = search_map.find(element_type);
-  if (iter != search_map.end()) {
-    return iter->second;
+  const auto& search_map =
+      std::get<SearchKeyToPredicateMap>(GetSearchKeyData());
+  auto it = search_map.find(element_type);
+  if (it != search_map.end()) {
+    return it->second;
   } else {
     element_type = u"UNKNOWN";
   }
@@ -302,8 +300,8 @@ ui::AccessibilityMatchPredicate PredicateForSearchKey(
 
 AccessibilityPredicateType EnumForPredicate(
     const std::u16string& element_type) {
-  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
-  const auto& it = enum_map.find(element_type);
+  const auto& enum_map = std::get<PredicateToEnumMap>(GetSearchKeyData());
+  auto it = enum_map.find(element_type);
   if (it != enum_map.end()) {
     return it->second;
   } else {
@@ -1121,11 +1119,11 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
 
 base::android::ScopedJavaLocalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
-  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
+  const std::u16string& all_keys = std::get<std::u16string>(GetSearchKeyData());
   return GetCanonicalJNIString(env, all_keys).AsLocalRef(env);
 }
 
-WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid() {}
+WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid() = default;
 
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
