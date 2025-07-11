@@ -27,15 +27,11 @@ WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
 WebStateListChangeDetach::WebStateListChangeDetach(
     raw_ptr<web::WebState> detached_web_state,
     int detached_from_index,
-    bool is_closing,
-    bool is_user_action,
-    bool is_tabs_cleanup,
+    DetachReason detach_reason,
     raw_ptr<const TabGroup> group)
     : detached_web_state_(detached_web_state),
       detached_from_index_(detached_from_index),
-      is_closing_(is_closing),
-      is_user_action_(is_user_action),
-      is_tabs_cleanup_(is_tabs_cleanup),
+      detach_reason_(detach_reason),
       group_(group) {}
 
 WebStateListChange::Type WebStateListChangeDetach::type() const {

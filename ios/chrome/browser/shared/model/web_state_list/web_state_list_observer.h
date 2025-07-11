@@ -120,13 +120,17 @@ class WebStateListChangeDetach final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kDetach;
 
-  // TODO(crbug.com/365701685): Refactor WebStateListChangeDetach to use an
-  // enum for the reason why a WebState is being detached.
+  // Reason for the detach.
+  enum DetachReason {
+    kDetached,
+    kClosed,
+    kClosedByUserAction,
+    kClosedByTabsCleanup,
+  };
+
   WebStateListChangeDetach(raw_ptr<web::WebState> detached_web_state,
                            int detached_from_index,
-                           bool is_closing,
-                           bool is_user_action,
-                           bool is_tabs_cleanup,
+                           DetachReason detach_reason,
                            raw_ptr<const TabGroup> group);
   ~WebStateListChangeDetach() final = default;
 
@@ -143,16 +147,44 @@ class WebStateListChangeDetach final : public WebStateListChange {
   // Returns the index of the WebState was in before being detached.
   int detached_from_index() const { return detached_from_index_; }
 
+  // Returns the detach reason.
+  DetachReason detach_reason() const { return detach_reason_; }
+
   // Returns true when a detached WebState will be closed as well.
-  bool is_closing() const { return is_closing_; }
+  bool is_closing() const {
+    switch (detach_reason_) {
+      case DetachReason::kDetached:
+        return false;
+      case DetachReason::kClosed:
+      case DetachReason::kClosedByUserAction:
+      case DetachReason::kClosedByTabsCleanup:
+        return true;
+    };
+  }
 
   // Returns true when a detached WebState will be closed by the user action.
-  bool is_user_action() const { return is_user_action_; }
+  bool is_user_action() const {
+    switch (detach_reason_) {
+      case DetachReason::kDetached:
+      case DetachReason::kClosed:
+      case DetachReason::kClosedByTabsCleanup:
+        return false;
+      case DetachReason::kClosedByUserAction:
+        return true;
+    };
+  }
 
-  // TODO(crbug.com/365701685): Refactor WebStateListChangeDetach to use an
-  // enum for the reason why a WebState is being detached.
   // Returns true when a detached WebState will be closed in a tabs clean-up.
-  bool is_tabs_cleanup() const { return is_tabs_cleanup_; }
+  bool is_tabs_cleanup() const {
+    switch (detach_reason_) {
+      case DetachReason::kDetached:
+      case DetachReason::kClosed:
+      case DetachReason::kClosedByUserAction:
+        return false;
+      case DetachReason::kClosedByTabsCleanup:
+        return true;
+    };
+  }
 
   // The group the WebState was in prior to the change.
   raw_ptr<const TabGroup> group() const { return group_; }
@@ -160,9 +192,7 @@ class WebStateListChangeDetach final : public WebStateListChange {
  private:
   raw_ptr<web::WebState> detached_web_state_;
   const int detached_from_index_;
-  const bool is_closing_;
-  const bool is_user_action_;
-  const bool is_tabs_cleanup_;
+  const DetachReason detach_reason_;
   raw_ptr<const TabGroup> group_;
 };
 

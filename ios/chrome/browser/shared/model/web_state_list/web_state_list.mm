@@ -26,6 +26,23 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
+namespace {
+
+// Returns a WebStateListChangeDetach::DetachReason for `close_reason`.
+WebStateListChangeDetach::DetachReason DetachReasonFromClosingReason(
+    WebStateList::ClosingReason close_reason) {
+  switch (close_reason) {
+    case WebStateList::ClosingReason::kDefault:
+      return WebStateListChangeDetach::DetachReason::kClosed;
+    case WebStateList::ClosingReason::kUserAction:
+      return WebStateListChangeDetach::DetachReason::kClosedByUserAction;
+    case WebStateList::ClosingReason::kTabsCleanup:
+      return WebStateListChangeDetach::DetachReason::kClosedByTabsCleanup;
+  }
+}
+
+}  // namespace
+
 WebStateList::ScopedBatchOperation::ScopedBatchOperation(
     WebStateList* web_state_list)
     : web_state_list_(web_state_list) {
@@ -58,33 +75,22 @@ WebStateList::ScopedBatchOperation::~ScopedBatchOperation() {
 // The static helper method helps construct a object that represents
 // a valid state.
 struct WebStateList::DetachParams {
-  static DetachParams Detaching();
-  // TODO(crbug.com/365701685): Refactor DetachParams::Closing to use an enum
-  // for the reason why a WebState is being closed.
-  static DetachParams Closing(bool is_user_action,
-                              bool by_browsing_data_remover);
+  DetachParams(WebStateListChangeDetach::DetachReason detach_reason)
+      : detach_reason(detach_reason) {}
 
-  const bool is_closing;
-  const bool is_user_action;
-  const bool by_browsing_data_remover;
+  static DetachParams Detaching();
+  static DetachParams Closing(WebStateList::ClosingReason close_reason);
+
+  const WebStateListChangeDetach::DetachReason detach_reason;
 };
 
 WebStateList::DetachParams WebStateList::DetachParams::Detaching() {
-  return {
-      .is_closing = false,
-      .is_user_action = false,
-      .by_browsing_data_remover = false,
-  };
+  return DetachParams(WebStateListChangeDetach::DetachReason::kDetached);
 }
 
 WebStateList::DetachParams WebStateList::DetachParams::Closing(
-    bool is_user_action,
-    bool by_browsing_data_remover) {
-  return {
-      .is_closing = true,
-      .is_user_action = is_user_action,
-      .by_browsing_data_remover = by_browsing_data_remover,
-  };
+    WebStateList::ClosingReason close_reason) {
+  return DetachParams(DetachReasonFromClosingReason(close_reason));
 }
 
 // Wrapper around a WebState stored in a WebStateList.
@@ -341,12 +347,8 @@ void WebStateList::CloseWebStateAt(int index, ClosingReason close_reason) {
   const int new_active_index =
       order_controller.DetermineNewActiveIndex(active_index_, {index});
 
-  const DetachParams detach_params =
-      DetachParams::Closing(close_reason == ClosingReason::kUserAction,
-                            close_reason == ClosingReason::kTabsCleanup);
-
-  std::unique_ptr<web::WebState> detached_web_state =
-      DetachWebStateAtImpl(index, new_active_index, detach_params);
+  std::unique_ptr<web::WebState> detached_web_state = DetachWebStateAtImpl(
+      index, new_active_index, DetachParams::Closing(close_reason));
 
   // Dropping detached_web_state will destroy it.
 }
@@ -363,16 +365,13 @@ void WebStateList::CloseWebStatesAtIndices(ClosingReason close_reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
 
-  const DetachParams detach_params =
-      DetachParams::Closing(close_reason == ClosingReason::kUserAction,
-                            close_reason == ClosingReason::kTabsCleanup);
-
   // Detach all web states in a first pass, before destroying them at once
   // later. This avoids odd side effects as a result of WebStateImpl's
   // destructor notifying observers, including slowness during shutdown due to
   // quadratic behavior if observers iterate the WebStateList.
   std::vector<std::unique_ptr<web::WebState>> detached_web_states =
-      DetachWebStatesAtIndicesImpl(removing_indexes, detach_params);
+      DetachWebStatesAtIndicesImpl(removing_indexes,
+                                   DetachParams::Closing(close_reason));
 
   detached_web_states.clear();
 }
@@ -661,9 +660,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   delegate_->WillRemoveWebState(web_state);
 
   const TabGroup* group = web_state_wrappers_[index]->group();
-  const WebStateListChangeDetach detach_change(
-      web_state, index, params.is_closing, params.is_user_action,
-      params.by_browsing_data_remover, group);
+  const WebStateListChangeDetach detach_change(web_state, index,
+                                               params.detach_reason, group);
 
   // `new_active_index` may be invalid e.g. when closing all the WebStates,
   // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
@@ -674,8 +672,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   int insertion_index = kInvalidIndex;
   // Do not insert web state when shuting down the app. All tabs are closed.
-  bool is_shutting_down = params.is_closing && !params.is_user_action &&
-                          !params.by_browsing_data_remover;
+  bool is_shutting_down =
+      params.detach_reason == WebStateListChangeDetach::DetachReason::kClosed;
   if (!is_shutting_down && ShouldInsertWebState(group)) {
     // In case the group is empty but should be kept, add a new tab in it
     // to prevent its deletion.
