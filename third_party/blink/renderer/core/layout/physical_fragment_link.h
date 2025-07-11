@@ -43,13 +43,9 @@ struct ThreadingTrait<PhysicalFragmentLink> {
   static constexpr ThreadAffinity kAffinity = ThreadAffinity::kMainThreadOnly;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::PhysicalFragmentLink>
-    : VectorTraitsBase<blink::PhysicalFragmentLink> {
+struct VectorTraits<PhysicalFragmentLink>
+    : VectorTraitsBase<PhysicalFragmentLink> {
   static constexpr bool kCanInitializeWithMemset = true;
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanMoveWithMemcpy = true;
@@ -57,6 +53,6 @@ struct VectorTraits<blink::PhysicalFragmentLink>
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_LINK_H_

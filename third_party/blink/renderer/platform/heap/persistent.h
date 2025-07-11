@@ -70,10 +70,6 @@ T& WrapPersistentIfNeeded(T& value) {
   return value;
 }
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
 struct PersistentVectorTraitsBase : VectorTraitsBase<T> {
   STATIC_ONLY(PersistentVectorTraitsBase);
@@ -81,16 +77,12 @@ struct PersistentVectorTraitsBase : VectorTraitsBase<T> {
 };
 
 template <typename T>
-struct VectorTraits<blink::Persistent<T>>
-    : PersistentVectorTraitsBase<blink::Persistent<T>> {};
+struct VectorTraits<Persistent<T>> : PersistentVectorTraitsBase<Persistent<T>> {
+};
 
 template <typename T>
-struct VectorTraits<blink::WeakPersistent<T>>
-    : PersistentVectorTraitsBase<blink::WeakPersistent<T>> {};
-
-}  // namespace WTF
-
-namespace blink {
+struct VectorTraits<WeakPersistent<T>>
+    : PersistentVectorTraitsBase<WeakPersistent<T>> {};
 
 template <typename T, typename PersistentType>
 struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {

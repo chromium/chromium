@@ -289,17 +289,12 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
 
 CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::OffsetMappingUnit>
-    : VectorTraitsBase<blink::OffsetMappingUnit> {
+struct VectorTraits<OffsetMappingUnit> : VectorTraitsBase<OffsetMappingUnit> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_OFFSET_MAPPING_H_

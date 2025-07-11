@@ -166,18 +166,14 @@ class CORE_EXPORT MatchedPropertiesCache {
 // For debugging only.
 std::ostream& operator<<(std::ostream&, MatchedPropertiesCache::Key&);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::CachedMatchedProperties::Entry>
-    : VectorTraitsBase<blink::CachedMatchedProperties::Entry> {
+struct VectorTraits<CachedMatchedProperties::Entry>
+    : VectorTraitsBase<CachedMatchedProperties::Entry> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   // HeapVector is evidently not concurrent.
   static constexpr bool kCanTraceConcurrently = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCHED_PROPERTIES_CACHE_H_

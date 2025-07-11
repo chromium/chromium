@@ -187,12 +187,8 @@ using GCedHeapVector =
 static_assert(!WTF::IsDisallowNew<GCedHeapVector<int>>);
 ASSERT_SIZE(Vector<int>, GCedHeapVector<int>);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
-struct VectorTraits<blink::Member<T>> : VectorTraitsBase<blink::Member<T>> {
+struct VectorTraits<Member<T>> : VectorTraitsBase<Member<T>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = false;
   static const bool kCanInitializeWithMemset = true;
@@ -207,8 +203,7 @@ struct VectorTraits<blink::Member<T>> : VectorTraitsBase<blink::Member<T>> {
 // HeapLinkedHashSet though HeapVector<WeakMember> usage is still banned.
 // (See the discussion in https://crrev.com/c/2246014)
 template <typename T>
-struct VectorTraits<blink::WeakMember<T>>
-    : VectorTraitsBase<blink::WeakMember<T>> {
+struct VectorTraits<WeakMember<T>> : VectorTraitsBase<WeakMember<T>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = false;
   static const bool kCanInitializeWithMemset = true;
@@ -220,8 +215,7 @@ struct VectorTraits<blink::WeakMember<T>>
 };
 
 template <typename T>
-struct VectorTraits<blink::UntracedMember<T>>
-    : VectorTraitsBase<blink::UntracedMember<T>> {
+struct VectorTraits<UntracedMember<T>> : VectorTraitsBase<UntracedMember<T>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = false;
   static const bool kCanInitializeWithMemset = true;
@@ -230,8 +224,7 @@ struct VectorTraits<blink::UntracedMember<T>>
 };
 
 template <typename T>
-struct VectorTraits<blink::HeapVector<T, 0>>
-    : VectorTraitsBase<blink::HeapVector<T, 0>> {
+struct VectorTraits<HeapVector<T, 0>> : VectorTraitsBase<HeapVector<T, 0>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = false;
   static const bool kCanInitializeWithMemset = true;
@@ -240,8 +233,8 @@ struct VectorTraits<blink::HeapVector<T, 0>>
 };
 
 template <typename T, wtf_size_t inlineCapacity>
-struct VectorTraits<blink::HeapVector<T, inlineCapacity>>
-    : VectorTraitsBase<blink::HeapVector<T, inlineCapacity>> {
+struct VectorTraits<HeapVector<T, inlineCapacity>>
+    : VectorTraitsBase<HeapVector<T, inlineCapacity>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = VectorTraits<T>::kNeedsDestruction;
   static const bool kCanInitializeWithMemset =
@@ -251,6 +244,6 @@ struct VectorTraits<blink::HeapVector<T, inlineCapacity>>
   static const bool kCanMoveWithMemcpy = VectorTraits<T>::kCanMoveWithMemcpy;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_

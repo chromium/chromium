@@ -476,14 +476,12 @@ bool DeferredImageDecoder::HotSpot(gfx::Point& hot_spot) const {
   return has_hot_spot_;
 }
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct VectorTraits<blink::DeferredFrameData>
-    : public SimpleClassVectorTraits<blink::DeferredFrameData> {
+struct VectorTraits<DeferredFrameData>
+    : public SimpleClassVectorTraits<DeferredFrameData> {
   STATIC_ONLY(VectorTraits);
-  static const bool kCanInitializeWithMemset =
-      false;  // Not all DeferredFrameData members initialize to 0.
+  // Not all DeferredFrameData members initialize to 0.
+  static const bool kCanInitializeWithMemset = false;
 };
-}  // namespace WTF
+
+}  // namespace blink

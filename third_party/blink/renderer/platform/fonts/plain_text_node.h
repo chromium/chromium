@@ -132,17 +132,12 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   bool has_vertical_offsets_ = false;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::PlainTextItem>
-    : VectorTraitsBase<blink::PlainTextItem> {
+struct VectorTraits<PlainTextItem> : VectorTraitsBase<PlainTextItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_NODE_H_

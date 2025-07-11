@@ -660,17 +660,14 @@ inline bool FragmentItem::CanReuse() const {
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const FragmentItem*);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const FragmentItem&);
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct VectorTraits<blink::FragmentItem>
-    : VectorTraitsBase<blink::FragmentItem> {
+struct VectorTraits<FragmentItem> : VectorTraitsBase<FragmentItem> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   // FragmentItem(FragmentItem&&) is safe to be replaced with memcpy. This
   // will enable Oilpan compaction as well.
   static constexpr bool kCanMoveWithMemcpy = true;
 };
-}  // namespace WTF
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FRAGMENT_ITEM_H_

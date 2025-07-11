@@ -83,13 +83,8 @@ using GCedHeapDeque = BasicHeapDeque<internal::HeapCollectionType::kGCed, T>;
 static_assert(!WTF::IsDisallowNew<GCedHeapDeque<int>>);
 ASSERT_SIZE(Deque<int>, GCedHeapDeque<int>);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
-struct VectorTraits<blink::HeapDeque<T>>
-    : VectorTraitsBase<blink::HeapDeque<T>> {
+struct VectorTraits<HeapDeque<T>> : VectorTraitsBase<HeapDeque<T>> {
   STATIC_ONLY(VectorTraits);
   static const bool kNeedsDestruction = false;
   static const bool kCanInitializeWithMemset = true;
@@ -97,6 +92,6 @@ struct VectorTraits<blink::HeapDeque<T>>
   static const bool kCanMoveWithMemcpy = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_DEQUE_H_

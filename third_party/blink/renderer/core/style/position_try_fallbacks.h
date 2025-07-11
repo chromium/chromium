@@ -76,19 +76,15 @@ class CORE_EXPORT PositionTryFallbacks
   HeapVector<PositionTryFallback> fallbacks_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::PositionTryFallback>
-    : VectorTraitsBase<blink::PositionTryFallback> {
+struct VectorTraits<PositionTryFallback>
+    : VectorTraitsBase<PositionTryFallback> {
   static const bool kCanClearUnusedSlotsWithMemset = true;
   static const bool kCanInitializeWithMemset = true;
   static const bool kCanMoveWithMemcpy = true;
   static const bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_POSITION_TRY_FALLBACKS_H_

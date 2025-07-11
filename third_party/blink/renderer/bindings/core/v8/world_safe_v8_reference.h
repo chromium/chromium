@@ -161,40 +161,31 @@ class WorldSafeV8Reference final {
   Member<const DOMWrapperWorld> world_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename V8Type>
-struct VectorTraits<blink::WorldSafeV8Reference<V8Type>>
-    : VectorTraitsBase<blink::WorldSafeV8Reference<V8Type>> {
+struct VectorTraits<WorldSafeV8Reference<V8Type>>
+    : VectorTraitsBase<WorldSafeV8Reference<V8Type>> {
   STATIC_ONLY(VectorTraits);
 
   static constexpr bool kCanInitializeWithMemset =
+      VectorTraits<TraceWrapperV8Reference<V8Type>>::kCanInitializeWithMemset &&
       VectorTraits<
-          blink::TraceWrapperV8Reference<V8Type>>::kCanInitializeWithMemset &&
-      VectorTraits<scoped_refptr<const blink::DOMWrapperWorld>>::
-          kCanInitializeWithMemset;
+          scoped_refptr<const DOMWrapperWorld>>::kCanInitializeWithMemset;
   static constexpr bool kCanClearUnusedSlotsWithMemset =
-      VectorTraits<blink::TraceWrapperV8Reference<V8Type>>::
-          kCanClearUnusedSlotsWithMemset &&
-      VectorTraits<scoped_refptr<const blink::DOMWrapperWorld>>::
-          kCanClearUnusedSlotsWithMemset;
+      VectorTraits<
+          TraceWrapperV8Reference<V8Type>>::kCanClearUnusedSlotsWithMemset &&
+      VectorTraits<
+          scoped_refptr<const DOMWrapperWorld>>::kCanClearUnusedSlotsWithMemset;
   static constexpr bool kCanCopyWithMemcpy =
-      VectorTraits<
-          blink::TraceWrapperV8Reference<V8Type>>::kCanCopyWithMemcpy &&
-      VectorTraits<
-          scoped_refptr<const blink::DOMWrapperWorld>>::kCanCopyWithMemcpy;
+      VectorTraits<TraceWrapperV8Reference<V8Type>>::kCanCopyWithMemcpy &&
+      VectorTraits<scoped_refptr<const DOMWrapperWorld>>::kCanCopyWithMemcpy;
   static constexpr bool kCanMoveWithMemcpy =
-      VectorTraits<
-          blink::TraceWrapperV8Reference<V8Type>>::kCanMoveWithMemcpy &&
-      VectorTraits<
-          scoped_refptr<const blink::DOMWrapperWorld>>::kCanMoveWithMemcpy;
+      VectorTraits<TraceWrapperV8Reference<V8Type>>::kCanMoveWithMemcpy &&
+      VectorTraits<scoped_refptr<const DOMWrapperWorld>>::kCanMoveWithMemcpy;
 
-  static constexpr bool kCanTraceConcurrently = VectorTraits<
-      blink::TraceWrapperV8Reference<V8Type>>::kCanTraceConcurrently;
+  static constexpr bool kCanTraceConcurrently =
+      VectorTraits<TraceWrapperV8Reference<V8Type>>::kCanTraceConcurrently;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WORLD_SAFE_V8_REFERENCE_H_

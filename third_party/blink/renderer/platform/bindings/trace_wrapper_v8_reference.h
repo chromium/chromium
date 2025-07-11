@@ -38,9 +38,12 @@ struct IsTraceable<blink::TraceWrapperV8Reference<T>> {
   static const bool value = true;
 };
 
+}  // namespace WTF
+namespace blink {
+
 template <typename T>
-struct VectorTraits<blink::TraceWrapperV8Reference<T>>
-    : VectorTraitsBase<blink::TraceWrapperV8Reference<T>> {
+struct VectorTraits<TraceWrapperV8Reference<T>>
+    : VectorTraitsBase<TraceWrapperV8Reference<T>> {
   STATIC_ONLY(VectorTraits);
 
   static constexpr bool kNeedsDestruction =
@@ -67,6 +70,6 @@ struct VectorTraits<blink::TraceWrapperV8Reference<T>>
                 "TraceWrapperV8Reference should be trivially destructible.");
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRACE_WRAPPER_V8_REFERENCE_H_

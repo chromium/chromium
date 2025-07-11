@@ -391,16 +391,10 @@ struct NestedType final {
 
 size_t NestedType::num_dtor_checks = 0;
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct VectorTraits<blink::NestedType> : VectorTraitsBase<blink::NestedType> {
+struct VectorTraits<NestedType> : VectorTraitsBase<NestedType> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
 };
-}  // namespace WTF
-
-namespace blink {
 
 TEST_F(HeapCompactTest, AvoidCompactionWhenTraitsProhibitMemcpy) {
   // Regression test: https://crbug.com/1478343

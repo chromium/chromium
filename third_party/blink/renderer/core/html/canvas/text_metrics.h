@@ -165,17 +165,13 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   bool split_by_word_ = false;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::TextMetrics::RunWithOffset>
-    : VectorTraitsBase<blink::TextMetrics::RunWithOffset> {
+struct VectorTraits<TextMetrics::RunWithOffset>
+    : VectorTraitsBase<TextMetrics::RunWithOffset> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_TEXT_METRICS_H_

@@ -224,20 +224,16 @@ class CORE_EXPORT ScriptObject final {
   ScriptValue object_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 // VectorTraits for ScriptValue depend entirely on
 // WorldSafeV8Reference<v8::Value>.
 template <>
-struct VectorTraits<blink::ScriptValue>
-    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
+struct VectorTraits<ScriptValue>
+    : VectorTraits<WorldSafeV8Reference<v8::Value>> {};
 
 template <>
-struct VectorTraits<blink::ScriptObject>
-    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
+struct VectorTraits<ScriptObject>
+    : VectorTraits<WorldSafeV8Reference<v8::Value>> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_VALUE_H_

@@ -86,9 +86,12 @@ class VectorBackedLinkedListNode {
   ValueType value_ = HashTraits<ValueType>::EmptyValue();
 };
 
+}  // namespace WTF
+namespace blink {
+
 template <typename ValueType, typename Allocator>
-struct VectorTraits<VectorBackedLinkedListNode<ValueType, Allocator>>
-    : VectorTraitsBase<VectorBackedLinkedListNode<ValueType, Allocator>> {
+struct VectorTraits<WTF::VectorBackedLinkedListNode<ValueType, Allocator>>
+    : VectorTraitsBase<WTF::VectorBackedLinkedListNode<ValueType, Allocator>> {
   STATIC_ONLY(VectorTraits);
 
   static const bool kNeedsDestruction =
@@ -106,6 +109,9 @@ struct VectorTraits<VectorBackedLinkedListNode<ValueType, Allocator>>
   static constexpr bool kCanTraceConcurrently =
       VectorTraits<ValueType>::kCanTraceConcurrently;
 };
+
+}  // namespace blink
+namespace WTF {
 
 template <typename ValueType, typename Traits, typename Allocator>
 class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
