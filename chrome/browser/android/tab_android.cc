@@ -124,8 +124,16 @@ TabInterface* TabInterface::GetFromContents(
   return tab_android;
 }
 
+const TabInterface* TabInterface::GetFromContents(
+    const content::WebContents* web_contents) {
+  const auto* tab_android = TabAndroid::FromWebContents(web_contents);
+  CHECK(tab_android);
+  return tab_android;
+}
+
 // static
-TabInterface* MaybeGetFromContents(content::WebContents* web_contents) {
+TabInterface* TabInterface::MaybeGetFromContents(
+    content::WebContents* web_contents) {
   return TabAndroid::FromWebContents(web_contents);
 }
 
