@@ -29,6 +29,8 @@ class TabListBridge : public TabListInterface {
       BrowserWindowInterface* browser_window_interface);
 
   // TabListInterface:
+  int GetTabCount() const override;
+  int GetActiveIndex() const override;
   void OpenTab(const GURL& url, int index) override;
   void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(tabs::TabHandle tab) override;

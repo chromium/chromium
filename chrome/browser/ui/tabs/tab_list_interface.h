@@ -24,6 +24,13 @@ class TabListInterface {
   TabListInterface(const TabListInterface& other) = delete;
   void operator=(const TabListInterface& other) = delete;
 
+  // Returns the count of tabs within the tab list.
+  virtual int GetTabCount() const = 0;
+
+  // Returns the index of the currently-active tab. Note that this is different
+  // from the selected tab (of which there may be multiple).
+  virtual int GetActiveIndex() const = 0;
+
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
   virtual void OpenTab(const GURL& url, int index) = 0;

@@ -23,6 +23,14 @@ TabListInterface* TabListBridge::From(
       browser_window_interface->GetUnownedUserDataHost());
 }
 
+int TabListBridge::GetTabCount() const {
+  return tab_strip_->count();
+}
+
+int TabListBridge::GetActiveIndex() const {
+  return tab_strip_->active_index();
+}
+
 void TabListBridge::OpenTab(const GURL& url, int index) {}
 
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {}

@@ -37,3 +37,31 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTab) {
   ASSERT_TRUE(tab2);
   EXPECT_EQ(url2, tab2->GetContents()->GetLastCommittedURL());
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveIndex) {
+  const GURL url("http://one.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  EXPECT_EQ(0, tab_list_interface->GetActiveIndex());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(1, tab_list_interface->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTabCount) {
+  const GURL url("http://one.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  EXPECT_EQ(1, tab_list_interface->GetTabCount());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(2, tab_list_interface->GetTabCount());
+}
