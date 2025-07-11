@@ -60,8 +60,12 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kUint8, OperandDataType::kInt32,
       OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kFloat16To32Uint8Int8To32 = {
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kUint8, OperandDataType::kInt8, OperandDataType::kInt32};
+
   return ContextProperties(
-      InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
+      InputOperandLayout::kNchw, Resample2DAxes::kAny,
       BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),
@@ -199,7 +203,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*reduce_sum_square_input=*/
        {kFloat16To32Int32To64, kMaxRank},
        /*relu_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
-       /*resample2d_input=*/{},
+       /*resample2d_input=*/
+       {kFloat16To32Uint8Int8To32, SupportedRanks::Exactly(4)},
        // TODO(crbug.com/425151000): Add int4/uint4 support for reshape once the
        // related ORT issue is fixed.
        // https://github.com/microsoft/onnxruntime/issues/24285

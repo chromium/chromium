@@ -80,6 +80,7 @@ constexpr base::cstring_view kOpTypeMatMul = "MatMul";
 constexpr base::cstring_view kOpTypePad = "Pad";
 constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
+constexpr base::cstring_view kOpTypeResample2d = "Resize";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeScatterElements = "ScatterElements";
 constexpr base::cstring_view kOpTypeScatterND = "ScatterND";
@@ -888,56 +889,49 @@ void GraphBuilderOrt::AddElementWiseBinaryOperation(
     case mojom::ElementWiseBinary::Kind::kEqual: {
       CHECK(data_type_limits.equal_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeEqual);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeEqual);
     }
     case mojom::ElementWiseBinary::Kind::kNotEqual: {
       CHECK(data_type_limits.not_equal_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalNotEqualOperation(element_wise_binary);
-      break;
+      return AddLogicalNotEqualOperation(element_wise_binary);
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
       CHECK(data_type_limits.greater_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeGreater);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeGreater);
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
       CHECK(data_type_limits.greater_or_equal_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeGreaterOrEqual);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary,
+                                       kOpTypeGreaterOrEqual);
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
       CHECK(data_type_limits.lesser_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLesser);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeLesser);
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
       CHECK(data_type_limits.lesser_or_equal_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLesserOrEqual);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary,
+                                       kOpTypeLesserOrEqual);
     }
     case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
       CHECK(data_type_limits.logical_and_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalAnd);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalAnd);
     }
     case mojom::ElementWiseBinary::Kind::kLogicalOr: {
       CHECK(data_type_limits.logical_or_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalOr);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalOr);
     }
     case mojom::ElementWiseBinary::Kind::kLogicalXor: {
       CHECK(data_type_limits.logical_xor_input.SupportsAll(
           {lhs_descriptor, rhs_descriptor}));
-      AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalXor);
-      break;
+      return AddLogicalBinaryOperation(element_wise_binary, kOpTypeLogicalXor);
     }
   }
 }
@@ -974,8 +968,7 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       CHECK(data_type_limits.logical_not_input.Supports(input_descriptor));
-      AddLogicalNotOperation(element_wise_unary);
-      break;
+      return AddLogicalNotOperation(element_wise_unary);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(data_type_limits.neg_input.Supports(input_descriptor));
@@ -1122,8 +1115,7 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   std::string int64_indices =
       indices_descriptor.data_type() == OperandDataType::kInt64
           ? indices
-          : CreateCastNode(indices,
-                           WebnnToOnnxDataType(OperandDataType::kInt64));
+          : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
 
   // Clamp the indices operand to prevent out-of-bounds reading which will cause
   // ORT CPU EP to throw a runtime error.
@@ -1410,6 +1402,57 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   model_editor_.AddNode(reduce_op_type, node_name, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddResample2dOperation(
+    const mojom::Resample2d& resample2d) {
+  const std::string node_name = GenerateNodeName(resample2d.label);
+  const std::string input = GetOperandNameById(resample2d.input_operand_id);
+  const std::string output = GetOperandNameById(resample2d.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(resample2d.input_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.resample2d_input.Supports(
+      input_descriptor));
+
+  // Skip the input roi, which only takes effect when the coordinate
+  // transformation mode is set to "tf_crop_and_resize". Currently WebNN only
+  // supports "half_pixel", which is the default mode.
+  const std::string roi;
+  std::string scales;
+  std::string sizes;
+  if (resample2d.scales) {
+    // Each element of scales applies to a dimension of the input.
+    CHECK_EQ(input_descriptor.Rank(), 4u);
+    std::array<float, 4> scales_data = {1.f, 1.f, 1.f, 1.f};
+    CHECK_EQ(resample2d.axes.size(), 2u);
+    CHECK_EQ(resample2d.scales->size(), 2u);
+    scales_data.at(resample2d.axes[0]) = resample2d.scales->at(0);
+    scales_data.at(resample2d.axes[1]) = resample2d.scales->at(1);
+    scales = Create1DInitializer<float>(scales_data);
+  } else {
+    sizes = CreateInt64InitializerForUint32Array(
+        GetOperand(resample2d.output_operand_id).descriptor.shape());
+  }
+  std::array<const char*, 4> inputs = {input.c_str(), roi.c_str(),
+                                       scales.c_str(), sizes.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrMode = "mode";
+  std::string mode;
+  switch (resample2d.mode) {
+    case mojom::Resample2d::InterpolationMode::kLinear:
+      mode = "linear";
+      break;
+    case mojom::Resample2d::InterpolationMode::kNearestNeighbor:
+      mode = "nearest";
+      break;
+  }
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrMode, mode)};
+
+  model_editor_.AddNode(kOpTypeResample2d, node_name, inputs, outputs,
+                        attributes);
+}
+
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GenerateNodeName(reshape.label);
   const std::string input = GetOperandNameById(reshape.input_operand_id);
@@ -1522,8 +1565,7 @@ void GraphBuilderOrt::AddScatterNDOperation(
   std::string int64_indices =
       indices_descriptor.data_type() == OperandDataType::kInt64
           ? indices
-          : CreateCastNode(indices,
-                           WebnnToOnnxDataType(OperandDataType::kInt64));
+          : CreateCastNode(indices, ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
 
   // Clamp the indices operand to prevent out-of-bounds writing which will cause
   // ORT CPU EP to throw a runtime error.
@@ -1887,6 +1929,10 @@ GraphBuilderOrt::BuildModel() {
         AddReduceOperation(*operation->get_reduce());
         break;
       }
+      case mojom::Operation::Tag::kResample2d: {
+        AddResample2dOperation(*operation->get_resample2d());
+        break;
+      }
       case mojom::Operation::Tag::kReshape: {
         AddReshapeOperation(*operation->get_reshape());
         break;
@@ -1957,7 +2003,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTriangular:
         NOTREACHED() << "[WebNN] Unsupported operation.";
