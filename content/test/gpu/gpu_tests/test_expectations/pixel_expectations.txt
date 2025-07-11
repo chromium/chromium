@@ -335,6 +335,14 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas
 # Currently has flaky test setup hangs on Mac.
 crbug.com/286989320 [ mac ] Pixel_MeetEffects* [ Skip ]
 
+# Skip TreesInViz tests on Android webview.
+crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_CSS3DBlueBox_TreesInViz [ Skip ]
+crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_Canvas2DRedBox_TreesInViz [ Skip ]
+crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_Video_MP4_TreesInViz [ Skip ]
+crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_ViewTransitionsCapture_TreesInViz [ Skip ]
+crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ Skip ]
+
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -484,6 +492,12 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release
 
 # Flaky Timeout on Mac m3
 crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
+
+# Tests either fail consistently or flakily on Android in TreesInViz mode.
+crbug.com/415830130 [ android android-chromium ] Pixel_Video_MP4_TreesInViz [ Failure ]
+crbug.com/415830130 [ android android-chromium ] Pixel_Canvas2DRedBox_TreesInViz [ RetryOnFailure ]
+crbug.com/415830130 [ android android-chromium ] Pixel_ViewTransitionsCapture_TreesInViz [ RetryOnFailure ]
+crbug.com/415830130 [ android android-chromium ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

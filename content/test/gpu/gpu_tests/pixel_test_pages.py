@@ -627,6 +627,47 @@ class PixelTestPages():
             crop_action=ca.NonWhiteContentCropAction(
                 initial_crop=ca.FixedRectCropAction(0, 0, 500, 300)),
         ),
+
+        # The following tests are a subset of the above, only that they
+        # run in TreesInViz mode, to make sure basic graphics features render
+        # correctly in this mode. They should be deleted once TreesInViz is
+        # turned on by default on GPU bots.
+        PixelTestPage('pixel_canvas2d.html',
+            base_name + '_Canvas2DRedBox' + '_TreesInViz',
+            crop_action=standard_crop,
+            matching_algorithm=algo.FuzzyMatchingAlgorithm(
+                max_different_pixels=130,
+                pixel_per_channel_delta_threshold=2),
+            browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage('pixel_css3d.html',
+            base_name + '_CSS3DBlueBox' + '_TreesInViz',
+            crop_action=standard_crop,
+            matching_algorithm=algo.SobelMatchingAlgorithm(
+                max_different_pixels=0,
+                pixel_delta_threshold=0,
+                edge_threshold=90),
+            browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage('pixel_webgl_aa_alpha.html',
+            base_name + '_WebGLGreenTriangle_AA_Alpha' + '_TreesInViz',
+            crop_action=standard_crop,
+            browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage(
+            'pixel_video_mp4.html?width=240&height=135&use_timer=1',
+            base_name + '_Video_MP4' + '_TreesInViz',
+            crop_action=standard_crop,
+            # Most images are actually very similar, but Pixel 2
+            # tends to produce images with all colors shifted by a
+            # small amount.
+            matching_algorithm=GENERAL_MP4_ALGO,
+            browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage('pixel_view_transitions_capture.html',
+            base_name + '_ViewTransitionsCapture' + '_TreesInViz',
+            crop_action=standard_crop,
+            matching_algorithm=algo.SobelMatchingAlgorithm(
+                max_different_pixels=0,
+                pixel_delta_threshold=0,
+                edge_threshold=90),
+            browser_args=['--enable-features=TreesInViz']),
     ]
 
   @staticmethod
