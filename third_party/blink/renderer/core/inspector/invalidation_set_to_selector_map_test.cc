@@ -1309,6 +1309,51 @@ TEST_F(InvalidationSetToSelectorMapTest, HostSelector) {
   EXPECT_EQ(found_event_count, 1u);
 }
 
+TEST_F(InvalidationSetToSelectorMapTest, PartSelector) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a ::part(b) { background: yellow; }
+    </style>
+    <template id="custom-template">
+      <div part="b">Shadow Inner</div>
+    </template>
+    <div id="parent" class="a"></div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  ShadowRoot& shadow_root =
+      parent->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("custom-template"))
+          ->content()
+          ->cloneNode(true));
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+  parent->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  size_t found_event_count = 0;
+  for (auto event : invalidation_events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched part") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      ASSERT_NE(selector_list, nullptr);
+      EXPECT_EQ(selector_list->size(), 1u);
+      EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a ::part(b)");
+      found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
 TEST_F(InvalidationSetToSelectorMapTest, UserStylesheet) {
   SetBodyInnerHTML(R"HTML(
     <div id=parent class=a>Parent

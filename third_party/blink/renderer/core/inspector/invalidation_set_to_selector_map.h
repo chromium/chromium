@@ -54,6 +54,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     kId,
     kTagName,
     kAttribute,
+    kPart,
     kWholeSubtree
   };
 

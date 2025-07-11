@@ -563,6 +563,8 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
   } else if (reason == kInvalidationSetMatchedAttribute) {
     feature_type =
         InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute;
+  } else if (reason == kInvalidationSetMatchedPart) {
+    feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kPart;
   } else if (reason == kInvalidationSetInvalidatesSubtree) {
     feature_type =
         InvalidationSetToSelectorMap::SelectorFeatureType::kWholeSubtree;
