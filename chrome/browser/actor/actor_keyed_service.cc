@@ -16,15 +16,11 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
-#endif
 
 namespace {
 
@@ -34,18 +30,6 @@ namespace {
 // lines of complex code that tries to precisely wait for navigation commit, but
 // that would be overkill.
 constexpr base::TimeDelta kDelayForNewTab = base::Seconds(1);
-
-#if BUILDFLAG(ENABLE_GLIC)
-glic::mojom::GetTabContextOptions DefaultOptions() {
-  glic::mojom::GetTabContextOptions options;
-  options.include_annotated_page_content = true;
-  options.include_viewport_screenshot = true;
-  options.annotated_page_content_mode = optimization_guide::proto::
-      ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
-  return options;
-}
-
-#endif
 
 void RunLater(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
@@ -116,24 +100,17 @@ void ActorKeyedService::ExecuteAction(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback) {
   auto* task = GetTask(task_id);
-  bool always_fail = false;
-#if !BUILDFLAG(ENABLE_GLIC)
-  // The current implementation relies on glic::FetchPageContext().
-  always_fail = true;
-#endif
-  if (!task || always_fail) {
+  if (!task) {
     VLOG(1) << "Execute Action failed: Task not found.";
     optimization_guide::proto::BrowserActionResult result;
     result.set_action_result(0);
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
-#if BUILDFLAG(ENABLE_GLIC)
   task->Act(std::move(actions),
             base::BindOnce(&ActorKeyedService::OnActionFinished,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                            task_id.value()));
-#endif
 }
 
 TaskId ActorKeyedService::CreateTask() {
@@ -209,41 +186,75 @@ void ActorKeyedService::FinishStartTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
+void ActorKeyedService::RequestTabObservation(
+    const tabs::TabInterface& tab,
+    base::OnceCallback<void(TabObservationResult)> callback) {
+  page_content_annotations::FetchPageContextOptions options;
+  options.include_viewport_screenshot = true;
+  options.annotated_page_content_options =
+      optimization_guide::ActionableAIPageContentOptions();
+  page_content_annotations::FetchPageContext(
+      *tab.GetContents(), options,
+      base::BindOnce(&ActorKeyedService::OnTabOservationResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ActorKeyedService::OnTabOservationResult(
+    base::OnceCallback<void(TabObservationResult)> callback,
+    page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
+  if (!fetch_result.has_value()) {
+    std::move(callback).Run(base::unexpected(fetch_result.error()));
+    return;
+  }
+  auto& page_context = **fetch_result;
+  if (!page_context.screenshot_result.has_value() ||
+      !page_context.annotated_page_content_result.has_value()) {
+    std::move(callback).Run(
+        base::unexpected<std::string>("Failed Observation"));
+    return;
+  }
+  std::unique_ptr<optimization_guide::proto::TabObservation> result =
+      std::make_unique<optimization_guide::proto::TabObservation>();
+  if (page_context.screenshot_result) {
+    auto& data = page_context.screenshot_result->jpeg_data;
+    if (data.size() != 0) {
+      result->set_screenshot_mime_type("image/jpeg");
+      result->set_screenshot(data.data(), data.size());
+    }
+  }
+  if (page_context.annotated_page_content_result) {
+    result->mutable_annotated_page_content()->Swap(
+        &page_context.annotated_page_content_result->proto);
+  }
+  std::move(callback).Run(std::move(result));
+}
+
 void ActorKeyedService::ConvertToBrowserActionResult(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
     int task_id,
     int32_t tab_id,
     actor::mojom::ActionResultPtr action_result,
-    glic::mojom::GetContextResultPtr context_result) {
+    base::expected<std::unique_ptr<optimization_guide::proto::TabObservation>,
+                   std::string> context_result) {
   optimization_guide::proto::BrowserActionResult browser_action_result;
-  if (context_result->is_error_reason()) {
+  if (!context_result.has_value()) {
     VLOG(1) << "Execute Action failed: Error fetching context.";
     browser_action_result.set_action_result(0);
     RunLater(
         base::BindOnce(std::move(callback), std::move(browser_action_result)));
     return;
   }
-  if (context_result->get_tab_context() &&
-      context_result->get_tab_context()->annotated_page_data &&
-      context_result->get_tab_context()
-          ->annotated_page_data->annotated_page_content) {
-    auto apc = context_result->get_tab_context()
-                   ->annotated_page_data->annotated_page_content.value()
-                   .As<optimization_guide::proto::AnnotatedPageContent>();
-    if (apc.has_value()) {
-      auto apc_value = *std::move(apc);
-      browser_action_result.mutable_annotated_page_content()->Swap(&apc_value);
-    }
+  auto& tab_observation = **context_result;
+  if (tab_observation.has_annotated_page_content()) {
+    browser_action_result.mutable_annotated_page_content()->Swap(
+        tab_observation.mutable_annotated_page_content());
   }
-  if (context_result->get_tab_context()->viewport_screenshot &&
-      context_result->get_tab_context()->viewport_screenshot->data.size() !=
-          0) {
-    auto& data = context_result->get_tab_context()->viewport_screenshot->data;
-    browser_action_result.set_screenshot(data.data(), data.size());
+  if (tab_observation.has_screenshot()) {
+    browser_action_result.set_screenshot(tab_observation.screenshot().data(),
+                                         tab_observation.screenshot().size());
     browser_action_result.set_screenshot_mime_type(
-        context_result->get_tab_context()->viewport_screenshot->mime_type);
+        tab_observation.screenshot_mime_type());
   }
   browser_action_result.set_task_id(task_id);
   browser_action_result.set_tab_id(tab_id);
@@ -268,16 +279,12 @@ void ActorKeyedService::OnActionFinished(
     RunLater(base::BindOnce(std::move(callback), std::move(result)));
     return;
   }
-  // TODO(https://crbug.com/398271171): Remove when the actor coordinator
-  // handles getting a new observation.
   int32_t tab_id = tab->GetHandle().raw_value();
-  glic::FetchPageContext(
-      tab, DefaultOptions(),
-      base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     task_id, tab_id, std::move(action_result)));
+  RequestTabObservation(
+      *tab, base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           task_id, tab_id, std::move(action_result)));
 }
-#endif
 
 void ActorKeyedService::PerformActions(
     TaskId task_id,

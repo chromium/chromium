@@ -117,6 +117,7 @@ source_set("impl") {
     "//chrome/browser/actor/ui:tool_request_variant",
     "//chrome/browser/actor/ui:ui",
     "//chrome/browser/optimization_guide:optimization_guide",
+    "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:browser_navigator_params_headers",

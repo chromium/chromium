@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "multi_source_page_context_fetcher\.*": [
+    "+pdf/mojom",
+  ],
+}

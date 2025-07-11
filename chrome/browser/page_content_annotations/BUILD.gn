@@ -16,3 +16,14 @@ source_set("extraction_service") {
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
+
+source_set("fetcher") {
+  sources = [ "multi_source_page_context_fetcher.h" ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//components/content_extraction/content/browser",
+    "//components/optimization_guide/content/browser",
+    "//ui/gfx/geometry",
+  ]
+}

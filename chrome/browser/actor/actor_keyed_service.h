@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -22,16 +23,15 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/tabs/public/tab_interface.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
-#include "chrome/common/actor.mojom-forward.h"
-#endif
-
 class Profile;
 
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace page_content_annotations {
+struct FetchPageContextResult;
+}  // namespace page_content_annotations
 
 namespace actor {
 namespace ui {
@@ -119,6 +119,15 @@ class ActorKeyedService : public KeyedService {
   bool IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
   Profile* GetProfile();
 
+  using TabObservationResult =
+      base::expected<std::unique_ptr<optimization_guide::proto::TabObservation>,
+                     std::string>;
+
+  // Request a TabOservation be generated from the given tab.
+  void RequestTabObservation(
+      const tabs::TabInterface& tab,
+      base::OnceCallback<void(TabObservationResult)> callback);
+
  protected:
   // Holds subscriptions for ActorTask callbacks.
   std::map<TaskId, base::CallbackListSubscription> actor_task_subscriptions_;
@@ -132,14 +141,6 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<
           void(optimization_guide::proto::BrowserStartTaskResult)> callback);
 
-#if BUILDFLAG(ENABLE_GLIC)
-  void ConvertToBrowserActionResult(
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback,
-      int task_id,
-      int32_t tab_id,
-      actor::mojom::ActionResultPtr action_result,
-      glic::mojom::GetContextResultPtr result);
   // Called when the actor coordinator has finished an action which required
   // task creation.
   void OnActionFinished(
@@ -148,12 +149,24 @@ class ActorKeyedService : public KeyedService {
       int task_id,
       actor::mojom::ActionResultPtr action_result,
       std::optional<size_t> index_of_failed_action);
-#endif
 
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(PerformActionsCallback callback,
                          actor::mojom::ActionResultPtr action_result,
                          std::optional<size_t> index_of_failed_action);
+
+  void ConvertToBrowserActionResult(
+      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
+          callback,
+      int task_id,
+      int32_t tab_id,
+      actor::mojom::ActionResultPtr action_result,
+      TabObservationResult context_result);
+  void OnTabOservationResult(
+      base::OnceCallback<void(TabObservationResult)> callback,
+      base::expected<
+          std::unique_ptr<page_content_annotations::FetchPageContextResult>,
+          std::string> result);
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
   // Stores completed tasks. May want to add cancelled tasks in the future.
