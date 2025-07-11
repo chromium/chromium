@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "third_party/microsoft_dxheaders/src/include/composition/dcomp-preview.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -383,6 +384,15 @@ void DCLayerTree::Initialize(
       DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
 
   hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
+
+  if (Microsoft::WRL::ComPtr<PREVIEW_IDCompositionDevice5> dcomp_device5;
+      SUCCEEDED(dcomp_device_.As(&dcomp_device5))) {
+    hr = dcomp_device5->CreateDynamicTexture(&primary_plane_surface_);
+    if (FAILED(hr)) {
+      LOG(WARNING) << "Failed to create IDCompositionDynamicTexture: "
+                   << logging::SystemErrorCodeToString(hr);
+    }
+  }
 }
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
@@ -1263,6 +1273,8 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     video_swap_chains_.reserve(num_swap_chain_presenters);
   }
 
+  bool did_update_primary_plane_damage = false;
+
   // Populate |overlays| with information required to build dcomp visual tree.
   for (auto it = overlays.begin(); it != overlays.end(); it++) {
     auto& overlay = *it;
@@ -1331,7 +1343,40 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         it = overlays.insert(std::next(it), std::move(tint_overlay));
         // Do not access `overlay` after this point since it is invalidated.
       }
+    } else if (primary_plane_surface_) {
+      // If supported, "present" the primary plane buffer to a surface with
+      // incremental damage.
+      if (overlay.z_order == 0 && overlay.overlay_image) {
+        if (Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture;
+            SUCCEEDED(Microsoft::WRL::ComPtr<IUnknown>(
+                          overlay.overlay_image->dcomp_visual_content())
+                          .As(&dcomp_texture))) {
+          DVLOG(1) << "Set primary_plane_surface_ damage: "
+                   << overlay.damage_rect.ToString();
+
+          const RECT damage_rect =
+              gfx::ToEnclosingRect(overlay.damage_rect).ToRECT();
+          HRESULT hr = primary_plane_surface_->SetTexture(dcomp_texture.Get(),
+                                                          &damage_rect, 1);
+          CHECK_EQ(hr, S_OK);
+
+          overlay.overlay_image = DCLayerOverlayImage(
+              overlay.overlay_image->size(), primary_plane_surface_,
+              primary_plane_surface_serial_++);
+          did_update_primary_plane_damage = true;
+        } else {
+          // Primary plane is not backed by `BufferQueue`.
+        }
+      } else {
+        // Overlay is not the primary plane.
+      }
     }
+  }
+
+  if (primary_plane_surface_ && !did_update_primary_plane_damage) {
+    DVLOG(1) << "Reset primary_plane_surface_ damage.";
+    primary_plane_surface_->SetTexture(nullptr);
+    primary_plane_surface_serial_ = 0;
   }
 
   if (!visual_tree_) {

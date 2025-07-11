@@ -994,9 +994,9 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   // It's possible to use BufferQueue with DComp textures, so we can optionally
   // enable it behind a feature flag.
   const bool want_buffer_queue =
-      base::FeatureList::IsEnabled(kBufferQueue) &&
       output_surface_->capabilities().dc_support_level >=
-          OutputSurface::DCSupportLevel::kDCompTexture;
+          OutputSurface::DCSupportLevel::kDCompDynamicTexture &&
+      base::FeatureList::IsEnabled(kBufferQueue);
 #else
   const bool want_buffer_queue = true;
 #endif

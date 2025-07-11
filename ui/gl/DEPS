@@ -21,6 +21,9 @@ specific_include_rules = {
   "delegated_ink_point_renderer_gpu_unittest.cc": [
     "+ui/base/win/hidden_window.h",
   ],
+  "dc_layer_tree\.(cc|h)": [
+    "+third_party/microsoft_dxheaders/src/include/composition",
+  ],
   "dcomp_presenter_unittest.cc": [
     "+ui/base/test/skia_gold_matching_algorithm.h",
     "+ui/base/test/skia_gold_pixel_diff.h",

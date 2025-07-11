@@ -37,6 +37,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   // |background_color| are null, this overlay will not have any visible output.
   std::optional<DCLayerOverlayImage> overlay_image;
 
+  // Damage in buffer space.
+  gfx::RectF damage_rect;
+
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;
 

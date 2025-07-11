@@ -291,6 +291,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
           BeginOverlayAccess(mailbox);
       if (overlay_image) {
         params.overlay_image = std::move(overlay_image);
+        params.damage_rect = dc_layer.damage_rect;
         scheduled_overlay_mailboxes_.insert(mailbox);
       } else {
         DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
