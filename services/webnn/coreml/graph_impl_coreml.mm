@@ -511,6 +511,26 @@ void GraphImplCoreml::ReadComputePlan(
       NOTREACHED();
     }
 
+    if (DLOG_IS_ON(INFO)) {
+      std::string supported_devices;
+      for (id<MLComputeDeviceProtocol> device in compute_device_usage
+               .supportedComputeDevices) {
+        if (!device) {
+          continue;
+        }
+        if ([device isKindOfClass:[MLCPUComputeDevice class]]) {
+          supported_devices += " CPU";
+        } else if ([device isKindOfClass:[MLGPUComputeDevice class]]) {
+          supported_devices += " GPU";
+        } else if ([device isKindOfClass:[MLNeuralEngineComputeDevice class]]) {
+          supported_devices += " ANE";
+        } else {
+          NOTREACHED();
+        }
+      }
+      DLOG(INFO) << operation.operatorName
+                 << " supported devices:" << supported_devices;
+    }
     // Get the estimated cost of executing the operation.
     MLComputePlanCost* estimated_cost =
         [compute_plan estimatedCostOfMLProgramOperation:operation];
