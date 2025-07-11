@@ -278,7 +278,7 @@ void DedicatedWorker::Start() {
   // WorkerOptions.
   // https://html.spec.whatwg.org/C/#workeroptions
   auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
-  if (options_->type() == script_type_names::kModule) {
+  if (options_->type() == V8WorkerType::Enum::kModule) {
     credentials_mode = Request::V8RequestCredentialsToCredentialsMode(
         options_->credentials().AsEnum());
   }
@@ -574,7 +574,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
   DCHECK(top_level_frame_security_origin);
 
   mojom::blink::ScriptType script_type =
-      (options_->type() == script_type_names::kClassic)
+      (options_->type() == V8WorkerType::Enum::kClassic)
           ? mojom::blink::ScriptType::kClassic
           : mojom::blink::ScriptType::kModule;
 
