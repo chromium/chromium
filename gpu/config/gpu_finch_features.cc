@@ -576,6 +576,10 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
     return false;
   }
 #if BUILDFLAG(IS_MAC)
+  // This function only works in the Browser process on Macs. Calling
+  // HardwareModelName() from the Renderer or GPU processes will result in an
+  // empty hardware model name and an inability to detect unsupported devices.
+
   // The following code tries to match angle::IsMetalRendererAvailable().
   auto model_name_split = base::SysInfo::SplitHardwareModelNameDoNotUse(
       base::SysInfo::HardwareModelName());
@@ -598,7 +602,7 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
         int32_t min_supported_model;
       } kModelSupportData[] = {
           {"MacBookPro", 13}, {"MacBookAir", 8}, {"MacBook", 9},
-          {"iMac", 17},       {"MacPro", 6},     {"Macmini", 8},
+          {"iMac", 17},       {"iMacPro", 1},    {"Macmini", 8},
       };
       for (const auto& [category, min_supported_model] : kModelSupportData) {
         if (model_name_split->category == category) {
@@ -645,6 +649,11 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
 #endif
 }
 }  // namespace
+
+// This function should be called only from the browser process on all platforms
+// so that the finch flag check will happen in exactly one place and then the
+// Graphite enabled state will be propagated elsewhere via GpuPreferences to GPU
+// process launch and then later to renderer processes via GpuFeatureInfo.
 
 bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   // Force disabling graphite if --disable-skia-graphite flag is specified.
