@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -335,21 +334,6 @@ public class MiniPlayerLayoutUnitTest {
         mLayout.onLayout(true, 0, 0, 0, 0);
 
         verify(mMediator).onHeightKnown(eq(187));
-    }
-
-    @Test
-    public void testOnLayoutSetsCloseButtonTouchDelegate() {
-        // Fake the backdrop height so onLayout() doesn't return early.
-        View spyBackdrop = replaceWithSpy(R.id.backdrop);
-        mLayout.onFinishInflate();
-        doReturn(187).when(spyBackdrop).getHeight();
-        assertEquals(187, mLayout.findViewById(R.id.backdrop).getHeight());
-
-        mLayout.onLayout(true, 0, 0, 0, 0);
-
-        TouchDelegate delegate =
-                ((View) mLayout.findViewById(R.id.close_button).getParent()).getTouchDelegate();
-        assertNotNull(delegate);
     }
 
     @Test

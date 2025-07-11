@@ -270,8 +270,9 @@ found in the LICENSE file.
                             android:layout_weight="1" />
                         <ImageView
                             android:id="@+id/readaloud_more_button"
-                            android:layout_width="@dimen/readaloud_menu_buttons_width"
-                            android:layout_height="@dimen/readaloud_menu_buttons_width"
+                            android:layout_width="@dimen/button_size"
+                            android:layout_height="@dimen/button_size"
+                            android:padding="12dp"
                             android:src="@drawable/baseline_more_horiz_24"
                             android:layout_gravity="center_vertical"
                             android:contentDescription="@string/readaloud_options_menu_button"/>

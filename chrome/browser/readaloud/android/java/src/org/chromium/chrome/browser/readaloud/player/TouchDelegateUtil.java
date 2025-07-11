@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player;
 
+import static org.chromium.ui.base.ViewUtils.dpToPx;
+
 import android.graphics.Rect;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -14,21 +16,34 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class TouchDelegateUtil {
     /**
-     * Set a TouchDelegate on view's parent so that view's touch target is doubled in width and
-     * height.
+     * If a view's hit rect is smaller than 48x48dp in either dimension, set a TouchDelegate
+     * centered on view that is at least 48x48.
      *
-     * @param view View whose touch target needs to be bigger.
+     * @param ancestor Ancestor of the view, which needs to forward touch events to the delegate.
+     * @param view View on which to maybe set a TouchDelegate.
+     * @return TouchDelegate.
      */
-    public static void setBiggerTouchTarget(View view) {
+    public static TouchDelegate createTouchDelegate(View ancestor, View view) {
+        final int minTargetSizePx = dpToPx(view.getContext(), 48);
+
         Rect target = new Rect();
         view.getHitRect(target);
-        int halfWidth = target.width() / 2;
-        int halfHeight = target.height() / 2;
-        target.left -= halfWidth;
-        target.top -= halfHeight;
-        target.right += halfWidth;
-        target.bottom += halfHeight;
-        ((View) view.getParent()).setTouchDelegate(new TouchDelegate(target, view));
+        int viewWidth = target.width();
+        int viewHeight = target.height();
+
+        int newWidth = Math.max(viewWidth, minTargetSizePx);
+        int newHeight = Math.max(viewHeight, minTargetSizePx);
+
+        // Grow the hit rect around the center.
+        int dx = ((newWidth / 2) - (viewWidth / 2));
+        int dy = ((newHeight / 2) - (viewHeight / 2));
+        target.left -= dx;
+        target.top -= dy;
+        target.right += dx;
+        target.bottom += dy;
+        TouchDelegate delegate = new TouchDelegate(target, view);
+        ancestor.setTouchDelegate(delegate);
+        return delegate;
     }
 
     private TouchDelegateUtil() {}

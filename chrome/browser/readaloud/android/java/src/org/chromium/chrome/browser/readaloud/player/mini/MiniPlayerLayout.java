@@ -17,6 +17,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -68,6 +70,7 @@ public class MiniPlayerLayout extends LinearLayout {
     private @ColorInt int mBackgroundColorArgb;
     private int mYOffset;
     private PlaybackMode mRequestedPlaybackMode = PlaybackMode.UNSPECIFIED;
+    private @Nullable TouchDelegate mTouchDelegate;
 
     private ProgressBar mSpinner;
 
@@ -135,8 +138,14 @@ public class MiniPlayerLayout extends LinearLayout {
             mMediator.onHeightKnown(height);
         }
 
-        // Make the close button touch target bigger.
-        TouchDelegateUtil.setBiggerTouchTarget(findViewById(R.id.close_button));
+        if (mTouchDelegate == null) {
+            mTouchDelegate = TouchDelegateUtil.createTouchDelegate(this, mPlayPauseView);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mTouchDelegate != null && mTouchDelegate.onTouchEvent(event);
     }
 
     void changeOpacity(float startValue, float endValue) {

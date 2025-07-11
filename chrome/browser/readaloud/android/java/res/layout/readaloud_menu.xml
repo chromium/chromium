@@ -28,6 +28,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:padding="12dp"
             android:src="@drawable/ic_arrow_back_24dp"
             android:clickable="true"
             android:focusable="true"
