@@ -84,8 +84,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // focusable or clickable aren't interesting.
   bool IsInterestingOnAndroid() const;
 
-  // Is a heading whose only child is a link.
-  bool IsHeadingLink() const;
+  // If it's a heading whose only child is a link, or a heading that is inside
+  // a link, returns the link node if it exists; otherwise nullptr.
+  BrowserAccessibilityAndroid* GetHeadingLinkOrLinkHeading() const;
 
   // If this node is interesting (IsInterestingOnAndroid() returns true),
   // returns |this|. If not, it recursively checks all of the

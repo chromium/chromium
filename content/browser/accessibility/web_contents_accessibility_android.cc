@@ -1596,10 +1596,12 @@ void WebContentsAccessibilityAndroid::Click(JNIEnv* env, jint unique_id) {
     return;
   }
 
-  // If it's a heading consisting of only a link, click the link.
-  if (node->IsHeadingLink()) {
-    node = static_cast<BrowserAccessibilityAndroid*>(
-        node->InternalChildrenBegin().get());
+  // If it's a heading consisting of only a link or a heading nested in a link,
+  // click the link.
+  BrowserAccessibilityAndroid* heading_link_or_link_heading_node =
+      node->GetHeadingLinkOrLinkHeading();
+  if (heading_link_or_link_heading_node != nullptr) {
+    node = heading_link_or_link_heading_node;
   }
 
   // Only perform the default action on a node that is enabled. Having the

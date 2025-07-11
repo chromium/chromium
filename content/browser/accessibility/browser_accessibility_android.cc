@@ -283,15 +283,15 @@ bool BrowserAccessibilityAndroid::IsChecked() const {
 bool BrowserAccessibilityAndroid::IsClickable() const {
   // If it has a custom default action verb except for
   // ax::mojom::DefaultActionVerb::kClickAncestor, it's definitely clickable.
-  // ax::mojom::DefaultActionVerb::kClickAncestor is used when an element with a
-  // click listener is present in its ancestry chain.
+  // ax::mojom::DefaultActionVerb::kClickAncestor is used when an element with
+  // a click listener is present in its ancestry chain.
   if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
       (GetData().GetDefaultActionVerb() !=
        ax::mojom::DefaultActionVerb::kClickAncestor)) {
     return true;
   }
 
-  if (IsHeadingLink()) {
+  if (GetHeadingLinkOrLinkHeading() != nullptr) {
     return true;
   }
 
@@ -569,14 +569,33 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
                                                base::kWhitespaceUTF16);
 }
 
-bool BrowserAccessibilityAndroid::IsHeadingLink() const {
-  if (!(GetRole() == ax::mojom::Role::kHeading && InternalChildCount() == 1)) {
-    return false;
+BrowserAccessibilityAndroid*
+BrowserAccessibilityAndroid::GetHeadingLinkOrLinkHeading() const {
+  if (GetRole() != ax::mojom::Role::kHeading) {
+    return nullptr;
   }
 
-  BrowserAccessibilityAndroid* child =
+  // If it has ax::mojom::DefaultActionVerb::kClickAncestor, an element with a
+  // click listener is present in its ancestry chain. Heading inside link is an
+  // example of this case.
+  if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
+      (GetData().GetDefaultActionVerb() ==
+       ax::mojom::DefaultActionVerb::kClickAncestor)) {
+    // Check if it's the case of heading inside link.
+    auto* parent =
+        static_cast<BrowserAccessibilityAndroid*>(InternalGetParent());
+    if (parent && ui::IsLink(parent->GetRole())) {
+      return parent;
+    }
+  }
+
+  // Begin to check if it's the case of link inside heading.
+  if (InternalChildCount() != 1) {
+    return nullptr;
+  }
+  auto* child =
       static_cast<BrowserAccessibilityAndroid*>(InternalChildrenBegin().get());
-  return ui::IsLink(child->GetRole());
+  return ui::IsLink(child->GetRole()) ? child : nullptr;
 }
 
 const BrowserAccessibilityAndroid*
@@ -1414,7 +1433,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
       role_description.push_back(GetLocalizedString(IDS_AX_ROLE_HEADING));
     }
 
-    if (IsHeadingLink()) {
+    if (GetHeadingLinkOrLinkHeading() != nullptr) {
       role_description.push_back(GetLocalizedString(IDS_AX_ROLE_LINK));
     }
 
@@ -1432,7 +1451,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   if (ui::IsLink(GetRole()) && PlatformGetParent()) {
     BrowserAccessibilityAndroid* parent =
         static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
-    if (parent->IsHeadingLink()) {
+    if (parent && parent->GetHeadingLinkOrLinkHeading() != nullptr) {
       return parent->GetRoleDescription();
     }
   }
