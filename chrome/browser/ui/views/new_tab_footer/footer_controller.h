@@ -14,6 +14,14 @@ class BrowserWindowInterface;
 
 namespace new_tab_footer {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum FooterNoticeItem {
+  kExtensionAttribution = 0,
+  kManagementNotice = 1,
+  kMaxValue = kManagementNotice,
+};
+
 // Class used to manage the state of the new tab footer.
 class NewTabFooterController : public content::WebContentsObserver {
  public:
@@ -37,6 +45,9 @@ class NewTabFooterController : public content::WebContentsObserver {
   void UpdateFooterVisibility(bool log_on_load_metric);
   // Callback for active tab changes from BrowserWindowInterface.
   void OnActiveTabChanged(BrowserWindowInterface* browser);
+  bool ShouldSkipForErrorPage() const;
+  bool ShouldShowExtensionFooter(const GURL& url);
+  bool ShouldShowManagedFooter(const GURL& url);
 
   bool skip_error_page_check_for_testing_ = false;
   raw_ptr<BrowserWindowInterface> browser_;
