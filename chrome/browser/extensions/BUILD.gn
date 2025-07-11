@@ -1538,11 +1538,7 @@ source_set("extensions") {
     }
 
     if (enable_glic) {
-      deps += [
-        "//chrome/browser/glic:glic",
-        "//chrome/browser/glic:impl",
-      ]
-      allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
+      deps += [ "//chrome/browser/glic:glic" ]
     }
 
     if (!is_android && !is_chromeos) {
