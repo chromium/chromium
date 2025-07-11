@@ -18,6 +18,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
@@ -619,6 +620,10 @@ class HttpsUpgradesBrowserTest
   void EnableCaptivePortalDetection(Browser* browser);
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};

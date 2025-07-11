@@ -11,6 +11,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -603,6 +604,13 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+
+    // Initialize `prewarm_feature_list_` after `feature_list_` as they need to
+    // be destroyed in the reverse order, and `prewarm_feature_list_` owned by
+    // this class will be destroyed before `feature_list_` owned by the base
+    // class.
+    prewarm_feature_list_ = std::make_unique<test::ScopedPrewarmFeatureList>(
+        test::ScopedPrewarmFeatureList::PrewarmState::kDisabled);
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
@@ -653,6 +661,9 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  std::unique_ptr<test::ScopedPrewarmFeatureList> prewarm_feature_list_;
   webapps::AppId app_id_;
   web_app::OsIntegrationTestOverrideImpl::BlockingRegistration
       override_registration_;

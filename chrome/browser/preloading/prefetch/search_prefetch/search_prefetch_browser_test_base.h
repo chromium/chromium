@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
 
-#include <string>
-
 #include <map>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -16,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -160,6 +160,10 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
                             {"502_on_prefetch"},
                             /*prefetch_index=*/0,
                             /*prerender_index=*/-1)};
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 
   content::ContentMockCertVerifier mock_cert_verifier_;
 

@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,6 +124,11 @@ class ControlledFramePermissionRequestTestBase
       content::RenderFrameHost* app_frame,
       const std::string& expected_permission_name,
       bool allow_permission);
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 }  // namespace controlled_frame

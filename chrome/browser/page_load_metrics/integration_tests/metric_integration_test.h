@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_widget_host.h"
@@ -171,6 +172,10 @@ class MetricIntegrationTest : public InProcessBrowserTest {
 
   const ukm::mojom::UkmEntryPtr GetEntry();
 
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList feature_list_;
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::optional<base::HistogramTester> histogram_tester_;

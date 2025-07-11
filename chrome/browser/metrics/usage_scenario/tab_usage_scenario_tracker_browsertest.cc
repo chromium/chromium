@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
@@ -183,6 +184,12 @@ class TabUsageScenarioTrackerBrowserTest : public InProcessBrowserTest {
   raw_ptr<TabStatsTracker> tab_stats_tracker_{nullptr};
   UsageScenarioDataStoreImpl data_store_;
   std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {

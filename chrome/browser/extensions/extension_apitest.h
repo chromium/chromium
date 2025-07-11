@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 
 namespace base {
 class FilePath;
@@ -152,6 +153,11 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Initializes the test data directories to the proper locations.
   void SetUpTestDataDir();
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().

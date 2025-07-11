@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -123,6 +124,11 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void SetUpOnMainThread() override;
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  ::test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      ::test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::TimeTicks start_time_ = base::TimeTicks::Now();
 

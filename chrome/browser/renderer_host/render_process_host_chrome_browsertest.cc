@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -249,6 +250,12 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
     EXPECT_NE(rph1, rph3);
     EXPECT_NE(rph2, rph3);
   }
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 class ChromeRenderProcessHostTestWithCommandLine

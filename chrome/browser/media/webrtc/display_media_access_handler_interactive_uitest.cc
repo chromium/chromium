@@ -9,6 +9,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -86,6 +87,11 @@ class DisplayMediaAccessHandlerInteractiveUITest
   // what's actually going on.
   raw_ptr<content::WebContents, DisableDanglingPtrDetection>
       actual_ui_web_contents_ = nullptr;
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Verify that the picker shows up in the correct window when document picture
