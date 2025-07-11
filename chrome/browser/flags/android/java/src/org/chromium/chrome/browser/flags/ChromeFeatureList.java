@@ -700,7 +700,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
             newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, true);
     public static final CachedFlag sAndroidBottomToolbar =
-            newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
+            newCachedFlag(ANDROID_BOTTOM_TOOLBAR, true, true);
     public static final CachedFlag sAndroidComposeplate =
             newCachedFlag(ANDROID_COMPOSEPLATE, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -910,7 +910,7 @@ public abstract class ChromeFeatureList {
                     MALICIOUS_APK_DOWNLOAD_CHECK,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false, true);
+    public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, true, true);
     public static final CachedFlag sMitigateLegacySearchEnginePromoOverlap =
             newCachedFlag(MITIGATE_LEGACY_SEARCH_ENGINE_PROMO_OVERLAP, false, true);
     public static final CachedFlag sMostVisitedTilesCustomization =

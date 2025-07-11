@@ -560,7 +560,7 @@ BASE_FEATURE(kAndroidBookmarkBar,
 
 BASE_FEATURE(kAndroidBottomToolbar,
              "AndroidBottomToolbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
@@ -1074,9 +1074,7 @@ BASE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition,
              "MayLaunchUrlUsesSeparateStoragePartition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMiniOriginBar,
-             "MiniOriginBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMiniOriginBar, "MiniOriginBar", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMostVisitedTilesCustomization,
              "MostVisitedTilesCustomization",
