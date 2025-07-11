@@ -65,6 +65,7 @@ permission::-internal-permission-container {
 }
 
 ::permission-icon {
+  fill: currentcolor;
   height: 1.3em;
   width: auto;
   margin-inline-end: 5px;
