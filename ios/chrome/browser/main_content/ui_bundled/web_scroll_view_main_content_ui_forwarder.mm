@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -30,10 +32,12 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 @interface WebScrollViewMainContentUIForwarder () <
     CRWWebStateObserver,
     CRWWebViewScrollViewProxyObserver,
-    WebStateListObserving> {
+    WebStateListObserving,
+    WebViewProxyTabHelperObserving> {
   // The observer bridges.
   std::unique_ptr<WebStateListObserver> _webStateListBridge;
   std::unique_ptr<web::WebStateObserver> _webStateBridge;
+  std::unique_ptr<WebViewProxyTabHelperObserverBridge> _webViewProxyBridge;
 }
 
 // The updater being driven by this object.
@@ -43,7 +47,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 // The WebStateList's active WebState.
 @property(nonatomic, assign) web::WebState* webState;
 // The scroll view proxy whose scroll events are forwarded to `updater`.
-@property(nonatomic, readonly, strong) CRWWebViewScrollViewProxy* proxy;
+@property(nonatomic, strong) CRWWebViewScrollViewProxy* proxy;
 
 @end
 
@@ -62,15 +66,10 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
     DCHECK(_webStateList);
     _webStateBridge = std::make_unique<web::WebStateObserverBridge>(self);
     _webStateListBridge = std::make_unique<WebStateListObserverBridge>(self);
+    _webViewProxyBridge =
+        std::make_unique<WebViewProxyTabHelperObserverBridge>(self);
     _webStateList->AddObserver(_webStateListBridge.get());
-    web::WebState* activeWebState = webStateList->GetActiveWebState();
-    if (activeWebState) {
-      _webState = activeWebState;
-      _webState->AddObserver(_webStateBridge.get());
-      _proxy = activeWebState->GetWebViewProxy().scrollViewProxy;
-      [_proxy addObserver:self];
-      UpdateStateWithProxy(_updater, _proxy);
-    }
+    self.webState = webStateList->GetActiveWebState();
   }
   return self;
 }
@@ -89,15 +88,24 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
   if (_webState == webState) {
     return;
   }
+
   if (_webState) {
+    WebViewProxyTabHelper::FromWebState(_webState)->RemoveObserver(
+        _webViewProxyBridge.get());
     _webState->RemoveObserver(_webStateBridge.get());
   }
+
   _webState = webState;
+
+  CRWWebViewScrollViewProxy* proxy = nil;
   if (_webState) {
+    WebViewProxyTabHelper* tabHelper =
+        WebViewProxyTabHelper::FromWebState(_webState);
+    tabHelper->AddObserver(_webViewProxyBridge.get());
     _webState->AddObserver(_webStateBridge.get());
+    proxy = tabHelper->GetWebViewProxy().scrollViewProxy;
   }
-  self.proxy =
-      _webState ? _webState->GetWebViewProxy().scrollViewProxy : nullptr;
+  self.proxy = proxy;
 }
 
 - (void)setProxy:(CRWWebViewScrollViewProxy*)proxy {
@@ -117,6 +125,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
   _webStateListBridge = nullptr;
   self.webState = nullptr;
   _webStateBridge = nullptr;
+  _webViewProxyBridge = nullptr;
 }
 
 #pragma mark CRWWebStateObserver
@@ -186,6 +195,18 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
   if (status.active_web_state_change()) {
     self.webState = status.new_active_web_state;
   }
+}
+
+#pragma mark - WebViewProxyTabHelperObserving
+
+- (void)webViewProxyDidChange:(WebViewProxyTabHelper*)tabHelper {
+  self.proxy = tabHelper->GetWebViewProxy().scrollViewProxy;
+}
+
+- (void)webViewProxyTabHelperWasDestroyed:(WebViewProxyTabHelper*)tabHelper {
+  tabHelper->RemoveObserver(_webViewProxyBridge.get());
+  _webViewProxyBridge = nullptr;
+  self.proxy = nil;
 }
 
 #pragma mark - Private

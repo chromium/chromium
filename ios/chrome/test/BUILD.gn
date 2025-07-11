@@ -536,6 +536,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/web/model/image_fetch:unit_tests",
     "//ios/chrome/browser/web/model/java_script_console:unit_tests",
     "//ios/chrome/browser/web/model/print:unit_tests",
+    "//ios/chrome/browser/web/model/web_view_proxy:unit_tests",
     "//ios/chrome/browser/web_selection/model:unit_tests",
     "//ios/chrome/browser/web_state_list/model:unit_tests",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler:unit_tests",

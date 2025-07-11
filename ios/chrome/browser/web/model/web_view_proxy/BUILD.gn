@@ -6,6 +6,8 @@ source_set("web_view_proxy") {
   sources = [
     "web_view_proxy_tab_helper.h",
     "web_view_proxy_tab_helper.mm",
+    "web_view_proxy_tab_helper_observer_bridge.h",
+    "web_view_proxy_tab_helper_observer_bridge.mm",
   ]
   deps = [
     "//base",
@@ -15,7 +17,10 @@ source_set("web_view_proxy") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "web_view_proxy_tab_helper_unittest.mm" ]
+  sources = [
+    "web_view_proxy_tab_helper_observer_bridge_unittest.mm",
+    "web_view_proxy_tab_helper_unittest.mm",
+  ]
   deps = [
     ":web_view_proxy",
     "//base/test:test_support",
