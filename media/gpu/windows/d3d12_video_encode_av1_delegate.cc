@@ -417,6 +417,10 @@ size_t D3D12VideoEncodeAV1Delegate::GetMaxNumOfRefFrames() const {
   return max_num_ref_frames_;
 }
 
+bool D3D12VideoEncodeAV1Delegate::ReportsAverageQp() const {
+  return true;
+}
+
 EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
     const VideoEncodeAccelerator::Config& config) {
   DVLOG(3) << base::StringPrintf("%s: config = %s", __func__,
@@ -489,6 +493,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   software_brc_ = aom::AV1RateControlRTC::Create(
       ConvertToRateControlConfig(is_screen_, bitrate_allocation_, input_size_,
                                  config.framerate, 1 /*num_temporal_layers_*/));
+  rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
+      26 /*i_frame_qp*/, 30 /*p_frame_qp*/, 30 /*b_frame_qp*/);
 
   CHECK(config.gop_length.has_value());
   gop_sequence_ = {.IntraDistance = 0,
@@ -497,9 +503,6 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS tier_level;
   D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS
   resolution_limits[1];
-  cqp_pramas_ = {.ConstantQP_FullIntracodedFrame = 26,
-                 .ConstantQP_InterPredictedFrame_PrevRefOnly = 30,
-                 .ConstantQP_InterPredictedFrame_BiDirectionalRef = 30};
   D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1 support{
       .Codec = D3D12_VIDEO_ENCODER_CODEC_AV1,
       .InputFormat = input_format_,
@@ -507,10 +510,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
                              .pAV1Config = &codec_config},
       .CodecGopSequence = {.DataSize = sizeof(gop_sequence_),
                            .pAV1SequenceStructure = &gop_sequence_},
-      .RateControl = {.Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
-                      .ConfigParams = {.DataSize = sizeof(cqp_pramas_),
-                                       .pConfiguration_CQP = &cqp_pramas_},
-                      .TargetFrameRate = {framerate_, 1}},
+      .RateControl = rate_control_.GetD3D12VideoEncoderRateControl(),
       .IntraRefresh = D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE_NONE,
       .SubregionFrameEncoding =
           D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME,
@@ -784,11 +784,8 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
     const gfx::ColorSpace& input_color_space) {
   input_arguments_.SequenceControlDesc.Flags =
       D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE;
-  input_arguments_.SequenceControlDesc.RateControl = {
-      .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
-      .ConfigParams = {.DataSize = sizeof(cqp_pramas_),
-                       .pConfiguration_CQP = &cqp_pramas_},
-      .TargetFrameRate = {framerate_, 1}};
+  input_arguments_.SequenceControlDesc.RateControl =
+      rate_control_.GetD3D12VideoEncoderRateControl();
   input_arguments_.SequenceControlDesc.PictureTargetResolution = input_size_;
   input_arguments_.SequenceControlDesc.SelectedLayoutMode =
       D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME;
