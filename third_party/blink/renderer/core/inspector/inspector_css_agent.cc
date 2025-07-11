@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
+#include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -2160,13 +2161,10 @@ String InspectorCSSAgent::ResolvePercentagesValues(
     if (percentage_resolution_value == kIndefiniteSize) {
       return original_value;
     }
-    LayoutUnit resolved_percentage_value =
-        MinimumValueForLength(length_value, percentage_resolution_value);
-
-    StringBuilder builder;
-    builder.AppendNumber(static_cast<double>(resolved_percentage_value));
-    builder.Append("px");
-    return builder.ToString();
+    CSSValue* resolved_percentage_value = ZoomAdjustedPixelValue(
+        MinimumValueForLength(length_value, percentage_resolution_value),
+        element->ComputedStyleRef());
+    return resolved_percentage_value->CssText();
   }
 
   return original_value;
