@@ -85,16 +85,18 @@ using ButtonState = ::AvatarToolbarButtonStateManager::ButtonState;
 constexpr base::TimeDelta kInfiniteTimeForTesting = base::TimeDelta::Max();
 
 constexpr base::TimeDelta kShowNameDuration = base::Seconds(3);
-static std::optional<base::TimeDelta> g_show_name_duration_for_testing;
+std::optional<base::TimeDelta> g_show_name_duration_for_testing;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
-static std::optional<base::TimeDelta>
-    g_show_signin_pending_text_delay_for_testing;
+std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 
 constexpr base::TimeDelta kHistorySyncOptinDuration = base::Seconds(60);
-static std::optional<base::TimeDelta> g_history_sync_optin_duration_for_testing;
+std::optional<base::TimeDelta> g_history_sync_optin_duration_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+constexpr base::TimeDelta kOnSigninDuration = base::Seconds(30);
+std::optional<base::TimeDelta> g_on_signin_duration_for_testing;
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
   return g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -353,6 +355,174 @@ class ExplicitStateProvider : public StateProvider {
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
 
+// Helper class used to compute the `OnSigninStateProvider::IsActive()`.
+// It becomes active at a signin event and remains active for some duration.
+// There is one instance of this class per profile, so that the pill state is
+// consistent across browser windows.
+//
+// If this state is overridden by another higher-priotity state, then it cannot
+// become active anymore after this, even if the higher-priority state ends. It
+// can only become active again at the next signin event.
+class OnSigninCoordinator : public base::SupportsUserData::Data,
+                            public signin::IdentityManager::Observer,
+                            public AvatarToolbarButtonStateManager::Observer {
+ public:
+  static OnSigninCoordinator& GetOrCreateForProfile(Profile& profile) {
+    OnSigninCoordinator* coordinator = static_cast<OnSigninCoordinator*>(
+        profile.GetUserData(kOnSigninCoordinatorKey));
+    if (!coordinator) {
+      coordinator = new OnSigninCoordinator(profile);
+      profile.SetUserData(kOnSigninCoordinatorKey,
+                          base::WrapUnique(coordinator));
+    }
+    return *coordinator;
+  }
+
+  bool triggered() const { return triggered_; }
+
+  base::CallbackListSubscription AddStateChangedCallback(
+      base::RepeatingClosure callback) {
+    return state_changed_callbacks_.Add(std::move(callback));
+  }
+
+  void Collapse() {
+    if (!triggered_) {
+      return;
+    }
+    if (collapse_timer_.IsRunning()) {
+      collapse_timer_.Stop();
+    }
+    triggered_ = false;
+    state_changed_callbacks_.Notify();
+  }
+
+  void ClearForTesting() { Collapse(); }
+
+  // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      return;
+    }
+    Trigger();
+  }
+
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+    identity_manager_observation_.Reset();
+  }
+
+  // AvatarToolbarButtonStateManager::Observer:
+  void OnButtonStateChanged(std::optional<ButtonState> /*old_state*/,
+                            ButtonState new_state) override {
+    if (new_state != ButtonState::kOnSignin) {
+      // Collapse the on sign-in state on any button state change to make sure
+      // it is not shown when higher priority states become active and inactive
+      // while the on sign-in state is active.
+      // NOTE: This doesn't prevent from the on sign-in state being shown
+      // if a higher priority state is active when the on sign-in state is
+      // triggered. It is not expected to happen in practice. If needed, this
+      // can be fixed by tracking the current state in this class and checking
+      // it before triggering the on sign-in state.
+      Collapse();
+      return;
+    }
+    if (collapse_timer_.IsRunning()) {
+      return;
+    }
+    collapse_timer_.Start(
+        FROM_HERE, g_on_signin_duration_for_testing.value_or(kOnSigninDuration),
+        base::BindOnce(&OnSigninCoordinator::Collapse,
+                       // This is safe because
+                       // `OnSigninCoordinator`
+                       // owns `collapse_timer_`.
+                       base::Unretained(this)));
+  }
+
+ private:
+  constexpr static const void* const kOnSigninCoordinatorKey =
+      &kOnSigninCoordinatorKey;
+
+  explicit OnSigninCoordinator(Profile& profile) : profile_(profile) {
+    identity_manager_observation_.Observe(
+        IdentityManagerFactory::GetForProfile(&profile));
+  }
+
+  void Trigger() {
+    if (triggered_) {
+      return;
+    }
+    triggered_ = true;
+    state_changed_callbacks_.Notify();
+  }
+
+  bool triggered_ = false;
+  base::OneShotTimer collapse_timer_;
+  // Callbacks to be triggered when the on signin state (`triggered_`)
+  // changes.
+  base::RepeatingCallbackList<void()> state_changed_callbacks_;
+
+  const raw_ref<Profile> profile_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+};
+
+class OnSigninStateProvider : public StateProvider {
+ public:
+  explicit OnSigninStateProvider(Browser* browser,
+                                 StateObserver* state_observer)
+      : StateProvider(browser->profile(), state_observer),
+        browser_(*browser),
+        coordinator_(
+            OnSigninCoordinator::GetOrCreateForProfile(*browser->profile())) {}
+  ~OnSigninStateProvider() override = default;
+
+  // StateProvider:
+  bool IsActive() const override { return coordinator_->triggered(); }
+
+  void Init() override {
+    state_changed_callback_subscription_ =
+        coordinator_->AddStateChangedCallback(base::BindRepeating(
+            &OnSigninStateProvider::RequestUpdate, base::Unretained(this)));
+    if (coordinator_->triggered()) {
+      RequestUpdate();
+    }
+  }
+
+  std::u16string GetText() const override {
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS);
+  }
+
+  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
+      override {
+    return base::BindRepeating(
+        &OnSigninStateProvider::OnButtonClick,
+        // This is safe because `AvatarToolbarButtonDelegate`
+        // owning all the providers consumes the callback.
+        base::Unretained(this));
+  }
+
+  void ClearForTesting() override { coordinator_->Collapse(); }
+
+ private:
+  void OnButtonClick(bool is_source_accelerator) {
+    browser_->GetFeatures().profile_menu_coordinator()->Show(
+        is_source_accelerator);
+    coordinator_->Collapse();
+  }
+
+  // On signin coordinator state change callback subscription.
+  // The callbacks are used to notify the state provider(s) when the on signin
+  // state changes.
+  base::CallbackListSubscription state_changed_callback_subscription_;
+
+  const raw_ref<Browser> browser_;
+
+  const raw_ref<OnSigninCoordinator> coordinator_;
+};
+
 class ShowIdentityNameStateProvider : public StateProvider,
                                       public signin::IdentityManager::Observer,
                                       public AvatarToolbarButton::Observer {
@@ -401,7 +571,9 @@ class ShowIdentityNameStateProvider : public StateProvider,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
     if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-        signin::PrimaryAccountChangeEvent::Type::kSet) {
+            signin::PrimaryAccountChangeEvent::Type::kSet ||
+        base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
       return;
     }
     OnUserIdentityChanged();
@@ -618,6 +790,7 @@ class HistorySyncOptinCoordinator
       case ButtonState::kExplicitTextShowing:
         Collapse();
         return;
+      case ButtonState::kOnSignin:
       case ButtonState::kShowIdentityName:
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
@@ -637,6 +810,7 @@ class HistorySyncOptinCoordinator
         Trigger(signin_metrics::AccessPoint::
                     kHistorySyncOptinExpansionPillOnStartup);
         break;
+      case ButtonState::kOnSignin:
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
       case ButtonState::kNormal:
@@ -1523,6 +1697,14 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
   }
 
   if (profile->IsRegularProfile()) {
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      state_manager_observers_.emplace_back(
+          OnSigninCoordinator::GetOrCreateForProfile(*profile));
+      states_[ButtonState::kOnSignin] =
+          std::make_unique<OnSigninStateProvider>(browser,
+                                                  /*state_observer=*/this);
+    }
     states_[ButtonState::kShowIdentityName] =
         std::make_unique<ShowIdentityNameStateProvider>(
             profile,
@@ -1721,6 +1903,9 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
     case AvatarDelayType::kNameGreeting:
       return base::AutoReset<std::optional<base::TimeDelta>>(
           &g_show_name_duration_for_testing, kInfiniteTimeForTesting);
+    case AvatarDelayType::kOnSignin:
+      return base::AutoReset<std::optional<base::TimeDelta>>(
+          &g_on_signin_duration_for_testing, kInfiniteTimeForTesting);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case AvatarDelayType::kSigninPendingText:
       return base::AutoReset<std::optional<base::TimeDelta>>(

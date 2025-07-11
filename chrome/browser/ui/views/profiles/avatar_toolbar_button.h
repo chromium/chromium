@@ -31,6 +31,8 @@ class GaiaId;
 enum class AvatarDelayType {
   // Delay for the name to stop showing.
   kNameGreeting,
+  // Delay for the on sign-in state.
+  kOnSignin,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,

@@ -148,6 +148,7 @@ class AvatarToolbarButtonStateManager
     kGuestSession,
     kIncognitoProfile,
     kExplicitTextShowing,
+    kOnSignin,
     kShowIdentityName,
     kSigninPending,
     kSyncPaused,

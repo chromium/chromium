@@ -71,6 +71,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/user_education_features.h"
@@ -175,6 +176,17 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
               (override));
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void Click(views::View* clickable_view) {
+  clickable_view->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  clickable_view->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 class AvatarToolbarButtonBaseBrowserTest {
@@ -191,6 +203,7 @@ class AvatarToolbarButtonBaseBrowserTest {
     // `AvatarToolbarButton::ClearActiveStateForTesting()`. This allows to
     // properly test the behavior pre/post delay without being time dependent.
     SetInfiniteAvatarDelay(AvatarDelayType::kNameGreeting);
+    SetInfiniteAvatarDelay(AvatarDelayType::kOnSignin);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     SetInfiniteAvatarDelay(AvatarDelayType::kSigninPendingText);
     SetInfiniteAvatarDelay(AvatarDelayType::kHistorySyncOptin);
@@ -1653,15 +1666,6 @@ class AvatarToolbarButtonHistorySyncOptinClickBrowserTest
       : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
             &mock_signin_ui_delegate_)) {}
 
-  void Click(views::View* clickable_view) {
-    clickable_view->OnMousePressed(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    clickable_view->OnMouseReleased(ui::MouseEvent(
-        ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
   void ClickSyncButton(ProfileMenuViewBase* profile_menu_view) {
     ASSERT_NE(profile_menu_view, nullptr);
     profile_menu_view->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
@@ -2869,3 +2873,158 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSignin \
+  DISABLED_ShowMakingChromeYoursOnSignin
+#else
+#define MAYBE_ShowMakingChromeYoursOnSignin ShowMakingChromeYoursOnSignin
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSignin) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSigninAndSync \
+  DISABLED_ShowMakingChromeYoursOnSigninAndSync
+#else
+#define MAYBE_ShowMakingChromeYoursOnSigninAndSync \
+  ShowMakingChromeYoursOnSigninAndSync
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSigninAndSync) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  EnableSync(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MakingChromeYoursThenExplicitState \
+  DISABLED_MakingChromeYoursThenExplicitState
+#else
+#define MAYBE_MakingChromeYoursThenExplicitState \
+  MakingChromeYoursThenExplicitState
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_MakingChromeYoursThenExplicitState) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  const std::u16string explicit_state_text(u"Explicit State");
+  base::ScopedClosureRunner hide_callback =
+      avatar_toolbar_button->SetExplicitButtonState(
+          explicit_state_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  EXPECT_EQ(avatar_toolbar_button->GetText(), explicit_state_text);
+  hide_callback.RunAndReset();
+
+  // The on sign-in state is hidden.
+  EXPECT_EQ(avatar_toolbar_button->GetText(), std::u16string());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MakingChromeYoursThenSyncError \
+  DISABLED_MakingChromeYoursThenSyncError
+#else
+#define MAYBE_MakingChromeYoursThenSyncError MakingChromeYoursThenSyncError
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_MakingChromeYoursThenSyncError) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  EnableSync(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  SimulateSyncError();
+  // On sign-in state is higher priority than any sync error state.
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  // Once the sign-in state is cleared, the sync error state is shown.
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR));
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_DoesNotShowOnBrowserRestart \
+  DISABLED_PRE_DoesNotShowOnBrowserRestart
+#define MAYBE_DoesNotShowOnBrowserRestart DISABLED_DoesNotShowOnBrowserRestart
+#else
+#define MAYBE_PRE_DoesNotShowOnBrowserRestart PRE_DoesNotShowOnBrowserRestart
+#define MAYBE_DoesNotShowOnBrowserRestart DoesNotShowOnBrowserRestart
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_PRE_DoesNotShowOnBrowserRestart) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_DoesNotShowOnBrowserRestart) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // The greetings are shown after the restart.
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, u"Account"));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  // The button should return to the normal state.
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
