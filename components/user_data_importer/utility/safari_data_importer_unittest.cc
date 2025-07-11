@@ -129,34 +129,23 @@ class SafariDataImporterTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(path, html_data));
 
     importer_->PrepareBookmarks(
-        path,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        std::move(path));
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return bookmarks_callback_called_; }));
-  }
-
-  void ImportHistory() {
-    history_callback_called_ = false;
-    importer_->ImportHistory(
-        // Use of Unretained below is safe because the RunUntil loop below
-        // guarantees this outlives the tasks.
-        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
-                       base::Unretained(this)));
-    ASSERT_TRUE(
-        base::test::RunUntil([&]() { return history_callback_called_; }));
   }
 
   void PreparePasswords(std::string csv_data) {
     passwords_callback_called_ = false;
     importer_->PreparePasswords(
-        std::move(csv_data),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        std::move(csv_data));
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
   }
@@ -184,11 +173,11 @@ class SafariDataImporterTest : public testing::Test {
   void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards) {
     payment_cards_callback_called_ = false;
     importer_->PreparePaymentCards(
-        std::move(payment_cards),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        std::move(payment_cards));
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return payment_cards_callback_called_; }));
   }
@@ -541,6 +530,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
       <DT><A HREF="https://en.wikipedia.org/wiki/Brian_Wilson" ADD_DATE="-868878000">Brian Wilson</A>
       </DL><p>
       </DL>)");
+
   EXPECT_EQ(GetNumberOfBookmarksImported(), 4);
 
   EXPECT_EQ(GetPendingBookmarks().size(), 1u);
@@ -661,12 +651,6 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
 #endif  // BUILDFLAG(IS_IOS)
 }
 
-TEST_F(SafariDataImporterTest, NoHistory) {
-  ImportHistory();
-
-  ASSERT_EQ(GetNumberOfURLsImported(), 0);
-}
-
 TEST_F(SafariDataImporterTest, NoPassword) {
   PreparePasswords("");
 
@@ -763,7 +747,7 @@ TEST_F(SafariDataImporterTest, CancelImport) {
   CancelImport();
 }
 
-TEST_F(SafariDataImporterTest, ExecuteImport) {
+TEST_F(SafariDataImporterTest, ImportFileEndToEnd) {
   PrepareImportFromFile();
 
   password_manager::ImportResults import_results = GetImportResults();
@@ -792,6 +776,28 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
   ASSERT_EQ(GetNumberOfURLsImported(), 7);
+}
+
+// Smoke test to make sure that PrepareImport is idempotent(ish).
+TEST_F(SafariDataImporterTest, PrepareImportFileTwice) {
+  PrepareImportFromFile();
+  PrepareImportFromFile();
+
+  // Despite running twice, the results should be identical to the last test.
+  password_manager::ImportResults import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_to_import, 3u);
+  ASSERT_EQ(import_results.number_imported, 0u);
+
+// TODO(crbug.com/407587751): Align iOS and Blink implementation on if non-empty
+// folders should be added explicitly.
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 7);
+#else
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 6);
+#endif
+
+  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
+  ASSERT_EQ(GetNumberOfURLsImported(), 13);  // Note: Approximation.
 }
 
 }  // namespace user_data_importer

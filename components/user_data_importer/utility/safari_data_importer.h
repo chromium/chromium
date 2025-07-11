@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
@@ -32,6 +33,9 @@ class ReadingListModel;
 namespace user_data_importer {
 
 struct ImportedBookmarkEntry;
+
+// See impl.
+class RustHistoryCallback;
 
 // Main model-layer object for extracting and importing user data from a bundle
 // of data exported by Safari. The bundle is a ZIP file containing various data
@@ -87,77 +91,90 @@ class SafariDataImporter {
   // Called after calling "Import" in order to cancel the import process.
   void CancelImport();
 
-  // Callback called one or multiple times from the rust parser when importing
-  // history.
-  void ParseHistoryCallback(
-      std::vector<HistoryEntry> history_entries,
-      ImportCallback history_callback = base::DoNothing());
-
  private:
   friend class SafariDataImporterTest;
 
-  // Creates the zip file Rust archive from file provided by "zip_filename".
-  // Returns whether `zip_file_archive_` was created successfully.
-  bool CreateZipFileArchive(std::string zip_filename);
+  // Encapsulates work which must occur in a blocking context (mainly I/O).
+  // Intentionally does not provide access to any state or methods of
+  // `SafariDataImporter`.
+  class BlockingWorker {
+   public:
+    BlockingWorker();
+    ~BlockingWorker();
 
-  // Launches task to close the zip file archive once it is no longer needed.
-  void CloseZipFileArchive();
+    // Creates the zip file Rust archive from file provided by "zip_filename".
+    // Returns whether the archive was created successfully; if false, the
+    // import has failed and should terminate.
+    bool CreateZipFileArchive(std::string zip_filename);
 
-  // Closes the zip file archive from a worker thread.
-  void CloseZipFileArchiveInWorkerThread();
+    // Closes the zip file archive when it is no longer needed. Calling this is
+    // not mandatory; the archive will be cleaned up on the correct thread when
+    // the BlockingWorker is destroyed, if it exists.
+    void CloseZipFileArchive();
 
-  // Returns the contents of the file of the desired type contained in the
-  // zip file archive. Returns an empty string on failure.
-  std::string Unzip(FileType filetype);
+    // Returns the contents of the file of the desired type contained in the
+    // zip file archive. Returns an empty string on failure.
+    std::string Unzip(FileType filetype);
 
-  // Returns the uncompressed size of a file within the zip file archive.
-  size_t GetUncompressedFileSizeInBytes(FileType filetype);
+    // Returns the uncompressed size of a file within the zip file archive.
+    size_t GetUncompressedFileSizeInBytes(FileType filetype);
 
-  // Writes the contents of `html_data` to a `bookmarks.html` file in a tmp
-  // directory.
-  std::optional<base::FilePath> WriteBookmarksToTmpFile(
-      const std::string& html_data);
+    // Unzips bookmarks in the ZIP archive and writes the contents to a
+    // `bookmarks.html` file in a tmp directory. Returns nullopt if the file
+    // could not be created.
+    std::optional<base::FilePath> WriteBookmarksToTmpFile();
 
-  // Finds a file containing payment cards in the ZIP archive, parses it, and
-  // stores the result. Invokes `callback` with the count of parsed cards.
-  void ParsePaymentCards(ImportCallback payment_cards_callback);
+    // Finds a file containing payment cards in the ZIP archive, parses it, and
+    // returns the output. Returns empty on error.
+    std::vector<PaymentCardEntry> ParsePaymentCards();
 
-  // Attempts to import history from the zip file archive.
-  // "ParseHistoryCallback" may be called multiple times during this process.
-  void ImportHistory(ImportCallback history_callback);
+    // Attempts to import history from the zip file archive.
+    // `parse_history_callback` may be called multiple times during this
+    // process, as batches of history entries become ready. `done_callback`
+    // is called once, at the end.
+    void ImportHistory(std::unique_ptr<RustHistoryCallback> callback,
+                       size_t history_size_threshold);
 
-  // This function imports the various data types present in the file provided
-  // by "zip_filename" and should be called from a worker thread.
-  void ImportInWorkerThread(std::string zip_filename,
-                            PasswordImportCallback passwords_callback,
-                            ImportCallback bookmarks_callback,
-                            ImportCallback history_callback,
-                            ImportCallback payment_cards_callback);
+    // The Rust zip file archive.
+    std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;
+
+    // Stores bookmarks data on disk after unzip but before parsing.
+    std::unique_ptr<base::ScopedTempDir> bookmarks_temp_dir_;
+  };
+
+  // Once the ZIP archive has been created, checks its validity and triggers the
+  // next step in the parsing pipeline.
+  void OnZipArchiveReady(PasswordImportCallback passwords_callback,
+                         ImportCallback bookmarks_callback,
+                         ImportCallback history_callback,
+                         ImportCallback payment_cards_callback,
+                         bool success);
 
   // Parses the provided `csv_data` and determines if any conflicts with
   // existing passwords will occur. Stops before actually committing any data.
   // Calls `passwords_callback` with the results, which may include conflicts
   // that need to be resolved prior to finally committing data.
-  void PreparePasswords(std::string csv_data,
-                        PasswordImportCallback passwords_callback);
+  void PreparePasswords(PasswordImportCallback passwords_callback,
+                        std::string csv_data);
 
   // Converts payment_cards to autofill::CreditCard objects.
-  // Calls "payment_cards_callback" when done.
-  void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards,
-                           ImportCallback payment_cards_callback);
+  // Calls `payment_cards_callback` when done.
+  void PreparePaymentCards(ImportCallback payment_cards_callback,
+                           std::vector<PaymentCardEntry> payment_cards);
 
   // Attempts to parse the provided HTML data. Calls `bookmarks_callback` when
   // done.
-  void PrepareBookmarks(base::FilePath html, ImportCallback bookmarks_callback);
+  void PrepareBookmarks(ImportCallback bookmarks_callback,
+                        std::optional<base::FilePath> html);
 
   // Receives the result of parsing bookmarks, stores them for later use,
   // and invokes `callback` with the number of parsed bookmarks.
   void OnBookmarksParsed(ImportCallback callback,
                          BookmarkParser::BookmarkParsingResult result);
 
-  // Calls "history_callback" with an approximation of the number of URLs
-  // contains in the history file contained in the zip file archive.
-  void PrepareHistory(ImportCallback history_callback);
+  // Calls `history_callback` with an approximation of the number of URLs
+  // contained in one or more files with total size `file_size_bytes`.
+  void PrepareHistory(ImportCallback history_callback, size_t file_size_bytes);
 
   // Transforms the HistoryEntry objects into URLRow objects and uses the
   // history service to import them.
@@ -167,21 +184,11 @@ class SafariDataImporter {
   // Imports Credit Cards to the Payments Data Manager.
   void ContinueImportPaymentCards(ImportCallback payment_cards_callback);
 
-  // Launches the task to delete the bookmarks temp directory on a worker
-  // thread. Called after bookmarks parsing is completed.
-  void LaunchDeleteBookmarksDir();
+  // A queue for tasks which may block (e.g., I/O).
+  scoped_refptr<base::SequencedTaskRunner> blocking_queue_;
 
-  // Launches the task which will call "ImportBookmarks".
-  void LaunchImportBookmarksTask(ImportCallback bookmarks_callback);
-
-  // Launches the task which will call "ImportPasswords".
-  void LaunchImportPasswordsTask(PasswordImportCallback passwords_callback);
-
-  // Posts a task on "task_runner_" to call the provided callback.
-  void PostCallback(auto callback, auto results);
-
-  // The Rust zip file archive.
-  std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;
+  // An instance of BlockingWorker which is bound to `blocking_queue_`.
+  base::SequenceBound<BlockingWorker> blocking_worker_;
 
   // The password importer used to import passwords and resolve conflicts.
   std::unique_ptr<password_manager::PasswordImporter> password_importer_;
@@ -201,17 +208,8 @@ class SafariDataImporter {
   // The model-layer object used to parse bookmarks from an HTML file.
   std::unique_ptr<BookmarkParser> bookmark_parser_;
 
-  // The task runner from which the import task was launched. The purpose of
-  // this task runner is to post tasks on the thread where the importer lives,
-  // which we have to do for "password_importer_" tasks and for all callbacks,
-  // for example.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // Stores the credit cards parsed from the "PaymentCards" JSON file.
   std::vector<autofill::CreditCard> cards_to_import_;
-
-  // Stores bookmarks data on disk after unzip but before parsing.
-  std::unique_ptr<base::ScopedTempDir> bookmarks_temp_dir_;
 
   // Bookmarks which have been parsed, but not yet committed to permanent
   // storage.
