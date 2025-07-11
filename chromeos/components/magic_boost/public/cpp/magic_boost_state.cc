@@ -62,7 +62,28 @@ bool MagicBoostState::ShouldShowHmrCard() {
   return true;
 }
 
-bool MagicBoostState::IsMagicBoostAvailable() const {
+bool MagicBoostState::IsMagicBoostAvailable() {
+  if (!magic_boost_available_.has_value()) {
+    // If the value is not loaded yet, try loading it now as it might be
+    // available now. To determine eligibility, extended account info is
+    // required, which is loaded as an async operation. We read the value after
+    // refresh tokens are loaded in `IdentityManager`. But it turned out that
+    // it's not enough for after-OOBE case. The correct fix will monitor updates
+    // of extended account info, update and propagate availability properly.
+    //
+    // As a quick fix, we try re-loading availability as it gets requested by a
+    // client. The value should be loaded soon after refresh tokens are loaded.
+    // So there is a high-chance that the value is available at the time this
+    // method is called from a client side code.
+    //
+    // See crbug.com/429501088 for details.
+    magic_boost_available_ = IsMagicBoostAvailableExpected();
+    if (magic_boost_available_.has_value()) {
+      UpdateMagicBoostAvailable(magic_boost_available_.value());
+    }
+  }
+
+  // Returns false if value is not available for fail-safe.
   return magic_boost_available_.value_or(false);
 }
 
