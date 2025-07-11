@@ -103,6 +103,23 @@ class AutocompleteHistoryManager : public KeyedService {
                                    WebDataServiceBase::Handle h,
                                    std::unique_ptr<WDTypedResult> result);
 
+  // Returns true if the field has a meaningful `name`.
+  // An input field name 'field_2' bears no semantic meaning and there is a
+  // chance that a different website or different form uses the same field name
+  // for a totally different purpose.
+  static bool IsFieldNameMeaningfulForAutocomplete(const std::u16string& name);
+
+  // Retrieves a vector of all values which have been recorded in the
+  // autocomplete table as the value in a form element with name `field.name()`
+  // and which have a prefix `field.value()`. The comparison of the prefix is
+  // case insensitive.
+  // `on_suggestions_returned` is called with the retrieved values.
+  // Returns true if the query was started successfully.
+  bool GetFormValuesForElementName(
+      const FormFieldData& field,
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+          on_suggestions_returned);
+
  private:
   friend class AutocompleteHistoryManagerTest;
 

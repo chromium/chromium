@@ -36,17 +36,6 @@ namespace {
 // text input element in a form.
 const int kMaxAutocompleteMenuItems = 6;
 
-// Returns true if the field has a meaningful name.
-// An input field name 'field_2' bears no semantic meaning and there is a chance
-// that a different website or different form uses the same field name for a
-// totally different purpose.
-bool IsMeaningfulFieldName(const std::u16string& name) {
-  static constexpr char16_t kRegex[] =
-      u"^(((field|input|mat-input)(_|-)?\\d+)|title|otp|tan)$|"
-      u"(cvc|cvn|cvv|captcha)";
-  return !MatchesRegex<kRegex>(name);
-}
-
 }  // namespace
 
 AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
@@ -66,7 +55,8 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   CancelPendingQuery();
 
-  if (!IsMeaningfulFieldName(field.name()) || !client.IsAutocompleteEnabled() ||
+  if (!IsFieldNameMeaningfulForAutocomplete(field.name()) ||
+      !client.IsAutocompleteEnabled() ||
       field.form_control_type() == FormControlType::kTextArea ||
       field.form_control_type() == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
@@ -75,16 +65,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     return true;
   }
 
-  if (profile_database_) {
-    pending_query_ = profile_database_->GetFormValuesForElementName(
-        field.name(), field.value(), kMaxAutocompleteMenuItems,
-        base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       QueryHandler(field.global_id(), field.value(),
-                                    std::move(on_suggestions_returned))));
-    return true;
-  }
-  return false;
+  return GetFormValuesForElementName(field, on_suggestions_returned);
 }
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
@@ -207,6 +188,30 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   }
 }
 
+bool AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
+    const std::u16string& name) {
+  static constexpr char16_t kRegex[] =
+      u"^(((field|input|mat-input)(_|-)?\\d+)|title|otp|tan)$|"
+      u"(cvc|cvn|cvv|captcha)";
+  return !MatchesRegex<kRegex>(name);
+}
+
+bool AutocompleteHistoryManager::GetFormValuesForElementName(
+    const FormFieldData& field,
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+        on_suggestions_returned) {
+  if (profile_database_) {
+    pending_query_ = profile_database_->GetFormValuesForElementName(
+        field.name(), field.value(), kMaxAutocompleteMenuItems,
+        base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       QueryHandler(field.global_id(), field.value(),
+                                    std::move(on_suggestions_returned))));
+    return true;
+  }
+  return false;
+}
+
 AutocompleteHistoryManager::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
     std::u16string prefix,
@@ -294,7 +299,7 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   // value is neither empty nor only whitespaces.
   bool is_value_valid = std::ranges::any_of(
       field.value(), std::not_fn(base::IsUnicodeWhitespace<char16_t>));
-  return is_value_valid && IsMeaningfulFieldName(field.name()) &&
+  return is_value_valid && IsFieldNameMeaningfulForAutocomplete(field.name()) &&
          !field.name().empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
          field.form_control_type() != FormControlType::kInputNumber &&
