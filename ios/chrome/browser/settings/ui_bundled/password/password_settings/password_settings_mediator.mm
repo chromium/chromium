@@ -414,9 +414,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
-  [self.consumer setCanChangeGPMPin:password_manager::features_util::
-                                        IsAccountStorageEnabled(_prefService,
-                                                                _syncService)];
+  // TODO(crbug.com/430876032): Update GPM Pin section properly.
 }
 
 #pragma mark - Private
