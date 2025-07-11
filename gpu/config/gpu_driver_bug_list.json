@@ -2217,11 +2217,13 @@
     },
     {
       "id": 346,
-      "cr_bugs": [1062184],
-      "description": "Enable HDR video playing through overlay on Intel",
+      "cr_bugs": [1062184, 344343039],
+      "description": "Enable HDR video playing through overlay on older Intel Graphics drivers",
       "os": {
         "type": "win"
       },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "intel_gpu_series": [
         "icelake",
         "tigerlake",
@@ -2234,6 +2236,10 @@
         "lunarlake",
         "battlemage"
       ],
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.6314"
+      },
       "features": [
         "force_rgb10a2_overlay_support"
       ]
@@ -3565,6 +3571,33 @@
       },
       "features": [
         "enable_bgra8_overlays_with_yuv_overlay_support"
+      ]
+    },
+    {
+      "id": 452,
+      "cr_bugs": [1062184, 344343039],
+      "description": "Older Windows fails to report RGB10A2 overlay support for Intel GPUs",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.26100.4061"
+        }
+      },
+      "intel_gpu_series": [
+        "icelake",
+        "tigerlake",
+        "rocketlake",
+        "alderlake",
+        "alchemist",
+        "raptorlake",
+        "meteorlake",
+        "arrowlake",
+        "lunarlake",
+        "battlemage"
+      ],
+      "features": [
+        "force_rgb10a2_overlay_support"
       ]
     }
   ]
