@@ -1286,6 +1286,11 @@ inline constexpr char kFloatingSsoDomainBlocklistExceptions[] =
 // cookies from the previous device onto another, on ChromeOS.
 inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
 
+// Boolean pref that determine whether session cookies will be included or not
+// when user switches between ChromeOS devices.
+inline constexpr char kFloatingSsoSessionCookiesIncluded[] =
+    "floating_sso_session_cookies_included";
+
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.
@@ -4121,7 +4126,8 @@ inline constexpr char kReadAloudVoiceSettings[] = "readaloud.voices";
 // is 2.0, etc.
 inline constexpr char kReadAloudSpeed[] = "readaloud.speed";
 
-// Integer indicating Read Aloud playback mode (enum). Default is 0 (UNSPECIFIED).
+// Integer indicating Read Aloud playback mode (enum). Default is 0
+// (UNSPECIFIED).
 inline constexpr char kReadAloudPlaybackMode[] = "readaloud.playback_mode";
 
 // Boolean that specifies whether Read Aloud highlights words on the page during

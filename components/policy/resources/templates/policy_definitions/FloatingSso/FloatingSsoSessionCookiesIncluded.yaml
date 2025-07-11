@@ -1,0 +1,25 @@
+caption: Include session cookies in Floating SSO functionality
+default: false
+desc: |-
+  By default, Floating SSO moves only persistent cookies between devices. This policy controls whether session cookies should also be included. It takes effect only when <ph name="FLOATING_SSO_ENABLED_POLICY_NAME">FloatingSsoEnabled</ph> policy is Enabled.
+
+  When this policy is Enabled, Floating SSO will synchronize both session and persistent cookies.
+  When this policy is Disabled or not set, Floating SSO will only synchronize persistent cookies.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Include session cookies in Floating SSO functionality
+  value: true
+- caption: Don't sync session cookies with Floating SSO
+  value: false
+owners:
+- andreydav@google.com
+- mpetrisor@chromium.org
+schema:
+  type: boolean
+tags: []
+type: main

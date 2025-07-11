@@ -1134,6 +1134,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFloatingSsoDomainBlocklistExceptions,
     prefs::kFloatingSsoDomainBlocklistExceptions,
     base::Value::Type::LIST },
+  { key::kFloatingSsoSessionCookiesIncluded,
+    prefs::kFloatingSsoSessionCookiesIncluded,
+    base::Value::Type::BOOLEAN },
   { key::kDeviceAllowEnterpriseRemoteAccessConnections,
     prefs::kDeviceAllowEnterpriseRemoteAccessConnections,
     base::Value::Type::BOOLEAN
