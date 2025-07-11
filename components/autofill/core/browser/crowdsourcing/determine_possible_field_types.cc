@@ -308,9 +308,9 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
             field_type, comparator.app_locale(), std::nullopt);
 
         // Test if `value_in_field` and `value_on_file` match.
-        bool full_match =
-            comparator.Compare(value_in_field, value_on_file,
-                               AutofillProfileComparator::DISCARD_WHITESPACE);
+        bool full_match = comparator.Compare(
+            value_in_field, value_on_file,
+            AutofillProfileComparator::WhitespaceSpec::kDiscard);
         if (full_match) {
           if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
             pt.types.insert(attribute.type().field_type());

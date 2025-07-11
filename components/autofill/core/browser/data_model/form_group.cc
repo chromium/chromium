@@ -31,7 +31,7 @@ void FormGroup::GetMatchingTypes(const std::u16string& text,
       AutofillProfileComparator::NormalizeForComparison(text);
   for (FieldType type : GetSupportedTypes()) {
     if (comparator.Compare(canonicalized_text, GetInfo(type, app_locale),
-                           AutofillProfileComparator::DISCARD_WHITESPACE,
+                           AutofillProfileComparator::WhitespaceSpec::kDiscard,
                            type)) {
       matching_types->insert(type);
     }

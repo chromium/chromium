@@ -42,7 +42,7 @@ class AutofillProfileComparator {
 
   ~AutofillProfileComparator();
 
-  enum WhitespaceSpec { RETAIN_WHITESPACE, DISCARD_WHITESPACE };
+  enum class WhitespaceSpec { kRetain, kDiscard };
 
   // Returns true if `text1` matches `text2`. The following normalization
   // techniques are applied to the given texts before comparing.
@@ -54,17 +54,17 @@ class AutofillProfileComparator {
   // (3) Characters are converted to lowercase;
   // (4) For alternative name types, katakana is converted to hiragana.
   //
-  // If `whitespace_spec` is DISCARD_WHITESPACE, then punctuation and whitespace
+  // If `whitespace_spec` is kDiscard, then punctuation and whitespace
   // are discarded. For example, the postal codes "B15 3TR" and "B153TR" and
-  // street addresses "16 Bridge St."" and "16 Bridge St" are considered equal.
+  // street addresses "16 Bridge St." and "16 Bridge St" are considered equal.
   //
-  // If `whitespace_spec` is RETAIN_WHITESPACE, then the postal codes "B15 3TR"
-  // and "B153TR" are not considered equal, but "16 Bridge St."" and "16 Bridge
+  // If `whitespace_spec` is kRetain, then the postal codes "B15 3TR"
+  // and "B153TR" are not considered equal, but "16 Bridge St." and "16 Bridge
   // St" are because trailing whitespace and punctuation are ignored.
   bool Compare(
       std::u16string_view text1,
       std::u16string_view text2,
-      WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE,
+      WhitespaceSpec whitespace_spec = WhitespaceSpec::kDiscard,
       std::optional<FieldType> type = std::nullopt,
       AddressCountryCode country_code_1 = AddressCountryCode(""),
       AddressCountryCode country_code_2 = AddressCountryCode("")) const;
@@ -98,15 +98,15 @@ class AutofillProfileComparator {
   // Returns a copy of `text` with uppercase converted to lowercase and
   // diacritics are rewritten using rules for given `country_code`.
   //
-  // If `whitespace_spec` is RETAIN_WHITESPACE, punctuation is converted to
+  // If `whitespace_spec` is kRetain, punctuation is converted to
   // spaces, and extraneous whitespace is trimmed and collapsed. For example,
   // "Jean- François" becomes "jean francois".
   //
-  // If `whitespace_spec` is DISCARD_WHITESPACE, punctuation and whitespace are
-  // discarded. For example, +1 (234) 567-8900 becomes 12345678900.
+  // If `whitespace_spec` is kDiscard, punctuation and whitespace are discarded.
+  // For example, +1 (234) 567-8900 becomes 12345678900.
   static std::u16string NormalizeForComparison(
       std::u16string_view text,
-      WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE,
+      WhitespaceSpec whitespace_spec = WhitespaceSpec::kRetain,
       const AddressCountryCode& country_code = AddressCountryCode(""));
 
   // Returns true if `p1` and `p2` are viable merge candidates. This means that

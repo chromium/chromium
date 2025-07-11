@@ -124,7 +124,7 @@ NormalizingIterator::NormalizingIterator(
     std::u16string_view text,
     AutofillProfileComparator::WhitespaceSpec whitespace_spec)
     : collapse_skippable_(whitespace_spec ==
-                          AutofillProfileComparator::RETAIN_WHITESPACE),
+                          AutofillProfileComparator::WhitespaceSpec::kRetain),
       iter_(text) {
   int32_t character = iter_.get();
 
@@ -304,8 +304,8 @@ bool AutofillProfileComparator::HasOnlySkippableCharacters(
     return true;
   }
 
-  return NormalizingIterator(text,
-                             AutofillProfileComparator::DISCARD_WHITESPACE)
+  return NormalizingIterator(
+             text, AutofillProfileComparator::WhitespaceSpec::kDiscard)
       .End();
 }
 
@@ -320,21 +320,21 @@ std::u16string AutofillProfileComparator::NormalizeForComparison(
   // needing domain-specific logic.
   //
   // 1. Convert punctuation to spaces and normalize all whitespace to spaces if
-  //    `whitespace_spec` is RETAIN_WHITESPACE.
+  //    `whitespace_spec` is WhitespaceSpec::kRetain.
   //    This will convert "Mid-Island Plz." -> "Mid Island Plz " (the trailing
   //    space will be trimmed off outside of the end of the loop).
   //
   // 2. Collapse consecutive punctuation/whitespace characters to a single
   //    space. We pretend the string has already started with whitespace in
   //    order to trim leading spaces.
-  //    If DISCARD_WHITESPACE was picked, remove all the punctuation/whitespace
-  //    characters altogether.
+  //    If kDiscard was picked, remove all the punctuation/whitespace characters
+  //    altogether.
   //
   // 3. Remove diacritics (accents and other non-spacing marks) and perform
   //    case folding to lower-case.
   std::u16string result;
   result.reserve(text.length());
-  const bool retain_whitespace = whitespace_spec == RETAIN_WHITESPACE;
+  const bool retain_whitespace = whitespace_spec == WhitespaceSpec::kRetain;
   bool previous_was_whitespace = true;
   for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     if (!IsPunctuationOrWhitespace(u_charType(iter.get()))) {
@@ -904,7 +904,7 @@ bool AutofillProfileComparator::AreNamesMergeable(const AutofillProfile& p1,
 
   if (HasOnlySkippableCharacters(name_1) ||
       HasOnlySkippableCharacters(name_2) ||
-      Compare(name_1, name_2, DISCARD_WHITESPACE, name_type,
+      Compare(name_1, name_2, WhitespaceSpec::kDiscard, name_type,
               p1.GetAddressCountryCode(), p2.GetAddressCountryCode())) {
     return true;
   }
@@ -916,9 +916,9 @@ bool AutofillProfileComparator::AreNamesMergeable(const AutofillProfile& p1,
   }
 
   std::u16string canon_full_name_1 = NormalizeForComparison(
-      name_1, RETAIN_WHITESPACE, p1.GetAddressCountryCode());
+      name_1, WhitespaceSpec::kRetain, p1.GetAddressCountryCode());
   std::u16string canon_full_name_2 = NormalizeForComparison(
-      name_2, RETAIN_WHITESPACE, p2.GetAddressCountryCode());
+      name_2, WhitespaceSpec::kRetain, p2.GetAddressCountryCode());
 
   // Is it reasonable to merge the names from `p1` and `p2`?
   bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
@@ -938,10 +938,10 @@ void AutofillProfileComparator::MergeNamesImpl(
                                          old_profile.GetAddressCountryCode());
   const std::u16string name_1 = NormalizeForComparison(
       GetNameForComparison(new_profile, common_country_code, name_type),
-      RETAIN_WHITESPACE, new_profile.GetAddressCountryCode());
+      WhitespaceSpec::kRetain, new_profile.GetAddressCountryCode());
   const std::u16string name_2 = NormalizeForComparison(
       GetNameForComparison(old_profile, common_country_code, name_type),
-      RETAIN_WHITESPACE, old_profile.GetAddressCountryCode());
+      WhitespaceSpec::kRetain, old_profile.GetAddressCountryCode());
 
   // At this state it is already determined that the two names are mergeable.
   // This can mean of of the following things:

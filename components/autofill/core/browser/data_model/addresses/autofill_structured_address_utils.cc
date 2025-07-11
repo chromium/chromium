@@ -339,8 +339,8 @@ std::u16string NormalizeValue(std::u16string_view value,
                               const AddressCountryCode& country_code) {
   return AutofillProfileComparator::NormalizeForComparison(
       value,
-      keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE
-                       : AutofillProfileComparator::DISCARD_WHITESPACE,
+      keep_white_space ? AutofillProfileComparator::WhitespaceSpec::kRetain
+                       : AutofillProfileComparator::WhitespaceSpec::kDiscard,
       country_code);
 }
 
