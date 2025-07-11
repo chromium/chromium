@@ -39,6 +39,8 @@ ts_library("build_extra_ts") {
   ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 
+  definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+
   path_mappings = [
     "/glic/glic_api/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/*",

@@ -10,11 +10,7 @@ $.executeAction.addEventListener('click', async () => {
 
   // The action proto is expected to be a BrowserAction proto, which is binary
   // serialized and then base64 encoded.
-  const protoByteString = atob($.actionProtoEncodedText.value);
-  const protoBytes = new Uint8Array(protoByteString.length);
-  for (let i = 0; i < protoByteString.length; i++) {
-    protoBytes[i] = protoByteString.charCodeAt(i);
-  }
+  const protoBytes = Uint8Array.fromBase64($.actionProtoEncodedText.value);
 
   const params: any = {
     actionProto: protoBytes.buffer,

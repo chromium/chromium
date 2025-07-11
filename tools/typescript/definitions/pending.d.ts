@@ -85,3 +85,11 @@ declare interface Matrix {
 interface Set<T> {
   difference(other: Set<T>): Set<T>;
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
+interface Uint8ArrayConstructor {
+  fromBase64(string: string, options?: {
+    alphabet?: string,
+    lastChunkHandling?: string
+  }): Uint8Array;
+}
