@@ -39,8 +39,9 @@ public interface MotionEventHandler {
      * @param x The X position of the event in the host view space in dp.
      * @param y The Y position of the event in the host view space in dp.
      * @param buttons State of all buttons that were pressed when onDown was invoked.
+     * @param modifiers State of all Meta/Modifier keys that are pressed.
      */
-    void click(float x, float y, int buttons);
+    void click(float x, float y, int buttons, int modifiers);
 
     /**
      * Called on fling touch event.

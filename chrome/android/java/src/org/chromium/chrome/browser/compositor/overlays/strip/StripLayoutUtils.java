@@ -30,6 +30,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @NullMarked
 public class StripLayoutUtils {
@@ -265,6 +266,45 @@ public class StripLayoutUtils {
             if (stripTabs[i].getTabId() == id) return stripTabs[i];
         }
         return null;
+    }
+
+    /**
+     * Finds and returns a list of {@link StripLayoutTab}s that match a given set of tab IDs.
+     *
+     * @param stripTabs The array of {@link StripLayoutTab}s to search through.
+     * @param ids A {@link Set} of tab IDs to find.
+     * @return A {@link List} containing the matching {@link StripLayoutTab}s, or {@code null} if no
+     *     matching tabs are found.
+     */
+    public static @Nullable List<StripLayoutTab> findTabsByIds(
+            StripLayoutTab[] stripTabs, Set<Integer> ids) {
+        List<StripLayoutTab> tabs = new ArrayList<>();
+        for (StripLayoutTab stripTab : stripTabs) {
+            if (ids.contains(stripTab.getTabId())) {
+                tabs.add(stripTab);
+            }
+        }
+        return tabs.isEmpty() ? null : tabs;
+    }
+
+    /**
+     * Filters a set of tab IDs, returning them in the order they appear in the tab strip.
+     *
+     * @param stripTabs The array of {@link StripLayoutTab}s representing the current visual order.
+     * @param ids A {@link Set} of tab IDs to find and order.
+     * @return A {@link List} of the found tab IDs, sorted according to their order in {@code
+     *     stripTabs}. Returns {@code null} if no matching tabs are found.
+     */
+    public static @Nullable List<Integer> getTabIdsInOrder(
+            StripLayoutTab[] stripTabs, Set<Integer> ids) {
+        List<Integer> tabs = new ArrayList<>();
+        for (StripLayoutTab stripTab : stripTabs) {
+            int id = stripTab.getTabId();
+            if (ids.contains(id)) {
+                tabs.add(id);
+            }
+        }
+        return tabs.isEmpty() ? null : tabs;
     }
 
     /**

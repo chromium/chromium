@@ -147,6 +147,7 @@ public class UndoIntegrationTest {
         final StripLayoutTab tab =
                 TabStripUtils.findStripLayoutTab(cta, /* incognito= */ false, tabId);
         tab.getCloseButton()
-                .handleClick(SystemClock.uptimeMillis(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+                .handleClick(
+                        SystemClock.uptimeMillis(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
     }
 }

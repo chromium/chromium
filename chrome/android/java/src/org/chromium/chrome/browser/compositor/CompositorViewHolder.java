@@ -1744,7 +1744,9 @@ public class CompositorViewHolder extends FrameLayout
             keyboardFocusableViews
                     .get(mKeyboardFocusIndex)
                     .handleClick(
-                            LayoutManagerImpl.time(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+                            LayoutManagerImpl.time(),
+                            MotionEventUtils.MOTION_EVENT_BUTTON_NONE,
+                            event.getMetaState());
             return true;
         }
         return super.dispatchKeyEvent(event);
@@ -1862,10 +1864,10 @@ public class CompositorViewHolder extends FrameLayout
                             .get(virtualViewId)
                             .handleClick(
                                     LayoutManagerImpl.time(),
-                                    MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+                                    MotionEventUtils.MOTION_EVENT_BUTTON_NONE,
+                                    0);
                     return true;
             }
-
             return false;
         }
 

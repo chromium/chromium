@@ -895,7 +895,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void click(float x, float y, int buttons) {
+    public void click(float x, float y, int buttons, int modifiers) {
         handleClick(x, y);
     }
 

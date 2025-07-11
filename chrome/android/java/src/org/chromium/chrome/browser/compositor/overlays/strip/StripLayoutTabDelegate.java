@@ -38,16 +38,37 @@ public class StripLayoutTabDelegate {
     /** Defines the different visual states a tab can be in, used for determining its tint. */
     @IntDef({
         VisualState.NORMAL,
+        VisualState.PLACEHOLDER,
         VisualState.HOVERED,
+        VisualState.MULTISELECT,
+        VisualState.MULTISELECT_HOVERED,
         VisualState.SELECTED,
         VisualState.SELECTED_HOVERED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface VisualState {
+        /** The default state for a tab that has no other state applied. */
         int NORMAL = 0;
-        int HOVERED = 1;
-        int SELECTED = 2;
-        int SELECTED_HOVERED = 3;
+
+        /** A temporary state for a tab that is waiting for its data to be loaded on startup. */
+        int PLACEHOLDER = 1;
+
+        /** The state when a pointer is hovering over an unselected tab. */
+        int HOVERED = 2;
+
+        /** The state for a tab that is part of a multi-selection, but is not active or hovered. */
+        int MULTISELECT = 3;
+
+        /**
+         * The state when a pointer is hovering over a tab that is also part of a multi-selection.
+         */
+        int MULTISELECT_HOVERED = 4;
+
+        /** The state for the currently active tab. */
+        int SELECTED = 5;
+
+        /** The state when a pointer is hovering over the currently active tab. */
+        int SELECTED_HOVERED = 6;
     }
 
     /**
@@ -109,7 +130,7 @@ public class StripLayoutTabDelegate {
     /**
      * Sets the selected state for this tab and updates its visual appearance instantly.
      *
-     * @param tab The {@link StripLayoutTab} the is being modified.
+     * @param tab The {@link StripLayoutTab} the to modify.
      * @param isSelected Whether the tab is selected.
      */
     public void setIsTabSelected(StripLayoutTab tab, boolean isSelected) {
@@ -120,13 +141,35 @@ public class StripLayoutTabDelegate {
     /**
      * Sets the hovered state for this tab.
      *
-     * @param tab The {@link StripLayoutTab} is being modified.
+     * @param tab The {@link StripLayoutTab} to modify.
      * @param isHovered Whether the tab is hovered.
      */
     public void setIsTabHovered(StripLayoutTab tab, boolean isHovered) {
         tab.setIsHovered(isHovered);
         if (!isHovered) tab.setCloseHovered(false);
         updateTabVisualState(tab, isHovered);
+    }
+
+    /**
+     * Sets the placeholder state for a given tab.
+     *
+     * @param tab The {@link StripLayoutTab} to modify.
+     * @param isPlaceholder Whether the tab is a placeholder.
+     */
+    public void setIsTabPlaceholder(StripLayoutTab tab, boolean isPlaceholder) {
+        tab.setIsPlaceholder(isPlaceholder);
+        updateTabVisualState(tab, false);
+    }
+
+    /**
+     * Sets the multi-selection state for a given tab..
+     *
+     * @param tab The {@link StripLayoutTab} to modify.
+     * @param isMultiSelected Whether the tab is part of a multi-selection.
+     */
+    public void setIsTabMultiSelected(StripLayoutTab tab, boolean isMultiSelected) {
+        tab.setIsMultiSelected(isMultiSelected);
+        updateTabVisualState(tab, isMultiSelected);
     }
 
     /**
@@ -181,8 +224,7 @@ public class StripLayoutTabDelegate {
         if (tab.getVisualState() == visualState) return;
         tab.setVisualState(visualState);
         // 1. Update Container Opacity.
-        boolean shouldBeOpaque =
-                tab.getIsSelected() || tab.getIsHovered() || tab.getIsPlaceholder();
+        boolean shouldBeOpaque = visualState != VisualState.NORMAL;
 
         if (animate) {
             float targetOpacity = shouldBeOpaque ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
@@ -266,8 +308,14 @@ public class StripLayoutTabDelegate {
             return VisualState.SELECTED_HOVERED;
         } else if (tab.getIsSelected()) {
             return VisualState.SELECTED;
+        } else if (tab.getIsMultiSelected() && tab.getIsHovered()) {
+            return VisualState.MULTISELECT_HOVERED;
+        } else if (tab.getIsMultiSelected()) {
+            return VisualState.MULTISELECT;
         } else if (tab.getIsHovered()) {
             return VisualState.HOVERED;
+        } else if (tab.getIsPlaceholder()) {
+            return VisualState.PLACEHOLDER;
         } else {
             return VisualState.NORMAL;
         }

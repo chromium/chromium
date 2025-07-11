@@ -150,6 +150,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mIsClosed;
     private boolean mIsSelected;
     private boolean mIsHovered;
+    private boolean mIsMultiSelected;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -298,6 +299,20 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
+     * Sets the multi-selected state for this tab.
+     *
+     * @param isMultiSelected whether this tab is multi-selected. ie, Ctrl Clicked or Shift Clicked.
+     */
+    public void setIsMultiSelected(boolean isMultiSelected) {
+        mIsMultiSelected = isMultiSelected;
+    }
+
+    /** gets the multi-selected state of this tab */
+    public boolean getIsMultiSelected() {
+        return mIsMultiSelected;
+    }
+
+    /**
      * @param observer The observer to add.
      */
     @VisibleForTesting
@@ -437,17 +452,22 @@ public class StripLayoutTab extends StripLayoutView {
      * @return The tint color resource that represents the tab background.
      */
     public @ColorInt int getTint() {
+        // TODO(crbug.com/404074503):
+        //  Add colors for MULTISELECT, MULTISELECT_HOVERED, SELECTED_HOVERED.
         switch (mVisualState) {
             case VisualState.SELECTED_HOVERED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
             case VisualState.SELECTED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
+            case VisualState.MULTISELECT_HOVERED:
+                return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
+            case VisualState.MULTISELECT:
+                return ChromeColors.getDefaultBgColor(mContext, isIncognito());
             case VisualState.HOVERED:
                 return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
+            case VisualState.PLACEHOLDER:
+                return TabUiThemeUtil.getTabStripStartupContainerColor(mContext);
             case VisualState.NORMAL:
-                if (mIsPlaceholder) {
-                    return TabUiThemeUtil.getTabStripStartupContainerColor(mContext);
-                }
                 return ChromeColors.getDefaultBgColor(mContext, isIncognito());
             default:
                 assert false : "Invalid Visual State";

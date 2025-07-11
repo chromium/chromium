@@ -38,8 +38,9 @@ public abstract class StripLayoutView implements VirtualView {
          * @param motionEventButtonState {@link MotionEvent#getButtonState()} at the moment of the
          *     click if the click is detected via motion events; otherwise, this parameter is {@link
          *     org.chromium.ui.util.MotionEventUtils#MOTION_EVENT_BUTTON_NONE}.
+         * @param modifiers State of all Meta/Modifier keys that are pressed.
          */
-        void onClick(long time, StripLayoutView view, int motionEventButtonState);
+        void onClick(long time, StripLayoutView view, int motionEventButtonState, int modifiers);
     }
 
     /** Handler for keyboard focus on VirtualViews. */
@@ -399,8 +400,8 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     @Override
-    public void handleClick(long time, int motionEventButtonState) {
-        mOnClickHandler.onClick(time, this, motionEventButtonState);
+    public void handleClick(long time, int motionEventButtonState, int modifiers) {
+        mOnClickHandler.onClick(time, this, motionEventButtonState, modifiers);
     }
 
     /** Returns cached touch target bounds. */

@@ -52,8 +52,9 @@ public interface VirtualView {
      * @param motionEventButtonState {@link MotionEvent#getButtonState()} at the moment of the click
      *     if the click is detected via motion events; otherwise, this parameter is {@link
      *     org.chromium.ui.util.MotionEventUtils#MOTION_EVENT_BUTTON_NONE}.
+     * @param modifiers State of all Meta/Modifier keys that are pressed.
      */
-    void handleClick(long time, int motionEventButtonState);
+    void handleClick(long time, int motionEventButtonState, int modifiers);
 
     /**
      * Set keyboard focus state of {@link VirtualView} to {@param isFocused}.

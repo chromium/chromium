@@ -137,7 +137,7 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint());
 
         // Normal inactive tab color.
-        mNormalTab.setVisualState(VisualState.NORMAL);
+        mNormalTab.setVisualState(VisualState.PLACEHOLDER);
         expectedColor = mContext.getColor(R.color.bg_tabstrip_tab_folio_startup_tint);
         assertEquals(
                 "Normal inactive tab should match the placeholder color.",
@@ -153,7 +153,7 @@ public class StripLayoutTabTest {
                 mIncognitoTab.getTint());
 
         // Incognito inactive tab color.
-        mIncognitoTab.setVisualState(VisualState.NORMAL);
+        mIncognitoTab.setVisualState(VisualState.PLACEHOLDER);
         expectedColor = mContext.getColor(R.color.bg_tabstrip_tab_folio_startup_tint);
         assertEquals(
                 "Incognito inactive tab should match the placeholder color.",

@@ -104,6 +104,11 @@ public class TestTabModel extends EmptyTabModel {
         return null;
     }
 
+    @Override
+    public int indexOf(@Nullable Tab tab) {
+        return mMockTabs.indexOf(tab);
+    }
+
     public void setTabRemover(TabRemover tabRemover) {
         mTabRemover = tabRemover;
     }

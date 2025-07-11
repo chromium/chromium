@@ -142,7 +142,11 @@ public class MotionEventFilter extends EventFilter {
                         // call handler.click if a long press has been detected.
                         if (mSingleInput && !mInLongPress) {
                             float pxToDp = mPxToDp;
-                            mHandler.click(e.getX() * pxToDp, e.getY() * pxToDp, mButtons);
+                            mHandler.click(
+                                    e.getX() * pxToDp,
+                                    e.getY() * pxToDp,
+                                    mButtons,
+                                    e.getMetaState());
                         }
                         return true;
                     }
