@@ -2346,7 +2346,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  context_creation_attribs_.bind_generates_resource = true;
+  context_creation_attribs_.bind_generates_resource = false;
 
   gl::init::InitializeStaticGLBindingsImplementation(
       gl::GLImplementationParts(gl::ANGLEImplementation::kNull));

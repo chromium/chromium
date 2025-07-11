@@ -26,6 +26,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsBufferBound) {
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -53,6 +54,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixels2PixelPackBuffer) {
   const GLint kBytesPerPixel = 4;
   GLint size = kWidth * kHeight * kBytesPerPixel;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
@@ -78,9 +80,11 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   const GLenum kFormat = GL_RGBA;
 
   // Set up GL objects for the read pixels with a known framebuffer size
+  GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
   DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 0, kFormat, kWidth, kHeight, 0, kFormat,
                GL_UNSIGNED_BYTE, 0, 0);
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
   DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          kClientTextureId, 0);
@@ -211,6 +215,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   cmds::BindBuffer bind_cmd;
   bind_cmd.Init(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(bind_cmd));
@@ -369,7 +374,9 @@ TEST_F(GLES2DecoderPassthroughTest,
 
 TEST_F(GLES2DecoderPassthroughTest,
        GetFramebufferAttachmentParameterivWithRenderbuffer) {
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  GenHelper<cmds::GenRenderbuffersImmediate>(kClientRenderbufferId);
   DoBindRenderbuffer(GL_RENDERBUFFER, kClientRenderbufferId);
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, kClientRenderbufferId);
@@ -391,7 +398,9 @@ TEST_F(GLES2DecoderPassthroughTest,
 
 TEST_F(GLES2DecoderPassthroughTest,
        GetFramebufferAttachmentParameterivWithTexture) {
+  GenHelper<cmds::GenFramebuffersImmediate>(kClientFramebufferId);
   DoBindFramebuffer(GL_FRAMEBUFFER, kClientFramebufferId);
+  GenHelper<cmds::GenTexturesImmediate>(kClientTextureId);
   DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
   DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          kClientTextureId, 0);

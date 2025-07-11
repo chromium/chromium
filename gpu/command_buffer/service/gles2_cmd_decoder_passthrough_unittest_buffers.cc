@@ -17,6 +17,7 @@ namespace gpu {
 namespace gles2 {
 
 TEST_F(GLES3DecoderPassthroughTest, BindBufferBaseValidArgs) {
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   cmds::BindBufferBase bind_cmd;
   bind_cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kClientBufferId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(bind_cmd));
@@ -29,6 +30,7 @@ TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgs) {
   const GLsizeiptr kRangeSize = 8;
   const GLsizeiptr kBufferSize = kRangeOffset + kRangeSize;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   cmds::BindBuffer bind_cmd;
   bind_cmd.Init(kTarget, kClientBufferId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(bind_cmd));
@@ -48,6 +50,7 @@ TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgsWithNoData) {
   const GLenum kTarget = GL_TRANSFORM_FEEDBACK_BUFFER;
   const GLintptr kRangeOffset = 4;
   const GLsizeiptr kRangeSize = 8;
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   cmds::BindBufferRange cmd;
   cmd.Init(kTarget, 2, kClientBufferId, kRangeOffset, kRangeSize);
@@ -60,6 +63,7 @@ TEST_F(GLES3DecoderPassthroughTest, BindBufferRangeValidArgsWithLessData) {
   const GLintptr kRangeOffset = 4;
   const GLsizeiptr kRangeSize = 8;
   const GLsizeiptr kBufferSize = kRangeOffset + kRangeSize - 4;
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kBufferSize, nullptr, GL_STREAM_DRAW);
   cmds::BindBufferRange cmd;
@@ -80,6 +84,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferReadSucceeds) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -128,6 +133,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferWriteSucceeds) {
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   std::vector<int8_t> gpu_data(kTotalSize);
   for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
@@ -219,6 +225,7 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   std::vector<int8_t> gpu_data(kTotalSize);
   for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
@@ -325,6 +332,7 @@ TEST_F(GLES3DecoderPassthroughTest,
   // With MAP_INVALIDATE_RANGE_BIT, no need to append MAP_READ_BIT.
   const GLbitfield kAccess = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -355,6 +363,7 @@ TEST_F(GLES3DecoderPassthroughTest,
   const GLbitfield kFilteredAccess =
       GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -391,6 +400,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeWriteUnsynchronizedBit) {
   const GLbitfield kAccess = GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
   const GLbitfield kFilteredAccess = GL_MAP_WRITE_BIT | GL_MAP_READ_BIT;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -462,6 +472,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeBadSharedMemoryFails) {
   const GLsizeiptr kSize = 64;
   const GLbitfield kAccess = GL_MAP_READ_BIT;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kOffset + kSize, nullptr, GL_STREAM_DRAW);
 
@@ -490,6 +501,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeBadSharedMemoryFails) {
 TEST_F(GLES3DecoderPassthroughTest, UnmapBufferWriteNotMappedFails) {
   const GLenum kTarget = GL_ARRAY_BUFFER;
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
 
   cmds::UnmapBuffer cmd;
@@ -520,6 +532,7 @@ TEST_F(GLES3DecoderPassthroughTest, BufferDataDestroysDataStore) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -576,6 +589,7 @@ TEST_F(GLES3DecoderPassthroughTest, DeleteBuffersDestroysDataStore) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize + kOffset, nullptr, GL_STREAM_DRAW);
 
@@ -662,6 +676,7 @@ TEST_F(GLES3DecoderPassthroughTest, CopyBufferSubDataValidArgs) {
   const char kValue1 = 21;
 
   // Set up the buffer so first half is kValue0 and second half is kValue1.
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize, nullptr, GL_STREAM_DRAW);
   base::HeapArray<char> data = base::HeapArray<char>::Uninit(kHalfSize);
