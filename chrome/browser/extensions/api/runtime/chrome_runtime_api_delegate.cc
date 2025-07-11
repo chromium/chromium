@@ -346,6 +346,8 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     info->arch = extensions::api::runtime::PlatformArch::kMips;
   } else if (strcmp(arch, "mips64el") == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kMips64;
+  } else if (strcmp(arch, "riscv64") == 0) {
+    info->arch = extensions::api::runtime::PlatformArch::kRiscv64;
   } else {
     NOTREACHED();
   }
@@ -361,6 +363,8 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips;
   } else if (strcmp(nacl_arch, "mips64") == 0) {
     info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips64;
+  } else if (strcmp(nacl_arch, "riscv64") == 0) {
+    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kRiscv64;
   } else {
     NOTREACHED();
   }
