@@ -6,53 +6,18 @@
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
-namespace {
-constexpr char kGlicMediaContextName[] = "GlicMediaContext";
-}  // namespace
-
 namespace glic {
 
-GlicMediaContext::GlicMediaContext(content::Page* page) : page_(page) {}
+DOCUMENT_USER_DATA_KEY_IMPL(GlicMediaContext);
+
+GlicMediaContext::GlicMediaContext(content::RenderFrameHost* frame)
+    : DocumentUserData(frame) {}
 
 GlicMediaContext::~GlicMediaContext() = default;
-
-// static
-GlicMediaContext* GlicMediaContext::GetOrCreateFor(
-    content::WebContents* web_contents) {
-  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
-    return nullptr;
-  }
-
-  auto& page = web_contents->GetPrimaryMainFrame()->GetPage();
-
-  if (auto* media_context = static_cast<GlicMediaContext*>(
-          page.GetUserData(kGlicMediaContextName))) {
-    return media_context;
-  }
-
-  auto new_media_context = std::make_unique<GlicMediaContext>(&page);
-  auto* media_context = new_media_context.get();
-  page.SetUserData(kGlicMediaContextName, std::move(new_media_context));
-
-  return media_context;
-}
-
-// static
-GlicMediaContext* GlicMediaContext::GetIfExistsFor(
-    content::WebContents* web_contents) {
-  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
-    return nullptr;
-  }
-
-  auto& page = web_contents->GetPrimaryMainFrame()->GetPage();
-
-  return static_cast<GlicMediaContext*>(
-      page.GetUserData(kGlicMediaContextName));
-}
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   if (IsExcludedFromTranscript()) {
@@ -96,7 +61,7 @@ bool GlicMediaContext::IsExcludedFromTranscript() const {
   }
 
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&page_->GetMainDocument());
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
   is_excluded_from_transcript_ |= MediaCaptureDevicesDispatcher::GetInstance()
                                       ->GetMediaStreamCaptureIndicator()
                                       ->IsCapturingUserMedia(web_contents);

@@ -67,7 +67,8 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   }
 
   GlicMediaContext* GetContext() {
-    return GlicMediaContext::GetIfExistsFor(web_contents());
+    return GlicMediaContext::GetForCurrentDocument(
+        web_contents()->GetPrimaryMainFrame());
   }
 
   captions::LiveCaptionController* live_caption_controller() {

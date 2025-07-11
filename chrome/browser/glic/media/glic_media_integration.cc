@@ -46,7 +46,10 @@ class GlicMediaPeerConnectionObserver
       return;
     }
 
-    auto* context = glic::GlicMediaContext::GetOrCreateFor(wc);
+    // For now, attribute everything to the primary main frame of the
+    // WebContents, even for subframes.
+    auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+        wc->GetPrimaryMainFrame());
     if (!context) {
       return;
     }
@@ -86,8 +89,14 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
   bool OnTranscription(content::WebContents* web_contents,
                        captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
+    if (!web_contents) {
+      return false;
+    }
     bool continue_transcribing = false;
-    if (auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents)) {
+    // Since we do not currently know which frame this comes from, attribute it
+    // to the primary main frame for now.
+    if (auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+            web_contents->GetPrimaryMainFrame())) {
       continue_transcribing = context->OnResult(result);
       static_cast<GlicMediaIntegrationImpl*>(
           glic::GlicMediaIntegration::GetFor(web_contents))
@@ -122,10 +131,16 @@ GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
 void GlicMediaIntegrationImpl::AppendContext(
     content::WebContents* web_contents,
     optimization_guide::proto::ContentNode* context_root) {
+  if (!web_contents) {
+    return;
+  }
   context_root->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
 
-  auto* context = glic::GlicMediaContext::GetIfExistsFor(web_contents);
+  // Since we don't know which frame we're being asked for, return the context
+  // for the primary main frame.
+  auto* context = glic::GlicMediaContext::GetForCurrentDocument(
+      web_contents->GetPrimaryMainFrame());
   std::string result;
   if (context != nullptr) {
     result = context->GetContext();

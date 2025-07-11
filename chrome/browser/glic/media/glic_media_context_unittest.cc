@@ -16,28 +16,28 @@ using content::WebContents;
 
 namespace glic {
 
-class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {};
-
-TEST_F(GlicMediaContextTest, GetWithNullReturnsNull) {
-  EXPECT_EQ(GlicMediaContext::GetOrCreateFor(nullptr), nullptr);
-  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(nullptr), nullptr);
-}
+class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {
+ public:
+  content::RenderFrameHost* rfh() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+};
 
 TEST_F(GlicMediaContextTest, InitialContextIsEmpty) {
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
   EXPECT_EQ(context->GetContext(), "");
 }
 
 TEST_F(GlicMediaContextTest, GetVariantsWork) {
-  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(web_contents()), nullptr);
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  EXPECT_EQ(GlicMediaContext::GetForCurrentDocument(rfh()), nullptr);
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
   EXPECT_NE(context, nullptr);
-  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(web_contents()), context);
-  EXPECT_EQ(GlicMediaContext::GetOrCreateFor(web_contents()), context);
+  EXPECT_EQ(GlicMediaContext::GetForCurrentDocument(rfh()), context);
+  EXPECT_EQ(GlicMediaContext::GetOrCreateForCurrentDocument(rfh()), context);
 }
 
 TEST_F(GlicMediaContextTest, ContextContainsTranscript) {
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
 
   // Send the string in pieces.
   const std::string test_cap_1("ABC");
@@ -54,7 +54,7 @@ TEST_F(GlicMediaContextTest, ContextContainsTranscript) {
 }
 
 TEST_F(GlicMediaContextTest, ContextShouldTruncate) {
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
 
   // Send in a very long string, and expect that it comes back shorter with
   // the end of the string retained.  We don't care exactly how long it is, as
@@ -70,7 +70,7 @@ TEST_F(GlicMediaContextTest, ContextShouldTruncate) {
 }
 
 TEST_F(GlicMediaContextTest, ContextContainsButReplacesNonFinal) {
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
 
   // Send the string in pieces, mixing final and non-final ones.
   const std::string test_cap_1("ABC");
@@ -106,7 +106,7 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
   ASSERT_TRUE(capture_dispatcher->IsCapturingAudio(web_contents()));
 
   // Send a transcription and verify that it is ignored.
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
   EXPECT_FALSE(context->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
   EXPECT_EQ(context->GetContext(), "");
@@ -117,7 +117,7 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
 TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
   // Send a transcription and verify that it is ignored once a peer connection
   // is added to the WebContents.
-  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  auto* context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
   context->OnPeerConnectionAdded();
   EXPECT_FALSE(context->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
