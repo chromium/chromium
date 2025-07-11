@@ -25,14 +25,28 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
 
   WebMediaPlayer* media_player =
       layout_video_.MediaElement()->GetWebMediaPlayer();
+  // TODO(crbug.com/419834322): Canvas drawElement does not yet draw video, so
+  // force the poster until it does.
   bool force_video_poster =
       layout_video_.GetDocument().GetPaintPreviewState() ==
-      Document::kPaintingPreviewSkipAcceleratedContent;
+          Document::kPaintingPreviewSkipAcceleratedContent ||
+      (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+       (paint_info.GetPaintFlags() & PaintFlag::kPlacedElement));
   bool should_display_poster =
       layout_video_.GetDisplayMode() == LayoutVideo::kPoster ||
       force_video_poster;
   if (!should_display_poster && !media_player)
     return;
+
+  if (paint_info.IsPrivacyPreserving()) {
+    if (should_display_poster) {
+      if (!layout_video_.ImageResource()->IsAccessAllowed()) {
+        return;
+      }
+    } else if (media_player->WouldTaintOrigin()) {
+      return;
+    }
+  }
 
   PhysicalRect replaced_rect = layout_video_.ReplacedContentRect();
   replaced_rect.Move(paint_offset);
