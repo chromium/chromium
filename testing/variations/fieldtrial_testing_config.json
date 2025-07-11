@@ -3886,24 +3886,6 @@
             ]
         }
     ],
-    "BubbleMetricsApi": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BubbleMetricsApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "BusyLoopOnMainThread": [
         {
             "platforms": [
