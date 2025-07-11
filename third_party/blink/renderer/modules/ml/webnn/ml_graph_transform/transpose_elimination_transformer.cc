@@ -98,6 +98,10 @@ void TransposeEliminationTransformer::HandleTranspose(
 
   MLOperator* front_transpose = optional_front_transpose.value();
 
+  if (graph_output_operators.Contains(front_transpose)) {
+    return;
+  }
+
   // We should guarantee that after elmination, the graph should have at least
   // one valid operator. So if the input of "front_transpose" is graph input and
   // "transpose" produces the graph output operand  and there is no intermediate
@@ -140,6 +144,17 @@ void TransposeEliminationTransformer::HandleTranspose(
         front_transpose->Outputs()[0]->DependentOperators();
     CHECK_EQ(front_transpose_deps.size(), 1u);
     layout_agnostic_node_front = front_transpose_deps.begin()->Get();
+  }
+
+  if (layout_agnostic_node_back != nullptr) {
+    CHECK_NE(layout_agnostic_node_front, nullptr);
+    for (MLOperator* cur_node = layout_agnostic_node_back;
+         cur_node != front_transpose;
+         cur_node = cur_node->Inputs()[0].Get()->Operator()) {
+      if (graph_output_operators.Contains(cur_node)) {
+        return;
+      }
+    }
   }
 
   RemoveUnaryOperator(front_transpose);

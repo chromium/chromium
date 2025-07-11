@@ -1797,6 +1797,54 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
   }
 
   {
+    {
+      DummyExceptionStateForTesting exception_state;
+      auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                             exception_state);
+      ASSERT_THAT(builder, testing::NotNull());
+      // [a] -> transpose -> [b] -> transpose -> [c] -> relu -> [d]
+      //  b and d are graph outputs.
+
+      auto* a =
+          BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
+                     V8MLOperandDataType::Enum::kFloat32, exception_state);
+      auto* transpose_options = MLTransposeOptions::Create();
+      transpose_options->setPermutation({0, 2, 1});
+      auto* b = builder->transpose(a, transpose_options, exception_state);
+      ASSERT_THAT(b, testing::NotNull());
+      auto* transpose_options2 = MLTransposeOptions::Create();
+      transpose_options2->setPermutation({0, 2, 1});
+      auto* c = builder->transpose(b, transpose_options2, exception_state);
+      ASSERT_THAT(c, testing::NotNull());
+      auto* relu_options = MLOperatorOptions::Create();
+      auto* d = builder->relu(c, relu_options, exception_state);
+      ASSERT_THAT(d, testing::NotNull());
+      EXPECT_EQ(d->Shape(), std::vector<uint32_t>({3, 4, 5}));
+      MLNamedOperands named_outputs = {{"b", b}, {"d", d}};
+
+      auto* transpose_elimination_transformer =
+          MakeGarbageCollected<TransposeEliminationTransformer>(builder);
+      transpose_elimination_transformer->Transform(named_outputs);
+
+      // Expect no change in the graph.
+      EXPECT_EQ(b->Operator()->Inputs()[0], a);
+      EXPECT_EQ(c->Operator()->Inputs()[0], b);
+      EXPECT_EQ(d->Operator()->Inputs()[0], c);
+
+      auto [graph, error_name, error_message] =
+          BuildGraph(scope, builder, named_outputs);
+      ASSERT_THAT(graph, testing::NotNull());
+      const auto& inputs = graph->GetInputConstraints();
+      EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+      EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+      const auto& outputs = graph->GetOutputConstraints();
+      EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+      EXPECT_EQ(*outputs.at("b"), b->Descriptor());
+      EXPECT_EQ(*outputs.at("d"), d->Descriptor());
+    }
+  }
+
+  {
     DummyExceptionStateForTesting exception_state;
     auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
                                            exception_state);
@@ -1854,6 +1902,52 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
     const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(*outputs.at("d"), updated_c->Descriptor());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+
+    // [a] -> transpose -> [b] -> relu -> [c] -> transpose -> [d]
+    // c and d are graph outputs.
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* transpose_options = MLTransposeOptions::Create();
+    transpose_options->setPermutation({0, 2, 1});
+    auto* b = builder->transpose(a, transpose_options, exception_state);
+    ASSERT_THAT(b, testing::NotNull());
+    auto* relu_options = MLOperatorOptions::Create();
+    auto* c = builder->relu(b, relu_options, exception_state);
+    ASSERT_THAT(c, testing::NotNull());
+    auto* transpose_options2 = MLTransposeOptions::Create();
+    transpose_options2->setPermutation({0, 2, 1});
+    auto* d = builder->transpose(c, transpose_options2, exception_state);
+    ASSERT_THAT(d, testing::NotNull());
+
+    EXPECT_EQ(d->Shape(), std::vector<uint32_t>({3, 4, 5}));
+    MLNamedOperands named_outputs = {{"c", c}, {"d", d}};
+
+    auto* transpose_elimination_transformer =
+        MakeGarbageCollected<TransposeEliminationTransformer>(builder);
+    transpose_elimination_transformer->Transform(named_outputs);
+
+    // Expect no change in the graph.
+    EXPECT_EQ(b->Operator()->Inputs()[0], a);
+    EXPECT_EQ(c->Operator()->Inputs()[0], b);
+    EXPECT_EQ(d->Operator()->Inputs()[0], c);
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputConstraints();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(*outputs.at("c"), c->Descriptor());
+    EXPECT_EQ(*outputs.at("d"), d->Descriptor());
   }
 
   {
