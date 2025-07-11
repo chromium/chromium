@@ -23650,8 +23650,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SoftNavigation" singular="True">
-  <owner>iclelland@chromium.org</owner>
-  <owner>haoliuk@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Records soft navigation metrics including LCP, CLS, INP. Soft navigation is
     DOM changes that are perceived to be navigation, but there is no page load.
