@@ -31,6 +31,7 @@ class DialogDelegate;
 namespace tabs {
 
 class TabDialogWidgetObserver;
+class BrowserWindowWidgetObserver;
 
 // Class provides a mechanism to show a tab-scoped dialog on desktop platforms.
 // Please file a bug if you encounter any issues.
@@ -87,13 +88,6 @@ class TabDialogManager : public content::WebContentsObserver,
 
   void CloseDialog();
 
-  // Activates the dialog if applicable. Returns true if the dialog was
-  // activated. This returns false in a few cases:
-  //  * If there is no dialog.
-  //  * If the associated tab is not active.
-  //  * If the browser window is minimized.
-  bool MaybeActivateDialog();
-
   // Resets all state associated with `widget_`.
   // Called in two different circumstances:
   //  * From an internal WidgetObserver when the Widget is in the process of
@@ -115,8 +109,6 @@ class TabDialogManager : public content::WebContentsObserver,
   void AnimationEnded(const gfx::Animation* animation) override;
 
  private:
-  class BrowserWindowWidgetObserver;
-
   // Overridden from content::WebContentObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -125,8 +117,6 @@ class TabDialogManager : public content::WebContentsObserver,
   void TabWillEnterBackground(TabInterface* tab_interface);
   void TabWillDetach(TabInterface* tab_interface,
                      TabInterface::DetachReason reason);
-
-  bool GetDialogWidgetVisibility();
 
   raw_ptr<TabInterface> tab_interface_ = nullptr;
   base::CallbackListSubscription tab_did_enter_foreground_subscription_;
