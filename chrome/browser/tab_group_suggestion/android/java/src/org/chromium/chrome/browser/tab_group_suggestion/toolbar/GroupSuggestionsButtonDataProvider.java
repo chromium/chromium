@@ -46,6 +46,16 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
     }
 
     @Override
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (!super.shouldShowButton(tab)) {
+            return false;
+        }
+
+        // Don't show button if the tab is already grouped (e.g. after clicking the button).
+        return tab.getTabGroupId() == null;
+    }
+
+    @Override
     public void onClick(View view) {
         if (!mActiveTabSupplier.hasValue()) {
             return;
@@ -57,7 +67,6 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
                         mActiveTabSupplier.get(),
                         mTabGroupModelFilterProvider.getTabGroupModelFilter(
                                 /* isIncognito= */ false));
-        mButtonData.setCanShow(false);
         notifyObservers(false);
     }
 }
