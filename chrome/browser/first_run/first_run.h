@@ -82,8 +82,7 @@ bool IsFirstRunSuppressed(const base::CommandLine& command_line);
 #endif
 
 // Creates the first run sentinel if needed. This should only be called after
-// the process singleton has been grabbed by the current process
-// (http://crbug.com/264694).
+// the process singleton has been grabbed by the current process.
 void CreateSentinelIfNeeded();
 
 // Returns the first run sentinel creation time. This only requires I/O
