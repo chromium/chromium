@@ -14,7 +14,6 @@
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "content/public/browser/render_process_host.h"
-#include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace fingerprinting_protection_filter {

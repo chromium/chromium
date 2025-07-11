@@ -16,8 +16,6 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/bindings_policy.h"
-#include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"

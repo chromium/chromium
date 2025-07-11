@@ -9,7 +9,6 @@
 
 #include "components/guest_view/renderer/guest_view_container.h"
 #include "content/public/renderer/render_frame.h"
-#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"

@@ -10,8 +10,6 @@
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/web_element.h"
-
-#include "ipc/ipc_message.h"
 #include "url/gurl.h"
 
 namespace blink {

@@ -95,7 +95,6 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "ipc/ipc_message.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

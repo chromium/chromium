@@ -18,7 +18,6 @@
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
-#include "ipc/ipc_sender.h"
 
 namespace content {
 class BrowserContext;
