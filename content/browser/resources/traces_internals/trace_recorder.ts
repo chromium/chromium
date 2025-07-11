@@ -466,7 +466,7 @@ export class TraceRecorderElement extends CrLitElement {
   private createDefaultTrackEventConfig_(): TrackEventConfig {
     return {
       enabledCategories: [],
-      disabledCategories: [],
+      disabledCategories: ['*'],
       enabledTags: [],
       disabledTags: ['slow', 'debug', 'sensitive'],
     };
