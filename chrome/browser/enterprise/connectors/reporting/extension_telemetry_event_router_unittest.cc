@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -17,6 +18,7 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -187,18 +189,45 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
 
 class ExtensionTelemetryEventInstallLocationTest
     : public ExtensionTelemetryEventRouterTest,
-      public testing::WithParamInterface<ExtensionInfo::InstallLocation> {
+      public testing::WithParamInterface<
+          std::tuple<ExtensionInfo::InstallLocation, bool>> {
  public:
   ExtensionTelemetryEventInstallLocationTest() = default;
 
+  bool use_proto_format() const { return std::get<1>(GetParam()); }
+
  protected:
-  ExtensionInfo::InstallLocation install_location_ = GetParam();
+  ExtensionInfo::InstallLocation install_location_ = std::get<0>(GetParam());
 };
 
 TEST_P(ExtensionTelemetryEventInstallLocationTest,
        CheckTelemetryEventReported) {
-  const std::string event_json = base::StringPrintf(
-      R"({
+  // Initialize the dictionary outside of the if/else block below, so that the
+  // variable won't be destroyed by the time the `EXPECT_CALL` is executed.
+  base::Value::Dict expected_event;
+
+  if (use_proto_format()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        policy::kUploadRealtimeReportingEventsUsingProto);
+
+    chrome::cros::reporting::proto::Event expected_proto_event;
+    auto* extension_telemetry_event =
+        expected_proto_event.mutable_extension_telemetry_event();
+    *extension_telemetry_event->mutable_extension_telemetry_report() =
+        *GenerateTelemetryReportRequest(install_location_);
+    extension_telemetry_event->set_profile_user_name(
+        profile_->GetProfileUserName());
+    extension_telemetry_event->set_profile_identifier(
+        profile_->GetPath().AsUTF8Unsafe());
+
+    EXPECT_CALL(*mock_realtime_reporting_client_,
+                ReportEvent(base::test::EqualsProto(expected_proto_event), _));
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        policy::kUploadRealtimeReportingEventsUsingProto);
+
+    const std::string event_json = base::StringPrintf(
+        R"({
     "extension_telemetry_report": {
       "creation_timestamp_msec": "1718811019088",
       "reports": [{
@@ -250,19 +279,21 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
       }]
     }
   })",
-      install_location_ == ExtensionInfo::UNPACKED ? R"(
+        install_location_ == ExtensionInfo::UNPACKED ? R"(
         "file_info": [ {
           "hash": "",
           "name": ""
         } ],
       )"
-                                                   : "",
-      ExtensionInfo::InstallLocation_Name(install_location_).c_str());
-  base::Value::Dict expected_event = base::test::ParseJsonDict(event_json);
+                                                     : "",
+        ExtensionInfo::InstallLocation_Name(install_location_).c_str());
+    expected_event = base::test::ParseJsonDict(event_json);
 
-  EXPECT_CALL(*mock_realtime_reporting_client_,
-              ReportRealtimeEvent(kExtensionTelemetryEvent, _,
-                                  Eq(ByRef(expected_event))));
+    EXPECT_CALL(*mock_realtime_reporting_client_,
+                ReportRealtimeEvent(kExtensionTelemetryEvent, _,
+                                    Eq(ByRef(expected_event))));
+  }
+
   extension_telemetry_event_router_->UploadTelemetryReport(
       GenerateTelemetryReportRequest(install_location_));
 }
@@ -270,17 +301,18 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
 INSTANTIATE_TEST_SUITE_P(
     ExtensionTelemetryEventInstallLocationTest,
     ExtensionTelemetryEventInstallLocationTest,
-    testing::Values(ExtensionInfo::UNKNOWN_LOCATION,
-                    ExtensionInfo::INTERNAL,
-                    ExtensionInfo::EXTERNAL_PREF,
-                    ExtensionInfo::EXTERNAL_REGISTRY,
-                    ExtensionInfo::UNPACKED,
-                    ExtensionInfo::COMPONENT,
-                    ExtensionInfo::EXTERNAL_PREF_DOWNLOAD,
-                    ExtensionInfo::EXTERNAL_POLICY_DOWNLOAD,
-                    ExtensionInfo::COMMAND_LINE,
-                    ExtensionInfo::EXTERNAL_POLICY,
-                    ExtensionInfo::EXTERNAL_COMPONENT));
+    testing::Combine(testing::Values(ExtensionInfo::UNKNOWN_LOCATION,
+                                     ExtensionInfo::INTERNAL,
+                                     ExtensionInfo::EXTERNAL_PREF,
+                                     ExtensionInfo::EXTERNAL_REGISTRY,
+                                     ExtensionInfo::UNPACKED,
+                                     ExtensionInfo::COMPONENT,
+                                     ExtensionInfo::EXTERNAL_PREF_DOWNLOAD,
+                                     ExtensionInfo::EXTERNAL_POLICY_DOWNLOAD,
+                                     ExtensionInfo::COMMAND_LINE,
+                                     ExtensionInfo::EXTERNAL_POLICY,
+                                     ExtensionInfo::EXTERNAL_COMPONENT),
+                     testing::Bool()));
 
 TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
   // Feature disabled by default, and set reportiing to false.

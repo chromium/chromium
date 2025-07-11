@@ -8,7 +8,9 @@
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
 
 namespace enterprise_connectors {
@@ -296,9 +298,26 @@ void ExtensionTelemetryEventRouter::UploadTelemetryReport(
   std::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
 
-  reporting_client->ReportRealtimeEvent(
-      kExtensionTelemetryEvent, std::move(settings.value()),
-      CreateExtensionTelemetryReportRequestDict(*telemetry_report_request));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::ExtensionTelemetryEvent
+        extension_telemetry_event;
+    *extension_telemetry_event.mutable_extension_telemetry_report() =
+        *telemetry_report_request;
+    extension_telemetry_event.set_profile_identifier(
+        reporting_client->GetProfileIdentifier());
+    extension_telemetry_event.set_profile_user_name(
+        reporting_client->GetProfileUserName());
+
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_extension_telemetry_event() = extension_telemetry_event;
+
+    reporting_client->ReportEvent(std::move(event), settings.value());
+  } else {
+    reporting_client->ReportRealtimeEvent(
+        kExtensionTelemetryEvent, std::move(settings.value()),
+        CreateExtensionTelemetryReportRequestDict(*telemetry_report_request));
+  }
 }
 
 }  // namespace enterprise_connectors
