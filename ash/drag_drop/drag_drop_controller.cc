@@ -381,9 +381,11 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
   if (!IsDragDropInProgress())
     return;
 
-  // If current drag session was not started by mouse, dont process this mouse
-  // event, but consume it so it does not interfere with current drag session.
-  if (current_drag_event_source_ != ui::mojom::DragEventSource::kMouse) {
+  // If current drag session was not started by mouse or mouse wheel event, dont
+  // process this mouse event, but consume it so it does not interfere with
+  // current drag session.
+  if (current_drag_event_source_ != ui::mojom::DragEventSource::kMouse ||
+      event->IsMouseWheelEvent()) {
     event->StopPropagation();
     return;
   }
