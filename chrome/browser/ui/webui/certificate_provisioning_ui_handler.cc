@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_is_test.h"
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,9 +15,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -45,14 +41,6 @@ using ash::cert_provisioning::CertProvisioningWorkerState;
 namespace chromeos::cert_provisioning {
 
 namespace {
-
-crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
-    Profile* profile) {
-  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    return nullptr;
-  }
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->cert_provisioning_ash();
-}
 
 CertProvisioningScheduler* GetUserScheduler(Profile* profile) {
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
@@ -235,20 +223,22 @@ void AppendWorkerStatus(CertProvisioningScheduler* scheduler,
 std::unique_ptr<CertificateProvisioningUiHandler>
 CertificateProvisioningUiHandler::CreateForProfile(Profile* user_profile) {
   return std::make_unique<CertificateProvisioningUiHandler>(
-      GetUserScheduler(user_profile), GetDeviceScheduler(user_profile),
-      GetCertProvisioningInterface(user_profile));
+      GetUserScheduler(user_profile), GetDeviceScheduler(user_profile));
 }
 
 CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
     CertProvisioningScheduler* user_scheduler,
-    CertProvisioningScheduler* device_scheduler,
-    crosapi::mojom::CertProvisioning* cert_provisioning_interface)
-    : user_scheduler_(user_scheduler),
-      device_scheduler_(device_scheduler),
-      cert_provisioning_interface_(cert_provisioning_interface) {
-  if (cert_provisioning_interface_) {
-    cert_provisioning_interface->AddObserver(
-        receiver_.BindNewPipeAndPassRemote());
+    CertProvisioningScheduler* device_scheduler)
+    : user_scheduler_(user_scheduler), device_scheduler_(device_scheduler) {
+  if (user_scheduler_) {
+    user_subscription_ = user_scheduler_->AddObserver(
+        base::BindRepeating(&CertificateProvisioningUiHandler::OnStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (device_scheduler_) {
+    device_subscription_ = device_scheduler_->AddObserver(
+        base::BindRepeating(&CertificateProvisioningUiHandler::OnStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

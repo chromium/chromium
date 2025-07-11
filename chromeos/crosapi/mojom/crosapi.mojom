@@ -10,7 +10,6 @@ import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
-import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
@@ -78,14 +77,8 @@ interface Crosapi {
       mojo_base.mojom.GenericPendingReceiver receiver);
 
   // BindCecPrivate@140 was removed.
-
   // BindCertDatabase@12 was removed.
-
-  // Binds the CertProvisioning interface for implementing certificate
-  // provisioning UI.
-  // Added in M102.
-  [MinVersion=83]
-  BindCertProvisioning@86(pending_receiver<CertProvisioning> receiver);
+  // BindCertProvisioning@86 was removed.
 
   // Binds the CfmServiceContext interface for communicating with the Hotline
   // daemon available only on Meet Devices platforms

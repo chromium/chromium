@@ -8,7 +8,6 @@ import("//printing/buildflags/buildflags.gni")
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
-    "cert_provisioning.mojom",
     "chrome_app_kiosk_service.mojom",
     "clipboard_history.mojom",
     "cros_display_config.mojom",

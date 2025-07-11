@@ -43,7 +43,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class CertProvisioningAsh;
 class DocumentScanAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -69,8 +68,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
-  void BindCertProvisioning(
-      mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
   void BindCfmServiceContext(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver)
       override;
@@ -136,10 +133,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
 
-  CertProvisioningAsh* cert_provisioning_ash() {
-    return cert_provisioning_ash_.get();
-  }
-
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
   FileSystemAccessCloudIdentifierProviderAsh*
@@ -176,7 +169,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>

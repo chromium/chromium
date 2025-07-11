@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
@@ -88,8 +87,7 @@ Profile* GetAshProfile() {
 }  // namespace
 
 CrosapiAsh::CrosapiAsh()
-    : cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
-      diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
+    : diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
@@ -139,11 +137,6 @@ void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
   }
-}
-
-void CrosapiAsh::BindCertProvisioning(
-    mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
-  cert_provisioning_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCfmServiceContext(

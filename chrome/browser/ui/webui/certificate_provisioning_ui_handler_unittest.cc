@@ -24,13 +24,11 @@
 #include "base/values.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -335,9 +333,8 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
         content::WebContents::CreateParams(testing_profile));
     web_ui_.set_web_contents(web_contents_.get());
 
-    cert_provisioning_.InjectForTesting(&user_scheduler_, &device_scheduler_);
     auto handler = std::make_unique<CertificateProvisioningUiHandler>(
-        &user_scheduler_, &device_scheduler_, &cert_provisioning_);
+        &user_scheduler_, &device_scheduler_);
     handler_ = handler.get();
     web_ui_.AddMessageHandler(std::move(handler));
   }
@@ -396,9 +393,6 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
 
   // Owned by |web_ui_|.
   raw_ptr<CertificateProvisioningUiHandler> handler_ = nullptr;
-
- private:
-  crosapi::CertProvisioningAsh cert_provisioning_;
 };
 
 TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {

@@ -14,8 +14,6 @@ static_library("crosapi") {
   sources = [
     "browser_manager.cc",
     "browser_manager.h",
-    "cert_provisioning_ash.cc",
-    "cert_provisioning_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
     "crosapi_id.h",
@@ -75,7 +73,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/attestation",
-    "//chrome/browser/ash/cert_provisioning",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",
@@ -325,7 +322,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "cert_provisioning_ash_unittest.cc",
     "crosapi_util_unittest.cc",
     "document_scan_ash_type_converters_unittest.cc",
     "document_scan_ash_unittest.cc",
@@ -345,7 +341,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
-    "//chrome/browser/ash/cert_provisioning:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/ash/platform_keys/key_permissions:test_support",
