@@ -221,13 +221,22 @@ void ScriptResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   }
 }
 
-const ParkableString& ScriptResource::SourceText() {
+const ParkableString& ScriptResource::GetSourceText() {
   CHECK(IsLoaded());
 
   if (source_text_.IsNull() && Data()) {
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Script.SourceTextTime");
     String source_text = DecodedText();
-    ClearData();
+    if (!(base::FeatureList::IsEnabled(
+              blink::features::kJavaScriptSourcePhaseImports) &&
+          MIMETypeRegistry::IsWasmMIMEType(GetResponse().HttpContentType()))) {
+      // It is possible for a Wasm resource to be used for classic JS
+      // script load and for a Wasm module load (via blink MemoryCache). When
+      // loaded as a Wasm module, the source is not decoded nor stored in a
+      // ParkableString and expects the shared buffer to not be cleared.
+      ClearData();
+    }
+
     SetDecodedSize(source_text.CharactersSizeInBytes());
     source_text_ = ParkableString(source_text.ReleaseImpl());
   }
@@ -240,7 +249,7 @@ ScriptResource::GetSourceTextOrWasmSource(ResolvedModuleType module_type) {
   if (module_type == ResolvedModuleType::kWasm) {
     return GetWasmSource();
   }
-  return SourceText();
+  return GetSourceText();
 }
 
 base::HeapArray<uint8_t> ScriptResource::GetWasmSource() {
@@ -524,7 +533,11 @@ void ScriptResource::NotifyFinished() {
   if (!source_text_.IsNull() && Data()) {
     // Wait to call ClearData() here instead of in DidReceiveDecodedData() since
     // the integrity check requires Data() to not be null.
-    ClearData();
+    if (!(base::FeatureList::IsEnabled(
+              blink::features::kJavaScriptSourcePhaseImports) &&
+          MIMETypeRegistry::IsWasmMIMEType(GetResponse().HttpContentType()))) {
+      ClearData();
+    }
   }
 
   TextResource::NotifyFinished();

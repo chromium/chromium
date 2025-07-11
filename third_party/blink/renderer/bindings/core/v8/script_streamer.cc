@@ -597,10 +597,19 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // Skip non-JS modules based on the mime-type.
   // TODO(crbug/1132413),TODO(crbug/1061857): Disable streaming for non-JS
   // based the specific import statements.
+
+  AtomicString mime_type = script_resource_->GetResponse().HttpContentType();
   if (script_type_ == v8::ScriptType::kModule &&
-      !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
-          script_resource_->GetResponse().HttpContentType())) {
+      !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(mime_type)) {
     SuppressStreaming(NotStreamingReason::kNonJavascriptModule);
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kJavaScriptSourcePhaseImports) &&
+      MIMETypeRegistry::IsWasmMIMEType(mime_type)) {
+    // Suppress streaming if the Wasm source was requested as a classic script.
+    SuppressStreaming(NotStreamingReason::kNonModuleWithWasmMimeType);
     return false;
   }
 
@@ -1399,14 +1408,21 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   SetState(BackgroundProcessorState::kResponseReceived);
 
   client_ = client;
-
+  std::string mime_type;
+  const bool has_mime_type = head->headers->GetMimeType(&mime_type);
   if (script_type_ == v8::ScriptType::kModule) {
-    std::string mime_type;
-    if (!head->headers->GetMimeType(&mime_type) ||
+    if (!has_mime_type ||
         !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(String(mime_type))) {
       SuppressStreaming(NotStreamingReason::kNonJavascriptModuleBackground);
       return false;
     }
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kJavaScriptSourcePhaseImports) &&
+      has_mime_type && MIMETypeRegistry::IsWasmMIMEType(String(mime_type))) {
+    // Suppress streaming if the Wasm source was requested as a classic script.
+    SuppressStreaming(NotStreamingReason::kNonModuleWithWasmMimeType);
+    return false;
   }
   if (!head->charset.empty()) {
     TextEncoding new_encoding = TextEncoding(String(head->charset));

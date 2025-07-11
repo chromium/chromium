@@ -1745,9 +1745,11 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/wasm/webapi/esm-integration/reuse-wasm-loaded-as-classic-script.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/script-src-allows-source-phase-wasm.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/source-phase.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/source-phase-import-non-UTF8.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/source-phase-preload.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html",

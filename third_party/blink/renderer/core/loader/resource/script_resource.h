@@ -119,8 +119,9 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Returns the decoded source text as a ParkableString.
   //
-  // This shouldn't be used for Wasm resources.
-  const ParkableString& SourceText();
+  // Clears the resource buffer unless the resource has a Wasm MIME type.
+  // Shouldn't be used for loading Wasm modules.
+  const ParkableString& GetSourceText();
 
   // For module purposes.
   // Returns the wire bytes for Wasm modules, or otherwise, the decoded text.

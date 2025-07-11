@@ -116,7 +116,7 @@ ClassicScript* ClassicScript::CreateFromResource(
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   return MakeGarbageCollected<ClassicScript>(
-      resource->SourceText(), source_url, base_url, fetch_options,
+      resource->GetSourceText(), source_url, base_url, fetch_options,
       ScriptSourceLocationType::kExternalFile,
       resource->GetResponse().IsCorsSameOrigin()
           ? SanitizeScriptErrors::kDoNotSanitize

@@ -48,6 +48,9 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
   // For tracking why some scripts are not streamed. Not streaming is part of
   // normal operation (e.g., script already loaded, script too small) and
   // doesn't necessarily indicate a failure.
+  //
+  // The enum values were used in histograms and thus do not change existing
+  // enum values when modifying.
   enum class NotStreamingReason {
     kAlreadyLoaded,  // DEPRECATED
     kNotHTTP,
@@ -80,8 +83,9 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
     kErrorOccurredBackground,
     kEncodingNotSupportedBackground,
 
+    kNonModuleWithWasmMimeType,
     // Pseudo values that should never be seen in reported metrics
-    kMaxValue = kEncodingNotSupportedBackground,
+    kMaxValue = kNonModuleWithWasmMimeType,
     kInvalid = -1,
   };
 

@@ -7359,7 +7359,9 @@ crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/worker-import.tentat
 
 # Source Phase Imports support.
 
+crbug.com/42204365 external/wpt/wasm/webapi/esm-integration/reuse-wasm-loaded-as-classic-script.tentative.html [ Timeout ]
 crbug.com/42204365 external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html [ Timeout ]
+crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/reuse-wasm-loaded-as-classic-script.tentative.html [ Pass ]
 crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Pass ]
 crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html [ Pass ]
 # Test passes but expects a syntax error.

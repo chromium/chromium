@@ -364,6 +364,8 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
       return "an error occurred (background)";
     case ScriptStreamer::NotStreamingReason::kEncodingNotSupportedBackground:
       return "encoding not supported (background)";
+    case ScriptStreamer::NotStreamingReason::kNonModuleWithWasmMimeType:
+      return "non-module script with wasm MIME type";
     case ScriptStreamer::NotStreamingReason::kDidntTryToStartStreaming:
     case ScriptStreamer::NotStreamingReason::kAlreadyLoaded:
     case ScriptStreamer::NotStreamingReason::kInvalid:
