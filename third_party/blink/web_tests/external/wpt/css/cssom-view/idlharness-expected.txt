@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 Found 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'scrollBy' on 'Element': Illegal invocation
 [FAIL] Screen interface: existence and properties of interface object
   assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 [FAIL] Screen interface: existence and properties of interface prototype object
