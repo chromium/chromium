@@ -554,11 +554,13 @@ public class NewTabAnimationLayout extends Layout {
                 finalRect.top = rectStart == RectStart.TOP ? -1 : finalRect.top - 1;
             } else {
                 startRadii[2] = 0;
-                finalRect.top = hostViewRect.top;
                 finalRect.bottom =
                         rectStart == RectStart.BOTTOM
                                 ? hostViewRect.bottom + 1
                                 : finalRect.bottom + 1;
+
+                // 0 instead of -1 since the rect is not expanding from this corner.
+                finalRect.top = 0;
             }
             if (isRtl) {
                 finalRect.right += 1;
@@ -570,6 +572,9 @@ public class NewTabAnimationLayout extends Layout {
             Rect compositorViewRect = new Rect();
             mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
             finalRect.bottom -= compositorViewRect.top;
+
+            // 0 instead of -1 since the rect is not expanding from this corner.
+            finalRect.top = 0;
         }
 
         NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
