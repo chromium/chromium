@@ -821,10 +821,6 @@ extern bool GetVisualSelectionUpdatesEnableCloseButtonTweaks();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UpdateViewportEachQueryEnabled();
 
-// Whether to send the current page for PDFs.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool SendPdfCurrentPageEnabled();
-
 // Whether to show zero prefix suggestions in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxZeroPrefixSuggest();

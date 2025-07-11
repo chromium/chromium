@@ -1335,16 +1335,14 @@ void LensOverlayController::GetPdfCurrentPage(
     const SkBitmap& bitmap,
     const std::vector<gfx::Rect>& bounds) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (lens::features::SendPdfCurrentPageEnabled()) {
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
-    if (pdf_helper) {
-      pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
-          &LensOverlayController::DidCaptureScreenshot,
-          weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
-          attempt_id, bitmap, bounds));
-      return;
-    }
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+  if (pdf_helper) {
+    pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+        &LensOverlayController::DidCaptureScreenshot,
+        weak_factory_.GetWeakPtr(), std::move(chrome_render_frame), attempt_id,
+        bitmap, bounds));
+    return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

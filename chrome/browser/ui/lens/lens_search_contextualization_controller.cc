@@ -429,18 +429,15 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
   }
 
 #if BUILDFLAG(ENABLE_PDF)
-  if (lens::features::SendPdfCurrentPageEnabled()) {
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(
-            lens_search_controller_->GetTabInterface()->GetContents());
-    if (pdf_helper) {
-      pdf_helper->GetMostVisiblePageIndex(
-          base::BindOnce(&LensSearchContextualizationController::
-                             UpdatePageContextualizationPart3,
-                         weak_ptr_factory_.GetWeakPtr(), page_contents,
-                         primary_content_type, page_count, bitmap));
-      return;
-    }
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+          lens_search_controller_->GetTabInterface()->GetContents());
+  if (pdf_helper) {
+    pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+        &LensSearchContextualizationController::UpdatePageContextualizationPart3,
+        weak_ptr_factory_.GetWeakPtr(), page_contents, primary_content_type,
+        page_count, bitmap));
+    return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -863,17 +860,15 @@ void LensSearchContextualizationController::GetPdfCurrentPage(
     OnPageContextUpdatedCallback callback,
     const std::vector<gfx::Rect>& bounds) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (lens::features::SendPdfCurrentPageEnabled()) {
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(
-            lens_search_controller_->GetTabInterface()->GetContents());
-    if (pdf_helper) {
-      pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
-          &LensSearchContextualizationController::DidCaptureScreenshot,
-          weak_ptr_factory_.GetWeakPtr(), std::move(chrome_render_frame),
-          attempt_id, bitmap, bounds, std::move(callback)));
-      return;
-    }
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+          lens_search_controller_->GetTabInterface()->GetContents());
+  if (pdf_helper) {
+    pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+        &LensSearchContextualizationController::DidCaptureScreenshot,
+        weak_ptr_factory_.GetWeakPtr(), std::move(chrome_render_frame),
+        attempt_id, bitmap, bounds, std::move(callback)));
+    return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
