@@ -3606,6 +3606,7 @@ if (!is_android) {
       "../browser/ui/views/user_education/browser_help_bubble_browsertest.cc",
       "../browser/ui/views/user_education/browser_user_education_service_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
+      "../browser/ui/views/web_apps/frame_toolbar/web_app_menu_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_browsertest.cc",

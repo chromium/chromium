@@ -63,11 +63,8 @@ void WebAppMenuButton::StartHighlightAnimation() {
 }
 
 void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
-  Browser* browser = browser_view_->browser();
-  RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
-          event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
-                             : views::MenuRunner::NO_FLAGS);
-
+  ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+                              : views::MenuRunner::NO_FLAGS);
   // Add UMA for how many times the web app menu button are clicked.
   base::RecordAction(
       base::UserMetricsAction("HostedAppMenuButtonButton_Clicked"));
@@ -82,6 +79,12 @@ bool WebAppMenuButton::IsLabelPresentAndVisible() const {
 
 void WebAppMenuButton::UpdateStateForTesting() {
   UpdateTextAndHighlightColor();
+}
+
+void WebAppMenuButton::ShowMenu(int run_types) {
+  Browser* browser = browser_view_->browser();
+  RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
+          run_types);
 }
 
 void WebAppMenuButton::OnThemeChanged() {

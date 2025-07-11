@@ -41,6 +41,10 @@ class WebAppMenuButton : public AppMenuButton {
   // when the update available state changes.
   void UpdateStateForTesting();
 
+  // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
+  // with the menu.
+  void ShowMenu(int run_types);
+
  protected:
   BrowserView* browser_view() { return browser_view_; }
 
