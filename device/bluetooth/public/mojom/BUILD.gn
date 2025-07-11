@@ -50,6 +50,22 @@ mojom("mojom") {
       traits_public_deps = [ "//device/bluetooth/public/cpp" ]
     },
   ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.UUID"
+          cpp = "::WTF::String"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_private_headers = [
+        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//device/bluetooth" ]
+    },
+  ]
 }
 
 mojom("fake_bluetooth_interfaces") {

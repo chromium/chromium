@@ -97,10 +97,6 @@ mojom("mojom") {
           mojom = "viz.mojom.RegionCaptureBounds"
           cpp = "::viz::RegionCaptureBounds"
         },
-        {
-          mojom = "map"
-          cpp = "base::flat_map"
-        },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
@@ -148,24 +144,6 @@ mojom("mojom") {
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.VideoCaptureTarget"
-          cpp = "::viz::VideoCaptureTarget"
-        },
-        {
-          mojom = "viz.mojom.VideoCaptureSubTarget"
-          cpp = "::viz::VideoCaptureSubTarget"
-          nullable_is_same_type = true
-        },
-      ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h" ]
-      traits_public_deps = [
-        "//components/viz/common",
-        "//ui/gfx/geometry/mojom",
-      ]
     },
   ]
   cpp_typemaps = shared_cpp_typemaps
@@ -631,10 +609,6 @@ mojom("surfaces") {
         {
           mojom = "viz.mojom.OffsetTagValue"
           cpp = "::viz::OffsetTagValue"
-        },
-        {
-          mojom = "viz.mojom.OffsetTagDefinitoin"
-          cpp = "::viz::OffsetTagDefintion"
         },
       ]
       traits_headers =

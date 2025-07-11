@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//components/onc",
     "//components/prefs:test_support",
+    "//components/proxy_config:proxy_config",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//content/test:test_support",

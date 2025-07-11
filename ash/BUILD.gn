@@ -4771,6 +4771,7 @@ test("ash_unittests") {
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/peripherals/logging:logging",
     "//components/prefs:test_support",
+    "//components/proxy_config",
     "//components/quirks",
     "//components/services/app_service",
     "//components/session_manager/core",

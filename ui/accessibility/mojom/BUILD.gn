@@ -67,7 +67,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ax.mojom.AXEventIntent"
+          mojom = "ax.mojom.EventIntent"
           cpp = "::ui::AXEventIntent"
         },
       ]

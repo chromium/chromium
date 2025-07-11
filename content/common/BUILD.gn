@@ -497,14 +497,6 @@ mojom("mojo_bindings") {
           cpp = "::net::NetworkChangeNotifier::ConnectionType"
         },
         {
-          mojom = "content.mojom.Impression"
-          cpp = "::blink::Impression"
-        },
-        {
-          mojom = "content.mojom.ScrollGranularity"
-          cpp = "::ui::ScrollGranularity"
-        },
-        {
           mojom = "content.mojom.SyntheticPinch"
           cpp = "::content::SyntheticPinchGestureParams"
         },
@@ -527,10 +519,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content.mojom.SystemThemeColor"
           cpp = "::ui::NativeTheme::SystemThemeColor"
-        },
-        {
-          mojom = "content.mojom.VisualProperties"
-          cpp = "::blink::VisualProperties"
         },
       ]
 

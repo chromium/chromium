@@ -78,15 +78,6 @@ mojom("mojom") {
           cpp = "::rmad::UpdateRoFirmwareStatus"
         },
         {
-          mojom = "media.mojom.CdmKeyInformation"
-          cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
-          move_only = true
-        },
-        {
-          mojom = "media.mojom.CdmKeyStatus"
-          cpp = "::media::CdmKeyInformation::KeyStatus"
-        },
-        {
           mojom = "ash.shimless_rma.mojom.UpdateErrorCode"
           cpp = "::update_engine::ErrorCode"
         },

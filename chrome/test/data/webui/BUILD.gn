@@ -258,6 +258,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings:settings",
       "//components/manta",
+      "//components/proxy_config:proxy_config",
     ]
   }
   if (enable_compose) {

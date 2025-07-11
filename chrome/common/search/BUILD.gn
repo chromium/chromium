@@ -40,10 +40,6 @@ mojom("mojo_bindings") {
           mojom = "search.mojom.NtpTheme"
           cpp = "::NtpTheme"
         },
-        {
-          mojom = "search.mojom.SearchBoxTheme"
-          cpp = "::SearchBoxTheme"
-        },
       ]
       traits_headers = [
         "//chrome/common/search/instant_types.h",

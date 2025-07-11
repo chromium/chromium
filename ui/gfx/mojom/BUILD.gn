@@ -75,23 +75,9 @@ mojom("mojom") {
           cpp = "::gfx::BufferPlane"
         },
         {
-          # TODO(crbug.com/40584691): Note that this is typemapped to the same
-          # type as the gfx.mojom.GpuMemoryBufferPlatformHandle *union*. This
-          # is intentional since the C++ GpuMemoryBufferHandle type is is a
-          # hybrid union+struct today. This can be cleaned up once the
-          # associated bug is fixed.
-          mojom = "gfx.mojom.GpuMemoryBufferHandle"
-          cpp = "::gfx::GpuMemoryBufferHandle"
-          move_only = true
-        },
-        {
           mojom = "gfx.mojom.GpuMemoryBufferId"
           cpp = "::gfx::GpuMemoryBufferId"
           copyable_pass_by_value = true
-        },
-        {
-          mojom = "gfx.mojom.GpuMemoryBufferType"
-          cpp = "::gfx::GpuMemoryBufferType"
         },
       ]
 
@@ -210,17 +196,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "accelerated_widget_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/gfx" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gfx.mojom.CALayerResult"
-          cpp = "::gfx::CALayerResult"
-        },
-      ]
-      traits_sources = [ "ca_layer_result_mojom_traits.cc" ]
-      traits_headers = [ "ca_layer_result_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
     {
@@ -345,6 +320,22 @@ mojom("mojom") {
     },
   ]
 
+  if (is_apple) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "gfx.mojom.CALayerResult"
+            cpp = "::gfx::CALayerResult"
+          },
+        ]
+        traits_sources = [ "ca_layer_result_mojom_traits.cc" ]
+        traits_headers = [ "ca_layer_result_mojom_traits.h" ]
+        traits_public_deps = [ "//ui/gfx" ]
+      },
+    ]
+  }
+
   if (use_blink) {
     cpp_typemaps += [
       {
@@ -357,6 +348,27 @@ mojom("mojom") {
         traits_sources = [ "ca_layer_params_mojom_traits.cc" ]
         traits_headers = [ "ca_layer_params_mojom_traits.h" ]
         traits_public_deps = [ "//ui/gfx" ]
+      },
+    ]
+  }
+
+  if (use_blink) {
+    shared_cpp_typemaps += [
+      {
+        types = [
+          {
+            # TODO(crbug.com/40584691): Note that this is typemapped to the same
+            # type as the gfx.mojom.GpuMemoryBufferPlatformHandle *union*. This
+            # is intentional since the C++ GpuMemoryBufferHandle type is is a
+            # hybrid union+struct today. This can be cleaned up once the
+            # associated bug is fixed.
+            mojom = "gfx.mojom.GpuMemoryBufferHandle"
+            cpp = "::gfx::GpuMemoryBufferHandle"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "buffer_types_mojom_traits.h" ]
+        traits_public_deps = [ ":shared_mojom_traits" ]
       },
     ]
   }
@@ -381,55 +393,98 @@ mojom("mojom") {
 
 mojom("native_handle_types") {
   sources = [ "native_handle_types.mojom" ]
-  if (is_linux || is_chromeos || use_ozone) {
+  supports_native_pixmap = is_linux || is_chromeos || use_ozone
+
+  if (supports_native_pixmap) {
     enabled_features = [ "supports_native_pixmap" ]
   }
+
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
 
-  shared_cpp_typemap = {
-    types = [
+  shared_cpp_typemaps = []
+
+  if (supports_native_pixmap) {
+    shared_cpp_typemaps += [
       {
-        mojom = "gfx.mojom.AHardwareBufferHandle"
-        cpp = "::base::android::ScopedHardwareBufferHandle"
-        move_only = true
-      },
-      {
-        mojom = "gfx.mojom.DXGIHandle"
-        cpp = "::gfx::DXGIHandle"
-        move_only = true
-      },
-      {
-        mojom = "gfx.mojom.DXGIHandleToken"
-        cpp = "::gfx::DXGIHandleToken"
-      },
-      {
-        # TODO(crbug.com/40584691): Note that this is typemapped to the same
-        # type as the gfx.mojom.GpuMemoryBufferHandle *struct*. This is
-        # intentional since the C++ GpuMemoryBufferHandle type is is a hybrid
-        # union+struct today. This can be cleaned up once the associated bug is
-        # fixed.
-        mojom = "gfx.mojom.GpuMemoryBufferPlatformHandle"
-        cpp = "::gfx::GpuMemoryBufferHandle"
-        move_only = true
-        nullable_is_same_type = true
-      },
-      {
-        mojom = "gfx.mojom.NativePixmapHandle"
-        cpp = "::gfx::NativePixmapHandle"
-        move_only = true
-      },
-      {
-        mojom = "gfx.mojom.NativePixmapPlane"
-        cpp = "::gfx::NativePixmapPlane"
-        move_only = true
+        types = [
+          {
+            mojom = "gfx.mojom.NativePixmapHandle"
+            cpp = "::gfx::NativePixmapHandle"
+            move_only = true
+          },
+          {
+            mojom = "gfx.mojom.NativePixmapPlane"
+            cpp = "::gfx::NativePixmapPlane"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "native_handle_types_mojom_traits.h" ]
+        traits_public_deps = [ ":native_handle_types_mojom_traits" ]
       },
     ]
-    traits_headers = [ "native_handle_types_mojom_traits.h" ]
-    traits_public_deps = [ ":native_handle_types_mojom_traits" ]
   }
-  cpp_typemaps = [ shared_cpp_typemap ]
-  blink_cpp_typemaps = [ shared_cpp_typemap ]
+
+  if (use_blink) {
+    shared_cpp_typemaps += [
+      {
+        types = [
+          {
+            # TODO(crbug.com/40584691): Note that this is typemapped to the same
+            # type as the gfx.mojom.GpuMemoryBufferHandle *struct*. This is
+            # intentional since the C++ GpuMemoryBufferHandle type is is a hybrid
+            # union+struct today. This can be cleaned up once the associated bug is
+            # fixed.
+            mojom = "gfx.mojom.GpuMemoryBufferPlatformHandle"
+            cpp = "::gfx::GpuMemoryBufferHandle"
+            move_only = true
+            nullable_is_same_type = true
+          },
+        ]
+        traits_headers = [ "native_handle_types_mojom_traits.h" ]
+        traits_public_deps = [ ":native_handle_types_mojom_traits" ]
+      },
+    ]
+  }
+
+  if (is_android) {
+    shared_cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "gfx.mojom.AHardwareBufferHandle"
+            cpp = "::base::android::ScopedHardwareBufferHandle"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "native_handle_types_mojom_traits.h" ]
+        traits_public_deps = [ ":native_handle_types_mojom_traits" ]
+      },
+    ]
+  }
+
+  if (is_win) {
+    shared_cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "gfx.mojom.DXGIHandle"
+            cpp = "::gfx::DXGIHandle"
+            move_only = true
+          },
+          {
+            mojom = "gfx.mojom.DXGIHandleToken"
+            cpp = "::gfx::DXGIHandleToken"
+          },
+        ]
+        traits_headers = [ "native_handle_types_mojom_traits.h" ]
+        traits_public_deps = [ ":native_handle_types_mojom_traits" ]
+      },
+    ]
+  }
+
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
 }
 
 if (is_win) {

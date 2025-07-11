@@ -70,23 +70,49 @@ mojom("compositing") {
     enabled_features += [ "can_set_refresh_rate" ]
   }
 
-  cpp_typemaps = [
+  shared_cpp_typemaps = [
     {
       types = [
         {
-          mojom = "viz.mojom.RendererSettings"
-          cpp = "::viz::RendererSettings"
+          mojom = "viz.mojom.VideoCaptureTarget"
+          cpp = "::viz::VideoCaptureTarget"
         },
         {
-          mojom = "viz.mojom.DebugRendererSettings"
-          cpp = "::viz::DebugRendererSettings"
+          mojom = "viz.mojom.VideoCaptureSubTarget"
+          cpp = "::viz::VideoCaptureSubTarget"
+          nullable_is_same_type = true
         },
       ]
-      traits_headers =
-          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.cc" ]
-      traits_public_deps += [ "//ui/gfx/geometry/mojom" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h" ]
+      traits_public_deps += [
+        "//components/viz/common",
+        "//ui/gfx/geometry/mojom",
+      ]
     },
   ]
+
+  cpp_typemaps =
+      shared_cpp_typemaps + [
+        {
+          types = [
+            {
+              mojom = "viz.mojom.RendererSettings"
+              cpp = "::viz::RendererSettings"
+            },
+            {
+              mojom = "viz.mojom.DebugRendererSettings"
+              cpp = "::viz::DebugRendererSettings"
+            },
+          ]
+          traits_headers = [
+            "//services/viz/privileged/cpp/renderer_settings_mojom_traits.h",
+          ]
+          traits_sources = [
+            "//services/viz/privileged/cpp/renderer_settings_mojom_traits.cc",
+          ]
+          traits_public_deps += [ "//ui/gfx/geometry/mojom" ]
+        },
+      ]
+
+  blink_cpp_typemaps = shared_cpp_typemaps
 }
