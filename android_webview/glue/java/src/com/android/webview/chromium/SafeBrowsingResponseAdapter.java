@@ -5,10 +5,7 @@
 package com.android.webview.chromium;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.webkit.SafeBrowsingResponse;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -18,7 +15,6 @@ import org.chromium.base.Callback;
 // TODO(ntfschr): remove @SuppressLint once lint uses 27 for targetSdk (this is needed to
 // subclass SafeBrowsingResponse)
 @SuppressLint({"Override"})
-@RequiresApi(Build.VERSION_CODES.O_MR1)
 public class SafeBrowsingResponseAdapter extends SafeBrowsingResponse {
     private final Callback<AwSafeBrowsingResponse> mCallback;
 

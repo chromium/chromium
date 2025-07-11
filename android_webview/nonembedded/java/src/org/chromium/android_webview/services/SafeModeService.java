@@ -10,11 +10,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
 
@@ -27,10 +24,7 @@ import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -105,36 +99,9 @@ public final class SafeModeService extends Service {
                 return false;
             }
             final Context context = ContextUtils.getApplicationContext();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                PackageManager pm = context.getPackageManager();
-                return pm.hasSigningCertificate(
-                        packageName, expectedCertHash, PackageManager.CERT_INPUT_SHA256);
-            }
-            PackageInfo info =
-                    PackageUtils.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-            if (info != null) {
-                Signature[] signatures = info.signatures;
-                if (signatures == null) {
-                    return false;
-                }
-                for (Signature signature : signatures) {
-                    if (Arrays.equals(expectedCertHash, sha256Hash(signature))) {
-                        return true;
-                    }
-                }
-            }
-            return false; // no matches
-        }
-
-        @Nullable
-        private static byte[] sha256Hash(@Nullable Signature signature) {
-            if (signature == null) return null;
-            try {
-                return MessageDigest.getInstance("SHA256").digest(signature.toByteArray());
-            } catch (NoSuchAlgorithmException e) {
-                // This shouldn't happen.
-                return null;
-            }
+            PackageManager pm = context.getPackageManager();
+            return pm.hasSigningCertificate(
+                    packageName, expectedCertHash, PackageManager.CERT_INPUT_SHA256);
         }
     }
 

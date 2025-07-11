@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
@@ -14,8 +13,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwCookieManager;
@@ -68,7 +65,6 @@ public class WebkitToSharedGlueConverter {
         return ((WebResourceErrorAdapter) error).getAwWebResourceError();
     }
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public static Callback<AwSafeBrowsingResponse> getAwSafeBrowsingResponseCallback(
             SafeBrowsingResponse response) {
         return ((SafeBrowsingResponseAdapter) response).getAwSafeBrowsingResponseCallback();
