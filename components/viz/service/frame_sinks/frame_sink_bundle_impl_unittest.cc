@@ -142,7 +142,7 @@ struct TestFrameSink {
 
   ~TestFrameSink() {
     base::RunLoop loop;
-    manager_->DestroyCompositorFrameSink(id_, std::nullopt, loop.QuitClosure());
+    manager_->DestroyCompositorFrameSink(id_, loop.QuitClosure());
     loop.Run();
   }
 

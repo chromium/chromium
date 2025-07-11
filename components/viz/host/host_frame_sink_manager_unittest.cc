@@ -86,7 +86,6 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
                void(const FrameSinkId& frame_sink_id));
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
-      std::optional<base::TimeTicks> request_time,
       DestroyCompositorFrameSinkCallback callback) override {
     MockDestroyCompositorFrameSink(frame_sink_id);
     std::move(callback).Run();

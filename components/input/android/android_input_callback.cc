@@ -10,11 +10,8 @@ namespace input {
 
 AndroidInputCallback::AndroidInputCallback(
     const viz::FrameSinkId& root_frame_sink_id,
-    AndroidInputCallbackClient* client,
-    InputManagerOperationTracker& operation_tracker)
-    : root_frame_sink_id_(root_frame_sink_id),
-      client_(client),
-      operation_tracker_(operation_tracker) {
+    AndroidInputCallbackClient* client)
+    : root_frame_sink_id_(root_frame_sink_id), client_(client) {
   CHECK(client_ != nullptr);
 }
 
@@ -29,9 +26,6 @@ bool AndroidInputCallback::OnMotionEventThunk(void* context,
 
 bool AndroidInputCallback::OnMotionEvent(
     base::android::ScopedInputEvent input_event) {
-  InputManagerScopedOperation operation(
-      *operation_tracker_,
-      InputManagerOperationTracker::Operation::Type::kOnMotionEvent);
   return client_->OnMotionEvent(std::move(input_event), root_frame_sink_id_);
 }
 

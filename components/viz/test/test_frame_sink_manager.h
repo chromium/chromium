@@ -56,7 +56,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       override {}
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
-      std::optional<base::TimeTicks> request_time,
       DestroyCompositorFrameSinkCallback callback) override {}
   void RegisterFrameSinkHierarchy(
       const FrameSinkId& parent_frame_sink_id,

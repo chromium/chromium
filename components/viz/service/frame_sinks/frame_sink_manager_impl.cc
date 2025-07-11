@@ -18,10 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -29,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "components/input/utils.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -314,33 +310,10 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
 
 void FrameSinkManagerImpl::DestroyCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
-    std::optional<base::TimeTicks> request_time,
     DestroyCompositorFrameSinkCallback callback) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  const bool is_root =
-      root_sink_map_.find(frame_sink_id) != root_sink_map_.end();
   sink_map_.erase(frame_sink_id);
   root_sink_map_.erase(frame_sink_id);
   std::move(callback).Run();
-
-  if (!is_root || !request_time.has_value() || !input_manager_) {
-    return;
-  }
-  base::TimeDelta viz_execution_time = base::TimeTicks::Now() - start_time;
-  base::TimeDelta total_time_taken_to_destroy =
-      (base::TimeTicks::Now() - *request_time);
-  // Threshold being used to dump crash keys, if DestroyCompositorFrameSink
-  // takes longer than this time including wait time before the mojo call starts
-  // executing, crash key is dumped including operations from InputManager.
-  constexpr const base::TimeDelta kAnrThreshold = base::Milliseconds(500);
-  if (total_time_taken_to_destroy < kAnrThreshold) {
-    return;
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FrameSinkManagerImpl::DumpCrashKeys,
-                     weak_factory_.GetWeakPtr(), total_time_taken_to_destroy,
-                     *request_time, viz_execution_time));
 }
 
 void FrameSinkManagerImpl::RegisterFrameSinkHierarchy(
@@ -698,20 +671,6 @@ void FrameSinkManagerImpl::UnregisterBeginFrameSource(
   // became null because of the previous step but that have an alternative.
   for (auto source_iter : registered_sources_)
     RecursivelyAttachBeginFrameSource(source_iter.second, source_iter.first);
-}
-
-void FrameSinkManagerImpl::DumpCrashKeys(
-    base::TimeDelta total_time_taken_to_destroy,
-    base::TimeTicks browser_request_time,
-    base::TimeDelta viz_execution_time) {
-  base::Value::Dict dict = base::Value::Dict();
-  dict.Set("time_taken_us",
-           base::TimeDeltaToValue(total_time_taken_to_destroy));
-  dict.Set("viz_execution_time_us", base::TimeDeltaToValue(viz_execution_time));
-  input_manager_->FillOperations(browser_request_time, dict);
-  SCOPED_CRASH_KEY_STRING1024("crbug414568877", "crbug414568877",
-                              dict.DebugString());
-  base::debug::DumpWithoutCrashing();
 }
 
 void FrameSinkManagerImpl::RecursivelyAttachBeginFrameSource(

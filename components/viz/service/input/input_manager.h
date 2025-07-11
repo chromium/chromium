@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 #define COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 
-#include <deque>
 #include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "components/input/input_manager_operation_tracker.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -66,7 +64,6 @@ class VIZ_SERVICE_EXPORT InputManager
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate,
-      public input::InputManagerOperationTracker,
       public input::mojom::RenderInputRouterDelegate,
       public mojom::RendererInputRouterDelegateRegistry {
  public:
@@ -127,10 +124,6 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   GpuServiceImpl* GetGpuService() override;
 
-  // input::InputManagerOperationTracker implementation.
-  void AddOperation(
-      const input::InputManagerOperationTracker::Operation& operation) override;
-
   // input::mojom::RenderInputRouterDelegate implementation.
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
   void ForceEnableZoomStateChanged(bool force_enable_zoom,
@@ -166,11 +159,6 @@ class VIZ_SERVICE_EXPORT InputManager
   void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
                            BeginFrameSource* begin_frame_source);
 
-  // Removes operations that ended before `browser_request_time` from
-  // `operations_`, then writes them into `dict`.
-  void FillOperations(base::TimeTicks browser_request_time,
-                      base::Value::Dict& dict);
-
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a
   // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
@@ -181,8 +169,6 @@ class VIZ_SERVICE_EXPORT InputManager
 
   void RecreateRenderInputRouterSupport(const FrameSinkId& child_frame_sink_id,
                                         FrameSinkMetadata& frame_sink_metadata);
-
-  void RemoveOlderOperations(base::TimeTicks earliest_time);
 
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,
@@ -255,8 +241,6 @@ class VIZ_SERVICE_EXPORT InputManager
       rir_delegate_receivers_;
 
   raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
-
-  std::deque<input::InputManagerOperationTracker::Operation> operations_;
 
   base::WeakPtrFactory<InputManager> weak_ptr_factory_{this};
 };
