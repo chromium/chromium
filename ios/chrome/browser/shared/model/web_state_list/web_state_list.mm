@@ -682,18 +682,20 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
                                             : nullptr;
 
   int insertion_index = kInvalidIndex;
-  std::unique_ptr<web::WebState> web_state_to_insert;
   // Do not insert web state when shuting down the app. All tabs are closed.
   bool is_shutting_down = params.is_closing && !params.is_user_action &&
                           !params.by_browsing_data_remover;
   if (!is_shutting_down && ShouldInsertWebState(group)) {
     // In case the group is empty but should be kept, add a new tab in it
     // to prevent its deletion.
-    web_state_to_insert = groups_delegate_->WebStateToAddToEmptyGroup();
+    std::unique_ptr<web::WebState> web_state_to_insert =
+        groups_delegate_->WebStateToAddToEmptyGroup();
+    CHECK(web_state_to_insert);
     new_active_web_state = web_state_to_insert.get();
     insertion_index = InsertWebStateImpl(
         std::move(web_state_to_insert),
         WebStateList::InsertionParams::Automatic().InGroup(group));
+    CHECK_GT(insertion_index, index);
   }
 
   const WebStateListStatus status = {
@@ -1177,11 +1179,13 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
     // to prevent group deletion.
     std::unique_ptr<web::WebState> web_state_to_insert =
         groups_delegate_->WebStateToAddToEmptyGroup();
-    int insertion_index =
+    CHECK(web_state_to_insert);
+    const int insertion_index =
         InsertWebStateImpl(std::move(web_state_to_insert),
                            WebStateList::InsertionParams::Automatic()
                                .InGroup(old_group)
                                .Activate());
+    CHECK_GT(insertion_index, from_index);
     if (insertion_index < to_index) {
       to_index++;
     }
