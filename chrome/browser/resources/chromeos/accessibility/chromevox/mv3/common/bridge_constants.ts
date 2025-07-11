@@ -203,6 +203,10 @@ export const BridgeConstants = {
       GET_TUTORIAL_ACTIVE_SCREEN: 'getTutorialActiveScreen',
       GET_TUTORIAL_INTERACTIVE_MODE: 'getTutorialInteractiveMode',
       GET_TUTORIAL_READY: 'getTutorialReady',
+      GET_FORCED_ACTION_PATH_CREATED_COUNT: 'getForcedActionPathCreatedCount',
+      GET_FORCED_ACTION_PATH_DESTROYED_COUNT:
+          'getForcedActionPathDestroyedCount',
+      GET_IS_FORCED_ACTION_PATH_ACTIVE: 'getIsForcedActionPathActive',
       GIVE_TUTORIAL_NUDGE: 'giveTutorialNudge',
       INITIALIZE_TUTORIAL_NUDGES: 'initializeTutorialNudges',
       PERFORM_ACTIVE_MENU_TEST: 'performActiveMenuTest',
@@ -222,6 +226,7 @@ export const BridgeConstants = {
       SHOW_TUTORIAL_LESSON_MENU: 'showTutorialLessonMenu',
       SHOW_TUTORIAL_MAIN_MENU: 'showTutorialMainMenu',
       SHOW_TUTORIAL_NEXT_LESSON: 'showTutorialNextLesson',
+      SWAP_FORCED_ACTION_PATH_METHODS: 'swapForcedActionPathMethods',
     },
   },
 

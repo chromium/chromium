@@ -608,33 +608,25 @@ AX_TEST_F(
     'ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
-      let userActionMonitorCreatedCount = 0;
-      let userActionMonitorDestroyedCount = 0;
-      let isForcedActionPathActive = false;
-      // Expose the correct BackgroundBridge so we can override the functions
-      this.getPanel().exportBackgroundBridgeForTesting();
+
       // Swap in functions below so we can track the number of times
       // ForcedActionPath is created and destroyed.
-      this.getPanelWindow().BackgroundBridge.ForcedActionPath.listenFor =
-          () => {
-            userActionMonitorCreatedCount += 1;
-            isForcedActionPathActive = true;
-          };
-      this.getPanelWindow().BackgroundBridge.ForcedActionPath.stopListening =
-          () => {
-            userActionMonitorDestroyedCount += 1;
-            isForcedActionPathActive = false;
-          };
+      await PanelBridge.swapForcedActionPathMethodsForTesting();
 
       // A helper to make assertions on four variables of interest.
       const makeAssertions = async expectedVars => {
-        assertEquals(expectedVars.createdCount, userActionMonitorCreatedCount);
-        assertEquals(
-            expectedVars.destroyedCount, userActionMonitorDestroyedCount);
+        const createdCount =
+            await PanelBridge.getForcedActionPathCreatedCountForTest();
+        assertEquals(expectedVars.createdCount, createdCount);
+        const destroyedCount =
+            await PanelBridge.getForcedActionPathDestroyedCountForTest();
+        assertEquals(expectedVars.destroyedCount, destroyedCount);
         const interactiveMode = await this.getTutorialInteractiveMode();
         assertEquals(expectedVars.interactiveMode, interactiveMode);
         // Note: Interactive mode and ForcedActionPath should always be in
         // sync in the context of the tutorial.
+        const isForcedActionPathActive =
+            await PanelBridge.getIsForcedActionPathActiveForTest();
         assertEquals(expectedVars.interactiveMode, isForcedActionPathActive);
       };
 

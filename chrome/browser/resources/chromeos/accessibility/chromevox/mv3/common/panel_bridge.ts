@@ -97,6 +97,22 @@ export class PanelBridge {
         PanelTestTarget, PanelTestAction.GET_TUTORIAL_READY);
   }
 
+  static getForcedActionPathCreatedCountForTest(): Promise<number> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_FORCED_ACTION_PATH_CREATED_COUNT);
+  }
+
+  static getForcedActionPathDestroyedCountForTest(): Promise<number> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget,
+        PanelTestAction.GET_FORCED_ACTION_PATH_DESTROYED_COUNT);
+  }
+
+  static getIsForcedActionPathActiveForTest(): Promise<boolean> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.GET_IS_FORCED_ACTION_PATH_ACTIVE);
+  }
+
   static giveTutorialNudge(): Promise<void> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.GIVE_TUTORIAL_NUDGE);
@@ -140,6 +156,11 @@ export class PanelBridge {
   static showTutorialNextLesson(): Promise<void> {
     return BridgeHelper.sendMessage(
         PanelTestTarget, PanelTestAction.SHOW_TUTORIAL_NEXT_LESSON);
+  }
+
+  static swapForcedActionPathMethodsForTesting(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        PanelTestTarget, PanelTestAction.SWAP_FORCED_ACTION_PATH_METHODS);
   }
 }
 

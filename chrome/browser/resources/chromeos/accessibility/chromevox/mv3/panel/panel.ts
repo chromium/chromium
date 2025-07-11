@@ -38,7 +38,12 @@ export class Panel implements PanelInterface {
   private originalStickyState_ = false;
   private pendingCallback_: AsyncCallback | null = null;
   private sessionState_ = '';
-  private tutorial_: Object | null = null;
+  private tutorial_: Object|null = null;
+  // TODO(crbug.com/388867840): encapsulate these testing members (and others
+  // below) in a separate class.
+  private userActionMonitorCreatedCount_ = 0;
+  private userActionMonitorDestroyedCount_ = 0;
+  private isForcedActionPathActive_ = false;
 
   private brailleContainer_ = $('braille-container');
   private brailleTableElement_ = $('braille-table') as HTMLTableElement;
@@ -154,6 +159,18 @@ export class Panel implements PanelInterface {
         () => this.tutorialReadyForTesting_);
     BridgeHelper.registerHandler(
         BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_FORCED_ACTION_PATH_CREATED_COUNT,
+        () => this.getForcedActionPathCreatedCountForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_FORCED_ACTION_PATH_DESTROYED_COUNT,
+        () => this.getForcedActionPathDestroyedCountForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_IS_FORCED_ACTION_PATH_ACTIVE,
+        () => this.getIsForcedActionPathActiveForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.GIVE_TUTORIAL_NUDGE,
         () => this.giveTutorialNudgeForTest_());
     BridgeHelper.registerHandler(
@@ -168,6 +185,10 @@ export class Panel implements PanelInterface {
         BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.RESTART_TUTORIAL_NUDGES,
         () => this.restartTutorialNudgesForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.SWAP_FORCED_ACTION_PATH_METHODS,
+        () => this.swapForcedActionPathMethodsForTest_());
     BridgeHelper.registerHandler(
         BridgeConstants.PanelTest.TARGET,
         BridgeConstants.PanelTest.Action.SET_TUTORIAL_CURRICULUM,
@@ -225,12 +246,6 @@ export class Panel implements PanelInterface {
 
   get sessionState(): string {
     return this.sessionState_;
-  }
-
-  /** Adds BackgroundBridge to the global object so that tests can mock it. */
-  static exportBackgroundBridgeForTesting(): void {
-    // @ts-ignore: Exports for testing.
-    window['BackgroundBridge'] = BackgroundBridge;
   }
 
   /**
@@ -320,6 +335,18 @@ export class Panel implements PanelInterface {
     return false;
   }
 
+  private getForcedActionPathCreatedCountForTest_(): number {
+    return this.userActionMonitorCreatedCount_;
+  }
+
+  private getForcedActionPathDestroyedCountForTest_(): number {
+    return this.userActionMonitorDestroyedCount_;
+  }
+
+  private getIsForcedActionPathActiveForTest_(): boolean {
+    return this.isForcedActionPathActive_;
+  }
+
   private giveTutorialNudgeForTest_(): void {
     if (this.tutorial_) {
       (this.tutorial_ as {giveNudge: () => void}).giveNudge();
@@ -344,6 +371,31 @@ export class Panel implements PanelInterface {
         (this.tutorial_ as {restartNudges: () => void}).restartNudges = resolve;
       }
     });
+  }
+
+  private swapForcedActionPathMethodsForTest_(): void {
+    this.userActionMonitorCreatedCount_ = 0;
+    this.userActionMonitorDestroyedCount_ = 0;
+    this.isForcedActionPathActive_ = false;
+    BackgroundBridge.ForcedActionPath.listenFor = () => {
+      this.userActionMonitorCreatedCount_ += 1;
+      this.isForcedActionPathActive_ = true;
+      return new Promise((resolve) => {
+        // In production, this will resolve when the forced action path has
+        // been fulfilled. For example, if the forced action path is for the
+        // user to press the space bar, then this will resolve when the space
+        // bar is pressed. For the purposes of testing, we don't want this to
+        // resolve because that gives a false signal that the forced action
+        // path has been completed. To prevent this from resolving, we use a
+        // timeout.
+        setTimeout(resolve, 30 * 1000);
+      })
+    };
+    BackgroundBridge.ForcedActionPath.stopListening = () => {
+      this.userActionMonitorDestroyedCount_ += 1;
+      this.isForcedActionPathActive_ = false;
+      return Promise.resolve();
+    };
   }
 
   private setTutorialCurriculumForTest_(curriculum: string): void {
@@ -740,7 +792,7 @@ export class Panel implements PanelInterface {
       await BackgroundBridge.ForcedActionPath.listenFor(actions);
       await BackgroundBridge.ForcedActionPath.stopListening();
       const tutorial = this.tutorial_ as {showNextLesson: VoidFunction};
-      if (this.tutorial_ && tutorial.showNextLesson) {
+      if (tutorial && tutorial.showNextLesson) {
         tutorial.showNextLesson();
       }
     });
@@ -759,7 +811,7 @@ export class Panel implements PanelInterface {
       BackgroundBridge.Earcons.cancelEarcon(earconId);
     });
     elementInPage.addEventListener('readyfortesting', () => {
-      this.tutorialReadyForTesting_ ||= true;
+      this.tutorialReadyForTesting_ = true;
     });
     elementInPage.addEventListener('openUrl', async evt => {
       const url = (evt as CustomEvent).detail.url;
