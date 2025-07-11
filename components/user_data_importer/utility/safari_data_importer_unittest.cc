@@ -121,14 +121,14 @@ class SafariDataImporterTest : public testing::Test {
 
   int GetNumberOfURLsImported() const { return number_urls_imported_; }
 
-  void ImportBookmarks(std::string html_data) {
+  void PrepareBookmarks(std::string html_data) {
     bookmarks_callback_called_ = false;
     base::ScopedTempDir dir;
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     base::FilePath path = dir.GetPath().AppendASCII("bookmarks.html");
     ASSERT_TRUE(base::WriteFile(path, html_data));
 
-    importer_->ImportBookmarks(
+    importer_->PrepareBookmarks(
         path,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -149,9 +149,9 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return history_callback_called_; }));
   }
 
-  void ImportPasswords(std::string csv_data) {
+  void PreparePasswords(std::string csv_data) {
     passwords_callback_called_ = false;
-    importer_->ImportPasswords(
+    importer_->PreparePasswords(
         std::move(csv_data),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -162,10 +162,10 @@ class SafariDataImporterTest : public testing::Test {
   }
 
   // Executes the import, using selected_ids to resolve password conflicts.
-  void ExecuteImport(const std::vector<int>& selected_ids) {
+  void CompleteImport(const std::vector<int>& selected_ids) {
     PrepareCallbacks();
 
-    importer_->ContinueImport(
+    importer_->CompleteImport(
         selected_ids,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -181,9 +181,9 @@ class SafariDataImporterTest : public testing::Test {
     WaitForCallbacks();
   }
 
-  void ImportPaymentCards(std::vector<PaymentCardEntry> payment_cards) {
+  void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards) {
     payment_cards_callback_called_ = false;
-    importer_->ImportPaymentCards(
+    importer_->PreparePaymentCards(
         std::move(payment_cards),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -193,20 +193,19 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return payment_cards_callback_called_; }));
   }
 
-  void ImportInvalidFile() {
-    ImportFile(base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/zip/file")));
+  void PrepareInvalidFile() {
+    PrepareFile(base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/zip/file")));
   }
 
-  void ImportFile() {
+  void PrepareImportFromFile() {
     base::FilePath zip_archive_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
-    ImportFile(zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip")));
+    PrepareFile(zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip")));
   }
 
   void CancelImport() { importer_->CancelImport(); }
 
   void SetHistorySizeThreshold(size_t history_size_threshold) {
-    importer_->history_size_threshold_ = history_size_threshold;
     importer_->history_size_threshold_ = history_size_threshold;
   }
 
@@ -253,10 +252,10 @@ class SafariDataImporterTest : public testing::Test {
     })) << CallbackTimeoutMessage();
   }
 
-  void ImportFile(const base::FilePath& file) {
+  void PrepareFile(const base::FilePath& file) {
     PrepareCallbacks();
 
-    importer_->StartImport(
+    importer_->PrepareImport(
         file,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -345,7 +344,7 @@ class SafariDataImporterTest : public testing::Test {
 };
 
 TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
-  ImportBookmarks(R"(
+  PrepareBookmarks(R"(
       <!DOCTYPE NETSCAPE-Bookmark-file-1>
       <!--This is an automatically generated file.
       It will be read and overwritten.
@@ -380,7 +379,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
 // It's documented as part of the format, but real-world Safari exports don't
 // use it, so we have to support both with and without.
 TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
-  ImportBookmarks(
+  PrepareBookmarks(
       R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
       <!--This is an automatically generated file.
       It will be read and overwritten.
@@ -410,7 +409,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
 }
 
 TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
-  ImportBookmarks(
+  PrepareBookmarks(
       R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
       <!--This is an automatically generated file.
       It will be read and overwritten.
@@ -529,7 +528,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
 
 #if BUILDFLAG(IS_IOS)
 TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
-  ImportBookmarks(
+  PrepareBookmarks(
       R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
       <!--This is an automatically generated file.
       It will be read and overwritten.
@@ -574,7 +573,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
-  ImportBookmarks(R"(
+  PrepareBookmarks(R"(
       <!DOCTYPE NETSCAPE-Bookmark-file-1>
       <!--This is an automatically generated file.
       It will be read and overwritten.
@@ -669,14 +668,14 @@ TEST_F(SafariDataImporterTest, NoHistory) {
 }
 
 TEST_F(SafariDataImporterTest, NoPassword) {
-  ImportPasswords("");
+  PreparePasswords("");
 
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 0u);
 }
 
 TEST_F(SafariDataImporterTest, NoPaymentCard) {
-  ImportPaymentCards(std::vector<PaymentCardEntry>());
+  PreparePaymentCards(std::vector<PaymentCardEntry>());
 
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 0);
 }
@@ -688,13 +687,13 @@ TEST_F(SafariDataImporterTest, PasswordImport) {
       "http://example1.com,username2,password2,note2\n"
       "http://example2.com,username1,password3,note3\n";
 
-  ImportPasswords(kTestCSVInput);
+  PreparePasswords(kTestCSVInput);
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 0u);
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImport({});
+  CompleteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -713,19 +712,19 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
       "http://example2.com,username1,password5,note3\n";
 
   // Import 3 passwords.
-  ImportPasswords(kTestCSVInput);
+  PreparePasswords(kTestCSVInput);
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 0u);
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImport({});
+  CompleteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
 
   // Attempt to import 2 conflicting passwords, which should fail.
-  ImportPasswords(kTestCSVConflicts);
+  PreparePasswords(kTestCSVConflicts);
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 0u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -736,18 +735,18 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   std::vector<int> selected_ids;
   selected_ids.push_back(0);
   selected_ids.push_back(1);
-  ExecuteImport(selected_ids);
+  CompleteImport(selected_ids);
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 2u);
   ASSERT_EQ(import_results.number_to_import, 0u);
 }
 
 TEST_F(SafariDataImporterTest, CallbacksAreCalled) {
-  ImportInvalidFile();
+  PrepareInvalidFile();
 }
 
 TEST_F(SafariDataImporterTest, CancelImport) {
-  ImportFile();
+  PrepareImportFromFile();
 
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
@@ -765,7 +764,7 @@ TEST_F(SafariDataImporterTest, CancelImport) {
 }
 
 TEST_F(SafariDataImporterTest, ExecuteImport) {
-  ImportFile();
+  PrepareImportFromFile();
 
   password_manager::ImportResults import_results = GetImportResults();
   ASSERT_EQ(import_results.number_to_import, 3u);
@@ -786,7 +785,7 @@ TEST_F(SafariDataImporterTest, ExecuteImport) {
   // multiple times internally.
   SetHistorySizeThreshold(3u);
 
-  ExecuteImport({});
+  CompleteImport({});
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);

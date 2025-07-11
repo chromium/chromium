@@ -141,20 +141,20 @@ std::optional<history::URLRow> ConvertToURLRow(
   return url_row;
 }
 
-class SafariDataImporterHistoryCallback final
+class RustHistoryCallback final
     : public user_data_importer::HistoryCallbackFromRust {
  public:
   using ParseHistoryCallback = base::RepeatingCallback<void(
       std::vector<user_data_importer::HistoryEntry>,
       user_data_importer::SafariDataImporter::ImportCallback)>;
 
-  explicit SafariDataImporterHistoryCallback(
+  explicit RustHistoryCallback(
       ParseHistoryCallback parse_history_callback,
       user_data_importer::SafariDataImporter::ImportCallback done_callback)
       : parse_history_callback_(parse_history_callback),
         done_callback_(std::move(done_callback)) {}
 
-  ~SafariDataImporterHistoryCallback() override = default;
+  ~RustHistoryCallback() override = default;
 
   // Callback called while parsing the history file.
   void ImportHistoryEntries(
@@ -210,11 +210,12 @@ SafariDataImporter::~SafariDataImporter() {
   }
 }
 
-void SafariDataImporter::StartImport(const base::FilePath& path,
-                                     PasswordImportCallback passwords_callback,
-                                     ImportCallback bookmarks_callback,
-                                     ImportCallback history_callback,
-                                     ImportCallback payment_cards_callback) {
+void SafariDataImporter::PrepareImport(
+    const base::FilePath& path,
+    PasswordImportCallback passwords_callback,
+    ImportCallback bookmarks_callback,
+    ImportCallback history_callback,
+    ImportCallback payment_cards_callback) {
   std::string zip_filename = path.MaybeAsASCII();
   if (zip_filename.empty()) {
     // Nothing to import, early exit.
@@ -235,7 +236,7 @@ void SafariDataImporter::StartImport(const base::FilePath& path,
                      std::move(payment_cards_callback)));
 }
 
-void SafariDataImporter::ContinueImport(
+void SafariDataImporter::CompleteImport(
     const std::vector<int>& selected_password_ids,
     PasswordImportCallback passwords_callback,
     ImportCallback bookmarks_callback,
@@ -270,15 +271,14 @@ void SafariDataImporter::CancelImport() {
   CloseZipFileArchive();
 }
 
-void SafariDataImporter::CloseZipFileArchive() {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&SafariDataImporter::CloseZipFileArchiveInWorkerThread,
-                     base::Unretained(this)));
-}
-
-void SafariDataImporter::CloseZipFileArchiveInWorkerThread() {
-  zip_file_archive_.reset();
+void SafariDataImporter::ParseHistoryCallback(
+    std::vector<HistoryEntry> history_entries,
+    ImportCallback history_callback) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SafariDataImporter::ImportHistoryEntries,
+                     base::Unretained(this), std::move(history_entries),
+                     std::move(history_callback)));
 }
 
 bool SafariDataImporter::CreateZipFileArchive(std::string zip_filename) {
@@ -297,6 +297,17 @@ bool SafariDataImporter::CreateZipFileArchive(std::string zip_filename) {
   return true;
 }
 
+void SafariDataImporter::CloseZipFileArchive() {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&SafariDataImporter::CloseZipFileArchiveInWorkerThread,
+                     base::Unretained(this)));
+}
+
+void SafariDataImporter::CloseZipFileArchiveInWorkerThread() {
+  zip_file_archive_.reset();
+}
+
 std::string SafariDataImporter::Unzip(FileType filetype) {
   std::string output_bytes;
   if (!zip_file_archive_ ||
@@ -306,37 +317,9 @@ std::string SafariDataImporter::Unzip(FileType filetype) {
   return output_bytes;
 }
 
-size_t SafariDataImporter::UncompressedFileSizeInBytes(FileType filetype) {
+size_t SafariDataImporter::GetUncompressedFileSizeInBytes(FileType filetype) {
   return zip_file_archive_ ? (*zip_file_archive_)->get_file_size_bytes(filetype)
                            : 0u;
-}
-
-void SafariDataImporter::ImportInWorkerThread(
-    std::string zip_filename,
-    PasswordImportCallback passwords_callback,
-    ImportCallback bookmarks_callback,
-    ImportCallback history_callback,
-    ImportCallback payment_cards_callback) {
-  if (!CreateZipFileArchive(std::move(zip_filename))) {
-    // Nothing to import, early exit.
-    PasswordImportResults results;
-    PostCallback(std::move(passwords_callback), std::move(results));
-    PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
-    PostCallback(std::move(history_callback), /*number_of_imports=*/0);
-    PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
-    return;
-  }
-
-  // Passwords import may require conflict resolution, so it is done first.
-  LaunchImportPasswordsTask(std::move(passwords_callback));
-
-  // Launch payment cards and bookmarks import processes.
-  LaunchImportPaymentCardsTask(std::move(payment_cards_callback));
-  LaunchImportBookmarksTask(std::move(bookmarks_callback));
-
-  // History import may require synchronously reading from the file, so it is
-  // done last in this thread.
-  StartImportHistory(std::move(history_callback));
 }
 
 std::optional<base::FilePath> SafariDataImporter::WriteBookmarksToTmpFile(
@@ -360,52 +343,7 @@ std::optional<base::FilePath> SafariDataImporter::WriteBookmarksToTmpFile(
   return path;
 }
 
-void SafariDataImporter::LaunchDeleteBookmarksDir() {
-  // Launch a low priority task to delete the bookmarks temp directory. Note
-  // that bookmarks_temp_dir_ will be nullptr after std::move() is done, as the
-  // ownership of the ScopedTempDir object will be transferred to temp_dir.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](std::unique_ptr<base::ScopedTempDir> temp_dir) {
-            temp_dir = nullptr;
-          },
-          std::move(bookmarks_temp_dir_)));
-}
-
-void SafariDataImporter::LaunchImportBookmarksTask(
-    ImportCallback bookmarks_callback) {
-  // Unzip the file and write the contents to a tmp file.
-  std::string html_data = Unzip(FileType::Bookmarks);
-
-  ASSIGN_OR_RETURN(base::FilePath path, WriteBookmarksToTmpFile(html_data),
-                   [this, &bookmarks_callback](auto) {
-                     // TODO(crbug.com/407587751): Log error.
-                     PostCallback(std::move(bookmarks_callback),
-                                  /*number_of_imports=*/0);
-                   });
-
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&SafariDataImporter::ImportBookmarks,
-                                        base::Unretained(this), path,
-                                        std::move(bookmarks_callback)));
-}
-
-void SafariDataImporter::LaunchImportPasswordsTask(
-    PasswordImportCallback passwords_callback) {
-  std::string csv_data = Unzip(FileType::Passwords);
-  if (csv_data.empty()) {
-    PasswordImportResults results;
-    PostCallback(std::move(passwords_callback), std::move(results));
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SafariDataImporter::ImportPasswords,
-                                  base::Unretained(this), std::move(csv_data),
-                                  std::move(passwords_callback)));
-  }
-}
-
-void SafariDataImporter::LaunchImportPaymentCardsTask(
+void SafariDataImporter::ParsePaymentCards(
     ImportCallback payment_cards_callback) {
   std::vector<PaymentCardEntry> payment_cards;
   if (!zip_file_archive_ ||
@@ -414,23 +352,57 @@ void SafariDataImporter::LaunchImportPaymentCardsTask(
   } else {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&SafariDataImporter::ImportPaymentCards,
+        base::BindOnce(&SafariDataImporter::PreparePaymentCards,
                        base::Unretained(this), std::move(payment_cards),
                        std::move(payment_cards_callback)));
   }
 }
 
-void SafariDataImporter::PostCallback(auto callback, auto results) {
-  // Post the callback back to the original task runner.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(
-                             [](auto callback, auto results) {
-                               std::move(callback).Run(std::move(results));
-                             },
-                             std::move(callback), std::move(results)));
+void SafariDataImporter::ImportHistory(ImportCallback history_callback) {
+  history_urls_imported_ = 0;
+  if (!zip_file_archive_) {
+    PostCallback(std::move(history_callback), /*number_of_imports=*/0);
+    return;
+  }
+
+  (*zip_file_archive_)
+      ->parse_history(
+          std::make_unique<RustHistoryCallback>(
+              base::BindRepeating(&SafariDataImporter::ParseHistoryCallback,
+                                  base::Unretained(this)),
+              std::move(history_callback)),
+          history_size_threshold_);
 }
 
-void SafariDataImporter::ImportPasswords(
+void SafariDataImporter::ImportInWorkerThread(
+    std::string zip_filename,
+    PasswordImportCallback passwords_callback,
+    ImportCallback bookmarks_callback,
+    ImportCallback history_callback,
+    ImportCallback payment_cards_callback) {
+  if (!CreateZipFileArchive(std::move(zip_filename))) {
+    // Nothing to import, early exit.
+    PasswordImportResults results;
+    PostCallback(std::move(passwords_callback), std::move(results));
+    PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
+    PostCallback(std::move(history_callback), /*number_of_imports=*/0);
+    PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
+    return;
+  }
+
+  // Passwords import may require conflict resolution, so it is done first.
+  LaunchImportPasswordsTask(std::move(passwords_callback));
+
+  // Launch payment cards and bookmarks import processes.
+  ParsePaymentCards(std::move(payment_cards_callback));
+  LaunchImportBookmarksTask(std::move(bookmarks_callback));
+
+  // History import may require synchronously reading from the file, so it is
+  // done last in this thread.
+  PrepareHistory(std::move(history_callback));
+}
+
+void SafariDataImporter::PreparePasswords(
     std::string csv_data,
     PasswordImportCallback passwords_callback) {
   // TODO(crbug.com/407587751): Pick a store based on whether the user is
@@ -442,7 +414,7 @@ void SafariDataImporter::ImportPasswords(
                              std::move(passwords_callback));
 }
 
-void SafariDataImporter::ImportPaymentCards(
+void SafariDataImporter::PreparePaymentCards(
     std::vector<PaymentCardEntry> payment_cards,
     ImportCallback payment_cards_callback) {
   if (payment_cards.empty()) {
@@ -461,6 +433,69 @@ void SafariDataImporter::ImportPaymentCards(
                          });
 
   PostCallback(std::move(payment_cards_callback), cards_to_import_.size());
+}
+
+void SafariDataImporter::PrepareBookmarks(base::FilePath bookmarks_html,
+                                          ImportCallback bookmarks_callback) {
+  CHECK(!bookmarks_html.empty());
+
+  bookmark_parser_->Parse(
+      bookmarks_html,
+      base::BindOnce(&SafariDataImporter::OnBookmarksParsed,
+                     // Safe to bind to WeakPtr because this runs on the
+                     // same sequence where the factory was created.
+                     weak_factory_.GetWeakPtr(),
+                     std::move(bookmarks_callback)));
+}
+
+void SafariDataImporter::OnBookmarksParsed(
+    ImportCallback callback,
+    BookmarkParser::BookmarkParsingResult result) {
+  LaunchDeleteBookmarksDir();
+
+  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
+                   [this, &callback](auto) {
+                     // TODO(crbug.com/407587751): Log error to UMA.
+                     PostCallback(std::move(callback), 0);
+                   });
+
+  pending_bookmarks_ = std::move(value.bookmarks);
+  pending_reading_list_ = std::move(value.reading_list);
+
+  PostCallback(std::move(callback),
+               pending_bookmarks_.size() + pending_reading_list_.size());
+}
+
+void SafariDataImporter::PrepareHistory(ImportCallback history_callback) {
+  // This is an approximation of the number of bytes per URL entry in the
+  // history file.
+  static const size_t kBytesPerURL = 250;
+  size_t file_size_bytes = GetUncompressedFileSizeInBytes(FileType::History);
+  size_t approximate_number_of_urls =
+      (file_size_bytes > 0) ? (file_size_bytes / kBytesPerURL) + 1 : 0;
+  PostCallback(std::move(history_callback),
+               /*number_of_imports=*/approximate_number_of_urls);
+}
+
+void SafariDataImporter::ImportHistoryEntries(
+    std::vector<HistoryEntry> history_entries,
+    ImportCallback history_callback) {
+  history::URLRows url_rows;
+  url_rows.reserve(history_entries.size());
+  for (auto history_entry : history_entries) {
+    auto opt_row = ConvertToURLRow(history_entry);
+    if (opt_row) {
+      url_rows.push_back(opt_row.value());
+    }
+  }
+
+  if (!url_rows.empty()) {
+    history_service_->AddPagesWithDetails(url_rows,
+                                          history::SOURCE_SAFARI_IMPORTED);
+
+    history_urls_imported_ += url_rows.size();
+  }
+  PostCallback(std::move(history_callback), history_urls_imported_);
 }
 
 void SafariDataImporter::ContinueImportPaymentCards(
@@ -495,93 +530,59 @@ void SafariDataImporter::ContinueImportPaymentCards(
   PostCallback(std::move(payment_cards_callback), imported_credit_cards);
 }
 
-void SafariDataImporter::ImportBookmarks(base::FilePath bookmarks_html,
-                                         ImportCallback bookmarks_callback) {
-  CHECK(!bookmarks_html.empty());
-
-  bookmark_parser_->Parse(
-      bookmarks_html,
-      base::BindOnce(&SafariDataImporter::OnBookmarksParsed,
-                     // Safe to bind to WeakPtr because this runs on the
-                     // same sequence where the factory was created.
-                     weak_factory_.GetWeakPtr(),
-                     std::move(bookmarks_callback)));
+void SafariDataImporter::LaunchDeleteBookmarksDir() {
+  // Launch a low priority task to delete the bookmarks temp directory. Note
+  // that bookmarks_temp_dir_ will be nullptr after std::move() is done, as the
+  // ownership of the ScopedTempDir object will be transferred to temp_dir.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](std::unique_ptr<base::ScopedTempDir> temp_dir) {
+            temp_dir = nullptr;
+          },
+          std::move(bookmarks_temp_dir_)));
 }
 
-void SafariDataImporter::OnBookmarksParsed(
-    ImportCallback callback,
-    BookmarkParser::BookmarkParsingResult result) {
-  LaunchDeleteBookmarksDir();
+void SafariDataImporter::LaunchImportBookmarksTask(
+    ImportCallback bookmarks_callback) {
+  // Unzip the file and write the contents to a tmp file.
+  std::string html_data = Unzip(FileType::Bookmarks);
 
-  ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [this, &callback](auto) {
-                     // TODO(crbug.com/407587751): Log error to UMA.
-                     PostCallback(std::move(callback), 0);
+  ASSIGN_OR_RETURN(base::FilePath path, WriteBookmarksToTmpFile(html_data),
+                   [this, &bookmarks_callback](auto) {
+                     // TODO(crbug.com/407587751): Log error.
+                     PostCallback(std::move(bookmarks_callback),
+                                  /*number_of_imports=*/0);
                    });
 
-  pending_bookmarks_ = std::move(value.bookmarks);
-  pending_reading_list_ = std::move(value.reading_list);
-
-  PostCallback(std::move(callback),
-               pending_bookmarks_.size() + pending_reading_list_.size());
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&SafariDataImporter::PrepareBookmarks,
+                                        base::Unretained(this), path,
+                                        std::move(bookmarks_callback)));
 }
 
-void SafariDataImporter::StartImportHistory(ImportCallback history_callback) {
-  // This is an approximation of the number of bytes per URL entry in the
-  // history file.
-  static const size_t kBytesPerURL = 250;
-  size_t file_size_bytes = UncompressedFileSizeInBytes(FileType::History);
-  size_t approximate_number_of_urls =
-      (file_size_bytes > 0) ? (file_size_bytes / kBytesPerURL) + 1 : 0;
-  PostCallback(std::move(history_callback),
-               /*number_of_imports=*/approximate_number_of_urls);
-}
-
-void SafariDataImporter::ParseHistoryCallback(
-    std::vector<HistoryEntry> history_entries,
-    ImportCallback history_callback) {
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SafariDataImporter::ImportHistoryEntries,
-                     base::Unretained(this), std::move(history_entries),
-                     std::move(history_callback)));
-}
-
-void SafariDataImporter::ImportHistoryEntries(
-    std::vector<HistoryEntry> history_entries,
-    ImportCallback history_callback) {
-  history::URLRows url_rows;
-  url_rows.reserve(history_entries.size());
-  for (auto history_entry : history_entries) {
-    auto opt_row = ConvertToURLRow(history_entry);
-    if (opt_row) {
-      url_rows.push_back(opt_row.value());
-    }
+void SafariDataImporter::LaunchImportPasswordsTask(
+    PasswordImportCallback passwords_callback) {
+  std::string csv_data = Unzip(FileType::Passwords);
+  if (csv_data.empty()) {
+    PasswordImportResults results;
+    PostCallback(std::move(passwords_callback), std::move(results));
+  } else {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SafariDataImporter::PreparePasswords,
+                                  base::Unretained(this), std::move(csv_data),
+                                  std::move(passwords_callback)));
   }
-
-  if (!url_rows.empty()) {
-    history_service_->AddPagesWithDetails(url_rows,
-                                          history::SOURCE_SAFARI_IMPORTED);
-
-    history_urls_imported_ += url_rows.size();
-  }
-  PostCallback(std::move(history_callback), history_urls_imported_);
 }
 
-void SafariDataImporter::ImportHistory(ImportCallback history_callback) {
-  history_urls_imported_ = 0;
-  if (!zip_file_archive_) {
-    PostCallback(std::move(history_callback), /*number_of_imports=*/0);
-    return;
-  }
-
-  (*zip_file_archive_)
-      ->parse_history(
-          std::make_unique<SafariDataImporterHistoryCallback>(
-              base::BindRepeating(&SafariDataImporter::ParseHistoryCallback,
-                                  base::Unretained(this)),
-              std::move(history_callback)),
-          history_size_threshold_);
+void SafariDataImporter::PostCallback(auto callback, auto results) {
+  // Post the callback back to the original task runner.
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(
+                             [](auto callback, auto results) {
+                               std::move(callback).Run(std::move(results));
+                             },
+                             std::move(callback), std::move(results)));
 }
 
 }  // namespace user_data_importer
