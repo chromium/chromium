@@ -420,7 +420,33 @@ int UtilityMain(MainFunctionParams parameters) {
       PreLockdownSandboxHook(delegate_data.value());
     }
   }
+#endif
 
+  ChildProcess utility_process(base::ThreadType::kDefault);
+  GetContentClient()->utility()->PostIOThreadCreated(
+      utility_process.io_task_runner());
+  base::RunLoop run_loop;
+  utility_process.set_main_thread(
+      new UtilityThreadImpl(run_loop.QuitClosure()));
+
+  // Both utility process and service utility process would come
+  // here, but the later is launched without connection to service manager, so
+  // there has no base::PowerMonitor be created(See ChildThreadImpl::Init()).
+  // As base::PowerMonitor is necessary to base::HighResolutionTimerManager, for
+  // such case we just disable base::HighResolutionTimerManager for now.
+  // Note that disabling base::HighResolutionTimerManager means high resolution
+  // timer is always disabled no matter on battery or not, but it should have
+  // no any bad influence because currently service utility process is not using
+  // any high resolution timer.
+  // TODO(leonhsl): Once http://crbug.com/646833 got resolved, re-enable
+  // base::HighResolutionTimerManager here for future possible usage of high
+  // resolution timer in service utility process.
+  std::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
+  if (base::PowerMonitor::GetInstance()->IsInitialized()) {
+    hi_res_timer_manager.emplace();
+  }
+
+#if BUILDFLAG(IS_WIN)
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   DVLOG(1) << "Sandbox type: " << static_cast<int>(sandbox_type);
@@ -459,30 +485,6 @@ int UtilityMain(MainFunctionParams parameters) {
     g_utility_target_services->LowerToken();
   }
 #endif
-
-  ChildProcess utility_process(base::ThreadType::kDefault);
-  GetContentClient()->utility()->PostIOThreadCreated(
-      utility_process.io_task_runner());
-  base::RunLoop run_loop;
-  utility_process.set_main_thread(
-      new UtilityThreadImpl(run_loop.QuitClosure()));
-
-  // Both utility process and service utility process would come
-  // here, but the later is launched without connection to service manager, so
-  // there has no base::PowerMonitor be created(See ChildThreadImpl::Init()).
-  // As base::PowerMonitor is necessary to base::HighResolutionTimerManager, for
-  // such case we just disable base::HighResolutionTimerManager for now.
-  // Note that disabling base::HighResolutionTimerManager means high resolution
-  // timer is always disabled no matter on battery or not, but it should have
-  // no any bad influence because currently service utility process is not using
-  // any high resolution timer.
-  // TODO(leonhsl): Once http://crbug.com/646833 got resolved, re-enable
-  // base::HighResolutionTimerManager here for future possible usage of high
-  // resolution timer in service utility process.
-  std::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
-  if (base::PowerMonitor::GetInstance()->IsInitialized()) {
-    hi_res_timer_manager.emplace();
-  }
 
   base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       switches::kUtilityProcess);
