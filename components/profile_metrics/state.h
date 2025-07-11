@@ -35,6 +35,7 @@ enum class AllAccountsNames {
 
 // Different types of reporting for profile state. This is used as a histogram
 // suffix.
+// LINT.IfChange(StateSuffix)
 enum class StateSuffix {
   kAll,                 // Recorded for all clients and all their profiles.
   kAllManagedDevice,    // Recorded for all clients on a managed device and all
@@ -53,7 +54,13 @@ enum class StateSuffix {
   kSingleProfile,  // Recorded for single-profile users for their single
                    // profile.
   kUponDeletion,   // Recorded whenever a profile gets deleted.
+  kManagementDisclaimerAccepted,     // Recorded for all profiles where
+                                     // management disclaimer was accepted.
+  kManagementDisclaimerNotAccepted,  // Recorded for all profiles where
+                                     // management disclaimer was not
+                                     // accepted.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/histograms.xml:ProfileStateGroup)
 
 // Records the state of profile's UPA.
 void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,

@@ -29,6 +29,8 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for the regular Profile Picker Flow."/>
 </variants>
 
+<!-- LINT.IfChange(ProfileStateGroup) -->
+
 <variants name="ProfileStateGroup">
   <variant name="_ActiveMultiProfile"
       summary="Recorded only for users with &gt;=2 active profiles; recorded
@@ -47,11 +49,19 @@ chromium-metrics-reviews@google.com.
   <variant name="_LatentMultiProfileOthers"
       summary="Recorded only for users with &gt;=2 profiles but only one
                active; recorded only for the non-active profiles."/>
+  <variant name="_ManagementDisclaimerAccepted"
+      summary="Recorded for profiles where management disclaimer was
+               accepted."/>
+  <variant name="_ManagementDisclaimerNotAccepted"
+      summary="Recorded for profiles where management disclaimer was not
+               accepted."/>
   <variant name="_SingleProfile"
       summary="Recorded only for single-profile users."/>
   <variant name="_UponDeletion"
       summary="Recorded for a profile upon its deletion"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/profile_metrics/state.h:StateSuffix) -->
 
 <histogram name="Profile.AddNewUser" enum="ProfileAddNewUser"
     expires_after="2025-11-16">

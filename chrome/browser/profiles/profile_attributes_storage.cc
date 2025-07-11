@@ -822,6 +822,15 @@ void ProfileAttributesStorage::RecordProfilesState() {
                          profile_metrics::StateSuffix::kAllUnmanagedDevice);
     }
 
+    if (entry->UserAcceptedAccountManagement()) {
+      RecordProfileState(
+          entry, profile_metrics::StateSuffix::kManagementDisclaimerAccepted);
+    } else {
+      RecordProfileState(
+          entry,
+          profile_metrics::StateSuffix::kManagementDisclaimerNotAccepted);
+    }
+
     switch (type) {
       case MultiProfileUserType::kSingleProfile:
         RecordProfileState(entry, profile_metrics::StateSuffix::kSingleProfile);
