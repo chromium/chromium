@@ -44,6 +44,8 @@ std::string GetToastName(ToastId toast_id) {
       return "ClosePinnedTab";
     case ToastId::kGeminiWorkingOnTask:
       return "GeminiWorkingOnTask";
+    case ToastId::kDiceUserMigrated:
+      return "DiceUserMigrated";
   }
 
   NOTREACHED();

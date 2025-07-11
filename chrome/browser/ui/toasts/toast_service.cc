@@ -270,4 +270,14 @@ void ToastService::RegisterToasts(
             .Build());
   }
 
+  toast_registry_->RegisterToast(
+      ToastId::kDiceUserMigrated,
+      ToastSpecification::Builder(vector_icons::kCelebrationIcon,
+                                  IDS_DICE_MIGRATION_CONFIRMATION_TOAST_MESSAGE)
+          .AddCloseButton()
+          .AddActionButton(
+              IDS_DICE_MIGRATION_CONFIRMATION_TOAST_BUTTON,
+              // TODO(crbug.com/399838468): Show the sync setup settings page.
+              base::DoNothing())
+          .Build());
 }  // RegisterToasts() end.

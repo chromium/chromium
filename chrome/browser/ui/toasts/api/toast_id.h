@@ -37,7 +37,8 @@ enum class ToastId {
   kVideoFrameCopied = 15,
   kClosePinnedTab = 16,
   kGeminiWorkingOnTask = 17,
-  kMaxValue = kGeminiWorkingOnTask
+  kDiceUserMigrated = 18,
+  kMaxValue = kDiceUserMigrated
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

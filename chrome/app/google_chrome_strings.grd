@@ -2610,6 +2610,12 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_DICE_MIGRATION_DIALOG_OK_BUTTON" desc="The primary button label in the Dice Migration dialog, letting the user acknowledge signing in to Chrome.">
         Got it
       </message>
+      <message name="IDS_DICE_MIGRATION_CONFIRMATION_TOAST_MESSAGE" desc="The confirmation message shown in a toast after the user clicks on the accept button on the Dice Migration dialog.">
+        You now have more features available in Chrome
+      </message>
+      <message name="IDS_DICE_MIGRATION_CONFIRMATION_TOAST_BUTTON" desc="The text on the button of the confirmation toast shown after the user clicks on the accept button on the Dice Migration dialog, that allows the users to control the sync settings or sign out of Chrome.">
+        Manage
+      </message>
     </messages>
   </release>
 </grit>

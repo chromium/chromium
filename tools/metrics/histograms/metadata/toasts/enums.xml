@@ -74,6 +74,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Video Frame Copied"/>
   <int value="16" label="Close pinned tab confirmation toast"/>
   <int value="17" label="Gemini will keep working on task"/>
+  <int value="18" label="Dice user migrated"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
