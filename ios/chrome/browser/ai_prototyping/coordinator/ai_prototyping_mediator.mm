@@ -169,6 +169,7 @@
       completionCallback:std::move(page_context_completion_callback)];
   [_pageContextWrapper setShouldGetInnerText:YES];
   [_pageContextWrapper setShouldGetSnapshot:YES];
+  [_pageContextWrapper setShouldGetFullPagePDF:YES];
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
