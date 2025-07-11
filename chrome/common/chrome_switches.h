@@ -10,7 +10,6 @@
 
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
 
@@ -268,11 +267,6 @@ extern const char kUninstallAppId[];
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 extern const char kDebugPrint[];
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kAllowNaClCrxFsAPI[];
-extern const char kAllowNaClFileHandleAPI[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \

@@ -898,16 +898,6 @@ const char kPwaLauncherVersion[] = "pwa-launcher-version";
 const char kDebugPrint[] = "debug-print";
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Specifies comma-separated list of extension ids or hosts to grant
-// access to CRX file system APIs.
-const char kAllowNaClCrxFsAPI[] = "allow-nacl-crxfs-api";
-
-// Specifies comma-separated list of extension ids or hosts to grant
-// access to file handle APIs.
-const char kAllowNaClFileHandleAPI[] = "allow-nacl-file-handle-api";
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
