@@ -13,7 +13,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="24dp"
-    android:paddingBottom="24dp">
+    android:paddingBottom="24dp"
+    android:background="@macro/default_bg_color">
 
     <ImageView
             android:layout_width="32dp"
@@ -28,9 +29,9 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/reader_mode_bottom_sheet_title"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
         android:paddingVertical="24dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="start" />
 
 
     <FrameLayout

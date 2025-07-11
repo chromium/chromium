@@ -727,6 +727,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.dom_distiller") {
   sources = [
     "src/org/chromium/chrome/browser/dom_distiller/DistillabilityServiceTest.java",
     "src/org/chromium/chrome/browser/dom_distiller/DistilledPagePrefsTest.java",
+    "src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/dom_distiller/ReaderModeTest.java",
   ]
 

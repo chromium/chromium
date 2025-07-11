@@ -166,6 +166,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_OMNIBOX,
         Component.UI_BROWSER_PASSWORDS,
         Component.UI_BROWSER_PRIVACY_SANDBOX,
+        Component.UI_BROWSER_READER_MODE,
         Component.UI_BROWSER_SEARCH_VOICE,
         Component.UI_BROWSER_SHARING,
         Component.UI_BROWSER_SHOPPING,
@@ -218,6 +219,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
         String UI_BROWSER_PASSWORDS = "UI>Browser>Passwords";
         String UI_BROWSER_PRIVACY_SANDBOX = "UI>Browser>Privacy Sandbox";
+        String UI_BROWSER_READER_MODE = "UI>Browser>ReaderMode";
         String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
         String UI_BROWSER_SHARING = "UI>Browser>Sharing";
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";

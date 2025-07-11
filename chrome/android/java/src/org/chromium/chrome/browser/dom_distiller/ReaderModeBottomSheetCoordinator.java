@@ -9,13 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -29,26 +32,34 @@ public class ReaderModeBottomSheetCoordinator {
                     PropertyModel, ReaderModeBottomSheetView, PropertyKey>
             mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
-
     private final BottomSheetController mBottomSheetController;
     private final ReaderModeBottomSheetContent mBottomSheetContent;
     private final ReaderModeBottomSheetView mReaderModeBottomSheetView;
+    private final DomDistillerService mDomDistillerService;
+    ;
 
     /**
      * @param context The {@link Context} associated with this coordinator.
+     * @param profile The {@link Profile} associated with this coordinator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
      */
     public ReaderModeBottomSheetCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context, Profile profile, BottomSheetController bottomSheetController) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mDestroyChecker = new DestroyChecker();
+        mDomDistillerService = DomDistillerServiceFactory.getForProfile(profile);
 
         mPropertyModel = new PropertyModel(ReaderModeBottomSheetProperties.ALL_KEYS);
+        mPropertyModel.set(
+                ReaderModeBottomSheetProperties.CONTENT_VIEW,
+                DistilledPagePrefsView.create(
+                        mContext, mDomDistillerService.getDistilledPagePrefs()));
         mReaderModeBottomSheetView =
                 (ReaderModeBottomSheetView)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.reader_mode_bottom_sheet, /* root= */ null);
+
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mPropertyModel,
@@ -62,6 +73,8 @@ public class ReaderModeBottomSheetCoordinator {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
+
+    // Private methods.
 
     private void destroy() {
         mDestroyChecker.destroy();
@@ -134,5 +147,12 @@ public class ReaderModeBottomSheetCoordinator {
         public boolean hasCustomScrimLifecycle() {
             return false;
         }
+    }
+
+    // For testing methods.
+
+    @VisibleForTesting
+    View getView() {
+        return mReaderModeBottomSheetView;
     }
 }

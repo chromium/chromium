@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import android.view.ViewGroup;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,5 +21,11 @@ public class ReaderModeBottomSheetViewBinder {
      * @param view The View to be bound.
      * @param key The key that's being bound.
      */
-    public static void bind(PropertyModel model, ReaderModeBottomSheetView view, PropertyKey key) {}
+    public static void bind(PropertyModel model, ReaderModeBottomSheetView view, PropertyKey key) {
+        if (key == ReaderModeBottomSheetProperties.CONTENT_VIEW) {
+            ViewGroup controlsContainer = view.findViewById(R.id.controls_container);
+            controlsContainer.removeAllViews();
+            controlsContainer.addView(model.get(ReaderModeBottomSheetProperties.CONTENT_VIEW));
+        }
+    }
 }
