@@ -78,6 +78,7 @@ extern const char kIncognitoModeAvailability[];
 extern const char kStandardizedBrowserZoomEnabled[];
 extern const char kPolicyTestPageEnabled[];
 extern const char kHasDismissedPolicyPagePromotionBanner[];
+extern const char kHasDismissedManagementPagePromotionBanner[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
 extern const char kCSSCustomStateDeprecatedSyntaxEnabled[];

@@ -19,6 +19,8 @@
 #include "chrome/grit/management_resources.h"
 #include "chrome/grit/management_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -298,3 +300,9 @@ ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 ManagementUI::~ManagementUI() = default;
+
+// static
+void ManagementUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner, false);
+}

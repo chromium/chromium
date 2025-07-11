@@ -9,6 +9,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -53,6 +54,7 @@ class ManagementUI : public content::WebUIController {
   // dialog.
   static void GetLocalizedStrings(std::vector<webui::LocalizedString>& strings,
                                   bool remove_links);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_

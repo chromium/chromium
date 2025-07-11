@@ -308,6 +308,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -1951,6 +1952,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   HatsServiceDesktop::RegisterProfilePrefs(registry);
   lens::prefs::RegisterProfilePrefs(registry);
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
+  ManagementUI::RegisterProfilePrefs(registry);
   media_router::RegisterAccessCodeProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
   MicrosoftAuthPageHandler::RegisterProfilePrefs(registry);
