@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/microsoft_dxheaders/src/include/composition/dcomp-preview.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -49,6 +50,22 @@ NOINLINE void CheckForLoopFailures() {
     NOTREACHED();
   }
   g_last_reshape_failure = now;
+}
+
+OutputSurface::DCSupportLevel GetDcSupportLevel() {
+  if (gl::DirectCompositionTextureSupported()) {
+    Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
+        gl::GetDirectCompositionDevice();
+
+    if (Microsoft::WRL::ComPtr<PREVIEW_IDCompositionDevice5> dcomp_device5;
+        SUCCEEDED(dcomp_device.As(&dcomp_device5))) {
+      return OutputSurface::DCSupportLevel::kDCompDynamicTexture;
+    }
+
+    return OutputSurface::DCSupportLevel::kDCompTexture;
+  }
+
+  return OutputSurface::DCSupportLevel::kDCLayers;
 }
 
 }  // namespace
@@ -131,10 +148,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           features::kDirectCompositionUnlimitedOverlays)) {
     capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
-  capabilities_.dc_support_level =
-      gl::DirectCompositionTextureSupported()
-          ? OutputSurface::DCSupportLevel::kDCompTexture
-          : OutputSurface::DCSupportLevel::kDCLayers;
+  capabilities_.dc_support_level = GetDcSupportLevel();
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps =
