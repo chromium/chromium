@@ -40,17 +40,21 @@ void FullscreenWebStateObserver::SetWebState(web::WebState* web_state) {
   }
   if (web_state_) {
     web_state_->RemoveObserver(this);
+    WebViewProxyTabHelper::FromWebState(web_state_)->RemoveObserver(this);
   }
   web_state_ = web_state;
   if (web_state_) {
     web_state_->AddObserver(this);
+    WebViewProxyTabHelper::FromWebState(web_state_)->AddObserver(this);
     // The toolbar should be visible whenever the current tab changes.
     model_->ResetForNavigation();
   }
   mediator_->SetWebState(web_state);
   // Update the scroll view replacement handler's proxy.
   web_view_proxy_observer_.proxy =
-      web_state_ ? web_state_->GetWebViewProxy() : nil;
+      web_state_
+          ? WebViewProxyTabHelper::FromWebState(web_state_)->GetWebViewProxy()
+          : nil;
 }
 
 void FullscreenWebStateObserver::WasShown(web::WebState* web_state) {
@@ -74,7 +78,8 @@ void FullscreenWebStateObserver::DidFinishNavigation(
   //   position DOM elements, so top padding must be accomplished by updating
   //   the WKWebView's frame.
   bool is_pdf = web_state->GetContentsMimeType() == "application/pdf";
-  id<CRWWebViewProxy> web_view_proxy = web_state->GetWebViewProxy();
+  id<CRWWebViewProxy> web_view_proxy =
+      WebViewProxyTabHelper::FromWebState(web_state)->GetWebViewProxy();
   web_view_proxy.shouldUseViewContentInset = is_pdf;
 
   model_->SetResizesScrollView(
@@ -100,4 +105,16 @@ void FullscreenWebStateObserver::DidStartLoading(web::WebState* web_state) {
 void FullscreenWebStateObserver::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state, web_state_);
   SetWebState(nullptr);
+}
+
+#pragma mark - WebViewProxyTabHelper::Observer
+
+void FullscreenWebStateObserver::WebViewProxyChanged(
+    WebViewProxyTabHelper* tab_helper) {
+  web_view_proxy_observer_.proxy = tab_helper->GetWebViewProxy();
+}
+
+void FullscreenWebStateObserver::WebViewProxyTabHelperDestroyed(
+    WebViewProxyTabHelper* tab_helper) {
+  tab_helper->RemoveObserver(this);
 }
