@@ -1223,15 +1223,9 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
                        kEmeNotSupportedError);
 }
 
-// TODO(crbug.com/40105240): Failing on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
-#else
-#define MAYBE_CDMCrashDuringDecode CDMCrashDuringDecode
-#endif
 // When CDM crashes, we should still get a decode error and all sessions should
 // be closed.
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, CDMCrashDuringDecode) {
   TestNonPlaybackCases(media::kExternalClearKeyCrashKeySystem,
                        kEmeSessionClosedAndError);
 }
