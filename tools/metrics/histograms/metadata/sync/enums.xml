@@ -289,10 +289,10 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="LastClearBrowsingDataTime"/>
   <int value="26" label="(obsolete) PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
-  <int value="28" label="Font"/>
+  <int value="28" label="(obsolete) Font"/>
   <int value="29" label="(obsolete) OfferReaderMode"/>
-  <int value="30" label="ReaderForAccessibility"/>
-  <int value="31" label="Theme"/>
+  <int value="30" label="(obsolete) ReaderForAccessibility"/>
+  <int value="31" label="(obsolete) Theme"/>
   <int value="32" label="AcceptLanguages"/>
   <int value="33" label="(obsolete) ApplicationLocale"/>
   <int value="34" label="SelectedLanguages"/>

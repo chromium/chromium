@@ -11,11 +11,8 @@
 #include "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class PrefRegistrySimple;
 class PrefService;
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
 
 namespace dom_distiller {
 
@@ -36,7 +33,7 @@ class DistilledPagePrefs {
 
   ~DistilledPagePrefs();
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets the user's preference for the font family of distilled pages.
   void SetFontFamily(mojom::FontFamily new_font);

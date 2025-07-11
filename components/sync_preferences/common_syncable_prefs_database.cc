@@ -15,7 +15,6 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/dom_distiller/core/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -74,10 +73,10 @@ enum {
   kLastClearBrowsingDataTime = 25,
   // kPreferencesMigratedToBasic = 26, (deprecated)
   kPriceEmailNotificationsEnabled = 27,
-  kFont = 28,
+  // kFont = 28, (deprecated)
   // kOfferReaderMode = 29, (deprecated)
-  kReaderForAccessibility = 30,
-  kTheme = 31,
+  // kReaderForAccessibility = 30, (deprecated)
+  // kTheme = 31, (deprecated)
   kAcceptLanguages = 32,
   // kApplicationLocale = 33,  (moved to chrome_syncable_prefs_database.cc)
   kSelectedLanguages = 34,
@@ -179,15 +178,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {commerce::kPriceEmailNotificationsEnabled,
          {syncable_prefs_ids::kPriceEmailNotificationsEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {dom_distiller::prefs::kFont,
-         {syncable_prefs_ids::kFont, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {dom_distiller::prefs::kReaderForAccessibility,
-         {syncable_prefs_ids::kReaderForAccessibility, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {dom_distiller::prefs::kTheme,
-         {syncable_prefs_ids::kTheme, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {language::prefs::kAcceptLanguages,
          {syncable_prefs_ids::kAcceptLanguages, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
