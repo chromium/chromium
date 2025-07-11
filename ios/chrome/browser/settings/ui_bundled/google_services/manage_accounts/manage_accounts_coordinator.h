@@ -24,22 +24,13 @@ class Browser;
 // The delegate for the coordinator.
 @property(nonatomic, weak) id<ManageAccountsCoordinatorDelegate> delegate;
 
-// Initializes ManageAccountsCoordinator to present its controller modally.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                 closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
-    NS_DESIGNATED_INITIALIZER;
-
 // Initializes ManageAccountsCoordinator to view its controller by pushing it on
 // top of the navigation stack.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                       closeSettingsOnAddAccount:
-                           (BOOL)closeSettingsOnAddAccount;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+                       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+                                  showDoneButton:(BOOL)showDoneButton;
 
 @end
 

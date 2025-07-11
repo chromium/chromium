@@ -2459,12 +2459,14 @@ using UserFeedbackDataCallback =
   }
 
   Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController accountsControllerForBrowser:browser
-                                                        delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  self.settingsNavigationController = [SettingsNavigationController
+             accountsControllerForBrowser:browser
+                       baseViewController:baseViewController
+                                 delegate:self
+                closeSettingsOnAddAccount:YES
+                        showSignoutButton:YES
+                           showDoneButton:NO
+      signoutDismissalByParentCoordinator:NO];
 }
 
 // TODO(crbug.com/41352590) : Remove Google services settings from

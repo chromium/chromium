@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_table_view_controller.h"
@@ -86,7 +87,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
-    ManageAccountsCoordinatorDelegate,
+    SettingsNavigationControllerDelegate,
     SyncErrorSettingsCommandHandler,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
@@ -106,8 +107,8 @@ void maybeShowSettingsIPH(Browser* browser) {
   // Dismiss callback for account details view.
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
-  // The coordinators for the "Edit account list"
-  ManageAccountsCoordinator* _manageAccountsCoordinator;
+  // The view controller for the "Edit account list"
+  SettingsNavigationController* _manageAccountsNavigationController;
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
@@ -272,14 +273,15 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)didTapManageAccounts {
-  CHECK(!_manageAccountsCoordinator);
-  _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
-      initWithBaseViewController:_navigationController
-                         browser:self.browser
-       closeSettingsOnAddAccount:NO];
-  _manageAccountsCoordinator.delegate = self;
-  _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
-  [_manageAccountsCoordinator start];
+  CHECK(!_manageAccountsNavigationController);
+  _manageAccountsNavigationController = [SettingsNavigationController
+             accountsControllerForBrowser:self.browser
+                       baseViewController:_navigationController
+                                 delegate:self
+                closeSettingsOnAddAccount:NO
+                        showSignoutButton:NO
+                           showDoneButton:YES
+      signoutDismissalByParentCoordinator:YES];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
@@ -483,12 +485,14 @@ void maybeShowSettingsIPH(Browser* browser) {
   [_addAccountSigninCoordinator start];
 }
 
-#pragma mark - ManageAccountsCoordinatorDelegate
+#pragma mark - SettingsNavigationControllerDelegate
 
-- (void)manageAccountsCoordinatorWantsToBeStopped:
-    (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _manageAccountsCoordinator);
-  [self stopManageAccountsCoordinator];
+- (void)closeSettings {
+  [self stopManageAccountsNavigationController];
+}
+
+- (void)settingsWasDismissed {
+  [self stopManageAccountsNavigationController];
 }
 
 #pragma mark - Private
@@ -510,10 +514,12 @@ void maybeShowSettingsIPH(Browser* browser) {
   [self stopAddAccountCoordinator];
 }
 
-- (void)stopManageAccountsCoordinator {
-  [_manageAccountsCoordinator stop];
-  _manageAccountsCoordinator.delegate = nil;
-  _manageAccountsCoordinator = nil;
+- (void)stopManageAccountsNavigationController {
+  [_manageAccountsNavigationController dismissViewControllerAnimated:YES
+                                                          completion:nil];
+  [_manageAccountsNavigationController cleanUpSettings];
+  _manageAccountsNavigationController.delegate = nil;
+  _manageAccountsNavigationController = nil;
 }
 
 - (void)resetAccountDetailsControllerDismissCallback {
@@ -546,7 +552,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   [self stopAddAccountCoordinator];
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
-  [self stopManageAccountsCoordinator];
+  [self stopManageAccountsNavigationController];
   [self dismissViewControllerAnimated:animated completion:nil];
 }
 

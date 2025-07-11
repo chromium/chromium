@@ -77,10 +77,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 @interface ManageSyncSettingsCoordinator () <
     AccountMenuCoordinatorDelegate,
     BulkUploadCoordinatorDelegate,
-    ManageAccountsCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCoordinatorDelegate,
+    SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     SyncErrorSettingsCommandHandler,
@@ -91,8 +91,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   BOOL _settingsAreDismissed;
   // The coordinator for the view Save in Account.
   BulkUploadCoordinator* _bulkUploadCoordinator;
-  // The coordinator for the Manage Accounts view.
-  ManageAccountsCoordinator* _manageAccountsCoordinator;
+  // The navigation controller displaying the Manage Accounts view.
+  SettingsNavigationController* _manageAccountsNavigationController;
   SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
@@ -212,7 +212,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 // Stops properly all views opened by the current coordinator.
 - (void)stopChildren {
   [self stopBulkUpload];
-  [self stopManageAccountsCoordinator];
+  [self stopManageAccountsNavigationController];
   [self stopAccountMenuCoordinator];
   [self stopTrustedVaultReauthenticationCoordinator];
   [self stopAddAccountCoordinator];
@@ -238,10 +238,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _trustedVaultReauthenticationCoordinator = nil;
 }
 
-- (void)stopManageAccountsCoordinator {
-  _manageAccountsCoordinator.delegate = nil;
-  [_manageAccountsCoordinator stop];
-  _manageAccountsCoordinator = nil;
+- (void)stopManageAccountsNavigationController {
+  _manageAccountsNavigationController.delegate = nil;
+  [_manageAccountsNavigationController cleanUpSettings];
+  [_manageAccountsNavigationController dismissViewControllerAnimated:YES
+                                                          completion:nil];
+  _manageAccountsNavigationController = nil;
 }
 
 - (void)stopSignoutActionSheetCoordinator {
@@ -350,12 +352,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self stopPersonalizedGoogleServicesCoordinator];
 }
 
-#pragma mark - ManageAccountsCoordinator
+#pragma mark - SettingsNavigationControllerDelegate
 
-- (void)manageAccountsCoordinatorWantsToBeStopped:
-    (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _manageAccountsCoordinator);
-  [self stopManageAccountsCoordinator];
+- (void)closeSettings {
+  [self stopManageAccountsNavigationController];
+}
+
+- (void)settingsWasDismissed {
+  [self stopManageAccountsNavigationController];
 }
 
 #pragma mark - ManageSyncSettingsCommandHandler
@@ -474,14 +478,15 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)showAccountsPage {
   // Stopping the manage accounts coordinator if it’s already opened. See
   // crbug.com/383373460
-  [self stopManageAccountsCoordinator];
-  _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-       closeSettingsOnAddAccount:NO];
-  _manageAccountsCoordinator.delegate = self;
-  _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
-  [_manageAccountsCoordinator start];
+  [self stopManageAccountsNavigationController];
+  _manageAccountsNavigationController = [SettingsNavigationController
+             accountsControllerForBrowser:self.browser
+                       baseViewController:self.viewController
+                                 delegate:self
+                closeSettingsOnAddAccount:NO
+                        showSignoutButton:NO
+                           showDoneButton:YES
+      signoutDismissalByParentCoordinator:YES];
 }
 
 - (void)showManageYourGoogleAccount {

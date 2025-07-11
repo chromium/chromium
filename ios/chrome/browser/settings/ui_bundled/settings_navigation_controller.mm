@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_coordinator.h"
@@ -89,6 +91,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     ClearBrowsingDataCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
+    ManageAccountsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
     NotificationsCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
@@ -196,9 +199,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
-    accountsControllerForBrowser:(Browser*)browser
-                        delegate:
-                            (id<SettingsNavigationControllerDelegate>)delegate {
+           accountsControllerForBrowser:(Browser*)browser
+                     baseViewController:(UIViewController*)baseViewController
+                               delegate:
+                                   (id<SettingsNavigationControllerDelegate>)
+                                       delegate
+              closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+                      showSignoutButton:(BOOL)showSignoutButton
+                         showDoneButton:(BOOL)showDoneButton
+    signoutDismissalByParentCoordinator:
+        (BOOL)signoutDismissalByParentCoordinator {
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
@@ -208,9 +218,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [[ManageAccountsCoordinator alloc]
           initWithBaseNavigationController:navigationController
                                    browser:browser
-                 closeSettingsOnAddAccount:YES];
-  navigationController.manageAccountsCoordinator.showSignoutButton = YES;
+                 closeSettingsOnAddAccount:closeSettingsOnAddAccount
+                            showDoneButton:showDoneButton];
+  navigationController.manageAccountsCoordinator.delegate =
+      navigationController;
+  navigationController.manageAccountsCoordinator.showSignoutButton =
+      showSignoutButton;
   [navigationController.manageAccountsCoordinator start];
+  [baseViewController presentViewController:navigationController
+                                   animated:YES
+                                 completion:nil];
   return navigationController;
 }
 
@@ -689,8 +706,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // GoogleServicesSettingsCoordinator and PasswordsCoordinator must be stopped
   // before dismissing the sync settings view.
-  [self.manageAccountsCoordinator stop];
-  self.manageAccountsCoordinator = nil;
+  [self stopManageAccountsCoordinator];
   [self stopSyncSettingsCoordinator];
   [self stopContentSettingsCoordinator];
   [self stopGoogleServicesSettingsCoordinator];
@@ -735,6 +751,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 #pragma mark - Private
+
+- (void)stopManageAccountsCoordinator {
+  self.manageAccountsCoordinator.delegate = nil;
+  [self.manageAccountsCoordinator stop];
+  self.manageAccountsCoordinator = nil;
+}
 
 // Pushes a ContentSettingsCoordinator on this settings navigation
 // controller. Does nothing id the top view controller is already of type
@@ -1146,7 +1168,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser
-             closeSettingsOnAddAccount:NO];
+             closeSettingsOnAddAccount:NO
+                        showDoneButton:NO];
+  self.manageAccountsCoordinator.delegate = self;
   [self.manageAccountsCoordinator start];
 }
 
@@ -1324,6 +1348,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
   [self.syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   self.syncEncryptionPassphraseTableViewController = nil;
+}
+
+#pragma mark - ManageAccountsCoordinatorDelegate
+
+// Requests the delegate to stop the manage accounts coordinator.
+- (void)manageAccountsCoordinatorWantsToBeStopped:
+    (ManageAccountsCoordinator*)coordinator {
+  CHECK_EQ(coordinator, self.manageAccountsCoordinator,
+           base::NotFatalUntil::M144);
+  [self stopManageAccountsCoordinator];
 }
 
 @end
