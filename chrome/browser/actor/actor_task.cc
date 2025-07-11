@@ -160,7 +160,8 @@ bool ActorTask::HasActedOnTab(tabs::TabHandle tab) const {
 }
 
 tabs::TabInterface* ActorTask::GetTabForObservation() const {
-  CHECK_EQ(tab_handles_.size(), 1ul);
+  DCHECK_GT(tab_handles_.size(), 0ul);
+  DCHECK_LT(tab_handles_.size(), 2ul);
   for (const tabs::TabHandle& handle : tab_handles_) {
     if (tabs::TabInterface* tab = handle.Get()) {
       return tab;
