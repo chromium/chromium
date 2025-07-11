@@ -215,7 +215,6 @@ void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
 
 void JNI_CronetLibraryLoader_CronetInitOnInitThread(
     JNIEnv* env,
-    jboolean updateNetworkStateFromNative,
     net::NetLogCaptureMode trace_net_log_capture_mode) {
   // Initialize SingleThreadTaskExecutor for init thread.
   DCHECK(!base::CurrentThread::IsSet());
@@ -247,11 +246,8 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
   if (!net::NetworkChangeNotifier::GetFactory()) {
     net::NetworkChangeNotifier::SetFactory(
         new net::NetworkChangeNotifierFactoryAndroid(
-            updateNetworkStateFromNative
-                ? net::NetworkChangeNotifierDelegateAndroid::
-                      ForceUpdateNetworkState::kEnabled
-                : net::NetworkChangeNotifierDelegateAndroid::
-                      ForceUpdateNetworkState::kDisabled));
+            net::NetworkChangeNotifierDelegateAndroid::ForceUpdateNetworkState::
+                kDisabled));
   }
   g_network_change_notifier = net::NetworkChangeNotifier::CreateIfNeeded();
   DCHECK(g_network_change_notifier);

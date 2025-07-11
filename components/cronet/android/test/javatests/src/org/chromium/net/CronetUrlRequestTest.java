@@ -30,14 +30,11 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApkInfo;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
-import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -46,7 +43,6 @@ import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.apihelpers.UploadDataProviders;
 import org.chromium.net.impl.CronetExceptionImpl;
-import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
@@ -194,18 +190,6 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    @Flags(
-            boolFlags = {
-                @BoolFlag(
-                        name = CronetLibraryLoader.UPDATE_NETWORK_STATE_ONCE_ON_STARTUP_FLAG_NAME,
-                        value = true)
-            })
-    public void testSimpleGetWithReducedNetworkChangeNotifierExperiment() throws Exception {
-        testSimpleGet();
-    }
-
-    @Test
-    @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "The output differs depending on the type of Cronet Impl.")
@@ -222,25 +206,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    @Flags(
-            boolFlags = {
-                @BoolFlag(name = CronetLibraryLoader.INITIALIZE_BUILD_INFO_ON_STARTUP, value = true)
-            })
-    public void testSimpleRequestMustCreateApkInfoOrDeviceInfoWhenFlagEnabled() throws Exception {
-        testBindToDefaultNetworkSucceeds();
-        assertThat(ApkInfo.isInitializedForTesting()).isTrue();
-        assertThat(DeviceInfo.isInitializedForTesting()).isTrue();
-    }
-
-    @Test
-    @SmallTest
-    @Flags(
-            boolFlags = {
-                @BoolFlag(
-                        name = CronetLibraryLoader.INITIALIZE_BUILD_INFO_ON_STARTUP,
-                        value = false)
-            })
-    public void testSimpleRequestMustNotCreateDeviceInfoWhenFlagDisabled() throws Exception {
+    public void testSimpleRequestMustNotCreateDeviceInfo() throws Exception {
         testBindToDefaultNetworkSucceeds();
         assertThat(DeviceInfo.isInitializedForTesting()).isFalse();
     }
