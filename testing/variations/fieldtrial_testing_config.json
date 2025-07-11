@@ -15964,6 +15964,25 @@
             ]
         }
     ],
+    "OffloadAcceptCHFrameCheck": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OffloadAcceptCHFrameCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "OidcAuthProfileManagement": [
         {
             "platforms": [

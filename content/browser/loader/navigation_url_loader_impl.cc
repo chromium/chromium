@@ -346,9 +346,12 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         *frame_tree_node->current_frame_host()->GetPermissionsPolicy();
   }
 
+  base::UmaHistogramBoolean(
+      "Navigation.URLLoader.HasClientHintsControllerDelegate",
+      client_hints_controller_delegate != nullptr);
   if (base::FeatureList::IsEnabled(
-          network::features::kOffloadAcceptCHFrameCheck)) {
-    CHECK(client_hints_controller_delegate);
+          network::features::kOffloadAcceptCHFrameCheck) &&
+      client_hints_controller_delegate) {
     new_request->trusted_params->enabled_client_hints = GetEnabledClientHints(
         url::Origin::Create(new_request->url), frame_tree_node,
         client_hints_controller_delegate);

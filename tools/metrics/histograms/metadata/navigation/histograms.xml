@@ -2780,6 +2780,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.URLLoader.HasClientHintsControllerDelegate"
+    enum="Boolean" expires_after="2025-10-26">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether a ClientHintsControllerDelegate was available when creating
+    a resource request for a navigation. This is part of investigating if the
+    delegate is sometimes missing when it should be present.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.URLLoader.InMainPath" enum="Boolean"
     expires_after="2025-09-25">
   <owner>yyanagisawa@chromium.org</owner>
