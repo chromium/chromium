@@ -145,9 +145,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
   }
 
-  if (SyscallSets::IsSockRecvOneMsg(sysno)) {
-    return RestrictSockRecvFlags(sysno);
-  }
 
   if (SyscallSets::IsSockSendOneMsg(sysno)) {
     return RestrictSockSendFlags(sysno);
