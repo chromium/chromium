@@ -61,6 +61,10 @@ static_library("help_app_ui") {
     "//mojo/public/cpp/platform",
     "//ui/webui",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("help_app_ui_pref") {
