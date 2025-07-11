@@ -15,6 +15,7 @@ BASE_DECLARE_FEATURE(kAllowClientCertificateReportingForUsers);
 
 BASE_DECLARE_FEATURE(kProfileSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kBrowserSignalsReportingEnabled);
+BASE_DECLARE_FEATURE(kDetectedAgentSignalCollectionEnabled);
 
 // Signals reporting related feature parameters.
 extern const base::FeatureParam<bool> kTriggerOnCookieChange;
@@ -27,6 +28,9 @@ bool IsProfileSignalsReportingEnabled();
 // Returns true if additional device signals reporting for browser-level Chrome
 // reports has been enabled.
 bool IsBrowserSignalsReportingEnabled();
+// Returns true if detected agent signal collection has been
+// enabled.
+bool IsDetectedAgentSignalCollectionEnabled();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
