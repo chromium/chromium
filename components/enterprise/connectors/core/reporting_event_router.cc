@@ -5,7 +5,9 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
@@ -359,6 +361,77 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
         std::move(settings.value()), std::move(event), base::Time::Now(),
         /*include_profile_user_name=*/true);
   }
+}
+
+void ReportingEventRouter::OnUnscannedFileEvent(
+    const GURL& url,
+    const GURL& tab_url,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
+    const std::string& mime_type,
+    const std::string& trigger,
+    const std::string& reason,
+    const std::string& content_transfer_method,
+    const int64_t content_size,
+    const ReferrerChain& referrer_chain,
+    EventResult event_result) {
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyUnscannedFileEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
+  event.Set(kKeySource, source);
+  event.Set(kKeyDestination, destination);
+  event.Set(kKeyFileName,
+            GetFileName(file_name, reporting_client_->ShouldIncludeDeviceInfo(
+                                       settings->per_profile)));
+  event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
+  event.Set(kKeyContentType, mime_type);
+  event.Set(kKeyUnscannedReason, reason);
+  // |content_size| can be set to -1 to indicate an unknown size, in
+  // which case the field is not set.
+  if (content_size >= 0) {
+    event.Set(kKeyContentSize, base::Int64ToValue(content_size));
+  }
+  event.Set(kKeyTrigger, trigger);
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
+  }
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
+  event.Set(kKeyClickedThrough,
+            event_result == enterprise_connectors::EventResult::BYPASSED);
+  if (!content_transfer_method.empty()) {
+    event.Set(kKeyContentTransferMethod, content_transfer_method);
+  }
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyUnscannedFileEvent,
+      std::move(settings.value()), std::move(event), base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
+// static
+std::string ReportingEventRouter::GetFileName(const std::string& filename,
+                                              const bool include_full_path) {
+  base::FilePath::StringType os_filename;
+#if BUILDFLAG(IS_WIN)
+  os_filename = base::UTF8ToWide(filename);
+#else
+  os_filename = filename;
+#endif
+
+  return include_full_path
+             ? filename
+             : base::FilePath(os_filename).BaseName().AsUTF8Unsafe();
 }
 
 }  // namespace enterprise_connectors

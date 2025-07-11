@@ -246,18 +246,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             referrer_chain, event_result);
   }
 
-  void TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult result) {
-    safe_browsing::ReferrerChain referrer_chain;
-    referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnUnscannedFileEvent(
-            GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
-            "sensitive_data.txt", "sha256_of_data", "text/plain",
-            SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            "filePasswordProtected", "content_transfer_method", 12345,
-            referrer_chain, result);
-  }
-
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   void TriggerOnDataControlsSensitiveDataEvent(
       const data_controls::Verdict::TriggeredRules& triggered_rules) {
@@ -992,104 +980,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   EXPECT_EQ(1u, referrers->size());
 }
 
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
-  SetUpRouters();
-
-  base::Value::Dict report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(CaptureArg(&report));
-
-  TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult::ALLOWED);
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeyUnscannedFileEvent);
-  ASSERT_NE(nullptr, event);
-
-  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
-  EXPECT_EQ(kTabUrl,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
-  EXPECT_EQ(kSource,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
-  EXPECT_EQ(kDestination, *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyDestination));
-  EXPECT_EQ("12345", *event->FindString(
-                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("sha256_of_data",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ("sensitive_data.txt",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ(
-      "filePasswordProtected",
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
-  EXPECT_EQ(
-      EventResultToString(enterprise_connectors::EventResult::ALLOWED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  const base::Value::List& referrers =
-      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers.size());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
-  SetUpRouters();
-
-  base::Value::Dict report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(CaptureArg(&report));
-
-  TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult::BLOCKED);
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeyUnscannedFileEvent);
-  ASSERT_NE(nullptr, event);
-
-  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
-  EXPECT_EQ(kTabUrl,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
-  EXPECT_EQ(kSource,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
-  EXPECT_EQ(kDestination, *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyDestination));
-  EXPECT_EQ("12345", *event->FindString(
-                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("sha256_of_data",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ("sensitive_data.txt",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ(
-      "filePasswordProtected",
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUnscannedReason));
-  EXPECT_EQ(
-      EventResultToString(enterprise_connectors::EventResult::BLOCKED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  const base::Value::List& referrers =
-      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers.size());
-}
-
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
   SetUpRouters();
   SafeBrowsingEventObserver event_observer(
@@ -1239,21 +1129,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestSensitiveDataEnabled) {
 
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
   TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::BLOCKED);
-  base::RunLoop().RunUntilIdle();
-
-  // Make sure UploadSecurityEventReport was called the expected number of
-  // times.
-  Mock::VerifyAndClearExpectations(client_.get());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestUnscannedFileEnabled) {
-  std::set<std::string> enabled_event_names;
-  enabled_event_names.insert(enterprise_connectors::kKeyUnscannedFileEvent);
-  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
-               enabled_event_names);
-
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
-  TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult::ALLOWED);
   base::RunLoop().RunUntilIdle();
 
   // Make sure UploadSecurityEventReport was called the expected number of
@@ -1475,7 +1350,6 @@ TEST_P(SafeBrowsingIsRealtimeReportingEventDisabledTest,
   TriggerOnDangerousDownloadEvent();
   TriggerOnDangerousDownloadEventBypass();
   TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::BLOCKED);
-  TriggerOnUnscannedFileEvent(enterprise_connectors::EventResult::ALLOWED);
 
   base::RunLoop().RunUntilIdle();
 
@@ -1500,7 +1374,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::make_tuple(enterprise_connectors::kKeyDangerousDownloadEvent,
                             3),
         testing::make_tuple(enterprise_connectors::kKeyInterstitialEvent, 2),
-        testing::make_tuple(enterprise_connectors::kKeySensitiveDataEvent, 1),
-        testing::make_tuple(enterprise_connectors::kKeyUnscannedFileEvent, 1)));
+        testing::make_tuple(enterprise_connectors::kKeySensitiveDataEvent, 1)));
 
 }  // namespace extensions

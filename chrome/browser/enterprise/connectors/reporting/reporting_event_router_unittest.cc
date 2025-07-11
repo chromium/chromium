@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -35,6 +36,13 @@ using ReferrerChain =
 using UrlInfo = ::chrome::cros::reporting::proto::UrlInfo;
 
 constexpr char kFakeProfileUsername[] = "Fakeuser";
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+const std::set<std::string>* ZipMimeType() {
+  static std::set<std::string> set = {"application/zip"};
+  return &set;
+}
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -707,6 +715,81 @@ TEST_P(ReportingEventRouterTest, TestPasswordChanged) {
 
   reporting_event_router_->OnPasswordChanged("user_name_1");
 }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyUnscannedFileEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+
+  validator.ExpectUnscannedFileEvent(
+      /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
+      /*expected_source=*/"exampleSource",
+      /*expected_destination=*/"exampleDestination",
+      /*expected_filename=*/"encrypted.zip",
+      /*expected_sha256=*/"sha256_of_data", /*expected_trigger=*/"FILE_UPLOAD",
+      /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
+      /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
+      /* expected_result=*/"EVENT_RESULT_ALLOWED",
+      /*expected_profile_username=*/profile_->GetProfileUserName(),
+      /*expected_profile_identifier=*/GetProfileIdentifier(),
+      /*expected_content_transfer_method*/
+      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnUnscannedFileEvent(
+      GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
+      "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "application/zip", "FILE_UPLOAD", "FILE_PASSWORD_PROTECTED",
+      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, referrer_chain,
+      EventResult::ALLOWED);
+}
+
+TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyUnscannedFileEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+
+  validator.ExpectUnscannedFileEvent(
+      /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
+      /*expected_source=*/"exampleSource",
+      /*expected_destination=*/"exampleDestination",
+      /*expected_filename=*/"encrypted.zip",
+      /*expected_sha256=*/"sha256_of_data",
+      /*expected_trigger=*/"FILE_DOWNLOAD",
+      /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
+      /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
+      /* expected_result=*/"EVENT_RESULT_BLOCKED",
+      /*expected_profile_username=*/profile_->GetProfileUserName(),
+      /*expected_profile_identifier=*/GetProfileIdentifier(),
+      /*expected_content_transfer_method*/
+      "CONTENT_TRANSFER_METHOD_UNKNOWN");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnUnscannedFileEvent(
+      GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
+      "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED",
+      "CONTENT_TRANSFER_METHOD_UNKNOWN", 12345, referrer_chain,
+      EventResult::BLOCKED);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 INSTANTIATE_TEST_SUITE_P(, ReportingEventRouterTest, ::testing::Bool());
 

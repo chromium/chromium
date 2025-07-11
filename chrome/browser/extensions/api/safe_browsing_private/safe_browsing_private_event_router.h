@@ -170,22 +170,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const int64_t content_size,
       std::optional<std::u16string> user_justification);
 
-  // Notifies listeners that deep scanning failed, for the given |reason|.
-  void OnUnscannedFileEvent(
-      const GURL& url,
-      const GURL& tab_url,
-      const std::string& source,
-      const std::string& destination,
-      const std::string& file_name,
-      const std::string& download_digest_sha256,
-      const std::string& mime_type,
-      const std::string& trigger,
-      const std::string& reason,
-      const std::string& content_transfer_method,
-      const int64_t content_size,
-      const safe_browsing::ReferrerChain& referrer_chain,
-      enterprise_connectors::EventResult event_result);
-
   // Notifies listeners that the user saw a download warning.
   // - |url| is the download URL
   // - |file_name| is the path on disk

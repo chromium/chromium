@@ -34,7 +34,7 @@ constexpr char kKeyName[] = "name";
 constexpr char kKeyDescription[] = "description";
 constexpr char kKeyExtensionAction[] = "extension_action_type";
 constexpr char kKeyVersion[] = "extension_version";
-constexpr char kKeySource[] = "extension_source";
+constexpr char kKeyExtensionSource[] = "extension_source";
 
 // Extension action types
 constexpr char kInstallAction[] = "INSTALL";
@@ -119,11 +119,11 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   // function.
   if (extension->location() ==
       extensions::mojom::ManifestLocation::kComponent) {
-    event.Set(kKeySource, kComponentSource);
+    event.Set(kKeyExtensionSource, kComponentSource);
   } else if (extension->from_webstore()) {
-    event.Set(kKeySource, kChromeWebstoreSource);
+    event.Set(kKeyExtensionSource, kChromeWebstoreSource);
   } else {
-    event.Set(kKeySource, kExternalSource);
+    event.Set(kKeyExtensionSource, kExternalSource);
   }
 
   reporting_client_->ReportRealtimeEvent(

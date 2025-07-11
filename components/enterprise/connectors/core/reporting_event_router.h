@@ -76,7 +76,27 @@ class ReportingEventRouter : public KeyedService {
                                    bool proceed_anyway_disabled,
                                    const ReferrerChain& referrer_chain);
 
+  // Notifies listeners that deep scanning failed, for the given |reason|.
+  void OnUnscannedFileEvent(const GURL& url,
+                            const GURL& tab_url,
+                            const std::string& source,
+                            const std::string& destination,
+                            const std::string& file_name,
+                            const std::string& download_digest_sha256,
+                            const std::string& mime_type,
+                            const std::string& trigger,
+                            const std::string& reason,
+                            const std::string& content_transfer_method,
+                            const int64_t content_size,
+                            const ReferrerChain& referrer_chain,
+                            EventResult event_result);
+
  private:
+  // Returns filename with full path if full path is required;
+  // Otherwise returns only the basename without full path.
+  static std::string GetFileName(const std::string& filename,
+                                 const bool include_full_path);
+
   raw_ptr<RealtimeReportingClientBase> reporting_client_;
 };
 
