@@ -215,9 +215,9 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   base::test::TestFuture<Browser*> browser_future;
   // `is_new_profile` has to be set to false so that the profile picker is not
   // triggered.
-  profiles::OpenBrowserWindowForProfile(
-      browser_future.GetCallback(), /*always_create=*/true,
-      /*is_new_profile=*/false, /*unblock_extensions=*/false, new_profile);
+  profiles::OpenBrowserWindowForProfile(browser_future.GetCallback(),
+                                        /*always_create=*/true,
+                                        /*is_new_profile=*/false, new_profile);
   EXPECT_TRUE(browser_future.Wait());
   Browser* new_browser = browser_future.Get();
   EXPECT_EQ(new_browser->profile(), new_profile);

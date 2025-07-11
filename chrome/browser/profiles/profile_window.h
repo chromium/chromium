@@ -45,13 +45,11 @@ void FindOrCreateNewWindowForProfile(
 // Opens a Browser for |profile|.
 // If |always_create| is true a window is created even if one already exists.
 // If |is_new_profile| is true a first run window is created.
-// If |unblock_extensions| is true, all extensions are unblocked.
 // |callback| is called with a nullptr `Browser` in case of failure.
 // |callback| may be null.
 void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
-                                 bool unblock_extensions,
                                  Profile* profile);
 
 // Loads the specified profile given by |path| asynchronously. Once profile is

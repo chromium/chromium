@@ -41,16 +41,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_factory.h"
-#include "extensions/browser/extension_system.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
@@ -68,12 +59,6 @@ using base::UserMetricsAction;
 using content::BrowserThread;
 
 namespace {
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void UnblockExtensions(Profile* profile) {
-  extensions::ExtensionRegistrar::Get(profile)->UnblockAllExtensions();
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Helper function to run a callback on a profile once it's initialized.
 void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
@@ -120,7 +105,6 @@ void FindOrCreateNewWindowForProfile(
 void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
-                                 bool unblock_extensions,
                                  Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser", "OpenBrowserWindowForProfile", "profile_path",
@@ -157,12 +141,6 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (unblock_extensions) {
-    UnblockExtensions(profile);
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // If |always_create| is false, and we have a |callback| to run, check
   // whether a browser already exists so that we can run the callback. We don't
@@ -213,8 +191,7 @@ void SwitchToProfile(const base::FilePath& path,
   base::OnceCallback<void(Profile*)> open_browser_callback =
       base::BindOnce(&profiles::OpenBrowserWindowForProfile,
                      std::move(callback), always_create,
-                     /*is_new_profile=*/false,
-                     /*unblock_extensions=*/false);
+                     /*is_new_profile=*/false);
   g_browser_process->profile_manager()->CreateProfileAsync(
       path,
       base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));

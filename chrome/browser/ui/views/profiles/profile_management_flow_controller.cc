@@ -183,10 +183,6 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
       std::move(post_browser_open_callback),
       /*always_create=*/false,   // Don't create a window if one already exists.
       /*is_new_profile=*/false,  // Don't create a first run window.
-      /*unblock_extensions=*/false,  // There is no need to unblock all
-                                     // extensions because we only open browser
-                                     // window if the Profile is not locked.
-                                     // Hence there is no extension blocked.
       profile);
 }
 
