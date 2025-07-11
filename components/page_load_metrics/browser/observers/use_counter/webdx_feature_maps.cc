@@ -427,6 +427,22 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kObservableConstructor, WebDXFeature::kObservable},
           {WebFeature::kEventTargetOnObservable, WebDXFeature::kObservable},
           {WebFeature::kWebAppTitle, WebDXFeature::kMetaApplicationTitle},
+          {WebFeature::kV8WasmExceptionHandling,
+           WebDXFeature::kWasmExceptionHandling},
+          {WebFeature::kV8WasmExtendedConst,
+           WebDXFeature::kWasmExtendedConstantExpressions},
+          {WebFeature::kV8WasmGC, WebDXFeature::kWasmGarbageCollection},
+          {WebFeature::kV8WasmMultiMemory, WebDXFeature::kWasmMultiMemory},
+          {WebFeature::kV8WasmRefTypes, WebDXFeature::kWasmReferenceTypes},
+          {WebFeature::kV8WasmRelaxedSimd, WebDXFeature::kWasmSimdRelaxed},
+          {WebFeature::kV8WasmReturnCall,
+           WebDXFeature::kWasmTailCallOptimization},
+          {WebFeature::kV8WasmThreadOpcodes, WebDXFeature::kWasmThreads},
+          {WebFeature::kV8WebAssemblyJSStringBuiltins,
+           WebDXFeature::kWasmStringBuiltins},
+          {WebFeature::kV8WasmTypedFuncRef, WebDXFeature::kWasmTypedFunRefs},
+          {WebFeature::kV8WasmMemory64, WebDXFeature::kWasmMemory64},
+          {WebFeature::kV8WasmExnRef, WebDXFeature::kWasmExnrefExceptions},
           // Add new features above this line.
       }};
 

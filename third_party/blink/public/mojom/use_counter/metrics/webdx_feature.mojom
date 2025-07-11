@@ -415,6 +415,23 @@ enum WebDXFeature {
   kFontMetricOverrides = 353,
   kDetailsContent = 354,
   kTimeRelativeSelectors = 355,
+  kWasmExceptionHandling = 356,
+  kWasmExtendedConstantExpressions = 357,
+  kWasmGarbageCollection = 358,
+  kWasmMultiMemory = 359,
+  kWasmReferenceTypes = 360,
+  kWasmSimdRelaxed = 361,
+  kWasmTailCallOptimization = 362,
+  kWasmThreads = 363,
+  kWasmStringBuiltins = 364,
+  kWasmTypedFunRefs = 365,
+  kWasmMemory64 = 366,
+  kWasmExnrefExceptions = 367,
+  kWasmMultiValue = 368,
+  kWasmBulkMemory = 369,
+  kWasmMutableGlobals = 370,
+  kWasmNonTrappingFloatToInt = 371,
+  kWasmSignExtensionOperators = 372,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
