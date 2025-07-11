@@ -95,6 +95,7 @@ base::Value::Dict BuildIndexJson() {
 #endif
                    .Append(kIsolatedWebAppUpdateManager)
                    .Append(kIsolatedWebAppPolicyManager)
+                   .Append(kIwaKeyDistributionInfoProvider)
                    .Append(kWebAppDirectoryDiskState));
 }
 
