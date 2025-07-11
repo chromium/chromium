@@ -318,20 +318,19 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContentWhenProfileIsNotReady() {
         List<Integer> listContent = mMediator.buildListContent();
         assertEquals(List.of(MVT, NTP_CARDS), listContent);
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContentWhenProfileIsNotReadyAsNtpCustomizationForMvtFeatureDisabled() {
         List<Integer> listContent = mMediator.buildListContent();
         assertEquals(List.of(NTP_CARDS), listContent);
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContent() {
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -348,6 +347,7 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testBuildListContentWithNtpCustomizationForMvtFeatureDisabled() {
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);

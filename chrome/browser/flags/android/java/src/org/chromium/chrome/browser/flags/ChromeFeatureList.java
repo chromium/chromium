@@ -939,7 +939,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNewTabPageCustomization =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false, true);
     public static final CachedFlag sNewTabPageCustomizationForMvt =
-            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, false);
+            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, false, true);
     public static final CachedFlag sNewTabPageCustomizationToolbarButton =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_TOOLBAR_BUTTON, false);
     public static final CachedFlag sNewTabPageCustomizationV2 =

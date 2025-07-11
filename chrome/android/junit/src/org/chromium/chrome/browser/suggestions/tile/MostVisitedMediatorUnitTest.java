@@ -421,6 +421,7 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
     public void testAddAndRemoveListener_FeatureDisabled() {
         createMediator();
         verify(mNtpCustomizationConfigManager, never()).addListener(any());
