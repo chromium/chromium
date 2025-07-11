@@ -51,10 +51,6 @@ constexpr Visitor UiEventToDebugStringFn{
     [](const StartTask& e) -> std::string {
       return absl::StrFormat("StartTask[id=%d]", e.task_id.value());
     },
-    [](const TaskStateChanged& e) -> std::string {
-      return absl::StrFormat("TaskStateChanged[task_id=%d, state=%s]",
-                             e.task_id.value(), ToString(e.state));
-    },
     [](const StartingToActOnTab& e) -> std::string {
       return absl::StrFormat("StartingToActOnTab[task_id=%d, tab=%d]",
                              e.task_id.value(), e.tab_handle.raw_value());
