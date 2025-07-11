@@ -541,9 +541,8 @@ void V8Environment::AddV8Bindings() {
 
   // Create a template for the "Mojo" object in the context scope.
   Context::Scope context_scope(context);
-  gin::Handle<Mojo> mojo = Mojo::Create(context);
-  global_proxy->Set(context, gin::StringToV8(isolate, "Mojo"), mojo.ToV8())
-      .Check();
+  v8::Local<v8::Object> mojo = Mojo::Create(isolate);
+  global_proxy->Set(context, gin::StringToV8(isolate, "Mojo"), mojo).Check();
 
   // Initialize self as the global template. This will allow mojo to work with
   // modules without a shim.
