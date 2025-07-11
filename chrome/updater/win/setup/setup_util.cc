@@ -85,9 +85,9 @@ void AddInstallComProgIdWorkItems(UpdaterScope scope,
 std::wstring GetTaskName(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  return task_scheduler
-             ? task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope))
-             : std::wstring();
+  return task_scheduler ? task_scheduler->FindFirstTaskName(
+                              GetTaskNamePrefix(scope) + L"{")
+                        : std::wstring();
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
