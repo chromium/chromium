@@ -20,8 +20,6 @@ import org.chromium.build.annotations.Nullable;
 /** Represents the view inside the page info popup. */
 @NullMarked
 public class PageInfoView extends FrameLayout implements OnClickListener {
-    private static final int COOKIES_ROW_POSITION = 1;
-
     private final LinearLayout mRowWrapper;
     private final PageInfoRowView mConnectionRow;
     private final PageInfoRowView mPermissionsRow;
@@ -42,12 +40,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
         // Elevate the "Cookies and site data" item.
         LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
-        PageInfoRowView cookiesRow = (PageInfoRowView) findViewById(R.id.page_info_cookies_row);
-        rowWrapper.removeView(cookiesRow);
-        rowWrapper.addView(cookiesRow, COOKIES_ROW_POSITION);
 
         mRowWrapper = rowWrapper;
-        mCookiesRow = cookiesRow;
+        mCookiesRow = findViewById(R.id.page_info_cookies_row);
         initializePageInfoViewChild(rowWrapper, true, null);
         mConnectionRow = findViewById(R.id.page_info_connection_row);
         mPermissionsRow = findViewById(R.id.page_info_permissions_row);
