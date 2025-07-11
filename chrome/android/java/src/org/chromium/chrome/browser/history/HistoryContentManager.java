@@ -251,8 +251,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 new HistoryAdapter(
                         this,
                         sProviderForTests != null ? sProviderForTests : historyProvider,
-                        mHistorySyncPromoCoordinator,
-                        mActivity);
+                        mHistorySyncPromoCoordinator);
 
         // Create a recycler view.
         mRecyclerView =
