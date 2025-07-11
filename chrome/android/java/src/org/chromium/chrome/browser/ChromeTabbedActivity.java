@@ -556,7 +556,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private CookiesFetcher mIncognitoCookiesFetcher;
 
     // Manager for tab group visual data lifecycle updates.
-    private TabGroupVisualDataManager mTabGroupVisualDataManager;
+    private @Nullable TabGroupVisualDataManager mTabGroupVisualDataManager;
 
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
@@ -716,14 +716,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             mTabModelOrchestrator.onNativeLibraryReady(getTabContentManager());
 
-            TabModelUtils.runOnTabStateInitialized(
-                    mTabModelSelector,
-                    mCallbackController.makeCancelable(
-                            (tabModelSelector) -> {
-                                assert tabModelSelector != null;
-                                mTabGroupVisualDataManager =
-                                        new TabGroupVisualDataManager(tabModelSelector);
-                            }));
+            // With tab collections this is managed internally to {@link TabCollectionTabModelImpl}.
+            if (!ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
+                TabModelUtils.runOnTabStateInitialized(
+                        mTabModelSelector,
+                        mCallbackController.makeCancelable(
+                                (tabModelSelector) -> {
+                                    assert tabModelSelector != null;
+                                    mTabGroupVisualDataManager =
+                                            new TabGroupVisualDataManager(tabModelSelector);
+                                }));
+            }
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
 
