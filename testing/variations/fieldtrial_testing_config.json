@@ -753,21 +753,6 @@
             ]
         }
     ],
-    "AndroidMinimalUiLargeScreen": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidMinimalUiLargeScreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidPdfSummarization": [
         {
             "platforms": [
