@@ -361,6 +361,7 @@ void UpdateOverlaySupport() {
 
   if (g_force_nv12_overlay_support) {
     supports_overlays = true;
+    supports_hardware_overlays = true;
     nv12_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     overlay_format_used = DXGI_FORMAT_NV12;
   }
@@ -1129,13 +1130,16 @@ void SetDirectCompositionOverlayWorkarounds(
   }
 }
 
+bool IsSwapChainYuvFormatForced() {
+  return g_force_nv12_overlay_support;
+}
+
 void SetDirectCompositionMonitorInfoForTesting(
     int num_monitors,
     const gfx::Size& primary_monitor_size) {
   g_num_monitors = num_monitors;
   g_primary_monitor_size = primary_monitor_size;
 }
-
 
 bool DirectCompositionTextureSupported() {
   if (g_direct_composition_texture_supported.has_value()) {

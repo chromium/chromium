@@ -167,6 +167,10 @@ struct DirectCompositionOverlayWorkarounds {
 GL_EXPORT void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds);
 
+// Returns true if the swap chain format is forced to be a YUV format via a GPU
+// workaround flag.
+GL_EXPORT bool IsSwapChainYuvFormatForced();
+
 // Returns monitor size.
 GL_EXPORT gfx::Size GetDirectCompositionPrimaryMonitorSize();
 
