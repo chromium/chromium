@@ -192,11 +192,14 @@ shown on non-ChromeOS platforms -->
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/account">
-        <settings-subpage page-title="$i18n{accountPageTitle}">
-          <settings-account-page prefs="{{prefs}}" sync-status="[[syncStatus]]">
-          </settings-account-page>
-        </settings-subpage>
+      <template is="dom-if" if="[[shouldShowAccountSettingsPage_]]" restamp>
+        <template is="dom-if" route-path="/account">
+          <settings-subpage page-title="$i18n{accountPageTitle}">
+            <settings-account-page prefs="{{prefs}}"
+                sync-status="[[syncStatus]]" no-search>
+            </settings-account-page>
+          </settings-subpage>
+        </template>
       </template>
 </if>
     </settings-animated-pages>

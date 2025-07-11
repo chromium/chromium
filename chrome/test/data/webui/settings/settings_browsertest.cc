@@ -19,6 +19,7 @@
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sync/base/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
@@ -46,6 +47,7 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             features::kGlic, features::kTabstripComboButton,
 #endif
+            syncer::kReplaceSyncPromosWithSignInPromos,
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/{

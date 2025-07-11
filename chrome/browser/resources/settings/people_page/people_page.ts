@@ -173,6 +173,12 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
             'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
       },
 
+      shouldShowAccountSettingsPage_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
+      },
+
       showImportDataDialog_: {
         type: Boolean,
         value: false,
@@ -216,6 +222,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // <if expr="not is_chromeos">
   declare storedAccounts: StoredAccount[]|null;
   declare private shouldShowGoogleAccount_: boolean;
+  declare private shouldShowAccountSettingsPage_: boolean;
   declare private showImportDataDialog_: boolean;
   declare private showSignoutDialog_: boolean;
   // </if>
