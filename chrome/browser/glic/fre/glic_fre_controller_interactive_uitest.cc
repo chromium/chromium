@@ -449,9 +449,9 @@ class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic,
-         {{"glic-max-loading-time-ms", "100"},
-          {"glic-min-loading-time-ms", "10"},
-          {"glic-pre-loading-time-ms", "10"}}}};
+         {{"glic-max-loading-time-ms", "0"},
+          {"glic-min-loading-time-ms", "0"},
+          {"glic-pre-loading-time-ms", "0"}}}};
 
     // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
     // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
@@ -461,16 +461,9 @@ class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
         enabled_features, {features::kGlicWarming, features::kGlicFreWarming});
 
     fre_server_.AddDefaultHandlers();
-    // Register a handler that will hang, to simulate a timeout.
-    fre_server_.RegisterRequestHandler(base::BindRepeating(
-        [](const GURL& url, const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url == url.path()) {
-            return std::make_unique<net::test_server::HungResponse>();
-          }
-          return nullptr;
-        },
-        fre_url()));
+    fre_server_.ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
     ASSERT_TRUE(fre_server_.InitializeAndListen());
 
     fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
@@ -508,15 +501,8 @@ class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/429040435): Test is failing on Mac and Linux bots.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ShowsErrorPanelOnLoadingTimeout \
-  DISABLED_ShowsErrorPanelOnLoadingTimeout
-#else
-#define MAYBE_ShowsErrorPanelOnLoadingTimeout ShowsErrorPanelOnLoadingTimeout
-#endif
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
-                       MAYBE_ShowsErrorPanelOnLoadingTimeout) {
+                       ShowsErrorPanelOnLoadingTimeout) {
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
@@ -526,7 +512,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
                          base::Unretained(this))),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
-      WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kError),
+      InAnyContext(Do([this]() {
         histogram_tester().ExpectUniqueSample(
             "Glic.FreErrorStateReason",
             glic::FreErrorStateReason::kTimeoutExceeded, 1);
@@ -535,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
             9  // GlicFreWebviewLoadAbortReason::ERR_TIMED_OUT
             ,
             1);
-      }),
+      })),
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
