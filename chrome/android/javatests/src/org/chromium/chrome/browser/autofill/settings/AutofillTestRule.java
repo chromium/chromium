@@ -59,6 +59,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
                 AutofillLocalCardEditor.setObserverForTest(AutofillTestRule.this);
                 AutofillLocalIbanEditor.setObserverForTest(AutofillTestRule.this);
                 FinancialAccountsManagementFragment.setObserverForTest(AutofillTestRule.this);
+                NonCardPaymentMethodsManagementFragment.setObserverForTest(AutofillTestRule.this);
                 statement.evaluate();
             }
         };
