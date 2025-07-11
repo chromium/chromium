@@ -1,0 +1,32 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* File Comment. */
+
+label Chrome {
+  M13 = 0.0,
+  M14 = 1.0,
+  M15 = 2.0,
+  M16 = 3.0,
+  M17 = 4.0
+};
+
+/* Bogus Interface Foo */
+[version=0.0]
+interface Foo {
+  /**
+   * Comment for function x
+   */
+  [version=0.0] int32_t Bar(int32_t x);
+  /**
+   * Comment for function x,y
+   */
+  [version=1.0] int32_t Bar(int32_t x, int32_t y);
+  /**
+   * Comment for function x,y,z
+   */
+  [version=2.0] int32_t Bar(int32_t x, int32_t y, int32_t z);
+};
+

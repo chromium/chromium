@@ -1,0 +1,67 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+label Chrome {
+  M13 = 1.0,
+  [channel=dev] M14 = 1.1,
+  M15 = 1.2,
+  [channel=dev] M16 = 1.3,
+  M17 = 1.4
+};
+
+describe {
+  int32_t;
+  void;
+};
+
+/**
+ * TestDev
+ */
+interface TestDev {
+  /**
+   * TestDev1()
+   */
+   void TestDev1();
+
+  /**
+   * TestDev2()
+   */
+   [dev_version=1.1]
+   void TestDev2();
+
+  /**
+   * TestDev3()
+   */
+   [version=1.2]
+   void TestDev3();
+
+  /**
+   * TestDev4()
+   */
+   [dev_version=1.3]
+   void TestDev4();
+};
+
+/**
+ * TestDevToStable
+ */
+interface TestDevToStable {
+  /**
+   * Foo() comment.
+   */
+  void Foo([in] int32_t x);
+
+  /**
+   * Bar() comment.
+   */
+  [dev_version=1.1, version=1.2]
+  void Bar([in] int32_t x);
+
+  /**
+   * Baz() comment.
+   */
+  [dev_version=1.1, version=1.2]
+  void Baz([in] int32_t x);
+};

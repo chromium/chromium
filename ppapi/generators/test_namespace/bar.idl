@@ -1,0 +1,33 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* This file tests the namespace functions in the parser. */
+
+label Chrome {
+  M14 = 1.0
+};
+
+/* PPAPI ID */
+typedef int32_t PP_Instance;
+
+/* PPAPI ID */
+typedef int32_t PP_Resource;
+
+/* Interface test */
+interface PPB_Bar_0_3 {
+  /* Face create */
+  PP_Resource Create(
+      [in] PP_Instance instance,
+      [in] PP_Size size,
+      [in] PP_Bool is_always_opaque);
+
+  /* Returns PP_TRUE if the given resource is a valid Graphics2D, PP_FALSE if it
+   * is an invalid resource or is a resource of another type.
+   */
+  PP_Bool IsGraphics2D(
+      [in] PP_Resource resource);
+};
+
+

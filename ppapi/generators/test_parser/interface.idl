@@ -1,0 +1,59 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* Tests for interface */
+
+/* OK Interface(Interface1) */
+interface Interface1 {
+  /* OK Member(OneParam) */
+  PP_Bool OneParam(
+      /* OK Param(resource) */
+      [in] PP_Resource resource);
+
+  /* OK Member(TwoParam) */
+  PP_Resource TwoParam(
+      /* OK Param(instance) */
+      [in] PP_Instance instance,
+      /* OK Param(size) */
+      [in] PP_Size size);
+
+  /* OK Member(ThreeParam) */
+  PP_Bool ThreeParam(
+      /* OK Param(graphics_2d) */
+      [in] PP_Resource graphics_2d,
+      /* OK Param(size) */
+      [out] PP_Size size,
+      /* OK Param(is_always_opaque) */
+      [out] PP_Bool is_always_opaque);
+
+  /* OK Member(ReturnArray) */
+  PP_Resource[] ReturnArray();
+};
+
+
+/* OK Interface(Interface2) */
+interface Interface2 {
+  /* OK Member(OneParam) */
+  PP_Bool OneParam(
+      /* OK Param(resource) */
+      [in] PP_Resource resource);
+
+  /* OK Member(TwoParam) */
+  PP_Resource TwoParam(
+      /* OK Param(instance) */
+      [in] PP_Instance instance,
+      /* OK Param(size) */
+      /* FAIL Missing argument. */
+      [in] PP_Size size, );
+
+  /* OK Member(ThreeParam) */
+  PP_Bool ThreeParam(
+      /* OK Param(graphics_2d) */
+      [in] PP_Resource graphics_2d,
+      /* FAIL Unexpected "," after symbol PP_Size. */
+      [out] PP_Size,
+      /* OK Param(is_always_opaque) */
+      [out] PP_Bool is_always_opaque);
+};

@@ -1,0 +1,26 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* File Comment */
+
+describe {
+  int32_t;
+};
+
+/* PPAPI Structure */
+struct PP_Size {
+  /* This value represents the width of the rectangle. */
+  int32_t width;
+  /* This value represents the height of the rectangle. */
+  int32_t height;
+};
+
+/* PPAPI Enum */
+enum PP_Bool {
+  /* Decalare False */
+  PP_FALSE = 0,
+  /* Decalare True */
+  PP_TRUE  = 1
+};

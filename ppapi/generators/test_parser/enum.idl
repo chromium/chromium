@@ -1,0 +1,108 @@
+/* Copyright 2011 The Chromium Authors
+   Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file. */
+
+/* This file tests parsing of enumerations under different conditions */
+
+/* OK Enum(Es1) */
+enum Es1 {
+  /* OK EnumItem(E1) */
+  E1 = 1,
+  /* OK EnumItem(E2) */
+  E2 = 2
+};
+
+/* FAIL Enum missing name. */
+enum {
+  E3 = 3,
+  E4 = 4
+};
+
+/* OK Enum(Es3) */
+enum Es3 {
+  E5 = 1 << 1,
+  E6 = 3 << 2
+};
+
+/* FAIL Unexpected empty block. */
+enum Es4 {
+};
+
+/* OK Enum(Es5) */
+enum Es5 {
+  /* OK EnumItem(E9) */
+  E9 = 9,
+  /* OK EnumItem(E10) */
+  /* FAIL Trailing comma in block. */
+  E10 = 10,
+};
+
+/* FAIL Unexpected trailing comment. */
+enum Es6 {
+  E5 = 11,
+  E6 = 12
+}
+
+/* Bad comment because of Es6 */
+enum Es7 {
+  E11 = 11
+};
+
+
+/* OK Enum(Es8) */
+enum Es8 {
+  /* OK EnumItem(E12) */
+  E12 = 12,
+  /* OK EnumItem(E13) */
+  /* FAIL Unexpected value 13.0 after "=". */
+  E13 = 13.0,
+  /* FAIL Unexpected string "hello" after "=". */
+  /* OK EnumItem(E14) */
+  E14 = "hello",
+  /* OK EnumItem(E15) */
+  E15 = 0x400
+};
+
+/* OK Enum(Es9) */
+enum Es9 {
+  /* OK EnumItem(Es9_1) */
+  Es9_1 = 0,
+  /* OK EnumItem(Es9_2) */
+  Es9_2 = Es9_1,
+  /* OK EnumItem(Es9_3) */
+  Es9_3 = Es9_1 << Es9_2,
+  /* OK EnumItem(Es9_3a) */
+  /* FAIL Unexpected symbol Es9_2 after symbol Es9_1. */
+  Es9_3a = Es9_1 Es9_2,
+  /* OK EnumItem(Es9_4) */
+  Es9_4 = Es9_1 >> Es9_2,
+  /* OK EnumItem(Es9_5) */
+  Es9_5 = Es9_1 | Es9_2,
+  /* OK EnumItem(Es9_6) */
+  Es9_6 = Es9_1 & Es9_2,
+  /* OK EnumItem(Es9_7) */
+  Es9_7 = Es9_1 ^ Es9_2,
+  /* OK EnumItem(Es9_8) */
+  Es9_8 = Es9_1 + Es9_2,
+  /* OK EnumItem(Es9_9) */
+  Es9_9 = Es9_1 - Es9_2,
+  /* OK EnumItem(Es9_10) */
+  Es9_10 = Es9_1 * Es9_2,
+  /* OK EnumItem(Es9_11) */
+  Es9_11 = Es9_1 / Es9_2,
+  /* OK EnumItem(Es9_12) */
+  Es9_12 = -Es9_1,
+  /* OK EnumItem(Es9_13) */
+  Es9_13 = ~Es9_1,
+  /* OK EnumItem(Es9_14) */
+  Es9_14 = (Es9_1),
+  /* OK EnumItem(Es9_14a) */
+  /* FAIL Unexpected ,. */
+  Es9_14a = (Es9_1,
+  /* OK EnumItem(Es9_15) */
+  Es9_15 = (Es9_1 + Es9_2) << Es9_3 + 1,
+  /* OK EnumItem(Es9_16) */
+  Es9_16 = Es9_1 + -Es9_2
+};
+
+

@@ -1,0 +1,66 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* File Comment. */
+
+label Chrome {
+  M13 = 0.0,
+  M14 = 1.0,
+  M15 = 2.0
+};
+
+describe {
+  int32_t;
+};
+
+/*REL: M13 M15 */
+[version=0.0]
+interface iFoo {
+  /**
+   * Comment for function x
+   */
+  [version=0.0] int32_t Bar([in] int32_t x);
+  /**
+   * Comment for function x,y,z
+   */
+  [version=2.0] int32_t Bar([in] int32_t x, [in] int32_t y, [in] int32_t z);
+};
+
+
+/*REL: M13 M15 */
+[version=0.0]
+struct iBar {
+  /**
+   * Comment for function x
+   */
+  [version=0.0] iFoo x;
+};
+
+/*REL: M13 M14 M15 */
+[version=0.0]
+struct iX {
+  /**
+   * Comment for function x
+   */
+  [version=0.0] iFoo x;
+  /**
+   * Comment for member y
+   */
+  [version=1.0] int32_t y;
+};
+
+
+/**
+  *  Typedef to generate M13-M14, M15
+  */
+typedef int32_t callback_t([in] int32_t x, [in, version=2.0] int32_t y);
+
+/*REL: M13 M14 M15 */
+interface iFooX {
+  /**
+   * Comment for function Bar
+   */
+  int32_t Bar([in, version=1.0] callback_t cb);
+};

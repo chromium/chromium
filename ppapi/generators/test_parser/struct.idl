@@ -1,0 +1,34 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* Tests for structures */
+
+/* OK Struct(S1) */
+struct S1 {
+  /* OK Member(Mem1) */
+  PP_Bool Mem1;
+  /* OK Member(Mem2) */
+  PP_Resource Mem2;
+};
+
+typedef int func([in] int x, [in] int y);
+
+/* OK Struct(S2) */
+struct S2 {
+  /* OK Member(Mem1) */
+  PP_Bool Mem1;
+  /* OK Member(Mem2) */
+  PP_Resource Mem2;
+  /* OK Member(Mem3) */
+  [attr1, attr2] PP_Resource Mem3;
+  /* OK Member(foo) */
+  FuncFoo foo;
+};
+
+/* FAIL Struct missing name. */
+struct {
+  PP_Bool Mem1;
+  PP_Resource Mem2;
+};

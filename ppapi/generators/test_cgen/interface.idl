@@ -1,0 +1,52 @@
+/*
+ * Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file will test that the IDL snippet matches the comment.
+ */
+
+label Chrome {
+  M14 = 1.0,
+  M15 = 2.0
+};
+/* struct ist { void* X; }; */
+struct ist {
+  mem_t X;
+};
+
+/*
+ * struct ifaceFoo_1_0 {
+ * int8_t (*mem1)(int16_t x, int32_t y);
+ * int32_t (*mem2)(const struct ist* a);
+ * int32_t (*mem3)(struct ist* b);
+ * int32_t (*mem4)(const void** ptr);
+ * int32_t (*mem5)(void** ptr);
+ * };
+ * typedef struct ifaceFoo_1_0 ifaceFoo;
+ */
+interface ifaceFoo {
+  int8_t mem1([in] int16_t x, [in] int32_t y);
+  int32_t mem2([in] ist a);
+  int32_t mem3([out] ist b);
+  int32_t mem4([in] blob_t ptr);
+  int32_t mem5([out] blob_t ptr);
+  [version=2.0] int32_t mem6([inout] blob_t ptr);
+};
+
+interface ifaceBar {
+  int8_t testIface([in] ifaceFoo foo, [in] int32_t y);
+  ifaceFoo createIface([in] str_t name);
+};
+
+[no_interface_string]
+interface ifaceNoString {
+  void mem();
+};
+
+struct struct2 {
+  ifaceBar bar;
+};
+

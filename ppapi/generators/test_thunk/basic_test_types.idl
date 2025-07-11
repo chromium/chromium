@@ -1,0 +1,58 @@
+/* Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file defines some basic types for use in testing.
+ */
+
+label Chrome {
+  M13 = 0.0,
+  M14 = 1.0,
+  M15 = 2.0
+};
+
+[version=0.0]
+describe {
+  /** Standard Ints. */
+  int8_t;
+  int16_t;
+  int32_t;
+  int64_t;
+  uint8_t;
+  uint16_t;
+  uint32_t;
+  uint64_t;
+  /** Small and large floats. */
+  double_t;
+  float_t;
+
+  /** Native file handle (int). */
+  handle_t;
+
+  /** Interface object (void *). */
+  interface_t;
+
+  /** Used for padding, should be (u)int8_t */
+  char;
+
+  /** Pointer to memory (void *). */
+  mem_t;
+
+  /** Pointer to null terminated string (char *). */
+  str_t;
+
+  /** No return value. */
+  void;
+
+  /** Pointer to pointer to memory (void **). */
+  blob_t;
+
+  /** Pepper types */
+  PP_Bool;
+  PP_Instance;
+  PP_Resource;
+  PP_Var;
+};
+

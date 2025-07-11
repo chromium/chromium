@@ -1,0 +1,50 @@
+/*
+ * Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file will test that the IDL snippet matches the comment.
+ */
+
+label Chrome {
+  M14=1.0
+};
+
+/* typedef uint8_t s_array[3]; */
+typedef uint8_t[3] s_array;
+
+/* typedef enum { esv1 = 1, esv2 = 2 } senum; */
+enum senum {
+  esv1=1,
+  esv2=2
+};
+
+/* struct st1 { int32_t i; senum j; }; */
+struct st1 {
+  int32_t i;
+  senum j;
+};
+
+/* struct st2 { s_array pixels[640][480]; }; */
+struct st2 {
+  s_array[640][480] pixels;
+};
+
+/* typedef float (*func_t)(const s_array data); */
+typedef float_t func_t([in] s_array data); 
+
+/* typedef func_t (*findfunc_t)(const char* x); */
+typedef func_t findfunc_t([in] str_t x);
+
+/*
+ * struct sfoo {
+ *  s_array screen[480][640];
+ *  findfunc_t myfunc;
+ * };
+ */
+struct sfoo {
+  s_array[480][640] screen;
+  findfunc_t myfunc;
+};

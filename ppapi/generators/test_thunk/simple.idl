@@ -1,0 +1,39 @@
+/* Copyright 2012 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+[generate_thunk]
+
+/**
+ * This file defines the <code>PPB_Simple</code> interface.
+ */
+
+label Chrome {
+  M13 = 0.5,
+  M14 = 1.0,
+  M15 = 1.5
+};
+
+interface PPB_Simple {
+  PP_Resource Create([in] PP_Instance instance);
+
+  PP_Bool IsSimple([in] PP_Resource resource);
+
+  [deprecate=1.0]
+  void PostMessage([in] PP_Instance instance, [in] PP_Var message);
+
+  uint32_t DoUint32Instance([in] PP_Instance instance);
+
+  [version=1.5]
+  uint32_t DoUint32Instance([in] PP_Instance instance,
+                            [in] PP_Resource resource);
+
+  uint32_t DoUint32Resource([in] PP_Resource instance);
+
+  [report_errors=False]
+  uint32_t DoUint32ResourceNoErrors([in] PP_Resource instance);
+
+  [version=1.0, on_failure="12"]
+  int32_t OnFailure12([in] PP_Instance instance);
+};

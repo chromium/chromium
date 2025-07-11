@@ -1,0 +1,161 @@
+/*
+ * Copyright 2011 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file will test that the pnacl-generated wrapper functions match
+ * the comments in this IDL.
+ */
+
+label Chrome {
+  M13 = 0.0,
+  M14 = 1.0,
+  M15 = 2.0
+};
+
+describe {
+  void;
+  mem_t;
+  int32_t;
+};
+
+[passByValue, returnByValue] struct some_struct {
+  mem_t X;
+  int32_t Y;
+};
+
+struct some_struct2 {
+  mem_t X;
+  int32_t Y;
+};
+
+[union, passByValue, returnByValue] struct some_union {
+  mem_t X;
+  int32_t Y;
+};
+
+/*
+ * static int32_t
+ * Pnacl_M15_PPB_Iface_struct_wrap_foo1(int32_t a, struct some_struct* b) {
+ *   const struct PPB_Iface_struct_wrap_2_0 *iface =
+ *     Pnacl_WrapperInfo_PPB_Iface_struct_wrap_2_0.real_iface;
+ *   return iface->foo1(a, *b);
+ * }
+ */
+[version=2.0]
+interface PPB_Iface_struct_wrap {
+  int32_t foo1(int32_t a, [in] some_struct b);
+};
+
+/*
+ * static int32_t
+ * Pnacl_M15_PPB_Iface_union_wrap_foo1(int32_t a, union some_union* b) {
+ *   const struct PPB_Iface_union_wrap_2_0 *iface =
+ *     Pnacl_WrapperInfo_PPB_Iface_union_wrap_2_0.real_iface;
+ *   return iface->foo1(a, *b);
+ * }
+ */
+[version=2.0]
+interface PPB_Iface_union_wrap {
+  int32_t foo1(int32_t a, [in] some_union b);
+};
+
+
+[version=2.0]
+interface PPB_Iface_nowrap {
+  int32_t foo1(int32_t a, [in] some_struct2 b);
+};
+
+
+/*
+ * static
+ * int32_t Pnacl_M13_PPB_SomeWrap_foo1(struct some_struct* a) {
+ *   const struct PPB_SomeWrap_0_0 *iface =
+ *     Pnacl_WrapperInfo_PPB_SomeWrap_0_0.real_iface;
+ *   return iface->foo1(*a);
+ * }
+ * 
+ * static
+ * void Pnacl_M13_PPB_SomeWrap_foo2(struct some_struct* _struct_result,
+ *                                  int32_t a) {
+ *   const struct PPB_SomeWrap_0_0 *iface =
+ *     Pnacl_WrapperInfo_PPB_SomeWrap_0_0.real_iface;
+ *   *_struct_result = iface->foo2(a);
+ * }
+ */
+[version=0.0]
+interface PPB_SomeWrap {
+  int32_t foo1([in] some_struct a);
+  some_struct foo2([in] int32_t a);
+
+  /* Not generating wrapper methods for PPB_SomeWrap_1_0 */
+  [version=1.0]
+  int32_t foo1([in] some_struct[] a);
+  [version=1.0]
+  void foo2([in] int32_t a, [out] some_struct b);
+
+  /* Not generating wrapper methods for PPB_SomeWrap */
+  [version=2.0]
+  int32_t foo1([in] some_struct2 a);
+};
+
+
+/*
+ * static int32_t Pnacl_M13_PPP_SomeWrap_foo1(struct some_struct a) {
+ *   const struct PPP_SomeWrap_0_0 *iface =
+ *     Pnacl_WrapperInfo_PPP_SomeWrap_0_0.real_iface;
+ *   int32_t (*temp_fp)(struct some_struct* a) =
+ *     ((int32_t (*)(struct some_struct* a))iface->foo1);
+ *   return temp_fp(&a);
+ * }
+ *
+ * static struct some_struct Pnacl_M13_PPP_SomeWrap_foo2(int32_t a) {
+ *   const struct PPP_SomeWrap_0_0 *iface =
+ *     Pnacl_WrapperInfo_PPP_SomeWrap_0_0.real_iface;
+ *   void (*temp_fp)(struct some_struct* _struct_result, int32_t a) =
+ *     ((void (*)(struct some_struct* _struct_result, int32_t a))iface->foo2);
+ *   struct some_struct _struct_result;
+ *   temp_fp(&_struct_result, a);
+ *   return _struct_result;
+ * }
+ *
+ * static struct some_struct Pnacl_M14_PPP_SomeWrap_foo2(int32_t a) {
+ *   const struct PPP_SomeWrap_1_0 *iface =
+ *     Pnacl_WrapperInfo_PPP_SomeWrap_1_0.real_iface;
+ *   void (*temp_fp)(struct some_struct* _struct_result, int32_t a) =
+ *     ((void (*)(struct some_struct* _struct_result, int32_t a))iface->foo2);
+ *   struct some_struct _struct_result;
+ *   temp_fp(&_struct_result, a);
+ *   return _struct_result;
+ * }
+ *
+ * static int32_t Pnacl_M14_PPP_SomeWrap_foo1(const struct some_struct a[]) {
+ *   const struct PPP_SomeWrap_1_0 *iface =
+ *     Pnacl_WrapperInfo_PPP_SomeWrap_1_0.real_iface;
+ *   int32_t (*temp_fp)(const struct some_struct a[]) =
+ *     ((int32_t (*)(const struct some_struct a[]))iface->foo1);
+ *   return temp_fp(a);
+ * }
+ */
+[version=0.0]
+interface PPP_SomeWrap {
+  int32_t foo1([in] some_struct a);
+  some_struct foo2([in] int32_t a);
+
+  [version=1.0]
+  int32_t foo1([in] some_struct[] a);
+
+  /* Not generating wrapper interface for PPP_SomeWrap */
+  [version=2.0]
+  int32_t foo1([in] some_struct2 a);
+  [version=2.0]
+  void foo2([in] int32_t a);
+};
+
+[no_interface_string]
+interface PPP_NoIFString {
+  int32_t Dummy([in] some_struct a);
+};
+
