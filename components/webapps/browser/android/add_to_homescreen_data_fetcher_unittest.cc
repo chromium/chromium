@@ -421,22 +421,6 @@ TEST_F(AddToHomescreenDataFetcherTest, NoManifest) {
   CheckHistograms(histograms);
 }
 
-TEST_F(AddToHomescreenDataFetcherTest, NoManifestDesktopAndroid) {
-  if (!base::android::BuildInfo::GetInstance()->is_desktop()) {
-    GTEST_SKIP() << "Test runs only in desktop mode";
-  }
-  // Fake that `InstallableIconFetcher` generated the icon, which is the
-  // fallback behavior on desktop Android.
-  SetPrimaryIcon(GURL(kDefaultIconUrl));
-
-  ObserverWaiter waiter;
-  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
-  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
-             blink::mojom::DisplayMode::kStandalone,
-             AddToHomescreenParams::AppType::WEBAPK_DIY,
-             InstallableStatusCode::NO_MANIFEST);
-}
-
 TEST_F(AddToHomescreenDataFetcherTest, NoIconManifest) {
   // Test a manifest with no icons. This should use the short name and have
   // a generated icon (empty icon url).

@@ -212,11 +212,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   installable_status_code_ = data.GetFirstError();
 
-  // Desktop Android is allowed to install incompatible sites as apps.
-  // Regular Android installs them as shortcuts.
-  // TODO(b/362975239): Fix the compatibility check on desktop Android.
-  if (!webapk_compatible &&
-      !base::android::BuildInfo::GetInstance()->is_desktop()) {
+  if (!webapk_compatible) {
     PrepareToAddShortcut();
     return;
   }

@@ -307,10 +307,6 @@ void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
     if (!IsWebApkDisplayMode(display)) {
       display = DisplayMode::kMinimalUi;
     }
-  } else if (base::android::BuildInfo::GetInstance()->is_desktop()) {
-    if (!IsWebApkDisplayMode(display)) {
-      display = DisplayMode::kStandalone;
-    }
   } else {
     if (IsWebApkDisplayMode(display)) {
       display = DisplayMode::kMinimalUi;
