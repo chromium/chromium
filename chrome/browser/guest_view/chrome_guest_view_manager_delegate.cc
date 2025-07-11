@@ -39,7 +39,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-  // Check if guest belongs to glic and apply transparent background if so.
+  // Check if guest belongs to glic and apply specific customizations if so.
   glic::OnGuestAdded(guest_web_contents);
 #endif
 }

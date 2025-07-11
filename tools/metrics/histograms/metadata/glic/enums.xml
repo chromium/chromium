@@ -412,6 +412,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->
 
+<!-- LINT.IfChange(WebViewAutoPlayProgress) -->
+
+<enum name="WebViewAutoPlayProgress">
+  <int value="0" label="WebContentsObserver registered"/>
+  <int value="1" label="AutoPlay granted for primary RFH"/>
+  <int value="2" label="AutoPlay granted for other RFH"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/guest_util.cc:WebViewAutoPlayProgress) -->
+
 </enums>
 
 </histogram-configuration>

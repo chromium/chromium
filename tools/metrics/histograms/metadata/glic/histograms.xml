@@ -297,6 +297,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Host.WebView.AutoPlay" enum="WebViewAutoPlayProgress"
+    expires_after="2025-12-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>dewittj@google.com</owner>
+  <summary>
+    Debug histogram that tracks the internal steps that lead to the granting of
+    AutoPlay permissions to the renderer frame hosting Glic's embedded webview.
+    Samples are recorded when their respective events take place.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>

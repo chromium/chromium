@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -25,6 +26,16 @@
 namespace glic {
 
 namespace {
+
+// LINT.IfChange(WebViewAutoPlayProgress)
+enum class WebViewAutoPlayProgress {
+  kWebContentsObserverRegistered = 0,
+  kAutoPlayGrantedForPrimaryRFH = 1,
+  kAutoPlayGrantedForOtherRFH = 2,
+  kMaxValue = kAutoPlayGrantedForOtherRFH,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
+
 // Observes the glic webview's `WebContents`.
 class WebviewWebContentsObserver : public content::WebContentsObserver,
                                    public base::SupportsUserData::Data {
@@ -38,7 +49,15 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&client);
     client->AddAutoplayFlags(GetGuestOrigin(),
-                             blink::mojom::kAutoplayFlagHighMediaEngagement);
+                             blink::mojom::kAutoplayFlagForceAllow);
+    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin()
+            << "\" at " << (handle->IsInPrimaryMainFrame() ? "main " : "")
+            << "RFH with url=\"" << handle->GetURL() << "\"";
+    base::UmaHistogramEnumeration(
+        "Glic.Host.WebView.AutoPlay",
+        handle->IsInPrimaryMainFrame()
+            ? WebViewAutoPlayProgress::kAutoPlayGrantedForPrimaryRFH
+            : WebViewAutoPlayProgress::kAutoPlayGrantedForOtherRFH);
   }
 };
 
@@ -100,6 +119,12 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   guest_contents->SetUserData(
       "glic::WebviewWebContentsObserver",
       std::make_unique<WebviewWebContentsObserver>(guest_contents));
+  VLOG(1) << "Registered glic::WebviewWebContentsObserver for guest "
+             "WebContents with url=\""
+          << guest_contents->GetVisibleURL() << "\"";
+  base::UmaHistogramEnumeration(
+      "Glic.Host.WebView.AutoPlay",
+      WebViewAutoPlayProgress::kWebContentsObserverRegistered);
   return true;
 }
 
