@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -321,8 +322,10 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    storage_access_handle->SharedWorker(scope.GetExecutionContext(), "",
-                                        nullptr, scope.GetExceptionState());
+    storage_access_handle->SharedWorker(
+        scope.GetExecutionContext(),
+        MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(""), nullptr,
+        scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),

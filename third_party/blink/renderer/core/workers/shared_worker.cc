@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shared_worker_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sharedworkeroptions_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
@@ -81,10 +82,15 @@ SharedWorker::SharedWorker(ExecutionContext* context)
 }
 SharedWorker* SharedWorker::Create(
     ExecutionContext* context,
-    const String& url,
+    const V8UnionTrustedScriptURLOrUSVString* url,
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) {
-  return CreateImpl(context, url, name_or_options, exception_state,
+  String compliant_url = TrustedTypesCheckForScriptURL(
+      url, context, "SharedWorker", "create", exception_state);
+  if (exception_state.HadException()) {
+    return 0;
+  }
+  return CreateImpl(context, compliant_url, name_or_options, exception_state,
                     &To<LocalDOMWindow>(context)->GetPublicURLManager(),
                     /*connector_override=*/nullptr);
 }

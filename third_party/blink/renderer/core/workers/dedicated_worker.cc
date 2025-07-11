@@ -66,10 +66,11 @@
 
 namespace blink {
 
-DedicatedWorker* DedicatedWorker::Create(ExecutionContext* context,
-                                         const String& url,
-                                         const WorkerOptions* options,
-                                         ExceptionState& exception_state) {
+DedicatedWorker* DedicatedWorker::Create(
+    ExecutionContext* context,
+    const V8UnionTrustedScriptURLOrUSVString* url,
+    const WorkerOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(context->IsContextThread());
   UseCounter::Count(context, WebFeature::kWorkerStart);
   if (context->IsContextDestroyed()) {
@@ -78,7 +79,13 @@ DedicatedWorker* DedicatedWorker::Create(ExecutionContext* context,
     return nullptr;
   }
 
-  KURL script_request_url = ResolveURL(context, url, exception_state);
+  String compliant_url = TrustedTypesCheckForScriptURL(
+      url, context, "Worker", "constructor", exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  KURL script_request_url = ResolveURL(context, compliant_url, exception_state);
   if (!script_request_url.IsValid()) {
     // Don't throw an exception here because it's already thrown in
     // ResolveURL().

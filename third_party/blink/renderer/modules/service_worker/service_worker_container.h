@@ -57,6 +57,7 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class ServiceWorkerRegistration;
+class V8UnionTrustedScriptURLOrUSVString;
 
 class MODULES_EXPORT ServiceWorkerContainer final
     : public EventTarget,
@@ -84,13 +85,19 @@ class MODULES_EXPORT ServiceWorkerContainer final
 
   ScriptPromise<ServiceWorkerRegistration> registerServiceWorker(
       ScriptState*,
-      const String& pattern,
-      const RegistrationOptions*);
+      const V8UnionTrustedScriptURLOrUSVString* scriptURL,
+      const RegistrationOptions*,
+      ExceptionState&);
   ScriptPromise<ServiceWorkerRegistration> getRegistration(
       ScriptState*,
       const String& document_url);
   ScriptPromise<IDLSequence<ServiceWorkerRegistration>> getRegistrations(
       ScriptState*);
+
+  ScriptPromise<ServiceWorkerRegistration>
+  registerServiceWorkerWithoutTrustedTypes(ScriptState*,
+                                           const String& scriptURL,
+                                           const RegistrationOptions*);
 
   void startMessages();
 

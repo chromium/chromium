@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -336,12 +337,21 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
 ScriptPromise<ServiceWorkerRegistration>
 ServiceWorkerContainer::registerServiceWorker(
     ScriptState* script_state,
-    const String& url,
-    const RegistrationOptions* options) {
+    const V8UnionTrustedScriptURLOrUSVString* untrusted_url,
+    const RegistrationOptions* options,
+    ExceptionState& exception_state) {
+  // step 2 of
+  // https://w3c.github.io/ServiceWorker/#dom-serviceworkercontainer-register
+  String url = TrustedTypesCheckForScriptURL(
+      untrusted_url, GetExecutionContext(), "ServiceWorkerContainer",
+      "register", exception_state);
+  if (exception_state.HadException()) {
+    return {};
+  }
+
   if (!script_state->ContextIsValid()) {
-    V8ThrowDOMException::Throw(script_state->GetIsolate(),
-                               DOMExceptionCode::kInvalidStateError,
-                               "The document is in an invalid state.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The document is in an invalid state.");
     return {};
   }
 
@@ -599,6 +609,17 @@ ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
   provider_->GetRegistrations(std::move(callbacks));
 
   return promise;
+}
+
+ScriptPromise<ServiceWorkerRegistration>
+ServiceWorkerContainer::registerServiceWorkerWithoutTrustedTypes(
+    ScriptState* script_state,
+    const String& script_url,
+    const RegistrationOptions* options) {
+  return registerServiceWorker(
+      script_state,
+      MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(script_url),
+      options, ASSERT_NO_EXCEPTION);
 }
 
 // https://w3c.github.io/ServiceWorker/#dom-serviceworkercontainer-startmessages

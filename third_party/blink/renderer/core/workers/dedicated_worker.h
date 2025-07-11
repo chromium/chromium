@@ -44,6 +44,7 @@ class ExceptionState;
 class ExecutionContext;
 class PostMessageOptions;
 class ScriptState;
+class V8UnionTrustedScriptURLOrUSVString;
 class WebContentSettingsClient;
 class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
@@ -66,7 +67,7 @@ class CORE_EXPORT DedicatedWorker final
 
  public:
   static DedicatedWorker* Create(ExecutionContext*,
-                                 const String& url,
+                                 const V8UnionTrustedScriptURLOrUSVString* url,
                                  const WorkerOptions*,
                                  ExceptionState&);
 

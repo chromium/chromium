@@ -48,7 +48,7 @@ enum SharedWorkerSameSiteCookies { "all", "none" };
     Exposed=Window,
     RuntimeEnabled=SharedWorker
 ] interface SharedWorker : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
+    [CallWith=ExecutionContext, RaisesException] constructor((USVString or TrustedScriptURL) scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
     readonly attribute MessagePort port;
 };
 

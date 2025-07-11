@@ -435,9 +435,15 @@ BroadcastChannel* StorageAccessHandle::BroadcastChannel(
 
 blink::SharedWorker* StorageAccessHandle::SharedWorker(
     ExecutionContext* context,
-    const String& url,
+    const V8UnionTrustedScriptURLOrUSVString* url,
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) const {
+  String compliant_url = TrustedTypesCheckForScriptURL(
+      url, context, "StorageAccessHandle", "SharedWorker", exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
   if (!storage_access_types_->all() && !storage_access_types_->sharedWorker()) {
     exception_state.ThrowSecurityError(kSharedWorkerNotRequested);
     return nullptr;
@@ -457,9 +463,9 @@ blink::SharedWorker* StorageAccessHandle::SharedWorker(
   GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use);
-  return SharedWorker::Create(PassKey(), context, url, name_or_options,
-                              exception_state, public_url_manager,
-                              &shared_worker_connector);
+  return SharedWorker::Create(PassKey(), context, compliant_url,
+                              name_or_options, exception_state,
+                              public_url_manager, &shared_worker_connector);
 }
 
 namespace bindings {

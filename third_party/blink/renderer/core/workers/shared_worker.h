@@ -47,6 +47,7 @@ namespace blink {
 class ExceptionState;
 class StorageAccessHandle;
 class V8UnionSharedWorkerOptionsOrString;
+class V8UnionTrustedScriptURLOrUSVString;
 
 class CORE_EXPORT SharedWorker final
     : public AbstractWorker,
@@ -60,7 +61,7 @@ class CORE_EXPORT SharedWorker final
   // recorded in `exception_state`.
   static SharedWorker* Create(
       ExecutionContext* context,
-      const String& url,
+      const V8UnionTrustedScriptURLOrUSVString* url,
       const V8UnionSharedWorkerOptionsOrString* name_or_options,
       ExceptionState& exception_state);
 

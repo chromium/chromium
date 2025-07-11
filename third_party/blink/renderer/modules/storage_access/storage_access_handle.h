@@ -28,6 +28,7 @@ class SharedWorker;
 class StorageArea;
 class StorageEstimate;
 class V8UnionSharedWorkerOptionsOrString;
+class V8UnionTrustedScriptURLOrUSVString;
 
 class MODULES_EXPORT StorageAccessHandle final
     : public ScriptWrappable,
@@ -72,7 +73,7 @@ class MODULES_EXPORT StorageAccessHandle final
       ExceptionState& exception_state) const;
   blink::SharedWorker* SharedWorker(
       ExecutionContext* context,
-      const String& url,
+      const V8UnionTrustedScriptURLOrUSVString* url,
       const V8UnionSharedWorkerOptionsOrString* name_or_options,
       ExceptionState& exception_state) const;
 
