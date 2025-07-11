@@ -138,59 +138,10 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       IOSCredentialProviderPromoSource::kAutofillUsed, 1);
 }
 
-// Tests that tapping the primary CTA in both the first and second step of the
-// promo will result in two primary actions being recorded correctly.
-TEST_F(CredentialProviderPromoCoordinatorTest,
-       CredentialProviderPromoTwoStepPrimaryActionRecorded) {
-  // Disable the Passkeys M2 feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kIOSPasskeysM2);
-
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
-      0);
-  // Trigger the promo with PasswordSaved.
-  // The primary CTA on the first step of the promo is 'learn more'.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
-
-  // Perform the action. Coordinator will record the action and set
-  // `promoContext` to 'learn more'
-  ASSERT_TRUE([coordinator_
-      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
-  [(id<ConfirmationAlertActionHandler>)
-          coordinator_ confirmationAlertPrimaryAction];
-
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
-      1);
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::
-          kGoToSettings,
-      0);
-
-  // When the `promoContext` is 'learn more', the primary CTA is 'go to
-  // settings'.
-  [(id<ConfirmationAlertActionHandler>)
-          coordinator_ confirmationAlertPrimaryAction];
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::
-          kGoToSettings,
-      1);
-}
-
 // Tests that tapping the primary CTA results in the actions being recorded
 // correctly.
 TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoPrimaryActionRecorded) {
-  // Enable the Passkeys M2 feature.
-  base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
-
   int final_learn_more_action_count = 1;
   int final_turn_on_autofill_action_count = 0;
   int final_go_to_settings_action_count = 1;
@@ -261,9 +212,6 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
   // The "Turn on AutoFill…" action is only available on iOS 18+.
   if (@available(iOS 18.0, *)) {
-    // Enable the Passkeys M2 feature.
-    base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
-
     // Make sure bucket counts are all initially zero.
     histogram_tester_->ExpectTotalCount(
         kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
@@ -358,7 +306,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
   }
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIOSPasskeysM2, kIOSExpandedTips}, {});
+  feature_list.InitAndEnableFeature(kIOSExpandedTips);
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnSetUpListHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,

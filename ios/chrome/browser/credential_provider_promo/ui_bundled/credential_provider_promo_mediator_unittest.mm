@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/with_feature_override.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -15,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -48,25 +46,16 @@ PromoStrings ExpectedFirstStepPromoStrings() {
   NSString* secondary_action_string;
   NSString* tertiary_action_string;
 
-  if (IOSPasskeysM2Enabled()) {
-    if (@available(iOS 18.0, *)) {
-      title_string =
-          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
-      primary_action_string = l10n_util::GetNSString(
-          IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
-    } else {
-      title_string =
-          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
-      subtitle_string =
-          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
-      primary_action_string =
-          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
-    }
+  if (@available(iOS 18.0, *)) {
+    title_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
+    primary_action_string = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
   } else {
     title_string =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
-    subtitle_string = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
+    subtitle_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
     primary_action_string =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
   }
@@ -94,9 +83,7 @@ PromoStrings ExpectedLearnMorePromoStrings() {
   NSString* ios_settings_title = l10n_util::GetNSString(
       IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
   subtitle_string = l10n_util::GetNSStringF(
-      IOSPasskeysM2Enabled()
-          ? IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE
-          : IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE,
       base::SysNSStringToUTF16(ios_settings_title));
 
   primary_action_string =
@@ -113,12 +100,9 @@ PromoStrings ExpectedLearnMorePromoStrings() {
 }  // namespace
 
 // Test fixture for testing the CredentialProviderPromoMediator class.
-class CredentialProviderPromoMediatorTest
-    : public PlatformTest,
-      public base::test::WithFeatureOverride {
+class CredentialProviderPromoMediatorTest : public PlatformTest {
  protected:
-  CredentialProviderPromoMediatorTest()
-      : base::test::WithFeatureOverride(kIOSPasskeysM2) {
+  CredentialProviderPromoMediatorTest() {
     CreateCredentialProviderPromoMediator();
   }
 
@@ -177,7 +161,7 @@ class CredentialProviderPromoMediatorTest
 
 // Tests that promo is NOT displayed when the user has already enabled the
 // Credential Provider Extension.
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderExtensionEnabled) {
   local_state()->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
@@ -190,7 +174,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 
 // Tests that promo will NOT be displayed when the promo has already been
 // displayed in the current app session.
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoAlreadySeen) {
   EXPECT_FALSE([mediator_
       canShowCredentialProviderPromoWithTrigger:
@@ -200,7 +184,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 
 // Tests that promo will NOT be displayed when the user has previously seen the
 // promo and selected "No Thanks".
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoNoThanksSelected) {
   local_state()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo, true);
 
@@ -212,7 +196,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 
 // Tests that the promo will be displayed when all the trigger requirements are
 // met.
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoRequirementsMet) {
   EXPECT_TRUE([mediator_
       canShowCredentialProviderPromoWithTrigger:
@@ -221,7 +205,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 }
 
 // Tests that the promo will always be displayed when the trigger is SetUpList.
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoSetUpListTrigger) {
   local_state()->SetBoolean(prefs::kIosCredentialProviderPromoStopPromo, true);
   EXPECT_TRUE([mediator_ canShowCredentialProviderPromoWithTrigger:
@@ -233,7 +217,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 // - Is a “First Step” promo
 // - Was triggered by the user successfully logging in using an existing
 // password
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        ConsumerContent_FirstStep_SuccessfulLoginUsingExistingPassword) {
   ExpectConsumerSetFieldsForFirstStepNoAnimation();
 
@@ -250,7 +234,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 //  - Was a “First Step” promo
 //  - Was triggered by the user successfully logging in using an existing
 //  password
-TEST_P(
+TEST_F(
     CredentialProviderPromoMediatorTest,
     ConsumerContent_FirstStep_RemindMeLater_AfterFirstStepSuccessfulLoginUsingExistingPassword) {
   // Need to check for this method call twice: once for the promo
@@ -274,7 +258,7 @@ TEST_P(
 //  - Is a “Learn More” promo
 //  - Was triggered by the user successfully logging in using an existing
 //  password
-TEST_P(CredentialProviderPromoMediatorTest,
+TEST_F(CredentialProviderPromoMediatorTest,
        ConsumerContent_LearnMore_SuccessfulLoginUsingExistingPassword) {
   ExpectConsumerSetFieldsForLearnMore();
 
@@ -291,7 +275,7 @@ TEST_P(CredentialProviderPromoMediatorTest,
 //  - Was a “Learn More” promo
 //  - Was triggered by the user successfully logging in using an existing
 //  password
-TEST_P(
+TEST_F(
     CredentialProviderPromoMediatorTest,
     ConsumerContent_LearnMore_RemindMeLater_AfterSuccessfulLoginUsingExistingPassword) {
   // Need to check for each of these method calls twice: once for the promo
@@ -310,5 +294,3 @@ TEST_P(
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CredentialProviderPromoMediatorTest);

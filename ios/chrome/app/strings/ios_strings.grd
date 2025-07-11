@@ -1723,9 +1723,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS" desc="Text of the primary button in the 'Learn More' step view of the Credential Provider Exention Promo. [iOS only]">
         Go to Settings…
       </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE" desc="Title text of the inital step Credential Provider Exention promo. [iOS only]">
-        Get your saved passwords in any app with one tap
-      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW" desc="Text of the primary button in the inital step view of the Credential Provider Exention Promo. [iOS only]">
         Learn how
       </message>

@@ -119,19 +119,17 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
     if (@available(iOS 18.0, *)) {
-      if (IOSPasskeysM2Enabled()) {
-        // Show the prompt to allow the app to be turned on as a credential
-        // provider.
-        __weak __typeof(self) weakSelf = self;
-        [ASSettingsHelper
-            requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
-                BOOL appWasEnabledForAutoFill) {
-              [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
-                            appWasEnabledForAutoFill];
-            }];
-        [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
-        return;
-      }
+      // Show the prompt to allow the app to be turned on as a credential
+      // provider.
+      __weak __typeof(self) weakSelf = self;
+      [ASSettingsHelper
+          requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+              BOOL appWasEnabledForAutoFill) {
+            [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
+                          appWasEnabledForAutoFill];
+          }];
+      [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
+      return;
     }
 
     // Show the screen informing the user on how they can set the app as a
@@ -173,10 +171,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 
 // Presents the 'learn more' step of the feature.
 - (void)presentLearnMore {
-  // The 'learn more' step shouldn't be presented on iOS 18+ when the Passkeys
-  // M2 feature is enabled.
+  // The 'learn more' step shouldn't be presented on iOS 18+.
   if (@available(iOS 18.0, *)) {
-    CHECK(!IOSPasskeysM2Enabled());
+    NOTREACHED();
   }
 
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
@@ -247,7 +244,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     (CredentialProviderPromoTrigger)trigger {
   if (trigger == CredentialProviderPromoTrigger::SetUpList) {
     if (@available(iOS 18.0, *)) {
-      if (IOSPasskeysM2Enabled() && IsIOSExpandedTipsEnabled()) {
+      if (IsIOSExpandedTipsEnabled()) {
         // Go to the first step, which allows enabling CPE in-app.
         return CredentialProviderPromoContext::kFirstStep;
       }

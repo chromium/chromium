@@ -276,14 +276,8 @@
     <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE" desc="Branded title on the Contextual Panel screen. The string is lowercase on purpose.">
         chromium
       </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE" desc="Subtitle text of the inital step view of Credential Provider Exention promo. [iOS only]">
-        To easily get your saved passwords in your other apps, use Chromium for AutoFill
-      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE" desc="Subitle text of the instructions page on how to set up Chromium as the Credential Provider. [iOS only]">
         From "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password Options</ex></ph>" settings, toggle "Chromium" on
-      </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
-        From your device's settings, open "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password options</ex></ph>" and select "Chromium"
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
         Choose Chromium for AutoFill

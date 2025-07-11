@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
 
 #import "base/values.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -140,8 +139,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
 
-  if ((!self.alertScreen.image && self.shouldShowAnimation) ||
-      (!self.shouldShowAnimation && IOSPasskeysM2Enabled())) {
+  if (!self.shouldShowAnimation || !self.alertScreen.image) {
     self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
         kCustomSpacingAtTopIfNoNavigationBar;
   }
@@ -202,8 +200,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
       self.alertScreen.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    IOSPasskeysM2Enabled() ? self.alertScreen.preferredHeightDetent
-                           : [UISheetPresentationControllerDetent mediumDetent],
+    self.alertScreen.preferredHeightDetent,
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kPreferredCornerRadius;
