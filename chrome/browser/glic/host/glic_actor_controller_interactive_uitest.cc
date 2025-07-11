@@ -113,28 +113,19 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                   AsInstrumentedWebContents(el)->web_contents();
               std::string script = content::JsReplace(
                   R"js(
-                              (async () => {
-                                const base64ToArrayBuffer = (base64) => {
-                                  const bytes = window.atob(base64);
-                                  const len = bytes.length;
-                                  const ret = new Uint8Array(len);
-                                  for (var i = 0; i < len; i++) {
-                                    ret[i] = bytes.charCodeAt(i);
-                                  }
-                                  return ret.buffer;
-                                }
-                                try {
-                                  await client.browser.actInFocusedTab({
-                                    actionProto: base64ToArrayBuffer($1),
-                                    tabContextOptions: $2
-                                  });
-                                  // Return success.
-                                  return $3;
-                                } catch (err) {
-                                  return err.reason;
-                                }
-                              })();
-                            )js",
+                        (async () => {
+                          try {
+                            await client.browser.actInFocusedTab({
+                              actionProto: Uint8Array.fromBase64($1).buffer,
+                              tabContextOptions: $2
+                            });
+                            // Return success.
+                            return $3;
+                          } catch (err) {
+                            return err.reason;
+                          }
+                        })();
+                      )js",
                   std::move(proto_provider).Run(), std::move(context_options),
                   kResultSuccess);
               *result_out = content::EvalJs(glic_contents, std::move(script))
