@@ -186,7 +186,7 @@ bool BufferQueue::SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable) {
   }
 
   skia_output_surface_->SetSharedImagePurgeable(buffer.mailbox, purgeable);
-  buffer.purgeable = true;
+  buffer.purgeable = purgeable;
   return true;
 }
 
