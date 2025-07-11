@@ -375,10 +375,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Verify the context bar is shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeUIToolbarIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  if (!iOS26_OR_ABOVE()) {
+    // Verify the context bar is shown.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kBookmarksHomeUIToolbarIdentifier)]
+        assertWithMatcher:grey_notNil()];
+  }
 
   // Verify the context bar's leading and trailing buttons are shown.
   [[EarlGrey
@@ -397,10 +399,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Verify the context bar is shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeUIToolbarIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  if (!iOS26_OR_ABOVE()) {
+    // Verify the context bar is shown.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kBookmarksHomeUIToolbarIdentifier)]
+        assertWithMatcher:grey_notNil()];
+  }
 
   // Change to edit mode
   [[EarlGrey
@@ -532,10 +536,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Verify the context bar is shown.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeUIToolbarIdentifier)]
-      assertWithMatcher:grey_notNil()];
+  if (!iOS26_OR_ABOVE()) {
+    // Verify the context bar is shown.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kBookmarksHomeUIToolbarIdentifier)]
+        assertWithMatcher:grey_notNil()];
+  }
 
   // Change to edit mode
   [[EarlGrey

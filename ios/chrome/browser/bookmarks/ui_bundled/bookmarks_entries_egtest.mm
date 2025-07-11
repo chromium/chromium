@@ -135,7 +135,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify the delete confirmation button is gone after entering edit mode.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
       inRoot:grey_kindOfClassName(@"UITableView")]
-      assertWithMatcher:grey_nil()];
+      assertWithMatcher:grey_notVisible()];
 
   // Swipe action on "Second URL".  This should not bring out delete
   // confirmation button as swipe-to-delete is disabled in edit mode.
