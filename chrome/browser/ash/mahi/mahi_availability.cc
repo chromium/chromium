@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -22,10 +21,6 @@
 namespace ash::mahi_availability {
 
 std::optional<bool> CanUseMahiService() {
-  if (!manta::features::IsMantaServiceEnabled()) {
-    return false;
-  }
-
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kMahiRestrictionsOverride)) {
     return true;

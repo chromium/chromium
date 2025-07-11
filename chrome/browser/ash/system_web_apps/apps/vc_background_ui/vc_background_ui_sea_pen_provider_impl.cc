@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "components/manta/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/url_data_source.h"
@@ -79,7 +78,6 @@ void VcBackgroundUISeaPenProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
   CHECK(::ash::features::IsVcBackgroundReplaceEnabled());
-  CHECK(::manta::features::IsMantaServiceEnabled());
   ::ash::personalization_app::PersonalizationAppSeaPenProviderBase::
       BindInterface(std::move(receiver));
 }

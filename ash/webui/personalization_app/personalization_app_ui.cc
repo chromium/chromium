@@ -38,7 +38,6 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -555,8 +554,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsCrosPrivacyHubLocationEnabled());
 
   const bool common_sea_pen_requirements =
-      sea_pen_provider_->IsEligibleForSeaPen() &&
-      manta::features::IsMantaServiceEnabled();
+      sea_pen_provider_->IsEligibleForSeaPen();
   source->AddBoolean("isSeaPenEnabled",
                      ::ash::features::IsSeaPenEnabled() &&
                          common_sea_pen_requirements);

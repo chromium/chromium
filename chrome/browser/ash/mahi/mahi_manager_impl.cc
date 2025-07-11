@@ -49,7 +49,6 @@
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -85,7 +84,7 @@ enum class CacheHit {
 // Provider creation -----------------------------------------------------------
 enum class ProviderCreationStatus {
   kOk = 0,
-  kMantaServiceDisabled = 1,
+  // kMantaServiceDisabled = 1,
   kProfileUnavailable = 2,
   kMantaServiceIsNull = 3,
   kMantaServiceFailedToCreate = 4,
@@ -185,11 +184,6 @@ MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
 }
 
 std::unique_ptr<manta::MahiProvider> CreateProvider() {
-  if (!manta::features::IsMantaServiceEnabled()) {
-    LogProviderCreationStatus(ProviderCreationStatus::kMantaServiceDisabled);
-    return nullptr;
-  }
-
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
     LogProviderCreationStatus(ProviderCreationStatus::kProfileUnavailable);

@@ -36,7 +36,6 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -86,7 +85,6 @@ PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
 void PersonalizationAppSeaPenProviderBase::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
-  CHECK(manta::features::IsMantaServiceEnabled());
   CHECK(::ash::features::IsSeaPenEnabled() ||
         ::ash::features::IsVcBackgroundReplaceEnabled());
   sea_pen_receiver_.reset();

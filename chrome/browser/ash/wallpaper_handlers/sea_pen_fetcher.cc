@@ -233,7 +233,6 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       : snapper_provider_(std::move(snapper_provider)) {
     CHECK(ash::features::IsSeaPenEnabled() ||
           ash::features::IsVcBackgroundReplaceEnabled());
-    CHECK(manta::features::IsMantaServiceEnabled());
   }
 
   SeaPenFetcherImpl(const SeaPenFetcherImpl&) = delete;

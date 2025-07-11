@@ -10,10 +10,6 @@
 
 namespace manta::features {
 
-// This flag is used for enabling the Manta Service, a profile keyed service for
-// the google chrome Manta project.
-COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kMantaService);
-
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kAnchovyUseProdServer);
 
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kOrcaUseProdServer);
@@ -21,8 +17,6 @@ COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kOrcaUseProdServer);
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kSeaPenUseProdServer);
 
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kWalrusUseProdServer);
-
-COMPONENT_EXPORT(MANTA) bool IsMantaServiceEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsAnchovyUseProdServerEnabled();
 

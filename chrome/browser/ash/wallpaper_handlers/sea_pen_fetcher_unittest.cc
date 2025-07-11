@@ -25,7 +25,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -199,7 +198,6 @@ class SeaPenFetcherTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {
             ash::features::kFeatureManagementSeaPen,
-            manta::features::kMantaService,
         },
         {});
   }
@@ -294,7 +292,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
       },
       {});
@@ -391,7 +388,7 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kFeatureManagementSeaPen, manta::features::kMantaService,
+      {ash::features::kFeatureManagementSeaPen,
        ash::features::kSeaPenTextInput},
       {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
@@ -433,7 +430,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kFeatureManagementSeaPen, manta::features::kMantaService,
+      {ash::features::kFeatureManagementSeaPen,
        ash::features::kSeaPenTextInput},
       {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
@@ -935,7 +932,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnails_StoresGenerativePrompts) {
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
       },
       {});
@@ -993,7 +989,6 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
       },
       {
@@ -1043,7 +1038,6 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_UsesGenerativePrompt) {
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
           ash::features::kSeaPenQueryRewrite,
       },
@@ -1094,7 +1088,6 @@ TEST_F(SeaPenFetcherTest,
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
           ash::features::kSeaPenQueryRewrite,
       },
@@ -1138,7 +1131,6 @@ TEST_F(SeaPenFetcherTest, FetchTemplateWallpaper_UsesTemplate) {
   scoped_feature_list_.InitWithFeatures(
       {
           ash::features::kFeatureManagementSeaPen,
-          manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
           ash::features::kSeaPenQueryRewrite,
       },

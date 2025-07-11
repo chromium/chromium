@@ -16609,7 +16609,6 @@
                         "ime_allowlist": "[\"xkb:es::spa\"]"
                     },
                     "enable_features": [
-                        "MantaService",
                         "OrcaDogfood",
                         "OrcaOnWorkspace"
                     ]
@@ -16617,7 +16616,6 @@
                 {
                     "name": "Enabled_Pre_121_Dogfood",
                     "enable_features": [
-                        "MantaService",
                         "OrcaDogfood"
                     ]
                 }

@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
-#include "components/manta/features.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/display/screen.h"
 
@@ -88,7 +87,6 @@ void PersonalizationAppSeaPenProviderImpl::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
   CHECK(::ash::features::IsSeaPenEnabled());
-  CHECK(manta::features::IsMantaServiceEnabled());
   PersonalizationAppSeaPenProviderBase::BindInterface(std::move(receiver));
 }
 
