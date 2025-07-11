@@ -82,7 +82,7 @@ void PostTaskForActCallback(ActorTask::ActCallback callback,
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -92,7 +92,7 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_(tab),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -259,7 +259,6 @@ void ExecutionEngine::Act(const BrowserAction& action,
     }
 
     ui_event_dispatcher_->OnPreFirstAct(
-        profile_,
         ui::UiEventDispatcher::FirstActInfo{
             .task_id = task_->id(),
             .tab_handle = acting_tab_handles.empty()
@@ -326,7 +325,6 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     // it even the right interface? Different sets of tabs might be acted on in
     // followup sequences...
     ui_event_dispatcher_->OnPreFirstAct(
-        profile_,
         ui::UiEventDispatcher::FirstActInfo{
             .task_id = task_->id(),
             .tab_handle = acting_tab_handles.empty()
@@ -440,7 +438,7 @@ void ExecutionEngine::ExecuteNextAction() {
 
   SetState(State::kUiPreTool);
   ui_event_dispatcher_->OnPreTool(
-      profile_, GetInProgressAction(),
+      GetInProgressAction(),
       base::BindOnce(&ExecutionEngine::FinishedUiPreTool, GetWeakPtr()));
 }
 
@@ -474,7 +472,7 @@ void ExecutionEngine::FinishedToolController(mojom::ActionResultPtr result) {
 
   SetState(State::kUiPostTool);
   ui_event_dispatcher_->OnPostTool(
-      profile_, GetInProgressAction(),
+      GetInProgressAction(),
       base::BindOnce(&ExecutionEngine::FinishedUiPostTool, GetWeakPtr()));
 }
 

@@ -8,7 +8,6 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class Profile;
 namespace actor {
 class ToolRequest;
 namespace ui {
@@ -19,23 +18,17 @@ class MockUiEventDispatcher : public UiEventDispatcher {
   ~MockUiEventDispatcher() override;
   MOCK_METHOD(void,
               OnPreTool,
-              (Profile * profile,
-               const ToolRequest& tool_request,
-               UiCompleteCallback callback),
+              (const ToolRequest& tool_request, UiCompleteCallback callback),
               (override));
 
   MOCK_METHOD(void,
               OnPostTool,
-              (Profile * profile,
-               const ToolRequest& tool_request,
-               UiCompleteCallback callback),
+              (const ToolRequest& tool_request, UiCompleteCallback callback),
               (override));
 
   MOCK_METHOD(void,
               OnPreFirstAct,
-              (Profile * profile,
-               const FirstActInfo& first_act_info,
-               UiCompleteCallback callback),
+              (const FirstActInfo& first_act_info, UiCompleteCallback callback),
               (override));
 };
 

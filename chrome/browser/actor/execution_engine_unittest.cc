@@ -50,7 +50,7 @@ template <typename T>
 auto UiEventDispatcherCallback(
     base::RepeatingCallback<mojom::ActionResultPtr()> result_fn) {
   return [result_fn = std::move(result_fn)](
-             Profile*, const T&,
+             const T&,
              ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
     std::move(callback).Run(result_fn.Run());
   };
@@ -133,14 +133,14 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     task_->SetIdForTesting(0);
     raw_execution_engine->SetOwner(task_.get());
 
-    ON_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _, _))
+    ON_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _))
         .WillByDefault(Invoke(Invoke(
             UiEventDispatcherCallback<ui::UiEventDispatcher::FirstActInfo>(
                 base::BindRepeating(MakeOkResult)))));
-    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _, _))
+    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _))
         .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
             base::BindRepeating(MakeOkResult))));
-    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _, _))
+    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _))
         .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
             base::BindRepeating(MakeOkResult))));
   }
@@ -227,15 +227,12 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(profile(), _, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnPreTool(Property(&ToolRequest::JournalEvent, Eq("Click")), _))
       .Times(1);
   EXPECT_CALL(*mock_ui_event_dispatcher_,
-              OnPreTool(profile(),
-                        Property(&ToolRequest::JournalEvent, Eq("Click")), _))
-      .Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_,
-              OnPostTool(profile(),
-                         Property(&ToolRequest::JournalEvent, Eq("Click")), _))
+              OnPostTool(Property(&ToolRequest::JournalEvent, Eq("Click")), _))
       .Times(1);
   EXPECT_TRUE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
@@ -244,21 +241,20 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
 }
 
 TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(profile(), _, _))
-      .Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(0);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
                    MakeClickCallback(kFakeContentNodeId)));
 }
 
 TEST_F(ExecutionEngineTest, UiOnPreFirstActFails) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(profile(), _, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _))
       .WillOnce(
           Invoke(UiEventDispatcherCallback<ui::UiEventDispatcher::FirstActInfo>(
               base::BindRepeating(MakeErrorResult))));
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(0);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
@@ -266,12 +262,11 @@ TEST_F(ExecutionEngineTest, UiOnPreFirstActFails) {
 }
 
 TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(profile(), _, _))
-      .Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _))
       .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeErrorResult))));
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _)).Times(0);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
@@ -279,10 +274,9 @@ TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
 }
 
 TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(profile(), _, _))
-      .Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(profile(), _, _)).Times(1);
-  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(profile(), _, _))
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreFirstAct(_, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(1);
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _))
       .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
           base::BindRepeating(MakeErrorResult))));
   EXPECT_FALSE(

@@ -30,24 +30,21 @@ class UiEventDispatcher {
 
   // Should be called before the ToolRequest is actuated.  Callback will be made
   // once the UI has completed its pre-tool.
-  virtual void OnPreTool(Profile* profile,
-                         const ToolRequest& tool_request,
+  virtual void OnPreTool(const ToolRequest& tool_request,
                          UiCompleteCallback callback) = 0;
 
   // Should be called after the ToolRequest is actuated.  Callback will be made
   // once the UI has completed its post-tool.
-  virtual void OnPostTool(Profile* profile,
-                          const ToolRequest& tool_request,
+  virtual void OnPostTool(const ToolRequest& tool_request,
                           UiCompleteCallback callback) = 0;
 
   // Should be called before the first ToolRequest is processed.  Callback will
   // be made once the UI has initialized.
-  virtual void OnPreFirstAct(Profile* profile,
-                             const FirstActInfo& first_act_info,
+  virtual void OnPreFirstAct(const FirstActInfo& first_act_info,
                              UiCompleteCallback callback) = 0;
 };
 
-std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher();
+std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(Profile* profile);
 }  // namespace ui
 }  // namespace actor
 

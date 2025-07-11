@@ -145,28 +145,24 @@ GetUiStateManager(Profile* profile) {
 
 class UiEventDispatcherImpl : public UiEventDispatcher {
  public:
-  UiEventDispatcherImpl() = default;
+  explicit UiEventDispatcherImpl(Profile* profile) : profile_(profile) {}
   ~UiEventDispatcherImpl() override = default;
 
-  void OnPreTool(Profile* profile,
-                 const ToolRequest& tr,
-                 UiCompleteCallback callback) override {
-    On<PreToolEventsFn>(profile, tr, std::move(callback));
+  void OnPreTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    On<PreToolEventsFn>(tr, std::move(callback));
   }
 
-  void OnPostTool(Profile* profile,
-                  const ToolRequest& tr,
-                  UiCompleteCallback callback) override {
-    On<PostToolEventsFn>(profile, tr, std::move(callback));
+  void OnPostTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    On<PostToolEventsFn>(tr, std::move(callback));
   }
 
-  void OnPreFirstAct(Profile* profile,
-                     const FirstActInfo& first_act_info,
+  void OnPreFirstAct(const FirstActInfo& first_act_info,
                      UiCompleteCallback callback) override {
-    On<FirstActEventsFn>(profile, first_act_info, std::move(callback));
+    On<FirstActEventsFn>(first_act_info, std::move(callback));
   }
 
  private:
+  raw_ptr<Profile> profile_;
   std::deque<UiEvent> events_;
   UiCompleteCallback overall_callback_;
   raw_ptr<ActorUiStateManagerInterface> ui_state_manager_;
@@ -180,19 +176,18 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   }
 
   template <Visitor V, typename InputT>
-  void On(Profile* profile, const InputT& in, UiCompleteCallback callback) {
+  void On(const InputT& in, UiCompleteCallback callback) {
     VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
             << "): " << InputTraits<InputT>::debug_info(in);
-    GenerateAndSend<V>(profile, InputTraits<InputT>::convert_fn(in),
+    GenerateAndSend<V>(InputTraits<InputT>::convert_fn(in),
                        std::move(callback));
   }
 
   template <Visitor V, typename ConvertedInputT>
-  void GenerateAndSend(Profile* profile,
-                       const ConvertedInputT& converted,
+  void GenerateAndSend(const ConvertedInputT& converted,
                        UiCompleteCallback callback) {
     CHECK(events_.empty()) << "Unexpected: unprocessed UiEvents remaining";
-    auto result = GetUiStateManager(profile);
+    auto result = GetUiStateManager(profile_);
     if (std::holds_alternative<mojom::ActionResultPtr>(result)) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -238,7 +233,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
 };
 }  // namespace
 
-std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher() {
-  return std::make_unique<UiEventDispatcherImpl>();
+std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(Profile* profile) {
+  return std::make_unique<UiEventDispatcherImpl>(profile);
 }
 }  // namespace actor::ui

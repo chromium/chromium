@@ -22,7 +22,7 @@ ActorTask::ActorTask(Profile* profile,
                      std::unique_ptr<ExecutionEngine> execution_engine)
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {}
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {}
 ActorTask::~ActorTask() = default;
 
 void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {
