@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -432,7 +433,8 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
               {features::kGlicMinLoadingTimeMs.name, "40"},
           }},
          {features::kGlicApiActivationGating, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, {}}},
+         {contextual_cueing::kGlicZeroStateSuggestions, {}},
+         {mojom::features::kZeroStateSuggestionsV2, {}}},
         /*disabled_features=*/
         {
             features::kGlicWarming,
@@ -912,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestions) {
+                       testGetZeroStateSuggestionsForFocusedTabApi) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(1);
@@ -920,11 +922,21 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsFailsWhenHidden) {
+IN_PROC_BROWSER_TEST_F(
+    GlicApiTestWithOneTabAndContextualCueing,
+    testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
   EXPECT_CALL(*mock_cueing_service(),
               GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
       .Times(0);
+
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestionsApi) {
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+      .Times(1);
 
   ExecuteJsTest();
 }

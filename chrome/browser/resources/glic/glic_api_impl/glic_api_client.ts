@@ -90,7 +90,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     suggestions: ZeroStateSuggestionsV2,
     options: ZeroStateSuggestionsOptions,
   }): void {
-    this.host.getZeroStateSuggestionsObservable?.(payload.options)
+    this.host.getZeroStateSuggestions?.(payload.options)
         .assignAndSignal(payload.suggestions);
   }
 
@@ -290,7 +290,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
-      this.getZeroStateSuggestionsObservable = undefined;
+      this.getZeroStateSuggestions = undefined;
     }
 
     if (!state.enableClosedCaptioningFeature) {
@@ -658,7 +658,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
   }
 
-  getZeroStateSuggestionsObservable?(options?: ZeroStateSuggestionsOptions):
+  getZeroStateSuggestions?(options?: ZeroStateSuggestionsOptions):
       ObservableValueImpl<ZeroStateSuggestionsV2> {
     options = options ?? {
       isFirstRun: false,

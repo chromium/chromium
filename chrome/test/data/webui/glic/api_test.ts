@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
@@ -313,18 +313,27 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.enableDragResize(false);
   }
 
-  async testGetZeroStateSuggestions() {
+  async testGetZeroStateSuggestionsForFocusedTabApi() {
     assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
     const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
     assertTrue(!!suggestions);
     assertEquals(0, suggestions.suggestions.length);
   }
 
-  async testGetZeroStateSuggestionsFailsWhenHidden() {
+  async testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden() {
     assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
     assertTrue(!!this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
     const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
+    assertTrue(!!suggestions);
+    assertEquals(0, suggestions.suggestions.length);
+  }
+
+  async testGetZeroStateSuggestionsApi() {
+    assertTrue(!!this.host.getZeroStateSuggestions);
+    const sequence = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions = await sequence.next();
     assertTrue(!!suggestions);
     assertEquals(0, suggestions.suggestions.length);
   }
