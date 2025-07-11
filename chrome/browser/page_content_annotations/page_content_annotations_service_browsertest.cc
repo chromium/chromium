@@ -34,6 +34,7 @@
 #include "components/optimization_guide/core/inference/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_enums.h"
@@ -684,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   category2->set_score(0.75);
   page_entities_metadata.set_alternative_title("alternative title");
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(page_entities_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
                           metadata);
@@ -726,7 +728,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(page_entities_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
                           metadata);
@@ -756,7 +759,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
   page_entities_metadata.set_alternative_title("alternative title");
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(page_entities_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
                           metadata);
@@ -778,7 +782,8 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
 
   optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(page_entities_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
                           metadata);
@@ -819,7 +824,8 @@ IN_PROC_BROWSER_TEST_F(
 
   optimization_guide::proto::SalientImageMetadata salient_image_metadata;
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(salient_image_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
                           metadata);
@@ -844,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(
   salient_image_metadata.add_thumbnails();
   salient_image_metadata.add_thumbnails();
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(salient_image_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
                           metadata);
@@ -870,7 +877,8 @@ IN_PROC_BROWSER_TEST_F(
   salient_image_metadata.add_thumbnails()->set_image_url(
       "http://gstatic.com/image");
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(salient_image_metadata));
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE,
                           metadata);

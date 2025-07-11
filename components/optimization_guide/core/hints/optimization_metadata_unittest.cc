@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -94,7 +95,7 @@ TEST(OptimizationMetadataTest, SetAnyMetadataForTestingTest) {
   subresource->set_resource_type(proto::ResourceType::RESOURCE_TYPE_CSS);
   subresource->set_preconnect_only(true);
   OptimizationMetadata optimization_metadata;
-  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  optimization_metadata.set_any_metadata(AnyWrapProto(metadata));
 
   std::optional<proto::LoadingPredictorMetadata> parsed_metadata =
       optimization_metadata.ParsedMetadata<proto::LoadingPredictorMetadata>();

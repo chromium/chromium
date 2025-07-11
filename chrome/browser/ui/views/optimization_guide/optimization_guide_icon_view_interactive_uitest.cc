@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -33,7 +34,8 @@ class OptimizationGuideIconViewTestBase : public InProcessBrowserTest {
         icon_view_metadata;
     icon_view_metadata.set_cue_label(label);
     optimization_guide::OptimizationMetadata metadata;
-    metadata.SetAnyMetadataForTesting(icon_view_metadata);
+    metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(icon_view_metadata));
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->AddHintForTesting(
             url, optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW,

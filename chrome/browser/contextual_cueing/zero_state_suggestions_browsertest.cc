@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
@@ -91,7 +92,8 @@ class ZeroStateSuggestionsBrowserTest
         decision_with_metadata;
     decision_with_metadata.decision =
         optimization_guide::OptimizationGuideDecision::kTrue;
-    decision_with_metadata.metadata.SetAnyMetadataForTesting(metadata);
+    decision_with_metadata.metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(metadata));
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->GetForProfile(browser()->profile())
@@ -108,7 +110,7 @@ class ZeroStateSuggestionsBrowserTest
     *metadata.mutable_contextual_suggestions() = {suggestions.begin(),
                                                   suggestions.end()};
     optimization_guide::OptimizationMetadata og_metadata;
-    og_metadata.SetAnyMetadataForTesting(metadata);
+    og_metadata.set_any_metadata(optimization_guide::AnyWrapProto(metadata));
 
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->GetForProfile(browser()->profile())
