@@ -725,6 +725,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),
+        VARIATION_ENTRY(kIPHiOSPromoGenericDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature),
