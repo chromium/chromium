@@ -572,6 +572,8 @@ TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
       base::BindRepeating(TestClipboardRequestHandler::Create));
 
   auto validator = helper_->CreateValidator();
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/
       "",
@@ -615,6 +617,7 @@ TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
   ASSERT_FALSE(future.Get().has_value());
 
   EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+  run_loop.Run();
 }
 
 }  // namespace enterprise_data_protection

@@ -294,6 +294,8 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
       MakeTriggeredRuleInfo(/*has_watermark=*/false);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   lookup_service_.SetShouldHaveMatchedRule(true);
@@ -328,6 +330,7 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
   auto* user_data = DataProtectionPageUserData::GetForPage(
       GetPageFromWebContents(web_contents()));
   ASSERT_TRUE(user_data);
+  run_loop.Run();
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
@@ -951,6 +954,8 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       MakeTriggeredRuleInfo(/*has_watermark=*/true);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   base::test::TestFuture<const UrlSettings&> future;
@@ -993,6 +998,7 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   ASSERT_TRUE(user_data);
   EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
             std::string::npos);
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(OrderedDataProtectionNavigationObserverTest,

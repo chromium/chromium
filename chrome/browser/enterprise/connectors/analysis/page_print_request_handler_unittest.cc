@@ -201,7 +201,10 @@ TEST_F(PagePrintRequestHandlerTest, Test) {
   histogram_tester_.ExpectTotalCount(
       "Enterprise.FileAnalysisRequest.PrintedPageSize", 1);
 
-  validator.ExpectSensitiveDataEvent(
+  base::RunLoop run_loop_bypass;
+  auto validator_bypass = helper_->CreateValidator();
+  validator_bypass.SetDoneClosure(run_loop_bypass.QuitClosure());
+  validator_bypass.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
       /*tab_url*/ kTabUrl,
@@ -225,6 +228,7 @@ TEST_F(PagePrintRequestHandlerTest, Test) {
       /*content_transfer_method*/ std::nullopt,
       /*user_justification*/ kJustification);
   handler->ReportWarningBypass(kJustification);
+  run_loop_bypass.Run();
 }
 
 TEST_F(PagePrintRequestHandlerTest, TestNewLimit) {
@@ -284,7 +288,10 @@ TEST_F(PagePrintRequestHandlerTest, TestNewLimit) {
   histogram_tester_.ExpectTotalCount(
       "Enterprise.FileAnalysisRequest.PrintedPageSize", 1);
 
-  validator.ExpectSensitiveDataEvent(
+  base::RunLoop run_loop_bypass;
+  auto validator_bypass = helper_->CreateValidator();
+  validator_bypass.SetDoneClosure(run_loop_bypass.QuitClosure());
+  validator_bypass.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
       /*tab_url*/ kTabUrl,
@@ -308,6 +315,7 @@ TEST_F(PagePrintRequestHandlerTest, TestNewLimit) {
       /*content_transfer_method*/ std::nullopt,
       /*user_justification*/ kJustification);
   handler->ReportWarningBypass(kJustification);
+  run_loop_bypass.Run();
 }
 
 }  // namespace enterprise_connectors

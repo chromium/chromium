@@ -200,7 +200,10 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
   EXPECT_TRUE(handler->UploadData());
   run_loop.Run();
 
-  validator.ExpectSensitiveDataEvent(
+  base::RunLoop run_loop_bypass;
+  auto validator_bypass = helper_->CreateValidator();
+  validator_bypass.SetDoneClosure(run_loop_bypass.QuitClosure());
+  validator_bypass.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
       /*tab_url*/ kUrl,
@@ -224,6 +227,7 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
       /*content_transfer_method*/ kMethod,
       /*user_justification*/ kJustification);
   handler->ReportWarningBypass(kJustification);
+  run_loop_bypass.Run();
 }
 
 TEST_F(ClipboardRequestHandlerTest, Image) {
@@ -272,7 +276,10 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   EXPECT_TRUE(handler->UploadData());
   run_loop.Run();
 
-  validator.ExpectSensitiveDataEvent(
+  base::RunLoop run_loop_bypass;
+  auto validator_bypass = helper_->CreateValidator();
+  validator_bypass.SetDoneClosure(run_loop_bypass.QuitClosure());
+  validator_bypass.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
       /*tab_url*/ kUrl,
@@ -296,6 +303,7 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
       /*content_transfer_method*/ kMethod,
       /*user_justification*/ kJustification);
   handler->ReportWarningBypass(kJustification);
+  run_loop_bypass.Run();
 }
 
 }  // namespace enterprise_connectors
