@@ -432,7 +432,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressBackwardForPlayingMedia) {
 
   // Ends dragging the progress view should resume the media.
   media_session::MediaPosition media_position_released(
-      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*playback_rate=*/0, /*duration=*/base::Seconds(10),
       /*position=*/base::Seconds(5), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position_released);
   ui::MouseEvent released_event =
@@ -480,7 +480,7 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForwardForPausedMedia) {
 
   // Ends dragging the progress view.
   media_session::MediaPosition media_position_released(
-      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*playback_rate=*/0, /*duration=*/base::Seconds(10),
       /*position=*/base::Seconds(5), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position_released);
   ui::MouseEvent released_event =

@@ -504,4 +504,47 @@ TEST_F(MediaProgressViewTest, MediaProgressAccessibleValue) {
             u"0:03");
 }
 
+TEST_F(MediaProgressViewTest, PausesForDraggingIfPlayedAfterDraggingStarted) {
+  // Simulate a paused media.
+  media_session::MediaPosition paused_media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  view()->UpdateProgress(paused_media_position);
+
+  // Simulate a mouse press event. This should not fire a
+  // "PauseForDraggingStarted" notification since media is already paused.
+  gfx::Point point(view()->width() / 2, view()->height() / 2);
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this,
+              OnPlaybackStateChangeForProgressDrag(
+                  PlaybackStateChangeForDragging::kPauseForDraggingStarted))
+      .Times(0);
+  view()->OnMousePressed(pressed_event);
+  progress_drag_started_delay_timer()->Fire();
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Now update the media to start playing. This should fire a
+  // "PauseForDraggingStarted" notification to pause the media.
+  media_session::MediaPosition playing_media_position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
+  EXPECT_CALL(*this,
+              OnPlaybackStateChangeForProgressDrag(
+                  PlaybackStateChangeForDragging::kPauseForDraggingStarted));
+  view()->UpdateProgress(playing_media_position);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Simulate a mouse release event. This should fire a
+  // "ResumeForDraggingEnded" notification.
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(*this,
+              OnPlaybackStateChangeForProgressDrag(
+                  PlaybackStateChangeForDragging::kResumeForDraggingEnded));
+  view()->OnMouseReleased(released_event);
+}
+
 }  // namespace global_media_controls
