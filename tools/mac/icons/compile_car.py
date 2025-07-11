@@ -22,6 +22,7 @@ $ python3 compile_car.py chrome/app/theme/chromium/mac/Assets.xcasset
 import argparse
 import os
 import pathlib
+import platform
 import plistlib
 import re
 import shutil
@@ -33,6 +34,55 @@ import typing
 
 class AssetCatalogException(Exception):
     pass
+
+
+def _split_version(version: str) -> tuple[int, ...]:
+    return tuple(int(x) for x in version.split('.'))
+
+
+def _unsplit_version(version: tuple[int, ...]) -> str:
+    return '.'.join((str(x) for x in version))
+
+
+_REQUIRED_OS_VERSION = _split_version('15.5')
+_REQUIRED_ACTOOL_VERSION = _split_version('16.4')
+
+
+def _verify_os_version() -> None:
+    """Verifies that the OS being used is suitably recent.
+
+    Raises:
+        AssetCatalogException: If the OS is too old
+    """
+    version = _split_version(platform.mac_ver()[0])
+
+    if version < _REQUIRED_OS_VERSION:
+        raise AssetCatalogException(
+            'OS is too old; it is version '
+            f'{_unsplit_version(version)} but at least version '
+            f'{_unsplit_version(_REQUIRED_OS_VERSION)} is '
+            'required')
+
+
+def _verify_actool_version() -> None:
+    """Verifies that the `actool` being used is suitably recent.
+
+    Raises:
+        AssetCatalogException: If `actool` is too old
+    """
+    command = ['xcrun', 'actool', '--output-format=xml1', '--version']
+    process = subprocess.check_output(command)
+    output_dict = plistlib.loads(process)
+
+    version = _split_version(
+        output_dict['com.apple.actool.version']['short-bundle-version'])
+
+    if version < _REQUIRED_ACTOOL_VERSION:
+        raise AssetCatalogException(
+            'actool is too old; it is version '
+            f'{_unsplit_version(version)} but at least version '
+            f'{_unsplit_version(_REQUIRED_ACTOOL_VERSION)} is '
+            'required')
 
 
 def _min_deployment_target() -> str:
@@ -85,7 +135,7 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         if len(name_parts) > 2:
             raise ValueError('Asset catalog filename must have at most one _')
         name_tag = f'_{name_parts[1]}' if len(name_parts) == 2 else ''
-        source_dir = path / os.pardir
+        source_dir = path.joinpath(os.pardir)
 
         command = [
             'xcrun', 'actool', '--output-format=xml1', '--notices',
@@ -95,6 +145,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             f'--output-partial-info-plist={tmp_plist}', f'--compile={tmp_dir}',
             path
         ]
+        if verbose:
+            print(f'  Invoking: {" ".join((str(item) for item in command))}')
 
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -161,35 +213,35 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         # appropriately.
         for output_file in output_files:
             output_file = pathlib.Path(output_file)
-            match output_file.name:
-                case 'partial.plist':
-                    # Ignore the partial plist, as the Chromium plist already
-                    # has the required information.
-                    pass
-                case 'AppIcon.icns':
-                    # For now, ignore the generated icon file in favor of
-                    # keeping the existing hand-crafted icns file.
-                    #
-                    # TODO(avi): When moving to .icon files, uncomment.
-                    #
-                    # destination_path = source_dir.joinpath(
-                    #     f'app{name_tag}.icns')
-                    # if verbose:
-                    #     print(f'  Copying output to {destination_path}')
-                    # shutil.copyfile(output_file, destination_path)
-                    pass
-                case 'Assets.car':
-                    destination_path = source_dir.joinpath(
-                        f'Assets{name_tag}.car')
-                    if verbose:
-                        print(f'  Copying output to {destination_path}')
-                    shutil.copyfile(output_file, destination_path)
-                case _:
-                    raise AssetCatalogException(
-                        f'Unexpected output file: {output_file}')
+            if output_file.name == 'partial.plist':
+                # Ignore the partial plist, as the Chromium plist already has
+                # the required information.
+                pass
+            elif output_file.name == 'AppIcon.icns':
+                # For now, ignore the generated icon file in favor of keeping
+                # the existing hand-crafted icns file.
+                #
+                # TODO(avi): When moving to .icon files, uncomment.
+                #
+                # destination_path = source_dir.joinpath( f'app{name_tag}.icns')
+                # if verbose:
+                #     print(f'  Copying output to: {destination_path}')
+                # shutil.copyfile(output_file, destination_path)
+                pass
+            elif output_file.name == 'Assets.car':
+                destination_path = source_dir.joinpath(f'Assets{name_tag}.car')
+                if verbose:
+                    print(f'  Copying output to: {destination_path}')
+                shutil.copyfile(output_file, destination_path)
+            else:
+                raise AssetCatalogException(
+                    f'Unexpected output file: {output_file}')
 
 
 def main(args: list[str]):
+    _verify_os_version()
+    _verify_actool_version()
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'paths',
@@ -211,7 +263,7 @@ def main(args: list[str]):
 
     for path in parsed.paths:
         if parsed.verbose:
-            print(f'Processing {path} ...')
+            print(f'Processing: {path}')
         _process_path(pathlib.Path(path), min_deployment_target, parsed.verbose)
 
 
