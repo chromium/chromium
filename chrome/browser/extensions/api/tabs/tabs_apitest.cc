@@ -414,6 +414,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessage) {
   ASSERT_TRUE(RunExtensionTest("tabs/send_message"));
 }
 
+// Tests sending messages from an extension's option page to a tab using
+// chrome.tabs.sendMessage to a webpage in the extension listening for them
+// using chrome.runtime.OnMessage.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessageFromOptionsPage) {
+  ASSERT_TRUE(RunExtensionTest("tabs/send_message_from_options",
+                               {.extension_url = "options.html"}));
+}
+
 // Tests that extension with "tabs" permission does not leak tab info to another
 // extension without "tabs" permission.
 //

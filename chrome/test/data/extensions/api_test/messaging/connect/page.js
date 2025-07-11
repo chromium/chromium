@@ -149,6 +149,11 @@ function testConnectFromTabError() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const extensionOrigin = new URL(chrome.runtime.getURL('')).origin;
   chrome.test.assertEq(
-      { id: chrome.runtime.id, origin: extensionOrigin }, sender);
+      {
+        id: chrome.runtime.id,
+        url: chrome.runtime.getURL('_generated_background_page.html'),
+        origin: extensionOrigin
+      },
+      sender);
   sendResponse({success: (request.step2 == 1)});
 });
