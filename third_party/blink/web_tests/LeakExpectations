@@ -23,11 +23,6 @@ crbug.com/325977041 [ Linux ] external/wpt/document-picture-in-picture/focus-ope
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
 
-# This test triggers existing leaky behavior, but this test also catches
-# a prior crash.
-crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
-
-
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
 
