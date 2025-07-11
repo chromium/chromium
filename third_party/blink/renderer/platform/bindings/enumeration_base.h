@@ -120,19 +120,6 @@ operator==(const char* lhs, const EnumTypeClass& rhs) {
   return rhs == lhs;
 }
 
-// TODO(crbug.com/1092328): IDLEnumAsString is an adapter between the old and
-// new bindings generators.  The old bindings generator implements IDL
-// enumeration with String class, however, the new bindings generator implements
-// it with subclasses of EnumerationBase.  IDLEnumAsString resolves this
-// difference.
-inline const String& IDLEnumAsString(const String& value) {
-  return value;
-}
-
-inline String IDLEnumAsString(const bindings::EnumerationBase& value) {
-  return value.AsString();
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ENUMERATION_BASE_H_

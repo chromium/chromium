@@ -1442,7 +1442,7 @@ ScriptPromise<XRLightProbe> XRSession::requestLightProbe(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Reflection format \"" +
-            IDLEnumAsString(light_probe_init->reflectionFormat()) +
+            light_probe_init->reflectionFormat().AsString() +
             "\" not supported.");
     return EmptyPromise();
   }

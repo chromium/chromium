@@ -102,7 +102,7 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext* context,
 
   // TODO(crbug.com/1070871): Use periodicWaveOr(nullptr).
   OscillatorNode* node =
-      Create(*context, IDLEnumAsString(options->type()),
+      Create(*context, options->type().AsString(),
              options->hasPeriodicWave() ? options->periodicWave() : nullptr,
              exception_state);
 
