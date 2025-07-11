@@ -131,7 +131,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+      int32_t history_index,
+      int32_t history_length);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -718,7 +720,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+      int32_t history_index,
+      int32_t history_length);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();
@@ -886,8 +890,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // The RenderView's current impression of the history length.  This includes
   // any items that have committed in this process, but because of cross-process
   // navigations, the history may have some entries that were committed in other
-  // processes.  We won't know about them until the next navigation in this
-  // process.
+  // processes. History information from other processes in the frame tree are
+  // broadcasted to this process once the navigation commimts.
   int32_t history_list_length_ = 0;
 
   // The popup associated with an input/select element. The popup is owned via

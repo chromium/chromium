@@ -749,7 +749,9 @@ void WebViewHelper::InitializeWebView(
       /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt, browsing_context_group_token,
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr));
+      /*partitioned_popin_params=*/nullptr,
+      /*history_index=*/-1,
+      /*history_length=*/0));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);
@@ -792,7 +794,9 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
       /*page_base_background_color=*/std::nullopt,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr));
+      /*partitioned_popin_params=*/nullptr,
+      /*history_index=*/-1,
+      /*history_length=*/0));
 }
 
 int TestWebFrameClient::loads_in_progress_ = 0;

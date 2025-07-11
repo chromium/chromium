@@ -10424,10 +10424,14 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
     ReattachOuterDelegateIfNeeded();
   }
 
-  SetHistoryIndexAndLengthForView(
-      render_view_host,
-      rvh_impl->frame_tree()->controller().GetLastCommittedEntryIndex(),
-      rvh_impl->frame_tree()->controller().GetEntryCount());
+  // With SetHistoryInfoOnViewCreation enabled, the history and index length are
+  // sent as part of the the CreateView() IPC via the CreateViewParams.
+  if (!base::FeatureList::IsEnabled(features::kSetHistoryInfoOnViewCreation)) {
+    SetHistoryIndexAndLengthForView(
+        render_view_host,
+        rvh_impl->frame_tree()->controller().GetLastCommittedEntryIndex(),
+        rvh_impl->frame_tree()->controller().GetEntryCount());
+  }
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   // Force a ViewMsg_Resize to be sent, needed to make plugins show up on

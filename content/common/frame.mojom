@@ -177,6 +177,10 @@ struct CreateViewParams {
   // Identifies the navigation that triggered this view creation, if any. Used
   // for collecting metrics.
   mojo_base.mojom.UnguessableToken? navigation_metrics_token;
+
+  // A snapshot of the history information when this view was created.
+  int32 history_index = -1;
+  int32 history_length = 0;
 };
 
 // A union to distinguish between parameters specific to local main frame

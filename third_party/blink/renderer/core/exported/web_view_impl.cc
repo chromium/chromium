@@ -500,7 +500,9 @@ WebView* WebView::Create(
     std::optional<SkColor> page_base_background_color,
     const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+    int32_t history_index,
+    int32_t history_length) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
@@ -509,7 +511,8 @@ WebView* WebView::Create(
       widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
       agent_group_scheduler, session_storage_namespace_id,
       std::move(page_base_background_color), browsing_context_group_token,
-      color_provider_colors, std::move(partitioned_popin_params));
+      color_provider_colors, std::move(partitioned_popin_params), history_index,
+      history_length);
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -527,14 +530,16 @@ WebViewImpl* WebViewImpl::Create(
     std::optional<SkColor> page_base_background_color,
     const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params) {
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+    int32_t history_index,
+    int32_t history_length) {
   return new WebViewImpl(
       client, visibility, std::move(prerender_param), fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
       browsing_context_group_token, color_provider_colors,
-      std::move(partitioned_popin_params));
+      std::move(partitioned_popin_params), history_index, history_length);
 }
 
 size_t WebView::GetWebViewCount() {
@@ -599,7 +604,9 @@ WebViewImpl::WebViewImpl(
     std::optional<SkColor> page_base_background_color,
     const base::UnguessableToken& browsing_context_group_token,
     const ColorProviderColorMaps* color_provider_colors,
-    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params)
+    blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
+    int32_t history_index,
+    int32_t history_length)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -607,6 +614,8 @@ WebViewImpl::WebViewImpl(
           blink::ZoomFactorToZoomLevel(kMinimumBrowserZoomFactor)),
       maximum_zoom_level_(
           blink::ZoomFactorToZoomLevel(kMaximumBrowserZoomFactor)),
+      history_list_index_(history_index),
+      history_list_length_(history_length),
       does_composite_(does_composite),
       fullscreen_controller_(std::make_unique<FullscreenController>(this)),
       page_base_background_color_(

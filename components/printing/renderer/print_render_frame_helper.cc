@@ -674,7 +674,9 @@ class HeaderAndFooterContext {
         /*page_base_background_color=*/std::nullopt,
         /*browsing_context_group_token=*/base::UnguessableToken::Create(),
         /*color_provider_colors=*/nullptr,
-        /*partitioned_popin_params=*/nullptr);
+        /*partitioned_popin_params=*/nullptr,
+        /*history_index=*/-1,
+        /*history_length=*/0);
     view->GetSettings()->SetJavaScriptEnabled(true);
     return view;
   }
@@ -966,7 +968,9 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*page_base_background_color=*/std::nullopt,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr);
+      /*partitioned_popin_params=*/nullptr,
+      /*history_index=*/-1,
+      /*history_length=*/0);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, mojo::NullRemote(), blink::LocalFrameToken(),

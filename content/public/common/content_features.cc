@@ -870,6 +870,13 @@ BASE_FEATURE(kRestrictThreadPoolInBackground,
              "RestrictThreadPoolInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature that stops broadcasting the history index and length when
+// CreateRenderViewForRenderManager() is invoked, and instead passes the
+// information in the CreateViewParams, saving some IPC calls.
+BASE_FEATURE(kSetHistoryInfoOnViewCreation,
+             "SetHistoryInfoOnViewCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Set a tri-state priority on v8 isolates reflecting the renderer priority.
 BASE_FEATURE(kSetIsolatesPriority,
              "SetIsolatesPriority",

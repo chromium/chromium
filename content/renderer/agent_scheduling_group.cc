@@ -255,7 +255,8 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
       params->session_storage_namespace_id, params->base_background_color,
       params->browsing_context_group_token, &params->color_provider_colors,
-      std::move(params->partitioned_popin_params));
+      std::move(params->partitioned_popin_params), params->history_index,
+      params->history_length);
 
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);

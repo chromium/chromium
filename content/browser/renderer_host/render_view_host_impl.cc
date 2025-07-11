@@ -621,6 +621,12 @@ bool RenderViewHostImpl::CreateRenderView(
             .AsMojom();
   }
 
+  if (base::FeatureList::IsEnabled(features::kSetHistoryInfoOnViewCreation)) {
+    params->history_index =
+        frame_tree()->controller().GetLastCommittedEntryIndex();
+    params->history_length = frame_tree()->controller().GetEntryCount();
+  }
+
   // The renderer process's `blink::WebView` is owned by this lifecycle of
   // the `page_broadcast_` channel.
   GetAgentSchedulingGroup().CreateView(std::move(params));
