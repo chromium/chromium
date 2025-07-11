@@ -38,7 +38,7 @@ class WebState;
 // performed on `web_state_list` can be checked with e.g. the following code:
 //
 //   web_state_list.SetWebStatePinnedAt(4, true);
-//   web_state_list.CloseWebStateAt(0, WebStateList::CLOSE_NO_FLAGS);
+//   web_state_list.CloseWebStateAt(0, WebStateList::ClosingReason::kDefault);
 //   EXPECT_EQ("b e | [ 0 c d* ] f [ 1 g h ]",
 //             builder.GetWebStateListDescription());
 //

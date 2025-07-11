@@ -243,7 +243,7 @@ void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
 
   CloseAllWebStatesInGroup(*tab_group_info.web_state_list,
                            tab_group_info.tab_group,
-                           WebStateList::CLOSE_NO_FLAGS);
+                           WebStateList::ClosingReason::kDefault);
 }
 
 void IOSTabGroupSyncDelegate::ConnectLocalTabGroup(
@@ -352,7 +352,7 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
   CHECK(tabs_to_delete >= 0);
   for (int count = 0; count < tabs_to_delete; count++) {
     web_state_list->CloseWebStateAt(tab_group_range.range_end() - 1,
-                                    WebStateList::CLOSE_NO_FLAGS);
+                                    WebStateList::ClosingReason::kDefault);
   }
 }
 
@@ -526,7 +526,7 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
       InsertDistantTab(saved_tab, tab_insertion_browser_agent, web_state_index,
                        tab_group_info.tab_group);
   web_state_list->CloseWebStateAt(web_state_index + 1,
-                                  WebStateList::CLOSE_NO_FLAGS);
+                                  WebStateList::ClosingReason::kDefault);
 
   // Do the association on the server.
   UpdateLocalTabId(local_web_state, tab_group_info.tab_group, saved_tab);

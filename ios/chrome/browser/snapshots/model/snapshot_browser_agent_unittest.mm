@@ -130,8 +130,8 @@ TEST_F(SnapshotBrowserAgentTest, SnapshotDeletedWhenTabClosedByUser) {
 
   // Pretend the user closed the WebState and check that the image has been
   // removed from the storage.
-  const int flags = WebStateList::CLOSE_USER_ACTION;
-  browser_->GetWebStateList()->CloseWebStateAt(0, flags);
+  const auto close_reason = WebStateList::ClosingReason::kUserAction;
+  browser_->GetWebStateList()->CloseWebStateAt(0, close_reason);
   EXPECT_NSEQ(RetrieveImageFromStorage(snapshot_id), nil);
 }
 
@@ -155,8 +155,8 @@ TEST_F(SnapshotBrowserAgentTest, SnapshotDeletedWhenTabClosedForCleanup) {
 
   // Pretend the user closed the WebState and check that the image has been
   // removed from the storage.
-  const int flags = WebStateList::CLOSE_TABS_CLEANUP;
-  browser_->GetWebStateList()->CloseWebStateAt(0, flags);
+  const auto close_reason = WebStateList::ClosingReason::kTabsCleanup;
+  browser_->GetWebStateList()->CloseWebStateAt(0, close_reason);
   EXPECT_NSEQ(RetrieveImageFromStorage(snapshot_id), nil);
 }
 
@@ -180,8 +180,8 @@ TEST_F(SnapshotBrowserAgentTest, SnapshotNotDeletedWhenTabClosedWithNoFlags) {
 
   // Pretend the user closed the WebState and check that the image has been
   // removed from the storage.
-  const int flags = WebStateList::CLOSE_NO_FLAGS;
-  browser_->GetWebStateList()->CloseWebStateAt(0, flags);
+  const auto close_reason = WebStateList::ClosingReason::kDefault;
+  browser_->GetWebStateList()->CloseWebStateAt(0, close_reason);
   EXPECT_NSEQ(RetrieveImageFromStorage(snapshot_id), image);
 }
 

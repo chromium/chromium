@@ -354,7 +354,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 - (void)closeAllItems {
   // TODO(crbug.com/40257500): Add metrics when the user closes all inactive
   // tabs.
-  CloseAllWebStates(*_webStateList, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*_webStateList, WebStateList::ClosingReason::kUserAction);
   [_snapshotStorage removeAllImages];
 }
 
@@ -420,7 +420,8 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
                                                   .identifier = itemID,
                                               });
   if (index != WebStateList::kInvalidIndex) {
-    _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    _webStateList->CloseWebStateAt(index,
+                                   WebStateList::ClosingReason::kUserAction);
   }
 }
 

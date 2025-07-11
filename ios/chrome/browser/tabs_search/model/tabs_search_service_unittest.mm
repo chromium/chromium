@@ -463,8 +463,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedNoResults) {
 TEST_F(TabsSearchServiceTest, RecentlyClosedNoMatch) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -483,8 +483,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitle) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -507,8 +507,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchURL) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -535,7 +535,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
   // Add a webstate which will not match `kSearchQueryMatchesAll`.
   AppendNewWebState(browser_.get(), u"X", GURL("http://abc.xyz"));
 
-  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(

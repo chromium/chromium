@@ -179,7 +179,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
   // returned by HasIncognitoSessionTabs() and the callbacks must not have
   // been notified.
   otr_scoped_browser_for_profile1->GetWebStateList()->CloseWebStateAt(
-      0, WebStateList::CLOSE_NO_FLAGS);
+      0, WebStateList::ClosingReason::kDefault);
   EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
   EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(1, true));
 
@@ -194,10 +194,11 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
         web_state_list->StartBatchOperation();
 
     web_state_list->CloseWebStatesAtIndices(
-        WebStateList::CLOSE_NO_FLAGS, RemovingIndexes({
-                                          .start = 0,
-                                          .count = web_state_list->count(),
-                                      }));
+        WebStateList::ClosingReason::kDefault,
+        RemovingIndexes({
+            .start = 0,
+            .count = web_state_list->count(),
+        }));
 
     EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
     EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(1, true));
@@ -243,7 +244,7 @@ TEST_F(IncognitoSessionTrackerTest, HasIncognitoSessionTabs) {
     InsertNewTab(otr_scoped_browser_for_profile3_2.get());
 
     CloseAllWebStates(*otr_scoped_browser_for_profile2->GetWebStateList(),
-                      WebStateList::CLOSE_NO_FLAGS);
+                      WebStateList::ClosingReason::kDefault);
 
     EXPECT_TRUE(tracker.HasIncognitoSessionTabs());
     EXPECT_TRUE(callback_helper.ExpectCallCountAndParameter(3, true));

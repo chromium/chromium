@@ -489,7 +489,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroup) {
 
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()));
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
 }
 
 // Tests that the service is not updated when sync is pausded and a tab is
@@ -510,7 +511,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroupSyncPaused) {
   EXPECT_CALL(*mock_service_,
               RemoveTab(tab_group_id, web_state_id.identifier()))
       .Times(0);
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
 }
 
 // Tests that the service is correctly updated when a raw tab group is created.
@@ -759,7 +761,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, CloseGroupLocally) {
   EXPECT_EQ(2, web_state_list->count());
 
   web_state_list->MoveWebStateAt(0, 1);
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(1, web_state_list->count());
 }
 
@@ -782,7 +785,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, DeleteGroupAfterRemovingLastTtab) {
   EXPECT_CALL(*mock_service_, RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*mock_service_, RemoveGroup(tab_group_id));
-  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list->CloseWebStateAt(/*index*/ 0,
+                                  WebStateList::ClosingReason::kDefault);
 }
 
 // Tests that the service is correctly called when the active tab is updated.

@@ -348,7 +348,7 @@
   // in their -dealloc method, ensure the -autorelease introduced by ARC are
   // processed before the WebStateList destructor is called.
   @autoreleasepool {
-    CloseAllWebStates(*webStateList, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*webStateList, WebStateList::ClosingReason::kDefault);
   }
 }
 

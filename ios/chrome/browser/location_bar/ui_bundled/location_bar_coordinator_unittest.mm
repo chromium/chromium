@@ -197,7 +197,8 @@ TEST_F(LocationBarCoordinatorTest, Stops) {
 // Removes the existing WebState to ensure that nothing breaks when there is no
 // active WebState.
 TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
-  browser_->GetWebStateList()->CloseWebStateAt(0, 0);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
 }
 
 // Calls -loadGURLFromLocationBar:transition: with https://www.google.com/ URL.

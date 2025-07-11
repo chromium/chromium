@@ -2378,7 +2378,8 @@ enum class ToolbarKind {
     snapshotView.frame = contentArea.frame;
   }
 
-  webStateList->CloseWebStateAt(active_index, WebStateList::CLOSE_USER_ACTION);
+  webStateList->CloseWebStateAt(active_index,
+                                WebStateList::ClosingReason::kUserAction);
 
   if (!canShowTabStrip) {
     [contentArea addSubview:snapshotView];
@@ -3670,7 +3671,8 @@ enum class ToolbarKind {
 
   int index = GetWebStateIndex(webStateList, searchCriteria);
   if (index != WebStateList::kInvalidIndex) {
-    webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    webStateList->CloseWebStateAt(index,
+                                  WebStateList::ClosingReason::kUserAction);
   }
   _lastTabClosingAlert = nil;
 }

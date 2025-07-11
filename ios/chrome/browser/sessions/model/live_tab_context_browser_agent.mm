@@ -152,5 +152,5 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
 
 void LiveTabContextBrowserAgent::CloseTab() {
   web_state_list_->CloseWebStateAt(web_state_list_->active_index(),
-                                   WebStateList::CLOSE_USER_ACTION);
+                                   WebStateList::ClosingReason::kUserAction);
 }

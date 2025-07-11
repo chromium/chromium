@@ -100,7 +100,7 @@ void CloseTabGroupLocally(const TabGroup* tab_group,
                                              ClosingSource::kClosedByUser);
   }
   CloseAllWebStatesInGroup(*web_state_list, tab_group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 }
 
 // Moves tab group across browsers.

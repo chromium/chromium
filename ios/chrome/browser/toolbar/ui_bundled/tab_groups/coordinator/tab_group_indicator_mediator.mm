@@ -427,7 +427,7 @@ using tab_groups::SharingState;
     // Using `CloseAllWebStatesInGroup` will result in calling the web state
     // list observers which will take care of updating the consumer.
     CloseAllWebStatesInGroup(*_webStateList, tabGroup,
-                             WebStateList::CLOSE_USER_ACTION);
+                             WebStateList::ClosingReason::kUserAction);
   }
 }
 

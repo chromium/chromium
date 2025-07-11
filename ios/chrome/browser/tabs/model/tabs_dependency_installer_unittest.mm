@@ -271,21 +271,21 @@ TEST_P(TabsDependencyInstallerTest, UnrealizedWebStates) {
 TEST_P(TabsDependencyInstallerTest, Deleted) {
   struct TestCase {
     bool expect_notification;
-    WebStateList::ClosingFlags removal_flags;
+    WebStateList::ClosingReason close_reason;
   };
 
   constexpr TestCase kTestCases[] = {
       {
           .expect_notification = false,
-          .removal_flags = WebStateList::CLOSE_NO_FLAGS,
+          .close_reason = WebStateList::ClosingReason::kDefault,
       },
       {
           .expect_notification = true,
-          .removal_flags = WebStateList::CLOSE_USER_ACTION,
+          .close_reason = WebStateList::ClosingReason::kUserAction,
       },
       {
           .expect_notification = true,
-          .removal_flags = WebStateList::CLOSE_TABS_CLEANUP,
+          .close_reason = WebStateList::ClosingReason::kTabsCleanup,
       },
   };
 
@@ -301,7 +301,7 @@ TEST_P(TabsDependencyInstallerTest, Deleted) {
     const int index = web_state_list_.InsertWebState(std::move(web_state));
     ASSERT_NE(index, WebStateList::kInvalidIndex);
 
-    web_state_list_.CloseWebStateAt(index, test_case.removal_flags);
+    web_state_list_.CloseWebStateAt(index, test_case.close_reason);
     EXPECT_EQ(installer_.WasDeleted(web_state_id),
               test_case.expect_notification);
   }
@@ -356,7 +356,8 @@ TEST_P(TabsDependencyInstallerTest, Activation) {
   EXPECT_EQ(detached_web_state->GetUniqueIdentifier(), web_state_2_id);
   EXPECT_TRUE(installer_.WasActivated(web_state_2_id, web_state_1_id));
 
-  web_state_list_.CloseWebStateAt(index_1, WebStateList::CLOSE_USER_ACTION);
+  web_state_list_.CloseWebStateAt(index_1,
+                                  WebStateList::ClosingReason::kUserAction);
   EXPECT_TRUE(installer_.WasActivated(web_state_1_id, web::WebStateID()));
 }
 

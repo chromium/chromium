@@ -466,7 +466,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close) {
   call_count = 0;
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
@@ -503,7 +504,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_Unrealized) {
   call_count = 0;
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
@@ -540,7 +542,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_Unserializable) {
   call_count = 0;
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
@@ -574,7 +577,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_Dirty) {
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
@@ -608,7 +612,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_DirtyUnrealized) {
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
@@ -642,7 +647,8 @@ TEST_F(SessionRestorationWebStateListObserverTest, Close_DirtyUnserializable) {
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   ASSERT_GT(web_state_list()->count(), 0);
-  web_state_list()->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+  web_state_list()->CloseWebStateAt(/*index*/ 0,
+                                    WebStateList::ClosingReason::kDefault);
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());

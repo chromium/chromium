@@ -220,7 +220,7 @@ void TabsCloser::UndoStorage::Undo() {
 
 void TabsCloser::UndoStorage::Drop() {
   CloseAllWebStates(*temporary_browser_->GetWebStateList(),
-                    WebStateList::CLOSE_USER_ACTION);
+                    WebStateList::ClosingReason::kUserAction);
 
   openers_.clear();
 }

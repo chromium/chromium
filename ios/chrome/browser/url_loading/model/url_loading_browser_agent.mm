@@ -304,7 +304,7 @@ void UrlLoadingBrowserAgent::SwitchToTab(const UrlLoadParams& params) {
   // empty tabs.
   if (old_tab_is_ntp_without_history) {
     web_state_list->CloseWebStateAt(old_web_state_index,
-                                    WebStateList::CLOSE_USER_ACTION);
+                                    WebStateList::ClosingReason::kUserAction);
   }
 
   notifier_->DidSwitchToTabWithUrl(web_params.url, new_web_state_index);

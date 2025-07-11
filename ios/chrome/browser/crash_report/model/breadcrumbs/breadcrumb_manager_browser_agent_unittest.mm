@@ -145,9 +145,9 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
     WebStateList::ScopedBatchOperation lock =
         browser_->GetWebStateList()->StartBatchOperation();
     browser_->GetWebStateList()->CloseWebStateAt(
-        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+        0, WebStateList::ClosingReason::kDefault);
     browser_->GetWebStateList()->CloseWebStateAt(
-        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+        0, WebStateList::ClosingReason::kDefault);
   }
 
   ASSERT_EQ(2u, events.size());

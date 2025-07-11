@@ -357,7 +357,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     self.loadingWebState = nil;
     if (index != WebStateList::kInvalidIndex) {
       self.browser->GetWebStateList()->CloseWebStateAt(
-          index, WebStateList::CLOSE_USER_ACTION);
+          index, WebStateList::ClosingReason::kUserAction);
     }
   }
 

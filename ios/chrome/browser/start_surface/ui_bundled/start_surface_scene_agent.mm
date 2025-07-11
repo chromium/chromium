@@ -350,7 +350,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // Close the excessive NTPs.
   webStateList->CloseWebStatesAtIndices(
-      WebStateList::CLOSE_NO_FLAGS,
+      WebStateList::ClosingReason::kDefault,
       RemovingIndexes(std::move(indicesToRemove)));
 }
 

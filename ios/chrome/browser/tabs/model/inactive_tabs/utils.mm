@@ -181,7 +181,8 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
   for (int iter = 0; iter < source_count; ++iter) {
     const int index = source_count - iter - 1;
     if (std::ranges::binary_search(indexes_closing, index)) {
-      source_list->CloseWebStateAt(index, WebStateList::CLOSE_NO_FLAGS);
+      source_list->CloseWebStateAt(index,
+                                   WebStateList::ClosingReason::kDefault);
       continue;
     }
 

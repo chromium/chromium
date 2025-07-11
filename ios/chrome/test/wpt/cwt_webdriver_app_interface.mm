@@ -156,7 +156,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     if (webStateIndex != WebStateList::kInvalidIndex) {
       WebStateList* webStateList = GetCurrentWebStateList();
       webStateList->CloseWebStateAt(webStateIndex,
-                                    WebStateList::CLOSE_USER_ACTION);
+                                    WebStateList::ClosingReason::kUserAction);
     } else {
       error = testing::NSErrorWithLocalizedDescription(@"No matching tab");
     }

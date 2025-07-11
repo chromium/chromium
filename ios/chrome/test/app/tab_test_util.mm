@@ -45,8 +45,8 @@ WebStateList* GetCurrentWebStateList() {
 // Close all tabs for `browser` and request the session to be saved.
 void CloseAllTabsForBrowser(Browser* browser) {
   DCHECK(browser);
-  const int close_flags = WebStateList::CLOSE_USER_ACTION;
-  CloseAllWebStates(*browser->GetWebStateList(), close_flags);
+  const auto close_reason = WebStateList::ClosingReason::kUserAction;
+  CloseAllWebStates(*browser->GetWebStateList(), close_reason);
   ProfileIOS* profile = browser->GetProfile();
   SessionRestorationServiceFactory::GetForProfile(profile)->SaveSessions();
 }
@@ -163,7 +163,7 @@ void CloseCurrentTab() {
     return;
   }
   web_state_list->CloseWebStateAt(web_state_list->active_index(),
-                                  WebStateList::CLOSE_USER_ACTION);
+                                  WebStateList::ClosingReason::kUserAction);
 }
 
 void PinCurrentTab() {
@@ -179,8 +179,8 @@ void PinCurrentTab() {
 void CloseTabAtIndex(NSUInteger index) {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     DCHECK_LE(index, static_cast<NSUInteger>(INT_MAX));
-    GetCurrentWebStateList()->CloseWebStateAt(static_cast<int>(index),
-                                              WebStateList::CLOSE_USER_ACTION);
+    GetCurrentWebStateList()->CloseWebStateAt(
+        static_cast<int>(index), WebStateList::ClosingReason::kUserAction);
   }
 }
 
@@ -189,7 +189,8 @@ NSUInteger GetIndexOfActiveNormalTab() {
 }
 
 void CloseAllTabsInCurrentMode() {
-  CloseAllWebStates(*GetCurrentWebStateList(), WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*GetCurrentWebStateList(),
+                    WebStateList::ClosingReason::kUserAction);
 }
 
 void CloseAllTabs() {
@@ -291,7 +292,7 @@ BOOL CloseAllNormalTabs() {
   Browser* browser = GetMainBrowser();
   DCHECK(browser);
   CloseAllWebStates(*browser->GetWebStateList(),
-                    WebStateList::CLOSE_USER_ACTION);
+                    WebStateList::ClosingReason::kUserAction);
   return YES;
 }
 
@@ -303,7 +304,7 @@ BOOL CloseAllIncognitoTabs() {
       scene_state.browserProviderInterface.incognitoBrowserProvider.browser;
   DCHECK(browser);
   CloseAllWebStates(*browser->GetWebStateList(),
-                    WebStateList::CLOSE_USER_ACTION);
+                    WebStateList::ClosingReason::kUserAction);
   return YES;
 }
 

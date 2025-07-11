@@ -53,7 +53,7 @@ TestBrowser::TestBrowser(ProfileIOS* profile)
 
 TestBrowser::~TestBrowser() {
   // Ensure all WebStates are closed before destroying the Browser.
-  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list_, WebStateList::ClosingReason::kDefault);
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);
   }

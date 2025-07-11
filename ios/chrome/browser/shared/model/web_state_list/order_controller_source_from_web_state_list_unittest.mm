@@ -75,7 +75,7 @@ TEST_F(OrderControllerSourceFromWebStateListTest, GetCount) {
 
   // Test that GetCount() returns the list count when items are
   // removed.
-  CloseAllWebStates(web_state_list(), WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(web_state_list(), WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(0, source.GetCount());
 }
 

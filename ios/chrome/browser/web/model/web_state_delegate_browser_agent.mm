@@ -245,7 +245,8 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 void WebStateDelegateBrowserAgent::CloseWebState(web::WebState* source) {
   int index = web_state_list_->GetIndexOfWebState(source);
   if (index != WebStateList::kInvalidIndex) {
-    web_state_list_->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+    web_state_list_->CloseWebStateAt(index,
+                                     WebStateList::ClosingReason::kUserAction);
   }
 }
 

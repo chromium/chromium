@@ -124,12 +124,11 @@ class PinnedTabsMediatorTest : public PlatformTest {
   ~PinnedTabsMediatorTest() override {
     // Cleanup to avoid debugger crash in non empty observer lists.
     WebStateList* web_state_list = regular_browser_->GetWebStateList();
-    CloseAllWebStates(*web_state_list,
-                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
     WebStateList* incognito_web_state_list =
         incognito_browser_->GetWebStateList();
     CloseAllWebStates(*incognito_web_state_list,
-                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+                      WebStateList::ClosingReason::kDefault);
   }
 
   // Creates a FakeWebState with a navigation history containing exactly only
@@ -282,7 +281,7 @@ TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
   }
 
   WebStateList* web_state_list = regular_browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a* b c | d e f", regular_browser_->GetProfile()));
@@ -321,7 +320,7 @@ TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
   }
 
   WebStateList* web_state_list = regular_browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a* b c | d e f", regular_browser_->GetProfile()));
@@ -360,7 +359,7 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
   }
 
   WebStateList* web_state_list = regular_browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a* b c | d [ 0 e f ]", regular_browser_->GetProfile()));
@@ -410,7 +409,7 @@ TEST_F(PinnedTabsMediatorTest, DropExternalURL) {
   }
 
   WebStateList* web_state_list = regular_browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "a* b c | d", regular_browser_->GetProfile()));

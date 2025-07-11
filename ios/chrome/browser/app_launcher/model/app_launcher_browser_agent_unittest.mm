@@ -85,7 +85,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
     CloseAllWebStates(*browser_->GetWebStateList(),
-                      WebStateList::CLOSE_NO_FLAGS);
+                      WebStateList::ClosingReason::kDefault);
     EXPECT_OCMOCK_VERIFY(
         app_launcher_tab_helper_browser_presentation_provider_);
     EXPECT_OCMOCK_VERIFY(application_);

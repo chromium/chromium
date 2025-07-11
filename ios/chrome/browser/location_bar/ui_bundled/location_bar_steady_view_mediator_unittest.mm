@@ -158,7 +158,8 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   // Disable dismissal callbacks in the presentation context so that the active
   // WebState can be reset to null before the dismisal callbacks are executed.
   presentation_context_.SetDismissalCallbacksEnabled(false);
-  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
   EXPECT_FALSE(browser_->GetWebStateList()->GetActiveWebState());
 
   // Execute the dismissal callback and verify that the location text has been

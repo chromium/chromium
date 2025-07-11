@@ -251,7 +251,7 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
 
   // Check that the webstate is correctly removed from the consumer.
   web_state_list_->CloseWebStateAt(web_state_list_->active_index(),
-                                   WebStateList::CLOSE_USER_ACTION);
+                                   WebStateList::ClosingReason::kUserAction);
 
   ASSERT_NE(nil, consumer_.selectedItem);
   EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
@@ -281,7 +281,7 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
   EXPECT_NSEQ(nil, consumer_.itemData[consumer_.items[2]].groupStrokeColor);
 
   // Check that the closed tab and its group are removed from the consumer.
-  web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+  web_state_list_->CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
 
   ASSERT_NE(nil, consumer_.selectedItem);
   EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
@@ -915,7 +915,7 @@ TEST_F(TabStripMediatorTest, DeleteAllWebState) {
 
   InitializeMediator();
 
-  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list_, WebStateList::ClosingReason::kDefault);
 
   AddWebState();
   AddWebState();
@@ -1146,7 +1146,7 @@ TEST_F(TabStripMediatorTest, AddTabToGroup) {
 // Tests dropping an interal URL (e.g. drag from omnibox).
 TEST_F(TabStripMediatorTest, DropInternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1174,7 +1174,7 @@ TEST_F(TabStripMediatorTest, DropInternalURL) {
 // Tests dropping an external URL.
 TEST_F(TabStripMediatorTest, DropExternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1204,7 +1204,7 @@ TEST_F(TabStripMediatorTest, DropExternalURL) {
 // Tests dropping a tab.
 TEST_F(TabStripMediatorTest, DropTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1231,7 +1231,7 @@ TEST_F(TabStripMediatorTest, DropTab) {
 // Tests dragging the last tab out of a group.
 TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b [ 0 c ]",
                                                        browser_->GetProfile()));
@@ -1278,7 +1278,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
 // Tests dragging the last tab out of a group from another browser.
 TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b",
                                                        browser_->GetProfile()));
@@ -1332,7 +1332,7 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
 // Tests dragging the a tab out of a group containing several tabs.
 TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* [ 0 b c ]",
                                                        browser_->GetProfile()));
@@ -1379,7 +1379,7 @@ TEST_F(TabStripMediatorTest, DeleteTabGroup) {
 // Tests cancelling a tab move on the same browser.
 TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1437,7 +1437,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
 // been associated with another local group.
 TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1484,7 +1484,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
 // exist anymore.
 TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1542,7 +1542,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
 // Tests cancelling a tab move on another browser.
 TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
                                                        browser_->GetProfile()));
@@ -1611,7 +1611,7 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
 // Tests that the group item in the tab strip has the notification dot in its
 // item data.
 TEST_F(TabStripMediatorTest, TabGroupItemHasNotificationDot) {
-  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list_, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a* b ] c ",
                                                        browser_->GetProfile()));
@@ -1646,7 +1646,7 @@ TEST_F(TabStripMediatorTest, TabGroupItemHasNotificationDot) {
 
 // Tests that the tab strip has the notification dot in its item data.
 TEST_F(TabStripMediatorTest, TabStripItemHasNotificationDot) {
-  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*web_state_list_, WebStateList::ClosingReason::kDefault);
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("|[ 0 a* b ] c ",
                                                        browser_->GetProfile()));

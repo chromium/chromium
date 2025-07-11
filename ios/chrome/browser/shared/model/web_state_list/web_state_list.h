@@ -122,19 +122,11 @@ class WebStateList {
     InsertionParams();
   };
 
-  // TODO(crbug.com/365701685): Refactor WebStateList::ClosingFlags to use an
-  // enum for the reason why a WebState is being closed.
   // Constants used when closing WebStates.
-  enum ClosingFlags {
-    // Used to indicate that nothing special should happen to the closed
-    // WebState.
-    CLOSE_NO_FLAGS = 0,
-
-    // Used to indicate that the WebState was closed due to user action.
-    CLOSE_USER_ACTION = 1 << 0,
-
-    // Used tp indicate that the WebState was closed in a tabs clean-up.
-    CLOSE_TABS_CLEANUP = 1 << 1,
+  enum class ClosingReason {
+    kDefault,      // Closed programmatically.
+    kUserAction,   // Closed due to an user action.
+    kTabsCleanup,  // Closed due to tabs cleanup.
   };
 
   // Scoped type representing a batch operation in progress.
@@ -275,16 +267,14 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   std::unique_ptr<web::WebState> DetachWebStateAt(int index);
 
-  // Closes and destroys the WebState at the specified index. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
-  void CloseWebStateAt(int index, int close_flags);
+  // Closes and destroys the WebState at the specified index.
+  void CloseWebStateAt(int index, ClosingReason close_reason);
 
   // Makes the WebState at the specified index the active WebState.
   void ActivateWebStateAt(int index);
 
-  // Closes and destroys all WebStates at `removing_indexes`. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
-  void CloseWebStatesAtIndices(int close_flags,
+  // Closes and destroys all WebStates at `removing_indexes`.
+  void CloseWebStatesAtIndices(ClosingReason close_reason,
                                RemovingIndexes removing_indexes);
 
   // Returns the tab group the WebState belongs to, if any. Otherwise, returns
@@ -552,30 +542,28 @@ class WebStateList {
 
 // Helper function that closes all WebStates in `web_state_list`. The operation
 // is performed as a batch operation and thus cannot be called from another
-// batch operation. The `close_flags` is a bitwise combination of ClosingFlags
-// values.
-void CloseAllWebStates(WebStateList& web_state_list, int close_flags);
+// batch operation.
+void CloseAllWebStates(WebStateList& web_state_list,
+                       WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all regular WebStates in `web_state_list`. The
 // operation is performed as a batch operation and thus cannot be called from
-// another batch operation. The `close_flags` is a bitwise combination of
-// ClosingFlags values.
-void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags);
+// another batch operation.
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list,
+                                WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all WebStates from `group` in `web_state_list`.
 // The operation is performed as a batch operation and thus cannot be called
-// from another batch operation. The `close_flags` is a bitwise combination of
-// ClosingFlags values.
+// from another batch operation.
 void CloseAllWebStatesInGroup(WebStateList& web_state_list,
                               const TabGroup* group,
-                              int close_flags);
+                              WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all WebStates in `web_state_list` that are not at
 // `index_to_keep`. The operation is performed as a batch operation and thus
-// cannot be called from another batch operation. The `close_flags` is a bitwise
-// combination of ClosingFlags values.
+// cannot be called from another batch operation.
 void CloseOtherWebStates(WebStateList& web_state_list,
                          int index_to_keep,
-                         int close_flags);
+                         WebStateList::ClosingReason close_reason);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_

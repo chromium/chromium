@@ -105,8 +105,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
 
   void CloseActiveWebState() {
     browser_->GetWebStateList()->CloseWebStateAt(
-        active_web_state_index_.value(),
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+        active_web_state_index_.value(), WebStateList::ClosingReason::kDefault);
     active_web_state_index_.reset();
   }
 

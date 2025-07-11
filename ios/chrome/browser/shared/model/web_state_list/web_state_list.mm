@@ -26,15 +26,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
-namespace {
-
-// Returns whether the given flag is set in a flagset.
-bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
-  return (flagset & flag) == flag;
-}
-
-}  // namespace
-
 WebStateList::ScopedBatchOperation::ScopedBatchOperation(
     WebStateList* web_state_list)
     : web_state_list_(web_state_list) {
@@ -340,7 +331,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAt(int index) {
                               DetachParams::Detaching());
 }
 
-void WebStateList::CloseWebStateAt(int index, int close_flags) {
+void WebStateList::CloseWebStateAt(int index, ClosingReason close_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
 
@@ -351,8 +342,8 @@ void WebStateList::CloseWebStateAt(int index, int close_flags) {
       order_controller.DetermineNewActiveIndex(active_index_, {index});
 
   const DetachParams detach_params =
-      DetachParams::Closing(IsClosingFlagSet(close_flags, CLOSE_USER_ACTION),
-                            IsClosingFlagSet(close_flags, CLOSE_TABS_CLEANUP));
+      DetachParams::Closing(close_reason == ClosingReason::kUserAction,
+                            close_reason == ClosingReason::kTabsCleanup);
 
   std::unique_ptr<web::WebState> detached_web_state =
       DetachWebStateAtImpl(index, new_active_index, detach_params);
@@ -367,14 +358,14 @@ void WebStateList::ActivateWebStateAt(int index) {
   return ActivateWebStateAtImpl(index);
 }
 
-void WebStateList::CloseWebStatesAtIndices(int close_flags,
+void WebStateList::CloseWebStatesAtIndices(ClosingReason close_reason,
                                            RemovingIndexes removing_indexes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
 
   const DetachParams detach_params =
-      DetachParams::Closing(IsClosingFlagSet(close_flags, CLOSE_USER_ACTION),
-                            IsClosingFlagSet(close_flags, CLOSE_TABS_CLEANUP));
+      DetachParams::Closing(close_reason == ClosingReason::kUserAction,
+                            close_reason == ClosingReason::kTabsCleanup);
 
   // Detach all web states in a first pass, before destroying them at once
   // later. This avoids odd side effects as a result of WebStateImpl's
@@ -1318,24 +1309,26 @@ void WebStateList::OnActiveWebStateChanged() {
   }
 }
 
-void CloseAllWebStates(WebStateList& web_state_list, int close_flags) {
+void CloseAllWebStates(WebStateList& web_state_list,
+                       WebStateList::ClosingReason close_reason) {
   const int count = web_state_list.count();
 
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();
-  web_state_list.CloseWebStatesAtIndices(close_flags, RemovingIndexes({
-                                                          .start = 0,
-                                                          .count = count,
-                                                      }));
+  web_state_list.CloseWebStatesAtIndices(close_reason, RemovingIndexes({
+                                                           .start = 0,
+                                                           .count = count,
+                                                       }));
 }
 
-void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list,
+                                WebStateList::ClosingReason close_reason) {
   const int pinned_tabs_count = web_state_list.pinned_tabs_count();
   const int regular_tabs_count = web_state_list.count() - pinned_tabs_count;
 
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();
-  web_state_list.CloseWebStatesAtIndices(close_flags,
+  web_state_list.CloseWebStatesAtIndices(close_reason,
                                          RemovingIndexes({
                                              .start = pinned_tabs_count,
                                              .count = regular_tabs_count,
@@ -1344,12 +1337,12 @@ void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
 
 void CloseAllWebStatesInGroup(WebStateList& web_state_list,
                               const TabGroup* group,
-                              int close_flags) {
+                              WebStateList::ClosingReason close_reason) {
   const TabGroupRange range = group->range();
 
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();
-  web_state_list.CloseWebStatesAtIndices(close_flags,
+  web_state_list.CloseWebStatesAtIndices(close_reason,
                                          RemovingIndexes({
                                              .start = range.range_begin(),
                                              .count = range.count(),
@@ -1358,7 +1351,7 @@ void CloseAllWebStatesInGroup(WebStateList& web_state_list,
 
 void CloseOtherWebStates(WebStateList& web_state_list,
                          int index_to_keep,
-                         int close_flags) {
+                         WebStateList::ClosingReason close_reason) {
   const int count = web_state_list.count();
   const int pinned_count = web_state_list.pinned_tabs_count();
   std::vector<int> indexes_to_close;
@@ -1372,5 +1365,5 @@ void CloseOtherWebStates(WebStateList& web_state_list,
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();
   web_state_list.CloseWebStatesAtIndices(
-      close_flags, RemovingIndexes(std::move(indexes_to_close)));
+      close_reason, RemovingIndexes(std::move(indexes_to_close)));
 }

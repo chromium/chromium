@@ -285,7 +285,7 @@ TEST_F(OpenTabsSpotlightManagerTest, TestCloseTab) {
 
   // Close the first tab.
   browser_.get()->GetWebStateList()->CloseWebStateAt(
-      0, WebStateList::CLOSE_USER_ACTION);
+      0, WebStateList::ClosingReason::kUserAction);
 
   // We don't expect to delete the tab url for spotlight index since there still
   // a tab loaded with that url.
@@ -295,7 +295,7 @@ TEST_F(OpenTabsSpotlightManagerTest, TestCloseTab) {
 
   // Close the second tab.
   browser_.get()->GetWebStateList()->CloseWebStateAt(
-      0, WebStateList::CLOSE_USER_ACTION);
+      0, WebStateList::ClosingReason::kUserAction);
 
   // We expect to delete the closed tab (since it was the unique tab that has
   // the loaded url).
@@ -325,7 +325,7 @@ TEST_F(OpenTabsSpotlightManagerTest, TestBackgroundUpdatesPostponed) {
 
   // Close a tab.
   browser_.get()->GetWebStateList()->CloseWebStateAt(
-      0, WebStateList::CLOSE_USER_ACTION);
+      0, WebStateList::ClosingReason::kUserAction);
 
   // We expect to NOT delete the closed tab (since it was the unique tab that
   // has the loaded url).

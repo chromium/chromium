@@ -215,7 +215,7 @@ NSString* CreationText(base::Time creation_date) {
     // the tab group sync service.
     CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
                              tabGroupInfo.tab_group,
-                             WebStateList::CLOSE_USER_ACTION);
+                             WebStateList::ClosingReason::kUserAction);
   } else {
     // The group doesn't exist locally. Delete the group from the tab group
     // sync service.

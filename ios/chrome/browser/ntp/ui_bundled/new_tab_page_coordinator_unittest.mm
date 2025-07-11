@@ -499,7 +499,7 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateWithinWebState) {
 
     // Remove one of the tabs so that NTPCoordinator will actually stop.
     browser_->GetWebStateList()->CloseWebStateAt(
-        /*index=*/0, /* close_flags= */ 0);
+        /*index=*/0, WebStateList::ClosingReason::kDefault);
     [coordinator_ stopIfNeeded];
     EXPECT_FALSE(coordinator_.started);
     EXPECT_FALSE(coordinator_.visible);
@@ -542,7 +542,7 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
 
     // Close non-NTP web state to get back to NTP web state.
     browser_->GetWebStateList()->CloseWebStateAt(
-        /*index=*/1, /* close_flags= */ 0);
+        /*index=*/1, WebStateList::ClosingReason::kDefault);
     [coordinator_ didNavigateToNTPInWebState:web_state_];
     if (!off_the_record) {
       histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 1);
@@ -554,7 +554,7 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
     // Close all web states.
     [coordinator_ didNavigateAwayFromNTP];
     CloseAllWebStates(*browser_->GetWebStateList(),
-                      WebStateList::CLOSE_NO_FLAGS);
+                      WebStateList::ClosingReason::kDefault);
     [coordinator_ stopIfNeeded];
     if (!off_the_record) {
       histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 2);

@@ -72,7 +72,8 @@
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllIncognitoTabs"));
   // This is a no-op if `webStateList` is already empty.
-  CloseAllWebStates(*self.webStateList, WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*self.webStateList,
+                    WebStateList::ClosingReason::kUserAction);
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 

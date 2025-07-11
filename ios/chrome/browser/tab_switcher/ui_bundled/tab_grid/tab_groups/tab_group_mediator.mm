@@ -206,7 +206,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
                                             syncService);
   } else {
     CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
-                             WebStateList::CLOSE_USER_ACTION);
+                             WebStateList::ClosingReason::kUserAction);
   }
   _tabGroup.reset();
 }
@@ -215,7 +215,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
   CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
   _tabGroup.reset();
 }
 

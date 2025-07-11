@@ -2510,8 +2510,9 @@ enum HeaderBehaviour {
                            "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
                      }
                      if (webStateList) {
-                       CloseAllWebStates(*(webStateList),
-                                         WebStateList::CLOSE_USER_ACTION);
+                       CloseAllWebStates(
+                           *(webStateList),
+                           WebStateList::ClosingReason::kUserAction);
                      }
                      [reauthHandler manualAuthenticationOverride];
                    }]

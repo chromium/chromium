@@ -81,7 +81,7 @@ TEST_F(TabsDependencyInstallerBridgeTest, DeleteWebState) {
       WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_EQ(installer_.deletedCount, 0);
 
-  web_state_list_.CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+  web_state_list_.CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
   EXPECT_EQ(installer_.deletedCount, 1);
 }
 

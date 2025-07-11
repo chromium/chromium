@@ -169,7 +169,7 @@ void CloseTabs(WebStateList* web_state_list,
 
   auto lock = web_state_list->StartBatchOperation();
   web_state_list->CloseWebStatesAtIndices(
-      WebStateList::CLOSE_TABS_CLEANUP,
+      WebStateList::ClosingReason::kTabsCleanup,
       RemovingIndexes(std::move(indices_to_close)));
 }
 }  // namespace tabs_closure_util

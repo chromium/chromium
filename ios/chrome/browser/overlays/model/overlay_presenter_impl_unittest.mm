@@ -381,7 +381,8 @@ TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
 
   // Remove the WebState and verify that its overlay was cancelled.
   EXPECT_CALL(observer(), DidHideOverlay(&presenter(), request));
-  web_state_list()->CloseWebStateAt(/*index=*/0, /* close_flags= */ 0);
+  web_state_list()->CloseWebStateAt(/*index=*/0,
+                                    WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kCancelled,
             presentation_context().GetPresentationState(request));
 }

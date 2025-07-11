@@ -108,8 +108,8 @@ class KeyCommandsProviderTest : public PlatformTest {
   }
 
   void CloseWebState(int index) {
-    web_state_list_->CloseWebStateAt(
-        index, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    web_state_list_->CloseWebStateAt(index,
+                                     WebStateList::ClosingReason::kDefault);
   }
 
   // Checks that `view_controller_` can perform the `action` with the given
