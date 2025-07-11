@@ -180,6 +180,8 @@
     'internal.optimization_guide': {
       # Linux and win64 CI bots use official builds to catch official-specific ODML bugs. These
       # take significantly longer to compile, and thus are only for these two builders.
+      'ai_wpt-mac-arm64': 'optimization_guide_mac_arm64_rel',
+      'ai_wpt-mac-x64': 'optimization_guide_rel',
       'model_validation-linux': 'optimization_guide_rel',
       'model_validation-mac-arm64': 'optimization_guide_mac_arm64_rel',
       'model_validation-mac-x64': 'optimization_guide_rel',
@@ -263,6 +265,8 @@
     },
 
     'tryserver.internal.optimization_guide': {
+      'ai_wpt-mac-arm64': 'optimization_guide_mac_arm64_rel',
+      'ai_wpt-mac-x64': 'optimization_guide_rel',
       'model_validation-linux': 'optimization_guide_rel',
       'model_validation-mac-arm64': 'optimization_guide_mac_arm64_rel',
       'model_validation-mac-x64': 'optimization_guide_rel',

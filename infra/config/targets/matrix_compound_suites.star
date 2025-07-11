@@ -492,7 +492,6 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
         "ondevice_stability_tests_suite": None,
-        "chrome_ai_wpt_tests_suite": None,
     },
 )
 
