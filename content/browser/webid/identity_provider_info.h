@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace gfx {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/federated_auth_autofill_source.h"
+#include "content/public/browser/webid/federated_auth_autofill_source.h"
 
 #include <optional>
 

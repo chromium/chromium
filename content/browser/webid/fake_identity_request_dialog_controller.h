@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace base {
 class Location;

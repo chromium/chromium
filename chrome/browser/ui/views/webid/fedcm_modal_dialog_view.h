@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace webid {
 

@@ -12,8 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "content/public/browser/identity_request_account.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 

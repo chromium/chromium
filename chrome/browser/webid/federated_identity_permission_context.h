@@ -14,7 +14,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webid/federated_identity_data_model.h"
-#include "content/public/browser/federated_identity_permission_context_delegate.h"
+#include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 

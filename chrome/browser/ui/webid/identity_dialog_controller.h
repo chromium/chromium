@@ -16,8 +16,8 @@
 #include "chrome/browser/webid/proto/fedcm_clickthrough_rate_metadata.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
 using AccountSelectionCallback =

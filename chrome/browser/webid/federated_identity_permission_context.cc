@@ -12,7 +12,7 @@
 #include "chrome/browser/webid/federated_identity_identity_provider_signin_status_context.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
-#define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
+#define CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 
 #include <optional>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -134,4 +134,4 @@ class FederatedIdentityPermissionContextDelegate {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_

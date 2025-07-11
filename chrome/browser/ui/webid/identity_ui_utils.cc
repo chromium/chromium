@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/platform_locale_settings.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"

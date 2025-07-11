@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
-#define CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
+#define CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -304,4 +304,4 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_DIALOG_CONTROLLER_H_

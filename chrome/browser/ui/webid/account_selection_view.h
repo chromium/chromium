@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/identity_request_account.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/identity_request_account.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
 using Account = content::IdentityRequestAccount;

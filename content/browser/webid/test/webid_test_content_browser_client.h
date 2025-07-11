@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "content/browser/webid/identity_registry.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 
 namespace content {

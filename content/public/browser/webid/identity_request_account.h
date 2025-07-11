@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_ACCOUNT_H_
-#define CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_ACCOUNT_H_
+#ifndef CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_ACCOUNT_H_
+#define CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_ACCOUNT_H_
 
 #include <optional>
 #include <string>
@@ -135,4 +135,4 @@ class CONTENT_EXPORT IdentityRequestAccount
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_IDENTITY_REQUEST_ACCOUNT_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEBID_IDENTITY_REQUEST_ACCOUNT_H_

@@ -8,8 +8,8 @@
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
-#include "content/public/browser/federated_auth_autofill_source.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/federated_auth_autofill_source.h"
 
 namespace autofill {
 

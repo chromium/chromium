@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
+#include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
