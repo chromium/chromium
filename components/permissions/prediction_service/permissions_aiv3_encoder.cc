@@ -96,4 +96,8 @@ void PermissionsAiv3Encoder::SetThresholdValues(
       thresholds.min_high_relevance(), thresholds.min_very_high_relevance()};
 }
 
+base::TaskPriority PermissionsAiv3Encoder::GetModelLoadingTaskPriority() const {
+  return base::TaskPriority::USER_VISIBLE;
+}
+
 }  // namespace permissions

@@ -60,7 +60,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
       // Passing nullopt will use a default value.
       std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
-      const std::optional<proto::Any>& model_metadata)
+      const std::optional<proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner =
+          base::SequencedTaskRunner::GetCurrentDefault())
       : model_provider_(model_provider),
         optimization_target_(optimization_target),
         model_executor_(std::move(model_executor)),
@@ -79,8 +81,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     model_executor_->InitializeAndMoveToExecutionThread(
         model_inference_timeout, optimization_target_,
-        model_executor_task_runner_,
-        base::SequencedTaskRunner::GetCurrentDefault());
+        model_executor_task_runner_, reply_task_runner);
 
     // Run this after the executor is initialized in case the model is already
     // available.

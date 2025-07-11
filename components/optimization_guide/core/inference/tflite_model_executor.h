@@ -114,7 +114,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     execution_task_runner_ = execution_task_runner;
     reply_task_runner_ = reply_task_runner;
     model_loading_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+        {base::MayBlock(), GetModelLoadingTaskPriority()});
 
     if (features::IsModelExecutionWatchdogEnabled()) {
       // The sequence |watchdog_sequence| is used to run watchdog's task. The
@@ -295,6 +295,14 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   TFLiteModelExecutor(const TFLiteModelExecutor&) = delete;
   TFLiteModelExecutor& operator=(const TFLiteModelExecutor&) = delete;
+
+  // Returns the task priority to use for loading the model. By default, this
+  // returns BEST_EFFORT which is the lowest priority. The method is virtual
+  // so that the priority can be overridden in case the model is needed for user
+  // visible tasks.
+  virtual base::TaskPriority GetModelLoadingTaskPriority() const {
+    return base::TaskPriority::BEST_EFFORT;
+  }
 
  protected:
   using ModelExecutionTask =

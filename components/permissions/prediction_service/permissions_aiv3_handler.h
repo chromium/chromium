@@ -28,6 +28,7 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
       std::unique_ptr<PermissionsAiv3Encoder> model_executor);
   ~PermissionsAiv3Handler() override;
 

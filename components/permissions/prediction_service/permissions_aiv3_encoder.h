@@ -51,6 +51,7 @@ class PermissionsAiv3Encoder : public optimization_guide::BaseModelExecutor<
                   const ModelInput& input) override;
   std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
+  base::TaskPriority GetModelLoadingTaskPriority() const override;
 
  private:
   void SetThresholdValues(
