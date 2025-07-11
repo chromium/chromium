@@ -9604,6 +9604,26 @@
             ]
         }
     ],
+    "EnterpriseActiveUserDetection": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseActiveUserDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseBadgingForNtpFooter": [
         {
             "platforms": [
