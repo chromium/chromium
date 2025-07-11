@@ -4,6 +4,7 @@
 
 #include "extensions/browser/service_worker/service_worker_state.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/process_manager.h"
@@ -179,6 +180,12 @@ void ServiceWorkerState::DidStopServiceWorkerContext(const WorkerId& worker_id,
     // We can see `DidStopServiceWorkerContext` right after
     // `DidInitializeServiceWorkerContext` and without
     // `DidStartServiceWorkerContext`.
+    if (worker_id_.has_value()) {
+      // TODO(andreaorru): I expect that in this case, `worker_id_` would not be
+      // set at all, rather than being set to a non-null but different value.
+      // Verify that's the case and simplify the logic.
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 
