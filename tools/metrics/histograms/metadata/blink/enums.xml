@@ -8347,6 +8347,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="370" label="WasmMutableGlobals"/>
   <int value="371" label="WasmNonTrappingFloatToInt"/>
   <int value="372" label="WasmSignExtensionOperators"/>
+  <int value="373" label="IncomingCallNotifications"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

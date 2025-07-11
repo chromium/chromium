@@ -2637,6 +2637,10 @@
     },
     {
       name: "IncomingCallNotifications",
+      origin_trial_feature_name: "IncomingCallNotifications",
+      origin_trial_os: [ "win" ],
+      origin_trial_allows_third_party: true,
+      base_feature: "IncomingCallNotifications",
     },
     {
        // When enabled, every traversable mainframe same-doc navigation will

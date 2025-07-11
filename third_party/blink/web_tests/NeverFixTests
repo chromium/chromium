@@ -1907,3 +1907,7 @@ virtual/prefetch/external/wpt/speculation-rules/prefetch/anonymous-client.https.
 virtual/prefetch/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
 virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/anonymous-client.https.html [ Skip ]
 virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html [ Skip ]
+
+# These tests test origin trial behavior that is only enabled on windows
+[ Mac ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]
+[ Linux ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]

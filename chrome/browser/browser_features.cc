@@ -132,7 +132,11 @@ BASE_FEATURE(kFlexOrgManagementDisclosure,
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Notifications/notifications_actions_customization.md
 BASE_FEATURE(kIncomingCallNotifications,
              "IncomingCallNotifications",
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Adds a "Snooze" action to mute notifications during screen sharing sessions.
