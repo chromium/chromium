@@ -826,9 +826,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   }
   READ_BOOL_OR_RETURN(&sps->sps_temporal_mvp_enabled_flag);
   READ_BOOL_OR_RETURN(&sps->strong_intra_smoothing_enabled_flag);
-  bool vui_parameters_present_flag;
-  READ_BOOL_OR_RETURN(&vui_parameters_present_flag);
-  if (vui_parameters_present_flag) {
+  READ_BOOL_OR_RETURN(&sps->vui_parameters_present_flag);
+  if (sps->vui_parameters_present_flag) {
     res = ParseVuiParameters(*sps, &sps->vui_parameters);
     if (res != kOk)
       return res;

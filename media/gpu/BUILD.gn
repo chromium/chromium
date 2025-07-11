@@ -705,7 +705,10 @@ source_set("unit_tests") {
     ]
 
     if (enable_hevc_parser_and_hw_decoder) {
-      sources += [ "windows/d3d12_video_encode_h265_delegate_unittest.cc" ]
+      sources += [
+        "h265_builder_unittest.cc",
+        "windows/d3d12_video_encode_h265_delegate_unittest.cc",
+      ]
     }
   }
 

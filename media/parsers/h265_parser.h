@@ -226,6 +226,7 @@ struct MEDIA_EXPORT H265SPS {
   bool used_by_curr_pic_lt_sps_flag[kMaxLongTermRefPicSets] = {};
   bool sps_temporal_mvp_enabled_flag = false;
   bool strong_intra_smoothing_enabled_flag = false;
+  bool vui_parameters_present_flag = false;
   H265VUIParameters vui_parameters;
 
   // Extension extra elements.

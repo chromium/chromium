@@ -273,6 +273,22 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
   if (is_keyframe) {
     H265VPS vps = ToVPS();
     H265SPS sps = ToSPS(vps);
+    // Values specified here equals to that in T-REC H.273 Table 3.
+    if (IsRec601(input_color_space)) {
+      sps.vui_parameters.colour_primaries = 6;          // SMPTE170M
+      sps.vui_parameters.transfer_characteristics = 6;  // SMPTE170M
+      sps.vui_parameters.matrix_coeffs = 6;             // SMPTE170M
+      sps.vui_parameters.colour_description_present_flag = true;
+      sps.vui_parameters_present_flag = true;
+    } else if (IsRec709(input_color_space)) {
+      sps.vui_parameters.colour_primaries = 1;          // BT709
+      sps.vui_parameters.transfer_characteristics = 1;  // BT709
+      sps.vui_parameters.matrix_coeffs = 1;             // BT709
+      sps.vui_parameters.colour_description_present_flag = true;
+      sps.vui_parameters_present_flag = true;
+    }
+    sps.vui_parameters.video_full_range_flag =
+        input_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
     H265PPS pps = ToPPS(sps);
     packed_header_.Reset();
     BuildPackedH265VPS(packed_header_, vps);
