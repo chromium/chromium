@@ -24,12 +24,15 @@ class WebStateList;
 class Browser : public base::SupportsUserData {
  public:
   // Different type of browsers.
+  // LINT.IfChange(ChromeBrowserType)
   enum class Type {
-    kRegular,
-    kIncognito,
-    kInactive,
-    kTemporary,
+    kRegular = 0,
+    kIncognito = 1,
+    kInactive = 2,
+    kTemporary = 3,
+    kMaxValue = kTemporary,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ChromeBrowserType)
 
   // Creates a new Browser attached to `profile` and to `scene_state`.
   static std::unique_ptr<Browser> Create(ProfileIOS* profile,

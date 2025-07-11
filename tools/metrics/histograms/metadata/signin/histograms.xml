@@ -2642,6 +2642,19 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ShowManageAccountFromGaia.BrowserType"
+    enum="ChromeBrowserType" expires_after="2026-05-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Logs the browser type when the Gaia server triggers the manage account
+    dialog. Most likely, this is recorded when the user taps on a manage
+    accounts button in Google web site (like gmail, drive, etc…).
+
+    Only logged on iOS.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.DurationBetweenTwoSigninCoordinatorCreation"
     units="ms" expires_after="2025-08-03">

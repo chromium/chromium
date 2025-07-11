@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
@@ -90,6 +91,12 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
 }
 
 void AccountConsistencyBrowserAgent::OnManageAccounts(const GURL& url) {
+  Browser::Type browser_type = browser_->type();
+  base::UmaHistogramEnumeration("Signin.ShowManageAccountFromGaia.BrowserType",
+                                browser_type);
+  if (browser_type != Browser::Type::kRegular) {
+    return;
+  }
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
