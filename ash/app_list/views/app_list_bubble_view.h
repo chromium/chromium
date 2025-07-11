@@ -152,7 +152,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
  private:
   friend class AppListTestHelper;
-  friend class AssistantTestApiImpl;
 
   // Initializes the main contents (search box, apps page, and search page).
   void InitContentsView();

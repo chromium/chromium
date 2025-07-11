@@ -97,7 +97,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_restore:unit_tests",
     "//chrome/browser/ash/apps:unit_tests",
     "//chrome/browser/ash/arc:unit_tests",
-    "//chrome/browser/ash/assistant:unit_tests",
     "//chrome/browser/ash/attestation:unit_tests",
     "//chrome/browser/ash/audio:unit_tests",
     "//chrome/browser/ash/bluetooth:unit_tests",

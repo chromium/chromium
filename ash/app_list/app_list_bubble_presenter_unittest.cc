@@ -18,7 +18,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
-#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
@@ -50,10 +49,6 @@ using views::Widget;
 namespace ash {
 namespace {
 
-constexpr std::string_view kNoAssistantForNewEntryPoint =
-    "Assistant is not available if new entry point is enabled. "
-    "crbug.com/388361414";
-
 // Distance under which two points are considered "near" each other.
 constexpr int kNearDistanceDips = 20;
 
@@ -82,8 +77,7 @@ size_t NumberOfWidgetsInAppListContainer(int64_t display_id) {
 
 class AppListBubblePresenterTest : public AshTestBase {
  public:
-  AppListBubblePresenterTest()
-      : assistant_test_api_(AssistantTestApi::Create()) {}
+  AppListBubblePresenterTest() {}
   ~AppListBubblePresenterTest() override = default;
 
   // testing::Test:
@@ -111,8 +105,6 @@ class AppListBubblePresenterTest : public AshTestBase {
       presenter->bubble_widget_for_test()->LayoutRootViewIfNecessary();
     }
   }
-
-  std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 
 // Tests that verify app list bubble bounds. Parameterized by whether launcher
@@ -433,104 +425,11 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
   EXPECT_FALSE(presenter->bubble_widget_for_test()->IsVisible());
 }
 
-// Regression test for https://crbug.com/1275755
-TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
-  if (ash::assistant::features::IsNewEntryPointEnabled()) {
-    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
-  }
-
-  // Simulate production behavior for animations, assistant, and zero-state
-  // search results.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_test_api_->EnableAssistantAndWait();
-  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
-
-  PressAndReleaseKey(ui::VKEY_ASSISTANT);
-  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  EXPECT_TRUE(presenter->IsShowing());
-  EXPECT_FALSE(
-      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
-  EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
-
-  views::View* progress_indicator =
-      presenter->bubble_view_for_test()->GetViewByID(
-          AssistantViewID::kProgressIndicator);
-  EXPECT_FLOAT_EQ(0.f, progress_indicator->layer()->opacity());
-
-  // Check target opacity as footer is animating.
-  views::View* footer = presenter->bubble_view_for_test()->GetViewByID(
-      AssistantViewID::kFooterView);
-  EXPECT_FLOAT_EQ(1.f, footer->layer()->GetTargetOpacity());
-}
-
-TEST_F(AppListBubblePresenterTest, AssistantKeyOpensAssistantPageWhenCached) {
-  if (ash::assistant::features::IsNewEntryPointEnabled()) {
-    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
-  }
-
-  // Show and hide the widget to force it to be cached.
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-  presenter->Dismiss();
-
-  // Simulate production behavior for animations, assistant, and zero-state
-  // search results.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_test_api_->EnableAssistantAndWait();
-  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
-
-  PressAndReleaseKey(ui::VKEY_ASSISTANT);
-  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
-
-  EXPECT_TRUE(presenter->IsShowing());
-  EXPECT_FALSE(
-      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
-  EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
-}
-
-TEST_F(AppListBubblePresenterTest, AppsPageVisibleAfterShowingAssistant) {
-  if (ash::assistant::features::IsNewEntryPointEnabled()) {
-    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
-  }
-
-  // Simulate production behavior for animations, assistant, and zero-state
-  // search results.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_test_api_->EnableAssistantAndWait();
-  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
-
-  // Show the assistant.
-  PressAndReleaseKey(ui::VKEY_ASSISTANT);
-  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
-
-  // Hide the assistant.
-  PressAndReleaseKey(ui::VKEY_ASSISTANT);
-  base::RunLoop().RunUntilIdle();
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  ASSERT_FALSE(presenter->IsShowing());
-
-  // Show the launcher.
-  PressAndReleaseKey(ui::VKEY_BROWSER_SEARCH);
-  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
-
-  // Apps page is visible, even though it was hidden when showing assistant.
-  EXPECT_TRUE(
-      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
-  EXPECT_FALSE(presenter->IsShowingEmbeddedAssistantUI());
-}
-
 TEST_F(AppListBubblePresenterTest, SearchKeyOpensToAppsPage) {
   // Simulate production behavior for animations, assistant, and zero-state
   // search results.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  assistant_test_api_->EnableAssistantAndWait();
   GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
 
   PressAndReleaseKey(ui::VKEY_LWIN);  // Search key.
@@ -540,27 +439,6 @@ TEST_F(AppListBubblePresenterTest, SearchKeyOpensToAppsPage) {
   EXPECT_TRUE(presenter->IsShowing());
   EXPECT_TRUE(
       presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
-  EXPECT_FALSE(presenter->IsShowingEmbeddedAssistantUI());
-}
-
-TEST_F(AppListBubblePresenterTest, SearchFieldHasFocusAfterAssistantPageShown) {
-  // Search box takes focus on show.
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-  auto* search_box_view = GetAppListTestHelper()->GetBubbleSearchBoxView();
-  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
-
-  // Switch to assistant page. Search box loses focus.
-  presenter->ShowEmbeddedAssistantUI();
-  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
-
-  // The widget is still open, but hidden.
-  presenter->Dismiss();
-  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
-
-  // Focus returns to the main search box on show.
-  presenter->Show(GetPrimaryDisplay().id());
-  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
 }
 
 TEST_F(AppListBubblePresenterTest, DoesNotCrashWhenNativeWidgetDestroyed) {

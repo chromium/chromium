@@ -25,25 +25,3 @@ static_library("assistant") {
     "//components/language/core/browser",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "assistant_util_unittest.cc" ]
-
-  deps = [
-    ":assistant",
-    "//ash/public/cpp",
-    "//base/test:test_support",
-    "//chrome/browser/ash/login/demo_mode",
-    "//chrome/browser/ash/login/users:test_support",
-    "//chrome/test:test_support",
-    "//chromeos/ash/components/install_attributes:test_support",
-    "//chromeos/ash/services/assistant/public/cpp",
-    "//components/language/core/browser",
-    "//components/prefs:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-}

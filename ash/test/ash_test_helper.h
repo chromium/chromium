@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/assistant/test/test_assistant_service.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -168,10 +167,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return test_keyboard_controller_observer_.get();
   }
 
-  TestAssistantService* test_assistant_service() {
-    return assistant_service_.get();
-  }
-
   AmbientAshTestHelper* ambient_ash_test_helper() {
     return ambient_ash_test_helper_.get();
   }
@@ -226,8 +221,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<TestNotifierSettingsController>
       notifier_settings_controller_ =
           std::make_unique<TestNotifierSettingsController>();
-  std::unique_ptr<TestAssistantService> assistant_service_ =
-      std::make_unique<TestAssistantService>();
   std::unique_ptr<TestSystemTrayClient> system_tray_client_ =
       std::make_unique<TestSystemTrayClient>();
   std::unique_ptr<AppListTestHelper> app_list_test_helper_;

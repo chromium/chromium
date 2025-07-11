@@ -67,12 +67,7 @@ static_library("assistant") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "assistant_browser_delegate_impl_unittest.cc",
-    "assistant_state_client_unittest.cc",
-    "device_actions_unittest.cc",
-    "search_and_assistant_enabled_checker_unittest.cc",
-  ]
+  sources = [ "assistant_browser_delegate_impl_unittest.cc" ]
 
   deps = [
     ":assistant",

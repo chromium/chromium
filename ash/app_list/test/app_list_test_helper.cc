@@ -368,11 +368,6 @@ SearchResultPageAnchoredDialog* AppListTestHelper::GetBubbleSearchPageDialog() {
       ->bubble_view_for_test()
       ->search_page_dialog_controller_->dialog();
 }
-AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
-  return app_list_controller_->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->assistant_page_;
-}
 
 SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
   return AppListModelProvider::Get()->search_model()->results();

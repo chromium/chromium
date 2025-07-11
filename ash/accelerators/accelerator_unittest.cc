@@ -11,7 +11,6 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/network/network_observer.h"
@@ -39,10 +38,6 @@
 namespace ash {
 
 namespace {
-
-constexpr std::string_view kNoAssistantForNewEntryPoint =
-    "Assistant is not available if new entry point is enabled. "
-    "crbug.com/388361414";
 
 // A network observer to watch for the toggle wifi events.
 class TestNetworkObserver : public NetworkObserver {
@@ -190,52 +185,6 @@ TEST_F(AcceleratorTest, ToggleAppList) {
   SendKeyPressSync(ui::VKEY_LWIN, false, false, false);
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
-}
-
-TEST_F(AcceleratorTest, SearchPlusAWithNewEntryPointDisabled) {
-  if (ash::assistant::features::IsNewEntryPointEnabled()) {
-    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
-  }
-
-  base::UserActionTester user_action_tester;
-
-  std::unique_ptr<AssistantTestApi> test_api = AssistantTestApi::Create();
-  test_api->EnableAssistantAndWait();
-
-  ui::test::EmulateFullKeyPressReleaseSequence(
-      GetEventGenerator(), ui::VKEY_A,
-      /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/true);
-
-  AssistantUiController* ui_controller = AssistantUiController::Get();
-  CHECK(ui_controller);
-  EXPECT_EQ(AssistantVisibility::kVisible,
-            ui_controller->GetModel()->visibility());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "VoiceInteraction.Started.Search_A"));
-}
-
-TEST_F(AcceleratorTest, AssistantKeyWithNewEntryPointDisabled) {
-  if (ash::assistant::features::IsNewEntryPointEnabled()) {
-    GTEST_SKIP() << kNoAssistantForNewEntryPoint;
-  }
-
-  base::UserActionTester user_action_tester;
-
-  std::unique_ptr<AssistantTestApi> test_api = AssistantTestApi::Create();
-  test_api->EnableAssistantAndWait();
-
-  ui::test::EmulateFullKeyPressReleaseSequence(
-      GetEventGenerator(), ui::VKEY_ASSISTANT,
-      /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false);
-
-  AssistantUiController* ui_controller = AssistantUiController::Get();
-  CHECK(ui_controller);
-  EXPECT_EQ(AssistantVisibility::kVisible,
-            ui_controller->GetModel()->visibility());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "VoiceInteraction.Started.Assistant"));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(
-                   "Assistant.NewEntryPoint.AssistantKey"));
 }
 
 class AcceleratorNewEntryPointTest : public AcceleratorTest {

@@ -16,7 +16,6 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/assistant/test/test_assistant_service.h"
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
