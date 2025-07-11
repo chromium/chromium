@@ -5,6 +5,8 @@
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -14,6 +16,7 @@
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
+#include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -50,7 +53,36 @@ base::FilePath ModelFilePath(std::string_view file_name) {
       .AppendASCII(file_name);
 }
 
-void FillDataToBitmap(SkBitmap* bmp) {}
+PermissionsAiv3ModelMetadata BuildMetadataFromValues(
+    const std::array<float, 4>& thresholds) {
+  PermissionsAiv3ModelMetadata metadata;
+  std::string serialized_metadata;
+  metadata.mutable_relevance_thresholds()->set_min_low_relevance(thresholds[0]);
+  metadata.mutable_relevance_thresholds()->set_min_medium_relevance(
+      thresholds[1]);
+  metadata.mutable_relevance_thresholds()->set_min_high_relevance(
+      thresholds[2]);
+  metadata.mutable_relevance_thresholds()->set_min_very_high_relevance(
+      thresholds[3]);
+  return metadata;
+}
+
+std::string RelevanceToString(PermissionRequestRelevance relevance) {
+  switch (relevance) {
+    case PermissionRequestRelevance::kVeryLow:
+      return "VeryLow";
+    case PermissionRequestRelevance::kLow:
+      return "Low";
+    case PermissionRequestRelevance::kMedium:
+      return "Medium";
+    case PermissionRequestRelevance::kHigh:
+      return "High";
+    case PermissionRequestRelevance::kVeryHigh:
+      return "VeryHigh";
+    default:
+      NOTREACHED();
+  }
+}
 
 std::unique_ptr<SkBitmap> BuildBitmap(int width, int height) {
   SkBitmap bitmap;
@@ -125,15 +157,29 @@ class Aiv3HandlerTestBase : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void PushModelFileToModelExecutor(OptimizationTarget opt_target,
-                                    const base::FilePath& model_file_path) {
+  void PushModelFileToModelExecutor(
+      OptimizationTarget opt_target,
+      const base::FilePath& model_file_path,
+      std::optional<PermissionsAiv3ModelMetadata> metadata = std::nullopt) {
     std::optional<optimization_guide::proto::Any> any;
+
+    if (metadata.has_value()) {
+      any = std::make_optional<optimization_guide::proto::Any>();
+      std::string serialized_metadata;
+      (metadata.value()).SerializeToString(&serialized_metadata);
+      any->set_value(serialized_metadata);
+      any->set_type_url(
+          "type.googleapis.com/"
+          "google.privacy.webpermissionpredictions.aiv3.v1."
+          "PermissionsAiv3ModelMetadata");
+    }
 
     auto model_metadata = optimization_guide::TestModelInfoBuilder()
                               .SetModelMetadata(any)
                               .SetModelFilePath(model_file_path)
                               .SetVersion(123)
                               .Build();
+
     model_handler(opt_target)->OnModelUpdated(opt_target, *model_metadata);
 
     task_environment_.RunUntilIdle();
@@ -162,6 +208,7 @@ struct RelevanceTestCase {
   OptimizationTarget optimization_target;
   base::FilePath model_file_path;
   PermissionRequestRelevance expected_relevance;
+  std::optional<PermissionsAiv3ModelMetadata> metadata;
 };
 
 class RelevanceAiv3HandlerTest
@@ -173,23 +220,49 @@ INSTANTIATE_TEST_SUITE_P(
     RelevanceAiv3HandlerTest,
     testing::ValuesIn<RelevanceTestCase>({
         {kOptTargetGeolocation, ModelFilePath(kZeroReturnModel),
-         PermissionRequestRelevance::kVeryLow},
+         PermissionRequestRelevance::kVeryLow, /*metadata=*/std::nullopt},
         {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
-         PermissionRequestRelevance::kHigh},
+         PermissionRequestRelevance::kHigh, /*metadata=*/std::nullopt},
         {kOptTargetGeolocation, ModelFilePath(kOneReturnModel),
-         PermissionRequestRelevance::kVeryHigh},
+         PermissionRequestRelevance::kVeryHigh, /*metadata=*/std::nullopt},
         {kOptTargetNotification, ModelFilePath(kZeroReturnModel),
-         PermissionRequestRelevance::kVeryLow},
+         PermissionRequestRelevance::kVeryLow, /*metadata=*/std::nullopt},
         {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
-         PermissionRequestRelevance::kMedium},
+         PermissionRequestRelevance::kMedium, /*metadata=*/std::nullopt},
         {kOptTargetNotification, ModelFilePath(kOneReturnModel),
-         PermissionRequestRelevance::kVeryHigh},
-    }));
+         PermissionRequestRelevance::kVeryHigh, /*metadata=*/std::nullopt},
+        {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
+         PermissionRequestRelevance::kVeryLow,
+         BuildMetadataFromValues({0.6, 0.7, 0.8, 0.9})},
+        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+         PermissionRequestRelevance::kLow,
+         BuildMetadataFromValues({0.5, 0.6, 0.7, 0.8})},
+        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+         PermissionRequestRelevance::kMedium,
+         BuildMetadataFromValues({0.4, 0.5, 0.6, 0.7})},
+        {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
+         PermissionRequestRelevance::kHigh,
+         BuildMetadataFromValues({0.3, 0.4, 0.5, 0.6})},
+        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+         PermissionRequestRelevance::kVeryHigh,
+         BuildMetadataFromValues({0.2, 0.3, 0.4, 0.5})},
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<RelevanceAiv3HandlerTest::ParamType>&
+           info) {
+      return base::StrCat(
+          {"With",
+           info.param.metadata.has_value() ? "Metadata" : "DefaultThresholds",
+           info.param.optimization_target == kOptTargetGeolocation
+               ? "Geolocation"
+               : "Notifications",
+           "ModelReturns" + RelevanceToString(info.param.expected_relevance)});
+    });
 
 TEST_P(RelevanceAiv3HandlerTest,
        RelevanceIsMatchedToTheCorrectModelThresholds) {
   PushModelFileToModelExecutor(GetParam().optimization_target,
-                               GetParam().model_file_path);
+                               GetParam().model_file_path, GetParam().metadata);
   auto* aiv3_handler = model_handler(GetParam().optimization_target);
   EXPECT_TRUE(aiv3_handler->ModelAvailable());
 
@@ -205,8 +278,6 @@ TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
                                ModelFilePath(kZeroReturnModel));
 
   auto snapshot = BuildBitmap(kModelInputWidth, kModelInputHeight);
-
-  FillDataToBitmap(snapshot.get());
 
   bool flag = false;
   geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
@@ -238,8 +309,6 @@ TEST_F(Aiv3HandlerTest, HandlesEmptyInputSnapshot) {
 
   auto snapshot = BuildBitmap(/*width=*/0, /*height=*/0);
 
-  FillDataToBitmap(snapshot.get());
-
   ModelCallbackFuture future;
   auto* aiv3_handler = model_handler(kOptTargetGeolocation);
   aiv3_handler->ExecuteModel(future.GetCallback(), std::move(snapshot));
@@ -255,24 +324,29 @@ class ResizeAiv3HandlerTest
     : public Aiv3HandlerTestBase,
       public testing::WithParamInterface<ResizeTestCase> {};
 
-INSTANTIATE_TEST_SUITE_P(ResizeBitmapInternally,
-                         ResizeAiv3HandlerTest,
-                         testing::ValuesIn<ResizeTestCase>({
-                             {/*input_width=*/32, /*input_height=*/32},
-                             {/*input_width=*/32, /*input_height=*/64},
-                             {/*input_width=*/64, /*input_height=*/32},
-                             {/*input_width=*/128, /*input_height=*/128},
-                             {/*input_width=*/64, /*input_height=*/128},
-                             {/*input_width=*/128, /*input_height=*/64},
-                         }));
+INSTANTIATE_TEST_SUITE_P(
+    ResizeBitmapInternally,
+    ResizeAiv3HandlerTest,
+    testing::ValuesIn<ResizeTestCase>({
+        {/*input_width=*/32, /*input_height=*/32},
+        {/*input_width=*/32, /*input_height=*/64},
+        {/*input_width=*/64, /*input_height=*/32},
+        {/*input_width=*/128, /*input_height=*/128},
+        {/*input_width=*/64, /*input_height=*/128},
+        {/*input_width=*/128, /*input_height=*/64},
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<ResizeAiv3HandlerTest::ParamType>& info) {
+      return base::StrCat({base::NumberToString(info.param.input_width), "x",
+                           base::NumberToString(info.param.input_height),
+                           "To64x64"});
+    });
 
 TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
   PushModelFileToModelExecutor(kOptTargetGeolocation,
                                ModelFilePath(kZeroReturnModel));
 
   auto snapshot = BuildBitmap(GetParam().input_width, GetParam().input_height);
-
-  FillDataToBitmap(snapshot.get());
 
   bool flag = false;
   geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(

@@ -91,7 +91,10 @@ source_set("unit_tests") {
   ]
   if (build_with_tflite_lib) {
     sources += [ "permissions_aiv3_handler_unittest.cc" ]
-    deps += [ ":unit_tests_bundle_data" ]
+    deps += [
+      ":unit_tests_bundle_data",
+      "//base",
+    ]
     data = [ "//components/test/data/permissions/" ]
   }
 }

@@ -45,6 +45,8 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
           std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
 
+PermissionsAiv3Handler::~PermissionsAiv3Handler() = default;
+
 void PermissionsAiv3Handler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
@@ -56,15 +58,18 @@ void PermissionsAiv3Handler::OnModelUpdated(
     // The parent class should always set the model availability to true after
     // having received an updated model.
     DCHECK(ModelAvailable());
-    // TODO(crbug.com/405095664): Parse ModelMetadata as soon as we have it.
+    model_metadata_ =
+        ParsedSupportedFeaturesForLoadedModel<PermissionsAiv3ModelMetadata>();
   }
 }
 
-void PermissionsAiv3Handler::ExecuteModel(
-    ExecutionCallback callback,
-    std::unique_ptr<ModelInput> snapshot) {
+void PermissionsAiv3Handler::ExecuteModel(ExecutionCallback callback,
+                                          std::unique_ptr<SkBitmap> snapshot) {
   if (snapshot.get()) {
-    ExecuteModelWithInput(std::move(callback), *snapshot);
+    ModelInput input;
+    input.snapshot = *snapshot;
+    input.metadata = model_metadata_;
+    ExecuteModelWithInput(std::move(callback), input);
   } else {
     std::move(callback).Run(std::nullopt);
   }

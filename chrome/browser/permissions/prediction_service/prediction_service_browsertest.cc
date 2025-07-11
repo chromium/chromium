@@ -180,9 +180,8 @@ class PermissionsAiv3HandlerFake : public PermissionsAiv3Handler {
     model_execute_run_loop_for_testing_.Quit();
   }
 
-  void ExecuteModel(
-      PermissionsAiv3Handler::ExecutionCallback callback,
-      std::unique_ptr<PermissionsAiv3Encoder::ModelInput> snapshot) override {
+  void ExecuteModel(PermissionsAiv3Handler::ExecutionCallback callback,
+                    std::unique_ptr<SkBitmap> snapshot) override {
     PermissionsAiv3Handler::ExecuteModel(
         base::BindOnce(&PermissionsAiv3HandlerFake::ExecuteModelWrapper,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
