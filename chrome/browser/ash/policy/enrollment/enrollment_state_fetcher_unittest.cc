@@ -60,6 +60,9 @@ const char kTestBrandCode[] = "GOOG";
 const char kTestPsmId[] = "474F4F47/test-serial-number";
 const char kTestDisabledMessage[] = "test-disabled-message";
 
+// Should be equal to StateKeys::kMaxAttempts from enrollment_state_fetcher.cc.
+constexpr int kMaxAttemptsForTesting = 10;
+
 using base::test::RunOnceCallback;
 using testing::DoAll;
 using testing::InvokeWithoutArgs;
@@ -438,9 +441,11 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
   ExpectOprfRequest();
   ExpectQueryRequest();
   EXPECT_CALL(state_key_broker_, RequestStateKeys)
+      .Times(kMaxAttemptsForTesting)
       .WillRepeatedly(
           base::test::RunOnceCallbackRepeatedly<0>(std::vector<std::string>{}));
   EXPECT_CALL(state_key_broker_, error_type)
+      .Times(kMaxAttemptsForTesting)
       .WillRepeatedly(
           Return(ServerBackedStateKeysBroker::ErrorType::kCommunicationError));
 
@@ -1318,6 +1323,30 @@ TEST_F(EnrollmentStateFetcherTest,
   ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
   ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
             kDeviceStateInitialModeTokenEnrollment);
+}
+
+TEST_F(EnrollmentStateFetcherTest,
+       EnrollmentTokenPresentNoPsmStateStateRetrievalFails) {
+  psm_test_case_ = psm::testing::LoadTestCase(false);
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  // Mock the state retrieval request to fail.
+  EXPECT_CALL(
+      job_creation_handler_,
+      OnJobCreation(JobWithEnrollmentTokenStateRequest(
+          policy::test::kEnrollmentToken, kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobResponseAsync(net::ERR_FAILED, 0));
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  // Expect the state retrieval error to be reported.
+  EXPECT_EQ(state, ToState(AutoEnrollmentDMServerError{
+                       .dm_error = DM_STATUS_REQUEST_FAILED,
+                       .network_error = net::ERR_FAILED}));
 }
 
 TEST_F(EnrollmentStateFetcherTest,
