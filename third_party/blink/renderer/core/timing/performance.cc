@@ -115,6 +115,9 @@ constexpr size_t kLongTaskUkmSampleInterval = 100;
 const char kSwapsPerInsertionHistogram[] =
     "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
 
+const char kParserPausingCalledAfterResumimg[] =
+    "Blink.HTMLParsing.IsParserPausingCalledAfterResuming";
+
 const char kParserResumeByUserTiming[] =
     "Blink.HTMLParsing.ResumedByUserTiming";
 
@@ -182,6 +185,12 @@ inline bool CheckName(const PerformanceEntry* entry,
     return true;
   }
   return entry->name() == maybe_name;
+}
+
+void NotifyParserResume(Document* document, bool is_resumed_by_user_timing) {
+  document->NotifyParserResumeByUserTiming();
+  base::UmaHistogramBoolean(kParserResumeByUserTiming,
+                            is_resumed_by_user_timing);
 }
 
 }  // namespace
@@ -919,38 +928,37 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
           window->GetFrame()->IsOutermostMainFrame()) {
         Document* document = window->GetFrame()->GetDocument();
         if (mark_name == mark_parser_blocking) {
-          document->NotifyParserPauseByUserTiming();
-          is_parser_yielded_ = true;
-          // Schedule a timeout based resume event here since pausing the parser
-          // can be a potential footgun. It's not guaranteed that the parser
-          // resume mark is called after the parser pause mark.
-          //
-          // If the resuming task is already scheduled, cancels and reschedule
-          // it.
-          parser_yield_task_handle_.Cancel();
-          parser_yield_task_handle_ = PostDelayedCancellableTask(
-              *document->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-              WTF::BindOnce(
-                  [](Document* document) {
-                    document->NotifyParserResumeByUserTiming();
-                    base::UmaHistogramBoolean(kParserResumeByUserTiming, false);
-                  },
-                  WrapPersistent(document)),
-              base::Milliseconds(timeout));
+          base::UmaHistogramBoolean(
+              kParserPausingCalledAfterResumimg,
+              parser_yield_state_ == ParserYieldState::kResumed);
+          if (parser_yield_state_ == ParserYieldState::kInitial) {
+            parser_yield_state_ = ParserYieldState::kPaused;
+            document->NotifyParserPauseByUserTiming();
+            // Schedule a timeout based resume event here since pausing the
+            // parser can be a potential footgun. It's not guaranteed that the
+            // parser resume mark is called after the parser pause mark.
+            //
+            // If the resuming task is already scheduled, cancels and reschedule
+            // it.
+            CHECK(!parser_yield_task_handle_.IsActive());
+            parser_yield_task_handle_ = PostDelayedCancellableTask(
+                *document->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+                WTF::BindOnce(&NotifyParserResume, WrapPersistent(document),
+                              false),
+                base::Milliseconds(timeout));
+          }
         } else if (mark_name == mark_parser_restart) {
-          base::UmaHistogramBoolean(kParserResumingCalledBeforePausing,
-                                    !is_parser_yielded_);
-          // If the parser is pausing, resume it. This has to be called as a new
-          // task to ensure that the script is not running to resume the parser.
+          base::UmaHistogramBoolean(
+              kParserResumingCalledBeforePausing,
+              parser_yield_state_ != ParserYieldState::kPaused);
+          parser_yield_state_ = ParserYieldState::kResumed;
+          // If the parser is paused, resume it. This has to be called as a
+          // new task to ensure that the script is not running to resume the
+          // parser.
           document->GetTaskRunner(TaskType::kInternalLoading)
               ->PostTask(FROM_HERE,
-                         WTF::BindOnce(
-                             [](Document* document) {
-                               document->NotifyParserResumeByUserTiming();
-                               base::UmaHistogramBoolean(
-                                   kParserResumeByUserTiming, true);
-                             },
-                             WrapPersistent(document)));
+                         WTF::BindOnce(&NotifyParserResume,
+                                       WrapPersistent(document), true));
           parser_yield_task_handle_.Cancel();
         }
       }

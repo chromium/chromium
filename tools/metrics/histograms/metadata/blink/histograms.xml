@@ -2793,8 +2793,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.IsParserPausingCalledAfterResuming"
+    enum="Boolean" expires_after="2025-10-08">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether pausing the parser is attempted after resuming the parser.
+    This can happen when the site sends a signal to pause the parser after
+    sending another signal to resume the parser.
+
+    This is recorded when the signal to pause the parser is dispatched via the
+    user timing. This is measured for the experiment in crbug.com/416543903.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.IsParserResumingCalledBeforePausing"
-    enum="Boolean" expires_after="2025-08-07">
+    enum="Boolean" expires_after="2025-10-08">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
