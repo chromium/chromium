@@ -98,10 +98,26 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
                                       contrast_ratio);
 }
 
-}  // namespace
+// The progress bar used in the Payment Handler UI.
+class PaymentHandlerProgressBar : public views::ProgressBar {
+  METADATA_HEADER(PaymentHandlerProgressBar, views::ProgressBar)
 
-// The close ('X') button used in the PaymentHandler header UX. See
-// |PopulateSheetHeaderView|.
+ public:
+  PaymentHandlerProgressBar() { SetPreferredHeight(2); }
+  ~PaymentHandlerProgressBar() override = default;
+
+  base::WeakPtr<views::ProgressBar> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PaymentHandlerProgressBar> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(PaymentHandlerProgressBar)
+END_METADATA
+
+// The close ('X') button used in the header of the Payment Handler UI.
 class PaymentHandlerCloseButton : public views::ImageButton {
   METADATA_HEADER(PaymentHandlerCloseButton, views::ImageButton)
 
@@ -136,6 +152,8 @@ class PaymentHandlerCloseButton : public views::ImageButton {
 
 BEGIN_METADATA(PaymentHandlerCloseButton)
 END_METADATA
+
+}  // namespace
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -213,9 +231,10 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   if (!progress_bar_) {
     // Add the progress bar to the separator container. The progress bar
     // colors will be set in PopulateSheetHeaderView.
-    progress_bar_ = header_content_separator_container()->AddChildView(
-        std::make_unique<views::ProgressBar>());
-    progress_bar_->SetPreferredHeight(2);
+    progress_bar_ =
+        header_content_separator_container()
+            ->AddChildView(std::make_unique<PaymentHandlerProgressBar>())
+            ->GetWeakPtr();
   }
 
   content_view->SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -512,6 +531,10 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 }
 
 void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
+  if (!progress_bar_) {
+    return;
+  }
+
   // The progress bar reflects the load progress until it reaches 1.0, at
   // which point it's reset to 0 to just show the separator color.
   progress_bar_->SetValue(progress < 1.0 ? progress : 0);
