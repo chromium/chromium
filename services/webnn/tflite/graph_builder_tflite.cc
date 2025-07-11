@@ -739,8 +739,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/slice.h
        /*slice_input=*/
        {kFloat16To32AndInts8To32AndInt64, SupportedRanks::UpTo(5)},
+       // Transpose is used if the axis is not the last dimension.
        /*softmax_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::NonScalarUpTo(8)},
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::NonScalarUpTo(6)},
        // Polyfilled with a broadcasted ADD.
        /*softplus_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
