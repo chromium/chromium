@@ -87,15 +87,12 @@ interface CertProvisioningObserver {
 // It is implemented by Ash-Chrome.
 [Uuid="ff60efaf-bb5c-4aff-903f-72abcb613df6"]
 interface CertProvisioning {
+  // GetStatus@1() was removed.
+
   // Adds an observer that will be notified about updates from the certificate
   // provisioning feature.
   AddObserver@0(
     pending_remote<CertProvisioningObserver> observer);
-
-  // Returns the information about all currently active and recently failed cert
-  // provisioning processes.
-  GetStatus@1() =>
-    (array<CertProvisioningProcessStatus> result);
 
   // Instructs Ash to immediately attempt the next planned step in provisioning
   // of the certificate with `cert_profile_id`. Specifically, if the process is

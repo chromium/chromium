@@ -336,8 +336,8 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
     web_ui_.set_web_contents(web_contents_.get());
 
     cert_provisioning_.InjectForTesting(&user_scheduler_, &device_scheduler_);
-    auto handler =
-        std::make_unique<CertificateProvisioningUiHandler>(&cert_provisioning_);
+    auto handler = std::make_unique<CertificateProvisioningUiHandler>(
+        &user_scheduler_, &device_scheduler_, &cert_provisioning_);
     handler_ = handler.get();
     web_ui_.AddMessageHandler(std::move(handler));
   }

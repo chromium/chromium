@@ -2148,6 +2148,7 @@ static_library("ui") {
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/browser_delegate:impl",
       "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/parent_access_code",

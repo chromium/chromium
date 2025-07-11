@@ -22,50 +22,6 @@ using ash::cert_provisioning::CertProvisioningWorkerState;
 
 namespace crosapi {
 
-namespace {
-
-constexpr mojom::CertProvisioningProcessState AshToMojoState(
-    CertProvisioningWorkerState state) {
-  switch (state) {
-    case CertProvisioningWorkerState::kInitState:
-      return mojom::CertProvisioningProcessState::kInitState;
-    case CertProvisioningWorkerState::kKeypairGenerated:
-      return mojom::CertProvisioningProcessState::kKeypairGenerated;
-    case CertProvisioningWorkerState::kStartCsrResponseReceived:
-      return mojom::CertProvisioningProcessState::kStartCsrResponseReceived;
-    case CertProvisioningWorkerState::kVaChallengeFinished:
-      return mojom::CertProvisioningProcessState::kVaChallengeFinished;
-    case CertProvisioningWorkerState::kKeyRegistered:
-      return mojom::CertProvisioningProcessState::kKeyRegistered;
-    case CertProvisioningWorkerState::kKeypairMarked:
-      return mojom::CertProvisioningProcessState::kKeypairMarked;
-    case CertProvisioningWorkerState::kSignCsrFinished:
-      return mojom::CertProvisioningProcessState::kSignCsrFinished;
-    case CertProvisioningWorkerState::kFinishCsrResponseReceived:
-      return mojom::CertProvisioningProcessState::kFinishCsrResponseReceived;
-    case CertProvisioningWorkerState::kSucceeded:
-      return mojom::CertProvisioningProcessState::kSucceeded;
-    case CertProvisioningWorkerState::kInconsistentDataError:
-      return mojom::CertProvisioningProcessState::kInconsistentDataError;
-    case CertProvisioningWorkerState::kFailed:
-      return mojom::CertProvisioningProcessState::kFailed;
-    case CertProvisioningWorkerState::kCanceled:
-      return mojom::CertProvisioningProcessState::kCanceled;
-    case CertProvisioningWorkerState::kReadyForNextOperation:
-      return mojom::CertProvisioningProcessState::kReadyForNextOperation;
-    case CertProvisioningWorkerState::kAuthorizeInstructionReceived:
-      return mojom::CertProvisioningProcessState::kAuthorizeInstructionReceived;
-    case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
-      return mojom::CertProvisioningProcessState::
-          kProofOfPossessionInstructionReceived;
-    case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
-      return mojom::CertProvisioningProcessState::
-          kImportCertificateInstructionReceived;
-  }
-}
-
-}  // namespace
-
 CertProvisioningAsh::CertProvisioningAsh() {
   // Unretained(this) is safe because `observers_` is owned by `this` and will
   // never outlive it.
@@ -125,67 +81,6 @@ void CertProvisioningAsh::OnSchedulersChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& observer : observers_) {
     observer->OnStateChanged();
-  }
-}
-
-void CertProvisioningAsh::GetStatus(GetStatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::vector<mojom::CertProvisioningProcessStatusPtr> result;
-
-  AppendWorkerStatuses(GetUserScheduler(), /*is_device_wide=*/false, result);
-  AppendWorkerStatuses(GetDeviceScheduler(), /*is_device_wide=*/true, result);
-
-  std::move(callback).Run(std::move(result));
-}
-
-void CertProvisioningAsh::AppendWorkerStatuses(
-    CertProvisioningScheduler* scheduler,
-    bool is_device_wide,
-    std::vector<mojom::CertProvisioningProcessStatusPtr>& result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!scheduler) {
-    return;
-  }
-
-  const auto& worker_map = scheduler->GetWorkers();
-  const auto& failed_workers_map = scheduler->GetFailedCertProfileIds();
-
-  result.reserve(result.size() + worker_map.size() + failed_workers_map.size());
-
-  for (const auto& [profile_id, worker] : worker_map) {
-    result.push_back(mojom::CertProvisioningProcessStatus::New());
-    mojom::CertProvisioningProcessStatusPtr& status = result.back();
-
-    status->process_id = worker->GetProcessId();
-    status->cert_profile_id = profile_id;
-    status->cert_profile_name = worker->GetCertProfile().name;
-    status->public_key = worker->GetPublicKey();
-    status->last_update_time = worker->GetLastUpdateTime();
-    status->state = AshToMojoState(worker->GetState());
-    status->did_fail = false;
-    status->is_device_wide = is_device_wide;
-
-    const auto& backend_error = worker->GetLastBackendServerError();
-    if (backend_error.has_value()) {
-      status->last_backend_server_error =
-          crosapi::mojom::CertProvisioningBackendServerError::New(
-              backend_error->time, backend_error->status);
-    }
-  }
-
-  for (const auto& [profile_id, worker] : failed_workers_map) {
-    result.push_back(mojom::CertProvisioningProcessStatus::New());
-    mojom::CertProvisioningProcessStatusPtr& status = result.back();
-
-    status->process_id = worker.process_id;
-    status->cert_profile_id = profile_id;
-    status->cert_profile_name = worker.cert_profile_name;
-    status->public_key = worker.public_key;
-    status->last_update_time = worker.last_update_time;
-    status->state = AshToMojoState(worker.state_before_failure);
-    status->did_fail = true;
-    status->is_device_wide = is_device_wide;
-    status->failure_message = worker.failure_message;
   }
 }
 

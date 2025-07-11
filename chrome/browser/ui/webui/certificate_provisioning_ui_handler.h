@@ -16,6 +16,10 @@
 
 class Profile;
 
+namespace ash::cert_provisioning {
+class CertProvisioningScheduler;
+}  // namespace ash::cert_provisioning
+
 namespace chromeos {
 namespace cert_provisioning {
 
@@ -35,7 +39,9 @@ class CertificateProvisioningUiHandler
   // cert provisioning component, can be nullptr.
   // The constructor is public for testing, prefer using CreateForProfile when
   // possible.
-  explicit CertificateProvisioningUiHandler(
+  CertificateProvisioningUiHandler(
+      ash::cert_provisioning::CertProvisioningScheduler* user_scheduler,
+      ash::cert_provisioning::CertProvisioningScheduler* device_scheduler,
       crosapi::mojom::CertProvisioning* cert_provisioning_interface);
 
   CertificateProvisioningUiHandler(
@@ -83,9 +89,11 @@ class CertificateProvisioningUiHandler
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();
 
-  // Called when the status of cert provisioning processes is received.
-  void GotStatus(
-      std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status);
+  // Schedulers for the given profile.
+  const raw_ptr<ash::cert_provisioning::CertProvisioningScheduler>
+      user_scheduler_;
+  const raw_ptr<ash::cert_provisioning::CertProvisioningScheduler>
+      device_scheduler_;
 
   // The interface to communicate with the cert provisioning component.
   // Can be null (e.g. for non-primary / non-main profiles), in which case this

@@ -29,7 +29,6 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   // mojom::CertProvisioning
   void AddObserver(
       mojo::PendingRemote<mojom::CertProvisioningObserver> observer) override;
-  void GetStatus(GetStatusCallback callback) override;
   void UpdateOneProcess(const std::string& cert_profile_id) override;
   void ResetOneProcess(const std::string& cert_profile_id) override;
 
@@ -44,11 +43,6 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   // have access to different schedulers, so they should not be cached.
   ash::cert_provisioning::CertProvisioningScheduler* GetUserScheduler();
   ash::cert_provisioning::CertProvisioningScheduler* GetDeviceScheduler();
-
-  void AppendWorkerStatuses(
-      ash::cert_provisioning::CertProvisioningScheduler* scheduler,
-      bool is_device_wide,
-      std::vector<mojom::CertProvisioningProcessStatusPtr>& result);
 
   // Called when one of the schedulers notifies about new changes.
   void OnSchedulersChanged();
