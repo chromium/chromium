@@ -6,6 +6,37 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+# Remove when GTX is updated or a better solution is found.
+template("patch_file") {
+  assert(defined(invoker.patch_path),
+         "patch_path must be defined for $target_name")
+  assert(defined(invoker.source_file),
+         "source_file must be defined for $target_name")
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+
+    script = "patch.py"
+    sources = [
+      invoker.patch_path,
+      invoker.source_file,
+    ]
+    outputs = [ "$target_gen_dir/" + invoker.source_file ]
+
+    args = rebase_path(sources, root_build_dir) +
+           rebase_path(outputs, root_build_dir)
+  }
+}
+
+patch_file("patch_GTXAccessibilityTree_m") {
+  patch_path = "patches/GTXAccessibilityTree.m.diff"
+  source_file = "src/Classes/GTXAccessibilityTree.m"
+}
+
 config("config") {
   include_dirs = [ "src/Classes" ]
 }
@@ -216,11 +247,17 @@ ios_framework_bundle("gtx") {
     "src/Classes/UIColor+GTXOOPAdditions.h",
     "src/Classes/GTXToolKit+GTXOOPAdditions.h",
   ]
+
   deps = [
     ":oop_classes",
     "//build/config/ios:xctest",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  # Remove when GTX is updated or a better solution is found.
+  sources -= [ "src/Classes/GTXAccessibilityTree.m" ]
+  sources += get_target_outputs(":patch_GTXAccessibilityTree_m")
+  deps += [ ":patch_GTXAccessibilityTree_m" ]
 
   # Don't use the gtx provided compiled protobuf header. The ordering of these
   # include_dirs enforces that.

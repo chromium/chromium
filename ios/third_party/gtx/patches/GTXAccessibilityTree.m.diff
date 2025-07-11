@@ -1,0 +1,24 @@
+diff --git a/Classes/GTXAccessibilityTree.m b/Classes/GTXAccessibilityTree.m
+index 0c6c504..ce7369c 100644
+--- a/Classes/GTXAccessibilityTree.m
++++ b/Classes/GTXAccessibilityTree.m
+@@ -210,6 +210,19 @@ static NSString *const kUIPickerTableViewAccessibilityElementClassName =
+     CGRect frame = [element frame];
+     isHiddenDueToFrame = frame.size.width == 0 || frame.size.height == 0;
+   }
++
++  if (@available(iOS 26, *)) {
++    if ([element respondsToSelector:@selector(accessibilityTraits)]) {
++      if ([NSStringFromClass([element class]) isEqualToString:@"_UIButtonBarButton"]) {
++        UIAccessibilityTraits traits = ((UIView*)element).accessibilityTraits;
++        // Unclear what trait 0x8000000 is, but with liquid glass on iOS26
++        // this element appears to want to be ignored.
++        if (traits & 0x8000000) {
++          isHidden = YES;
++        }
++      }
++    }
++  }
+   return (isHidden || isAccessibilityHidden ||
+           (isHiddenDueToFrame && isHiddenDueToAccessibilityFrame) ||
+           [self gtx_isElementOffscreenPickerViewElement:element]);
