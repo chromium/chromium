@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "android_webview/browser/metrics/android_metrics_service_client.h"
 
 #include <jni.h>
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "android_webview/browser/metrics/android_metrics_log_uploader.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/barrier_closure.h"
@@ -28,7 +29,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
 #include "components/metrics/android_metrics_provider.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/content/content_stability_metrics_provider.h"
@@ -59,7 +59,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
+#include "android_webview/browser_jni_headers/AndroidMetricsServiceClient_jni.h"
 
 namespace metrics {
 
@@ -101,11 +101,13 @@ metrics::FileMetricsProvider::FilterAction FilterBrowserMetricsFiles(
     return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
   }
 
-  if (pid == base::GetCurrentProcId())
+  if (pid == base::GetCurrentProcId()) {
     return metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID;
+  }
 
-  if (IsProcessRunning(pid))
+  if (IsProcessRunning(pid)) {
     return metrics::FileMetricsProvider::FILTER_TRY_LATER;
+  }
 
   return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
 }
@@ -255,8 +257,9 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
 void AndroidMetricsServiceClient::MaybeStartMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsConsentDetermined())
+  if (!IsConsentDetermined()) {
     return;
+  }
 
 #if DCHECK_IS_ON()
   // This function should be called only once after consent has been determined.
@@ -366,8 +369,9 @@ bool AndroidMetricsServiceClient::IsConsentGiven() const {
 
 bool AndroidMetricsServiceClient::IsReportingEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!app_consent_)
+  if (!app_consent_) {
     return false;
+  }
   return IsMetricsReportingForceEnabled() ||
          (EnabledStateProvider::IsReportingEnabled() && IsInSample());
 }
@@ -457,8 +461,9 @@ void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
                            on_final_metrics_collected_listener_),
       timeout);
 
-  if (collect_final_metrics_for_log_closure_)
+  if (collect_final_metrics_for_log_closure_) {
     std::move(collect_final_metrics_for_log_closure_).Run();
+  }
 }
 
 std::unique_ptr<MetricsLogUploader> AndroidMetricsServiceClient::CreateUploader(
@@ -572,8 +577,9 @@ void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(
     MetricsService* service) {}
 
 std::string AndroidMetricsServiceClient::GetAppPackageNameIfLoggable() {
-  if (ShouldRecordPackageName() && CanRecordPackageNameForAppType())
+  if (ShouldRecordPackageName() && CanRecordPackageNameForAppType()) {
     return GetAppPackageName();
+  }
   return std::string();
 }
 
@@ -581,8 +587,9 @@ std::string AndroidMetricsServiceClient::GetAppPackageName() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_app_name =
       Java_AndroidMetricsServiceClient_getAppPackageName(env);
-  if (j_app_name)
+  if (j_app_name) {
     return base::android::ConvertJavaStringToUTF8(env, j_app_name);
+  }
   return std::string();
 }
 

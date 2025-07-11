@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_MEMORY_METRICS_LOGGER_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_MEMORY_METRICS_LOGGER_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_METRICS_MEMORY_METRICS_LOGGER_H_
+#define ANDROID_WEBVIEW_BROWSER_METRICS_MEMORY_METRICS_LOGGER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -50,4 +50,4 @@ class MemoryMetricsLogger {
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_MEMORY_METRICS_LOGGER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_MEMORY_METRICS_LOGGER_H_

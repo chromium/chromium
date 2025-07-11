@@ -14,7 +14,6 @@ import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.gwp_asan.GwpAsanFeatures;
-import org.chromium.components.metrics.AndroidMetricsFeatures;
 import org.chromium.components.metrics.MetricsFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
@@ -378,7 +377,7 @@ public final class ProductionSupportedFlagList {
                 "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                         + " directly when running within the SDK Runtime."),
         Flag.baseFeature(
-                AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
+                AwFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
                 "Initiate metric uploading on a background thread."),
         Flag.baseFeature(
                 BlinkFeatures.SET_INTERVAL_WITHOUT_CLAMP,

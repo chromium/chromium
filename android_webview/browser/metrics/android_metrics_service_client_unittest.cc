@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "android_webview/browser/metrics/android_metrics_service_client.h"
 
 #include <memory>
 
@@ -25,6 +25,7 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_content_client_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -49,8 +50,9 @@ class TestClient : public AndroidMetricsServiceClient {
 
   bool IsRecordingActive() {
     auto* service = GetMetricsService();
-    if (service)
+    if (service) {
       return service->recording_active();
+    }
     return false;
   }
 
@@ -183,6 +185,9 @@ class AndroidMetricsServiceClientTest : public testing::Test {
   }
 
  private:
+  // Needed since starting metrics reporting triggers code that uses content::
+  // objects.
+  content::TestContentClientInitializer test_content_initializer_;
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 };

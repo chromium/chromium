@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_
+#define ANDROID_WEBVIEW_BROWSER_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -179,7 +179,7 @@ class AndroidMetricsServiceClient
     return metrics_state_manager_.get();
   }
 
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.metrics
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.metrics
   enum class InstallerPackageType {
     // App has been initially preinstalled in the system image.
     SYSTEM_APP,
@@ -307,4 +307,4 @@ class AndroidMetricsServiceClient
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_ANDROID_METRICS_SERVICE_CLIENT_H_

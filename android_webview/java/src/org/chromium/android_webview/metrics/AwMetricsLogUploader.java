@@ -24,7 +24,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 
 import java.net.HttpURLConnection;
 import java.util.concurrent.LinkedBlockingQueue;

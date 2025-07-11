@@ -658,8 +658,6 @@ test("components_unittests") {
       "//components/data_sharing/internal:native_test_helper_java",
       "//components/download/internal/common:internal_java",
       "//components/embedder_support/android:native_java_unittests_java",
-      "//components/embedder_support/android/metrics:test_support_java",
-      "//components/embedder_support/android/metrics:unit_tests",
       "//components/facilitated_payments/android:unit_tests",
       "//components/facilitated_payments/android/java",
       "//components/facilitated_payments/content/browser:unit_tests",

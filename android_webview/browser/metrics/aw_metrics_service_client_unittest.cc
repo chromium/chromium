@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/user_metrics.h"
@@ -15,7 +16,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/testing_pref_service.h"

@@ -34,6 +34,8 @@ import org.chromium.android_webview.common.services.IMetricsBridgeService;
 import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
+import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
+import org.chromium.android_webview.metrics.AndroidMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
@@ -61,9 +63,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
-import org.chromium.components.metrics.AndroidMetricsFeatures;
-import org.chromium.components.metrics.AndroidMetricsLogConsumer;
-import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -668,8 +667,7 @@ public final class AwBrowserProcess {
             if (metricServiceEnabledOnlySdkRuntime
                     || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
                 boolean isAsync =
-                        AwFeatureMap.isEnabled(
-                                AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
+                        AwFeatureMap.isEnabled(AwFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
                 AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync);
                 // Open a connection during startup while connecting to other services such as
                 // ComponentsProviderService and VariationSeedServer to try to avoid spinning the

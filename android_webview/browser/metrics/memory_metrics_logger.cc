@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/android/metrics/memory_metrics_logger.h"
+#include "android_webview/browser/metrics/memory_metrics_logger.h"
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -30,8 +30,9 @@ void RecordMemoryMetricsImpl(
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
   if (!success) {
-    if (done_callback)
+    if (done_callback) {
       std::move(done_callback).Run(false);
+    }
     return;
   }
 
@@ -77,8 +78,9 @@ void RecordMemoryMetricsImpl(
     MEMORY_METRICS_HISTOGRAM_MB("Memory.Total.PrivateMemoryFootprint",
                                 total_private_footprint_kb / 1024);
   }
-  if (done_callback)
+  if (done_callback) {
     std::move(done_callback).Run(true);
+  }
 }
 
 }  // namespace
@@ -132,8 +134,9 @@ void MemoryMetricsLogger::ScheduleRecordForTesting(
 // static
 void MemoryMetricsLogger::RecordMemoryMetricsAfterDelay(
     scoped_refptr<State> state) {
-  if (state->stop_logging)
+  if (state->stop_logging) {
     return;
+  }
 
   state->task_runner->PostDelayedTask(
       FROM_HERE,

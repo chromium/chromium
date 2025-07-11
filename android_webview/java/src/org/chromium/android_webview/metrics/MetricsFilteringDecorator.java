@@ -8,7 +8,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.MetricsFilteringStatus;

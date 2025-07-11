@@ -343,7 +343,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="components/embedder_support/android/java/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/javatests/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/junit/src"/>
-    <classpathentry kind="src" path="components/embedder_support/android/metrics/java/src"/>
     <classpathentry kind="src" path="components/embedder_support/android/native_java_unittests/src"/>
     <classpathentry kind="src" path="components/externalauth/android/java/src"/>
     <classpathentry kind="src" path="components/externalauth/android/junit/src"/>

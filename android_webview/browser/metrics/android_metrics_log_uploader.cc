@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
+#include "android_webview/browser/metrics/android_metrics_log_uploader.h"
 
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_array.h"
 #include "base/task/thread_pool.h"
-#include "components/embedder_support/android/metrics/features.h"
 #include "components/metrics/log_decoder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/embedder_support/android/metrics/jni/AndroidMetricsLogUploader_jni.h"
+#include "android_webview/browser_jni_headers/AndroidMetricsLogUploader_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
@@ -50,7 +50,8 @@ void AndroidMetricsLogUploader::UploadLog(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kAndroidMetricsAsyncMetricLogging)) {
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::kAndroidMetricsAsyncMetricLogging)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&UploadLogWithUploader, log_data, true),

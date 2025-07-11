@@ -17,11 +17,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
 import org.chromium.android_webview.metrics.AwMetricsUtils;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
