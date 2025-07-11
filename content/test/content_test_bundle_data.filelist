@@ -7490,6 +7490,8 @@ data/indexeddb/fill_quota.html
 data/indexeddb/fill_up_5k.html
 data/indexeddb/force_close_event.html
 data/indexeddb/force_close_event.js
+data/indexeddb/index_deletion_regression_tests.html
+data/indexeddb/index_deletion_regression_tests.js
 data/indexeddb/index_test.html
 data/indexeddb/index_test.js
 data/indexeddb/key_path_test.html

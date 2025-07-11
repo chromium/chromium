@@ -114,7 +114,8 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
     return running_state_;
   }
 
-  // Postpones any scheduled task unless `kMaximumTimeBetweenRuns` has passed.
+  // Stops any scheduled cleanup operations, which will be resumed once all
+  // active transactions are complete.
   void OnTransactionStart();
 
   // Schedules a cleanup task if `running_state_` is set and there are no other
@@ -122,15 +123,17 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
   void OnTransactionComplete();
 
   // To avoid interrupting active usage, defer runs until there has been no
-  // activity for a few seconds.
-  static constexpr base::TimeDelta kDeferTimeAfterLastTransaction =
-      base::Seconds(4);
-  static constexpr base::TimeDelta kDeferTimeOnNoTransactions =
-      base::Seconds(0.4);
+  // activity for 0.4 seconds.
+  static constexpr base::TimeDelta kDeferTime = base::Seconds(0.4);
+
+  // Threshold for the tombstones which were encountered during the
+  // lifetime of the cursor. Crossing it will cause scheduling of the
+  // `LevelDBCleanupScheduler`.
+  static constexpr int kTombstoneThreshold = 1000;
 
  private:
   // Starts the timer for the cleanup tasks.
-  void ScheduleNextCleanupTask(const base::TimeDelta& defer_time);
+  void ScheduleNextCleanupTask();
 
   // Logs the histograms for the current clean up tasks, resets the running
   // state and marks the last run time.

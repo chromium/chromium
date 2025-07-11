@@ -120,11 +120,6 @@ class AutoDidCommitTransaction {
 };
 
 namespace {
-// Threshold for the tombstones which were encountered during the
-// lifetime of the cursor. Crossing it will cause scheduling of the
-// `LevelDBCleanupScheduler`.
-constexpr int kCursorTombstoneThreshold = 1000;
-
 std::string ComputeOriginIdentifier(
     const storage::BucketLocator& bucket_locator) {
   return storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin()) +
@@ -3147,7 +3142,7 @@ BackingStore::Cursor::Cursor(base::WeakPtr<Transaction> transaction,
 }
 
 BackingStore::Cursor::~Cursor() {
-  if (tombstones_count_ > kCursorTombstoneThreshold) {
+  if (tombstones_count_ > LevelDBCleanupScheduler::kTombstoneThreshold) {
     transaction_->SetTombstoneThresholdExceeded(true);
   }
 }

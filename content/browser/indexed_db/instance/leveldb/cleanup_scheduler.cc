@@ -17,28 +17,17 @@ BASE_FEATURE(kIdbInSessionDbCleanup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
-constexpr base::TimeDelta kMaximumTimeBetweenRuns = base::Minutes(50);
-constexpr base::TimeDelta kMinimumTimeBetweenRuns = base::Minutes(30);
-
-// To ensure the sweeper runs for database connections with a shorter
-// timespan, run the first sweep after `kMinimumTimeBeforeInitialForcedRun`
-// minutes.
-// The last_run_ is initialized to 40 minutes in the past so short lived apps
-// which accrue a lot of tombstones will get a chance to have their tombstones
-// cleaned. The first sweep can be happen if there are no active transactions in
-// last 4 seconds and can get postponed for another 10 minutues due to database
-// activity. But after the 10 minute mark, the cleanup will be forced once the
-// current transaction count reaches zero.
-constexpr base::TimeDelta kMinimumTimeBeforeInitialForcedRun =
-    base::Minutes(10);
+constexpr base::TimeDelta kTimeBetweenRuns = base::Minutes(30);
 }  // namespace
 
 LevelDBCleanupScheduler::LevelDBCleanupScheduler(leveldb::DB* database,
                                                  Delegate* delegate)
     : database_(database),
       delegate_(delegate),
-      last_run_(base::TimeTicks::Now() - kMaximumTimeBetweenRuns +
-                kMinimumTimeBeforeInitialForcedRun) {}
+      // The last_run_ is initialized to a past value so short lived apps
+      // which accrue a lot of tombstones will get a chance to have their
+      // tombstones cleaned.
+      last_run_(base::TimeTicks::Min()) {}
 
 LevelDBCleanupScheduler::~LevelDBCleanupScheduler() {
   if (running_state_) {
@@ -53,10 +42,8 @@ LevelDBCleanupScheduler::~LevelDBCleanupScheduler() {
 
 void LevelDBCleanupScheduler::OnTransactionStart() {
   ++active_transactions_count_;
-  // Do not stop the cleanup if it's past `kMaximumTimeBetweenRuns`
   if (running_state_ &&
-      running_state_->clean_up_scheduling_timer_.IsRunning() &&
-      (base::TimeTicks::Now() - last_run_) < kMaximumTimeBetweenRuns) {
+      running_state_->clean_up_scheduling_timer_.IsRunning()) {
     ++running_state_->postpone_count;
     running_state_->clean_up_scheduling_timer_.Stop();
   }
@@ -64,14 +51,17 @@ void LevelDBCleanupScheduler::OnTransactionStart() {
 
 void LevelDBCleanupScheduler::OnTransactionComplete() {
   --active_transactions_count_;
-  bool scheduler_waiting_to_schedule =
-      running_state_ && !running_state_->clean_up_scheduling_timer_.IsRunning();
-  if (scheduler_waiting_to_schedule) {
-    // Schedule a run if there are no active transactions or the upper bound has
-    // been exceeded.
-    if (active_transactions_count_ == 0 ||
-        (base::TimeTicks::Now() - last_run_) > kMaximumTimeBetweenRuns) {
-      ScheduleNextCleanupTask(kDeferTimeAfterLastTransaction);
+  if (active_transactions_count_ == 0 && running_state_ &&
+      !running_state_->clean_up_scheduling_timer_.IsRunning()) {
+    // Schedule a run if there are no active transactions and
+    // `kTimeBetweenRuns` has been exceeded. The check for `time_since_last_run`
+    // is only required when it's the first time the run is being scheduled
+    // and has not been paused by `OnTransactionStart`. However, it will
+    // always be true if the run was paused, as the condition was met when
+    // it was scheduled the first time.
+    base::TimeDelta time_since_last_run = base::TimeTicks::Now() - last_run_;
+    if (time_since_last_run > kTimeBetweenRuns) {
+      ScheduleNextCleanupTask();
     }
   }
 }
@@ -85,18 +75,13 @@ void LevelDBCleanupScheduler::Initialize() {
     return;
   }
 
-  // Initialize the `running_state` if it has been more than
-  // `kMinimumTimeBetweenRuns` since the last run.
-  if ((base::TimeTicks::Now() - last_run_) > kMinimumTimeBetweenRuns) {
-    running_state_.emplace();
-  }
+  running_state_.emplace();
 }
 
-void LevelDBCleanupScheduler::ScheduleNextCleanupTask(
-    const base::TimeDelta& defer_time) {
+void LevelDBCleanupScheduler::ScheduleNextCleanupTask() {
   CHECK(running_state_);
   running_state_->clean_up_scheduling_timer_.Start(
-      FROM_HERE, defer_time,
+      FROM_HERE, kDeferTime,
       base::BindRepeating(&LevelDBCleanupScheduler::RunCleanupTask,
                           base::Unretained(this)));
 }
@@ -124,7 +109,7 @@ void LevelDBCleanupScheduler::RunCleanupTask() {
             running_state_->tombstone_sweeper_duration);
         running_state_->cleanup_phase = Phase::kDatabaseCompaction;
       }
-      ScheduleNextCleanupTask(kDeferTimeOnNoTransactions);
+      ScheduleNextCleanupTask();
       break;
     case Phase::kDatabaseCompaction:
       IndexedDBCompactionTask(database_).RunRound();
@@ -134,7 +119,7 @@ void LevelDBCleanupScheduler::RunCleanupTask() {
           "IndexedDB.LevelDBCleanupScheduler.DBCompactionDuration",
           running_state_->db_compaction_duration);
       running_state_->cleanup_phase = Phase::kLoggingAndCleanup;
-      ScheduleNextCleanupTask(kDeferTimeOnNoTransactions);
+      ScheduleNextCleanupTask();
       break;
     case Phase::kLoggingAndCleanup:
       LogAndResetState();

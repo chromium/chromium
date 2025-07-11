@@ -21,6 +21,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,6 +29,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/thread_test_helper.h"
 #include "base/threading/thread_restrictions.h"
@@ -41,6 +43,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -681,6 +684,37 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion987654SSVData,
   int64_t new_size = RequestUsage();
   EXPECT_GT(new_size, 0);
   EXPECT_NE(original_size, new_size);
+}
+
+class IndexedDBBrowserTestsWithCleanupScheduler : public IndexedDBBrowserTest {
+ public:
+  IndexedDBBrowserTestsWithCleanupScheduler() {
+    scoped_feature_list_.InitAndEnableFeature(
+        content::indexed_db::level_db::kIdbInSessionDbCleanup);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug.com/413540372.
+// More details in `index_deletion_regression_tests.js`.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
+                       RollbackTrasactionDuringTombstoneSweep) {
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
+
+  int delay_for_sweeper_run =
+      content::indexed_db::level_db::LevelDBCleanupScheduler::kDeferTime
+          .InMilliseconds() +
+      100;
+  int num_entries = content::indexed_db::level_db::LevelDBCleanupScheduler::
+                        kTombstoneThreshold +
+                    1;
+  ASSERT_TRUE(
+      ExecJs(shell(), base::StringPrintf("runRollbackTest(%d, %d)", num_entries,
+                                         delay_for_sweeper_run)));
 }
 
 class IndexedDBBrowserTestWithCorruptLevelDB : public

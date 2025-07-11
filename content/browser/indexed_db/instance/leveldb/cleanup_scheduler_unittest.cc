@@ -134,7 +134,7 @@ TEST_F(LevelDBCleanupSchedulerTest, WithPostpone) {
   scoped_feature_list.InitAndEnableFeature(kIdbInSessionDbCleanup);
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
 
-  // Schedule a run to occur after 4 seconds.
+  // Schedule a run.
   scheduler_->OnTransactionStart();
   scheduler_->Initialize();
   EXPECT_TRUE(scheduler_->GetRunningStateForTesting().has_value());
@@ -144,9 +144,8 @@ TEST_F(LevelDBCleanupSchedulerTest, WithPostpone) {
             LevelDBCleanupScheduler::Phase::kRunScheduled);
   EXPECT_EQ(0, scheduler_->GetRunningStateForTesting()->postpone_count);
 
-  // Begin the cleanup process.
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeAfterLastTransaction);
+  // Pass the time by `kDeferTime` to begin the run.
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
 
   // The tombstone sweeper completes and sets the phase to
   // `kDatabaseCompaction`.
@@ -157,8 +156,7 @@ TEST_F(LevelDBCleanupSchedulerTest, WithPostpone) {
   scheduler_->OnTransactionStart();
   // Pass the time in the task scheduler to confirm no operation was
   // performed.
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeAfterLastTransaction);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
   // The cleanup will be currently paused. Confirm by checking the
   // phase and the postpone count.
   EXPECT_EQ(scheduler_->GetRunningStateForTesting()->cleanup_phase,
@@ -170,14 +168,12 @@ TEST_F(LevelDBCleanupSchedulerTest, WithPostpone) {
   EXPECT_EQ(1, scheduler_->GetRunningStateForTesting()->postpone_count);
 
   // Complete the database compaction phase.
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeAfterLastTransaction);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
 
   EXPECT_EQ(scheduler_->GetRunningStateForTesting()->cleanup_phase,
             LevelDBCleanupScheduler::Phase::kLoggingAndCleanup);
 
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeOnNoTransactions);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
 
   tester_.ExpectTotalCount(
@@ -199,29 +195,28 @@ TEST_F(LevelDBCleanupSchedulerTest, SecondRunTooQuick) {
   scheduler_->Initialize();
   scheduler_->OnTransactionComplete();
 
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeAfterLastTransaction);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
 
   EXPECT_EQ(scheduler_->GetRunningStateForTesting()->cleanup_phase,
             LevelDBCleanupScheduler::Phase::kDatabaseCompaction);
 
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeOnNoTransactions);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
 
   EXPECT_EQ(scheduler_->GetRunningStateForTesting()->cleanup_phase,
             LevelDBCleanupScheduler::Phase::kLoggingAndCleanup);
 
-  task_environment_.FastForwardBy(
-      LevelDBCleanupScheduler::kDeferTimeOnNoTransactions);
+  task_environment_.FastForwardBy(LevelDBCleanupScheduler::kDeferTime);
 
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
 
-  // Try initializing the scheduler again.
-  // This should fail as `kMinimumTimeBetweenRuns` has not passed since
-  // the last run.
+  // Simulate another transaction, sweeper should not be running since
+  // `clean_up_scheduling_timer_` already executed within `kTimeBetweenRuns`
+  // since the last run.
+  scheduler_->OnTransactionStart();
   scheduler_->Initialize();
-
-  EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
+  scheduler_->OnTransactionComplete();
+  EXPECT_FALSE(scheduler_->GetRunningStateForTesting()
+                   ->clean_up_scheduling_timer_.IsRunning());
 }
 
 TEST_F(LevelDBCleanupSchedulerTest, PrematureTermination) {
