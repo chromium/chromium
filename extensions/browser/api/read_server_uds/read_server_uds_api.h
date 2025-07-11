@@ -2,6 +2,7 @@
 #define EXTENSIONS_BROWSER_API_READ_SERVER_UDS_API_H_
 
 #include "base/memory/weak_ptr.h"
+#include "extensions/browser/api/read_server_uds/ml_server_uds.h"
 #include "extensions/browser/extension_function.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "net/base/io_buffer.h"
@@ -29,20 +30,12 @@ private:
   void OnResponded() override;
 
   // Socket handling
-  void ConnectToUnixSocket();
-  void OnConnected(int result);
-  void OnDataWritten(int result);
-  void OnDataRead(int result);
-  void RespondSuccessOnUI(std::string json_result);
-  void RespondFromIOThread(ResponseValue error_result);
-  void RespondErrorOnUI(base::Value error_result);
+  void OnSuccess(std::string result);
+  void OnError(std::string error_msg);
 
-  std::unique_ptr<net::UnixDomainClientSocket> socket_;
-  scoped_refptr<net::IOBuffer> read_buffer_;
+  std::unique_ptr<extensions::MLServerUDS> ml_server_;
   base::WeakPtrFactory<ReadServerUdsReadDataFunction> weak_ptr_factory_{this};
 };
-
-
 
 // send data by chunking
 class ReadServerUdsSendDataFunction : public ExtensionFunction {

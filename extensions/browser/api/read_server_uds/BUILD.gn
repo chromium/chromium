@@ -10,6 +10,8 @@ source_set("read_server_uds") {
   sources = [
     "read_server_uds_api.cc",
     "read_server_uds_api.h",
+    "ml_server_uds.cc",
+    "ml_server_uds.hh",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
