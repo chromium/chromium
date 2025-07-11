@@ -1422,8 +1422,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void setTabGroupTitle(int rootId, @Nullable String title) {
         TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupTitle(rootId, tabGroupId, title);
+            observer.didChangeTabGroupTitle(tabGroupId, title);
         }
     }
 
@@ -1438,8 +1439,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void deleteTabGroupTitle(int rootId) {
         TabGroupTitleUtils.deleteTabGroupTitle(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupTitle(rootId, tabGroupId, null);
+            observer.didChangeTabGroupTitle(tabGroupId, null);
         }
     }
 
@@ -1480,8 +1482,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void setTabGroupColor(int rootId, @TabGroupColorId int color) {
         TabGroupColorUtils.storeTabGroupColor(rootId, color);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupColor(rootId, tabGroupId, color);
+            observer.didChangeTabGroupColor(tabGroupId, color);
         }
     }
 
@@ -1496,8 +1499,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void deleteTabGroupColor(int rootId) {
         TabGroupColorUtils.deleteTabGroupColor(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupColor(rootId, tabGroupId, TabGroupColorId.GREY);
+            observer.didChangeTabGroupColor(tabGroupId, TabGroupColorId.GREY);
         }
     }
 
@@ -1524,8 +1528,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void setTabGroupCollapsed(int rootId, boolean isCollapsed, boolean animate) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didChangeTabGroupCollapsed(rootId, tabGroupId, isCollapsed, animate);
+            observer.didChangeTabGroupCollapsed(tabGroupId, isCollapsed, animate);
         }
     }
 
@@ -1540,9 +1545,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
         Token tabGroupId = getTabGroupIdFromRootId(rootId);
+        if (tabGroupId == null) return;
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didChangeTabGroupCollapsed(
-                    rootId, tabGroupId, /* isCollapsed= */ false, /* animate= */ false);
+                    tabGroupId, /* isCollapsed= */ false, /* animate= */ false);
         }
     }
 

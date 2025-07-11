@@ -641,11 +641,10 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabGroupModelFilterObserver mTabGroupObserver =
             new TabGroupModelFilterObserver() {
                 @Override
-                public void didChangeTabGroupTitle(
-                        int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
+                public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
                     assert mShowingTabs;
 
-                    if (!mActionsOnAllRelatedTabs || tabGroupId == null) return;
+                    if (!mActionsOnAllRelatedTabs) return;
 
                     @Nullable Pair<Integer, Tab> indexAndTab =
                             getIndexAndTabForTabGroupId(tabGroupId);
@@ -663,10 +662,10 @@ class TabListMediator implements TabListNotificationHandler {
 
                 @Override
                 public void didChangeTabGroupColor(
-                        int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
+                        Token tabGroupId, @TabGroupColorId int newColor) {
                     assert mShowingTabs;
 
-                    if (!mActionsOnAllRelatedTabs || tabGroupId == null) return;
+                    if (!mActionsOnAllRelatedTabs) return;
 
                     @Nullable Pair<Integer, Tab> indexAndTab =
                             getIndexAndTabForTabGroupId(tabGroupId);

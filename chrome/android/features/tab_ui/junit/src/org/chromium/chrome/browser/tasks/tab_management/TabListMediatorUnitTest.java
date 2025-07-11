@@ -610,8 +610,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
 
         assertThat(
                 mModelList.get(0).model.get(TabProperties.TITLE),
@@ -624,8 +623,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
 
         // Ignored as the tab is not in a group.
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
@@ -640,7 +638,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, "");
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(mTab1.getRootId(), mTab1.getTabGroupId(), "");
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), "");
         assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo("2 tabs"));
     }
 
@@ -650,8 +648,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), TabGroupColorId.BLUE);
+                .didChangeTabGroupColor(mTab1.getTabGroupId(), TabGroupColorId.BLUE);
 
         // Ignored as the tab is not in a group.
         assertEquals(oldFaviconFetcher, mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
@@ -667,37 +664,10 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), TabGroupColorId.BLUE);
+                .didChangeTabGroupColor(mTab1.getTabGroupId(), TabGroupColorId.BLUE);
 
         assertNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
         var provider = mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
-        assertNotNull(provider);
-        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
-    }
-
-    @Test
-    public void updatesColor_OnTabGroupColorChange_Group_RejectFromOldRootId() {
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
-        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
-
-        mTabGroupModelFilter.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupColor(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), TabGroupColorId.BLUE);
-
-        assertNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
-        var provider = mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
-        assertNotNull(provider);
-        assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
-
-        // Updates for the old root ID of one of the grouped tabs should be rejected.
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupColor(TAB3_ID, null, TabGroupColorId.GREY);
-        provider = mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
         assertNotNull(provider);
         assertEquals(TabGroupColorId.BLUE, provider.getTabGroupColorIdForTesting());
     }
@@ -711,8 +681,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), TabGroupColorId.BLUE);
+                .didChangeTabGroupColor(mTab1.getTabGroupId(), TabGroupColorId.BLUE);
 
         PropertyModel model = mModelList.get(0).model;
         var provider = spy(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
@@ -731,8 +700,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupColor(
-                        mTab1.getRootId(), mTab1.getTabGroupId(), TabGroupColorId.BLUE);
+                .didChangeTabGroupColor(mTab1.getTabGroupId(), TabGroupColorId.BLUE);
 
         PropertyModel model = mModelList.get(0).model;
         var provider = spy(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
@@ -2868,7 +2836,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
 
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.TITLE),
@@ -2895,7 +2863,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
 
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.TITLE),
@@ -3697,7 +3665,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(TAB2_ID, mTab2.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList
                         .get(POSITION2)
@@ -3851,7 +3819,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(TAB2_ID, mTab2.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab2.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList
                         .get(POSITION2)
@@ -3892,7 +3860,7 @@ public class TabListMediatorUnitTest {
         mTabGroupModelFilter.setTabGroupTitle(TAB_GROUP_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
+                .didChangeTabGroupTitle(mTab1.getTabGroupId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList
                         .get(POSITION1)

@@ -135,36 +135,28 @@ public interface TabGroupModelFilterObserver {
     /**
      * This method is called after a new title is set on a tab group.
      *
-     * @param rootId The current rootId of the tab group.
-     * @param tabGroupId The tab group id, may be null if the value is being changed and the group
-     *     doesn't exist.
+     * @param tabGroupId The tab group id.
      * @param newTitle The new title.
      */
-    default void didChangeTabGroupTitle(
-            int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {}
+    default void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {}
 
     /**
      * This method is called after a new color is set on a tab group.
      *
-     * @param rootId The current rootId of the tab group.
-     * @param tabGroupId The tab group id, may be null if the value is being changed and the group
-     *     doesn't exist.
+     * @param tabGroupId The tab group id.
      * @param newColor The new color.
      */
-    default void didChangeTabGroupColor(
-            int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {}
+    default void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {}
 
     /**
      * This method is called when a tab group is collapsed or expanded on the tab strip.
      *
-     * @param rootId The current rootId of the tab group.
-     * @param tabGroupId The tab group id, may be null if the value is being changed and the group
-     *     doesn't exist.
+     * @param tabGroupId The tab group id.
      * @param isCollapsed Whether or not the tab group is now collapsed.
      * @param animate Whether the collapse or expand should be animated.
      */
     default void didChangeTabGroupCollapsed(
-            int rootId, @Nullable Token tabGroupId, boolean isCollapsed, boolean animate) {}
+            Token tabGroupId, boolean isCollapsed, boolean animate) {}
 
     /**
      * When a tab group's root id needs to change because the tab whose id was previously being used

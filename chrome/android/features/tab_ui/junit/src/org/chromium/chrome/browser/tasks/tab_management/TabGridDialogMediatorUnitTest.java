@@ -1751,9 +1751,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertNotEquals(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), COLOR_3);
 
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupColor(rootId, TAB_GROUP_ID, COLOR_3);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupColor(TAB_GROUP_ID, COLOR_3);
 
         assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
     }
@@ -1774,7 +1772,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(newTitle);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didChangeTabGroupTitle(rootId, TAB_GROUP_ID, newTitle);
+                .didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
 
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));
     }

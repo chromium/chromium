@@ -2361,15 +2361,14 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     public void testSetTabGroupTitle() {
         mTabGroupModelFilter.setTabGroupTitle(TAB2_ROOT_ID, "Foo");
-        verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupTitle(TAB2_ROOT_ID, TAB2_TAB_GROUP_ID, "Foo");
+        verify(mTabGroupModelFilterObserver).didChangeTabGroupTitle(TAB2_TAB_GROUP_ID, "Foo");
     }
 
     @Test
     public void testDeleteTabGroupTitle() {
         mTabGroupModelFilter.deleteTabGroupTitle(TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupTitle(TAB2_ROOT_ID, TAB2_TAB_GROUP_ID, /* newTitle= */ null);
+                .didChangeTabGroupTitle(TAB2_TAB_GROUP_ID, /* newTitle= */ null);
     }
 
     @Test
@@ -2389,7 +2388,7 @@ public class TabGroupModelFilterImplUnitTest {
     public void testSetTabGroupColor() {
         mTabGroupModelFilter.setTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
         verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupColor(TAB2_ROOT_ID, TAB2_TAB_GROUP_ID, TabGroupColorId.GREY);
+                .didChangeTabGroupColor(TAB2_TAB_GROUP_ID, TabGroupColorId.GREY);
     }
 
     @Test
@@ -2397,10 +2396,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupCollapsed(
-                        TAB2_ROOT_ID,
-                        TAB2_TAB_GROUP_ID,
-                        /* isCollapsed= */ true,
-                        /* animate= */ false);
+                        TAB2_TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test
@@ -2409,10 +2405,7 @@ public class TabGroupModelFilterImplUnitTest {
                 TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupCollapsed(
-                        TAB2_ROOT_ID,
-                        TAB2_TAB_GROUP_ID,
-                        /* isCollapsed= */ true,
-                        /* animate= */ false);
+                        TAB2_TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test
@@ -2420,10 +2413,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.deleteTabGroupCollapsed(TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupCollapsed(
-                        TAB2_ROOT_ID,
-                        TAB2_TAB_GROUP_ID,
-                        /* isCollapsed= */ false,
-                        /* animate= */ false);
+                        TAB2_TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
     }
 
     @Test

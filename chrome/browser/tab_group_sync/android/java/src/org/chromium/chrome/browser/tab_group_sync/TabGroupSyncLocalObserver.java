@@ -199,19 +199,17 @@ public final class TabGroupSyncLocalObserver {
     private TabGroupModelFilterObserver createTabGroupModelFilterObserver() {
         return new TabGroupModelFilterObserver() {
             @Override
-            public void didChangeTabGroupColor(
-                    int rootId, @Nullable Token tabGroupId, @TabGroupColorId int newColor) {
+            public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
                 if (!mIsObserving) return;
-                LogUtils.log(TAG, "didChangeTabGroupColor, rootId = " + rootId);
+                LogUtils.log(TAG, "didChangeTabGroupColor, tabGroupId = " + tabGroupId);
                 updateVisualData(
                         TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, tabGroupId));
             }
 
             @Override
-            public void didChangeTabGroupTitle(
-                    int rootId, @Nullable Token tabGroupId, @Nullable String newTitle) {
+            public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
                 if (!mIsObserving) return;
-                LogUtils.log(TAG, "didChangeTabGroupTitle, rootId = " + rootId);
+                LogUtils.log(TAG, "didChangeTabGroupTitle, tabGroupId = " + tabGroupId);
                 updateVisualData(
                         TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, tabGroupId));
             }
