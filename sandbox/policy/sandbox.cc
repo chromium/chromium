@@ -27,6 +27,8 @@
 #include "base/process/process_info.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_factory.h"
+#include "sandbox/win/src/target_services.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace sandbox {
@@ -110,7 +112,9 @@ bool Sandbox::IsProcessSandboxed() {
 #elif BUILDFLAG(IS_MAC)
   return Seatbelt::IsSandboxed();
 #elif BUILDFLAG(IS_WIN)
-  return base::GetCurrentProcessIntegrityLevel() < base::MEDIUM_INTEGRITY;
+  auto* target_services = sandbox::SandboxFactory::GetTargetServices();
+  return target_services && target_services->GetState()->InitCompleted() &&
+         base::GetCurrentProcessIntegrityLevel() < base::MEDIUM_INTEGRITY;
 #else
   return false;
 #endif
