@@ -275,16 +275,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
-// TODO(crbug.com/40863269): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
-  DISABLED_Playback_VideoClearAudio_WebM_Opus
-#else
-#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
-  Playback_VideoClearAudio_WebM_Opus
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoClearAudio_WebM_Opus) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
 #if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable()) {
     GTEST_SKIP() << "Opus decoder not available";
