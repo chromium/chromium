@@ -4202,9 +4202,10 @@
       "--enable-blink-features=NonStandardAppearanceValueSliderVertical"
     ],
     "owners": [
-      "dizhangg@chromium.org"
+      "dizhangg@chromium.org",
+      "jarhar@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "soft-navigation-heuristics-pre-paint-attribution",
