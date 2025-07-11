@@ -13,10 +13,12 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/restricted_cookie_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -35,6 +37,11 @@
 namespace blink {
 
 namespace {
+
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Property;
 
 constexpr char kDefaultUrl[] = "https://example.com/";
 
@@ -157,8 +164,7 @@ TEST_F(CookieStoreTest, SetByName) {
   ASSERT_TRUE(script_state);
   ExceptionState exception_state(v8_testing_scope.GetIsolate());
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   ScriptPromise<IDLUndefined> promise = cookie_store->set(
       script_state, "cookie-name", "cookie-value", exception_state);
@@ -166,10 +172,8 @@ TEST_F(CookieStoreTest, SetByName) {
   promise_tester.WaitUntilSettled();
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(promise_tester.IsFulfilled());
-  got = GetAllCookies();
-  EXPECT_EQ(1u, got.size());
-  EXPECT_EQ("cookie-name", got[0].Name());
-  EXPECT_EQ("cookie-value", got[0].Value());
+  EXPECT_THAT(GetAllCookies(), ElementsAre(net::MatchesCookieNameValue(
+                                   "cookie-name", "cookie-value")));
 }
 
 TEST_F(CookieStoreTest, SetByName_DisallowEqualsInName) {
@@ -180,8 +184,7 @@ TEST_F(CookieStoreTest, SetByName_DisallowEqualsInName) {
   ASSERT_TRUE(script_state);
   DummyExceptionStateForTesting exception_state;
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   ScriptPromise<IDLUndefined> promise = cookie_store->set(
       script_state, "cookie=name", "cookie-value", exception_state);
@@ -191,8 +194,7 @@ TEST_F(CookieStoreTest, SetByName_DisallowEqualsInName) {
   EXPECT_EQ("Cookie name cannot contain '='", exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
 
-  got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 }
 
 TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
@@ -203,8 +205,7 @@ TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
   ASSERT_TRUE(script_state);
   ExceptionState exception_state(v8_testing_scope.GetIsolate());
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   CookieInit* set_options = CookieInit::Create();
   set_options->setName("cookie-name");
@@ -217,11 +218,11 @@ TEST_F(CookieStoreTest, SetWithMixedCaseDomain) {
   promise_tester.WaitUntilSettled();
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(promise_tester.IsFulfilled());
-  got = GetAllCookies();
-  EXPECT_EQ(1u, got.size());
-  EXPECT_EQ("cookie-name", got[0].Name());
-  EXPECT_EQ("cookie-value", got[0].Value());
-  EXPECT_EQ(".example.com", got[0].Domain());
+  EXPECT_THAT(
+      GetAllCookies(),
+      ElementsAre(AllOf(
+          net::MatchesCookieNameValue("cookie-name", "cookie-value"),
+          Property("Domain", &net::CanonicalCookie::Domain, ".example.com"))));
 }
 
 TEST_F(CookieStoreTest, SetWithHttpPrefix) {
@@ -235,8 +236,7 @@ TEST_F(CookieStoreTest, SetWithHttpPrefix) {
   ASSERT_TRUE(script_state);
   DummyExceptionStateForTesting exception_state;
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   CookieInit* set_options = CookieInit::Create();
   set_options->setName("__HtTp-name");
@@ -253,8 +253,7 @@ TEST_F(CookieStoreTest, SetWithHttpPrefix) {
       "API.",
       exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
-  got = GetAllCookies();
-  EXPECT_EQ(0u, got.size());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 }
 
 TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
@@ -268,8 +267,7 @@ TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
   ASSERT_TRUE(script_state);
   DummyExceptionStateForTesting exception_state;
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   CookieInit* set_options = CookieInit::Create();
   set_options->setName("__HoStHtTp-name");
@@ -286,8 +284,7 @@ TEST_F(CookieStoreTest, SetWithHostHttpPrefix) {
       "API.",
       exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
-  got = GetAllCookies();
-  EXPECT_EQ(0u, got.size());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 }
 
 TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
@@ -298,8 +295,7 @@ TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
   ASSERT_TRUE(script_state);
   DummyExceptionStateForTesting exception_state;
 
-  std::vector<net::CanonicalCookie> got = GetAllCookies();
-  EXPECT_TRUE(got.empty());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 
   CookieInit* set_options = CookieInit::Create();
   set_options->setName("__HosT-name");
@@ -314,8 +310,7 @@ TEST_F(CookieStoreTest, SetWithHostPrefixAndDomain) {
   EXPECT_EQ("Cookies with \"__Host-\" prefix cannot have a domain",
             exception_state.Message());
   EXPECT_TRUE(promise_tester.IsRejected());
-  got = GetAllCookies();
-  EXPECT_EQ(0u, got.size());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
 }
 
 }  // namespace
