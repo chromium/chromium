@@ -285,8 +285,8 @@ public class NotificationPlatformBridge {
                         attributes.notificationId, attributes.origin);
                 return true;
             case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
-                NotificationContentDetectionManager.showOriginalNotification(
-                        attributes.notificationId);
+                NotificationContentDetectionManager.showOriginalNotifications(
+                        attributes.notificationId, attributes.origin);
                 return true;
             case NotificationConstants.ACTION_ALWAYS_ALLOW:
                 NotificationContentDetectionManager.onNotificationPreAlwaysAllow(

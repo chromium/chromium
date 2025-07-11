@@ -3408,13 +3408,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Manage
       </message>
       <message name="IDS_NOTIFICATION_WARNING_TITLE" desc="Title of a warning notification informing the user that the notification may be suspicious.">
-        Possible spam
+        {NUM_SUSPICIOUS_NOTIFICATIONS, plural,
+          =1 {Possible spam}
+          other {Possible spam (#)}}
       </message>
       <message name="IDS_NOTIFICATION_WARNING_BODY" desc="Body text of a warning notification informing the user that the notification from the domain may be suspicious.">
         Chrome detected possible spam from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
       </message>
       <message name="IDS_NOTIFICATION_SHOW_ORIGINAL_BUTTON" desc="Text of a button shown on suspicious notifications, allowing the user to see the contents of the original notification instead of the warning.">
-        Show notification
+        {NUM_SUSPICIOUS_NOTIFICATIONS, plural,
+          =1 {Show notification}
+          other {Show notifications}}
       </message>
       <message name="IDS_NOTIFICATION_ALWAYS_ALLOW_BUTTON" desc="Text of a button shown on original notifications that were displayed after the warning notifications. Clicking the button allows the user to always receive notifications from their origin without warning notifications.">
         Always allow

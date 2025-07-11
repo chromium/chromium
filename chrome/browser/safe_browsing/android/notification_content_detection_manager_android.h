@@ -26,7 +26,8 @@ enum class SuspiciousNotificationWarningInteractions {
   kReportAsSafe = 5,
   kReportWarnedNotificationAsSpam = 6,
   kReportUnwarnedNotificationAsSpam = 7,
-  kMaxValue = kReportUnwarnedNotificationAsSpam,
+  kSuppressDuplicateWarning = 8,
+  kMaxValue = kSuppressDuplicateWarning,
 };
 
 void UpdateSuspiciousNotificationIds(HostContentSettingsMap* hcsm,
