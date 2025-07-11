@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -68,6 +69,7 @@
 #include "url/gurl.h"
 
 using content_settings::ContentSettingsInfo;
+using content_settings::PermissionSettingsInfo;
 using content_settings::SettingSource;
 using content_settings::WebsiteSettingsInfo;
 
@@ -596,7 +598,7 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    ContentSetting setting,
+    PermissionSetting setting,
     const content_settings::ContentSettingConstraints& constraints) {
   content_settings::PatternPair patterns =
       GetNarrowestPatterns(primary_url, secondary_url, type);
@@ -605,8 +607,8 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
     return;
   }
 
-  SetContentSettingCustomScope(patterns.first, patterns.second, type, setting,
-                               constraints);
+  SetPermissionSettingCustomScope(patterns.first, patterns.second, type,
+                                  setting, constraints);
 }
 
 content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
@@ -699,6 +701,52 @@ void HostContentSettingsMap::SetContentSettingDefaultScope(
 
   SetContentSettingCustomScope(primary_pattern, secondary_pattern, content_type,
                                setting, constraints);
+}
+
+void HostContentSettingsMap::SetPermissionSettingCustomScope(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type,
+    std::optional<PermissionSetting> setting,
+    const content_settings::ContentSettingConstraints& constraints) {
+  // TODO(crbug.com/425642101): Register all content settings as permission
+  // settings to avoid this special case.
+  if (setting && std::get_if<ContentSetting>(&setting.value()) != nullptr) {
+    SetContentSettingCustomScope(primary_pattern, secondary_pattern,
+                                 content_type,
+                                 std::get<ContentSetting>(*setting));
+    return;
+  }
+
+  base::Value value;
+  if (setting) {
+    auto* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            content_type);
+    DCHECK(info->delegate().IsValid(*setting));
+    value = info->delegate().ToValue(*setting);
+  }
+  SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
+                               std::move(value), constraints);
+}
+
+void HostContentSettingsMap::SetPermissionSettingDefaultScope(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    std::optional<PermissionSetting> setting,
+    const content_settings::ContentSettingConstraints& constraints) {
+  content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
+      primary_url, secondary_url, content_type);
+
+  ContentSettingsPattern primary_pattern = patterns.first;
+  ContentSettingsPattern secondary_pattern = patterns.second;
+  if (!primary_pattern.IsValid() || !secondary_pattern.IsValid()) {
+    return;
+  }
+
+  SetPermissionSettingCustomScope(primary_pattern, secondary_pattern,
+                                  content_type, setting, constraints);
 }
 
 base::WeakPtr<HostContentSettingsMap> HostContentSettingsMap::GetWeakPtr() {

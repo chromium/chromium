@@ -28,6 +28,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -238,6 +239,24 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
+  // Like SetContentSettingCustomScope but accepts PermissionSettings. An empty
+  // setting means that the setting should be deleted.
+  void SetPermissionSettingCustomScope(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      std::optional<PermissionSetting> setting,
+      const content_settings::ContentSettingConstraints& constraints = {});
+
+  // Like SetContentSettingDefaultScope but accepts PermissionSettings. An empty
+  // setting means that the setting should be deleted.
+  void SetPermissionSettingDefaultScope(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      std::optional<PermissionSetting> setting,
+      const content_settings::ContentSettingConstraints& constraints = {});
+
   // TODO(crbug.com/425642101): Add functions to set and reset
   // PermissionSettings.
 
@@ -287,7 +306,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType type,
-      ContentSetting setting,
+      PermissionSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Updates the last used time to a recent timestamp.

@@ -990,6 +990,73 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
   }
 }
 
+TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithContentSetting) {
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  GURL url("https://example.com");
+
+  // Check that default is ask.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            std::get<ContentSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION)));
+
+  // Set to allow.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            std::get<ContentSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION)));
+
+  // Reset with nullopt.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, std::nullopt);
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            std::get<ContentSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION)));
+
+  // Set to block
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            std::get<ContentSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION)));
+
+  // Reset with DEFAULT.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            std::get<ContentSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION)));
+}
+
+TEST_F(HostContentSettingsMapTest, SetPermissionSettingWithGeolocationSetting) {
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  GURL url("https://example.com");
+
+  // Check default.
+  EXPECT_EQ(GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+            std::get<GeolocationSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+
+  // Set to Allowed,Denied
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting(PermissionOption::kAllowed,
+                         PermissionOption::kDenied));
+  EXPECT_EQ(
+      GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kDenied),
+      std::get<GeolocationSetting>(map->GetPermissionSetting(
+          url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+
+  // Reset with nullopt.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, std::nullopt);
+  EXPECT_EQ(GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+            std::get<GeolocationSetting>(map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+}
+
 TEST_F(HostContentSettingsMapTest,
        IncognitoInheritGeolocationWithOptionPartialBlocks) {
   // The cookie setting has an initial value of ALLOW, so all changes should be
@@ -1015,10 +1082,10 @@ TEST_F(HostContentSettingsMapTest,
                 host, host, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
             permission_settings_info->GetInitialDefaultSetting());
   {
-    host_content_settings_map->SetWebsiteSettingDefaultScope(
+    host_content_settings_map->SetPermissionSettingDefaultScope(
         host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-        permission_settings_info->delegate().ToValue(GeolocationSetting{
-            PermissionOption::kAllowed, PermissionOption::kDenied}));
+        GeolocationSetting{PermissionOption::kAllowed,
+                           PermissionOption::kDenied});
     // Confirm state
     EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
                   host, host,
@@ -1037,10 +1104,10 @@ TEST_F(HostContentSettingsMapTest,
   }
 
   {
-    host_content_settings_map->SetWebsiteSettingDefaultScope(
+    host_content_settings_map->SetPermissionSettingDefaultScope(
         host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-        permission_settings_info->delegate().ToValue(GeolocationSetting{
-            PermissionOption::kAllowed, PermissionOption::kAllowed}));
+        GeolocationSetting{PermissionOption::kAllowed,
+                           PermissionOption::kAllowed});
 
     // Confirm state
     EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
@@ -1062,10 +1129,10 @@ TEST_F(HostContentSettingsMapTest,
   }
 
   {
-    host_content_settings_map->SetWebsiteSettingDefaultScope(
+    host_content_settings_map->SetPermissionSettingDefaultScope(
         host, GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-        permission_settings_info->delegate().ToValue(GeolocationSetting{
-            PermissionOption::kDenied, PermissionOption::kDenied}));
+        GeolocationSetting{PermissionOption::kDenied,
+                           PermissionOption::kDenied});
 
     // Confirm state
     EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
