@@ -123,16 +123,6 @@ class ChromeSigninClient : public SigninClient {
   void OnTokenFetchComplete(bool token_is_valid);
 #endif
 
-  // virtual for unit testing: cut down dependency on `BookmarkModel`.
-  // The following two functions will return `std::nullopt` if the
-  // `BookmarkModel` is nullptr.
-  virtual std::optional<size_t> GetAllBookmarksCount();
-  virtual std::optional<size_t> GetBookmarkBarBookmarksCount();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Returns `std::nullopt` if the `ExtensionRegistry` is nullptr.
-  virtual std::optional<size_t> GetExtensionsCount();
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
   void RecordOpenTabCount(signin_metrics::AccessPoint access_point,
                           signin::ConsentLevel consent_level);
