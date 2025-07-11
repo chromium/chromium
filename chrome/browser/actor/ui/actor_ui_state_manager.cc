@@ -155,7 +155,8 @@ void ActorUiStateManager::OnUiEvent(UiEvent event,
                      }},
              new_ui_state);
 
-  std::move(callback).Run(MakeOkResult());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
