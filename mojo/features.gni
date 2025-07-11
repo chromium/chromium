@@ -8,7 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 
 declare_args() {
   mojo_use_apple_channel =
-      is_mac || (is_ios && use_blink && target_platform != "tvos")
+      is_mac || (is_ios && use_blink && target_platform == "iphoneos")
 
   # Builds non-ipcz-based Mojo Core. No longer supported anywhere but Chrome OS.
   # We check target_os instead of is_chromeos since this also needs to be set
