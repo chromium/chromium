@@ -2767,6 +2767,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"diamond-prototype", flag_descriptions::kDiamondPrototypeName,
      flag_descriptions::kDiamondPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDiamondPrototype)},
+    {"aim-prototype-ios", flag_descriptions::kAIMPrototypeName,
+     flag_descriptions::kAIMPrototypeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAIMPrototype)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
