@@ -76,14 +76,12 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   }
 
   if (profile_database_) {
-    auto query_handle = profile_database_->GetFormValuesForElementName(
+    pending_query_ = profile_database_->GetFormValuesForElementName(
         field.name(), field.value(), kMaxAutocompleteMenuItems,
         base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    pending_query_.emplace(query_handle,
-                           QueryHandler(field.global_id(), field.value(),
-                                        std::move(on_suggestions_returned)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       QueryHandler(field.global_id(), field.value(),
+                                    std::move(on_suggestions_returned))));
     return true;
   }
   return false;
@@ -109,7 +107,7 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
 
 void AutocompleteHistoryManager::CancelPendingQuery() {
   if (profile_database_ && pending_query_) {
-      profile_database_->CancelRequest(pending_query_->handle);
+      profile_database_->CancelRequest(*pending_query_);
   }
   pending_query_.reset();
 }
@@ -176,12 +174,13 @@ void AutocompleteHistoryManager::Init(
       // Trigger the cleanup.
       profile_database_->RemoveExpiredAutocompleteEntries(base::BindOnce(
           &AutocompleteHistoryManager::OnWebDataServiceRequestDone,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), std::nullopt));
     }
   }
 }
 
 void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
+    std::optional<QueryHandler> query_handler,
     WebDataServiceBase::Handle current_handle,
     std::unique_ptr<WDTypedResult> result) {
   DCHECK(current_handle);
@@ -196,7 +195,9 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   WDResultType result_type = result->GetType();
   switch (result_type) {
     case AUTOFILL_VALUE_RESULT:
-      OnAutofillValuesReturned(current_handle, std::move(result));
+      DCHECK(query_handler);
+      OnAutofillValuesReturned(current_handle, std::move(result),
+            *std::move(query_handler));
       break;
     case AUTOFILL_CLEANUP_RESULT:
       OnAutofillCleanupReturned(current_handle, std::move(result));
@@ -211,21 +212,17 @@ AutocompleteHistoryManager::QueryHandler::QueryHandler(
     std::u16string prefix,
     SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned)
-    : field_id_(field_id),
-      prefix_(std::move(prefix)),
-      on_suggestions_returned_(std::move(on_suggestions_returned)) {}
+    : field_id(field_id),
+      prefix(std::move(prefix)),
+      on_suggestions_returned(std::move(on_suggestions_returned)) {}
 
 AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
     default;
 
+AutocompleteHistoryManager::QueryHandler&
+AutocompleteHistoryManager::QueryHandler::operator=(QueryHandler&&) = default;
+
 AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
-
-AutocompleteHistoryManager::PendingQuery::PendingQuery(
-    WebDataServiceBase::Handle handle,
-    QueryHandler query_handler)
-    : handle(handle), query_handler(std::move(query_handler)) {}
-
-AutocompleteHistoryManager::PendingQuery::~PendingQuery() = default;
 
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutocompleteEntry>& entries,
@@ -233,7 +230,7 @@ void AutocompleteHistoryManager::SendSuggestions(
   // If there is only one suggestion that is the exact same string as
   // what is in the input box, then don't show the suggestion.
   bool hide_suggestions =
-      entries.size() == 1 && query_handler.prefix_ == entries[0].key().value();
+      entries.size() == 1 && query_handler.prefix == entries[0].key().value();
 
   std::vector<Suggestion> suggestions;
   last_entries_.clear();
@@ -245,23 +242,21 @@ void AutocompleteHistoryManager::SendSuggestions(
     }
   }
 
-  std::move(query_handler.on_suggestions_returned_)
-      .Run(query_handler.field_id_, suggestions);
+  std::move(query_handler.on_suggestions_returned)
+      .Run(query_handler.field_id, suggestions);
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(
     WebDataServiceBase::Handle current_handle,
-    std::unique_ptr<WDTypedResult> result) {
+    std::unique_ptr<WDTypedResult> result,
+    QueryHandler query_handler) {
   DCHECK(result);
   DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
 
-  if (!pending_query_ || pending_query_->handle != current_handle) {
+  if (!pending_query_ || *pending_query_ != current_handle) {
     // There's no handler for this query, hence nothing to do.
     return;
   }
-
-  // Moving the handler since we're erasing the entry.
-  auto query_handler = std::move(pending_query_->query_handler);
 
   // Removing the query, as it is no longer pending.
   pending_query_.reset();

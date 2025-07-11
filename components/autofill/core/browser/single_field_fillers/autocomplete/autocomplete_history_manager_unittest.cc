@@ -61,8 +61,6 @@ class MockSuggestionsReturnedCallback
   }
 
  private:
-  using base::MockCallback<OnSuggestionsReturnedCallback>::Get;
-
   std::list<OnSuggestionsReturnedCallback> callbacks_;
 };
 
@@ -103,8 +101,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   }
 
   bool PendingQueryEmpty() {
-    return !autocomplete_manager_ ||
-           !autocomplete_manager_->pending_query_;
+    return !autocomplete_manager_ || !autocomplete_manager_->pending_query_;
   }
 
   static bool IsEmptySuggestionVector(
@@ -474,8 +471,10 @@ TEST_F(AutocompleteHistoryManagerTest,
                                  testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 
 // Tests that no suggestions are queried if the field name is filtered because
@@ -551,8 +550,10 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _));
 
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 // Tests that the suggestions are queried if the field name is not filtered
 // because the field's name is meaningful.
@@ -581,8 +582,10 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _));
 
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 
 // Tests that we are correctly returning a suggestion back to the handler.
@@ -615,8 +618,10 @@ TEST_F(AutocompleteHistoryManagerTest,
                                        Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 
 // Tests that we don't return any suggestion if we only have one suggestion that
@@ -646,8 +651,10 @@ TEST_F(AutocompleteHistoryManagerTest,
                                  testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 
 // Tests the case sensitivity of the unique suggestion equal to the prefix
@@ -681,8 +688,10 @@ TEST_F(AutocompleteHistoryManagerTest,
                                        Suggestion::Text::IsPrimary(true))))));
 
   // Simulate response from DB.
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 }
 
 TEST_F(AutocompleteHistoryManagerTest,
@@ -723,8 +732,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       test_field_, autofill_client_, mock_callback.GetNewRef()));
 
   // Simulate response from DB.
-  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
-                                                     std::move(mocked_results));
+  autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      mocked_db_query_id, std::move(mocked_results));
 
   base::HistogramTester histogram_tester;
 
@@ -788,6 +799,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate response from DB, second request comes back before.
   autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
       mocked_db_query_id_second, std::move(mocked_results_second));
 
   // Setting up mock to verify that the handler doesn't get called for the first
@@ -796,6 +809,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate response from DB, first request comes back after.
   autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
       mocked_db_query_id_first, std::move(mocked_results_first));
 }
 
@@ -823,6 +838,8 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
   // Make sure the handler is not called when the DB responds.
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _)).Times(0);
   autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
       mocked_db_query_id, std::move(mocked_results_one));
 }
 
@@ -876,10 +893,14 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
 
   size_t cleanup_result = 10;
   base::HistogramTester histogram_tester;
+  MockSuggestionsReturnedCallback mock_callback;
 
   autocomplete_manager_->OnWebDataServiceRequestDone(
-      1, std::make_unique<WDResult<size_t>>(AUTOFILL_CLEANUP_RESULT,
-                                            cleanup_result));
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
+      1,
+      std::make_unique<WDResult<size_t>>(AUTOFILL_CLEANUP_RESULT,
+                                         cleanup_result));
 
   EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
@@ -889,9 +910,12 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
 // crash on empty results.
 TEST_F(AutocompleteHistoryManagerTest, EmptyResult_DoesNotCrash) {
   auto empty_unique_ptr = std::unique_ptr<WDTypedResult>(nullptr);
+  MockSuggestionsReturnedCallback mock_callback;
 
   // The expectation in this test is that the following call doesn't crash.
   autocomplete_manager_->OnWebDataServiceRequestDone(
+      AutocompleteHistoryManager::QueryHandler(
+          test_field_.global_id(), test_field_.value(), mock_callback.Get()),
       1, std::move(empty_unique_ptr));
 }
 

@@ -37,6 +37,30 @@ class AutocompleteHistoryManager : public KeyedService {
 
   ~AutocompleteHistoryManager() override;
 
+  // Internal data object used to keep a request's context to associate it
+  // with the appropriate response.
+  struct QueryHandler {
+    QueryHandler(FieldGlobalId field_id,
+                 std::u16string prefix,
+                 SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                     on_suggestions_returned);
+    QueryHandler(const QueryHandler&) = delete;
+    QueryHandler(QueryHandler&&);
+    QueryHandler& operator=(const QueryHandler&) = delete;
+    QueryHandler& operator=(QueryHandler&&);
+    ~QueryHandler();
+
+    // The queried field ID.
+    FieldGlobalId field_id;
+
+    // Prefix used to search suggestions, submitted by the handler.
+    std::u16string prefix;
+
+    // Callback to-be-executed once a response from the DB is available.
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned;
+  };
+
   // May generate autocomplete suggestions for the given `field`. This is
   // achieved through an async DB query. `client` checks if the requirements for
   // generating autocomplete suggestions are met (e.g. autocomplete is enabled).
@@ -75,45 +99,12 @@ class AutocompleteHistoryManager : public KeyedService {
             PrefService* pref_service,
             bool is_off_the_record);
 
-  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
+  void OnWebDataServiceRequestDone(std::optional<QueryHandler> query_handler,
+                                   WebDataServiceBase::Handle h,
                                    std::unique_ptr<WDTypedResult> result);
 
  private:
   friend class AutocompleteHistoryManagerTest;
-
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(FieldGlobalId field_id,
-                 std::u16string prefix,
-                 SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                     on_suggestions_returned);
-    QueryHandler(const QueryHandler&) = delete;
-    QueryHandler(QueryHandler&&);
-    ~QueryHandler();
-
-    // The queried field ID.
-    FieldGlobalId field_id_;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix_;
-
-    // Callback to-be-executed once a response from the DB is available.
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned_;
-  };
-
-  // Internal data object used to keep a request's handle and it's context.
-  // Used to keep track of the pending query and cancel it if needed.
-  struct PendingQuery {
-    PendingQuery(WebDataServiceBase::Handle handle,
-                 QueryHandler query_handler);
-    PendingQuery(const PendingQuery&) = delete;
-    ~PendingQuery();
-
-    WebDataServiceBase::Handle handle;
-    QueryHandler query_handler;
-  };
 
   // Sends the autocomplete `entries` to the `query_handler` for display in the
   // associated Autofill popup. The parameter may be empty if there are no new
@@ -122,12 +113,13 @@ class AutocompleteHistoryManager : public KeyedService {
                        QueryHandler query_handler);
 
   // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
-  // |current_handle| is the DB query handle, and is used to retrieve the
+  // `current_handle` is the DB query handle, and is used to retrieve the
   // handler associated with that query.
-  // |result| contains the Autocomplete suggestions retrieved from the DB that,
-  // if valid and if the handler exists, are to be returned to the handler.
+  // `result` contains the Autocomplete suggestions retrieved from the DB that,
+  // if valid, will be passed to the callback in `query_handler`.
   void OnAutofillValuesReturned(WebDataServiceBase::Handle current_handle,
-                                std::unique_ptr<WDTypedResult> result);
+                                std::unique_ptr<WDTypedResult> result,
+                                QueryHandler query_handler);
 
   // Function handling WebDataService responses of type AUTOFILL_CLEANUP_RESULT.
   // |current_handle| is the DB query handle, and is used to retrieve the
@@ -146,12 +138,12 @@ class AutocompleteHistoryManager : public KeyedService {
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_;
 
-  // When the manager makes a request from WebDataServiceBase, the database is
-  // queried asynchronously. We associate the query handle to the requestor
-  // (with some context parameters) and store the association here until we get
-  // called back. Then we update the initial requestor, and deleting the
-  // no-longer-pending query.
-  std::optional<PendingQuery> pending_query_;
+  // The handle of the current pending query to the WebDataService.
+  // Since requests are asynchronous, this is used to identify the query when
+  // its results are returned, preventing race conditions with old, stale queries.
+  // It is also used to cancel a pending query if a new one is initiated or if
+  // this manager is destroyed. It is `std::nullopt` if no query is in flight.
+  std::optional<WebDataServiceBase::Handle> pending_query_;
 
   // Cached results of the last batch of autocomplete suggestions.
   // Key are the suggestions' values, and values are the associated
