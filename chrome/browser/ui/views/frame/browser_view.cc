@@ -2291,38 +2291,10 @@ void BrowserView::FullscreenStateChanging() {
 
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // Avoid using immersive mode in locked fullscreen as it allows the user to
-  // exit the locked mode. Keep immersive mode enabled if the webapp is locked
-  // for OnTask (only relevant for non-web browser scenarios).
-  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
-  // OnTask.
-  bool avoid_using_immersive_mode =
-      platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
-      !browser_->IsLockedForOnTask();
-
-  if (avoid_using_immersive_mode) {
-    immersive_mode_controller()->SetEnabled(false);
-  } else {
-    // Enable immersive before the browser refreshes its list of enabled
-    // commands.
-    // Enable immersive mode when entering browser fullscreen, unless it's in
-    // app mode or requested by an extension.
-    if (IsFullscreen()) {
-      auto* fullscreen_controller =
-          GetExclusiveAccessManager()->fullscreen_controller();
-
-      bool enable_immersive =
-          !IsRunningInAppMode() &&
-          !fullscreen_controller->IsExtensionFullscreenOrPending() &&
-          fullscreen_controller->IsFullscreenForBrowser();
-      immersive_mode_controller()->SetEnabled(enable_immersive);
-    } else if (!immersive_mode_controller()
-                    ->ShouldStayImmersiveAfterExitingFullscreen()) {
-      // Disable immersive mode if not required to stay immersive after exiting
-      // fullscreen.
-      immersive_mode_controller()->SetEnabled(false);
-    }
-  }
+  const auto* non_client_frame_view =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(frame_->GetFrameView());
+  immersive_mode_controller()->SetEnabled(
+      non_client_frame_view->ShouldEnableImmersiveModeController());
 #endif
 
 #if BUILDFLAG(IS_MAC)

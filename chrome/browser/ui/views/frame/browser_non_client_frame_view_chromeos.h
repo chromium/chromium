@@ -125,6 +125,9 @@ class BrowserNonClientFrameViewChromeOS
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  // Helper to check whether we should enable immersive mode in current state.
+  bool ShouldEnableImmersiveModeController() const;
+
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
@@ -208,15 +211,11 @@ class BrowserNonClientFrameViewChromeOS
   // Returns whether the associated window is currently floated or not.
   bool IsFloated() const;
 
-  // Helper to check whether we should enable immersive mode.`on_tablet_enabled`
-  // is set to true only when it is called when tablet mode is just toggled on
-  // notified from OnTabletModeToggled.
-  bool ShouldEnableImmersiveModeController(bool on_tablet_enabled) const;
+  // Returns whether the associated window is currently snapped or not.
+  bool IsSnapped() const;
 
-  // Helper to check whether we should enable fullscreen mode.
-  // `on_tablet_enabled` is set to true only when tablet mode is just toggled
-  // on notified from OnTabletModeToggled.
-  bool ShouldEnableFullscreenMode(bool on_tablet_enabled) const;
+  // Returns whether the associated window is in TrustedPinned state.
+  bool IsTrustedPinned() const;
 
   // True if the the associated browser window should be using the WebUI tab
   // strip.
