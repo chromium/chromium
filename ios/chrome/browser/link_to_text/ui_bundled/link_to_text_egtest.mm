@@ -11,7 +11,9 @@
 #import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,13 +29,14 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using shared_highlighting::TextFragment;
 
 namespace {
 
 const char kTestPageTextSample[] = "Lorem ipsum";
-const char kNoTextTestPageTextSample[] = "only boundary";
+const char kNoTextTestPageTextSample[] = ".!,";
 const char kInputTestPageTextSample[] = "has an input";
 const char kSimpleTextElementId[] = "toBeSelected";
 const char kToBeSelectedText[] = "VeryUniqueWord";
@@ -66,8 +69,7 @@ const char kHTMLOfLongTestPage[] =
 const char kNoTextTestURL[] = "/noTextPage";
 const char kHTMLOfNoTextTestPage[] =
     "<html><body>"
-    "This page has a paragraph with only boundary characters"
-    "<p id=\"toBeSelected\"> .!, \t</p>"
+    "<div><p id=\"toBeSelected\">.!, \t</p></div>"
     "</body></html>";
 
 const char kInputTestURL[] = "/inputTextPage";
@@ -144,13 +146,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
   // The link to text button may be in the overflow, so use a search action to
   // find it, if necessary.
-  id<GREYMatcher> linkToTextMatcher =
-      grey_allOf(chrome_test_util::SystemSelectionCalloutLinkToTextButton(),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:linkToTextMatcher]
-         usingSearchAction:grey_tap()
-      onElementWithMatcher:chrome_test_util::
-                               SystemSelectionCalloutOverflowButton()]
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
+
+  [[EarlGrey selectElementWithMatcher:linkToTextMatcher]
       performAction:grey_tap()];
 
   // Make sure the Edit menu is gone.
@@ -197,10 +196,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       waitForSufficientlyVisibleElementWithMatcher:[EditMenuAppInterface
                                                        editMenuMatcher]];
 
-  // Make sure the Link to Text button is not visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
-      assertWithMatcher:grey_notVisible()];
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
+
+  GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
 
   // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
   // buttons so tearDown doesn't hang when `disabler` goes out of scope.
@@ -242,9 +241,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   // [EarlGrey selectElementWithMatcher:menu];
 
   // Make sure the Link to Text button is not visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
-      assertWithMatcher:grey_notVisible()];
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
+
+  GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
 
   // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
   // buttons so tearDown doesn't hang when `disabler` goes out of scope.

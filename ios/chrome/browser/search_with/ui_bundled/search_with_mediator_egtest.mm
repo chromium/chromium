@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -102,34 +103,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Go through the pages and find the element with accessibility
-// `accessibility_label`. Returns whether the action can be found.
-bool FindEditMenuAction(NSString* accessibility_label) {
-  // The menu should be visible.
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Start on first screen (previous not visible or disabled).
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
-                                          editMenuPreviousButtonMatcher]]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
-                                   nil)
-                  error:&error];
-  GREYAssert(error, @"FindEditMenuAction not called on the first page.");
-  error = nil;
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              [EditMenuAppInterface
-                  editMenuActionWithAccessibilityLabel:accessibility_label],
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_tap()
-      onElementWithMatcher:[EditMenuAppInterface editMenuNextButtonMatcher]]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  return !error;
-}
 }  // namespace
 
 // Tests for the Search With Edit menu entry.
@@ -178,12 +151,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 - (void)testSearchWith {
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction(@"Search with test");
-  GREYAssertTrue(found, @"Search Web button not found");
-  [[EarlGrey selectElementWithMatcher:
-                 [EditMenuAppInterface
-                     editMenuActionWithAccessibilityLabel:@"Search with test"]]
-      performAction:grey_tap()];
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with test");
+  GREYAssertNotEqual(matcher, nil, @"Search Web button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"text"];
   GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
@@ -194,12 +165,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction(@"Search with test");
-  GREYAssertTrue(found, @"Search Web button not found");
-  [[EarlGrey selectElementWithMatcher:
-                 [EditMenuAppInterface
-                     editMenuActionWithAccessibilityLabel:@"Search with test"]]
-      performAction:grey_tap()];
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with test");
+  GREYAssertNotEqual(matcher, nil, @"Search Web button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"text"];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
@@ -222,12 +191,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction(@"Search with test");
-  GREYAssertTrue(found, @"Search Web button not found");
-  [[EarlGrey selectElementWithMatcher:
-                 [EditMenuAppInterface
-                     editMenuActionWithAccessibilityLabel:@"Search with test"]]
-      performAction:grey_tap()];
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with test");
+  GREYAssertNotEqual(matcher, nil, @"Search Web button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"text"];
   GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],

@@ -29,6 +29,11 @@
 + (id<GREYMatcher>)editMenuActionWithAccessibilityLabel:
     (NSString*)accessibilityLabel;
 
+// Matcher for the button in the Edit Menu with the accessibility label
+// `accessibilityLabel` when in context menu format.
++ (id<GREYMatcher>)contextMenuActionWithAccessibilityLabel:
+    (NSString*)accessibilityLabel;
+
 // Some individual matchers for specific actions
 + (id<GREYMatcher>)editMenuLinkToTextButtonMatcher;
 + (id<GREYMatcher>)editMenuCopyButtonMatcher;

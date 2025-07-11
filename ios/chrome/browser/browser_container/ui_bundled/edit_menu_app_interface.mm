@@ -25,9 +25,11 @@ NSDictionary* ExtractMenuElements(UIView* view,
                                   CGFloat menu_offset,
                                   CGFloat menu_width) {
   // The type of the edit menu cell depends on the OS version.
-  bool is_edit_menu_cell = false;
-  is_edit_menu_cell =
+  bool is_edit_menu_cell =
       [view isKindOfClass:NSClassFromString(@"_UIEditMenuListViewCell")];
+
+  bool is_context_menu_cell =
+      [view isKindOfClass:NSClassFromString(@"_UIContextMenuCellContentView")];
 
   if (is_edit_menu_cell) {
     // Exclude views that are hidden or outside of the scrollview visible part.
@@ -35,11 +37,23 @@ NSDictionary* ExtractMenuElements(UIView* view,
       return @{};
     }
     // Consider the center to avoid rounding issues.
-    CGFloat center = CGRectGetMidX(view.frame);
-    if (center < menu_offset || center >= menu_offset + menu_width) {
+    CGFloat center_x = CGRectGetMidX(view.frame);
+    CGFloat center_y = CGRectGetMidY(view.frame);
+    if (center_x < menu_offset || center_x >= menu_offset + menu_width) {
       return @{};
     }
-    return @{@(center) : view.accessibilityLabel};
+    return @{@(CGPointMake(center_x, center_y)) : view.accessibilityLabel};
+  }
+  if (is_context_menu_cell) {
+    // Exclude views that are hidden.
+    if (view.hidden) {
+      return @{};
+    }
+    CGFloat center_x = CGRectGetMidX(view.frame);
+    CGFloat center_y = CGRectGetMidY(view.frame);
+    CGPoint window_center = [view convertPoint:CGPointMake(center_x, center_y)
+                                        toView:nil];
+    return @{@(window_center) : view.accessibilityLabel};
   }
 
   NSMutableDictionary* sub_views_elements = [NSMutableDictionary dictionary];
@@ -94,6 +108,17 @@ NSDictionary* ExtractMenuElements(UIView* view,
   return actionButton;
 }
 
++ (id<GREYMatcher>)contextMenuActionWithAccessibilityLabel:
+    (NSString*)accessibilityLabel {
+  id<GREYMatcher> contextMenu = grey_kindOfClassName(@"_UIContextMenuListView");
+  id<GREYMatcher> contextMenuButton =
+      grey_kindOfClassName(@"_UIContextMenuCellContentView");
+  id<GREYMatcher> actionButton =
+      grey_allOf(grey_ancestor(contextMenu), contextMenuButton,
+                 grey_accessibilityLabel(accessibilityLabel), nil);
+  return actionButton;
+}
+
 + (id<GREYMatcher>)editMenuLinkToTextButtonMatcher {
   return [EditMenuAppInterface
       editMenuActionWithAccessibilityLabel:l10n_util::GetNSString(
@@ -118,16 +143,30 @@ NSDictionary* ExtractMenuElements(UIView* view,
     UIWindowScene* windowScene =
         base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
-      if ([window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")]) {
-        continue;
-      }
       [menuElements
           addEntriesFromDictionary:ExtractMenuElements(
                                        window, 0, window.bounds.size.width)];
     }
   }
-  NSArray* sortedKeys =
-      [[menuElements allKeys] sortedArrayUsingSelector:@selector(compare:)];
+  // Sort elements top to bottoms, left to right.
+  NSArray* sortedKeys = [[menuElements allKeys]
+      sortedArrayUsingComparator:^(NSValue* obj1, NSValue* obj2) {
+        CGPoint point1 = [obj1 CGPointValue];
+        CGPoint point2 = [obj2 CGPointValue];
+        if (point1.y < point2.y) {
+          return static_cast<NSComparisonResult>(NSOrderedAscending);
+        }
+        if (point1.y > point2.y) {
+          return static_cast<NSComparisonResult>(NSOrderedDescending);
+        }
+        if (point1.x < point2.x) {
+          return static_cast<NSComparisonResult>(NSOrderedAscending);
+        }
+        if (point1.x > point2.x) {
+          return static_cast<NSComparisonResult>(NSOrderedDescending);
+        }
+        return static_cast<NSComparisonResult>(NSOrderedSame);
+      }];
   NSMutableArray* sortedValues = [NSMutableArray array];
   for (NSNumber* key in sortedKeys) {
     [sortedValues addObject:[menuElements objectForKey:key]];

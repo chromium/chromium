@@ -1636,17 +1636,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.EditMenu.DismissedMenuOnPage" enum="IOSEditMenuPage"
-    expires_after="2026-03-05">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    Page on which the iOS web edit menu is dismissed. This histogram is only
-    collected on a subset of users and possibly not on every iOS version. Use
-    with care.
-  </summary>
-</histogram>
-
 <histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
     expires_after="2026-03-05">
   <owner>olivierrobin@chromium.org</owner>
@@ -1669,25 +1658,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.EditMenu.SelectedActionOnPage" enum="IOSEditMenuPage"
-    expires_after="2026-03-05">
+<histogram name="IOS.EditMenu.SelectedActionInContext"
+    enum="IOSEditMenuActions" expires_after="2026-03-05">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    Page on which an iOS web edit menu action is triggered. This histogram is
-    only collected on a subset of users and possibly not on every iOS version.
-    Use with care.
-  </summary>
-</histogram>
-
-<histogram name="IOS.EditMenu.UpdatingSelectionOnPage" enum="IOSEditMenuPage"
-    expires_after="2026-03-05">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    Page on which the iOS web edit menu is dismissed by updating the selection.
-    This histogram is only collected on a subset of users and possibly not on
-    every iOS version. Use with care.
+    The action that was triggered by the user on the iOS web edit menu when in
+    iOS26+ context menu form. This histogram is only collected on a subset of
+    users and possibly not on every iOS version. Use with care.
   </summary>
 </histogram>
 

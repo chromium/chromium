@@ -14,6 +14,7 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
@@ -91,35 +92,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return nullptr;
 }
 
-// Go through the pages and find the element with accessibility
-// `accessibility_label`. Returns whether the action can be found.
-bool FindEditMenuAction(NSString* accessibility_label) {
-  // The menu should be visible.
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Start on first screen (previous not visible or disabled).
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
-                                          editMenuPreviousButtonMatcher]]
-      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
-                                   nil)
-                  error:&error];
-  GREYAssert(error, @"FindEditMenuAction not called on the first page.");
-  error = nil;
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              [EditMenuAppInterface
-                  editMenuActionWithAccessibilityLabel:accessibility_label],
-              grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_tap()
-      onElementWithMatcher:[EditMenuAppInterface editMenuNextButtonMatcher]]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  return !error;
-}
-
 }  // namespace
 
 // Tests for the Search With Edit menu entry.
@@ -176,19 +148,16 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 - (void)testExplainWithGemini {
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertTrue(found, @"✦ Explain button not found");
+  GREYAssertNotEqual(matcher, nil, @"✦ Explain button not found");
 
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
 
-    [[EarlGrey selectElementWithMatcher:
-                   [EditMenuAppInterface
-                       editMenuActionWithAccessibilityLabel:@"✦ Explain"]]
-        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
     ConditionBlock condition = ^{
       NSError* error = nil;
@@ -216,10 +185,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertFalse(found, @"✦ Explain button was found");
+  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu when signed
@@ -229,10 +198,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
   [SigninEarlGrey verifySignedOut];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertFalse(found, @"✦ Explain button was found");
+  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu when the
@@ -248,10 +217,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
 
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertFalse(found, @"✦ Explain button was found");
+  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu with a
@@ -266,10 +235,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertFalse(found, @"✦ Explain button was found");
+  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
 }
 
 // Checks if Explain With Gemini button is present in Reading Mode.
@@ -288,10 +257,10 @@ bool FindEditMenuAction(NSString* accessibility_label) {
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  bool found = FindEditMenuAction([NSString
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
       stringWithFormat:@"✦ %@", l10n_util::GetNSString(
                                     IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertTrue(found, @"✦ Explain button not found");
+  GREYAssertNotEqual(matcher, nil, @"✦ Explain button not found");
 }
 
 @end
