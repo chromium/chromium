@@ -184,26 +184,14 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
     return;
   }
 
-  const WorkerId worker_id = {extension_id, render_process_id,
-                              service_worker_version_id, thread_id};
-  ProcessManager::Get(browser_context_)
-      ->StopTrackingServiceWorkerRunningInstance(worker_id);
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), activation_token};
-
+  const WorkerId worker_id = {extension_id, render_process_id,
+                              service_worker_version_id, thread_id};
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
 
-  if (worker_state->worker_id() != worker_id) {
-    // We can see DidStopServiceWorkerContext right after DidInitialize and
-    // without DidStartServiceWorkerContext.
-    return;
-  }
-
-  DCHECK_NE(ServiceWorkerState::RendererState::kNotActive,
-            worker_state->renderer_state());
-  worker_state->Reset();
-
+  worker_state->DidStopServiceWorkerContext(worker_id, service_worker_scope);
   if (g_test_observer) {
     g_test_observer->DidStopServiceWorkerContext(extension_id);
   }

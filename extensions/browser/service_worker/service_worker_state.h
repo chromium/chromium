@@ -87,12 +87,20 @@ class ServiceWorkerState
   // global JavaScript scope, and all its global event listeners have been
   // registered with the //extensions layer. It is considered the
   // "renderer-side" signal that the worker is ready.
+  // NOTE: this can be called before or after `DidStartWorkerForScope`.
   void DidStartServiceWorkerContext(const SequencedContextId& context_id,
                                     const WorkerId& worker_id);
+
+  // Called when the render worker thread is preparing to terminate. It is
+  // considered the "renderer-side" signal that the worker is stopping.
+  // NOTE: this can be called before or after `OnStopping` and `OnStopped`.
+  void DidStopServiceWorkerContext(const WorkerId& worker_id,
+                                   const GURL& scope);
 
   // Called when the worker was requested to start and it verified that a worker
   // registration exists at the //content layer. It is considered the
   // "browser-side" signal that the worker is ready.
+  // NOTE: this can be called before or after `DidStartServiceWorkerContext`.
   void DidStartWorkerForScope(const SequencedContextId& context_id,
                               base::Time start_time,
                               int64_t version_id,
@@ -111,14 +119,21 @@ class ServiceWorkerState
   void StopObservingContextForTest();
 
   // content::ServiceWorkerContextObserverSynchronous:
-  // Called when an extension service worker has stopped.
-  void OnStopped(int64_t version_id, const GURL& scope) override;
+
   // Called when an extension service worker is stopping.
+  // It is considered the "browser-side" signal that the worker is stopping.
+  // NOTE: this can be called before or after `DidStopServiceWorkerContext`.
   void OnStopping(int64_t version_id, const GURL& scope) override;
+
+  // Called when an extension service worker has stopped.
+  // It is considered the "browser-side" signal that the worker has stopped.
+  // NOTE: this can be called before or after `DidStopServiceWorkerContext`.
+  void OnStopped(int64_t version_id, const GURL& scope) override;
 
  private:
   void SetWorkerId(const WorkerId& worker_id);
   void NotifyObserversIfReady(const SequencedContextId& context_id);
+  void HandleStop(int64_t version_id, const GURL& scope);
 
   BrowserState browser_state_ = BrowserState::kNotActive;
   RendererState renderer_state_ = RendererState::kNotActive;

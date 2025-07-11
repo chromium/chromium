@@ -173,11 +173,38 @@ void ServiceWorkerState::NotifyObserversIfReady(
   }
 }
 
+void ServiceWorkerState::DidStopServiceWorkerContext(const WorkerId& worker_id,
+                                                     const GURL& scope) {
+  if (worker_id_ != worker_id) {
+    // We can see `DidStopServiceWorkerContext` right after
+    // `DidInitializeServiceWorkerContext` and without
+    // `DidStartServiceWorkerContext`.
+    return;
+  }
+
+  if (renderer_state() != RendererState::kActive) {
+    // We can see `DidStopServiceWorkerContext` before or after `OnStopping`.
+    return;
+  }
+
+  HandleStop(worker_id_->version_id, scope);
+}
+
 void ServiceWorkerState::OnStopping(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  HandleStop(version_id, scope);
+}
 
+void ServiceWorkerState::OnStopped(int64_t version_id, const GURL& scope) {
+  // If `OnStopping` was not called for some reason, try again here.
+  if (browser_state_ != BrowserState::kNotActive) {
+    OnStopping(version_id, scope);
+  }
+}
+
+void ServiceWorkerState::HandleStop(int64_t version_id, const GURL& scope) {
   // Check that the version ID of the worker that is stopping refers to an
   // extension service worker that is tracked by this class. Service workers
   // registered for subscopes via `navigation.serviceWorker.register()` rather
@@ -193,13 +220,6 @@ void ServiceWorkerState::OnStopping(int64_t version_id, const GURL& scope) {
 
   for (auto& observer : observers_) {
     observer.OnWorkerStop(version_id, scope);
-  }
-}
-
-void ServiceWorkerState::OnStopped(int64_t version_id, const GURL& scope) {
-  // If `OnStopping` was not called for some reason, try again here.
-  if (browser_state_ != BrowserState::kNotActive) {
-    OnStopping(version_id, scope);
   }
 }
 
