@@ -74,7 +74,8 @@ const CGFloat kIconPointSize = 16.0;
   }
   _webStateListObserver = nullptr;
   _searchEngineObserver = nullptr;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     self.placeholderService = nullptr;
   }
 }
@@ -124,7 +125,8 @@ const CGFloat kIconPointSize = 16.0;
 }
 
 - (void)setPlaceholderService:(PlaceholderService*)placeholderService {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  CHECK((base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
+         base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)));
   _placeholderService = placeholderService;
 
   if (!placeholderService) {
@@ -186,7 +188,9 @@ const CGFloat kIconPointSize = 16.0;
 #pragma mark - PlaceholderServiceObserving
 
 - (void)placeholderImageUpdated {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+    return;
+  }
 
   __weak __typeof(self) weakSelf = self;
   if (self.placeholderService) {
@@ -231,7 +235,7 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) &&
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2) &&
       [self isCurrentPageNTP]) {
     [self.consumer setPlaceholderType:LocationBarPlaceholderType::
                                           kDefaultSearchEngineIcon];

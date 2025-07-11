@@ -882,7 +882,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 - (void)setDefaultSearchEngineImage:(UIImage*)image {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+    return;
+  }
   // The header view might not be created yet. Store the logo image until it is
   // consumed.
   if (!self.headerView) {
