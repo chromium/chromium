@@ -67,9 +67,11 @@ class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
   }
 
   std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfoFromJob(
-      const blink::mojom::Manifest& manifest) {
+      const blink::mojom::Manifest& manifest,
+      WebAppInstallInfoConstructOptions construct_options =
+          WebAppInstallInfoConstructOptions{}) {
     return test::GetInstallInfoForCurrentManifest(web_contents()->GetWeakPtr(),
-                                                  manifest);
+                                                  manifest, construct_options);
   }
 
  protected:
@@ -849,6 +851,56 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
 
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   ASSERT_EQ(expected_icon_metadata, web_app_info->icons_with_size_any);
+}
+
+// Verifies that if `bypass_primary_icon_download` is set, then the main product
+// icons from the `icons` field of the manifest are skipped during metadata
+// population and bitmap downloading (or subsequent generations). Only icons
+// populated due to other use-cases, like file handling, is populated correctly.
+TEST_F(ManifestToWebAppInstallInfoJobTest, MainIconsNotPopulated) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kFileHandlingIcons);
+  WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(true);
+
+  // This manifest already has a default icon of size 64 populated that is blue
+  // in color.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up file handler metadata with icons in the manifest and the web
+  // contents.
+  GURL file_handler_icon_url("http://www.foo.bar/file_handler/icon.png");
+  int file_handler_size = 32;
+  auto handler = blink::mojom::ManifestFileHandler::New();
+  handler->action = GURL("http://www.foo.bar/open-files");
+  handler->accept[u"image/png"].push_back(u".png");
+  handler->name = u"Images";
+  blink::Manifest::ImageResource file_icon;
+  file_icon.src = file_handler_icon_url;
+  file_icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
+  file_icon.sizes.emplace_back(file_handler_size, file_handler_size);
+  handler->icons.push_back(file_icon);
+  manifest->file_handlers.push_back(std::move(handler));
+
+  SkBitmap file_handler_icon =
+      gfx::test::CreateBitmap(file_handler_size, SK_ColorRED);
+  web_contents_manager().GetOrCreateIconState(file_handler_icon_url).bitmaps = {
+      file_handler_icon};
+
+  // Verify product icon metadata and bitmaps are both not populated.
+  WebAppInstallInfoConstructOptions options;
+  options.skip_primary_icon_download = true;
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest, options);
+  ASSERT_TRUE(web_app_info->icon_bitmaps.empty());
+  EXPECT_TRUE(web_app_info->manifest_icons.empty());
+
+  // Verify file handler icons are properly populated.
+  EXPECT_EQ(1u, web_app_info->other_icon_bitmaps.size());
+  EXPECT_TRUE(
+      base::Contains(web_app_info->other_icon_bitmaps, file_handler_icon_url));
+  gfx::test::AreBitmapsEqual(
+      file_handler_icon,
+      web_app_info->other_icon_bitmaps[file_handler_icon_url][0]);
 }
 
 }  // namespace

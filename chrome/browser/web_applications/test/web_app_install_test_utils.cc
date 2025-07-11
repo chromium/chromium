@@ -333,7 +333,8 @@ webapps::AppId InstallForWebContents(
 
 std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
     base::WeakPtr<content::WebContents> web_contents,
-    const blink::mojom::Manifest& manifest) {
+    const blink::mojom::Manifest& manifest,
+    WebAppInstallInfoConstructOptions construct_options) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* provider = WebAppProvider::GetForTest(profile);
@@ -344,7 +345,8 @@ std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
   auto job = ManifestToWebAppInstallInfoJob::CreateAndStart(
       manifest, *retriever.get(), /*background_installation=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, web_contents,
-      [](IconUrlSizeSet&) {}, debug_data, test_future.GetCallback());
+      [](IconUrlSizeSet&) {}, debug_data, test_future.GetCallback(),
+      construct_options);
   EXPECT_TRUE(test_future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
   return test_future.Take();
 }

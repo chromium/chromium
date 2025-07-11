@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/buildflags.h"
@@ -96,7 +97,9 @@ webapps::AppId InstallForWebContents(
 // Parses the manifest to create a `WebAppInstallInfo` instance out of it.
 std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
     base::WeakPtr<content::WebContents> web_contents,
-    const blink::mojom::Manifest& manifest);
+    const blink::mojom::Manifest& manifest,
+    WebAppInstallInfoConstructOptions construct_options =
+        WebAppInstallInfoConstructOptions{});
 
 }  // namespace test
 }  // namespace web_app

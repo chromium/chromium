@@ -567,8 +567,10 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
     install_info_->display_override = manifest_->display_override;
   }
 
-  UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
-                                                   install_info_.get());
+  if (!options_.skip_primary_icon_download) {
+    UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
+                                                     install_info_.get());
+  }
 
   // TODO(crbug.com/40185556): Confirm incoming icons to write to install_info_.
   PopulateFileHandlerInfoFromManifest(
@@ -658,7 +660,11 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     RecordIconUpdateMetrics(result, icons_http_results);
   }
 
-  PopulateProductIcons(install_info_.get(), &icons_map);
+  // Bypass populating product icons, even generated ones, if icons have not
+  // been downloaded.
+  if (!options_.skip_primary_icon_download) {
+    PopulateProductIcons(install_info_.get(), &icons_map);
+  }
   PopulateOtherIcons(install_info_.get(), icons_map);
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);
   install_error_log_entry_.LogDownloadedIconsErrors(
