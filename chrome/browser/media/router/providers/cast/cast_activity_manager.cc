@@ -854,7 +854,6 @@ void CastActivityManager::HandleLaunchSessionResponse(
   // used.
   const std::string sink_name = sink.sink().name();
   const MediaSink::Id sink_id = sink.sink().id();
-  const base::Time request_creation_time = params.creation_time;
 
   auto activity_it = activities_.find(route_id);
   if (activity_it == activities_.end()) {
@@ -877,10 +876,6 @@ void CastActivityManager::HandleLaunchSessionResponse(
             std::move(params),
             "Pending user authentication for the cast request", out_callback);
         SendPendingUserAuthNotification(sink_name, sink_id);
-        MediaRouterMetrics::RecordMediaRouterPendingUserAuthLatency(
-            base::Time::Now() - request_creation_time);
-        MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
-            MediaRouterUserPromptWhenLaunchingCast::kPendingUserAuth);
         break;
       case cast_channel::LaunchSessionResponse::Result::kUserAllowed:
         HandleLaunchSessionResponseMiddleStages(
@@ -893,8 +888,6 @@ void CastActivityManager::HandleLaunchSessionResponse(
             activity_it, std::move(params),
             "Failed to launch session as the user declined the cast request.",
             mojom::RouteRequestResultCode::USER_NOT_ALLOWED);
-        MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
-            MediaRouterUserPromptWhenLaunchingCast::kUserNotAllowed);
         media_router_->ClearTopIssueForSink(sink_id);
         break;
       case cast_channel::LaunchSessionResponse::Result::kNotificationDisabled:

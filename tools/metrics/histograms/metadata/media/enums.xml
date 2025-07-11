@@ -1548,11 +1548,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kGmcDialogErrorDismissed"/>
 </enum>
 
-<enum name="MediaRouterUserPromptWhenLaunchingCast">
-  <int value="0" label="Total prompts"/>
-  <int value="1" label="User rejects cast request"/>
-</enum>
-
 <enum name="MediaSessionActionSource">
   <int value="0" label="Media Notification"/>
   <int value="1" label="MediaSession (Android)"/>

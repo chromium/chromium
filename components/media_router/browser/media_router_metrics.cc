@@ -106,10 +106,6 @@ const char MediaRouterMetrics::kHistogramUiAndroidDialogAction[] =
     "MediaRouter.Ui.Android.DialogAction";
 const char MediaRouterMetrics::kHistogramUiPermissionRejectedViewAction[] =
     "MediaRouter.Ui.PermissionRejectedViewAction";
-const char MediaRouterMetrics::kHistogramUserPromptWhenLaunchingCast[] =
-    "MediaRouter.Cast.UserPromptWhenLaunchingCast";
-const char MediaRouterMetrics::kHistogramPendingUserAuthLatency[] =
-    "MediaRouter.Cast.PendingUserAuthLatency";
 
 // static
 const base::TimeDelta MediaRouterMetrics::kDeviceCountMetricDelay =
@@ -222,19 +218,6 @@ void MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
 void MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
     MediaRouterAndroidDialogAction action) {
   base::UmaHistogramEnumeration(kHistogramUiAndroidDialogAction, action);
-}
-
-// static
-void MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
-    MediaRouterUserPromptWhenLaunchingCast user_prompt) {
-  base::UmaHistogramEnumeration(kHistogramUserPromptWhenLaunchingCast,
-                                user_prompt);
-}
-
-// static
-void MediaRouterMetrics::RecordMediaRouterPendingUserAuthLatency(
-    const base::TimeDelta& delta) {
-  base::UmaHistogramTimes(kHistogramPendingUserAuthLatency, delta);
 }
 
 void MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
