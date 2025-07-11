@@ -1098,8 +1098,7 @@ TEST_F(HostContentSettingsMapTest,
                   host, host,
                   content_settings::mojom::ContentSettingsType::
                       GEOLOCATION_WITH_OPTIONS),
-              // TODO(crbug.com/425642101): Should be {Ask, Denied}.
-              PermissionSetting(GeolocationSetting{PermissionOption::kAllowed,
+              PermissionSetting(GeolocationSetting{PermissionOption::kAsk,
                                                    PermissionOption::kDenied}));
   }
 
@@ -1122,10 +1121,8 @@ TEST_F(HostContentSettingsMapTest,
                   host, host,
                   content_settings::mojom::ContentSettingsType::
                       GEOLOCATION_WITH_OPTIONS),
-              // TODO(crbug.com/425642101): Should be {Ask, Ask}.
-
-              PermissionSetting(GeolocationSetting{
-                  PermissionOption::kAllowed, PermissionOption::kAllowed}));
+              PermissionSetting(GeolocationSetting{PermissionOption::kAsk,
+                                                   PermissionOption::kAsk}));
   }
 
   {

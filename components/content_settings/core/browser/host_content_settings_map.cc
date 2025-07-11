@@ -69,12 +69,14 @@
 #include "url/gurl.h"
 
 using content_settings::ContentSettingsInfo;
+using content_settings::ContentSettingsRegistry;
 using content_settings::PermissionSettingsInfo;
+using content_settings::PermissionSettingsRegistry;
 using content_settings::SettingSource;
 using content_settings::WebsiteSettingsInfo;
+using content_settings::WebsiteSettingsRegistry;
 
 namespace {
-
 typedef std::vector<content_settings::Rule> Rules;
 
 typedef std::pair<std::string, std::string> StringPair;
@@ -105,19 +107,32 @@ base::Value ProcessIncognitoInheritanceBehavior(
     base::Value value) {
   // Website setting inheritance can be completely disallowed.
   const WebsiteSettingsInfo* website_settings_info =
-      content_settings::WebsiteSettingsRegistry::GetInstance()->Get(
-          content_type);
+      WebsiteSettingsRegistry::GetInstance()->Get(content_type);
   if (website_settings_info &&
       website_settings_info->incognito_behavior() ==
           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO) {
     return base::Value();
   }
 
-  // Content setting inheritance can be for settings, that are more permissive
-  // than the initial value of a content setting.
+  auto* permission_info =
+      PermissionSettingsRegistry::GetInstance()->Get(content_type);
+  if (permission_info) {
+    auto setting = permission_info->delegate().FromValue(value);
+    if (setting) {
+      auto inherited_setting =
+          permission_info->delegate().InheritInIncognito(setting.value());
+      if (inherited_setting) {
+        return permission_info->delegate().ToValue(inherited_setting.value());
+      }
+    }
+    return base::Value();
+  }
+
+  // TODO(crbug.com/425642101): Remove when ContentSettings are registered as
+  // PermissionSettings. Content setting inheritance can be for settings, that
+  // are more permissive than the initial value of a content setting.
   const ContentSettingsInfo* content_settings_info =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(
-          content_type);
+      ContentSettingsRegistry::GetInstance()->Get(content_type);
   if (content_settings_info) {
     ContentSettingsInfo::IncognitoBehavior behaviour =
         content_settings_info->incognito_behavior();
