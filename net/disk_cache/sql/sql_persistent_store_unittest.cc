@@ -3315,6 +3315,44 @@ TEST_F(SqlPersistentStoreTest, CalculateSizeOfEntriesBetweenOverflow) {
   EXPECT_EQ(result.value(), std::numeric_limits<int64_t>::max());
 }
 
+TEST_F(SqlPersistentStoreTest, CalculateSizeOfEntriesBetweenExcludesDoomed) {
+  CreateAndInitStore();
+
+  const CacheEntryKey kKey1("key1");
+  const std::string kData1 = "apple";
+  const CacheEntryKey kKey2("key2");
+  const std::string kData2 = "orange";
+
+  const int64_t size2 =
+      kSqlBackendStaticResourceSize + kKey2.string().size() + kData2.size();
+
+  // Create entry 1.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const base::Time time1 = base::Time::Now();
+  const auto token1 = CreateEntryAndGetToken(kKey1);
+  WriteDataAndAssertSuccess(kKey1, token1, 0, 0, kData1, /*truncate=*/false);
+
+  // Create entry 2.
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const auto token2 = CreateEntryAndGetToken(kKey2);
+  WriteDataAndAssertSuccess(kKey2, token2, 0, 0, kData2, /*truncate=*/false);
+
+  // Doom entry 1.
+  ASSERT_EQ(DoomEntry(kKey1, token1), SqlPersistentStore::Error::kOk);
+
+  // Calculate size of all entries. Should only include entry 2.
+  auto result =
+      CalculateSizeOfEntriesBetween(base::Time::Min(), base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size2);
+
+  // Calculate the size of the range, including the doomed entry, but the result
+  // should not include the doomed entry.
+  result = CalculateSizeOfEntriesBetween(time1, base::Time::Max());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), size2);
+}
+
 TEST_F(SqlPersistentStoreTest,
        GetEntryAvailableRangeCallbackNotRunOnStoreDestruction) {
   CreateAndInitStore();

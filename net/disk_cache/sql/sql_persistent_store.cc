@@ -2143,7 +2143,8 @@ int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
       "FROM resources "
       "WHERE "
           "last_used>=? AND "  // 0
-          "last_used<?";       // 1
+          "last_used<? AND "   // 1
+          "doomed=?";          // 2
   // clang-format on
   // Intentionally DCHECK() for performance
   DCHECK(db_.IsSQLValid(kSqlSelectFromResources));
@@ -2151,6 +2152,7 @@ int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
       db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectFromResources));
   statement.BindTime(0, initial_time);
   statement.BindTime(1, end_time);
+  statement.BindBool(2, false);
   base::ClampedNumeric<int64_t> total_size = 0;
   while (statement.Step()) {
     // `bytes_usage` includes the size of the key, header, and body data.
