@@ -64,8 +64,8 @@ HttpStreamPool::QuicAttempt::QuicAttempt(AttemptManager* manager,
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_BOUND,
       net_log_.source());
 
-  request_ =
-      GetQuicSessionPool()->session_attempt_manager()->CreateRequest(GetKey());
+  request_ = quic_session_pool()->session_attempt_manager()->CreateRequest(
+      quic_session_alias_key());
 }
 
 HttpStreamPool::QuicAttempt::~QuicAttempt() {
@@ -117,18 +117,6 @@ void HttpStreamPool::QuicAttempt::Start() {
   }
 }
 
-QuicSessionPool* HttpStreamPool::QuicAttempt::GetQuicSessionPool() {
-  return manager_->group()->http_network_session()->quic_session_pool();
-}
-
-const QuicSessionAliasKey& HttpStreamPool::QuicAttempt::GetKey() {
-  return manager_->group()->quic_session_alias_key();
-}
-
-const NetLogWithSource& HttpStreamPool::QuicAttempt::GetNetLog() {
-  return net_log_;
-}
-
 base::Value::Dict HttpStreamPool::QuicAttempt::GetInfoAsValue() const {
   base::Value::Dict dict;
   dict.Set("quic_version",
@@ -144,6 +132,15 @@ base::Value::Dict HttpStreamPool::QuicAttempt::GetInfoAsValue() const {
 
 const HttpStreamKey& HttpStreamPool::QuicAttempt::stream_key() const {
   return manager_->group()->stream_key();
+}
+
+const QuicSessionAliasKey& HttpStreamPool::QuicAttempt::quic_session_alias_key()
+    const {
+  return manager_->group()->quic_session_alias_key();
+}
+
+QuicSessionPool* HttpStreamPool::QuicAttempt::quic_session_pool() {
+  return manager_->group()->http_network_session()->quic_session_pool();
 }
 
 void HttpStreamPool::QuicAttempt::OnSessionAttemptSlow() {
@@ -162,8 +159,8 @@ void HttpStreamPool::QuicAttempt::OnSessionAttemptComplete(int rv) {
   }
 
   if (rv == OK &&
-      !GetQuicSessionPool()->has_quic_ever_worked_on_current_network()) {
-    GetQuicSessionPool()->set_has_quic_ever_worked_on_current_network(true);
+      !quic_session_pool()->has_quic_ever_worked_on_current_network()) {
+    quic_session_pool()->set_has_quic_ever_worked_on_current_network(true);
   }
 
   result_ = rv;
