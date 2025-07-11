@@ -621,6 +621,21 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
+  // Check to see if any of the Cocoa wrappers refer to an invalid backing
+  // AXPlatformNode. If so, then we need to re-create the _children Cocoa
+  // wrappers.
+  if (_children) {
+    for (NSInteger child_index = [_children count] - 1; child_index >= 0;
+         --child_index) {
+      BrowserAccessibilityCocoa* child = _children[child_index];
+
+      if (![child instanceActive] || ![child nodeDelegate]) {
+        _children = nil;
+        break;
+      }
+    }
+  }
+
   if (!_children) {
     base::AutoReset<bool> set_getting_children(&_gettingChildren, true);
     // PlatformChildCount adds extra mac nodes if the node requires them.
@@ -674,33 +689,6 @@ bool ui::IsNSRange(id value) {
         continue;
       }
       [_children addObject:cocoa_child];
-    }
-  } else {
-    // Loop through the cached _children and check that they are still active
-    // instances. If not, it's likely that a childrenChanged() call is missing.
-    // For now, remove the item and log an issue.
-    // TODO(accessibility): debug all of the root causes of this and ensure
-    // childrenChanged() is called.
-    for (NSInteger child_index = [_children count] - 1; child_index >= 0;
-         --child_index) {
-      BrowserAccessibilityCocoa* child = _children[child_index];
-      bool invalid = false;
-
-      if (![child instanceActive]) {
-        invalid = true;
-        DUMP_WILL_BE_NOTREACHED()
-            << "Cached child is no longer active, parent = "
-            << _owner->ToString();
-      } else if (![child nodeDelegate]) {
-        DUMP_WILL_BE_NOTREACHED()
-            << "Cached child is missing a delegate, parent = "
-            << _owner->ToString();
-        invalid = true;
-      }
-
-      if (invalid) {
-        [_children removeObjectAtIndex:child_index];
-      }
     }
   }
   return NSAccessibilityUnignoredChildren(_children);
