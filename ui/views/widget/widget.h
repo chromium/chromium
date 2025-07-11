@@ -766,7 +766,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     View* client_contents = GetClientContentsView();
     T* typed_client_contents = AsViewClass<T>(client_contents);
     CHECK(typed_client_contents)
-        << "Client content view is not of the type specified or isn't present.";
+        << "Expected class of type: " << T::MetaData()->type_name()
+        << ", but found class of type: "
+        << client_contents->GetClassMetaData()->type_name();
     return typed_client_contents;
   }
   View* GetClientContentsView() const;

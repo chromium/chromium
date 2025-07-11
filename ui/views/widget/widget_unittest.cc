@@ -6345,7 +6345,7 @@ TEST_F(WidgetTest, SetClientContentsView) {
 TEST_F(WidgetTest, ReplaceClientContentsView) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  auto client_view = std::make_unique<View>();
+  auto client_view = std::make_unique<ContentsView>();
   EXPECT_NE(client_view.get(), widget->GetClientContentsView());
   auto* client_view_ptr = widget->SetClientContentsView(std::move(client_view));
   EXPECT_EQ(client_view_ptr, widget->GetClientContentsView());
