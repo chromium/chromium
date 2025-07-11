@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.ui.listmenu.ContextMenuSubmenuHeaderItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 
 import android.view.View;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ class ContextMenuItemWithSubmenuHeaderViewBinder {
         TextView textView = view.findViewById(R.id.menu_row_text);
         if (propertyKey == TITLE) {
             textView.setText(model.get(TITLE));
+        }  else if (propertyKey == ENABLED) {
+            textView.setEnabled(model.get(ENABLED));
         } else if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         }
