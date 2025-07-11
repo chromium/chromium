@@ -27,7 +27,7 @@ function runTestCase(filename,testFunction,description) {
       }
       testFunction(evt);
       resolve();
-    });
+    },{signal: t.get_signal()});
 
     document.body.appendChild(iframe);
   }), description);
