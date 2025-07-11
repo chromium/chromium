@@ -613,8 +613,7 @@ void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   PropagateSizeDependentData();
 
   OutOfFlowLayoutPart(this).Run();
-  if (Style().ScrollMarkerGroup() != EScrollMarkerGroup::kNone &&
-      !GetConstraintSpace().IsAnonymous()) {
+  if (!Style().ScrollMarkerGroupNone() && !GetConstraintSpace().IsAnonymous()) {
     Node().HandleScrollMarkerGroup();
   }
 }

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
+#include "third_party/blink/renderer/core/style/scroll_marker_group.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
@@ -1691,6 +1692,66 @@ inline CSSIdentifierValue::CSSIdentifierValue(TextUnderlinePosition position)
       break;
     case TextUnderlinePosition::kRight:
       value_id_ = CSSValueID::kRight;
+      break;
+  }
+}
+
+template <>
+inline ScrollMarkerGroup::ScrollMarkerPosition CSSIdentifierValue::ConvertTo()
+    const {
+  using enum ScrollMarkerGroup::ScrollMarkerPosition;
+  switch (GetValueID()) {
+    case CSSValueID::kAfter:
+      return kAfter;
+    case CSSValueID::kBefore:
+      return kBefore;
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    ScrollMarkerGroup::ScrollMarkerPosition position)
+    : CSSValue(kIdentifierClass) {
+  using enum ScrollMarkerGroup::ScrollMarkerPosition;
+  switch (position) {
+    case kAfter:
+      value_id_ = CSSValueID::kAfter;
+      break;
+    case kBefore:
+      value_id_ = CSSValueID::kBefore;
+      break;
+  }
+}
+
+template <>
+inline ScrollMarkerGroup::ScrollMarkerMode CSSIdentifierValue::ConvertTo()
+    const {
+  using enum ScrollMarkerGroup::ScrollMarkerMode;
+  switch (GetValueID()) {
+    case CSSValueID::kTabs:
+      return kTabs;
+    case CSSValueID::kLinks:
+      return kLinks;
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    ScrollMarkerGroup::ScrollMarkerMode mode)
+    : CSSValue(kIdentifierClass) {
+  using enum ScrollMarkerGroup::ScrollMarkerMode;
+  switch (mode) {
+    case kTabs:
+      value_id_ = CSSValueID::kTabs;
+      break;
+    case kLinks:
+      value_id_ = CSSValueID::kLinks;
       break;
   }
 }

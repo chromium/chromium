@@ -1370,9 +1370,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kAuto);
     case CSSPropertyID::kScrollTargetGroup:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kScrollMarkerGroup:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAfter ||
-             value_id == CSSValueID::kBefore;
     case CSSPropertyID::kScrollBehavior:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSmooth;
     case CSSPropertyID::kScrollInitialTarget:
@@ -1778,7 +1775,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kResize,
     CSSPropertyID::kRowRuleBreak,
     CSSPropertyID::kScrollTargetGroup,
-    CSSPropertyID::kScrollMarkerGroup,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,
     CSSPropertyID::kOverscrollBehaviorBlock,

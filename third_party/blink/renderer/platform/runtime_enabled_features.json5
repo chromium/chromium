@@ -1501,6 +1501,11 @@
       status: "stable",
     },
     {
+      // https://github.com/w3c/csswg-drafts/issues/12122
+      name: "CSSScrollMarkerGroupModes",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "stable",

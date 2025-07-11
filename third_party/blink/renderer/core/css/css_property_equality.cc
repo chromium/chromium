@@ -633,7 +633,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollTargetGroup:
       return a.ScrollTargetGroup() == b.ScrollTargetGroup();
     case CSSPropertyID::kScrollMarkerGroup:
-      return a.ScrollMarkerGroup() == b.ScrollMarkerGroup();
+      return base::ValuesEquivalent(a.GetScrollMarkerGroup(),
+                                    b.GetScrollMarkerGroup());
     case CSSPropertyID::kScrollbarColor:
       return a.ScrollbarColor() == b.ScrollbarColor();
     case CSSPropertyID::kScrollbarGutter:

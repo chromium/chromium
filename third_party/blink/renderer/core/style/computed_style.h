@@ -2409,12 +2409,10 @@ class ComputedStyle final : public ComputedStyleBase {
       return false;
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
-      return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore &&
-             IsScrollContainer();
+      return HasScrollMarkerGroupBefore() && IsScrollContainer();
     }
     if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
-      return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
-             IsScrollContainer();
+      return HasScrollMarkerGroupAfter() && IsScrollContainer();
     }
     if (pseudo == kPseudoIdScrollButtonBlockStart ||
         pseudo == kPseudoIdScrollButtonInlineStart ||
@@ -2436,19 +2434,18 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool HasScrollMarkerGroupBefore() const {
-    return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore;
+    return GetScrollMarkerGroup() && GetScrollMarkerGroup()->PositionBefore();
   }
 
   bool HasScrollMarkerGroupAfter() const {
-    return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter;
+    return GetScrollMarkerGroup() && GetScrollMarkerGroup()->PositionAfter();
   }
 
-  bool ScrollMarkerGroupNone() const {
-    return ScrollMarkerGroup() == EScrollMarkerGroup::kNone;
-  }
+  bool ScrollMarkerGroupNone() const { return !GetScrollMarkerGroup(); }
 
   bool ScrollMarkerGroupEqual(const ComputedStyle& other) const {
-    return ScrollMarkerGroup() == other.ScrollMarkerGroup();
+    return base::ValuesEquivalent(GetScrollMarkerGroup(),
+                                  other.GetScrollMarkerGroup());
   }
 
   bool ScrollTargetGroupNone() const {

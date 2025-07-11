@@ -2022,6 +2022,10 @@
     "else",
     "media",
 
+    // scroll-marker-group navigation/a11y modes
+    "tabs",
+    "links",
+
     // caret-shape
     // block is elsewhere
     "bar",

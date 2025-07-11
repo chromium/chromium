@@ -8571,7 +8571,44 @@ const CSSValue* ScrollMarkerGroup::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ScrollMarkerGroup());
+  if (style.ScrollMarkerGroupNone()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  auto* position = MakeGarbageCollected<CSSIdentifierValue>(
+      style.GetScrollMarkerGroup()->Position());
+  if (!RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
+    return position;
+  }
+  auto* mode = MakeGarbageCollected<CSSIdentifierValue>(
+      style.GetScrollMarkerGroup()->Mode());
+  return MakeGarbageCollected<CSSValuePair>(position, mode,
+                                            CSSValuePair::kKeepIdenticalValues);
+}
+
+const CSSValue* ScrollMarkerGroup::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    const CSSParserLocalContext&) const {
+  const CSSIdentifierValue* position =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kNone, CSSValueID::kAfter,
+                                      CSSValueID::kBefore>(stream);
+  if (!position) {
+    return nullptr;
+  }
+  if (position->GetValueID() == CSSValueID::kNone || stream.AtEnd()) {
+    return position;
+  }
+  if (!RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
+    return position;
+  }
+  const CSSIdentifierValue* mode =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kTabs, CSSValueID::kLinks>(
+          stream);
+  if (!mode) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<CSSValuePair>(position, mode,
+                                            CSSValuePair::kKeepIdenticalValues);
 }
 
 // https://www.w3.org/TR/css-scrollbars/

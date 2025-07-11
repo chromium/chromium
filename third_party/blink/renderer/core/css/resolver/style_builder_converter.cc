@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/core/style/scroll_marker_group.h"
 #include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
@@ -1745,6 +1746,25 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // the syntax.
   DCHECK(track_list.RepeaterCount() ||
          computed_grid_track_list.IsSubgriddedAxis());
+}
+
+ScrollMarkerGroup* StyleBuilderConverter::ConvertScrollMarkerGroup(
+    StyleResolverState&,
+    const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    if (identifier_value->GetValueID() == CSSValueID::kNone) {
+      return nullptr;
+    }
+    auto position =
+        identifier_value->ConvertTo<ScrollMarkerGroup::ScrollMarkerPosition>();
+    return MakeGarbageCollected<ScrollMarkerGroup>(position);
+  }
+  const auto& pair = To<CSSValuePair>(value);
+  auto position = To<CSSIdentifierValue>(pair.First())
+                      .ConvertTo<ScrollMarkerGroup::ScrollMarkerPosition>();
+  auto mode = To<CSSIdentifierValue>(pair.Second())
+                  .ConvertTo<ScrollMarkerGroup::ScrollMarkerMode>();
+  return MakeGarbageCollected<ScrollMarkerGroup>(position, mode);
 }
 
 std::optional<Length> StyleBuilderConverter::ConvertItemTolerance(

@@ -67,6 +67,7 @@ blink_core_sources_style = [
   "scoped_css_name.h",
   "scroll_start_data.cc",
   "scroll_start_data.h",
+  "scroll_marker_group.h",
   "shadow_data.cc",
   "shadow_data.h",
   "shadow_list.cc",
