@@ -1800,8 +1800,28 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
-  return AddToSplitImpl(split_id, indices, visual_data,
+  // Insert the active index into the sorted `indices`.
+  auto position = lower_bound(indices.begin(), indices.end(), active_index());
+  indices.insert(position, active_index());
+
+  return AddToSplitImpl(split_id, indices, active_index(), visual_data,
                         SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+}
+
+void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
+                                 const std::vector<int>& indices,
+                                 split_tabs::SplitTabVisualData visual_data) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  CHECK(std::ranges::is_sorted(indices));
+  CHECK_EQ(indices.size(), 2u);
+  CHECK(features::IsRestoringSplitViewEnabled());
+
+  // Ideally these are consecutive indices from the restore flow and the pivot
+  // index does not matter. However, given there are numerous steps in restore
+  // and split is the last step, the API should be resilient to potential
+  // changes.
+  AddToSplitImpl(split_id, indices, indices[0], visual_data,
+                 SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
@@ -3610,13 +3630,10 @@ std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
 
 split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     split_tabs::SplitTabId split_id,
-    std::vector<int> indices,
+    const std::vector<int>& indices,
+    int pivot_index,
     split_tabs::SplitTabVisualData visual_data,
     SplitTabChange::SplitTabAddReason reason) {
-  // Insert the active index into the sorted `indices`.
-  auto position = lower_bound(indices.begin(), indices.end(), active_index());
-  indices.insert(position, active_index());
-
   std::vector<tabs::TabInterface*> tabs = {};
   for (int i : indices) {
     tabs::TabInterface* tab = GetTabAtIndex(i);
@@ -3625,9 +3642,9 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
   }
 
   // Add the tabs to a split with the active index.
-  MoveTabsAndSetPropertiesImpl(indices, active_index(),
-                               GetTabGroupForTab(active_index()),
-                               IsTabPinned(active_index()));
+  MoveTabsAndSetPropertiesImpl(indices, pivot_index,
+                               GetTabGroupForTab(pivot_index),
+                               IsTabPinned(pivot_index));
 
   contents_data_->CreateSplit(split_id, tabs, visual_data);
 
@@ -3636,18 +3653,25 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     tabs_with_indices.emplace_back(tab, GetIndexOfTab(tab));
   }
 
-  // Since the split contains the active tabs, all tabs in the split must be
-  // selected.
-  const ui::ListSelectionModel old_selection_model = selection_model();
+  bool add_to_selection = std::any_of(
+      contents_data_->GetSplitTabCollection(split_id)->begin(),
+      contents_data_->GetSplitTabCollection(split_id)->end(),
+      [this](tabs::TabInterface* tab) {
+        return IsTabSelected(GetIndexOfTab(tab)) || tab->IsActivated();
+      });
 
-  for (auto split_tab : tabs_with_indices) {
-    selection_model_.AddIndexToSelection(split_tab.second);
+  if (add_to_selection) {
+    const ui::ListSelectionModel old_selection_model = selection_model();
+
+    for (auto split_tab : tabs_with_indices) {
+      selection_model_.AddIndexToSelection(split_tab.second);
+    }
+
+    TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
+    selection.new_model = selection_model();
+    TabStripModelChange change;
+    OnChange(change, selection);
   }
-
-  TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
-  selection.new_model = selection_model();
-  TabStripModelChange change;
-  OnChange(change, selection);
 
   NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
 
@@ -3760,7 +3784,12 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
     split_indices.emplace_back(GetIndexOfTab(tab));
   }
 
-  AddToSplitImpl(split_id, split_indices, split_visual_data,
+  // Insert the active index into the sorted `indices`.
+  auto position =
+      lower_bound(split_indices.begin(), split_indices.end(), active_index());
+  split_indices.insert(position, active_index());
+
+  AddToSplitImpl(split_id, split_indices, active_index(), split_visual_data,
                  SplitTabChange::SplitTabAddReason::kSplitTabUpdated);
 }
 

@@ -443,7 +443,8 @@ class TabStripModelTest : public testing::Test {
 
   void SetUp() override {
     tabstrip_ = std::make_unique<TabStripModel>(delegate(), profile());
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSideBySide, features::kSideBySideSessionRestore}, {});
     tabstrip()->AddObserver(observer());
     ASSERT_TRUE(tabstrip()->empty());
   }
@@ -1968,6 +1969,21 @@ TEST_F(TabStripModelTest, SplitTabPinningBulk) {
       0, TabStripModel::CommandTogglePinned);  // tab 0
   EXPECT_EQ("1p 2p 10p 0 4s 5s 7 8s 9s 3 6 11",
             GetTabStripStateString(tabstrip()));
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
+TEST_F(TabStripModelTest, RestoreSplit) {
+  // Create five tabs with two pinned.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  // Add tab at index 2 and 3 to a split.
+  tabstrip()->RestoreSplit(split_id, {2, 3}, split_tabs::SplitTabVisualData());
+
+  EXPECT_EQ("0p 1p 2s 3s 4", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ(tabstrip()->GetSplitData(split_id)->ListTabs().size(), 2u);
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());

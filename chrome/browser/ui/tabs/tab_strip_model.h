@@ -636,9 +636,16 @@ class TabStripModel {
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
   // must be sorted in ascending order.
   split_tabs::SplitTabId AddToNewSplit(
-      const std::vector<int> indices,
+      std::vector<int> indices,
       split_tabs::SplitTabVisualData visual_data,
       split_tabs::SplitTabCreatedSource source);
+
+  // Adds all the tabs in `indices` to a split with `split_id` and
+  // `visual_data`. `pivot_index` is the index in indices to determine the
+  // properties of the split like group, pin, destination index.
+  void RestoreSplit(split_tabs::SplitTabId split_id,
+                    const std::vector<int>& indices,
+                    split_tabs::SplitTabVisualData visual_data);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
@@ -1135,7 +1142,8 @@ class TabStripModel {
 
   split_tabs::SplitTabId AddToSplitImpl(
       split_tabs::SplitTabId split_id,
-      std::vector<int> indices,
+      const std::vector<int>& indices,
+      int pivot_index,
       split_tabs::SplitTabVisualData visual_data,
       SplitTabChange::SplitTabAddReason reasons);
 
