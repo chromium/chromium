@@ -24,6 +24,7 @@
 - (void)openItemOffline:(id<ReadingListListItem>)item;
 - (void)markItemRead:(id<ReadingListListItem>)item;
 - (void)markItemUnread:(id<ReadingListListItem>)item;
+- (void)remindItem:(id<ReadingListListItem>)item;
 - (void)deleteItem:(id<ReadingListListItem>)item;
 
 @end

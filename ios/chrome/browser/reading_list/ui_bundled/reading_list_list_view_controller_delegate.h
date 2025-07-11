@@ -39,6 +39,10 @@
 // Whether the view can be dismissed.
 - (BOOL)canDismiss;
 
+// Shows the "Set Tab Reminder" UI for the given `item`.
+- (void)readingListListViewController:(UIViewController*)viewController
+          showSetTabReminderUIForItem:(id<ReadingListListItem>)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_UI_BUNDLED_READING_LIST_LIST_VIEW_CONTROLLER_DELEGATE_H_

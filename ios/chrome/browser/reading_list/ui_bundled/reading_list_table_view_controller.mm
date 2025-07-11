@@ -15,6 +15,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/strings/grit/ui_strings.h"
@@ -169,16 +171,18 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self updateToolbarItems];
 
   // Force update a11y actions based on edit mode.
-  for (int section = 0; section < self.tableViewModel.numberOfSections;
-       section++) {
-    if (![self.tableViewModel numberOfItemsInSection:section]) {
-      continue;
+  if (self.editingWithToolbarButtons || !editing) {
+    for (int section = 0; section < self.tableViewModel.numberOfSections;
+         section++) {
+      if (![self.tableViewModel numberOfItemsInSection:section]) {
+        continue;
+      }
+      NSInteger sectionIdentifier =
+          [self.tableViewModel sectionIdentifierForSectionIndex:section];
+      [self reconfigureCellsForItems:
+                [self.tableViewModel
+                    itemsInSectionWithIdentifier:sectionIdentifier]];
     }
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSectionIndex:section];
-    [self reconfigureCellsForItems:
-              [self.tableViewModel
-                  itemsInSectionWithIdentifier:sectionIdentifier]];
   }
 }
 
@@ -301,6 +305,32 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 
 #pragma mark - UITableViewDelegate
+
+- (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
+    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSMutableArray<UIContextualAction*>* actions = [NSMutableArray array];
+
+  UIContextualAction* deleteAction =
+      [self createDeleteActionForIndexPath:indexPath];
+
+  [actions addObject:deleteAction];
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    UIContextualAction* remindAction =
+        [self createRemindActionForIndexPath:indexPath];
+
+    [actions addObject:remindAction];
+  }
+
+  UISwipeActionsConfiguration* configuration =
+      [UISwipeActionsConfiguration configurationWithActions:actions];
+
+  // A full swipe automatically performs the first action (Delete).
+  configuration.performsFirstActionWithFullSwipe = YES;
+
+  return configuration;
+}
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -542,6 +572,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self markItemsAtIndexPaths:@[ [model indexPathForItem:tableViewItem] ]
                  withReadStatus:NO];
   }
+}
+
+- (void)remindItem:(id<ReadingListListItem>)item {
+  [self.delegate readingListListViewController:self
+                   showSetTabReminderUIForItem:item];
 }
 
 - (void)deleteItem:(id<ReadingListListItem>)item {
@@ -1269,6 +1304,72 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   }
 
   [self tableIsEmpty];
+}
+
+// Creates a delete action for the swipe menu with destructive style (and red
+// color).
+- (UIContextualAction*)createDeleteActionForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+
+  return [UIContextualAction
+      contextualActionWithStyle:UIContextualActionStyleDestructive
+                          title:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_DELETE)
+                        handler:^(UIContextualAction* action,
+                                  UIView* sourceView,
+                                  void (^completionHandler)(BOOL)) {
+                          [weakSelf
+                              handleDeleteActionForIndexPath:indexPath
+                                           completionHandler:completionHandler];
+                        }];
+}
+
+// Creates a remind action for the swipe menu with normal style (and orange
+// color).
+- (UIContextualAction*)createRemindActionForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+
+  UIContextualAction* remindAction = [UIContextualAction
+      contextualActionWithStyle:UIContextualActionStyleNormal
+                          title:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_REMIND)
+                        handler:^(UIContextualAction* action,
+                                  UIView* sourceView,
+                                  void (^completionHandler)(BOOL)) {
+                          [weakSelf
+                              handleRemindActionForIndexPath:indexPath
+                                           completionHandler:completionHandler];
+                        }];
+
+  remindAction.backgroundColor = [UIColor colorNamed:kOrange500Color];
+
+  return remindAction;
+}
+
+// Handles the delete action for a cell at the given `indexPath` and calls the
+// `completionHandler` when complete. This is used by swipe actions.
+- (void)handleDeleteActionForIndexPath:(NSIndexPath*)indexPath
+                     completionHandler:(void (^)(BOOL))completionHandler {
+  [self tableView:self.tableView
+      commitEditingStyle:UITableViewCellEditingStyleDelete
+       forRowAtIndexPath:indexPath];
+
+  completionHandler(YES);
+}
+
+// Handles the remind action for a cell at the given `indexPath`, displays the
+// tab reminder UI for the selected item, and calls the `completionHandler` when
+// complete. This is used by swipe actions when Tab Reminders are enabled.
+- (void)handleRemindActionForIndexPath:(NSIndexPath*)indexPath
+                     completionHandler:(void (^)(BOOL))completionHandler {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+
+  [self.delegate readingListListViewController:self
+                   showSetTabReminderUIForItem:(id<ReadingListListItem>)item];
+
+  completionHandler(YES);
 }
 
 @end
