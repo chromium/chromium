@@ -183,16 +183,17 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
 
     // NV12 is the only supported pixel format at the moment.
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
-    int y_stride = static_cast<int>(scoped_mapping->Stride(0));
-    int uv_stride = static_cast<int>(scoped_mapping->Stride(1));
-    const uint8_t* y_plane = UNSAFE_TODO(
-        (static_cast<uint8_t*>(scoped_mapping->Memory(0)) +
-         frame->visible_rect().x() + (frame->visible_rect().y() * y_stride)));
+    size_t y_stride = scoped_mapping->Stride(media::VideoFrame::Plane::kY);
+    size_t uv_stride = scoped_mapping->Stride(media::VideoFrame::Plane::kUV);
+    auto y_plane = scoped_mapping->GetMemoryAsSpan(media::VideoFrame::Plane::kY)
+                       .subspan(frame->visible_rect().x() +
+                                (frame->visible_rect().y() * y_stride));
     // UV plane of NV12 has 2-byte pixel width, with half chroma subsampling
     // both horizontally and vertically.
-    const uint8_t* uv_plane = UNSAFE_TODO(
-        scoped_mapping->Memory(1) + ((frame->visible_rect().x() * 2) / 2) +
-        ((frame->visible_rect().y() / 2) * uv_stride));
+    auto uv_plane =
+        scoped_mapping->GetMemoryAsSpan(media::VideoFrame::Plane::kUV)
+            .subspan(((frame->visible_rect().x() * 2) / 2) +
+                     ((frame->visible_rect().y() / 2) * uv_stride));
 
     if (need_rotate) {
       // Transform to I420 first to be later on rotated.
@@ -201,7 +202,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
           original_size, base::TimeDelta());
 
       libyuv::NV12ToI420(
-          y_plane, y_stride, uv_plane, uv_stride,
+          y_plane.data(), y_stride, uv_plane.data(), uv_stride,
           i420_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
           i420_frame->stride(media::VideoFrame::Plane::kY),
           i420_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
@@ -212,13 +213,13 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
     } else {
       switch (destination_pixel_format) {
         case libyuv::FOURCC_ABGR:
-          libyuv::NV12ToABGR(y_plane, y_stride, uv_plane, uv_stride,
-                             destination_plane, destination_stride,
+          libyuv::NV12ToABGR(y_plane.data(), y_stride, uv_plane.data(),
+                             uv_stride, destination_plane, destination_stride,
                              destination_width, destination_height);
           break;
         case libyuv::FOURCC_ARGB:
-          libyuv::NV12ToARGB(y_plane, y_stride, uv_plane, uv_stride,
-                             destination_plane, destination_stride,
+          libyuv::NV12ToARGB(y_plane.data(), y_stride, uv_plane.data(),
+                             uv_stride, destination_plane, destination_stride,
                              destination_width, destination_height);
           break;
         default:
