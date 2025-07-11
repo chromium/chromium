@@ -105,6 +105,7 @@ class FieldInfoManager;
 class FirstCctPageLoadPasswordsUkmRecorder;
 #endif  // BUILDFLAG(IS_ANDROID)
 class HttpAuthManager;
+class OtpManager;
 class PasswordChangeServiceInterface;
 class PasswordFeatureManager;
 class PasswordFormManagerForUI;
@@ -375,6 +376,9 @@ class PasswordManagerClient {
 
   // Returns the HttpAuthManager associated with this client.
   virtual HttpAuthManager* GetHttpAuthManager();
+
+  // Returns the OtpManager associated with this client.
+  virtual OtpManager* GetOtpManager();
 
   // Returns the AutofillCrowdsourcingManager for votes uploading.
   virtual autofill::AutofillCrowdsourcingManager*

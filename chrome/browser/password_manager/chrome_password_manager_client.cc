@@ -1180,6 +1180,10 @@ ChromePasswordManagerClient::GetHttpAuthManager() {
   return &httpauth_manager_;
 }
 
+password_manager::OtpManager* ChromePasswordManagerClient::GetOtpManager() {
+  return &otp_manager_;
+}
+
 autofill::AutofillCrowdsourcingManager*
 ChromePasswordManagerClient::GetAutofillCrowdsourcingManager() {
   if (auto* client =

@@ -245,6 +245,7 @@ class ChromePasswordManagerClient
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
   password_manager::HttpAuthManager* GetHttpAuthManager() override;
+  password_manager::OtpManager* GetOtpManager() override;
   autofill::AutofillCrowdsourcingManager* GetAutofillCrowdsourcingManager()
       override;
   bool IsCommittedMainFrameSecure() const override;

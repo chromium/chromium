@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -20,17 +21,26 @@ class OtpFormManager;
 class PasswordManagerClient;
 
 // A class in charge of handling one time passwords, one per tab.
-class OtpManager {
+class OtpManager : public autofill::OtpSuggestionDelegate {
  public:
   explicit OtpManager(PasswordManagerClient* client);
 
-  ~OtpManager();
+  ~OtpManager() override;
 
   // Processes the classification model predictions received via Autofill.
   void ProcessClassificationModelPredictions(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
           field_predictions);
+
+  // OtpSuggestionDelegate implementation
+  bool IsFieldEligibleForOtpFilling(
+      const autofill::FormGlobalId& form_id,
+      const autofill::FieldGlobalId& field_id) const override;
+  void GetOtpSuggestions(const autofill::FormGlobalId& form_id,
+                         const autofill::FieldGlobalId& field_id,
+                         base::OnceCallback<void(std::vector<std::string>)>
+                             callback) const override;
 
 #if defined(UNIT_TEST)
   const base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>&

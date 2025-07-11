@@ -13,6 +13,9 @@ namespace password_manager {
 
 namespace {
 
+using autofill::FieldGlobalId;
+using autofill::FormGlobalId;
+
 std::vector<autofill::FieldGlobalId> GetFillableOtpFieldIds(
     const autofill::FormData& form,
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
@@ -61,6 +64,21 @@ void OtpManager::ProcessClassificationModelPredictions(
     CHECK(form_managers_.at(form_id));
     form_managers_.at(form_id)->ProcessUpdatedPredictions(fillable_otp_fields);
   }
+}
+
+bool OtpManager::IsFieldEligibleForOtpFilling(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) const {
+  // TODO(crbug.com/415273276): Implement.
+  return false;
+}
+
+void OtpManager::GetOtpSuggestions(
+    const autofill::FormGlobalId& form_id,
+    const autofill::FieldGlobalId& field_id,
+    base::OnceCallback<void(std::vector<std::string>)> callback) const {
+  // TODO(crbug.com/415273276): Implement.
+  return std::move(callback).Run({});
 }
 
 }  // namespace password_manager

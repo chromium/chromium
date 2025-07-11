@@ -125,6 +125,10 @@ HttpAuthManager* PasswordManagerClient::GetHttpAuthManager() {
   return nullptr;
 }
 
+OtpManager* PasswordManagerClient::GetOtpManager() {
+  return nullptr;
+}
+
 autofill::AutofillCrowdsourcingManager*
 PasswordManagerClient::GetAutofillCrowdsourcingManager() {
   return nullptr;
