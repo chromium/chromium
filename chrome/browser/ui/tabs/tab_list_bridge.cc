@@ -16,13 +16,6 @@ TabListBridge::TabListBridge(TabStripModel& tab_strip_model,
 
 TabListBridge::~TabListBridge() = default;
 
-// static
-TabListInterface* TabListBridge::From(
-    BrowserWindowInterface* browser_window_interface) {
-  return ui::ScopedUnownedUserData<TabListBridge>::Get(
-      browser_window_interface->GetUnownedUserDataHost());
-}
-
 int TabListBridge::GetTabCount() const {
   return tab_strip_->count();
 }
@@ -64,3 +57,11 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
+
+// static
+// From //chrome/browser/ui/tabs/tab_list_interface.h
+TabListInterface* TabListInterface::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return ui::ScopedUnownedUserData<TabListBridge>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
+}

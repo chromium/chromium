@@ -26,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTab) {
       browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
   ASSERT_TRUE(tab_list_interface);
 
   tabs::TabInterface* tab1 = tab_list_interface->GetTab(0);
