@@ -26,7 +26,6 @@
 
 namespace windows_util {
 
-#if !BUILDFLAG(IS_ANDROID)
 bool GetControllerFromWindowID(ExtensionFunction* function,
                                int window_id,
                                extensions::WindowController::TypeFilter filter,
@@ -69,7 +68,6 @@ bool GetControllerFromWindowID(ExtensionFunction* function,
     return false;
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool CanOperateOnWindow(const ExtensionFunction* function,
                         const extensions::WindowController* controller,

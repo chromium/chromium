@@ -55,7 +55,6 @@ class WindowControllerList {
       int id,
       WindowController::TypeFilter filter) const;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns the focused or last added window matching the context the function
   // was invoked in.
   WindowController* CurrentWindowForFunction(ExtensionFunction* function) const;
@@ -65,7 +64,6 @@ class WindowControllerList {
   WindowController* CurrentWindowForFunctionWithFilter(
       ExtensionFunction* function,
       WindowController::TypeFilter filter) const;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   static WindowControllerList* GetInstance();
 

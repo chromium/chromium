@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -11,6 +12,29 @@
 namespace extensions {
 
 namespace tabs = api::tabs;
+namespace windows = api::windows;
+
+ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
+  std::optional<windows::Get::Params> params =
+      windows::Get::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ApiParameterExtractor<windows::Get::Params> extractor(params);
+  WindowController* window_controller = nullptr;
+  std::string error;
+  if (!windows_util::GetControllerFromWindowID(this, params->window_id,
+                                               extractor.type_filters(),
+                                               &window_controller, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  WindowController::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? WindowController::kPopulateTabs
+                                : WindowController::kDontPopulateTabs;
+  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
+      extension(), populate_tab_behavior, source_context_type());
+  return RespondNow(WithArguments(std::move(windows)));
+}
 
 ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
   std::optional<tabs::GetAllInWindow::Params> params =

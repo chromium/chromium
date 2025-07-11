@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_API_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/zoom/zoom_controller.h"
@@ -47,6 +50,34 @@ class PrefRegistrySyncable;
 }
 
 namespace extensions {
+
+// A helper class to extract popular properties from different arguments.
+// TODO(devlin): Move this to the .cc file when it's no longer needed in
+// multiple .cc's (tabs_api_non_android.cc and tabs_api.cc).
+template <typename T>
+class ApiParameterExtractor {
+ public:
+  explicit ApiParameterExtractor(std::optional<T>& params) : params_(*params) {}
+  ~ApiParameterExtractor() = default;
+
+  bool populate_tabs() {
+    if (params_->query_options && params_->query_options->populate) {
+      return *params_->query_options->populate;
+    }
+    return false;
+  }
+
+  WindowController::TypeFilter type_filters() {
+    if (params_->query_options && params_->query_options->window_types) {
+      return WindowController::GetFilterFromWindowTypes(
+          *params_->query_options->window_types);
+    }
+    return WindowController::kNoWindowFilter;
+  }
+
+ private:
+  raw_ref<T> params_;
+};
 
 // Converts a ZoomMode to its ZoomSettings representation.
 void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,

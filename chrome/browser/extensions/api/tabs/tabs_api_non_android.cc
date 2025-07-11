@@ -186,31 +186,6 @@ constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
 constexpr char kWindowCreateCannotMoveIwaTabError[] =
     "The tab of an Isolated Web App cannot be moved to a new window.";
 
-template <typename T>
-class ApiParameterExtractor {
- public:
-  explicit ApiParameterExtractor(std::optional<T>& params) : params_(*params) {}
-  ~ApiParameterExtractor() = default;
-
-  bool populate_tabs() {
-    if (params_->query_options && params_->query_options->populate) {
-      return *params_->query_options->populate;
-    }
-    return false;
-  }
-
-  WindowController::TypeFilter type_filters() {
-    if (params_->query_options && params_->query_options->window_types) {
-      return WindowController::GetFilterFromWindowTypes(
-          *params_->query_options->window_types);
-    }
-    return WindowController::kNoWindowFilter;
-  }
-
- private:
-  raw_ref<T> params_;
-};
-
 // |error_message| can optionally be passed in and will be set with an
 // appropriate message if the tab cannot be found by id.
 bool GetTabById(int tab_id,
@@ -544,28 +519,6 @@ void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
 }
 
 // Windows ---------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
-  std::optional<windows::Get::Params> params =
-      windows::Get::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  ApiParameterExtractor<windows::Get::Params> extractor(params);
-  WindowController* window_controller = nullptr;
-  std::string error;
-  if (!windows_util::GetControllerFromWindowID(this, params->window_id,
-                                               extractor.type_filters(),
-                                               &window_controller, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  WindowController::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? WindowController::kPopulateTabs
-                                : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
-      extension(), populate_tab_behavior, source_context_type());
-  return RespondNow(WithArguments(std::move(windows)));
-}
 
 ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   std::optional<windows::GetCurrent::Params> params =
