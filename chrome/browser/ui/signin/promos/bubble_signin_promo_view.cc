@@ -22,6 +22,9 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -346,6 +349,8 @@ void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
       return;
   }
 
+  CHECK(!dismiss_action.empty());
+
   Profile* profile = Profile::FromBrowserContext(
       delegate_->GetWebContents()->GetBrowserContext());
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
@@ -361,6 +366,19 @@ void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   } else {
     SigninPrefs(*profile->GetPrefs())
         .IncrementAutofillSigninPromoDismissCount(account.gaia);
+  }
+
+  // Launch a HaTS survey if the user actively dismissed the promo.
+  if (base::FeatureList::IsEnabled(
+          switches::kChromeIdentitySurveySigninPromoBubbleDismissed)) {
+    HatsService* hats_service =
+        HatsServiceFactory::GetForProfile(profile,
+                                          /*create_if_necessary=*/true);
+    if (hats_service) {
+      // TODO(crbug.com/427971911): add product-specific data.
+      hats_service->LaunchSurvey(
+          kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
+    }
   }
 
   base::UmaHistogramEnumeration(

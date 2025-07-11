@@ -72,6 +72,8 @@ const ChromeIdentityHatsTriggerFeatureMappingEntry
     kChromeIdentityHatsTriggerFeatureMapping[] = {
         {kHatsSurveyTriggerIdentityAddressBubbleSignin,
          &switches::kChromeIdentitySurveyAddressBubbleSignin},
+        {kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+         &switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
         {kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
          &switches::kChromeIdentitySurveyDiceWebSigninAccepted},
         {kHatsSurveyTriggerIdentityDiceWebSigninDeclined,

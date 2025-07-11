@@ -32,6 +32,7 @@ extern const char kHatsSurveyTriggerIdentityPasswordBubbleSignin[];
 extern const char kHatsSurveyTriggerIdentityProfileMenuSignin[];
 extern const char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[];
 extern const char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[];
+extern const char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];

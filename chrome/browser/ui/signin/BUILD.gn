@@ -98,7 +98,10 @@ source_set("impl") {
       "promos/signin_promo_tab_helper.cc",
     ]
 
-    deps += [ "//chrome/browser/profiles:profile_util" ]
+    deps += [
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui/hats",
+    ]
   }
 
   if (enable_extensions) {
@@ -125,6 +128,8 @@ if (!is_android) {
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/webui/signin:test_support_ui",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",

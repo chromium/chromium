@@ -12,6 +12,9 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
@@ -71,6 +74,13 @@ std::unique_ptr<KeyedService> BuildMockSyncService(
 
 class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
  public:
+  BubbleSignInPromoInteractiveUITest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kSyncEnableBookmarksInTransportMode,
+         switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
+        /*disabled_features=*/{});
+  }
   void SetUpInProcessBrowserTestFixture() override {
     ManagePasswordsTest::SetUpInProcessBrowserTestFixture();
     url_loader_factory_helper_.SetUp();
@@ -93,6 +103,15 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
     ManagePasswordsTest::SetUpOnMainThread();
     ON_CALL(sync_service_mock(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(Return(syncer::DataTypeSet::All()));
+
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_hats_service_ = nullptr;
+    ManagePasswordsTest::TearDownOnMainThread();
   }
 
   // Trigger the password save by simulating an "Accept" in the password bubble,
@@ -156,8 +175,8 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSyncEnableBookmarksInTransportMode};
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::CallbackListSubscription create_services_subscription_;
@@ -678,6 +697,12 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   ExtendAccountInfo(info);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
 
+  // Verify that the HaTS service launches a survey when the user actively
+  // dismisses the sign-in promo bubble with the escape key.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+                           _, _, _, _, _, _));
+
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();
   TriggerSaveAddressBubble(address);
@@ -710,6 +735,12 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
       identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
   ExtendAccountInfo(info);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // Verify that the HaTS service launches a survey when the user actively
+  // dismisses the sign-in promo bubble with the close button.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+                           _, _, _, _, _, _));
 
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();

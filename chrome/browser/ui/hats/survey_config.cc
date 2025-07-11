@@ -72,6 +72,8 @@ constexpr char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[] =
     "identity-profile-picker-add-profile-signin";
 constexpr char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
     "identity-signin-intercept-profile-separation";
+constexpr char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[] =
+    "identity-signin-promo-bubble-dismissed";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
     "download-warning-bubble-bypass";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
@@ -507,6 +509,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
       kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
+      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
