@@ -111,7 +111,7 @@ class DownloadUIModel {
     raw_ptr<DownloadUIModel> model_ = nullptr;
   };
 
-  // Used in Download shelf and page, default option.
+  // Used in Download page, default option.
   class StatusTextBuilder : public StatusTextBuilderBase {
    public:
     std::u16string GetInProgressStatusText() const override;
@@ -260,26 +260,19 @@ class DownloadUIModel {
   //
   // Since the expectation of successful completion may change, the return value
   // of this function will change over the course of a download.
+  // TODO(crbug.com/401528883): Remove this function.
   virtual bool ShouldRemoveFromShelfWhenComplete() const;
 
-  // Returns |true| if the download started animation (big download arrow
-  // animates down towards the shelf) should be displayed for this download.
+  // Returns |true| if the download started animation (download icon animates
+  // towards the UI) should be displayed for this download.
   // Downloads that were initiated via "Save As" or are extension installs don't
   // show the animation.
   virtual bool ShouldShowDownloadStartedAnimation() const;
 
-  // Returns |true| if this download should be displayed in the downloads shelf.
-  virtual bool ShouldShowInShelf() const;
-
-  // Change whether the download should be displayed on the downloads
-  // shelf. Setting this is only effective if the download hasn't already been
-  // displayed in the shelf.
-  virtual void SetShouldShowInShelf(bool should_show);
-
   // Returns |true| if the UI should be notified when the download is ready to
-  // be presented in the UI. Note that this is independent of
-  // ShouldShowInShelf() since there might be actions other than showing in the
-  // shelf that the UI must perform.
+  // be presented in the UI. Note that this is independent of ShouldShowInUi()
+  // since there might be actions other than displaying the download that the UI
+  // must perform.
   virtual bool ShouldNotifyUI() const;
 
   // Returns |true| if the UI has been notified about this download. By default,
@@ -477,9 +470,19 @@ class DownloadUIModel {
   virtual void ExecuteCommand(DownloadCommands* download_commands,
                               DownloadCommands::Command command);
 
-  // Returns |true| if this download should be displayed in the download bubble.
-  // Note that this may return true even if the download bubble is not enabled
-  // on the platform.
+  // Returns true if this download should be displayed in the download UI
+  // on desktop platforms. This includes the chrome://downloads WebUI and the
+  // downloads UI implemented in native toolkit.
+  virtual bool ShouldShowInUi() const;
+
+  // Change whether the download should be displayed in the downloads UI on
+  // desktop platforms. Setting this is only effective if the download hasn't
+  // already been displayed in the UI.
+  virtual void SetShouldShowInUi(bool should_show);
+
+  // Returns true if this download should be displayed in the download bubble
+  // on platforms where the download bubble is available.
+  // TODO(crbug.com/401528883): This does not need to be compiled on ChromeOS.
   virtual bool ShouldShowInBubble() const;
 
   // Returns the type of tailored warning. Returns kNoTailoredWarning if this

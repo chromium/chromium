@@ -501,7 +501,7 @@ void DownloadItemView::ShowContextMenuForViewImpl(
 }
 
 void DownloadItemView::OnDownloadUpdated() {
-  if (!model_->ShouldShowInShelf()) {
+  if (!model_->ShouldShowInUi()) {
     shelf_->RemoveDownloadView(this);
     // WARNING: |this| has been deleted!
     return;

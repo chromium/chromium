@@ -147,14 +147,14 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   EXPECT_CALL(completed, UpdateObservers());
   downloads.push_back(&completed);
 
-  ASSERT_TRUE(DownloadItemModel(&completed).ShouldShowInShelf());
+  ASSERT_TRUE(DownloadItemModel(&completed).ShouldShowInUi());
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
                                   web_ui());
   handler.RemoveDownloads(downloads);
 
   // Ensure |completed| has been "soft removed" (i.e. can be revived).
-  EXPECT_FALSE(DownloadItemModel(&completed).ShouldShowInShelf());
+  EXPECT_FALSE(DownloadItemModel(&completed).ShouldShowInUi());
 
   // Make sure |completed| actually get removed when removals are "finalized".
   EXPECT_CALL(*manager(), GetDownload(1)).WillOnce(testing::Return(&completed));

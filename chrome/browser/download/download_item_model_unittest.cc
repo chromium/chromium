@@ -771,30 +771,30 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
   std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
   compare_results(english, expected_english);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
+TEST_F(DownloadItemModelTest, ShouldShowInUi) {
   SetupDownloadItemDefaults();
 
-  // By default the download item should be displayable on the shelf when it is
+  // By default the download item should be displayable on the UI when it is
   // not a transient download.
   EXPECT_CALL(item(), IsTransient()).WillOnce(Return(false));
-  EXPECT_TRUE(model().ShouldShowInShelf());
+  EXPECT_TRUE(model().ShouldShowInUi());
 
   EXPECT_CALL(item(), IsTransient()).WillOnce(Return(true));
-  EXPECT_FALSE(model().ShouldShowInShelf());
+  EXPECT_FALSE(model().ShouldShowInUi());
 
-  // Once explicitly set, ShouldShowInShelf() should return the explicit value
+  // Once explicitly set, ShouldShowInUi() should return the explicit value
   // regardless of whether it's a transient download, which should no longer
   // be considered by the model after initializing it.
   EXPECT_CALL(item(), IsTransient()).Times(1);
 
-  model().SetShouldShowInShelf(true);
-  EXPECT_TRUE(model().ShouldShowInShelf());
+  model().SetShouldShowInUi(true);
+  EXPECT_TRUE(model().ShouldShowInUi());
 
-  model().SetShouldShowInShelf(false);
-  EXPECT_FALSE(model().ShouldShowInShelf());
+  model().SetShouldShowInUi(false);
+  EXPECT_FALSE(model().ShouldShowInUi());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, DangerLevel) {
   SetupDownloadItemDefaults();

@@ -450,12 +450,6 @@ bool DownloadUIModel::ShouldShowDownloadStartedAnimation() const {
   return true;
 }
 
-bool DownloadUIModel::ShouldShowInShelf() const {
-  return true;
-}
-
-void DownloadUIModel::SetShouldShowInShelf(bool should_show) {}
-
 bool DownloadUIModel::ShouldNotifyUI() const {
   return true;
 }
@@ -797,8 +791,14 @@ DownloadUIModel::DangerUiPattern DownloadUIModel::GetDangerUiPattern() const {
   return DangerUiPattern::kNormal;
 }
 
+bool DownloadUIModel::ShouldShowInUi() const {
+  return true;
+}
+
+void DownloadUIModel::SetShouldShowInUi(bool should_show) {}
+
 bool DownloadUIModel::ShouldShowInBubble() const {
-  return ShouldShowInShelf();
+  return ShouldShowInUi();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -51,7 +51,7 @@ namespace {
 
 bool ShouldShowItem(const DownloadItem& item) {
   DownloadItemModel model(const_cast<DownloadItem*>(&item));
-  return model.ShouldShowInShelf();
+  return model.ShouldShowInUi();
 }
 
 class FakeRenameHandler : public download::DownloadItemRenameHandler {
@@ -254,7 +254,7 @@ TEST_F(DownloadsListTrackerTest, OnDownloadUpdatedCallsRemoveItem) {
 
   EXPECT_TRUE(tracker()->GetItemForTesting(0));
 
-  DownloadItemModel(first_item).SetShouldShowInShelf(false);
+  DownloadItemModel(first_item).SetShouldShowInUi(false);
   tracker()->OnDownloadUpdated(manager(), first_item);
 
   EXPECT_FALSE(tracker()->GetItemForTesting(0));
@@ -264,7 +264,7 @@ TEST_F(DownloadsListTrackerTest, OnDownloadUpdatedCallsRemoveItem) {
 
 TEST_F(DownloadsListTrackerTest, StartExcludesHiddenItems) {
   DownloadItem* first_item = CreateNextItem();
-  DownloadItemModel(first_item).SetShouldShowInShelf(false);
+  DownloadItemModel(first_item).SetShouldShowInUi(false);
 
   CreateTracker();
   tracker()->StartAndSendChunk();
@@ -337,11 +337,11 @@ TEST_F(DownloadsListTrackerTest, IgnoreUnsentItemRemovals) {
   EXPECT_CALL(page_, InsertItems(0, MatchIds(expected)));
 
   // Does not send an update. StrictMock ensures no methods called on |page_|.
-  DownloadItemModel(unsent_item).SetShouldShowInShelf(false);
+  DownloadItemModel(unsent_item).SetShouldShowInUi(false);
   tracker()->OnDownloadUpdated(manager(), unsent_item);
 
   // Does not send an update. StrictMock ensures no methods called on |page_|.
-  DownloadItemModel(unsent_item).SetShouldShowInShelf(true);
+  DownloadItemModel(unsent_item).SetShouldShowInUi(true);
   tracker()->OnDownloadUpdated(manager(), unsent_item);
 }
 

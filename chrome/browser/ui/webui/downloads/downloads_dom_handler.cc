@@ -495,7 +495,7 @@ void DownloadsDOMHandler::Undo() {
     }
 
     DownloadItemModel model(download);
-    model.SetShouldShowInShelf(true);
+    model.SetShouldShowInUi(true);
     model.SetIsBeingRevived(true);
 
     download->UpdateObservers();
@@ -550,12 +550,12 @@ void DownloadsDOMHandler::RemoveDownloads(const DownloadVector& to_remove) {
     }
 
     DownloadItemModel item_model(download);
-    if (!item_model.ShouldShowInShelf() ||
+    if (!item_model.ShouldShowInUi() ||
         download->GetState() == download::DownloadItem::IN_PROGRESS) {
       continue;
     }
 
-    item_model.SetShouldShowInShelf(false);
+    item_model.SetShouldShowInUi(false);
     ids.insert(download->GetId());
     download->UpdateObservers();
   }

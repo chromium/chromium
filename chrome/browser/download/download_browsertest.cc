@@ -420,7 +420,7 @@ bool IsDownloadExternallyRemoved(DownloadItem* item) {
 // Called when a download starts. Marks the download as hidden.
 void SetHiddenDownloadCallback(DownloadItem* item,
                                download::DownloadInterruptReason reason) {
-  DownloadItemModel(item).SetShouldShowInShelf(false);
+  DownloadItemModel(item).SetShouldShowInUi(false);
 }
 #endif
 

@@ -67,8 +67,6 @@ class DownloadItemModel : public DownloadUIModel,
   bool IsInsecure() const override;
   bool ShouldRemoveFromShelfWhenComplete() const override;
   bool ShouldShowDownloadStartedAnimation() const override;
-  bool ShouldShowInShelf() const override;
-  void SetShouldShowInShelf(bool should_show) override;
   bool ShouldNotifyUI() const override;
   bool WasUINotified() const override;
   void SetWasUINotified(bool should_notify) override;
@@ -130,6 +128,8 @@ class DownloadItemModel : public DownloadUIModel,
                       DownloadCommands::Command command) override;
   TailoredWarningType GetTailoredWarningType() const override;
   DangerUiPattern GetDangerUiPattern() const override;
+  bool ShouldShowInUi() const override;
+  void SetShouldShowInUi(bool should_show) override;
   bool ShouldShowInBubble() const override;
 #endif
 

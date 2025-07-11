@@ -116,9 +116,9 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
   // object if not found. Always returns a non-NULL pointer, unless OOM.
   static DownloadItemModelData* GetOrCreate(DownloadItem* download);
 
-  // Whether the download should be displayed in the download shelf. True by
-  // default.
-  bool should_show_in_shelf_ = true;
+  // Whether the download should be displayed in the download UI on desktop
+  // platforms. True by default.
+  bool should_show_in_ui_ = true;
 
   // Whether the UI has been notified about this download.
   bool was_ui_notified_ = false;
@@ -170,7 +170,7 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
       static_cast<DownloadItemModelData*>(download->GetUserData(kKey));
   if (data == nullptr) {
     data = new DownloadItemModelData();
-    data->should_show_in_shelf_ = !download->IsTransient();
+    data->should_show_in_ui_ = !download->IsTransient();
     download->SetUserData(kKey, base::WrapUnique(data));
   }
   return data;
@@ -413,31 +413,18 @@ bool DownloadItemModel::ShouldShowDownloadStartedAnimation() const {
          !download_crx_util::IsTrustedExtensionDownload(profile(), *download_);
 }
 
-bool DownloadItemModel::ShouldShowInShelf() const {
-  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
-  if (data)
-    return data->should_show_in_shelf_;
-
-  return !download_->IsTransient();
-}
-
-void DownloadItemModel::SetShouldShowInShelf(bool should_show) {
-  DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
-  data->should_show_in_shelf_ = should_show;
-}
-
 bool DownloadItemModel::ShouldNotifyUI() const {
   if (download_->IsTransient())
     return false;
 
   // The browser is only interested in new active downloads. History downloads
-  // that are completed or interrupted are not displayed on the shelf. The
+  // that are completed or interrupted are not displayed in the UI. The
   // downloads page independently listens for new downloads when it is active.
   // Note that the UI will be notified of downloads even if they are not meant
-  // to be displayed on the shelf (i.e. ShouldShowInShelf() returns false). This
-  // is because: *  The shelf isn't the only UI. E.g. on Android, the UI is the
-  // system
-  //    DownloadManager.
+  // to be displayed in the desktop downloads UI (i.e. ShouldShowInUi() returns
+  // false). This is because:
+  // *  The desktop UI (download bubble) isn't the only UI. E.g. on Android,
+  //    there is a separate download UI implemented in Java.
   // *  There are other UI activities that need to be performed. E.g. if the
   //    download was initiated from a new tab, then that tab should be closed.
   return download_->GetDownloadCreationType() !=
@@ -1030,6 +1017,19 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
   }
 
   return DangerUiPattern::kNormal;
+}
+
+bool DownloadItemModel::ShouldShowInUi() const {
+  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
+  if (data) {
+    return data->should_show_in_ui_;
+  }
+  return !download_->IsTransient();
+}
+
+void DownloadItemModel::SetShouldShowInUi(bool should_show) {
+  DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
+  data->should_show_in_ui_ = should_show;
 }
 
 bool DownloadItemModel::ShouldShowInBubble() const {
