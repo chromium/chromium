@@ -9,8 +9,6 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -129,8 +127,6 @@ public class AwClipboardTest extends AwParameterizedTest {
     public void clearClipboardOnUiThread() {
         Context context = mTestContainerView.getContext();
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
-        if (VERSION.SDK_INT >= VERSION_CODES.P) {
-            clipboard.clearPrimaryClip();
-        }
+        clipboard.clearPrimaryClip();
     }
 }
