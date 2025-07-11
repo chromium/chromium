@@ -72,6 +72,12 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
   void AsyncWriteHMREnabled(bool enabled) override {}
   void DisableOrcaFeature() override {}
   void DisableLobsterSettings() override {}
+
+ protected:
+  base::expected<bool, chromeos::MagicBoostState::Error>
+  IsMagicBoostAvailableExpected() const override {
+    return true;
+  }
 };
 
 }  // namespace

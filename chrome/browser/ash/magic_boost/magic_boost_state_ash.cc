@@ -36,15 +36,6 @@
 namespace ash {
 namespace {
 
-base::expected<bool, chromeos::MagicBoostState::Error>
-IsMagicBoostAvailableExpected() {
-  std::optional<bool> availability = mahi_availability::IsMahiAvailable();
-  if (!availability.has_value()) {
-    return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
-  }
-  return availability.value();
-}
-
 // Wait for refresh tokens load and run the provided callback. This object
 // immediately runs the callback if refresh tokens are already loaded.
 class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
@@ -270,6 +261,15 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
       profile, identity_manager,
       base::BindOnce(&MagicBoostStateAsh::OnRefreshTokensReady,
                      base::Unretained(this))));
+}
+
+base::expected<bool, chromeos::MagicBoostState::Error>
+MagicBoostStateAsh::IsMagicBoostAvailableExpected() const {
+  std::optional<bool> availability = mahi_availability::IsMahiAvailable();
+  if (!availability.has_value()) {
+    return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
+  }
+  return availability.value();
 }
 
 void MagicBoostStateAsh::OnRefreshTokensReady() {

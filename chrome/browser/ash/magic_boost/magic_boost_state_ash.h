@@ -65,6 +65,10 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
     editor_manager_for_test_ = editor_manager;
   }
 
+ protected:
+  base::expected<bool, chromeos::MagicBoostState::Error>
+  IsMagicBoostAvailableExpected() const override;
+
  private:
   friend class MagicBoostStateAshTest;
 
