@@ -702,7 +702,8 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     const timePeriodValue = this.getPref(timePeriodPref).value;
 
-    if (!(timePeriodValue in TimePeriod)) {
+    if (!this.clearFromOptions_.find(
+            timePeriodOption => timePeriodOption.value === timePeriodValue)) {
       // If the synced time period is not supported, default to "Last hour".
       this.setPrefValue(timePeriodPref, TimePeriod.LAST_HOUR);
     }
