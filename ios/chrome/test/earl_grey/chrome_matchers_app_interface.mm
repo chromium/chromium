@@ -704,12 +704,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)bookmarksNavigationBarBackButton {
-  UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
-      SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
-                                         GetAnyKeyWindow()));
-  return grey_allOf(grey_buttonTitle(navBar.backItem.title),
-                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-                    nil);
+  if (@available(iOS 26, *)) {
+    return grey_allOf(grey_accessibilityID(@"BackButton"),
+                      grey_kindOfClassName(@"UIAccessibilityBackButtonElement"),
+                      nil);
+  } else {
+    UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
+        SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
+                                           GetAnyKeyWindow()));
+    return grey_allOf(grey_buttonTitle(navBar.backItem.title),
+                      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+                      nil);
+  }
 }
 
 + (id<GREYMatcher>)managedProfileCreationNavigationBarBackButton {
