@@ -7966,6 +7966,7 @@ test("unit_tests") {
       "../browser/password_manager/password_change/change_password_form_finder_unittest.cc",
       "../browser/password_manager/password_change/change_password_form_waiter_unittest.cc",
       "../browser/password_manager/password_change/model_quality_logs_uploader_unittest.cc",
+      "../browser/password_manager/password_change/password_change_hats_unittest.cc",
       "../browser/password_manager/password_change/password_change_submission_verifier_unittest.cc",
       "../browser/password_manager/password_change_delegate_impl_unittest.cc",
       "../browser/performance_manager/execution_context_priority/side_panel_loading_voter_unittest.cc",

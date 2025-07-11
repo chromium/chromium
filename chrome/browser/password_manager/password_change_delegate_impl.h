@@ -30,6 +30,7 @@ class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
 class ModelQualityLogsUploader;
 class PasswordChangeUIController;
+class PasswordChangeHats;
 class Profile;
 
 // This class controls password change process including acceptance of privacy
@@ -128,6 +129,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   // The controller for password change views.
   std::unique_ptr<PasswordChangeUIController> ui_controller_;
+
+  // Helper class for handling happiness tracking surveys.
+  std::unique_ptr<PasswordChangeHats> password_change_hats_;
 
   // URL of the last committed page in `originator_` on the password change flow
   // startup.

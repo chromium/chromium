@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -16,14 +15,13 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
+#include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
@@ -37,7 +35,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -47,7 +44,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -162,49 +158,6 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
   return new_web_contents;
 }
 
-// Tries to launch a password change survey in `web_contents`. `trigger`
-// specifies which scenario occurred (e.g. error or successful password change).
-// `password_change_duration` specifies the feature runtime until reaching the
-// trigger condition.
-void MaybeLaunchSurvey(const std::string& trigger,
-                       base::TimeDelta password_change_duration,
-                       Profile* profile,
-                       content::WebContents* web_contents) {
-  CHECK(profile);
-  CHECK(web_contents);
-
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile,
-                                        /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-
-  int64_t bucketed_total_passwords = ukm::GetExponentialBucketMinForCounts1000(
-      profile->GetPrefs()->GetInteger(
-          password_manager::prefs::kTotalPasswordsAvailableForAccount) +
-      profile->GetPrefs()->GetInteger(
-          password_manager::prefs::kTotalPasswordsAvailableForProfile));
-  int64_t bucketed_runtime = ukm::GetSemanticBucketMinForDurationTiming(
-      password_change_duration.InMilliseconds());
-  // TODO(crbug.com/383079813): Pass actual values for suggested password
-  // adoption and breached passwords count. Ensure the latter is bucketed.
-
-  hats_service->LaunchDelayedSurveyForWebContents(
-      trigger, web_contents,
-      /*timeout_ms=*/0, /*product_specific_bits_data=*/
-      {{password_manager::features_util::
-            kPasswordChangeSuggestedPasswordsAdoption,
-        false}},
-      /*product_specific_string_data=*/
-      {{password_manager::features_util::kPasswordChangeBreachedPasswordsCount,
-        ""},
-       {password_manager::features_util::kPasswordChangeSavedPasswordsCount,
-        base::ToString(bucketed_total_passwords)},
-       {password_manager::features_util::kPasswordChangeRuntime,
-        base::ToString(bucketed_runtime)}});
-}
-
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
@@ -219,6 +172,7 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
       ui_controller_(
           std::make_unique<PasswordChangeUIController>(this, tab_interface)),
+      password_change_hats_(std::make_unique<PasswordChangeHats>(profile_)),
       last_committed_url_(originator_->GetLastCommittedURL()) {
   tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
       base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
@@ -269,10 +223,10 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   executor_.reset();
 
   UpdateState(State::kCanceled);
-  MaybeLaunchSurvey(
+  password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
       /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      profile_, originator_);
+      originator_);
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
@@ -371,10 +325,10 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
 
   content::WebContents* web_contents = executor_.get();
   tab_strip_model->AppendWebContents(std::move(executor_), /*foreground=*/true);
-  MaybeLaunchSurvey(
+  password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeError,
       /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      profile_, web_contents);
+      web_contents);
 }
 
 void PasswordChangeDelegateImpl::OpenPasswordDetails() {
@@ -409,9 +363,9 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
-  MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeCanceled,
-                    /*password_change_duration=*/base::TimeDelta(), profile_,
-                    originator_);
+  password_change_hats_->MaybeLaunchSurvey(
+      kHatsSurveyTriggerPasswordChangeCanceled,
+      /*password_change_duration=*/base::TimeDelta(), originator_);
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
@@ -456,8 +410,9 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     submission_verifier_->SavePassword(username_);
     NotifyPasswordChangeFinishedSuccessfully(originator_);
     UpdateState(State::kPasswordSuccessfullyChanged);
-    MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeSuccess,
-                      password_change_duration_overall, profile_, originator_);
+    password_change_hats_->MaybeLaunchSurvey(
+        kHatsSurveyTriggerPasswordChangeSuccess,
+        password_change_duration_overall, originator_);
   }
   submission_verifier_.reset();
 }
