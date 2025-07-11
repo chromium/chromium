@@ -84,13 +84,6 @@ import java.util.List;
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE
-})
 public class TabGroupContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final Token TAB_GROUP_ID = new Token(3L, 4L);
@@ -136,6 +129,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_Chromium_Activity);
         LayoutInflater inflater = LayoutInflater.from(activity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);

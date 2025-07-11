@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -73,7 +74,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -83,12 +83,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
-})
 @Batch(Batch.PER_CLASS)
 public class CustomTabActivityEphemeralTest {
     private static final String HISTOGRAM_NAME = "CustomTabs.IncognitoCctCallerId";
@@ -139,7 +133,7 @@ public class CustomTabActivityEphemeralTest {
 
     private static int getThemeColor(CustomTabActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeColors.getDefaultThemeColor(activity, false));
+                () -> SurfaceColorUpdateUtils.getDefaultThemeColor(activity, false));
     }
 
     private static int getToolbarColor(CustomTabActivity activity) {

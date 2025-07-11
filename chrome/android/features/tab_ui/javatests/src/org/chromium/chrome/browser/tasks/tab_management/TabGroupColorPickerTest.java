@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.MediumTest;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,13 +54,6 @@ import java.util.List;
 /** Integration and render tests for the ColorPicker feature. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE
-})
 @Batch(Batch.PER_CLASS)
 public class TabGroupColorPickerTest {
     @ParameterAnnotations.ClassParameter
@@ -237,6 +232,9 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
     public void testColorPicker_dynamicSingleRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -269,6 +267,9 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
     public void testColorPicker_dynamicAlternateSelection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -297,6 +298,36 @@ public class TabGroupColorPickerTest {
                             Assert.assertEquals(
                                     0, layerDrawable.getDrawable(SELECTION_LAYER).getAlpha());
                         }
+                    }
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_THEME_MODULE,
+    })
+    public void testColorPicker_dynamicSingleRow_androidThemeModule() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    Assert.assertEquals(mColorList.size(), firstRow.getChildCount());
+
+                    for (int color : mColorList) {
+                        FrameLayout colorView = (FrameLayout) firstRow.getChildAt(color);
+                        Assert.assertTrue(
+                                colorView.findViewById(R.id.color_picker_icon)
+                                        instanceof MaterialButton);
+                        MaterialButton materialButton =
+                                colorView.findViewById(R.id.color_picker_icon);
+                        Assert.assertNotNull(materialButton.getBackgroundTintList());
+                        Assert.assertNotNull(materialButton.getRippleColor());
                     }
                 });
     }

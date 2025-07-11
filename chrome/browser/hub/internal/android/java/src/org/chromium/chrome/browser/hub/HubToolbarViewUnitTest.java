@@ -77,12 +77,6 @@ import java.util.List;
 
 /** Unit tests for {@link HubPaneHostView}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-// TODO(crbug.com/419289558): Re-enable color surface feature flags
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE
-})
 public class HubToolbarViewUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.
@@ -315,6 +309,9 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures({
+        ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    })
     public void testUpdateSearchBoxColorScheme() {
         forceSetColorScheme(HubColorScheme.INCOGNITO);
         assertEquals(
@@ -338,6 +335,23 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
+    public void testUpdateSearchBoxColorScheme_gtsSurfaceColorUpdateEnabled() {
+        forceSetColorScheme(HubColorScheme.INCOGNITO);
+
+        GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(mActivity, R.color.gm3_baseline_surface_dark)),
+                backgroundDrawable.getColor());
+
+        forceSetColorScheme(HubColorScheme.DEFAULT);
+        assertEquals(
+                ColorStateList.valueOf(SemanticColorUtils.getColorSurface(mActivity)),
+                backgroundDrawable.getColor());
+    }
+
+    @Test
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
         assertFalse(mSearchBox.isEnabled());
@@ -351,6 +365,9 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures({
+        ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
+    })
     public void testHubColorMixer_searchBoxEnabled() {
         verify(mColorMixer, times(8)).registerBlend(any());
     }
