@@ -1230,6 +1230,9 @@ void LocalFrameMojoHandler::ClosePage(
   // when unloading itself.
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       frame_->GetDocument());
+  // Don't allow navigations to be triggered from the unload events below.
+  FrameNavigationDisabler navigation_disabler(*frame_);
+
   frame_->Loader().DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
       false /* need_unload_info_for_new_document */);
 
