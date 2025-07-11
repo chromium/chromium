@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
@@ -216,6 +218,38 @@ KioskMixin::Config CreateManualLaunchConfigWithVersionPinning(
                                          {iwa_option}};
   return kiosk_iwa_config;
 }
+
+// Checks that Kiosk IWA name that is used in the Apps menu is updated.
+// Wraps KioskAppManagerObserver to ignore irrelevant web app updates
+// (e.g. empty 'update' event from initialization or an icon key update).
+class KioskIwaTitleChangeWaiter : public KioskAppManagerObserver {
+ public:
+  explicit KioskIwaTitleChangeWaiter(std::string expected_title)
+      : expected_title_(std::move(expected_title)) {
+    iwa_manager_observation_.Observe(KioskIwaManager::Get());
+  }
+  KioskIwaTitleChangeWaiter(const KioskIwaTitleChangeWaiter&) = delete;
+  KioskIwaTitleChangeWaiter& operator=(const KioskIwaTitleChangeWaiter&) =
+      delete;
+  ~KioskIwaTitleChangeWaiter() override = default;
+
+  // `KioskAppManagerObserver`:
+  void OnKioskAppDataChanged(const std::string& id_of_updated_app) override {
+    if (id_of_updated_app == GetTestWebAppId() &&
+        TheKioskApp().name() == expected_title_) {
+      title_change_future_.SetValue(true);
+    }
+  }
+
+  bool Wait() { return title_change_future_.Take(); }
+
+ private:
+  const std::string expected_title_;
+  base::test::TestFuture<bool> title_change_future_;
+
+  base::ScopedObservation<KioskIwaManager, KioskAppManagerObserver>
+      iwa_manager_observation_{this};
+};
 
 }  // namespace
 
@@ -512,16 +546,14 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest,
 
   // Prevents the app launch to let the update apply.
   auto scoped_launch_blocker = BlockKioskLaunch();
+  KioskIwaTitleChangeWaiter title_change_waiter(kTestIwaTitle2);
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   WaitForKioskProfile();
   ExpectTestAppUpdatedToVersion(expected_version);
 
-  scoped_launch_blocker.reset();
-  ASSERT_TRUE(WaitKioskLaunched());
-
   ExpectTestAppInstalledAtVersion(expected_version);
-  EXPECT_EQ(TheKioskApp().name(), kTestIwaTitle2);
+  ASSERT_TRUE(title_change_waiter.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, PRE_UpdatesToLatestAtExit) {
