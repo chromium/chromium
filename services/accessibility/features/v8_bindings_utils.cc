@@ -87,9 +87,9 @@ void BindingsUtils::CreateTextEncoderCallback(
   // Check this is a constructor call: JS should always request
   // `new TextEncoder()` rather than just `TextEncoder`.
   DCHECK(info.IsConstructCall());
-  gin::Handle<TextEncoder> text_encoder =
-      TextEncoder::Create(info.GetIsolate()->GetCurrentContext());
-  info.GetReturnValue().Set(text_encoder.ToV8());
+  v8::Local<v8::Object> text_encoder =
+      TextEncoder::Create(info.GetIsolate());
+  info.GetReturnValue().Set(text_encoder);
 }
 
 // static
@@ -98,9 +98,9 @@ void BindingsUtils::CreateTextDecoderCallback(
   // Check this is a constructor call: JS should always request
   // `new TextDecoder()` rather than just `TextDecoder`.
   DCHECK(info.IsConstructCall());
-  gin::Handle<TextDecoder> text_decoder =
-      TextDecoder::Create(info.GetIsolate()->GetCurrentContext());
-  info.GetReturnValue().Set(text_decoder.ToV8());
+  v8::Local<v8::Object> text_decoder =
+      TextDecoder::Create(info.GetIsolate());
+  info.GetReturnValue().Set(text_decoder);
 }
 
 }  // namespace ax

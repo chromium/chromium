@@ -36,6 +36,8 @@ enum WrappablePointerTag : uint16_t {
   kSkiaBenchmarking,                   // content::SkiaBenchmarking
   kStatsCollectionController,          // content::StatsCollectionController
   kSupervisedUserErrorPageController,  // SupervisedUserErrorPageController
+  kTextDecoder,                        // ax::TextDecoder
+  kTextEncoder,                        // ax::TextEncoder
   kTestObject,                         // gin::TestGinObject
   kTestObject2,                        // gin::MyObject2
   kLastPointerTag = kTestObject2,

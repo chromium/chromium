@@ -5,10 +5,8 @@
 #ifndef SERVICES_ACCESSIBILITY_FEATURES_TEXT_ENCODER_H_
 #define SERVICES_ACCESSIBILITY_FEATURES_TEXT_ENCODER_H_
 
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "services/accessibility/features/registered_wrappable.h"
 
 namespace gin {
 class Arguments;
@@ -20,36 +18,33 @@ namespace ax {
 // This class is a parallel to blink::TextEncoder, which does the same for
 // any blink renderer.
 // Note that this only supports UTF-8 encoding.
-class TextEncoder : public gin::DeprecatedWrappable<TextEncoder>,
-                    public RegisteredWrappable {
+class TextEncoder : public gin::Wrappable<TextEncoder> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kTextEncoder};
 
-  static gin::Handle<TextEncoder> Create(v8::Local<v8::Context> context);
+  static v8::Local<v8::Object> Create(v8::Isolate* isolate);
 
-  ~TextEncoder() override = default;
+  // Make public for cppgc::MakeGarbageCollected.
+  TextEncoder();
+  ~TextEncoder() override;
+
   TextEncoder(const TextEncoder&) = delete;
   TextEncoder& operator=(const TextEncoder&) = delete;
 
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+  const gin::WrapperInfo* wrapper_info() const override;
 
   //
   // Methods exposed to Javascript.
-  // Note: gin::DeprecatedWrappable's bound methods need to be public.
+  // Note: gin::Wrappable's bound methods need to be public.
   //
 
   // Encodes a Javascript string into a v8::Uint8Array.
   // See third_party/blink/renderer/modules/encoding/text_encoder.idl.
   void Encode(gin::Arguments* arguments);
-
-  //
-  // End of methods exposed to Javascript.
-  //
-
- private:
-  explicit TextEncoder(v8::Local<v8::Context> context);
 };
 
 }  // namespace ax
