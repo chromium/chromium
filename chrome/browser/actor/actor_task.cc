@@ -9,6 +9,8 @@
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -16,8 +18,11 @@
 
 namespace actor {
 
-ActorTask::ActorTask(std::unique_ptr<ExecutionEngine> execution_engine)
-    : execution_engine_(std::move(execution_engine)) {}
+ActorTask::ActorTask(Profile* profile,
+                     std::unique_ptr<ExecutionEngine> execution_engine)
+    : profile_(profile),
+      execution_engine_(std::move(execution_engine)),
+      ui_event_dispatcher_(ui::NewUiEventDispatcher()) {}
 ActorTask::~ActorTask() = default;
 
 void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {

@@ -19,10 +19,14 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
+class Profile;
 namespace actor {
 
 class ActorKeyedService;
 class ExecutionEngine;
+namespace ui {
+class UiEventDispatcher;
+}
 
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
@@ -32,7 +36,8 @@ class ActorTask {
       base::OnceCallback<void(mojom::ActionResultPtr, std::optional<size_t>)>;
 
   ActorTask() = delete;
-  explicit ActorTask(std::unique_ptr<ExecutionEngine> execution_engine);
+  ActorTask(Profile* profile,
+            std::unique_ptr<ExecutionEngine> execution_engine);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
@@ -114,6 +119,7 @@ class ActorTask {
                                mojom::ActionResultPtr result);
 
   State state_ = State::kCreated;
+  raw_ptr<Profile> profile_;
 
   // The time at which the task was completed or cancelled.
   base::Time end_time_;
@@ -121,6 +127,8 @@ class ActorTask {
   // There are multiple possible execution engines. For now we only support
   // ExecutionEngine.
   std::unique_ptr<ExecutionEngine> execution_engine_;
+
+  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   TaskId id_;
 

@@ -147,7 +147,8 @@ class ActorToolsTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
     auto execution_engine =
         std::make_unique<ExecutionEngine>(browser()->profile());
-    auto actor_task = std::make_unique<ActorTask>(std::move(execution_engine));
+    auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
+                                                  std::move(execution_engine));
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(actor_task));
 

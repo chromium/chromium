@@ -72,7 +72,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
 
     auto execution_engine = InitializeExecutionEngine();
     ExecutionEngine* raw_execution_engine = execution_engine.get();
-    auto task = std::make_unique<ActorTask>(std::move(execution_engine));
+    auto task =
+        std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
     raw_execution_engine->SetOwner(task.get());
     task_id_ = ActorKeyedService::Get(browser()->profile())
                    ->AddActiveTask(std::move(task));

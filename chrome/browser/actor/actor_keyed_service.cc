@@ -138,7 +138,8 @@ void ActorKeyedService::ExecuteAction(
 
 TaskId ActorKeyedService::CreateTask() {
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
-  auto actor_task = std::make_unique<ActorTask>(std::move(execution_engine));
+  auto actor_task =
+      std::make_unique<ActorTask>(profile_.get(), std::move(execution_engine));
   TaskId task_id = AddActiveTask(std::move(actor_task));
   actor_task_subscriptions_.emplace(
       task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
@@ -192,8 +193,8 @@ void ActorKeyedService::FinishStartTask(
     execution_engine = std::make_unique<actor::ExecutionEngine>(profile_.get());
   }
 
-  auto actor_task =
-      std::make_unique<actor::ActorTask>(std::move(execution_engine));
+  auto actor_task = std::make_unique<actor::ActorTask>(
+      profile_.get(), std::move(execution_engine));
   actor::TaskId task_id = AddActiveTask(std::move(actor_task));
   actor_task_subscriptions_.emplace(
       task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(

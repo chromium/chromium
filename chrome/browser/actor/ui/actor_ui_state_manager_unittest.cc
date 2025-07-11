@@ -56,7 +56,8 @@ class ActorKeyedServiceFake : public ActorKeyedService {
         ui::NewMockUiEventDispatcher();
     auto execution_engine = ExecutionEngine::CreateForTesting(
         GetProfile(), std::move(ui_event_dispatcher));
-    auto actor_task = std::make_unique<ActorTask>(std::move(execution_engine));
+    auto actor_task =
+        std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
     TaskId task_id = AddActiveTask(std::move(actor_task));
     actor_task_subscriptions_.emplace(
         task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(

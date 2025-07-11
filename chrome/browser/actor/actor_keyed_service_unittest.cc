@@ -51,7 +51,7 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
   actor_service->AddActiveTask(
-      std::make_unique<ActorTask>(std::move(execution_engine)));
+      std::make_unique<ActorTask>(profile(), std::move(execution_engine)));
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
   EXPECT_EQ(actor_service->GetActiveTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
@@ -63,7 +63,7 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   std::unique_ptr<ExecutionEngine> execution_engine =
       std::make_unique<ExecutionEngine>(profile());
   TaskId id = actor_service->AddActiveTask(
-      std::make_unique<ActorTask>(std::move(execution_engine)));
+      std::make_unique<ActorTask>(profile(), std::move(execution_engine)));
   actor_service->StopTask(id);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
   ASSERT_EQ(actor_service->GetInactiveTasks().size(), 1u);
