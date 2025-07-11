@@ -190,11 +190,15 @@ void OpenXrDevice::OnCreateInstanceResult(
   auto on_visibility_state_changed = base::BindRepeating(
       &OpenXrDevice::OnVisibilityStateChanged, weak_ptr_factory_.GetWeakPtr());
 
+  auto session_ended_callback = base::BindOnce(&OpenXrDevice::OnSessionEnded,
+                                               weak_ptr_factory_.GetWeakPtr());
+
   render_loop_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestSession,
                                 base::Unretained(render_loop_.get()),
                                 std::move(on_visibility_state_changed),
-                                std::move(options), std::move(my_callback)));
+                                std::move(options), std::move(my_callback),
+                                std::move(session_ended_callback)));
 }
 
 void OpenXrDevice::OnRequestSessionResult(
@@ -236,8 +240,14 @@ void OpenXrDevice::ForceEndSession(ExitXrPresentReason reason) {
         base::BindOnce(&OpenXrRenderLoop::ExitPresent,
                        base::Unretained(render_loop_.get()), reason));
     render_loop_.reset();
+  } else {
+    // If we have a render loop, the act of it finishing shutting down will call
+    // OnSessionEnded for us.
+    OnSessionEnded();
   }
+}
 
+void OpenXrDevice::OnSessionEnded() {
   OnExitPresent();
   exclusive_controller_receiver_.reset();
 
