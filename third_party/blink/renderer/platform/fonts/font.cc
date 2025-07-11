@@ -465,6 +465,22 @@ float Font::TextAutoSpaceInlineSize() const {
   NOTREACHED();
 }
 
+std::pair<float, bool> Font::TabWidthInternal(const SimpleFontData* font_data,
+                                              const TabSize& tab_size) const {
+  const auto& font_description = GetFontDescription();
+  float letter_spacing = font_description.LetterSpacing();
+  if (!font_data) {
+    return {letter_spacing, false};
+  }
+  float word_spacing = font_description.WordSpacing();
+  float base_tab_width = tab_size.GetPixelSize(font_data->SpaceWidth(),
+                                               letter_spacing, word_spacing);
+  if (!base_tab_width) {
+    return {letter_spacing, false};
+  }
+  return {base_tab_width, true};
+}
+
 float Font::TabWidth(const SimpleFontData* font_data,
                      const TabSize& tab_size,
                      float position) const {
@@ -491,11 +507,10 @@ float Font::TabWidth(const SimpleFontData* font_data,
 
 LayoutUnit Font::TabWidth(const TabSize& tab_size, LayoutUnit position) const {
   const SimpleFontData* font_data = PrimaryFont();
-  if (!font_data)
-    return LayoutUnit::FromFloatCeil(GetFontDescription().LetterSpacing());
-  float base_tab_width = tab_size.GetPixelSize(font_data->SpaceWidth());
-  if (!base_tab_width)
-    return LayoutUnit::FromFloatCeil(GetFontDescription().LetterSpacing());
+  auto [base_tab_width, is_successed] = TabWidthInternal(font_data, tab_size);
+  if (!is_successed) {
+    return LayoutUnit::FromFloatCeil(base_tab_width);
+  }
 
   float modulized_position = fmodf(position, base_tab_width);
   if (RuntimeEnabledFeatures::TabWidthNegativePositionEnabled() &&

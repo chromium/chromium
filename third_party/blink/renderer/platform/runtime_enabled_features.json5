@@ -4653,6 +4653,10 @@
       status: "stable",
     },
     {
+      name: "TabSizeWithSpacing",
+      status: "stable",
+    },
+    {
       name: "TabWidthNegativePosition",
       status: "stable",
     },

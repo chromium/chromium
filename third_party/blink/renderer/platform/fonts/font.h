@@ -212,6 +212,9 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
 
   GlyphData GetEmphasisMarkGlyphData(const AtomicString&) const;
 
+  std::pair<float, bool> TabWidthInternal(const SimpleFontData* font_data,
+                                          const TabSize& tab_size) const;
+
  public:
   FontSelector* GetFontSelector() const;
   FontFallbackIterator CreateFontFallbackIterator(
@@ -270,10 +273,8 @@ inline FontSelector* Font::GetFontSelector() const {
 
 inline float Font::TabWidth(const SimpleFontData* font_data,
                             const TabSize& tab_size) const {
-  if (!font_data)
-    return GetFontDescription().LetterSpacing();
-  float base_tab_width = tab_size.GetPixelSize(font_data->SpaceWidth());
-  return base_tab_width ? base_tab_width : GetFontDescription().LetterSpacing();
+  auto [base_tab_width, is_successed] = TabWidthInternal(font_data, tab_size);
+  return base_tab_width;
 }
 
 template <>
