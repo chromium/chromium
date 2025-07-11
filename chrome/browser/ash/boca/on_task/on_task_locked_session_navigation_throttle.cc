@@ -238,8 +238,14 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     return CANCEL;
   }
 
-  // Allow redirects triggered as separate navigation requests to go through.
-  if (navigation_handle()->GetRedirectChain().size() > 1) {
+  // Allow redirects triggered as separate navigation requests to go through so
+  // they do not count towards the 1LD quota. We do not extend this to other
+  // navigation restrictions to prevent users from circumventing said
+  // restrictions.
+  OnTaskBlocklist* const on_task_blocklist =
+      window_tracker->on_task_blocklist();
+  if (navigation_handle()->GetRedirectChain().size() > 1 &&
+      on_task_blocklist->IsCurrentRestrictionOneLevelDeep()) {
     return PROCEED;
   }
   const GURL& url = navigation_handle()->GetURL();
@@ -287,7 +293,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // that URL needs to be blocked by another blocklist, such as the one imposed
   // by the device admin panel, this would be enforced by a different
   // NavigationThrottle.
-  if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
+  if (on_task_blocklist->IsCurrentRestrictionOneLevelDeep() &&
       navigation_handle()->GetReloadType() != content::ReloadType::NONE &&
       navigation_handle()->GetWebContents()->GetLastCommittedURL().is_valid()) {
     should_redirects_pass_ = true;
@@ -298,7 +304,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // the context menu. Back needs to be explicitly allowed to go back in the
   // case this was a one level deep navigation and we do not want to block
   // the navigation from going back.
-  if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
+  if (on_task_blocklist->IsCurrentRestrictionOneLevelDeep() &&
       navigation_handle()->GetNavigationEntry() &&
       navigation_handle()->GetNavigationEntry()->GetTransitionType() &
           ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) {
@@ -311,9 +317,6 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
       return PROCEED;
     }
   }
-
-  OnTaskBlocklist* const on_task_blocklist =
-      window_tracker->on_task_blocklist();
 
   policy::URLBlocklist::URLBlocklistState blocklist_state =
       on_task_blocklist->GetURLBlocklistState(url);
