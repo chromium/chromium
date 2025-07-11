@@ -1511,13 +1511,6 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
   if (page_content_upload_progress_callback_) {
     page_content_upload_progress_callback_.Run(position, total);
   }
-
-  if (lens::features::ShouldHoldContextualQueriesUntilAck()) {
-    return;
-  }
-  if (position == total) {
-    PageContentUploadFinished();
-  }
 }
 
 void LensOverlayQueryController::PageContentUploadFinished() {

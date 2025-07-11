@@ -385,8 +385,6 @@ constexpr base::FeatureParam<bool> kHandleSidePanelTextDirectives{
     &kLensOverlayContextualSearchbox, "handle-side-panel-text-directives",
     true};
 
-constexpr base::FeatureParam<bool> kHoldContextualQueriesUntilAck{
-    &kLensOverlayContextualSearchbox, "hold-csb-queries-until-ack", true};
 
 constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
@@ -956,9 +954,6 @@ bool HandleSidePanelTextDirectivesEnabled() {
   return kHandleSidePanelTextDirectives.Get();
 }
 
-bool ShouldHoldContextualQueriesUntilAck() {
-  return kHoldContextualQueriesUntilAck.Get();
-}
 
 int GetZstdCompressionLevel() {
   return kZstdCompressionLevel.Get();

@@ -708,13 +708,6 @@ extern bool IsLensOverlayRoutingInfoEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool HandleSidePanelTextDirectivesEnabled();
 
-// Whether to hold contextual queries until the user acknowledges the
-// contextual searchbox. If this is disabled, the contextual queries will be
-// sent immediately after the page content upload request is sent. If this is
-// enabled, the contextual queries will be sent after the server responds to the
-// page content upload request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldHoldContextualQueriesUntilAck();
 
 // The compression level to use when compressing the PDF bytes using zstd.
 // Higher values mean better compression but also take longer to compress.
