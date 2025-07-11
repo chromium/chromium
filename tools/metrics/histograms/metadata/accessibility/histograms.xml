@@ -3066,6 +3066,16 @@ even if they fit the naming pattern. -->
   <summary>Records when the Read Anything omnibox icon is shown.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.EngineVersion"
+    units="yyyymmdd0" expires_after="2026-07-10">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the installed TTS engine version of the format yyyymmdd0 for the
+    date + revision number of the installed engine
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.HighlightGranularity"
     enum="ReadAnythingHighlightState" expires_after="2026-06-01">
   <owner>ajitnarayanan@google.com</owner>

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -204,9 +205,40 @@ void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
     VLOG(1) << "Installing TTS component using V2 engine";
     manifest = kManifestFileName;
   }
+
+  RecordEngineVersion(new_dir.BaseName());
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
       extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir, manifest,
       /*should_localize=*/false);
+}
+void ReadAnythingService::RecordEngineVersion(
+    const base::FilePath& engine_version) {
+// Per FilePath documentation, Windows uses std::wstring, so string
+// so string manipulations must be handled slightly differently.
+#if BUILDFLAG(IS_WIN)
+  using path_string_t = std::wstring;
+  constexpr auto delimiter = L'.';
+#else
+  using path_string_t = std::string;
+  constexpr auto delimiter = '.';
+#endif
+
+  path_string_t file = engine_version.value();
+
+  int version_number = 0;
+
+  size_t pos = file.find(delimiter);
+  if (pos != std::string::npos) {
+    file.erase(pos, 1);
+  }
+
+  // In order for the engine to be recognized by component updater, it must be
+  // of the format YYYYMMDD.x. Convert the string representation of the engine
+  // version to an integer of format YYYMMDDx in order to be logged.
+  if (base::StringToInt(file, &version_number)) {
+    base::UmaHistogramSparse(
+        "Accessibility.ReadAnything.ReadAloud.EngineVersion", version_number);
+  }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
