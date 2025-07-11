@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -27,6 +28,8 @@ import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -43,6 +46,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private final boolean mShowAppFilter;
     // TODO(crbug.com/388201374): Remove the nullability once the feature is launched.
     private @Nullable final SigninPromoCoordinator mHistorySyncPromoCoordinator;
+    private @Nullable final Activity mActivity;
 
     private RecyclerView mRecyclerView;
     private @Nullable HistoryProvider mHistoryProvider;
@@ -86,7 +90,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     public HistoryAdapter(
             HistoryContentManager manager,
             HistoryProvider provider,
-            @Nullable SigninPromoCoordinator historySyncPromoCoordinator) {
+            @Nullable SigninPromoCoordinator historySyncPromoCoordinator,
+            @Nullable Activity activity) {
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
@@ -96,6 +101,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mShowAppFilter = mManager.showAppFilter();
         mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
         mHistorySyncPromoCoordinator = historySyncPromoCoordinator;
+        mActivity = activity;
+    }
+
+    public HistoryAdapter(
+            HistoryContentManager manager,
+            HistoryProvider provider,
+            @Nullable SigninPromoCoordinator historySyncPromoCoordinator) {
+        this(manager, provider, historySyncPromoCoordinator, null);
     }
 
     /** Called when the activity/native page is destroyed. */
@@ -520,12 +533,19 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             // Query for apps could be still pending. |setHeaders()| will be invoked
             // again when the query is completed in order to set the header accordingly.
             if (mShowAppFilter && mManager.hasFilterList()) args.add(mAppFilterHeaderItem);
-        } else {
-            if (mPrivacyDisclaimersVisible) {
-                args.add(mPrivacyDisclaimerHeaderItem);
-            }
+        }
+        boolean isLargeScreenWithKeyboard = false;
+        if (mActivity != null) {
+            isLargeScreenWithKeyboard =
+                    DeviceInput.supportsKeyboard()
+                            && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        }
+        if (!mIsSearching || isLargeScreenWithKeyboard) {
             if (mClearBrowsingDataButtonVisible) {
                 args.add(mClearBrowsingDataButtonHeaderItem);
+            }
+            if (mPrivacyDisclaimersVisible) {
+                args.add(mPrivacyDisclaimerHeaderItem);
             }
             if (mManager.launchedForApp()) {
                 args.add(mHistoryOpenInChromeHeaderItem);

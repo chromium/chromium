@@ -52,6 +52,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 import java.util.List;
 import java.util.function.Function;
@@ -266,6 +268,13 @@ public class HistoryManager
 
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
+
+        boolean isLargeScreenWithKeyboard =
+                DeviceInput.supportsKeyboard()
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (isLargeScreenWithKeyboard) {
+            enterSearchMode();
+        }
     }
 
     private void initializeEmptyView() {
@@ -334,20 +343,23 @@ public class HistoryManager
 
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
-            mContentManager.maybeResetAppFilterChip();
-            mContentManager.getAdapter().onSearchStart();
-            mToolbar.showSearchView(true);
-            String searchEmptyString = getSearchEmptyString();
-            mSelectableListLayout.onStartSearch(
-                    searchEmptyString,
-                    R.string.history_manager_empty_state_view_or_open_more_history);
-            mUmaRecorder.recordSearchHistory();
-            mIsSearching = true;
+            enterSearchMode();
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
             toggleInfoHeaderVisibility();
         }
         return false;
+    }
+
+    private void enterSearchMode() {
+        mContentManager.maybeResetAppFilterChip();
+        mContentManager.getAdapter().onSearchStart();
+        mToolbar.showSearchView(true);
+        String searchEmptyString = getSearchEmptyString();
+        mSelectableListLayout.onStartSearch(
+                searchEmptyString, R.string.history_manager_empty_state_view_or_open_more_history);
+        mUmaRecorder.recordSearchHistory();
+        mIsSearching = true;
     }
 
     private void toggleInfoHeaderVisibility() {
