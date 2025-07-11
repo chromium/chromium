@@ -207,18 +207,12 @@ IN_PROC_BROWSER_TEST_F(WebAppModelMenuPreventCloseTest,
         std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, browser);
     app_menu_model->Init();
 
-    EXPECT_EQ(!kShouldPreventClose,
-              app_menu_model->IsCommandIdEnabled(IDC_OPEN_IN_CHROME));
-    EXPECT_EQ(!kShouldPreventClose,
-              app_menu_model->IsCommandIdVisible(IDC_OPEN_IN_CHROME));
-
     // Verify that "Open in Chrome" button is not visible in the menu.
     ui::MenuModel* model = app_menu_model.get();
     size_t index = 0;
     const bool found = ui::MenuModel::GetModelAndIndexForCommandId(
         IDC_OPEN_IN_CHROME, &model, &index);
-    EXPECT_TRUE(found);
-    EXPECT_EQ(!kShouldPreventClose, model->IsVisibleAt(index));
+    EXPECT_EQ(!kShouldPreventClose, found);
   }
 
   test::UninstallAllWebApps(browser->profile());
