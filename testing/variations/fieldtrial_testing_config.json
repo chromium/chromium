@@ -10747,8 +10747,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GlicAssetsV2",
-                        "GlicParameterizedShader",
-                        "GlicThemeSync"
+                        "GlicParameterizedShader"
                     ]
                 }
             ]
