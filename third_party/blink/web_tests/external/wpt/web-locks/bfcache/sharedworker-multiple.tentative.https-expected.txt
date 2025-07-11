@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] A new held lock must prevent bfcache on all connected documents
+  assert_implements: Should not be BFCached but actually was undefined
+[FAIL] An existing held lock must prevent bfcache on all connected documents
+  assert_implements: Should not be BFCached but actually was undefined
+Harness: the test ran to completion.
+

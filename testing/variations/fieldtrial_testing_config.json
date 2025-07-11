@@ -3315,6 +3315,25 @@
             ]
         }
     ],
+    "BackForwardCacheWithSharedWorker": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250708",
+                    "enable_features": [
+                        "BFCacheWithSharedWorker"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardTransitions": [
         {
             "platforms": [
