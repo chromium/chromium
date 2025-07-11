@@ -205,6 +205,7 @@ extern const base::FeatureParam<base::TimeDelta>(
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityTimeout);
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorTaskIcon);
 
 #if BUILDFLAG(ENABLE_GLIC)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlic);

@@ -359,6 +359,11 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(10)};
 
+// Controls whether the task icon in the actor ui is enabled.
+BASE_FEATURE(kGlicActorTaskIcon,
+             "GlicActorTaskIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
