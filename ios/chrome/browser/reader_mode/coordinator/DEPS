@@ -1,4 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/dom_distiller/model/distiller_service.h",
   "+ios/chrome/browser/dom_distiller/model/distiller_service_factory.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h",
 ]

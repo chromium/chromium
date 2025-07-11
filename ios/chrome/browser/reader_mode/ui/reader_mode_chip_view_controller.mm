@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_view_controller.h"
 
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
@@ -86,6 +87,16 @@ const CGFloat kChipSymbolPointSize = 15;
 
 - (void)showReaderModeOptions {
   [self.readerModeOptionsHandler showReaderModeOptions];
+}
+
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  // Fade in/out the entrypoint badge.
+  CGFloat alphaValue = fmax((progress - kFullscreenProgressThreshold) /
+                                (1 - kFullscreenProgressThreshold),
+                            0);
+  self.view.alpha = alphaValue;
 }
 
 @end
