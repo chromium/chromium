@@ -1047,4 +1047,8 @@ void DocumentSpeculationRules::SetPendingUpdateState(
   pending_update_state_ = new_state;
 }
 
+void DocumentSpeculationRules::FlushMojoMessageForTesting() {
+  host_.FlushForTesting();
+}
+
 }  // namespace blink

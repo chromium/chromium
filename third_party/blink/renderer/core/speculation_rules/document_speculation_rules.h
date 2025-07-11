@@ -77,6 +77,8 @@ class CORE_EXPORT DocumentSpeculationRules
   // scheduled.
   void QueueUpdateSpeculationCandidates(bool force_style_update = false);
 
+  void FlushMojoMessageForTesting();
+
   void Trace(Visitor*) const override;
 
  private:
