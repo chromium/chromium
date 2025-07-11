@@ -1100,8 +1100,7 @@ TEST_P(OverviewSessionTest, TabletModeHistograms) {
 // Tests that entering overview when a fullscreen window is active in maximized
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
-// TODO(crbug.com/41496866): Fix flaky test.
-TEST_P(OverviewSessionTest, DISABLED_FullscreenWindowTabletMode) {
+TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
