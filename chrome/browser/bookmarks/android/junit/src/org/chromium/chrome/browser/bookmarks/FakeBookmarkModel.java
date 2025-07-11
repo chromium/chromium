@@ -614,10 +614,6 @@ public class FakeBookmarkModel extends BookmarkModel {
         }
 
         @Override
-        public void getBookmarksForFolder(
-                long nativeBookmarkBridge, BookmarkId folderId, List<BookmarkItem> bookmarksList) {}
-
-        @Override
         public boolean isFolderVisible(long nativeBookmarkBridge, long id, int type) {
             return true;
         }

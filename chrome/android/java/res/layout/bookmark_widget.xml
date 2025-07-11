@@ -20,7 +20,8 @@ found in the LICENSE file.
         android:background="@drawable/bookmark_widget_background"
         android:divider="@null"
         android:drawSelectorOnTop="true"
-        android:listSelector="@drawable/bookmark_widget_list_selector" />
+        android:listSelector="@drawable/bookmark_widget_list_selector"
+        android:clipToOutline="true" />
 
     <TextView
         android:id="@+id/empty_message"
