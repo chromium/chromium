@@ -209,8 +209,8 @@ declare_args() {
 declare_args() {
   # Set to true to use icf, Identical Code Folding.
   use_icf = (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
-            !use_clang_coverage && current_os != "zos" &&
-            !(is_android && use_order_profiling) && use_lld && !is_wasm
+            !use_clang_coverage && !(is_android && use_order_profiling) &&
+            use_lld && !is_wasm
 }
 
 if (is_android) {
@@ -3062,8 +3062,7 @@ config("symbols") {
       ldflags += [ "-gsplit-dwarf" ]
     }
 
-    _enable_gdb_index = symbol_level == 2 && !is_apple && current_os != "zos" &&
-                        use_lld && !is_wasm
+    _enable_gdb_index = symbol_level == 2 && !is_apple && use_lld && !is_wasm
     if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
