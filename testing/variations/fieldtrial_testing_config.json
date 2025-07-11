@@ -13429,6 +13429,21 @@
             ]
         }
     ],
+    "InfiniteTabsFreezingOnMemoryPressure": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InfiniteTabsFreezingOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "InlineFullscreenPerfExperiment": [
         {
             "platforms": [
