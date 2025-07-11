@@ -82,7 +82,9 @@ mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
   auto event = mojom::OnTabGroupCreatedEvent::New();
-  event->group_id = NodeId::FromTabGroupId(tab_group_change.group);
+  event->group_id = tabs_api::NodeId(
+      tabs_api::NodeId::Type::kCollection,
+      base::NumberToString(tab_group->GetCollectionHandle().raw_value()));
   event->visual_data = tabs_api::converters::BuildMojoTabGroupVisualData(
       *tab_group->visual_data());
   // TODO(crbug.com/412935315): Set the correct position.
@@ -96,21 +98,29 @@ mojom::OnTabGroupCreatedEventPtr ToTabGroupCreatedEvent(
 
 mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
     TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group,
-    std::optional<tab_groups::TabGroupId> new_group,
+    std::optional<tab_groups::TabGroupId> old_group_id,
+    std::optional<tab_groups::TabGroupId> new_group_id,
     tabs::TabInterface* tab,
     int index) {
   auto event = mojom::OnTabMovedEvent::New();
   event->id = NodeId::FromTabHandle(tab->GetHandle());
   std::optional<tabs_api::NodeId> old_parent_id;
-  if (old_group.has_value()) {
-    old_parent_id = tabs_api::NodeId::FromTabGroupId(*old_group);
+  if (old_group_id.has_value()) {
+    TabGroup* old_group =
+        tab_strip_model->group_model()->GetTabGroup(old_group_id.value());
+    old_parent_id = tabs_api::NodeId(
+        tabs_api::NodeId::Type::kCollection,
+        base::NumberToString(old_group->GetCollectionHandle().raw_value()));
   }
   event->from = tabs_api::Position(0, old_parent_id);
 
   std::optional<tabs_api::NodeId> new_parent_id;
-  if (new_group.has_value()) {
-    new_parent_id = tabs_api::NodeId::FromTabGroupId(*new_group);
+  if (new_group_id.has_value()) {
+    TabGroup* new_group =
+        tab_strip_model->group_model()->GetTabGroup(new_group_id.value());
+    new_parent_id = tabs_api::NodeId(
+        tabs_api::NodeId::Type::kCollection,
+        base::NumberToString(new_group->GetCollectionHandle().raw_value()));
   }
   event->to = tabs_api::Position(index, new_parent_id);
   return event;
@@ -122,7 +132,9 @@ mojom::OnTabGroupVisualsChangedEventPtr ToTabGroupVisualsChangedEvent(
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
   auto event = mojom::OnTabGroupVisualsChangedEvent::New();
-  event->group_id = NodeId::FromTabGroupId(tab_group_change.group);
+  event->group_id = tabs_api::NodeId(
+      tabs_api::NodeId::Type::kCollection,
+      base::NumberToString(tab_group->GetCollectionHandle().raw_value()));
   event->visual_data = tabs_api::converters::BuildMojoTabGroupVisualData(
       *tab_group->visual_data());
   return event;
