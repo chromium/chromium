@@ -231,7 +231,7 @@
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -246,7 +246,7 @@
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -270,7 +270,7 @@
         },
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -286,7 +286,7 @@
         "swarming": {
           "dimensions": {
             "integrity": "high",
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -302,7 +302,7 @@
         "name": "polymer_tools_python_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Windows-10",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

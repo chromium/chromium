@@ -565,7 +565,7 @@
         ],
         'swarming': {
           'dimensions': {
-            'os': 'Windows-10',
+            'os': 'Windows-10-19045',
           },
         },
       },
