@@ -74,6 +74,15 @@ class TailoredSecurityTabHelper
   // The currently displayed infobar.
   raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 
+  // Scoped observer that facilitates observing the service.
+  base::ScopedObservation<safe_browsing::TailoredSecurityService,
+                          safe_browsing::TailoredSecurityServiceObserver>
+      tailored_security_service_observation_{this};
+
+  // Scoped observer that facilitates observing the WebState.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
+
   // Scoped observer that facilitates observing the infobar manager.
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
