@@ -249,25 +249,34 @@ const int kBatchSize = 100;
     return;
   }
 
-  if (change.type() == WebStateListChange::Type::kInsert) {
-    const WebStateListChangeInsert& insertChange =
-        change.As<WebStateListChangeInsert>();
-    insertChange.inserted_web_state()->AddObserver(
-        _webStateObserverBridge.get());
-  } else if (change.type() == WebStateListChange::Type::kDetach) {
-    const WebStateListChangeDetach& detachChange =
-        change.As<WebStateListChangeDetach>();
-    raw_ptr<web::WebState> webState = detachChange.detached_web_state();
-    webState->RemoveObserver(_webStateObserverBridge.get());
-
-    if (self.isAppInBackground) {
-      // Normally, no model updates should happen in background.
-      // In case they do, process them on foreground.
-      self.needsClearAndReindex = YES;
-      return;
+  switch (change.type()) {
+    case WebStateListChange::Type::kDetach: {
+      const auto& detachChange = change.As<WebStateListChangeDetach>();
+      [self webStateRemoved:detachChange.detached_web_state()];
+      break;
     }
 
-    [self removeLatestCommittedURLForWebState:webState];
+    case WebStateListChange::Type::kInsert: {
+      const auto& insertChange = change.As<WebStateListChangeInsert>();
+      [self webStateInserted:insertChange.inserted_web_state()];
+      break;
+    }
+
+    case WebStateListChange::Type::kReplace: {
+      const auto& replaceChange = change.As<WebStateListChangeReplace>();
+      [self webStateRemoved:replaceChange.replaced_web_state()];
+      [self webStateInserted:replaceChange.inserted_web_state()];
+      break;
+    }
+
+    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      // Nothing to do for those changes.
+      break;
   }
 }
 
@@ -282,6 +291,22 @@ const int kBatchSize = 100;
   }
 
   [self removeAllURLsFromWebStateList:webStateList];
+}
+
+- (void)webStateInserted:(web::WebState*)webState {
+  webState->AddObserver(_webStateObserverBridge.get());
+}
+
+- (void)webStateRemoved:(web::WebState*)webState {
+  webState->RemoveObserver(_webStateObserverBridge.get());
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
+  [self removeLatestCommittedURLForWebState:webState];
 }
 
 #pragma mark - CRWWebStateObserver
