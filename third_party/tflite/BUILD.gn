@@ -248,6 +248,31 @@ tflite_static_library("tflite_builtin_op_resolver") {
   conditional_deps = [ ":tflite" ]
 }
 
+flatbuffer("mutable_schema_tflite_path") {
+  sources = [ "src/tensorflow/compiler/mlir/lite/schema/schema.fbs" ]
+  flatc_out_dir = "src/tensorflow/lite/schema/mutable"
+  args = [ "--gen-object-api" ]
+  mutable = true
+}
+
+# TFLite's model_serialize.cc expects the mutable schema to be in two different
+# places in the source tree. :/
+copy("mutable_schema_compiler_path") {
+  sources = [
+    "$target_gen_dir/src/tensorflow/lite/schema/mutable/schema_generated.h",
+  ]
+  outputs =
+      [ "$target_gen_dir/src/tensorflow/compiler/mlir/lite/schema/mutable" ]
+  deps = [ ":mutable_schema_tflite_path" ]
+}
+
+source_set("mutable_schema") {
+  deps = [
+    ":mutable_schema_compiler_path",
+    ":mutable_schema_tflite_path",
+  ]
+}
+
 source_set("tflite_public_headers") {
   public = [
     "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
@@ -1307,6 +1332,7 @@ tflite_static_library("tflite") {
   }
 
   deps = [
+    ":mutable_schema",
     "//third_party/abseil-cpp:absl",
     "//third_party/farmhash",
     "//third_party/fft2d",
