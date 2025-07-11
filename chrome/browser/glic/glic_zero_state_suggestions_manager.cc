@@ -13,7 +13,7 @@
 namespace glic {
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
-    GlicSharingManager* sharing_manager,
+    GlicSharingManagerImpl* sharing_manager,
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
     Host* host)
     : sharing_manager_(sharing_manager),
@@ -44,6 +44,25 @@ void GlicZeroStateSuggestionsManager::
   }
 }
 
+void GlicZeroStateSuggestionsManager::
+    NotifyZeroStateSuggestionsOnPinnedTabChanged(
+        bool is_first_run,
+        const std::vector<std::string>& supported_tools,
+        const std::vector<content::WebContents*>& pinned_tab_data) {
+  // TODO(b/431038465) Add gating to not call when it wouldn't
+  // meaningfully change the resulting suggestions.
+  if (contextual_cueing_service_) {
+    contextual_cueing_service_
+        ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+            pinned_tab_data, is_first_run, supported_tools,
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                   OnZeroStateSuggestionsNotify,
+                               GetWeakPtr(), is_first_run, supported_tools),
+                std::nullopt));
+  }
+}
+
 void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
     bool is_notifying,
     bool is_first_run,
@@ -55,12 +74,17 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
     if (current_zero_state_suggestions_focus_change_subscription_) {
       LOG(WARNING) << "Multiple active ZeroStateSuggestion requests";
     }
-    // If there was a previous subscription it will be unsubscribed when the
-    // old value is destructed on assignment.
+    // If there were previous subscriptions they will be unsubscribed when the
+    // old values are destructed on assignment.
     current_zero_state_suggestions_focus_change_subscription_ =
         sharing_manager_->AddFocusedTabChangedCallback(base::BindRepeating(
             &GlicZeroStateSuggestionsManager::
                 NotifyZeroStateSuggestionsOnFocusedTabChanged,
+            GetWeakPtr(), is_first_run, supported_tools));
+    current_zero_state_suggestions_pinned_tab_change_subscription_ =
+        sharing_manager_->AddPinnedTabsChangedCallback(base::BindRepeating(
+            &GlicZeroStateSuggestionsManager::
+                NotifyZeroStateSuggestionsOnPinnedTabChanged,
             GetWeakPtr(), is_first_run, supported_tools));
 
     auto* active_web_contents =
@@ -79,9 +103,24 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
                   std::nullopt));
       return;
     }
+    if (contextual_cueing_service_) {
+      auto pinned_tabs = sharing_manager_->GetPinnedTabs();
+      if (pinned_tabs.size() > 0) {
+        contextual_cueing_service_
+            ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                pinned_tabs, is_first_run, supported_tools,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                       OnZeroStateSuggestionsFetched,
+                                   GetWeakPtr(), std::move(callback)),
+                    std::nullopt));
+        return;
+      }
+    }
 
   } else {
-    current_zero_state_suggestions_focus_change_subscription_ = {};
+    // If is_notifying is false we need to reset the subscriptions.
+    Reset();
   }
 
   std::move(callback).Run(nullptr);
@@ -115,6 +154,7 @@ void GlicZeroStateSuggestionsManager::OnZeroStateSuggestionsNotify(
 
 void GlicZeroStateSuggestionsManager::Reset() {
   current_zero_state_suggestions_focus_change_subscription_ = {};
+  current_zero_state_suggestions_pinned_tab_change_subscription_ = {};
 }
 
 base::WeakPtr<GlicZeroStateSuggestionsManager>

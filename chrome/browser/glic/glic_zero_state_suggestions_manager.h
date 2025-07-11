@@ -16,23 +16,29 @@ class ContextualCueingService;
 }  // namespace contextual_cueing
 
 namespace glic {
-class GlicSharingManager;
+class GlicSharingManagerImpl;
 class Host;
 
-// A class for managing sendind zero state suggestions through the mojo api.
+// A class for managing sending zero state suggestions through the mojo api.
 class GlicZeroStateSuggestionsManager {
  public:
   explicit GlicZeroStateSuggestionsManager(
-      GlicSharingManager* sharing_manager,
+      GlicSharingManagerImpl* sharing_manager,
       contextual_cueing::ContextualCueingService* contextual_cueing_service,
       Host* host);
   virtual ~GlicZeroStateSuggestionsManager();
 
-  // Callback to send zero state suggestions to the webui on tab changes
+  // Callback to send zero state suggestions to the webui on tab changes.
   void NotifyZeroStateSuggestionsOnFocusedTabChanged(
       bool is_first_run,
       const std::vector<std::string>& supported_tools,
       const glic::FocusedTabData& focused_tab_data);
+
+  // Callback to send zero state suggestions to the webui on pinned tab changes.
+  void NotifyZeroStateSuggestionsOnPinnedTabChanged(
+      bool is_first_run,
+      const std::vector<std::string>& supported_tools,
+      const std::vector<content::WebContents*>& pinned_tab_data);
 
   // This handles calls from the webui to return a suggestion, and begin to
   // notify the webui of changes to the zero state suggestsions.
@@ -62,7 +68,7 @@ class GlicZeroStateSuggestionsManager {
   base::WeakPtr<GlicZeroStateSuggestionsManager> GetWeakPtr();
 
   // Owned by the glic_keyed_service.
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerImpl> sharing_manager_;
   raw_ptr<Host> host_;
 
   // This passed by the glic_keyed_service.
@@ -72,6 +78,9 @@ class GlicZeroStateSuggestionsManager {
   mojom::ZeroStateSuggestionsOptions current_zero_state_suggestions_options_;
   base::CallbackListSubscription
       current_zero_state_suggestions_focus_change_subscription_;
+
+  base::CallbackListSubscription
+      current_zero_state_suggestions_pinned_tab_change_subscription_;
 
   base::WeakPtrFactory<GlicZeroStateSuggestionsManager> weak_ptr_factory_{this};
 };
