@@ -4,11 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '/strings.m.js';
+import '/icons.html.js';
 import './managed_user_profile_notice_disclosure.js';
 import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state.js';
 import './managed_user_profile_notice_data_handling.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -91,16 +92,8 @@ export class ManagedUserProfileNoticeAppElement extends
       showSuccess_: {type: Boolean},
       showTimeout_: {type: Boolean},
       showError_: {type: Boolean},
-
       processingSubtitle_: {type: String},
-
       showUserDataHandling_: {type: Boolean},
-
-      useUpdatedUi_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       selectedDataHandling_: {type: String},
     };
   }
@@ -126,8 +119,6 @@ export class ManagedUserProfileNoticeAppElement extends
   protected accessor showSuccess_: boolean = false;
   protected accessor showTimeout_: boolean = false;
   protected accessor showError_: boolean = false;
-  protected accessor useUpdatedUi_: boolean =
-      loadTimeData.getBoolean('useUpdatedUi');
   protected accessor processingSubtitle_: string =
       loadTimeData.getString('processingSubtitle');
   protected accessor showUserDataHandling_: boolean = false;

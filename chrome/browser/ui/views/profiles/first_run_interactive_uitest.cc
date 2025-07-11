@@ -83,8 +83,6 @@ const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
                               "#acceptSignInButton"};
 const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
                                   "#declineSignInButton"};
-const DeepQuery kLegacyDeclineManagementButton{
-    "legacy-managed-user-profile-notice-app", "#cancel-button"};
 const DeepQuery kDeclineManagementButton{"managed-user-profile-notice-app",
                                          "#cancel-button"};
 const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
@@ -112,7 +110,6 @@ struct TestParam {
   bool with_privacy_sandbox_enabled = false;
   SyncButtonsFeatureConfig sync_buttons_feature_config =
       SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
-  bool with_updated_profile_creation_screen = false;
   std::optional<bool> with_supervision = std::nullopt;
 };
 
@@ -189,8 +186,6 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "Default", .with_supervision = true},
-    {.test_suffix = "WithUpdatedProfileCreationScreen",
-     .with_updated_profile_creation_screen = true},
     {.test_suffix = "AsyncCapabilitiesToNotEqualButtons",
      .sync_buttons_feature_config =
          SyncButtonsFeatureConfig::kAsyncEqualButtons},
@@ -564,13 +559,6 @@ class FirstRunParameterizedInteractiveUiTest
             ScopedChromeBuildOverrideForTesting(
                 /*force_chrome_build=*/true));
 
-    if (WithUpdatedProfileCreationScreen()) {
-      enabled_features_and_params.push_back(
-          {features::kEnterpriseUpdatedProfileCreationScreen, {}});
-    } else {
-      disabled_features.push_back(
-          features::kEnterpriseUpdatedProfileCreationScreen);
-    }
     // To allow an IPH for new supervised user profiles.
     enabled_features_and_params.push_back(
         {feature_engagement::kIPHSupervisedUserProfileSigninFeature, {}});
@@ -620,10 +608,6 @@ class FirstRunParameterizedInteractiveUiTest
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
-  }
-
-  static bool WithUpdatedProfileCreationScreen() {
-    return GetParam().with_updated_profile_creation_screen;
   }
 
   static bool WithPrivacySandboxEnabled() {
@@ -1207,9 +1191,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   ASSERT_TRUE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  auto& decline_button = WithUpdatedProfileCreationScreen()
-                             ? kDeclineManagementButton
-                             : kLegacyDeclineManagementButton;
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
       // Initially the loading screen is shown.
@@ -1224,8 +1205,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       // is managed and requiring to show the enterprise management opt-in.
       WaitForWebContentsNavigation(
           kWebContentsId, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
-      EnsurePresent(kWebContentsId, decline_button),
-      PressJsButton(kWebContentsId, decline_button),
+      EnsurePresent(kWebContentsId, kDeclineManagementButton),
+      PressJsButton(kWebContentsId, kDeclineManagementButton),
 
       CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 

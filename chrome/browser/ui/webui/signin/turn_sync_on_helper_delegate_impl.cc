@@ -122,12 +122,7 @@ void TurnSyncOnHelperDelegateImpl::
     ShouldEnterpriseConfirmationPromptForNewProfile(
         Profile* profile,
         base::OnceCallback<void(bool)> callback) {
-  if (base::FeatureList::IsEnabled(
-          features::kEnterpriseUpdatedProfileCreationScreen)) {
     std::move(callback).Run(/*prompt_for_new_profile=*/true);
-    return;
-  }
-  ui::CheckShouldPromptForNewProfile(profile, std::move(callback));
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(

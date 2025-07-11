@@ -58,16 +58,6 @@ namespace {
 const int kAvatarSize = 100;
 constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 
-bool UseMultiscreen() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(
-             profile_management::features::kOidcAuthProfileManagement) ||
-         base::FeatureList::IsEnabled(
-             features::kEnterpriseUpdatedProfileCreationScreen);
-#endif
-}
 
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
@@ -268,7 +258,7 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (show_link_data_option_ && IsJavascriptAllowed() && UseMultiscreen()) {
+  if (show_link_data_option_ && IsJavascriptAllowed()) {
     if ((is_consumer_domain &&
          state == ManagedUserProfileNoticeHandler::State::kValueProposition) ||
         (!is_consumer_domain &&
@@ -423,30 +413,23 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   std::string subtitle;
   std::string email;
   std::string account_name;
-  std::string enterprise_info;
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
-      enterprise_info = l10n_util::GetStringUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(
                                    IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL));
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled:
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
-      enterprise_info = l10n_util ::GetStringUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kConsumerAccountSyncDisabled:
       dict.Set("showEnterpriseBadge", false);
       subtitle = GetManagedDeviceTitle();
-      enterprise_info =
-          l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
@@ -455,8 +438,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
       dict.Set("showEnterpriseBadge", true);
       subtitle = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_ACCOUNT_MANAGED);
-      enterprise_info = l10n_util::GetStringUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.Set("proceedLabel",
                l10n_util::GetStringUTF8(
                    profile_creation_required_by_policy_
@@ -472,8 +453,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                !enterprise_util::IsKnownConsumerDomain(domain_name_));
       subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
                                                  entry, domain_name_, email_);
-      enterprise_info = l10n_util::GetStringUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.Set("proceedLabel",
                l10n_util::GetStringUTF8(
                    profile_creation_required_by_policy_
@@ -512,7 +491,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
 
   dict.Set("title", title);
   dict.Set("subtitle", subtitle);
-  dict.Set("enterpriseInfo", enterprise_info);
 
   return dict;
 }
@@ -574,12 +552,6 @@ void ManagedUserProfileNoticeHandler::CallProceedCallbackForTesting(
 void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
     signin::SigninChoiceOperationResult result,
     signin::SigninChoiceErrorType error_type) {
-  if (!UseMultiscreen() && done_callback_) {
-    DisallowJavascript();
-    std::move(done_callback_).Run();
-    return;
-  }
-
   if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
     processing_timer_.Stop();
   }

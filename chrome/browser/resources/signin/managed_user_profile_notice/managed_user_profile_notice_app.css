@@ -13,7 +13,7 @@
  * #include=signin-shared tangible-sync-style-shared cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
-:host([use-updated-ui_]) {
+:host {
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
@@ -24,11 +24,11 @@
   position: relative;
 }
 
-:host([use-updated-ui_]:not([is-modal-dialog_])) .main-container {
+:host(:not([is-modal-dialog_])) .main-container {
   margin-block-start: auto;
 }
 
-:host([use-updated-ui_][is-modal-dialog_]) .main-container {
+:host([is-modal-dialog_]) .main-container {
   flex: 1 1 auto;
 }
 

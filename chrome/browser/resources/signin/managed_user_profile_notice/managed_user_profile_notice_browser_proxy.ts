@@ -33,7 +33,6 @@ export interface ManagedUserProfileInfo {
   showEnterpriseBadge: boolean;
   title: string;
   subtitle: string;
-  enterpriseInfo: string;
   proceedLabel: string;
   checkLinkDataCheckboxByDefault: boolean;
 }

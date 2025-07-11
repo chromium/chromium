@@ -9678,23 +9678,6 @@
             ]
         }
     ],
-    "EnterpriseUpdatedProfileCreationScreen": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseUpdatedProfileCreationScreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "EsbAsASyncedSetting": [
         {
             "platforms": [

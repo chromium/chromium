@@ -280,23 +280,9 @@ INSTANTIATE_TEST_SUITE_P(,
                                           testing::Bool()));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-class ManagedBrowserUtilsDeviceSignalsBrowserTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kEnterpriseUpdatedProfileCreationScreen, GetParam());
-    InProcessBrowserTest::SetUp();
-  }
+using ManagedBrowserUtilsDeviceSignalsBrowserTest = InProcessBrowserTest;
 
-  bool EnterpriseUpdatedProfileCreationScreenEnabled() { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ManagedBrowserUtilsDeviceSignalsBrowserTest,
+IN_PROC_BROWSER_TEST_F(ManagedBrowserUtilsDeviceSignalsBrowserTest,
                        UserAcceptedAccountManagementSharesDeviceSignals) {
   Profile* profile = browser()->profile();
   auto* user_permission_service =
@@ -313,12 +299,7 @@ IN_PROC_BROWSER_TEST_P(ManagedBrowserUtilsDeviceSignalsBrowserTest,
   // User has consented to sharing signals for the lifetime of the profile.
   SetUserAcceptedAccountManagement(profile, true);
   ASSERT_TRUE(UserAcceptedAccountManagement(profile));
-  ASSERT_EQ(user_permission_service->HasUserConsented(),
-            EnterpriseUpdatedProfileCreationScreenEnabled());
+  ASSERT_EQ(user_permission_service->HasUserConsented(), true);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ManagedBrowserUtilsDeviceSignalsBrowserTest,
-                         testing::Bool());
 }  // namespace enterprise_util
 

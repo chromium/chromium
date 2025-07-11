@@ -221,11 +221,8 @@ void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
   // signals.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (accepted && base::FeatureList::IsEnabled(
-                      features::kEnterpriseUpdatedProfileCreationScreen)) {
-    profile->GetPrefs()->SetBoolean(
-        device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
-  }
+  profile->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, accepted);
 #endif
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesEntry* entry =

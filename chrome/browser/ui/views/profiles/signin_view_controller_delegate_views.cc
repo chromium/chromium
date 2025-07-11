@@ -71,10 +71,8 @@ namespace {
 
 const int kModalDialogWidth = 448;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const int kManagedUserNoticeConfirmationDialogWidth = 512;
-const int kManagedUserNoticeConfirmationDialogHeight = 576;
-const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 780;
-const int kManagedUserNoticeConfirmationUpdatedDialogHeight = 560;
+const int kManagedUserNoticeConfirmationDialogWidth = 780;
+const int kManagedUserNoticeConfirmationDialogHeight = 560;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
@@ -232,19 +230,9 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
-  bool enable_updated_dialog = base::FeatureList::IsEnabled(
-      features::kEnterpriseUpdatedProfileCreationScreen);
   bool is_oidc_account = create_param->is_oidc_account;
-  enable_updated_dialog |=
-      is_oidc_account &&
-      base::FeatureList::IsEnabled(
-          profile_management::features::kOidcAuthProfileManagement);
-  auto width = enable_updated_dialog
-                   ? kManagedUserNoticeConfirmationUpdatedDialogWidth
-                   : kManagedUserNoticeConfirmationDialogWidth;
-  auto height = enable_updated_dialog
-                    ? kManagedUserNoticeConfirmationUpdatedDialogHeight
-                    : kManagedUserNoticeConfirmationDialogHeight;
+  auto width = kManagedUserNoticeConfirmationDialogWidth;
+  auto height = kManagedUserNoticeConfirmationDialogHeight;
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl), height,
       width, InitializeSigninWebDialogUI(false));
