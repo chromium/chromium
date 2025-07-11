@@ -815,7 +815,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private boolean isInMultiWindowMode() {
         Activity activity = getActivityFromCurrentTab();
-        return MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+        if (activity == null) return false;
+        return !activity.isInPictureInPictureMode()
+                && MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
     }
 
     /** Returns {@code true} if the optional button will be shown. */
