@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      scriptprocessornode.html
-    </title>
+    <title>ScriptProcessorNode basic behavior test</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-
-      let sampleRate = 44100.0;
-      let outputChannels = 6;
+    <script>
+      const sampleRate = 44100.0;
+      const outputChannels = 6;
       let playbackTime = 0.0;
 
       // For the current implementation of ScriptProcessorNode, when it works
@@ -22,16 +17,16 @@
       // event.inputBuffer might be overwrite again before onaudioprocess ever
       // get chance to be called.  We carefully arrange the renderLengthInFrames
       // and bufferSize to have exactly the same value to avoid this issue.
-      let renderLengthInFrames = 512;
-      let bufferSize = 512;
+      const renderLengthInFrames = 512;
+      const bufferSize = 512;
 
       let context;
 
       function createBuffer(context, length) {
-        let audioBuffer = context.createBuffer(2, length, sampleRate);
-        let n = audioBuffer.length;
-        let dataL = audioBuffer.getChannelData(0);
-        let dataR = audioBuffer.getChannelData(1);
+        const audioBuffer = context.createBuffer(2, length, sampleRate);
+        const n = audioBuffer.length;
+        const dataL = audioBuffer.getChannelData(0);
+        const dataR = audioBuffer.getChannelData(1);
 
         for (let i = 0; i < n; ++i) {
           dataL[i] = -1;
@@ -41,99 +36,79 @@
         return audioBuffer;
       }
 
-      function processAudioData(event, should) {
+      function processAudioData(event) {
         playbackTime = event.playbackTime;
-        let expectedTime =
+        const expectedTime =
             context.currentTime + (bufferSize / context.sampleRate);
-        let allowedTimeGap = 0.0000001;
+        const allowedTimeGap = 0.0000001;
 
         // There may be a little time gap which is from different thread
         // operation between currentTime when main thread fires onaudioprocess()
         // and currentTime when read in JS since currentTime is continuously
         // increasing on audio thread.
+        assert_approx_equals(
+            playbackTime, expectedTime, allowedTimeGap,
+            'playbackTime must be close to expected time');
 
-        should(playbackTime, 'playbackTime').beCloseTo(expectedTime, {
-          threshold: allowedTimeGap
-        });
+        const outputBuffer = event.outputBuffer;
+        assert_equals(outputBuffer.numberOfChannels, outputChannels,
+            'Number of output channels');
+        assert_equals(outputBuffer.length, bufferSize, 'Length of buffer');
 
-        buffer = event.outputBuffer;
-        should(buffer.numberOfChannels, 'Number of output channels')
-            .beEqualTo(outputChannels);
-        should(buffer.length, 'Length of buffer').beEqualTo(bufferSize);
+        const inputBuffer = event.inputBuffer;
+        const bufferDataL = inputBuffer.getChannelData(0);
+        const bufferDataR = inputBuffer.getChannelData(1);
 
-        buffer = event.inputBuffer;
-        let bufferDataL = buffer.getChannelData(0);
-        let bufferDataR = buffer.getChannelData(1);
-
-        should(bufferDataL, 'Left channel').beConstantValueOf(-1);
-        should(bufferDataR, 'Right channel').beConstantValueOf(1);
+        assert_array_constant_value(
+              bufferDataL, -1, 'Left channel should be constant -1');
+        assert_array_constant_value(
+              bufferDataR,  1, 'Right channel should be constant 1');
       }
 
-      function doBufferSizeTest(size, should) {
-        should(() => {
-          context.createScriptProcessor(size, 1, 1);
-        }, 'context.createScriptProcessor(' + size + ', 1, 1)').notThrow();
-      }
+      promise_test(async () => {
+        context = new OfflineAudioContext(2, renderLengthInFrames, sampleRate);
 
-      audit.define(
-          {label: 'test', description: 'Basic ScriptProcessorNode properties'},
-          (task, should) => {
-            // Create offline audio context.
-            context =
-                new OfflineAudioContext(2, renderLengthInFrames, sampleRate);
+        assert_throws_dom(
+            'IndexSizeError',
+            () => context.createScriptProcessor(512, 0, 0),
+            'createScriptProcessor(512, 0, 0) must throw IndexSizeError');
 
-            should(() => {
-              context.createScriptProcessor(512, 0, 0);
-            }, 'createScriptProcessor(512, 0, 0)').throw();
+        context.createScriptProcessor(512, 1, 0);
+        context.createScriptProcessor(512, 2, 0);
+        context.createScriptProcessor(512, 0, 1);
+        context.createScriptProcessor(512, 0, 2);
 
-            should(() => {
-              context.createScriptProcessor(512, 1, 0);
-            }, 'context.createScriptProcessor(512, 1, 0)').notThrow();
+        assert_throws_dom(
+            'IndexSizeError',
+            () => context.createScriptProcessor(511, 1, 1),
+            'context.createScriptProcessor(511, 1, 1) must ' +
+                'throw IndexSizeError');
 
-            should(() => {
-              context.createScriptProcessor(512, 2, 0);
-            }, 'context.createScriptProcessor(512, 2, 0)').notThrow();
+        context.createScriptProcessor(256, 1, 1);
+        context.createScriptProcessor(512, 1, 1);
+        context.createScriptProcessor(1024, 1, 1);
+        context.createScriptProcessor(2048, 1, 1);
+        context.createScriptProcessor(4096, 1, 1);
+        context.createScriptProcessor(8192, 1, 1);
+        context.createScriptProcessor(16384, 1, 1);
 
-            should(() => {
-              context.createScriptProcessor(512, 0, 1);
-            }, 'context.createScriptProcessor(512, 0, 1)').notThrow();
+        const sourceBuffer = createBuffer(context, renderLengthInFrames);
 
-            should(() => {
-              context.createScriptProcessor(512, 0, 2);
-            }, 'context.createScriptProcessor(512, 0, 2)').notThrow();
-            should(() => {
-              context.createScriptProcessor(511, 1, 1);
-            }, 'context.createScriptProcessor(511, 1, 1)').throw();
+        const bufferSource = context.createBufferSource();
+        bufferSource.buffer = sourceBuffer;
 
-            doBufferSizeTest(256, should);
-            doBufferSizeTest(512, should);
-            doBufferSizeTest(1024, should);
-            doBufferSizeTest(2048, should);
-            doBufferSizeTest(4096, should);
-            doBufferSizeTest(8192, should);
-            doBufferSizeTest(16384, should);
+        const jsnode =
+            context.createScriptProcessor(bufferSize, 2, outputChannels);
 
-            let sourceBuffer = createBuffer(context, renderLengthInFrames);
+        bufferSource.connect(jsnode);
+        jsnode.connect(context.destination);
+        jsnode.onaudioprocess = event => {
+          processAudioData(event);
+        };
 
-            let bufferSource = context.createBufferSource();
-            bufferSource.buffer = sourceBuffer;
-
-            let jsnode =
-                context.createScriptProcessor(bufferSize, 2, outputChannels);
-
-            bufferSource.connect(jsnode);
-            jsnode.connect(context.destination);
-            jsnode.onaudioprocess = event => {
-              processAudioData(event, should);
-            };
-
-            bufferSource.start(0);
-
-            context.startRendering().then(() => task.done());
-            ;
-          });
-
-      audit.run();
+        bufferSource.start(0);
+        await context.startRendering();
+      }, 'ScriptProcessorNode: basic creation and audio processing behavior');
     </script>
   </body>
 </html>
