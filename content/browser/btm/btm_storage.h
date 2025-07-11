@@ -87,15 +87,6 @@ class CONTENT_EXPORT BtmStorage {
   std::vector<std::string> GetSitesThatBounced(
       base::TimeDelta grace_period) const;
 
-  // Returns all sites that did a stateful bounce that aren't protected from
-  // DIPS.
-  std::vector<std::string> GetSitesThatBouncedWithState(
-      base::TimeDelta grace_period) const;
-
-  // Returns all sites which use storage that aren't protected from DIPS.
-  std::vector<std::string> GetSitesThatUsedStorage(
-      base::TimeDelta grace_period) const;
-
   // Returns the list of sites that should have their state cleared by DIPS. How
   // these sites are determined is controlled by the value of
   // `features::kBtmTriggeringAction`. Passing a non-NULL `grace_period`

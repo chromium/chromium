@@ -672,69 +672,6 @@ std::vector<std::string> BtmDatabase::GetSitesThatBounced(
   return sites;
 }
 
-std::vector<std::string> BtmDatabase::GetSitesThatBouncedWithState(
-    base::TimeDelta grace_period) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return {};
-  }
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Privacy.DIPS.Database.Operation.GetSitesThatBouncedWithStateTime");
-
-  ClearExpiredRows();
-
-  static constexpr char kStatefulBounceSql[] =  // clang-format off
-    "SELECT site FROM bounces "
-    "WHERE "
-      "first_stateful_bounce_time<? "
-      "AND last_user_activation_time IS NULL "
-      "AND last_web_authn_assertion_time IS NULL "
-    "ORDER BY site";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kStatefulBounceSql));
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kStatefulBounceSql));
-  statement.BindTime(0, clock_->Now() - grace_period);
-
-  std::vector<std::string> sites;
-  while (statement.Step()) {
-    sites.push_back(statement.ColumnString(0));
-  }
-  return sites;
-}
-
-std::vector<std::string> BtmDatabase::GetSitesThatUsedStorage(
-    base::TimeDelta grace_period) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return {};
-  }
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Privacy.DIPS.Database.Operation.GetSitesThatUsedStorageTime");
-
-  ClearExpiredRows();
-
-  static constexpr char kStorageSql[] =  // clang-format off
-    "SELECT site FROM bounces "
-    "WHERE "
-      "first_site_storage_time<? "
-      "AND last_user_activation_time IS NULL "
-      "AND last_web_authn_assertion_time IS NULL "
-    "ORDER BY site";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kStorageSql));
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kStorageSql));
-  statement.BindTime(0, clock_->Now() - grace_period);
-
-  std::vector<std::string> sites;
-  while (statement.Step()) {
-    sites.push_back(statement.ColumnString(0));
-  }
-  return sites;
-}
-
 std::set<std::string> BtmDatabase::FilterSites(
     const std::set<std::string>& sites,
     BounceFilterType filter) {

@@ -225,20 +225,6 @@ std::vector<std::string> BtmStorage::GetSitesThatBounced(
   return db_->GetSitesThatBounced(grace_period);
 }
 
-std::vector<std::string> BtmStorage::GetSitesThatBouncedWithState(
-    base::TimeDelta grace_period) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatBouncedWithState(grace_period);
-}
-
-std::vector<std::string> BtmStorage::GetSitesThatUsedStorage(
-    base::TimeDelta grace_period) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatUsedStorage(grace_period);
-}
-
 std::vector<std::string> BtmStorage::GetSitesToClear(
     std::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
@@ -249,16 +235,8 @@ std::vector<std::string> BtmStorage::GetSitesToClear(
     case BtmTriggeringAction::kNone: {
       return {};
     }
-    case BtmTriggeringAction::kStorage: {
-      sites_to_clear = GetSitesThatUsedStorage(grace_period);
-      break;
-    }
     case BtmTriggeringAction::kBounce: {
       sites_to_clear = GetSitesThatBounced(grace_period);
-      break;
-    }
-    case BtmTriggeringAction::kStatefulBounce: {
-      sites_to_clear = GetSitesThatBouncedWithState(grace_period);
       break;
     }
   }

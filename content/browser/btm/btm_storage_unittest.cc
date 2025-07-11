@@ -84,23 +84,6 @@ TEST(BtmGetSitesToClearTest, FiltersByTriggerParam) {
                 testing::ElementsAre(GetSiteForBtm(kBounceUrl),
                                      GetSiteForBtm(kStatefulBounceUrl)));
   }
-  // Call 'GetSitesToClear' when DIPS is triggered by storage.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeatureWithParameters(
-        features::kBtm, {{"triggering_action", "storage"}});
-    EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
-                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl),
-                                     GetSiteForBtm(kStorageUrl)));
-  }
-  // Call 'GetSitesToClear' when DIPS is triggered by stateful bounces.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeatureWithParameters(
-        features::kBtm, {{"triggering_action", "stateful_bounce"}});
-    EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
-                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl)));
-  }
 }
 
 TEST(BtmGetSitesToClearTest, CustomGracePeriod) {
@@ -199,42 +182,6 @@ TEST(BtmGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
 
     // Reset `clock` to `start`.
     clock.SetNow(start);
-  }
-
-  // Call 'GetSitesToClear' with a custom grace period when DIPS is triggered by
-  // storage.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeatureWithParameters(
-        features::kBtm, {{"triggering_action", "storage"}});
-    // Advance time by less than `features::kBtmGracePeriod` and verify that
-    // no sites are returned without using a custom grace period.
-    clock.Advance(features::kBtmGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
-    // Verify that using a custom grace period less than the amount time was
-    // advanced returns the expected sites for triggering on storage.
-    EXPECT_THAT(storage.GetSitesToClear(grace_period),
-                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl),
-                                     GetSiteForBtm(kStorageUrl)));
-
-    // Reset `clock` to `start`.
-    clock.SetNow(start);
-  }
-
-  // Call 'GetSitesToClear' with a custom grace period when DIPS is triggered by
-  // stateful bounces.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeatureWithParameters(
-        features::kBtm, {{"triggering_action", "stateful_bounce"}});
-    // Advance time by less than `features::kBtmGracePeriod` and verify that
-    // no sites are returned without using a custom grace period.
-    clock.Advance(features::kBtmGracePeriod.Get() / 2);
-    EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
-    // Verify that using a custom grace period less than the amount time was
-    // advanced returns the expected sites for triggering on stateful bounces.
-    EXPECT_THAT(storage.GetSitesToClear(grace_period),
-                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl)));
   }
 }
 

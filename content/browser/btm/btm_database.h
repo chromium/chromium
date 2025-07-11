@@ -116,33 +116,6 @@ class CONTENT_EXPORT BtmDatabase {
   // `ClearExpiredRows()`.
   std::vector<std::string> GetSitesThatBounced(base::TimeDelta grace_period);
 
-  // Returns all sites which used storage and aren't protected from DIPS.
-  //
-  // A site can be protected in several ways:
-  // - it's still in its grace period after the first storage
-  // - it received user activation or WAA before the first storage
-  // - it received user activation or WAA in the grace period after the first
-  // storage.
-  //
-  // NOTE: This method's main procedure is performed after calling
-  // `ClearExpiredRows()`.
-  std::vector<std::string> GetSitesThatUsedStorage(
-      base::TimeDelta grace_period);
-
-  // Returns all sites which statefully bounced the user and aren't protected
-  // from DIPS.
-  //
-  // A site can be protected in several ways:
-  // - it's still in its grace period after the first stateful bounce
-  // - it received user activation or WAA before the first stateful bounce
-  // - it received user activation or WAA in the grace period after the first
-  // stateful bounce.
-  //
-  // NOTE: This method's main procedure is performed after calling
-  // `ClearExpiredRows()`.
-  std::vector<std::string> GetSitesThatBouncedWithState(
-      base::TimeDelta grace_period);
-
   // Deletes all rows in the database whose interactions have expired out.
   //
   // When an interaction happens before a DIPS-triggering action or during the

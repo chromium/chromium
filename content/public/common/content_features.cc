@@ -332,9 +332,7 @@ const base::FeatureParam<base::TimeDelta> kBtmInteractionTtl{
 constexpr base::FeatureParam<content::BtmTriggeringAction>::Option
     kBtmTriggeringActionOptions[] = {
         {content::BtmTriggeringAction::kNone, "none"},
-        {content::BtmTriggeringAction::kStorage, "storage"},
-        {content::BtmTriggeringAction::kBounce, "bounce"},
-        {content::BtmTriggeringAction::kStatefulBounce, "stateful_bounce"}};
+        {content::BtmTriggeringAction::kBounce, "bounce"}};
 
 // Sets the actions which will trigger BTM clearing for a site. The default is
 // to set to |kBounce|, but can be overridden by Finch experiment groups,

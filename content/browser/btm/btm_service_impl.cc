@@ -469,21 +469,16 @@ void BtmServiceImpl::RecordBounce(
   if (redirect.has_3pc_exception.value()) {
     // Check whether the site would have hypothetically been cleared.
     bool would_be_cleared;
+    // TODO(crbug.com/430921459): Refactor killswitch behavior into the
+    // top-level feature so there's no need to maintain multiple triggering
+    // actions.
     switch (features::kBtmTriggeringAction.Get()) {
       case BtmTriggeringAction::kNone: {
         would_be_cleared = false;
         break;
       }
-      case BtmTriggeringAction::kStorage: {
-        would_be_cleared = false;
-        break;
-      }
       case BtmTriggeringAction::kBounce: {
         would_be_cleared = true;
-        break;
-      }
-      case BtmTriggeringAction::kStatefulBounce: {
-        would_be_cleared = stateful;
         break;
       }
     }
