@@ -393,7 +393,6 @@ targets.bundle(
 targets.bundle(
     name = "android_cronet_clang_coverage_gtests",
     targets = [
-        "cronet_clang_coverage_additional_gtests",
         "cronet_gtests",
     ],
 )
