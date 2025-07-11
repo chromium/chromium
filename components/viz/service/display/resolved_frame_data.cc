@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -307,7 +309,16 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
   // Find the offset value for all defined tags first.
   has_non_zero_offset_tag_value_ = false;
   for (auto& tag_def : offset_tags_to_find) {
-    auto offset = tag_def.constraints.Clamp(lookup_value_fn(tag_def));
+    auto offset = lookup_value_fn(tag_def);
+    if (!tag_def.constraints.IsOffsetValid(offset)) {
+      SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
+      SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
+                                tag_def.constraints.ToString());
+      base::debug::DumpWithoutCrashing();
+
+      offset = tag_def.constraints.Clamp(offset);
+    }
+
     auto& tag_data = offset_tag_data_[tag_def.tag];
     tag_data.current_offset = offset;
     tag_data.defined_in_frame = true;

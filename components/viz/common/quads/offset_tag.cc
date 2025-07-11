@@ -57,6 +57,11 @@ bool OffsetTagConstraints::IsValid() const {
          min_offset.y() <= max_offset.y();
 }
 
+bool OffsetTagConstraints::IsOffsetValid(gfx::Vector2dF offset) const {
+  return offset.x() >= min_offset.x() && offset.x() <= max_offset.x() &&
+         offset.y() >= min_offset.y() && offset.y() <= max_offset.y();
+}
+
 std::string OffsetTagConstraints::ToString() const {
   return base::StringPrintf("[%g-%g %g-%g]", min_offset.x(), max_offset.x(),
                             min_offset.y(), max_offset.y());

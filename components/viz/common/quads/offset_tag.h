@@ -92,6 +92,10 @@ struct VIZ_COMMON_EXPORT OffsetTagConstraints {
 
   // Validates that constrains include 0,0 offset and that min is smaller max.
   bool IsValid() const;
+
+  // Validates that the offset is within the constraints.
+  bool IsOffsetValid(gfx::Vector2dF offset) const;
+
   std::string ToString() const;
 
   gfx::Vector2dF min_offset;
