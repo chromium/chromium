@@ -81,6 +81,7 @@ class BookmarkBarController : public TabStripModelObserver,
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  // Checks whether bookmark bar should be shown for the current browser.
   bool ShouldShowBookmarkBar() const;
 
   const raw_ref<BrowserWindowInterface> browser_;

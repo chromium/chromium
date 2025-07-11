@@ -171,6 +171,13 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
   // split, check if any tabs in the split are the NTP.
   std::optional<split_tabs::SplitTabId> split_id = active_tab->GetSplit();
   if (split_id.has_value()) {
+    // Prevent the bookmark bar from showing itself when entering fullscreen if
+    // fullscreen is entered through webview (TAB). This creates a consistent
+    // experience for split view fullscreen and the rest of the UI.
+    if (active_tab->GetContents()->IsFullscreen()) {
+      return false;
+    }
+
     std::vector<tabs::TabInterface*> split_tabs =
         tab_strip_model_->GetSplitData(split_id.value())->ListTabs();
     return std::any_of(
