@@ -607,6 +607,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(LogInWithChangedPasswordOutcome) -->
+
+<enum name="LogInWithChangedPasswordOutcome">
+  <int value="0" label="PrimaryPasswordFailed"/>
+  <int value="1" label="PrimaryPasswordSucceeded"/>
+  <int value="2" label="BackupPasswordFailed"/>
+  <int value="3" label="BackupPasswordSucceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager.h:LogInWithChangedPasswordOutcome) -->
+
 <enum name="ManagePasswordsReferrer">
   <int value="0" label="Chrome Settings"/>
   <int value="1" label="Manage Passwords Bubble"/>

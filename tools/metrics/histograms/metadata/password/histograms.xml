@@ -2323,13 +2323,13 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.LogInWithPasswordChangeSubmission"
-    enum="BooleanSuccess" expires_after="2026-02-04">
+    enum="LogInWithChangedPasswordOutcome" expires_after="2026-02-04">
   <owner>fiorellab@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    Records whether or not a login is successful using a password previously
-    saved through password change flow. It is recorded at the moment of
-    detecting a succesful or failed log in.
+    Records whether or not a login is successful using either the primary or the
+    backup password previously saved through password change flow. It is
+    recorded at the moment of detecting a succesful or failed log in.
   </summary>
 </histogram>
 

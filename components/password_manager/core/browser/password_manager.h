@@ -80,6 +80,19 @@ constexpr void operator|=(PasswordVsOtpFormType& lhs,
                                            static_cast<int>(rhs));
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LogInWithChangedPasswordOutcome)
+enum class LogInWithChangedPasswordOutcome {
+  kPrimaryPasswordFailed = 0,
+  kPrimaryPasswordSucceeded = 1,
+  kBackupPasswordFailed = 2,
+  kBackupPasswordSucceeded = 3,
+  kMaxValue = kBackupPasswordSucceeded
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LogInWithChangedPasswordOutcome)
+
 // Per-tab password manager. Handles creation and management of UI elements,
 // receiving password form data from the renderer and managing the password
 // database through the PasswordStore.

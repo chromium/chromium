@@ -1759,7 +1759,7 @@ TEST_P(PasswordManagerTest,
 }
 
 TEST_P(PasswordManagerTest,
-       MetricsReportedLogInFailedWithPasswordChangeSubmission) {
+       MetricsReportedLogInFailedWithPrimaryPasswordChangeSubmission) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   PasswordForm form(MakeSimpleForm());
@@ -1776,7 +1776,8 @@ TEST_P(PasswordManagerTest,
   manager()->DidNavigateMainFrame(true);
   manager()->OnPasswordFormsParsed(&driver_, {MakeSimpleFormData()});
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LogInWithPasswordChangeSubmission", false, 1);
+      "PasswordManager.LogInWithPasswordChangeSubmission",
+      LogInWithChangedPasswordOutcome::kPrimaryPasswordFailed, 1);
 
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(
@@ -1787,7 +1788,8 @@ TEST_P(PasswordManagerTest,
       0);
 }
 
-TEST_P(PasswordManagerTest, MetricsReportedLogInWithPasswordChangeSubmission) {
+TEST_P(PasswordManagerTest,
+       MetricsReportedLogInWithPrimaryPasswordChangeSubmission) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   base::HistogramTester histogram_tester;
@@ -1807,7 +1809,78 @@ TEST_P(PasswordManagerTest, MetricsReportedLogInWithPasswordChangeSubmission) {
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LogInWithPasswordChangeSubmission", true, 1);
+      "PasswordManager.LogInWithPasswordChangeSubmission",
+      LogInWithChangedPasswordOutcome::kPrimaryPasswordSucceeded, 1);
+
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
+      ukm::builders::PasswordManager_ChangeSubmission::
+          kLogInWithPasswordChangeSubmissionName,
+      1);
+}
+
+TEST_P(PasswordManagerTest,
+       MetricsReportedLogInFailedWithBackupPasswordChangeSubmission) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+  PasswordForm form(MakeSimpleForm());
+  std::u16string backup_password = u"backup_password";
+  form.SetPasswordBackupNote(backup_password);
+  // Set the backup password as input of the login form.
+  test_api(form.form_data).field(1).set_value(backup_password);
+  form.type = PasswordForm::Type::kChangeSubmission;
+  store_->AddLogin(form);
+  FormData observed_form = form.form_data;
+
+  manager()->OnPasswordFormsParsed(&driver_, {observed_form});
+  manager()->OnPasswordFormsRendered(&driver_, {observed_form});
+  task_environment_.RunUntilIdle();
+  manager()->OnPasswordFormSubmitted(&driver_, observed_form);
+  // Similar form appeared again
+  manager()->OnPasswordFormsRendered(&driver_, {MakeSimpleFormData()});
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsParsed(&driver_, {MakeSimpleFormData()});
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LogInWithPasswordChangeSubmission",
+      LogInWithChangedPasswordOutcome::kBackupPasswordFailed, 1);
+  ukm::TestUkmRecorder::ExpectEntryMetric(
+      GetMetricEntry(
+          test_ukm_recorder,
+          ukm::builders::PasswordManager_ChangeSubmission::kEntryName),
+      ukm::builders::PasswordManager_ChangeSubmission::
+          kLogInWithPasswordChangeSubmissionName,
+      0);
+}
+
+TEST_P(PasswordManagerTest,
+       MetricsReportedLogInWithBackupPasswordChangeSubmission) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+  PasswordForm form(MakeSimpleForm());
+  std::u16string backup_password = u"backup_password";
+  form.SetPasswordBackupNote(backup_password);
+  // Set the backup password as input of the login form.
+  test_api(form.form_data).field(1).set_value(backup_password);
+  form.type = PasswordForm::Type::kChangeSubmission;
+  store_->AddLogin(form);
+  std::vector<FormData> observed = {form.form_data};
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  OnPasswordFormSubmitted(form.form_data);
+  observed.clear();
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LogInWithPasswordChangeSubmission",
+      LogInWithChangedPasswordOutcome::kBackupPasswordSucceeded, 1);
 
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(
