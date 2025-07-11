@@ -109,7 +109,7 @@ class HttpStreamPrinter : public Http3DebugVisitor {
   }
 
   void OnHeadersDecoded(QuicStreamId stream_id,
-                        QuicHeaderList headers) override {
+                        const QuicHeaderList& headers) override {
     if (output_) {
       *output_ << "OnHeadersDecoded: " << stream_id << ", "
                << "received: " << headers.DebugString() << "\n";
