@@ -24,7 +24,6 @@ namespace scheduler {
 class TaskAttributionInfo;
 }  // namespace scheduler
 
-class ScriptState;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
 
@@ -126,8 +125,8 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // Returns an `EventScope` suitable for navigation. Used for navigations not
   // yet associated with an event.
-  EventScope CreateNavigationEventScope(ScriptState* script_state) {
-    return CreateEventScope(EventScope::Type::kNavigate, script_state);
+  EventScope CreateNavigationEventScope() {
+    return CreateEventScope(EventScope::Type::kNavigate);
   }
 
   // Returns an `EventScope` for the given `Event` if the event is relevant to
@@ -161,7 +160,7 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
-  EventScope CreateEventScope(EventScope::Type type, ScriptState*);
+  EventScope CreateEventScope(EventScope::Type type);
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;
 

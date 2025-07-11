@@ -76,32 +76,25 @@ scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
-    ScriptState* script_state,
     TaskAttributionInfo* task_state,
     TaskScopeType type) {
-  return CreateTaskScope(script_state, task_state, type,
+  return CreateTaskScope(task_state, type,
                          /*continuation_context=*/nullptr);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
-    ScriptState* script_state,
     SoftNavigationContext* soft_navigation_context) {
   next_task_id_ = next_task_id_.NextId();
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       next_task_id_, soft_navigation_context);
-  return CreateTaskScope(script_state, task_state,
-                         TaskScopeType::kSoftNavigation,
+  return CreateTaskScope(task_state, TaskScopeType::kSoftNavigation,
                          /*continuation_context=*/nullptr);
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
-    ScriptState* script_state,
     TaskAttributionInfo* task_state,
     TaskScopeType type,
     SchedulerTaskContext* continuation_context) {
-  CHECK(script_state);
-  CHECK_EQ(script_state->GetIsolate(), isolate_);
-
   TaskAttributionTaskState* previous_task_state =
       TaskAttributionTaskState::GetCurrent(isolate_);
   TaskAttributionTaskState* running_task_state = nullptr;
@@ -115,7 +108,7 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   }
 
   if (running_task_state != previous_task_state) {
-    TaskAttributionTaskState::SetCurrent(script_state, running_task_state);
+    TaskAttributionTaskState::SetCurrent(isolate_, running_task_state);
   }
 
   TaskAttributionInfo* current =
@@ -147,18 +140,15 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
             previous ? previous->Id().value() : 0);
       });
 
-  return TaskScope(this, script_state, previous_task_state);
+  return TaskScope(this, previous_task_state);
 }
 
 std::optional<TaskAttributionTracker::TaskScope>
 TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
-    ScriptState* script_state,
     TaskAttributionInfo* task_state) {
-  CHECK(script_state);
-
   // Always create a `TaskScope` if there's `task_state` to propagate.
   if (task_state) {
-    return CreateTaskScope(script_state, task_state, TaskScopeType::kCallback);
+    return CreateTaskScope(task_state, TaskScopeType::kCallback);
   }
 
   // Even though we don't need to create a `TaskScope`, we still need to notify
@@ -175,7 +165,7 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
 
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
     const TaskScope& task_scope) {
-  TaskAttributionTaskState::SetCurrent(task_scope.script_state_,
+  TaskAttributionTaskState::SetCurrent(isolate_,
                                        task_scope.previous_task_state_);
   TRACE_EVENT_END("scheduler");
 }

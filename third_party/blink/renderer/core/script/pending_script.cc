@@ -165,13 +165,11 @@ void PendingScript::ExecuteScriptBlock() {
 
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(
-            script_state->GetIsolate())) {
-      task_attribution_scope = tracker->CreateTaskScope(
-          script_state, task_state_,
-          scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
-    }
+  if (auto* tracker =
+          scheduler::TaskAttributionTracker::From(context->GetIsolate())) {
+    task_attribution_scope = tracker->CreateTaskScope(
+        task_state_,
+        scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
   }
 
   Script* script = GetSource();

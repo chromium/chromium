@@ -27,6 +27,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace v8 {
+class Isolate;
+}  // namespace v8
+
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
@@ -82,8 +86,8 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   ScriptPromise<IDLUndefined> yield(ScriptState*,
                                     ExceptionState&);
 
-  scheduler::TaskAttributionIdType taskId(ScriptState*);
-  void setTaskId(ScriptState*, scheduler::TaskAttributionIdType);
+  scheduler::TaskAttributionIdType taskId(v8::Isolate*);
+  void setTaskId(v8::Isolate*, scheduler::TaskAttributionIdType);
 
   void ContextDestroyed() override;
 

@@ -226,12 +226,10 @@ SchedulerTaskContext* DOMScheduler::GetSchedulerTaskContextForYield() {
   return can_use_context ? task_context : nullptr;
 }
 
-scheduler::TaskAttributionIdType DOMScheduler::taskId(
-    ScriptState* script_state) {
+scheduler::TaskAttributionIdType DOMScheduler::taskId(v8::Isolate* isolate) {
   // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
   // is enabled.
-  if (auto* tracker =
-          scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
+  if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
     // `task_state` is null if there's nothing to propagate.
     if (scheduler::TaskAttributionInfo* task_state =
             tracker->CurrentTaskState()) {
@@ -241,9 +239,9 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
   return 0;
 }
 
-void DOMScheduler::setTaskId(ScriptState* script_state,
+void DOMScheduler::setTaskId(v8::Isolate* isolate,
                              scheduler::TaskAttributionIdType task_id) {
-  if (!scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
+  if (!scheduler::TaskAttributionTracker::From(isolate)) {
     // This will be null if TaskAttributionInfrastructureDisabledForTesting is
     // enabled.
     return;
@@ -251,7 +249,7 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       scheduler::TaskAttributionId(task_id),
       /*soft_navigation_context=*/nullptr);
-  TaskAttributionTaskState::SetCurrent(script_state, task_state);
+  TaskAttributionTaskState::SetCurrent(isolate, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.
   CHECK(scheduler);
@@ -259,10 +257,10 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
   // a task scope on the stack to clear it.
   scheduler->ExecuteAfterCurrentTaskForTesting(
       WTF::BindOnce(
-          [](ScriptState* script_state) {
-            TaskAttributionTaskState::SetCurrent(script_state, nullptr);
+          [](v8::Isolate* isolate) {
+            TaskAttributionTaskState::SetCurrent(isolate, nullptr);
           },
-          WrapPersistent(script_state)),
+          WTF::Unretained(isolate)),
       ExecuteAfterCurrentTaskRestricted{});
 }
 

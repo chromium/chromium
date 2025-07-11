@@ -41,21 +41,17 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
 
   TaskAttributionInfo* CurrentTaskState() const override;
 
-  TaskScope CreateTaskScope(ScriptState* script_state,
-                            TaskAttributionInfo* task_state,
+  TaskScope CreateTaskScope(TaskAttributionInfo* task_state,
                             TaskScopeType type) override;
 
-  TaskScope CreateTaskScope(ScriptState* script_state,
-                            SoftNavigationContext*) override;
+  TaskScope CreateTaskScope(SoftNavigationContext*) override;
 
   TaskScope CreateTaskScope(
-      ScriptState* script_state,
       TaskAttributionInfo* task_state,
       TaskScopeType type,
       SchedulerTaskContext* continuation_context) override;
 
   std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
-      ScriptState*,
       TaskAttributionInfo* task_state) override;
 
   ObserverScope RegisterObserver(Observer* observer) override;

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "v8/include/v8-cpp-heap-external.h"
 #include "v8/include/v8.h"
@@ -42,11 +41,9 @@ TaskAttributionTaskState* TaskAttributionTaskState::GetCurrent(
 
 // static
 void TaskAttributionTaskState::SetCurrent(
-    ScriptState* script_state,
+    v8::Isolate* isolate,
     TaskAttributionTaskState* task_state) {
-  DCHECK(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  DCHECK(isolate);
+  CHECK(isolate);
   if (isolate->IsExecutionTerminating()) {
     return;
   }
@@ -56,10 +53,7 @@ void TaskAttributionTaskState::SetCurrent(
   // context. We don't need to distinguish between null and undefined values,
   // and V8 has a fast path if the CPED is undefined, so treat null `task_state`
   // as undefined.
-  //
-  // TODO(crbug.com/376599402): `script_state` won't be needed after
-  // `kTaskAttributionUsesV8CppHeapExternal` is removed.
-  if (!script_state->ContextIsValid() || !task_state) {
+  if (!task_state) {
     isolate->SetContinuationPreservedEmbedderDataV2(v8::Undefined(isolate));
   } else {
     v8::HandleScope handle_scope(isolate);

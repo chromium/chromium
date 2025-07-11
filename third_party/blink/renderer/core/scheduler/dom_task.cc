@@ -175,13 +175,14 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, task_state_,
+        task_state_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
         scheduler_task_context_);
   } else {
     auto* task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         /*TaskAttributionInfo=*/nullptr, scheduler_task_context_);
-    TaskAttributionTaskState::SetCurrent(script_state, task_state);
+    TaskAttributionTaskState::SetCurrent(script_state->GetIsolate(),
+                                         task_state);
   }
 
   execution_state_ = ExecutionState::kRunningSync;
@@ -206,7 +207,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // If this is a worker, clear the context to prevent it from leaking to the
   // next task (`task_attribution_scope` handles this on the main thread).
   if (!tracker) {
-    TaskAttributionTaskState::SetCurrent(script_state, nullptr);
+    TaskAttributionTaskState::SetCurrent(script_state->GetIsolate(), nullptr);
   }
 }
 

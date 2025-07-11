@@ -106,8 +106,8 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
                         CallbackFunctionWithTaskAttributionBase>::value) {
         task_state_to_propagate = callback_->GetTaskState();
       }
-      task_attribution_scope_ = tracker->MaybeCreateTaskScopeForCallback(
-          callback_->CallbackRelevantScriptState(), task_state_to_propagate);
+      task_attribution_scope_ =
+          tracker->MaybeCreateTaskScopeForCallback(task_state_to_propagate);
     }
   }
 

@@ -18,7 +18,6 @@
 
 namespace blink {
 class SchedulerTaskContext;
-class ScriptState;
 class SoftNavigationContext;
 class TaskAttributionTaskState;
 }  // namespace blink
@@ -66,12 +65,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
     TaskScope(TaskScope&& other)
         : task_tracker_(std::exchange(other.task_tracker_, nullptr)),
-          script_state_(other.script_state_),
           previous_task_state_(other.previous_task_state_) {}
 
     TaskScope& operator=(TaskScope&& other) {
       task_tracker_ = std::exchange(other.task_tracker_, nullptr);
-      script_state_ = other.script_state_;
       previous_task_state_ = other.previous_task_state_;
       return *this;
     }
@@ -81,19 +78,16 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     friend class TaskAttributionTrackerImpl;
 
     TaskScope(TaskAttributionTracker* tracker,
-              ScriptState* script_state,
               TaskAttributionTaskState* previous_task_state)
         : task_tracker_(tracker),
-          script_state_(script_state),
           previous_task_state_(previous_task_state) {}
 
     // `task_tracker_` is tied to the lifetime of the isolate, which will
     // outlive the current task.
     TaskAttributionTracker* task_tracker_;
 
-    // The rest are on the Oilpan heap, so these are stored as raw pointers
-    // since the class is stack allocated.
-    ScriptState* script_state_;
+    // `previous_task_state_` is on the Oilpan heap, so this is stored as a raw
+    // pointer since the class is stack allocated.
     TaskAttributionTaskState* previous_task_state_;
   };
 
@@ -145,19 +139,17 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   // Creates a new `TaskScope` to propagate `task_state` to descendant tasks and
   // continuations.
-  virtual TaskScope CreateTaskScope(ScriptState*,
-                                    TaskAttributionInfo* task_state,
+  virtual TaskScope CreateTaskScope(TaskAttributionInfo* task_state,
                                     TaskScopeType type) = 0;
 
   // Create a new `TaskScope` to propagate the given `SoftNavigationContext`,
   // initiating propagation for the context.
-  virtual TaskScope CreateTaskScope(ScriptState*, SoftNavigationContext*) = 0;
+  virtual TaskScope CreateTaskScope(SoftNavigationContext*) = 0;
 
   // Creates a new `TaskScope` with web scheduling context. `task_state` will be
   // propagated to descendant tasks and continuations; `continuation_context`
   // will only be propagated to continuations.
   virtual TaskScope CreateTaskScope(
-      ScriptState*,
       TaskAttributionInfo* task_state,
       TaskScopeType type,
       SchedulerTaskContext* continuation_context) = 0;
@@ -166,7 +158,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // is always created if `task_state` is non-null, and one is additionally
   // created if there isn't an active `TaskScope`.
   virtual std::optional<TaskScope> MaybeCreateTaskScopeForCallback(
-      ScriptState*,
       TaskAttributionInfo* task_state) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.

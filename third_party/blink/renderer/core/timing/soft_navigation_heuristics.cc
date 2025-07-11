@@ -647,8 +647,7 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
 }
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
-    EventScope::Type type,
-    ScriptState* script_state) {
+    EventScope::Type type) {
   // TODO(crbug.com/417164510): It appears that we can create many contexts for
   // a single interaction, because we can get many ::CreateEventScope (non
   // nested) even for a single interaction.
@@ -691,8 +690,8 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
   }
   return SoftNavigationHeuristics::EventScope(
       this, tracker->RegisterObserver(this),
-      tracker->CreateTaskScope(script_state, active_interaction_context_.Get()),
-      type, is_nested);
+      tracker->CreateTaskScope(active_interaction_context_.Get()), type,
+      is_nested);
 }
 
 std::optional<SoftNavigationHeuristics::EventScope>
@@ -701,11 +700,7 @@ SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
   if (!type) {
     return std::nullopt;
   }
-  auto* script_state = ToScriptStateForMainWorld(window_.Get());
-  if (!script_state) {
-    return std::nullopt;
-  }
-  return CreateEventScope(*type, script_state);
+  return CreateEventScope(*type);
 }
 
 void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(

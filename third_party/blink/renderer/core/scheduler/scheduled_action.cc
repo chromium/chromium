@@ -163,7 +163,7 @@ void ScheduledAction::Execute(ExecutionContext* context) {
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker && script_state->World().IsMainWorld()) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, code_task_state_,
+        code_task_state_,
         scheduler::TaskAttributionTracker::TaskScopeType::kScheduledAction);
   }
 

@@ -1131,13 +1131,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   SoftNavigationHeuristics* heuristics =
       frame_->DomWindow()->GetSoftNavigationHeuristics();
   if (heuristics && is_browser_initiated && !is_prerendering_) {
-    if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
-      // For browser-initiated navigations, we never started the soft
-      // navigation (as this is the first we hear of it in the renderer). We
-      // need to do that now.
-      soft_navigation_event_scope =
-          heuristics->CreateNavigationEventScope(script_state);
-    }
+    // For browser-initiated navigations, we never started the soft
+    // navigation (as this is the first we hear of it in the renderer). We
+    // need to do that now.
+    soft_navigation_event_scope = heuristics->CreateNavigationEventScope();
   }
 
   scheduler::TaskAttributionInfo* navigation_task_state = nullptr;

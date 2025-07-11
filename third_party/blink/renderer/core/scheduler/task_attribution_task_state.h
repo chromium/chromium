@@ -18,7 +18,6 @@ class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
-class ScriptState;
 class SchedulerTaskContext;
 
 // `TaskAttributionTaskState` objects are stored in V8 as continuation preserved
@@ -57,7 +56,7 @@ class CORE_EXPORT TaskAttributionTaskState
 
   // Set the given `TaskAttributionTaskState` as the current continuation
   // preserved embedder data.
-  static void SetCurrent(ScriptState*, TaskAttributionTaskState*);
+  static void SetCurrent(v8::Isolate*, TaskAttributionTaskState*);
 
   virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
   virtual SchedulerTaskContext* GetSchedulerTaskContext() = 0;

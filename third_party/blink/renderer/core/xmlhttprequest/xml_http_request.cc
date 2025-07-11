@@ -2085,12 +2085,10 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
       GetExecutionContext()->IsContextDestroyed()) {
     return std::nullopt;
   }
-  // `task_state_` being non-null implies that task tracking is enabled and
-  // this object is associated with the main world.
-  auto* script_state = ToScriptStateForMainWorld(GetExecutionContext());
-  CHECK(script_state);
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+  // `task_state_` being non-null implies that task tracking is enabled and this
+  // object is associated with the main world.
+  auto* tracker = scheduler::TaskAttributionTracker::From(
+      GetExecutionContext()->GetIsolate());
   CHECK(tracker);
 
   // Don't create a new (nested) task scope if we're still in the parent task,
@@ -2102,7 +2100,7 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
     return std::nullopt;
   }
   return tracker->CreateTaskScope(
-      script_state, task_state_,
+      task_state_,
       scheduler::TaskAttributionTracker::TaskScopeType::kXMLHttpRequest);
 }
 

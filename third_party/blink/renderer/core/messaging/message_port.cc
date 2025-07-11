@@ -399,32 +399,22 @@ void MessagePort::DispatchMessageEvent(BlinkTransferableMessage message) {
       message.sender_origin->IsSameOriginWith(context->GetSecurityOrigin()) &&
       context->IsSameAgentCluster(message.sender_agent_cluster_id) &&
       context->IsWindow()) {
-    // TODO(crbug.com/1351643): It is not correct to assume we're running in the
-    // main world here. Even though we're in Window, this could be running in an
-    // isolated world context. At the same time, even if we are running in such
-    // a context, the TaskScope creation here will not leak any meaningful
-    // information to that world. At worst, TaskAttributionTracking will return
-    // the wrong ancestor for tasks initiated by MessagePort::PostMessage inside
-    // of extensions. TaskScope is using the v8::Context in order to store the
-    // current TaskAttributionId in the context's
-    // EmbedderPreservedContinuationData, and it's only used later for
-    // attributing continuations to that original task.
-    // We cannot check `content->GetCurrentWorld()->IsMainWorld()` here, as the
-    // v8::Context may still be empty (and hence
-    // ExecutionContext::GetCurrentWorld returns null).
-    if (ScriptState* script_state = ToScriptStateForMainWorld(context)) {
-      if (auto* tracker = scheduler::TaskAttributionTracker::From(
-              script_state->GetIsolate())) {
-        // Since `initially_entangled_port_` is not nullptr, neither should be
-        // its `post_message_task_container_`.
-        CHECK(entangled_port->post_message_task_container_);
-        scheduler::TaskAttributionInfo* task_state =
-            entangled_port->post_message_task_container_
-                ->GetAndDecrementPostMessageTask(message.task_state_id);
-        task_attribution_scope = tracker->CreateTaskScope(
-            script_state, task_state,
-            scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
-      }
+    // It is not correct to assume we're running in the main world here,
+    // although if `task_state` is non-null, the message must have originated
+    // from the main world. And given isolated worlds cannot access main world
+    // variables and message ports aren't exposed through the DOM, we can assume
+    // we're propagating this in the main world.
+    if (auto* tracker =
+            scheduler::TaskAttributionTracker::From(context->GetIsolate())) {
+      // Since `initially_entangled_port_` is not nullptr, neither should be
+      // its `post_message_task_container_`.
+      CHECK(entangled_port->post_message_task_container_);
+      scheduler::TaskAttributionInfo* task_state =
+          entangled_port->post_message_task_container_
+              ->GetAndDecrementPostMessageTask(message.task_state_id);
+      task_attribution_scope = tracker->CreateTaskScope(
+          task_state,
+          scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
     }
   }
 
