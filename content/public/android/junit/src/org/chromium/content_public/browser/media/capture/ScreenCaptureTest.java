@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -61,6 +64,7 @@ public class ScreenCaptureTest {
     private static final int TEST_WIDTH_DP = 100;
     private static final int TEST_HEIGHT_DP = 200;
     private static final int TEST_DPI = 300;
+    private static final long NATIVE_POINTER = 1L;
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
@@ -95,9 +99,9 @@ public class ScreenCaptureTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mScreenCapture =
-                new ScreenCapture(
-                        /* nativeDesktopCapturerAndroid= */ 1, this::createTestImageHandler);
+
+        mScreenCapture = spy(new ScreenCapture(NATIVE_POINTER, this::createTestImageHandler));
+        ScreenCaptureJni.setInstanceForTesting(mNativeMock);
 
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
@@ -116,6 +120,7 @@ public class ScreenCaptureTest {
     public void tearDown() {
         // Clean up static state to avoid interference between tests.
         ScreenCapture.onForegroundServiceRunning(false);
+        ScreenCaptureJni.setInstanceForTesting(null);
     }
 
     private ImageHandler createTestImageHandler(
@@ -126,6 +131,15 @@ public class ScreenCaptureTest {
         mImageReader = mock(ImageReader.class);
         when(mImageReader.getSurface()).thenReturn(mSurface);
         return new ImageHandler(captureState, delegate, handler, mImageReader);
+    }
+
+    private MediaProjection.Callback getMediaProjectionCallback() {
+        final ArgumentCaptor<MediaProjection.Callback> cb =
+                ArgumentCaptor.forClass(MediaProjection.Callback.class);
+        verify(mMediaProjection).registerCallback(cb.capture(), any(Handler.class));
+        final MediaProjection.Callback callback = cb.getValue();
+        assertNotNull("MediaProjection.Callback was not registered.", callback);
+        return callback;
     }
 
     @Test
@@ -161,5 +175,32 @@ public class ScreenCaptureTest {
         verify(mImageReader).close();
         verify(mMediaProjection).stop();
         verify(mVirtualDisplay).release();
+    }
+
+    @Test
+    public void testMediaProjectionOnStopStopsNative() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+        callback.onStop();
+
+        verify(mNativeMock).onStop(NATIVE_POINTER);
+    }
+
+    @Test
+    public void testMediaProjectionOnStopDoesNotStopNative() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+        mScreenCapture.destroy();
+        callback.onStop();
+
+        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
     }
 }
