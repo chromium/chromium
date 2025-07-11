@@ -728,6 +728,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_anyOf(grey_accessibilityLabel(buttonTitle),
                  grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
                  grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+      grey_accessibilityID(@"BackButton"),
       grey_kindOfClassName(@"_UIButtonBarButton"),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
