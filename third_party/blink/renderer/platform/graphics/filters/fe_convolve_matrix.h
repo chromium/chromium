@@ -64,6 +64,7 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
   sk_sp<PaintFilter> CreateImageFilter() override;
 
   bool ParametersValid() const;
+  float ComputeDivisor() const;
 
   gfx::Size kernel_size_;
   float divisor_;

@@ -31,6 +31,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
@@ -121,9 +122,23 @@ bool FEConvolveMatrix::ParametersValid() const {
     return false;
   if (target_offset_.y() < 0 || target_offset_.y() >= kernel_size_.height())
     return false;
-  if (!divisor_)
+  if (!RuntimeEnabledFeatures::
+          SvgFeConvolveMatrixZeroDivisorBehaviorEnabled() &&
+      !divisor_) {
     return false;
+  }
   return true;
+}
+
+float FEConvolveMatrix::ComputeDivisor() const {
+  if (divisor_) {
+    return divisor_;
+  }
+  float divisor_value = 0;
+  for (const float v : kernel_matrix_) {
+    divisor_value += v;
+  }
+  return divisor_value ? divisor_value : 1;
 }
 
 sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
@@ -136,7 +151,7 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
       SkISize::Make(kernel_size_.width(), kernel_size_.height()));
   // parametersValid() above checks that the kernel area fits in int.
   int num_elements = base::checked_cast<int>(kernel_size_.Area64());
-  SkScalar gain = SkFloatToScalar(1.0f / divisor_);
+  SkScalar gain = SkFloatToScalar(1.0f / ComputeDivisor());
   SkScalar bias = SkFloatToScalar(bias_ * 255);
   SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
   SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
