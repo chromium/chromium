@@ -1864,10 +1864,15 @@ static_library("ui") {
 
     if (enable_dice_support) {
       deps += [
+        "//chrome/browser/profiles/batch_upload",
+        "//chrome/browser/profiles/batch_upload:impl",
         "//chrome/browser/ui/webui/signin/signout_confirmation",
         "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
       ]
-      allow_circular_includes_from += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl" ]
+      allow_circular_includes_from += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation_impl",
+        "//chrome/browser/profiles/batch_upload:impl",
+      ]
     }
 
     if (enable_extensions) {

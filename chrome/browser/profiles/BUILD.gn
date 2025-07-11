@@ -397,7 +397,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (enable_dice_support) {
-    deps += [ "//chrome/browser/ui/signin" ]
+    deps += [
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/ui/signin",
+    ]
   }
 }
 
