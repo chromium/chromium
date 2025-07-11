@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "skia/ext/skia_utils_ios.h"
 
 @implementation HomeCustomizationBackgroundPickerActionSheetMediator {
@@ -79,9 +80,20 @@
 // Applies a background color to the NTP.
 - (void)applyBackgroundColor:
     (id<BackgroundCustomizationConfiguration>)backgroundConfiguration {
+  if (![backgroundConfiguration
+          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
+    // Only `BackgroundCustomizationConfigurationItem` exposes required
+    // fields. Other implementations may not support expected properties.
+    return;
+  }
+
+  BackgroundCustomizationConfigurationItem* configurationItem =
+      static_cast<BackgroundCustomizationConfigurationItem*>(
+          backgroundConfiguration);
+
   _homeBackgroundCustomizationService->SetBackgroundColor(
-      skia::UIColorToSkColor(backgroundConfiguration.backgroundColor),
-      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+      skia::UIColorToSkColor(configurationItem.backgroundColor),
+      SchemeVariantToProtoEnum(configurationItem.colorVariant));
 }
 
 @end

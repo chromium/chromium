@@ -81,7 +81,9 @@ DynamicColorProviderBlock GetDynamicProvider(
 }  // namespace
 
 // Creates and returns a color palette from a seed color.
-NewTabPageColorPalette* CreateColorPaletteFromSeedColor(UIColor* seed_color) {
+NewTabPageColorPalette* CreateColorPaletteFromSeedColor(
+    UIColor* seed_color,
+    ui::ColorProviderKey::SchemeVariant variant) {
   if (!seed_color) {
     return nil;
   }
@@ -89,12 +91,12 @@ NewTabPageColorPalette* CreateColorPaletteFromSeedColor(UIColor* seed_color) {
   NewTabPageColorPalette* ntp_palette = [[NewTabPageColorPalette alloc] init];
 
   std::unique_ptr<ui::Palette> palette =
-      ui::GeneratePalette(skia::UIColorToSkColor(seed_color),
-                          ui::ColorProviderKey::SchemeVariant::kTonalSpot);
+      ui::GeneratePalette(skia::UIColorToSkColor(seed_color), variant);
   const ui::TonalPalette& primary = palette->primary();
   const ui::TonalPalette& secondary = palette->secondary();
 
   ntp_palette.seedColor = seed_color;
+  ntp_palette.variant = variant;
 
   ntp_palette.lightColor = [UIColor
       colorWithDynamicProvider:GetDynamicProvider(

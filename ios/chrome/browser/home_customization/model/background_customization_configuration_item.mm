@@ -13,6 +13,7 @@
   HomeCustomizationBackgroundStyle _backgroundStyle;
   NSString* _configurationID;
   UIColor* _backgroundColor;
+  ui::ColorProviderKey::SchemeVariant _colorVariant;
 }
 
 - (instancetype)initWithCollectionImage:
@@ -30,7 +31,9 @@
   return self;
 }
 
-- (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor {
+- (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor
+                           colorVariant:(ui::ColorProviderKey::SchemeVariant)
+                                            colorVariant {
   self = [super init];
   if (self) {
     _backgroundStyle = HomeCustomizationBackgroundStyle::kColor;
@@ -38,6 +41,7 @@
         stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
                          _backgroundStyle, backgroundColor.description];
     _backgroundColor = backgroundColor;
+    _colorVariant = colorVariant;
   }
   return self;
 }
@@ -72,6 +76,10 @@
 
 - (UIColor*)backgroundColor {
   return _backgroundColor;
+}
+
+- (ui::ColorProviderKey::SchemeVariant)colorVariant {
+  return _colorVariant;
 }
 
 @end

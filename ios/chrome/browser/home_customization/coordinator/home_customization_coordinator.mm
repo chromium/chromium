@@ -274,9 +274,11 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - HomeCustomizationColorPaletteProvider
 
-- (NewTabPageColorPalette*)provideColorPaletteFromSeedColor:
-    (UIColor*)seedColor {
-  return CreateColorPaletteFromSeedColor(seedColor);
+- (NewTabPageColorPalette*)
+    provideColorPaletteFromSeedColor:(UIColor*)seedColor
+                        colorVariant:
+                            (ui::ColorProviderKey::SchemeVariant)colorVariant {
+  return CreateColorPaletteFromSeedColor(seedColor, colorVariant);
 }
 
 @end

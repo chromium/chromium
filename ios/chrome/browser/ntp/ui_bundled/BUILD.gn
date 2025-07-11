@@ -28,12 +28,16 @@ source_set("color") {
     "new_tab_page_color_palette.mm",
     "new_tab_page_color_palette_util.h",
     "new_tab_page_color_palette_util.mm",
+    "theme_utils.h",
+    "theme_utils.mm",
   ]
   deps = [
     "//base",
+    "//components/sync/protocol",
     "//skia",
     "//skia:skia_core_public_headers",
     "//third_party/material_color_utilities",
+    "//ui/color:color_provider_key",
     "//ui/color/dynamic_color",
   ]
 }

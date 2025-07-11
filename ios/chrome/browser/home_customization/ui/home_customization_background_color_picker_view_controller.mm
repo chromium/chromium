@@ -116,9 +116,11 @@ const CGFloat kSectionInsetBottom = 20.0;
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  NewTabPageColorPalette* colorPalette = _colorPalettes[indexPath.item];
   BackgroundCustomizationConfigurationItem* backgroundConfiguration =
       [[BackgroundCustomizationConfigurationItem alloc]
-          initWithBackgroundColor:_colorPalettes[indexPath.item].seedColor];
+          initWithBackgroundColor:colorPalette.seedColor
+                     colorVariant:colorPalette.variant];
   _selectedColorIndex = @(indexPath.item);
   [self.presentationDelegate
       applyBackgroundForConfiguration:backgroundConfiguration];

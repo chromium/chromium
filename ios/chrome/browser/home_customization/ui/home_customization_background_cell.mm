@@ -211,7 +211,7 @@ const CGFloat kFeedsWidth = 70.0;
   if (imageBackground) {
     logoView.tintColor = [UIColor whiteColor];
   } else if (colorPalette) {
-    logoView.tintColor = colorPalette.darkColor;
+    logoView.tintColor = colorPalette.tintColor;
   }
 
   // Insert the logo view right after the spacer.

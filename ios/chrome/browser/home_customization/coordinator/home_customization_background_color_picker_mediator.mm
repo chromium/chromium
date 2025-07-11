@@ -14,18 +14,25 @@
 #import "skia/ext/skia_utils_ios.h"
 
 namespace {
-// Array of seed colors (in RGB integer format) used to generate background
-// color palette configurations in the color picker.
-const SkColor kSeedColorRGBs[] = {
-    0x8cabe4,  // Blue.
-    0x26a69a,  // Aqua.
-    0x00ff00,  // Green.
-    0x87ba81,  // Viridian.
-    0xfadf73,  // Citron.
-    0xff8000,  // Orange.
-    0xf3b2be,  // Rose.
-    0xff00ff,  // Fuchsia.
-    0xe5d5fc   // Violet.
+
+// Represents a seed color and its associated scheme variant.
+struct SeedColor {
+  SkColor color;
+  ui::ColorProviderKey::SchemeVariant variant;
+};
+
+// Array of seed colors (in RGB integer format) and variants used to generate
+// background color palette configurations in the color picker.
+const SeedColor kSeedColors[] = {
+    {0x8cabe4, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Blue
+    {0x26a69a, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Aqua
+    {0x00ff00, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Green
+    {0x87ba81, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Viridian
+    {0xfadf73, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Citron
+    {0xff8000, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Orange
+    {0xf3b2be, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Rose
+    {0xff00ff, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Fuchsia
+    {0xe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
 };
 
 // Returns a dynamic UIColor using two named color assets for light and dark
@@ -59,9 +66,10 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   [colorPalettes addObject:defaultColorPalette];
 
-  for (SkColor rgb : kSeedColorRGBs) {
+  for (SeedColor seedColor : kSeedColors) {
     [colorPalettes
-        addObject:CreateColorPaletteFromSeedColor(UIColorFromRGB(rgb))];
+        addObject:CreateColorPaletteFromSeedColor(
+                      UIColorFromRGB(seedColor.color), seedColor.variant)];
   }
 
   // TODO(crbug.com/408243803): Pass the current selection ID if the background

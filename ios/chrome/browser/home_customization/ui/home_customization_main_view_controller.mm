@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
@@ -376,9 +377,19 @@
              withItemIdentifier:(NSString*)itemIdentifier {
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
+
+  if (![backgroundConfiguration
+          isKindOfClass:[BackgroundCustomizationConfigurationItem class]]) {
+    return;
+  }
+  BackgroundCustomizationConfigurationItem* configurationItem =
+      static_cast<BackgroundCustomizationConfigurationItem*>(
+          backgroundConfiguration);
+
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
   NewTabPageColorPalette* colorPalette = [self.colorPaletteProvider
-      provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor];
+      provideColorPaletteFromSeedColor:backgroundConfiguration.backgroundColor
+                          colorVariant:configurationItem.colorVariant];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
                            logoVendor:logoVendor

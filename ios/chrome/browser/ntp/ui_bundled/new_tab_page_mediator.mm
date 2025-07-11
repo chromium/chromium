@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -392,9 +393,10 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 
   if (colorTheme && colorTheme->color()) {
     [self.consumer
-        updateBackgroundWithColorPalette:CreateColorPaletteFromSeedColor(
-                                             skia::UIColorFromSkColor(
-                                                 colorTheme->color()))];
+        updateBackgroundWithColorPalette:
+            CreateColorPaletteFromSeedColor(
+                skia::UIColorFromSkColor(colorTheme->color()),
+                ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()))];
     [self.consumer setBackgroundImage:nil];
     return;
   }

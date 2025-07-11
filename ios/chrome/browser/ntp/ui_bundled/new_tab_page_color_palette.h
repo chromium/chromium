@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ui/color/color_provider_key.h"
+
 // A model object that defines a background color palette, including
 // light, medium, and dark variants derived from a seed color.
 @interface NewTabPageColorPalette : NSObject
@@ -19,9 +21,6 @@
 
 // A darker tone variant of the seed color.
 @property(nonatomic, strong) UIColor* darkColor;
-
-// The original seed color used to generate the palette.
-@property(nonatomic, strong) UIColor* seedColor;
 
 // A general-purpose accent or highlight color used across the UI.
 @property(nonatomic, strong) UIColor* tintColor;
@@ -46,6 +45,13 @@
 
 // The color used for dividers or separators between omnibox icons.
 @property(nonatomic, strong) UIColor* omniboxIconDividerColor;
+
+// The original seed color used to generate the palette.
+@property(nonatomic, strong) UIColor* seedColor;
+
+// The color scheme variant that was used along with the seed color to generate
+// the palette.
+@property(nonatomic, assign) ui::ColorProviderKey::SchemeVariant variant;
 
 @end
 
