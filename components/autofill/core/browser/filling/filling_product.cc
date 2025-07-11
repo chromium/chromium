@@ -163,16 +163,4 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
   NOTREACHED();
 }
 
-FillingProduct GetPreferredSuggestionFillingProduct(
-    FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource suggestion_trigger_source) {
-  FillingProduct filling_product = GetFillingProductFromFieldTypeGroup(
-      GroupTypeOfFieldType(trigger_field_type));
-  // Autofill suggestions fallbacks to autocomplete if no product could be
-  // inferred from the suggestion context.
-  return filling_product == FillingProduct::kNone
-             ? FillingProduct::kAutocomplete
-             : filling_product;
-}
-
 }  // namespace autofill

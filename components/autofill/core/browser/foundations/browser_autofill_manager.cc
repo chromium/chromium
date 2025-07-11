@@ -235,6 +235,21 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
+// Returns the filling product likely to be used for suggestions given
+// `trigger_field_type`. This might not be the definitive product used because
+// for example the product could not yield any suggestion and we'd fallback to
+// another product.
+FillingProduct GetPreferredSuggestionFillingProduct(
+    FieldType trigger_field_type) {
+  FillingProduct filling_product = GetFillingProductFromFieldTypeGroup(
+      GroupTypeOfFieldType(trigger_field_type));
+  // Autofill suggestions fallbacks to autocomplete if no product could be
+  // inferred from the suggestion context.
+  return filling_product == FillingProduct::kNone
+             ? FillingProduct::kAutocomplete
+             : filling_product;
+}
+
 bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAutocomplete:
@@ -1079,8 +1094,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
 
   context.filling_product = GetPreferredSuggestionFillingProduct(
       got_autofillable_form ? autofill_field->Type().GetStorableType()
-                            : UNKNOWN_TYPE,
-      trigger_source);
+                            : UNKNOWN_TYPE);
 
   // If this is a mixed content form, we show a warning message and don't offer
   // autofill. The warning is shown even if there are no autofill suggestions
