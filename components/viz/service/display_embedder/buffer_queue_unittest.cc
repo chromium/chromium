@@ -726,6 +726,19 @@ TEST_F(BufferQueueTest, SetPurgeable) {
   EXPECT_CALL(mock, Call(mb1, false));
   EXPECT_CALL(mock, Call(mb2, false));
   EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb3);
+  buffer_queue_->SwapBuffers(small_damage);
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
+
+  // Start another swap here. There should be no change in buffer purgeable
+  // state.
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb1);
+  buffer_queue_->SwapBuffers(small_damage);
+
+  // Start purging buffers again. When the swap completes one of the buffers
+  // will be marked purgeable.
+  buffer_queue_->SetBuffersPurgeable();
+  EXPECT_CALL(mock, Call(_, true));
+  buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   // Reset callback since it points to stack allocated mock.
   skia_output_surface_->SetSharedImagePurgeableCallback({});
