@@ -1292,9 +1292,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging all tab grid items to another window.
-- (void)testDragAndDropAllItemsToOtherWindow {
+// TODO(crbug.com/431223435): Re-enable test on iOS 18.
+- (void)DISABLED_testDragAndDropAllItemsToOtherWindow {
   if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    // TODO(crbug.com/428898427): Re-enable test on iOS 26.
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
