@@ -1021,7 +1021,7 @@ const FeatureEntry::FeatureParam
         {"mode", "advanced_paint_attribution"}};
 const FeatureEntry::FeatureParam
     kSoftNavigationHeuristicsPrePaintBasedAttribution[] = {
-        {"mode", "pre_paint_based_attriubution"}};
+        {"mode", "pre_paint_based_attribution"}};
 
 const FeatureEntry::FeatureVariation kSoftNavigationHeuristicsVariations[] = {
     {"Basic (default)", kSoftNavigationHeuristicsBasic,
