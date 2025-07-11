@@ -17,8 +17,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "ui/gfx/animation/animation.h"
-#include "ui/gfx/animation/linear_animation.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -28,6 +26,8 @@
 #include "ui/base/base_window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
@@ -166,19 +166,14 @@ void ConfigureDesiredBoundsDelegate(
       widget, host_browser_window));
 }
 
-// The dialog widget should be visible if and only if the tab is in the
-// foreground and activated, and the host window is not minimized.
-bool GetDialogWidgetVisibility(bool activated, bool minimized) {
-  return activated && !minimized;
-}
-
 }  // namespace
 
 // Applies positioning changes from the browser window widget to the tracked
 // Widget. This class relies on the assumption that it is scoped to the lifetime
 // of a single tab, in a single browser, and that it will be destroyed
 // before the tab moves between browser windows.
-class BrowserWindowWidgetObserver : public views::WidgetObserver {
+class TabDialogManager::BrowserWindowWidgetObserver
+    : public views::WidgetObserver {
  public:
   BrowserWindowWidgetObserver(TabDialogManager* tab_dialog_manager,
                               TabInterface* tab_interface,
@@ -204,9 +199,8 @@ class BrowserWindowWidgetObserver : public views::WidgetObserver {
   }
 
   void OnWidgetShowStateChanged(views::Widget* widget) override {
-    bool minimized = widget->IsMinimized();
-    bool activated = tab_->IsActivated();
-    dialog_widget_->SetVisible(GetDialogWidgetVisibility(activated, minimized));
+    dialog_widget_->SetVisible(
+        tab_dialog_manager_->GetDialogWidgetVisibility());
   }
 
  private:
@@ -284,10 +278,8 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   browser_window_widget_observer_ =
       std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
                                                     widget_.get());
-  bool minimized = browser_window_interface->GetWindow()->IsMinimized();
-  bool activated = tab_interface_->IsActivated();
   widget_->Show();
-  widget_->SetVisible(GetDialogWidgetVisibility(activated, minimized));
+  widget_->SetVisible(GetDialogWidgetVisibility());
 }
 
 std::unique_ptr<views::Widget> TabDialogManager::CreateAndShowDialog(
@@ -310,6 +302,19 @@ void TabDialogManager::CloseDialog() {
     // point so it doesn't matter.
     widget->Close();
   }
+}
+
+bool TabDialogManager::MaybeActivateDialog() {
+  if (!widget_) {
+    return false;
+  }
+
+  if (GetDialogWidgetVisibility()) {
+    widget_->Activate();
+    return true;
+  }
+
+  return false;
 }
 
 void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
@@ -420,8 +425,7 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
     if (parent_widget != widget_->parent()) {
       widget_->Reparent(parent_widget);
     }
-    widget_->SetVisible(
-        GetDialogWidgetVisibility(/*activated=*/true, widget_->IsMinimized()));
+    widget_->SetVisible(GetDialogWidgetVisibility());
     UpdateModalDialogBounds();
   }
 }
@@ -441,6 +445,15 @@ void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
   if (widget_ && params_->close_on_detach) {
     CloseDialog();
   }
+}
+
+bool TabDialogManager::GetDialogWidgetVisibility() {
+  // The dialog widget should be visible if and only if the tab is in the
+  // foreground and activated, and the host window is not minimized.
+  return tab_interface_->IsActivated() &&
+         !tab_interface_->GetBrowserWindowInterface()
+              ->GetWindow()
+              ->IsMinimized();
 }
 
 void TabDialogManager::AnimationProgressed(const gfx::Animation* animation) {
