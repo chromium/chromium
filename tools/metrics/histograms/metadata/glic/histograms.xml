@@ -198,6 +198,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.WebUITerminationStatus" enum="TerminationStatus"
+    expires_after="2026-07-01">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    Records the termination status of the FRE WebUI process. This is logged when
+    the WebUI process associated with the FRE is terminated for any reason.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.WebviewLoadAbortReason"
+    enum="GlicFreWebviewLoadAbortReason" expires_after="2026-07-01">
+  <owner>birnie@google.com</owner>
+  <owner>cuianthony@google.com</owner>
+  <summary>
+    Records the reason why the FRE webview failed to load. This is logged when
+    the webview's `loadabort` event is fired.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.WidgetClosedReason" enum="WidgetClosedReason"
     expires_after="2026-07-01">
   <owner>birnie@google.com</owner>

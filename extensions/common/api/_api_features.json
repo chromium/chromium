@@ -395,6 +395,7 @@
       "chrome://extensions-zero-state/*",
       "chrome://file-manager/*",
       "chrome://glic/*",
+      "chrome://glic-fre/*",
       "chrome://help-app/*",
       "chrome://history/*",
       "chrome://new-tab-page/*",

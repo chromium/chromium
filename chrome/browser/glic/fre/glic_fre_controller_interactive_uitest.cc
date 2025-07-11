@@ -18,7 +18,10 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -156,69 +159,6 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList features_;
-  net::EmbeddedTestServer fre_server_;
-  GURL fre_url_;
-  base::HistogramTester histogram_tester_;
-};
-
-class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTest {
- public:
-  void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kGlic,
-         {{"glic-max-loading-time-ms", "100"},
-          {"glic-min-loading-time-ms", "10"},
-          {"glic-pre-loading-time-ms", "10"}}}};
-
-    // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
-    // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
-    // first. It's also unclear whether it ought to happen at all before FRE
-    // completion. Disable that feature until that can be sorted out.
-    features_.InitWithFeaturesAndParameters(
-        enabled_features, {features::kGlicWarming, features::kGlicFreWarming});
-
-    fre_server_.AddDefaultHandlers();
-    // Register a handler that will hang, to simulate a timeout.
-    fre_server_.RegisterRequestHandler(base::BindRepeating(
-        [](const GURL& url, const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url == url.path()) {
-            return std::make_unique<net::test_server::HungResponse>();
-          }
-          return nullptr;
-        },
-        fre_url()));
-    ASSERT_TRUE(fre_server_.InitializeAndListen());
-
-    fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
-
-    InteractiveGlicTestT::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    InteractiveGlicTestT::SetUpOnMainThread();
-    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
-    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
-  }
-
-  net::EmbeddedTestServer& fre_server() { return fre_server_; }
-  const GURL& fre_url() { return fre_url_; }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  GlicKeyedService* GetService() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  }
-
-  GlicFreController* GetFreController() {
-    return GetService()->window_controller().fre_controller();
-  }
   base::test::ScopedFeatureList features_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;
@@ -393,6 +333,181 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, ShowsErrorPanelOnInvalidAuth) {
                                          {"#errorPanel:not([hidden])"})));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
+                       RecordTerminationStatusOnWebUICrash) {
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      // Crash the renderer process for the FRE WebUI.
+      Do([this]() {
+        content::WebContents* fre_web_contents =
+            GetFreController()->GetWebContents();
+        ASSERT_TRUE(fre_web_contents);
+        content::RenderProcessHost* rph =
+            fre_web_contents->GetPrimaryMainFrame()->GetProcess();
+        ASSERT_TRUE(rph);
+        rph->Shutdown(content::RESULT_CODE_KILLED);
+      }),
+      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+      InAnyContext(Do([this]() {
+        histogram_tester().ExpectUniqueSample(
+            "Glic.Fre.WebUITerminationStatus",
+            base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1);
+      })));
+}
+
+class GlicFreControllerUiHttpErrorTest : public test::InteractiveGlicTest {
+ public:
+  void SetUp() override {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
+
+    fre_server_.AddDefaultHandlers();
+    // Register a handler that will return a 502 error.
+    fre_server_.RegisterRequestHandler(base::BindRepeating(
+        [](const GURL& url, const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == url.path()) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_BAD_GATEWAY);
+            return response;
+          }
+          return nullptr;
+        },
+        fre_url_));
+    ASSERT_TRUE(fre_server_.InitializeAndListen());
+
+    fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
+
+    InteractiveGlicTestT::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveGlicTestT::SetUpOnMainThread();
+    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
+    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
+  }
+
+  GlicKeyedService* GetService() {
+    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  }
+
+  GlicFreController* GetFreController() {
+    return GetService()->window_controller().fre_controller();
+  }
+
+  net::EmbeddedTestServer& fre_server() { return fre_server_; }
+  const GURL& fre_url() { return fre_url_; }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  net::EmbeddedTestServer fre_server_;
+  GURL fre_url_;
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
+                       ShowsErrorPanelOnHttpError) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(
+          kFreWebUiState,
+          base::BindOnce(&GlicFreControllerUiHttpErrorTest::GetFreController,
+                         base::Unretained(this))),
+      PressButton(kGlicButtonElementId),
+      WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
+        histogram_tester().ExpectUniqueSample(
+            "Glic.Fre.WebviewLoadAbortReason",
+            10  // GlicFreWebviewLoadAbortReason::ERR_HTTP_RESPONSE_CODE_FAILURE
+            ,
+            1);
+      }),
+      InstrumentNonTabWebView(test::kGlicFreHostElementId,
+                              GlicFreDialogView::kWebViewElementIdForTesting),
+      InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
+                                         {"#errorPanel:not([hidden])"})));
+}
+
+class GlicFreControllerUiTimeoutTest : public test::InteractiveGlicTest {
+ public:
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlic,
+         {{"glic-max-loading-time-ms", "100"},
+          {"glic-min-loading-time-ms", "10"},
+          {"glic-pre-loading-time-ms", "10"}}}};
+
+    // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
+    // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
+    // first. It's also unclear whether it ought to happen at all before FRE
+    // completion. Disable that feature until that can be sorted out.
+    features_.InitWithFeaturesAndParameters(
+        enabled_features, {features::kGlicWarming, features::kGlicFreWarming});
+
+    fre_server_.AddDefaultHandlers();
+    // Register a handler that will hang, to simulate a timeout.
+    fre_server_.RegisterRequestHandler(base::BindRepeating(
+        [](const GURL& url, const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == url.path()) {
+            return std::make_unique<net::test_server::HungResponse>();
+          }
+          return nullptr;
+        },
+        fre_url()));
+    ASSERT_TRUE(fre_server_.InitializeAndListen());
+
+    fre_url_ = fre_server_.GetURL("/glic/test_client/fre.html");
+
+    InteractiveGlicTestT::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveGlicTestT::SetUpOnMainThread();
+    SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
+    EXPECT_TRUE(GetFreController()->ShouldShowFreDialog());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kGlicFreURL, fre_url_.spec());
+  }
+
+  GlicFreController* GetFreController() {
+    return GetService()->window_controller().fre_controller();
+  }
+
+  net::EmbeddedTestServer& fre_server() { return fre_server_; }
+  const GURL& fre_url() { return fre_url_; }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  GlicKeyedService* GetService() {
+    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  }
+
+  base::test::ScopedFeatureList features_;
+  net::EmbeddedTestServer fre_server_;
+  GURL fre_url_;
+  base::HistogramTester histogram_tester_;
+};
+
 // TODO(crbug.com/429040435): Test is failing on Mac and Linux bots.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ShowsErrorPanelOnLoadingTimeout \
@@ -405,14 +520,20 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   RunTestSequence(
-      ObserveState(kFreWebUiState,
-                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
-                                  base::Unretained(this))),
+      ObserveState(
+          kFreWebUiState,
+          base::BindOnce(&GlicFreControllerUiTimeoutTest::GetFreController,
+                         base::Unretained(this))),
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
         histogram_tester().ExpectUniqueSample(
-            "Glic.FreErrorStateReason", FreErrorStateReason::kTimeoutExceeded,
+            "Glic.FreErrorStateReason",
+            glic::FreErrorStateReason::kTimeoutExceeded, 1);
+        histogram_tester().ExpectUniqueSample(
+            "Glic.Fre.WebviewLoadAbortReason",
+            9  // GlicFreWebviewLoadAbortReason::ERR_TIMED_OUT
+            ,
             1);
       }),
       InstrumentNonTabWebView(test::kGlicFreHostElementId,
