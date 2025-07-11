@@ -283,6 +283,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
+      gpu::SharedImageUsageSet si_usage,
       GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
           copy_native_buffer_to_shmem_callback =
               GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback(),
