@@ -99,7 +99,7 @@ public class PageInfoAboutThisSiteController {
 
             Profile profile = Profile.fromWebContents(mWebContents);
             assert profile != null;
-            mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+            mEphemeralTabCoordinator.requestOpenSheet(
                     bottomSheetUrl, fullPageUrl, getTitle(), profile);
 
             mMainController.dismiss();

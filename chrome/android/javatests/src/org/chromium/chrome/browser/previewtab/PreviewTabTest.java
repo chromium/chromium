@@ -214,6 +214,7 @@ public class PreviewTabTest {
                 () ->
                         mEphemeralTabCoordinator.requestOpenSheet(
                                 new GURL(mActivityTestRule.getTestServer().getURL(PREVIEW_TAB)),
+                                null,
                                 "PreviewTab",
                                 mActivityTestRule.getProfile(false)));
         endAnimations();
@@ -236,7 +237,7 @@ public class PreviewTabTest {
         // Open Preview Tab.
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+                        mEphemeralTabCoordinator.requestOpenSheet(
                                 new GURL(mActivityTestRule.getTestServer().getURL(PREVIEW_TAB)),
                                 null,
                                 "PreviewTab",

@@ -384,7 +384,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 || mEphemeralTabCoordinatorSupplier.get() == null) {
             return;
         }
-        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.getProfile());
+        mEphemeralTabCoordinatorSupplier
+                .get()
+                .requestOpenSheet(url, null, title, mTab.getProfile());
     }
 
     /**

@@ -120,18 +120,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         return mPeeked || mFullyOpened;
     }
 
-    /**
-     * Entry point for ephemeral tab flow. This will create an ephemeral tab and show it in the
-     * bottom sheet.
-     *
-     * @param url The URL to be shown.
-     * @param title The title to be shown.
-     * @param profile Profile associated with the ephemeral tab.
-     */
-    public void requestOpenSheet(GURL url, String title, Profile profile) {
-        requestOpenSheetWithFullPageUrl(url, null, title, profile);
-    }
-
     /** Add observer to be notified of ephemeral tab events. */
     public void addObserver(EphemeralTabObserver ephemeralTabObserver) {
         mMediator.addObserver(ephemeralTabObserver);
@@ -143,8 +131,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     }
 
     /**
-     * Alternative entry point for ephemeral tab flow. This will create an ephemeral tab and show it
-     * in the bottom sheet. When the tab is opened in a fullPage, an alternative URL is opened.
+     * Entry point for the ephemeral tab flow. This will create an ephemeral tab and show it in the
+     * bottom sheet. When the tab is opened in a fullPage, an alternative URL is opened.
      *
      * @param url The URL to be shown in the bottomsheet.
      * @param fullPageUrl The URL that will be opened when the bottomsheet is transformed to a full
@@ -152,7 +140,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param title The title to be shown.
      * @param profile Profile associated with the ephemeral tab.
      */
-    public void requestOpenSheetWithFullPageUrl(
+    public void requestOpenSheet(
             GURL url, @Nullable GURL fullPageUrl, String title, Profile profile) {
         mUrl = url;
         mFullPageUrl = fullPageUrl;
