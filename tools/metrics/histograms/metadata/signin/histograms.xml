@@ -1509,9 +1509,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccountsBackoffRetries" units="retries"
-    expires_after="2025-08-08">
+    expires_after="2026-04-01">
   <owner>samarchehade@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     Android only. The number of backoff retries necessary before fetching user
     accounts information from Google Play services succeeded. Recorded after
