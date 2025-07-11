@@ -34,14 +34,11 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
       gfx::IO_SURFACE_BUFFER;
 
   static std::unique_ptr<GpuMemoryBufferImplIOSurface>
-  CreateFromHandleForTesting(gfx::GpuMemoryBufferHandle handle,
+  CreateFromHandleForTesting(const gfx::GpuMemoryBufferHandle& handle,
                              const gfx::Size& size,
                              gfx::BufferFormat format,
                              gfx::BufferUsage usage,
-                             DestructionCallback callback) {
-    return CreateFromHandle(std::move(handle), size, format, usage,
-                            std::move(callback));
-  }
+                             DestructionCallback callback);
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
@@ -64,7 +61,14 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
+      bool is_read_only_cpu_usage,
+      DestructionCallback callback);
+
+  static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandleImpl(
+      const gfx::GpuMemoryBufferHandle& handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      int32_t lock_flags,
       DestructionCallback callback);
 
   GpuMemoryBufferImplIOSurface(const gfx::Size& size,

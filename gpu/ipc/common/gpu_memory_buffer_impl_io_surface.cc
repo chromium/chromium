@@ -57,11 +57,48 @@ GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {}
 
 // static
 std::unique_ptr<GpuMemoryBufferImplIOSurface>
-GpuMemoryBufferImplIOSurface::CreateFromHandle(
+GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
+    DestructionCallback callback) {
+  return CreateFromHandleImpl(std::move(handle), size, format, LockFlags(usage),
+                              std::move(callback));
+}
+
+// static
+base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    gfx::GpuMemoryBufferHandle* handle) {
+  handle->type = gfx::IO_SURFACE_BUFFER;
+  handle->io_surface = gfx::CreateIOSurface(size, format);
+  DCHECK(handle->io_surface);
+  return base::DoNothing();
+}
+
+// static
+std::unique_ptr<GpuMemoryBufferImplIOSurface>
+GpuMemoryBufferImplIOSurface::CreateFromHandle(
+    const gfx::GpuMemoryBufferHandle& handle,
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    bool is_read_only_cpu_usage,
+    DestructionCallback callback) {
+  uint32_t lock_flags = is_read_only_cpu_usage ? kIOSurfaceLockReadOnly : 0;
+  return CreateFromHandleImpl(std::move(handle), size, format, lock_flags,
+                              std::move(callback));
+}
+
+// static
+std::unique_ptr<GpuMemoryBufferImplIOSurface>
+GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
+    const gfx::GpuMemoryBufferHandle& handle,
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    int32_t lock_flags,
     DestructionCallback callback) {
   // The maximum number of times to dump before throttling (to avoid sending
   // thousands of crash dumps).
@@ -95,19 +132,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
 #endif
 
   return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      size, format, std::move(callback), handle.Clone(), LockFlags(usage)));
-}
-
-// static
-base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gfx::GpuMemoryBufferHandle* handle) {
-  handle->type = gfx::IO_SURFACE_BUFFER;
-  handle->io_surface = gfx::CreateIOSurface(size, format);
-  DCHECK(handle->io_surface);
-  return base::DoNothing();
+      size, format, std::move(callback), handle.Clone(), lock_flags));
 }
 
 bool GpuMemoryBufferImplIOSurface::Map() {

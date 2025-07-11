@@ -331,9 +331,14 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
           std::move(handle), size, format, usage, base::DoNothing());
 #if BUILDFLAG(IS_MAC)
-    case gfx::IO_SURFACE_BUFFER:
+    case gfx::IO_SURFACE_BUFFER: {
+      // TODO(crbug.com/404958317): Check SI usage instead of BufferUsage.
+      bool is_read_only_cpu_usage =
+          usage == gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
       return GpuMemoryBufferImplIOSurface::CreateFromHandle(
-          std::move(handle), size, format, usage, base::DoNothing());
+          std::move(handle), size, format, is_read_only_cpu_usage,
+          base::DoNothing());
+    }
 #endif
 #if BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP: {
