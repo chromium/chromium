@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 
 namespace extensions {
 
@@ -25,6 +26,28 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   if (!windows_util::GetControllerFromWindowID(this, params->window_id,
                                                extractor.type_filters(),
                                                &window_controller, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  WindowController::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? WindowController::kPopulateTabs
+                                : WindowController::kDontPopulateTabs;
+  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
+      extension(), populate_tab_behavior, source_context_type());
+  return RespondNow(WithArguments(std::move(windows)));
+}
+
+ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
+  std::optional<windows::GetCurrent::Params> params =
+      windows::GetCurrent::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ApiParameterExtractor<windows::GetCurrent::Params> extractor(params);
+  WindowController* window_controller = nullptr;
+  std::string error;
+  if (!windows_util::GetControllerFromWindowID(
+          this, extension_misc::kCurrentWindowId, extractor.type_filters(),
+          &window_controller, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 

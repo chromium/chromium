@@ -520,28 +520,6 @@ void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
 
 // Windows ---------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
-  std::optional<windows::GetCurrent::Params> params =
-      windows::GetCurrent::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  ApiParameterExtractor<windows::GetCurrent::Params> extractor(params);
-  WindowController* window_controller = nullptr;
-  std::string error;
-  if (!windows_util::GetControllerFromWindowID(
-          this, extension_misc::kCurrentWindowId, extractor.type_filters(),
-          &window_controller, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  WindowController::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? WindowController::kPopulateTabs
-                                : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
-      extension(), populate_tab_behavior, source_context_type());
-  return RespondNow(WithArguments(std::move(windows)));
-}
-
 ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   std::optional<windows::GetLastFocused::Params> params =
       windows::GetLastFocused::Params::Create(args());
