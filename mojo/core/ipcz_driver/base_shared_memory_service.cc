@@ -26,9 +26,8 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
-#define SHARED_MEMORY_SERVICE_REQUIRED()                                \
-  BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE) && \
-      !BUILDFLAG(IS_ANDROID)
+#define SHARED_MEMORY_SERVICE_REQUIRED() \
+  BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 
 namespace mojo::core::ipcz_driver {
 

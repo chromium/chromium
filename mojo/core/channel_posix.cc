@@ -10,7 +10,9 @@
 #include "mojo/core/channel_posix.h"
 
 #include <errno.h>
+#include <limits.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 
 #include <atomic>
 #include <limits>
@@ -31,15 +33,9 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
-#if !BUILDFLAG(IS_NACL)
-#include <limits.h>
-#include <sys/uio.h>
-
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 #include "mojo/core/channel_linux.h"
 #endif
-
-#endif  // !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "mojo/core/channel_binder.h"
@@ -48,9 +44,7 @@
 namespace mojo::core {
 
 namespace {
-#if !BUILDFLAG(IS_NACL)
 std::atomic<bool> g_use_writev{false};
-#endif  // !BUILDFLAG(IS_NACL)
 
 const size_t kMaxBatchReadCapacity = 256 * 1024;
 }  // namespace
@@ -441,10 +435,8 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
 }
 
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
-#if !BUILDFLAG(IS_NACL)
   if (g_use_writev)
     return FlushOutgoingMessagesWritevNoLock();
-#endif
 
   base::circular_deque<MessageView> messages;
   std::swap(outgoing_messages_, messages);
@@ -506,7 +498,6 @@ void ChannelPosix::OnWriteError(Error error) {
   OnError(error);
 }
 
-#if !BUILDFLAG(IS_NACL)
 bool ChannelPosix::WriteOutgoingMessagesWithWritev() {
   if (outgoing_messages_.empty())
     return true;
@@ -606,7 +597,6 @@ bool ChannelPosix::FlushOutgoingMessagesWritevNoLock() {
   } while (!outgoing_messages_.empty());
   return true;
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
                                     const void* payload,
@@ -682,12 +672,10 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_NACL)
 // static
 void Channel::set_posix_use_writev(bool use_writev) {
   g_use_writev = use_writev;
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 scoped_refptr<Channel> Channel::Create(
@@ -702,8 +690,7 @@ scoped_refptr<Channel> Channel::Create(
         std::move(io_task_runner));
   }
 #endif
-#if !BUILDFLAG(IS_NACL) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return new ChannelLinux(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);
 #else
@@ -712,7 +699,6 @@ scoped_refptr<Channel> Channel::Create(
 #endif
 }
 
-#if !BUILDFLAG(IS_NACL)
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 // static
 bool Channel::SupportsChannelUpgrade() {
@@ -728,6 +714,5 @@ void Channel::OfferChannelUpgrade() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace mojo::core

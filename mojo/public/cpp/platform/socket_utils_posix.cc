@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 #include <unistd.h>
 
 #include "base/files/file_util.h"
@@ -19,15 +20,10 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_NACL)
-#include <sys/uio.h>
-#endif
-
 namespace mojo {
 
 namespace {
 
-#if !BUILDFLAG(IS_NACL)
 bool IsRecoverableError() {
   return errno == ECONNABORTED || errno == EMFILE || errno == ENFILE ||
          errno == ENOMEM || errno == ENOBUFS;
@@ -68,7 +64,6 @@ bool IsPeerAuthorized(base::PlatformFile fd) {
   }
   return true;
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
@@ -159,9 +154,6 @@ bool AcceptSocketConnection(base::PlatformFile server_fd,
                             bool check_peer_user) {
   DCHECK_GE(server_fd, 0);
   connection_fd->reset();
-#if BUILDFLAG(IS_NACL)
-  NOTREACHED();
-#else
   base::ScopedFD accepted_handle(HANDLE_EINTR(accept(server_fd, nullptr, 0)));
   if (!accepted_handle.is_valid())
     return IsRecoverableError();
@@ -174,7 +166,6 @@ bool AcceptSocketConnection(base::PlatformFile server_fd,
 
   *connection_fd = std::move(accepted_handle);
   return true;
-#endif  // BUILDFLAG(IS_NACL)
 }
 
 }  // namespace mojo

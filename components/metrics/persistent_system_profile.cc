@@ -259,7 +259,6 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   }
   size_t read_size = header.as_parts.amount;
   if (end_offset_ + sizeof(header) + read_size > alloc_size_) {
-#if !BUILDFLAG(IS_NACL)
     // TODO(crbug.com/40064026): Remove these. They are used to investigate
     // unexpected failures.
     SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "end_offset_",
@@ -267,8 +266,6 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
     SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "read_size", read_size);
     SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "alloc_size_",
                             alloc_size_);
-#endif  // !BUILDFLAG(IS_NACL)
-
     DUMP_WILL_BE_NOTREACHED();  // Invalid header amount.
     *type = kUnusedSpace;
     return true;  // Don't try again.

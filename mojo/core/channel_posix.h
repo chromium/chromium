@@ -92,7 +92,6 @@ class ChannelPosix : public Channel,
               ;
   bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
-#if !BUILDFLAG(IS_NACL)
   bool WriteOutgoingMessagesWithWritev() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
   // FlushOutgoingMessagesWritevNoLock is equivalent to
@@ -103,7 +102,6 @@ class ChannelPosix : public Channel,
   // back to the standard write.
   bool FlushOutgoingMessagesWritevNoLock()
       EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-#endif  // !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_IOS)
   bool CloseHandles(const int* fds, size_t num_fds)

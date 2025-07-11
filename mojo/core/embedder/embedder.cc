@@ -37,12 +37,10 @@
 #include "mojo/core/node_controller.h"
 #endif
 
-#if !BUILDFLAG(IS_NACL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "mojo/core/channel_linux.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_NACL)
 
 namespace mojo::core {
 
@@ -80,8 +78,7 @@ bool g_enable_memv2 = false;
 void InitFeatures() {
   CHECK(base::FeatureList::GetInstance());
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && \
-    !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   Channel::set_posix_use_writev(
       base::FeatureList::IsEnabled(kMojoPosixUseWritev));
 
@@ -101,7 +98,7 @@ void InitFeatures() {
                                        use_zero_on_wake);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
   Channel::set_use_trivial_messages(
       base::FeatureList::IsEnabled(kMojoInlineMessagePayloads));

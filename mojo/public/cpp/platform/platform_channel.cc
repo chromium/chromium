@@ -43,10 +43,8 @@
 #include "base/apple/scoped_mach_port.h"
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/socket.h>
-#elif BUILDFLAG(IS_NACL)
-#include "native_client/src/public/imc_syscalls.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -137,15 +135,11 @@ void CreateChannel(PlatformHandle* local_endpoint,
 #endif  // BUILDFLAG_IS_ANDROID
 
   int fds[2];
-#if BUILDFLAG(IS_NACL)
-  PCHECK(imc_socketpair(fds) == 0);
-#else
   PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
 
   // Set non-blocking on both ends.
   PCHECK(fcntl(fds[0], F_SETFL, O_NONBLOCK) == 0);
   PCHECK(fcntl(fds[1], F_SETFL, O_NONBLOCK) == 0);
-#endif  // BUILDFLAG(IS_NACL)
 
   *local_endpoint = PlatformHandle(base::ScopedFD(fds[0]));
   *remote_endpoint = PlatformHandle(base::ScopedFD(fds[1]));

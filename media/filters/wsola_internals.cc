@@ -49,7 +49,7 @@ float MultiChannelSimilarityMeasure(const float* dot_prod_a_b,
   return similarity_measure;
 }
 
-#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+#if defined(ARCH_CPU_X86_FAMILY)
 void MultiChannelDotProduct_SSE(const AudioBus* a,
                                 int frame_offset_a,
                                 const AudioBus* b,
@@ -227,7 +227,7 @@ void MultiChannelDotProduct(const AudioBus* a,
   DCHECK_LE(frame_offset_b + num_frames, b->frames());
 
   static const auto dot_product_func = [] {
-#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+#if defined(ARCH_CPU_X86_FAMILY)
     base::CPU cpu;
     if (cpu.has_avx2() && cpu.has_fma3()) {
       return MultiChannelDotProduct_AVX2;
