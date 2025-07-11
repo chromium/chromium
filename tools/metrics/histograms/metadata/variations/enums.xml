@@ -158,10 +158,17 @@ chromium-metrics-reviews@google.com.
 
 <enum name="VariationsLimitedEntropySeedRejectionReason">
   <int value="0" label="Exceeds entropy limit"/>
-  <int value="1" label="More than one limited layer"/>
-  <int value="2" label="Limited layer is active but has invalid slot bounds"/>
-  <int value="3" label="Limited layer is active but does not contain slots"/>
-  <int value="4" label="Limited layer is not active"/>
+  <int value="1" label="More than one active limited layer"/>
+  <int value="2" label="Layer has invalid slot bounds"/>
+  <int value="3" label="Layer does not contain slots"/>
+  <int value="4" label="Invalid Layer ID"/>
+  <int value="5" label="Multiple layers with the same ID"/>
+  <int value="6" label="Invalid layer ID reference"/>
+  <int value="7" label="Dangling layer reference"/>
+  <int value="8" label="Dangling layer member reference"/>
+  <int value="9" label="Empty layer reference"/>
+  <int value="10"
+      label="Incomplete layer validation (errors found post validation)"/>
 </enum>
 
 <enum name="VariationsLogInvalidValue">

@@ -620,6 +620,7 @@ CreateTrialsResult VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!create_trials_from_seed_called_);
   CHECK(client_);
+  CHECK(client_state);
   create_trials_from_seed_called_ = true;
 
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -681,7 +682,7 @@ CreateTrialsResult VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   // is the case for clients on platforms, like Android WebView, that do not
   // support limited entropy randomization. For such clients,
   // `SeedHasMisconfiguredEntropy()`is always false.
-  if (SeedHasMisconfiguredEntropy(layers, seed)) {
+  if (SeedHasMisconfiguredEntropy(*client_state, seed)) {
     base::debug::DumpWithoutCrashing();
     return CreateTrialsResult{
         .applied_seed = false,
