@@ -215,24 +215,25 @@ void ParseIcons(const base::Value::Dict& dict,
     web_app_icon.src = *icon_src;
 
     const std::string* icon_sizes = icon.GetDict().FindString(kWebAppIconSizes);
-    if (!icon_sizes || icon_sizes->empty() ||
-        !base::IsStringUTF8(*icon_sizes)) {
-      log.Warn(
-          base::StringPrintf("Each dictionary in the list \"%s\" should "
-                             "contain a non-empty UTF8 string field \"%s\".",
-                             kWebAppIcons, kWebAppIconSizes));
-    } else {
-      web_app_icon.sizes = *icon_sizes;
+    if (icon_sizes) {
+      if (icon_sizes->empty() || !base::IsStringUTF8(*icon_sizes)) {
+        log.Warn(base::StringPrintf(
+            "Each \"%s\" in \"%s\" should be a non-empty UTF8 string.",
+            kWebAppIconSizes, kWebAppIcons));
+      } else {
+        web_app_icon.sizes = *icon_sizes;
+      }
     }
 
     const std::string* icon_type = icon.GetDict().FindString(kWebAppIconType);
-    if (!icon_type || icon_type->empty() || !base::IsStringUTF8(*icon_type)) {
-      log.Warn(
-          base::StringPrintf("Each dictionary in the list \"%s\" should "
-                             "contain a non-empty UTF8 string field \"%s\".",
-                             kWebAppIcons, kWebAppIconType));
-    } else {
-      web_app_icon.type = *icon_type;
+    if (icon_type) {
+      if (icon_type->empty() || !base::IsStringUTF8(*icon_type)) {
+        log.Warn(base::StringPrintf(
+            "Each \"%s\" in \"%s\" should be a non-empty UTF8 string.",
+            kWebAppIconType, kWebAppIcons));
+      } else {
+        web_app_icon.type = *icon_type;
+      }
     }
 
     icons->emplace_back(web_app_icon);
