@@ -4498,7 +4498,7 @@
       "--text-contrast=0.97",
       "--text-gamma=1.97"
     ],
-    "expires": "July 1, 2025"
+    "expires": "never"
   },
   {
     "prefix": "text-size-adjust",
