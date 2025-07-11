@@ -56,6 +56,10 @@ class SecurePaymentConfirmationTest
   // Returns the generic WebAuthn error message, to compare against SPC output.
   static std::string GetWebAuthnErrorMessage();
 
+  // Returns the cancel error message when the user closes the SPC dialog, to
+  // compare against SPC output.
+  static std::string GetCancelErrorMessage();
+
   bool database_write_responded_ = false;
   bool confirm_payment_ = false;
   bool close_dialog_on_error_ = false;

@@ -1038,4 +1038,10 @@ public class ChromePaymentRequestService
             getSecurePaymentConfirmationNoMatchingCredUiForTesting() {
         return mNoMatchingController;
     }
+
+    @VisibleForTesting
+    @Nullable
+    public SecurePaymentConfirmationController getSecurePaymentConfirmationForTesting() {
+        return mSpcController;
+    }
 }
