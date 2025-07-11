@@ -35,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
@@ -287,6 +288,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
             webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))),
         decoded_image_callback_(decoded_cb_.Get()),
         spatial_index_(0) {
+    blink::Platform::SetMainThreadTaskRunnerForTesting();
     media_thread_.Start();
 
     owned_video_decoder_ = std::make_unique<StrictMock<MockVideoDecoder>>();
@@ -323,6 +325,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   ~RTCVideoDecoderAdapterTest() override {
     adapter_wrapper_.reset();
     media_thread_.FlushForTesting();
+    blink::Platform::UnsetMainThreadTaskRunnerForTesting();
   }
 
  protected:

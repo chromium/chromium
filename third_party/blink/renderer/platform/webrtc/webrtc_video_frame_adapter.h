@@ -8,6 +8,9 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -20,6 +23,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -83,6 +87,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         const media::VideoFrame& src_frame,
         media::VideoFrame& dest_frame);
 
+    // Request a RasterContextProvider to be fetched from the main thread.
+    // Completes asynchronously.
+    virtual void RequestRasterContextProvider();
+    // Fetch a RasterContextProvider context provider instance, if available.
+    // Will be nullptr if callback from `RequestRasterContextProvider()` has not
+    // completed.
     virtual scoped_refptr<viz::RasterContextProvider>
     GetRasterContextProvider();
 
@@ -111,6 +121,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     virtual ~SharedResources();
 
    private:
+    void SetRasterContextProvider(scoped_refptr<viz::RasterContextProvider>);
+
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
 
@@ -118,9 +130,9 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         accelerated_frame_pool_;
     bool disable_gmb_frames_ = false;
 
-    base::Lock context_provider_lock_;
+    base::Lock raster_context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
-        GUARDED_BY(context_provider_lock_);
+        GUARDED_BY(raster_context_provider_lock_);
 
     raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
@@ -131,6 +143,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
     // Contains feedback from the most recently destroyed Adapter.
     media::VideoCaptureFeedback last_feedback_ GUARDED_BY(feedback_lock_);
+    base::WeakPtrFactory<SharedResources> weak_factory_{this};
   };
 
   struct PLATFORM_EXPORT ScaledBufferSize {
