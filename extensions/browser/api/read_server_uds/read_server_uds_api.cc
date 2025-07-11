@@ -82,8 +82,8 @@ void ReadServerUdsReadDataFunction::OnResponded() {
   LOG(INFO) << "ReadServerUdsReadDataFunction::OnResponded() Cleaning up";
 
   if (ml_server_) {
-    ml_server_->Clear();      // First clean up state
-    ml_server_.reset();       // Then destroy safely
+    ml_server_->Clear();  // First clean up state
+    ml_server_.reset();   // Then destroy safely
   }
 
   // Other cleanup if needed
@@ -115,180 +115,43 @@ ExtensionFunction::ResponseAction ReadServerUdsSendDataFunction::Run() {
   const base::Value& arg = args_list[0];
   EXTENSION_FUNCTION_VALIDATE(arg.is_string());
 
-  // Extract the message from the arguments and save it in this class variable
-  message_ = arg.GetString();
-  LOG(INFO) << "Sending message: " << message_;
+  std::string payload = arg.GetString();
 
-  AddRef();  // Keep the function alive until the request is completed
+  AddRef();  // async
 
-  // Post the Connect operation to IO thread
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ReadServerUdsSendDataFunction::ConnectToUnixSocket,
-                     weak_ptr_factory_.GetWeakPtr()));
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath);
 
-  LOG(INFO)
-      << "ReadServerUdsSendDataFunction::Run() completed, request started";
+  ml_server->Send(payload,
+                  base::BindOnce(&ReadServerUdsSendDataFunction::OnSuccess,
+                                 weak_ptr_factory_.GetWeakPtr()),
+                  base::BindOnce(&ReadServerUdsSendDataFunction::OnError,
+                                 weak_ptr_factory_.GetWeakPtr()));
+
+  // Important: hold the instance if needed
+  ml_server_ = std::move(ml_server);
+
   return RespondLater();
 }
 
-void ReadServerUdsSendDataFunction::ConnectToUnixSocket() {
-  base::FilePath socket_path("/tmp/shared-sockets/echo_socket");
-
-  LOG(INFO) << "Creating UnixDomainClientSocket to path: "
-            << socket_path.value();
-
-  socket_ = std::make_unique<net::UnixDomainClientSocket>(
-      socket_path.value(), false /* use_abstract_namespace */);
-
-  // this is uds so connect will be synchronous
-  int result = socket_->Connect(
-      base::BindOnce(&ReadServerUdsSendDataFunction::OnConnected,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  LOG(INFO) << "Connect() returned: " << result;
-  if (result == net::OK) {
-    LOG(INFO) << "OnConnected() synchronously";
-    OnConnected(result);
-  } else if (result == net::ERR_IO_PENDING) {
-    LOG(INFO) << "Connection pending, waiting for callback";
-  } else {
-    LOG(ERROR) << "Connect failed: " << result;
-    RespondFromIOThread(Error("Connect failed"));
-  }
-}
-
-void ReadServerUdsSendDataFunction::OnConnected(int result) {
-  if (result != net::OK) {
-    LOG(ERROR) << "OnConnected: Socket connection failed: " << result;
-    RespondFromIOThread(Error("Socket connection failed"));
-    return;
-  }
-
-  LOG(INFO) << "Socket connected successfully";
-
-  LOG(INFO) << "Sending message: " << message_;
-
-  auto send_buffer = base::MakeRefCounted<net::StringIOBuffer>(message_);
-
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("read_server_uds_write", R"(
-      semantics {
-        sender: "Read Server UDS API"
-        description: "Sends a message to the UNIX domain socket server."
-        trigger: "User action in the extension."
-        data: "A command string."
-        destination: LOCAL
-      }
-      policy {
-        cookies_allowed: NO
-        setting: "This request cannot be disabled by settings."
-      })");
-
-  // the no of byte written return by the write()
-  // describe at net/socket/socket.h:74
-  int write_result = socket_->Write(
-      send_buffer.get(), message_.size(),
-      base::BindOnce(&ReadServerUdsSendDataFunction::OnDataWritten,
-                     weak_ptr_factory_.GetWeakPtr()),
-      traffic_annotation);
-
-  if (write_result == static_cast<int>(message_.size())) {  // synchronous call
-    LOG(INFO) << "OnDataWritten() Synchronous";
-    OnDataWritten(write_result);
-    LOG(INFO) << "Data written to socket immediately";
-  } else if (write_result == net::ERR_IO_PENDING) {  // async
-    LOG(INFO) << "Write to socket pending";
-  } else {
-    LOG(ERROR) << "Failed to write to socket: " << write_result;
-    RespondFromIOThread(Error("Failed to write to socket"));
-  }
-}
-
-void ReadServerUdsSendDataFunction::OnDataWritten(int result) {
-  if (result <= 0) {
-    LOG(ERROR) << "Failed to write data: " << result;
-    RespondFromIOThread(Error("Write failed"));
-    return;
-  }
-
-  LOG(INFO) << "Data written successfully, bytes: " << result;
-
-  read_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(4096);
-
-  // refere to the net/socket/socket.h:38
-  int read_result =
-      socket_->Read(read_buffer_.get(), 4096,
-                    base::BindOnce(&ReadServerUdsSendDataFunction::OnDataRead,
-                                   weak_ptr_factory_.GetWeakPtr()));
-
-  if (read_result != net::ERR_IO_PENDING && read_result <= 0) {
-    LOG(ERROR) << "Read failed: " << read_result;
-    RespondFromIOThread(Error("Read failed"));
-  } else {  //
-    LOG(INFO) << "Read started";
-  }
-}
-
-void ReadServerUdsSendDataFunction::OnDataRead(int result) {
-  if (result <= 0) {
-    LOG(ERROR) << "Failed to read from socket: " << result;
-    RespondFromIOThread(Error("Failed to read from socket"));
-    return;
-  }
-
-  std::string response(read_buffer_->data(), result);
-  LOG(INFO) << "Response data: " << response;
-
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
-  LOG(INFO) << "Inside OnDataRead() on IO thread";
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ReadServerUdsSendDataFunction::RespondSuccessOnUI,
-                     base::Unretained(this), std::move(response)));
-}
-
-void ReadServerUdsSendDataFunction::RespondSuccessOnUI(std::string result) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  LOG(INFO) << "Inside RespondSuccessOnUI() on UI thread";
-
+void ReadServerUdsSendDataFunction::OnSuccess(std::string result) {
   Respond(WithArguments(base::Value(result)));
   Release();
 }
 
-void ReadServerUdsSendDataFunction::RespondFromIOThread(ResponseValue result) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
-  LOG(INFO) << "Inside RespondFromIOThread() on IO thread";
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ReadServerUdsSendDataFunction::Respond,
-                                base::Unretained(this), std::move(result)));
-}
-
-void ReadServerUdsSendDataFunction::RespondErrorOnUI(base::Value error_result) {
-  if (error_result.is_string()) {
-    Respond(Error(error_result.GetString()));
-  } else {
-    Respond(WithArguments(std::move(error_result)));
-  }
+void ReadServerUdsSendDataFunction::OnError(std::string error_msg) {
+  Respond(Error(error_msg));
   Release();
 }
 
-// clean up
-// called by the extension automatcially when send response
 void ReadServerUdsSendDataFunction::OnResponded() {
-  LOG(INFO) << "Cleaning up socket";
+  LOG(INFO) << "ReadServerUdsSendDataFunction::OnResponded() Cleaning up";
 
-  // Post socket cleanup to the IO thread
-  if (socket_) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](std::unique_ptr<net::UnixDomainClientSocket> socket) {
-                         // Socket will be destructed here, safely on IO thread
-                       },
-                       std::move(socket_)));
+  if (ml_server_) {
+    ml_server_->Clear();  // First clean up state
+    ml_server_.reset();   // Then destroy safely
   }
+
+  // Other cleanup if needed
 }
 
 //------------------------

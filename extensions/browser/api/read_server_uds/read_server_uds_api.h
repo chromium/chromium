@@ -49,18 +49,11 @@ private:
   ResponseAction Run() override;
   void OnResponded() override;
 
-  // handling function
-  void ConnectToUnixSocket();
-  void OnConnected(int result);
-  void OnDataWritten(int result);
-  void OnDataRead(int result);
-  void RespondSuccessOnUI(std::string json_result);
-  void RespondFromIOThread(ResponseValue error_result);
-  void RespondErrorOnUI(base::Value error_result);
 
-  std::string message_;
-  std::unique_ptr<net::UnixDomainClientSocket> socket_;
-  scoped_refptr<net::IOBuffer> read_buffer_;
+  void OnSuccess(std::string result);
+  void OnError(std::string error_msg);
+
+  std::unique_ptr<extensions::MLServerUDS> ml_server_;
   base::WeakPtrFactory<ReadServerUdsSendDataFunction> weak_ptr_factory_{this};
 };
 
