@@ -1080,9 +1080,7 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     const GpuFeatureInfo& gpu_feature_info,
     ValidateAdapterFn validate_adapter_fn) {
   bool thread_safe_graphite_context =
-      gpu_feature_info.status_values
-              [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
-          gpu::kGpuFeatureStatusEnabled &&
+      features::IsDrDcEnabled(gpu_feature_info) &&
       features::IsGraphiteContextThreadSafe();
   auto dawn_shared_context =
       base::MakeRefCounted<DawnSharedContext>(thread_safe_graphite_context);

@@ -213,10 +213,7 @@ GpuServiceImpl::GpuServiceImpl(
     bool is_native_gl =
         gpu_info_.gpu.vendor_id != 0xffff && gpu_info_.gpu.vendor_id != 0;
 
-    const bool is_thread_safe =
-        gpu_feature_info.status_values
-            [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
-        gpu::kGpuFeatureStatusEnabled;
+    const bool is_thread_safe = features::IsDrDcEnabled(gpu_feature_info);
 
     // If GL is using a real GPU, the gpu_info will be passed in and vulkan will
     // use the same GPU.
@@ -528,9 +525,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
       gpu_channel_manager_.get());
 
   // Create and Initialize compositor gpu thread.
-  if (gpu_feature_info_.status_values
-          [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
-      gpu::kGpuFeatureStatusEnabled) {
+  if (features::IsDrDcEnabled(gpu_feature_info_)) {
     CompositorGpuThread::CreateParams params;
     params.gpu_channel_manager = gpu_channel_manager_.get();
     params.display =
@@ -1336,9 +1331,7 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   // access to SharedImageManager on the viz thread to obtain the buffer
   // corresponding to a mailbox.
   const bool display_context_on_another_thread =
-      gpu_feature_info_.status_values
-          [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
-      gpu::kGpuFeatureStatusEnabled;
+      features::IsDrDcEnabled(gpu_feature_info_);
 
   // Record the crash key for DrDC.
   if (display_context_on_another_thread) {

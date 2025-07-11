@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -555,7 +556,10 @@ bool IsUsingThreadSafeMediaForWebView() {
 // now as the lock shouldn't have much overhead and is limited to only few gpus.
 // This should be fixed/updated later to account for disabled gpus.
 bool NeedThreadSafeAndroidMedia() {
-  return IsDrDcEnabled() || IsUsingThreadSafeMediaForWebView();
+  // If GpuFeatureInfo is available, replace ShouldEnableDrDc() with
+  // IsDrDcEnabled(gpu_feature_info) which is set after checking drdc
+  // workarounds;
+  return ShouldEnableDrDc() || IsUsingThreadSafeMediaForWebView();
 }
 
 namespace {
@@ -662,11 +666,13 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   return base::FeatureList::IsEnabled(features::kSkiaGraphite);
 }
 
-// Do not use IsDrDcEnabled() to check whether the DrDC thread is running, as
-// this does not include checks for the block list and graphite dawn. Instead,
-// use gpu_feature_info.status_values
-// [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR].
-bool IsDrDcEnabled() {
+bool IsDrDcEnabled(const gpu::GpuFeatureInfo& gpu_feature_info) {
+  return gpu_feature_info.status_values
+             [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] ==
+         gpu::kGpuFeatureStatusEnabled;
+}
+
+bool ShouldEnableDrDc() {
 #if BUILDFLAG(IS_ANDROID)
   // Enabled on android P+.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <

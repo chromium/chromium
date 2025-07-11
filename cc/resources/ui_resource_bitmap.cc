@@ -95,7 +95,11 @@ UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
   const SkBitmap* target = &skbitmap;
 #if BUILDFLAG(IS_ANDROID)
   SkBitmap copy;
-  if (features::IsDrDcEnabled()) {
+  if (features::ShouldEnableDrDc()) {
+    // If GpuFeatureInfo is available, replace ShouldEnableDrDc() with
+    // IsDrDcEnabled(gpu_feature_info) which is set after checking drdc
+    // workarounds;
+
     // TODO(vikassoni): Forcing everything to N32 while android backing cannot
     // support some other formats. Note that DrDc is disabled on some gl
     // renderers and hence gpus via gpu driver bug workaround. That workaround

@@ -17,6 +17,10 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+namespace gpu {
+struct GpuFeatureInfo;
+}  // namespace gpu
+
 namespace features {
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
@@ -123,7 +127,9 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
 
 GPU_CONFIG_EXPORT bool UseGles2ForOopR();
 GPU_CONFIG_EXPORT bool IsUsingVulkan();
-GPU_CONFIG_EXPORT bool IsDrDcEnabled();
+GPU_CONFIG_EXPORT bool IsDrDcEnabled(
+    const gpu::GpuFeatureInfo& gpu_feature_info);
+GPU_CONFIG_EXPORT bool ShouldEnableDrDc();
 GPU_CONFIG_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_CONFIG_EXPORT bool IsSkiaGraphiteEnabled(
     const base::CommandLine* command_line);

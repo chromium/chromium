@@ -319,8 +319,8 @@ GpuFeatureStatus GetDrDCFeatureStatus(const std::set<int>& blocklisted_features,
   }
 #endif
 
-  return features::IsDrDcEnabled() ? kGpuFeatureStatusEnabled
-                                   : kGpuFeatureStatusDisabled;
+  return features::ShouldEnableDrDc() ? kGpuFeatureStatusEnabled
+                                      : kGpuFeatureStatusDisabled;
 }
 
 void SetProcessGlWorkaroundsFromGpuFeatures(
