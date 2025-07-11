@@ -445,7 +445,7 @@ TEST(CredentialManagerTypeConvertersTest,
       /*device_scope_requested=*/true,
       /*provider_scope_requested=*/true,
       blink::mojom::blink::AttestationConveyancePreference::INDIRECT,
-      Vector<WTF::String>({WTF::String::FromUTF8(attestation_format)}));
+      Vector<blink::String>({blink::String::FromUTF8(attestation_format)}));
   ASSERT_EQ(*(mojo_type->supplemental_pub_keys), *expected);
 }
 

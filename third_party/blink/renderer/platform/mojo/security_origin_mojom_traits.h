@@ -48,12 +48,12 @@ struct UrlOriginAdapter {
 template <>
 struct StructTraits<url::mojom::OriginDataView,
                     scoped_refptr<const ::blink::SecurityOrigin>> {
-  static WTF::String scheme(
+  static blink::String scheme(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)
         ->Protocol();
   }
-  static WTF::String host(
+  static blink::String host(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)->Host();
   }

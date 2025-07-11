@@ -23,7 +23,8 @@ using payments::mojom::blink::ItemDetailsPtr;
 using payments::mojom::blink::ItemType;
 using payments::mojom::blink::PurchaseReferencePtr;
 
-WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
+blink::String
+TypeConverter<blink::String, CreateDigitalGoodsResponseCode>::Convert(
     const CreateDigitalGoodsResponseCode& input) {
   switch (input) {
     case CreateDigitalGoodsResponseCode::kOk:
@@ -75,7 +76,7 @@ blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
       output->setType("subscription");
       break;
   }
-  WTF::Vector<WTF::String> icon_urls;
+  blink::Vector<blink::String> icon_urls;
   if (input->icon_urls.has_value()) {
     for (const blink::KURL& icon_url : input->icon_urls.value()) {
       if (icon_url.IsValid() && !icon_url.IsEmpty()) {
@@ -87,7 +88,7 @@ blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
   return output;
 }
 
-WTF::String TypeConverter<WTF::String, BillingResponseCode>::Convert(
+blink::String TypeConverter<blink::String, BillingResponseCode>::Convert(
     const BillingResponseCode& input) {
   switch (input) {
     case BillingResponseCode::kOk:

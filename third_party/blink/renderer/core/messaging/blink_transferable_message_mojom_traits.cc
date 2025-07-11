@@ -57,8 +57,8 @@ ToSerializedAcceleratedImage(
           blink::AcceleratedImageInfo{
               shared_image->Export(), cloned_image->GetSyncToken(),
               cloned_image->GetAlphaType(), cloned_image->GetColorSpace(),
-              WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
-                            std::move(cloned_image))});
+              blink::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
+                              std::move(cloned_image))});
   return result;
 }
 

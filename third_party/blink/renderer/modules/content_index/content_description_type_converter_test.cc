@@ -17,8 +17,9 @@ namespace blink {
 
 namespace {
 
-const blink::ContentDescription* CreateDescription(const WTF::String& category,
-                                                   const WTF::String& url) {
+const blink::ContentDescription* CreateDescription(
+    const blink::String& category,
+    const blink::String& url) {
   auto* description = blink::MakeGarbageCollected<blink::ContentDescription>();
   description->setId("id");
   description->setTitle("title");
@@ -75,8 +76,8 @@ TEST(ContentDescriptionConversionTest, RoundTrip) {
 
 TEST(ContentDescriptionConversionTest, EnumRoundTrip) {
   test::TaskEnvironment task_environment;
-  WTF::Vector<WTF::String> categories = {"homepage", "article", "video",
-                                         "audio"};
+  blink::Vector<blink::String> categories = {"homepage", "article", "video",
+                                             "audio"};
   for (const auto& category : categories) {
     auto* description = CreateDescription(category, "https://example.com/");
     auto* round_trip_description =

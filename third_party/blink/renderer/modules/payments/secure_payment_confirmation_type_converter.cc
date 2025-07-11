@@ -38,7 +38,7 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
       input->instrument()->displayName(),
       blink::KURL(input->instrument()->icon()),
       input->instrument()->iconMustBeShown(),
-      // WTF::String()'s empty constructor constructs a 'null' string.
+      // blink::String()'s empty constructor constructs a 'null' string.
       input->instrument()->hasDetails() ? input->instrument()->details()
                                         : blink::String());
 
@@ -59,13 +59,13 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
 
   if (input->hasPaymentEntitiesLogos()) {
     output->payment_entities_logos =
-        ConvertTo<WTF::Vector<payments::mojom::blink::PaymentEntityLogoPtr>>(
+        ConvertTo<blink::Vector<payments::mojom::blink::PaymentEntityLogoPtr>>(
             input->paymentEntitiesLogos());
   }
 
   if (input->hasBrowserBoundPubKeyCredParams()) {
     output->browser_bound_pub_key_cred_params = ConvertTo<
-        WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>>(
+        blink::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>>(
         input->browserBoundPubKeyCredParams());
   }
 

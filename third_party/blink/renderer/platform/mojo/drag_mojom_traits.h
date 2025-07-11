@@ -33,9 +33,9 @@ namespace mojo {
 template <>
 struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemStringDataView,
                                     blink::WebDragData::StringItem> {
-  static WTF::String string_type(const blink::WebDragData::StringItem& item);
-  static WTF::String string_data(const blink::WebDragData::StringItem& item);
-  static WTF::String title(const blink::WebDragData::StringItem& item);
+  static blink::String string_type(const blink::WebDragData::StringItem& item);
+  static blink::String string_data(const blink::WebDragData::StringItem& item);
+  static blink::String title(const blink::WebDragData::StringItem& item);
   static std::optional<blink::KURL> base_url(
       const blink::WebDragData::StringItem& item);
   static bool Read(blink::mojom::DragItemStringDataView data,
@@ -65,7 +65,7 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemBinaryDataView,
   static blink::KURL source_url(const blink::WebDragData::BinaryDataItem& item);
   static base::FilePath filename_extension(
       const blink::WebDragData::BinaryDataItem& item);
-  static WTF::String content_disposition(
+  static blink::String content_disposition(
       const blink::WebDragData::BinaryDataItem& item);
   static bool Read(blink::mojom::DragItemBinaryDataView data,
                    blink::WebDragData::BinaryDataItem* out);
@@ -77,7 +77,7 @@ struct PLATFORM_EXPORT
                  blink::WebDragData::FileSystemFileItem> {
   static blink::KURL url(const blink::WebDragData::FileSystemFileItem& item);
   static int64_t size(const blink::WebDragData::FileSystemFileItem& item);
-  static WTF::String file_system_id(
+  static blink::String file_system_id(
       const blink::WebDragData::FileSystemFileItem& item);
   static scoped_refptr<blink::BlobDataHandle> serialized_blob(
       const blink::WebDragData::FileSystemFileItem& item);
@@ -115,7 +115,7 @@ struct PLATFORM_EXPORT
     StructTraits<blink::mojom::DragDataDataView, blink::WebDragData> {
   static const std::vector<blink::WebDragData::Item>& items(
       const blink::WebDragData& drag_data);
-  static WTF::String file_system_id(const blink::WebDragData& drag_data);
+  static blink::String file_system_id(const blink::WebDragData& drag_data);
   static bool force_default_action(const blink::WebDragData& drag_data);
   static network::mojom::ReferrerPolicy referrer_policy(
       const blink::WebDragData& drag_data);

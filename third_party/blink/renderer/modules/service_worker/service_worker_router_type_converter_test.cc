@@ -366,7 +366,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 
 TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
   test::TaskEnvironment task_environment;
-  auto verify = [](const WTF::String& test_url_pattern) {
+  auto verify = [](const blink::String& test_url_pattern) {
     auto* idl_rule = blink::RouterRule::Create();
     auto* idl_condition = blink::RouterCondition::Create();
     idl_condition->setUrlPattern(
@@ -552,7 +552,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
 
 TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
   test::TaskEnvironment task_environment;
-  auto validate_normalize = [](const WTF::String& input,
+  auto validate_normalize = [](const blink::String& input,
                                const std::string& expected) {
     auto* idl_rule = blink::RouterRule::Create();
     auto* idl_condition = blink::RouterCondition::Create();

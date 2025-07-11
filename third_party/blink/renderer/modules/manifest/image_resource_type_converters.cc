@@ -24,16 +24,16 @@ using Purpose = blink::mojom::blink::ManifestImageResource::Purpose;
 using blink::WebString;
 
 // https://w3c.github.io/manifest/#sizes-member.
-WTF::Vector<gfx::Size> ParseSizes(const WTF::String& sizes) {
+blink::Vector<gfx::Size> ParseSizes(const blink::String& sizes) {
   std::vector<gfx::Size> parsed_sizes =
       blink::WebIconSizesParser::ParseIconSizes(
           WebString::FromASCII(sizes.Ascii()));
-  WTF::HashSet<std::pair<int, int>,
-               blink::PairHashTraits<blink::IntWithZeroKeyHashTraits<int>,
-                                     blink::IntWithZeroKeyHashTraits<int>>>
+  blink::HashSet<std::pair<int, int>,
+                 blink::PairHashTraits<blink::IntWithZeroKeyHashTraits<int>,
+                                       blink::IntWithZeroKeyHashTraits<int>>>
       unique_sizes;
 
-  WTF::Vector<gfx::Size> results;
+  blink::Vector<gfx::Size> results;
   for (const auto& size : parsed_sizes) {
     auto add_result =
         unique_sizes.insert(std::make_pair(size.width(), size.height()));
@@ -46,19 +46,19 @@ WTF::Vector<gfx::Size> ParseSizes(const WTF::String& sizes) {
 }
 
 // https://w3c.github.io/manifest/#purpose-member.
-WTF::Vector<Purpose> ParsePurpose(const WTF::String& purpose) {
-  WTF::HashSet<WTF::String> valid_purpose_set;
-  WTF::Vector<Purpose> results;
+blink::Vector<Purpose> ParsePurpose(const blink::String& purpose) {
+  blink::HashSet<blink::String> valid_purpose_set;
+  blink::Vector<Purpose> results;
 
   // Only two purpose values are defined.
   valid_purpose_set.ReserveCapacityForSize(2u);
   results.ReserveInitialCapacity(2u);
 
-  WTF::Vector<WTF::String> split_purposes;
+  blink::Vector<blink::String> split_purposes;
   purpose.LowerASCII().Split(' ', false /* allow_empty_entries */,
                              split_purposes);
 
-  for (const WTF::String& lowercase_purpose : split_purposes) {
+  for (const blink::String& lowercase_purpose : split_purposes) {
     Purpose purpose_enum;
     if (lowercase_purpose == "any") {
       purpose_enum = Purpose::ANY;
@@ -82,7 +82,7 @@ WTF::Vector<Purpose> ParsePurpose(const WTF::String& purpose) {
   return results;
 }
 
-WTF::String ParseType(const WTF::String& type) {
+blink::String ParseType(const blink::String& type) {
   if (type.IsNull() || type.empty())
     return "";
 

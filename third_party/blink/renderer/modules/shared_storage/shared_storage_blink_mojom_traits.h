@@ -13,48 +13,48 @@
 namespace mojo {
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<network::mojom::SharedStorageKeyArgumentDataView,
-                 WTF::String> {
+struct PLATFORM_EXPORT StructTraits<
+    network::mojom::SharedStorageKeyArgumentDataView,
+    blink::String> {
   static bool Read(network::mojom::SharedStorageKeyArgumentDataView data,
-                   WTF::String* out_key);
+                   blink::String* out_key);
 
-  static const WTF::String& data(const WTF::String& input) { return input; }
+  static const blink::String& data(const blink::String& input) { return input; }
 };
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<network::mojom::SharedStorageValueArgumentDataView,
-                 WTF::String> {
+struct PLATFORM_EXPORT StructTraits<
+    network::mojom::SharedStorageValueArgumentDataView,
+    blink::String> {
   static bool Read(network::mojom::SharedStorageValueArgumentDataView data,
-                   WTF::String* out_value);
+                   blink::String* out_value);
 
-  static const WTF::String& data(const WTF::String& input) { return input; }
+  static const blink::String& data(const blink::String& input) { return input; }
 };
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<network::mojom::LockNameDataView, WTF::String> {
+struct PLATFORM_EXPORT StructTraits<network::mojom::LockNameDataView,
+                                    blink::String> {
   static bool Read(network::mojom::LockNameDataView data,
-                   WTF::String* out_value);
+                   blink::String* out_value);
 
-  static const WTF::String& data(const WTF::String& input) { return input; }
+  static const blink::String& data(const blink::String& input) { return input; }
 };
 
 template <>
 struct PLATFORM_EXPORT StructTraits<
     network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView,
-    WTF::Vector<
+    blink::Vector<
         network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>> {
   static bool Read(
       network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView data,
-      WTF::Vector<
+      blink::Vector<
           network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>*
           out_value);
 
-  static const WTF::Vector<
+  static const blink::Vector<
       network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
-  data(const WTF::Vector<
+  data(const blink::Vector<
        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
            input) {
     return input;

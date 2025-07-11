@@ -19,7 +19,7 @@ TypeConverter<blink::mojom::blink::BackgroundFetchOptionsPtr,
   blink::mojom::blink::BackgroundFetchOptionsPtr mojo_options =
       blink::mojom::blink::BackgroundFetchOptions::New();
 
-  WTF::Vector<blink::mojom::blink::ManifestImageResourcePtr> mojo_icons;
+  blink::Vector<blink::mojom::blink::ManifestImageResourcePtr> mojo_icons;
   mojo_icons.ReserveInitialCapacity(options->icons().size());
 
   for (auto& icon : options->icons()) {

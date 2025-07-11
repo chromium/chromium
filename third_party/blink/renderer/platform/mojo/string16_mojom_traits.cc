@@ -29,8 +29,9 @@ MaybeOwnedString16::MaybeOwnedString16(base::span<const uint16_t> unowned)
 MaybeOwnedString16::~MaybeOwnedString16() = default;
 
 // static
-MaybeOwnedString16 StructTraits<mojo_base::mojom::String16DataView,
-                                WTF::String>::data(const WTF::String& input) {
+MaybeOwnedString16
+StructTraits<mojo_base::mojom::String16DataView, blink::String>::data(
+    const blink::String& input) {
   if (input.Is8Bit()) {
     return MaybeOwnedString16(base::Latin1OrUTF16ToUTF16(
         input.length(), input.Characters8(), nullptr));
@@ -40,21 +41,22 @@ MaybeOwnedString16 StructTraits<mojo_base::mojom::String16DataView,
 }
 
 // static
-bool StructTraits<mojo_base::mojom::String16DataView, WTF::String>::Read(
+bool StructTraits<mojo_base::mojom::String16DataView, blink::String>::Read(
     mojo_base::mojom::String16DataView data,
-    WTF::String* out) {
+    blink::String* out) {
   ArrayDataView<uint16_t> view;
   data.GetDataDataView(&view);
   if (view.size() > std::numeric_limits<uint32_t>::max())
     return false;
-  *out = WTF::String(
+  *out = blink::String(
       base::span(reinterpret_cast<const UChar*>(view.data()), view.size()));
   return true;
 }
 
 // static
-mojo_base::BigBuffer StructTraits<mojo_base::mojom::BigString16DataView,
-                                  WTF::String>::data(const WTF::String& input) {
+mojo_base::BigBuffer
+StructTraits<mojo_base::mojom::BigString16DataView, blink::String>::data(
+    const blink::String& input) {
   if (input.Is8Bit()) {
     std::u16string input16(input.Characters8(),
                            input.Characters8() + input.length());
@@ -65,9 +67,9 @@ mojo_base::BigBuffer StructTraits<mojo_base::mojom::BigString16DataView,
 }
 
 // static
-bool StructTraits<mojo_base::mojom::BigString16DataView, WTF::String>::Read(
+bool StructTraits<mojo_base::mojom::BigString16DataView, blink::String>::Read(
     mojo_base::mojom::BigString16DataView data,
-    WTF::String* out) {
+    blink::String* out) {
   mojo_base::BigBuffer buffer;
   if (!data.ReadData(&buffer))
     return false;
@@ -83,7 +85,7 @@ bool StructTraits<mojo_base::mojom::BigString16DataView, WTF::String>::Read(
   if (!size) {
     *out = blink::g_empty_string;
   } else {
-    *out = WTF::String(
+    *out = blink::String(
         base::span(reinterpret_cast<const UChar*>(buffer.data()), size));
   }
 

@@ -25,11 +25,11 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::SerializedBlobDataView,
     *output = nullptr;
   }
 
-  static WTF::String uuid(const scoped_refptr<blink::BlobDataHandle>& input) {
+  static blink::String uuid(const scoped_refptr<blink::BlobDataHandle>& input) {
     return input->Uuid();
   }
 
-  static WTF::String content_type(
+  static blink::String content_type(
       const scoped_refptr<blink::BlobDataHandle>& input) {
     return input->GetType().IsNull() ? blink::g_empty_string : input->GetType();
   }
