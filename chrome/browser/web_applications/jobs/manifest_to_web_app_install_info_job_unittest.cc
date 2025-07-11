@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
@@ -901,6 +902,312 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, MainIconsNotPopulated) {
   gfx::test::AreBitmapsEqual(
       file_handler_icon,
       web_app_info->other_icon_bitmaps[file_handler_icon_url][0]);
+}
+
+// Unit-tests verifying the primary icon behavior.
+class ManifestToWebAppInstallInfoPrimaryIconTest
+    : public ManifestToWebAppInstallInfoJobTest {
+ protected:
+  bool ShouldPreferMaskable() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  }
+
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
+};
+
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, ChooseLargestIconAny) {
+  const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 128;
+  const SkBitmap larger_icon =
+      gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
+  const GURL largest_icon_url{"https://www.foo.bar/icon_largest.png"};
+  const int largest_icon_size = 512;
+  const SkBitmap largest_icon =
+      gfx::test::CreateBitmap(largest_icon_size, SK_ColorBLUE);
+
+  // The manifest already has an icon of size 64x64 set.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up 2 more icons, and verify that the largest icon gets loaded for
+  // purpose ANY.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_larger));
+  web_contents_manager().GetOrCreateIconState(larger_icon_url).bitmaps = {
+      larger_icon};
+
+  blink::Manifest::ImageResource icon_largest;
+  icon_largest.src = largest_icon_url;
+  icon_largest.sizes = {{largest_icon_size, largest_icon_size}};
+  icon_largest.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_largest));
+  web_contents_manager().GetOrCreateIconState(largest_icon_url).bitmaps = {
+      largest_icon};
+
+  // Verify the largest icon is chosen to be used as the primary icon.
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  EXPECT_EQ(web_app_info->manifest_icons[0].url, largest_icon_url);
+  EXPECT_EQ(web_app_info->manifest_icons[0].purpose,
+            apps::IconInfo::Purpose::kAny);
+  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, largest_icon_size);
+
+  ASSERT_FALSE(web_app_info->icon_bitmaps.any.empty());
+  EXPECT_TRUE(web_app_info->icon_bitmaps.maskable.empty());
+
+  // Verify correct bitmap chosen
+  gfx::test::AreBitmapsEqual(largest_icon, web_app_info->icon_bitmaps.any[512]);
+}
+
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest,
+       MaskableIconNotChosenIfBelow256) {
+  const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 96;
+  const SkBitmap larger_icon =
+      gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
+
+  const GURL largest_icon_maskable_url{"https://www.foo.bar/icon_largest.png"};
+  const int largest_icon_size = 128;
+  const SkBitmap largest_icon_maskable =
+      gfx::test::CreateBitmap(largest_icon_size, SK_ColorBLUE);
+
+  // The manifest already has an icon of size 64x64 set.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up 2 more icons, and verify that the larger icon gets loaded for
+  // purpose ANY.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_larger));
+  web_contents_manager().GetOrCreateIconState(larger_icon_url).bitmaps = {
+      larger_icon};
+
+  blink::Manifest::ImageResource icon_largest;
+  icon_largest.src = largest_icon_maskable_url;
+  icon_largest.sizes = {{largest_icon_size, largest_icon_size}};
+  icon_largest.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  manifest->icons.push_back(std::move(icon_largest));
+  web_contents_manager()
+      .GetOrCreateIconState(largest_icon_maskable_url)
+      .bitmaps = {largest_icon_maskable};
+
+  // Verify the icon of purpose 'Any' is chosen to be used as the primary icon.
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  ASSERT_FALSE(web_app_info->icon_bitmaps.any.empty());
+  EXPECT_TRUE(web_app_info->icon_bitmaps.maskable.empty());
+
+  // Verify that the larger icon is chosen an all platforms, even though there
+  // is a larger maskable icon, because it's size is not greater than 256.
+  gfx::test::AreBitmapsEqual(larger_icon, web_app_info->icon_bitmaps.any[96]);
+}
+
+// Choose same icon, to be used as `maskable` or `any` depending on whichever OS
+// it is used on.
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, MultiPurposeIcons) {
+  const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 128;
+  const SkBitmap larger_icon =
+      gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
+  const GURL largest_icon_url{"https://www.foo.bar/icon_largest.png"};
+  const int largest_icon_size = 512;
+  const SkBitmap largest_icon =
+      gfx::test::CreateBitmap(largest_icon_size, SK_ColorBLUE);
+
+  // The manifest already has an icon of size 64x64 set.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up 2 more icons, and verify that the largest icon gets loaded for
+  // purpose ANY.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_larger));
+  web_contents_manager().GetOrCreateIconState(larger_icon_url).bitmaps = {
+      larger_icon};
+
+  blink::Manifest::ImageResource icon_largest;
+  icon_largest.src = largest_icon_url;
+  icon_largest.sizes = {{largest_icon_size, largest_icon_size}};
+  icon_largest.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY,
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  manifest->icons.push_back(std::move(icon_largest));
+  web_contents_manager().GetOrCreateIconState(largest_icon_url).bitmaps = {
+      largest_icon};
+
+  // Verify the icon of purpose 'maskable` is chosen as the primary icon on Mac
+  // and ChromeOS, while on Linux and Windows, `any` is chosen as the primary
+  // icon
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  EXPECT_EQ(web_app_info->manifest_icons[0].url, largest_icon_url);
+  EXPECT_EQ(web_app_info->manifest_icons[0].purpose ==
+                apps::IconInfo::Purpose::kMaskable,
+            ShouldPreferMaskable());
+  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, largest_icon_size);
+
+  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
+  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
+  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+            ShouldPreferMaskable());
+
+  // Verify the same bitmap has been parsed and generated as per the
+  // requirements, since it is both maskable and any, and is the largest icon.
+  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
+                             : web_app_info->icon_bitmaps.any;
+  for (const auto& icon_data : icon_map_parsed) {
+    const SkBitmap& bitmap = icon_data.second;
+    gfx::test::CheckColors(
+        bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2), SK_ColorBLUE);
+  }
+}
+
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, AnyAndMaskableAsPerOs) {
+  const GURL larger_icon_any_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 128;
+  const SkColor icon_color_any = SK_ColorGREEN;
+  const SkBitmap larger_icon_any =
+      gfx::test::CreateBitmap(larger_icon_size, icon_color_any);
+
+  const GURL largest_icon_maskable_url{"https://www.foo.bar/icon_largest.png"};
+  const int largest_icon_size = 256;
+  const SkColor icon_color_maskable = SK_ColorBLUE;
+  const SkBitmap largest_icon_maskable =
+      gfx::test::CreateBitmap(largest_icon_size, icon_color_maskable);
+
+  // The manifest already has an icon of size 64x64 set.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up 2 more icons.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_any_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_larger));
+  web_contents_manager().GetOrCreateIconState(larger_icon_any_url).bitmaps = {
+      larger_icon_any};
+
+  blink::Manifest::ImageResource icon_largest;
+  icon_largest.src = largest_icon_maskable_url;
+  icon_largest.sizes = {{largest_icon_size, largest_icon_size}};
+  icon_largest.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  manifest->icons.push_back(std::move(icon_largest));
+  web_contents_manager()
+      .GetOrCreateIconState(largest_icon_maskable_url)
+      .bitmaps = {largest_icon_maskable};
+
+  // Verify the icon of purpose 'maskable` is chosen as the primary icon on Mac
+  // and ChromeOS, while on Linux and Windows, `any` is chosen as the primary
+  // icon
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+
+  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
+  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
+  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+            ShouldPreferMaskable());
+
+  // Verify the correct bitmap has been parsed and generated as per the
+  // requirements.
+  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
+                             : web_app_info->icon_bitmaps.any;
+  const SkColor final_color =
+      ShouldPreferMaskable() ? icon_color_maskable : icon_color_any;
+  for (const auto& icon_data : icon_map_parsed) {
+    const SkBitmap& bitmap = icon_data.second;
+    gfx::test::CheckColors(
+        bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2), final_color);
+  }
+}
+
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, GeneratedIconsIfNoDownload) {
+  const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 128;
+  const SkBitmap larger_icon =
+      gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
+
+  // The manifest already has an icon of size 64x64 set.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up icon, but don't add it to the WebContentsManager.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest->icons.push_back(std::move(icon_larger));
+
+  // Verify that the `web_app_info` has generated icons.
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  ASSERT_TRUE(web_app_info->is_generated_icon);
+}
+
+TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, SVGIconsNoSize) {
+  const GURL svg_icon_url{"https://www.foo.bar/icon_larger.svg"};
+  const SkBitmap expected_svg_icon =
+      gfx::test::CreateBitmap(512, SK_ColorGREEN);
+
+  // The manifest already has an icon of size 64x64 set. Clear that.
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  // Set an SVG icon of size (0,0), regardless of purpose.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = svg_icon_url;
+  icon_larger.sizes = {{0, 0}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY,
+                         blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+  manifest->icons.push_back(std::move(icon_larger));
+
+  web_contents_manager().GetOrCreateIconState(svg_icon_url).bitmaps = {
+      expected_svg_icon};
+
+  // Verify that the `web_app_info` has the correct icon metadata for the SVG
+  // icon.
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  EXPECT_EQ(web_app_info->manifest_icons[0].url, svg_icon_url);
+  EXPECT_EQ(web_app_info->manifest_icons[0].purpose ==
+                apps::IconInfo::Purpose::kMaskable,
+            ShouldPreferMaskable());
+  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, 512);
+
+  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
+  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
+  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+            ShouldPreferMaskable());
+
+  // Verify the correct bitmap has been parsed and downloaded as per the
+  // requirements.
+  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
+                             : web_app_info->icon_bitmaps.any;
+  for (const auto& icon_data : icon_map_parsed) {
+    const SkBitmap& bitmap = icon_data.second;
+    gfx::test::CheckColors(
+        bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2),
+        SK_ColorGREEN);
+  }
 }
 
 }  // namespace

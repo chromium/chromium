@@ -17,13 +17,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "chrome/browser/web_applications/icons/primary_icon_filter.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -568,8 +571,16 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   if (!options_.skip_primary_icon_download) {
-    UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
-                                                     install_info_.get());
+    if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+      std::optional<apps::IconInfo> primary_icon_metadata =
+          GetPrimaryIconsFromManifest(manifest_->icons);
+      if (primary_icon_metadata) {
+        install_info_->manifest_icons = {*primary_icon_metadata};
+      }
+    } else {
+      UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
+                                                       install_info_.get());
+    }
   }
 
   // TODO(crbug.com/40185556): Confirm incoming icons to write to install_info_.

@@ -1855,7 +1855,7 @@ BASE_FEATURE(kWebAppManifestIconUpdating,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebAppUsePrimaryIcon,
-             "WebAppPrimaryIcon",
+             "WebAppUsePrimaryIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

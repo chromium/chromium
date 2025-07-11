@@ -90,6 +90,8 @@ source_set("web_applications") {
     "generated_icon_fix_manager.h",
     "generated_icon_fix_util.cc",
     "generated_icon_fix_util.h",
+    "icons/primary_icon_filter.cc",
+    "icons/primary_icon_filter.h",
     "install_bounce_metric.cc",
     "install_bounce_metric.h",
     "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc",
