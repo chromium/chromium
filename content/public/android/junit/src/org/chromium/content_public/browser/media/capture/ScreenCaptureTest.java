@@ -4,8 +4,8 @@
 
 package org.chromium.content_public.browser.media.capture;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -13,12 +13,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.ImageReader;
@@ -26,7 +31,9 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.Surface;
+import android.view.WindowMetrics;
 
 import androidx.activity.result.ActivityResult;
 import androidx.test.core.app.ApplicationProvider;
@@ -40,7 +47,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -51,29 +57,43 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /** Unit tests for {@link ScreenCapture}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        sdk = Build.VERSION_CODES.R,
-        shadows = {ScreenCaptureTest.ShadowMediaProjectionManager.class})
+        sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+        shadows = {
+            ScreenCaptureTest.ShadowMediaProjectionManager.class,
+            ScreenCaptureTest.ShadowWindowManagerImpl.class
+        })
 public class ScreenCaptureTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TEST_WIDTH_DP = 100;
     private static final int TEST_HEIGHT_DP = 200;
     private static final int TEST_DPI = 300;
+    private static final int NEW_WIDTH_DP = 400;
+    private static final int NEW_HEIGHT_DP = 500;
     private static final long NATIVE_POINTER = 1L;
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private MediaProjection mMediaProjection;
     @Mock private VirtualDisplay mVirtualDisplay;
-    @Mock private Surface mSurface;
     @Mock private ScreenCapture.Natives mNativeMock;
 
-    private ImageReader mImageReader;
+    private static class ImageHandlerState {
+        public final ImageReader imageReader = mock(ImageReader.class);
+        public final Surface surface = mock(Surface.class);
+
+        ImageHandlerState() {
+            when(imageReader.getSurface()).thenReturn(surface);
+        }
+    }
+
+    private final ArrayList<ImageHandlerState> mImageHandlerStates = new ArrayList<>();
     private ScreenCapture mScreenCapture;
     private Context mContext;
 
@@ -81,7 +101,7 @@ public class ScreenCaptureTest {
     public static class ShadowMediaProjectionManager {
         private static MediaProjection sMediaProjection;
 
-        public static void setMediaProjection(MediaProjection projection) {
+        static void setMediaProjection(MediaProjection projection) {
             sMediaProjection = projection;
         }
 
@@ -96,6 +116,49 @@ public class ScreenCaptureTest {
         }
     }
 
+    @Implements(className = "android.view.WindowManagerImpl")
+    public static class ShadowWindowManagerImpl {
+        private static WindowMetrics sWindowMetrics;
+
+        static void setWindowBounds(Rect bounds) {
+            sWindowMetrics = mock(WindowMetrics.class);
+            when(sWindowMetrics.getBounds()).thenReturn(bounds);
+        }
+
+        @Implementation
+        protected WindowMetrics getMaximumWindowMetrics() {
+            return sWindowMetrics;
+        }
+
+        @Implementation
+        protected WindowMetrics getCurrentWindowMetrics() {
+            return sWindowMetrics;
+        }
+
+        @Resetter
+        public static void reset() {
+            sWindowMetrics = null;
+        }
+    }
+
+    private void updateConfiguration(Context context, int widthDp, int heightDp, int dpi) {
+        final Resources resources = context.getResources();
+        final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        displayMetrics.widthPixels = widthDp * dpi / DisplayMetrics.DENSITY_DEFAULT;
+        displayMetrics.heightPixels = heightDp * dpi / DisplayMetrics.DENSITY_DEFAULT;
+        displayMetrics.densityDpi = dpi;
+        displayMetrics.density = (float) dpi / DisplayMetrics.DENSITY_DEFAULT;
+
+        final Configuration configuration = resources.getConfiguration();
+        configuration.screenWidthDp = widthDp;
+        configuration.screenHeightDp = heightDp;
+        configuration.densityDpi = dpi;
+
+        ShadowWindowManagerImpl.setWindowBounds(
+                new Rect(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels));
+        resources.updateConfiguration(configuration, displayMetrics);
+    }
+
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
@@ -106,8 +169,7 @@ public class ScreenCaptureTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
 
-        RuntimeEnvironment.setQualifiers(
-                String.format("w%ddp-h%ddp-%ddpi", TEST_WIDTH_DP, TEST_HEIGHT_DP, TEST_DPI));
+        updateConfiguration(mContext, TEST_WIDTH_DP, TEST_HEIGHT_DP, TEST_DPI);
 
         ShadowMediaProjectionManager.setMediaProjection(mMediaProjection);
 
@@ -127,10 +189,9 @@ public class ScreenCaptureTest {
             ScreenCapture.CaptureState captureState,
             ImageHandler.Delegate delegate,
             Handler handler) {
-        assertNull(mImageReader);
-        mImageReader = mock(ImageReader.class);
-        when(mImageReader.getSurface()).thenReturn(mSurface);
-        return new ImageHandler(captureState, delegate, handler, mImageReader);
+        final var state = new ImageHandlerState();
+        mImageHandlerStates.add(state);
+        return new ImageHandler(captureState, delegate, handler, state.imageReader);
     }
 
     private MediaProjection.Callback getMediaProjectionCallback() {
@@ -149,16 +210,16 @@ public class ScreenCaptureTest {
         ScreenCapture.onForegroundServiceRunning(true);
 
         assertTrue(mScreenCapture.startCapture());
-        assertNotNull(mImageReader);
+        assertEquals(1, mImageHandlerStates.size());
 
         verify(mMediaProjection)
                 .createVirtualDisplay(
                         eq("ScreenCapture"),
-                        eq(TEST_WIDTH_DP * TEST_DPI / 160),
-                        eq(TEST_HEIGHT_DP * TEST_DPI / 160),
+                        eq(TEST_WIDTH_DP * TEST_DPI / DisplayMetrics.DENSITY_DEFAULT),
+                        eq(TEST_HEIGHT_DP * TEST_DPI / DisplayMetrics.DENSITY_DEFAULT),
                         eq(TEST_DPI),
                         eq(DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR),
-                        eq(mSurface),
+                        eq(mImageHandlerStates.get(0).surface),
                         eq(null),
                         eq(null));
     }
@@ -168,17 +229,17 @@ public class ScreenCaptureTest {
         final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
         ScreenCapture.onPick(mWebContents, activityResult);
         ScreenCapture.onForegroundServiceRunning(true);
-        mScreenCapture.startCapture();
+        assertTrue(mScreenCapture.startCapture());
         mScreenCapture.destroy();
 
-        assertNotNull(mImageReader);
-        verify(mImageReader).close();
+        assertEquals(1, mImageHandlerStates.size());
+        verify(mImageHandlerStates.get(0).imageReader).close();
         verify(mMediaProjection).stop();
         verify(mVirtualDisplay).release();
     }
 
     @Test
-    public void testMediaProjectionOnStopStopsNative() {
+    public void testMediaProjectionOnStopAndDestroy() {
         final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
         ScreenCapture.onPick(mWebContents, activityResult);
         ScreenCapture.onForegroundServiceRunning(true);
@@ -186,8 +247,12 @@ public class ScreenCaptureTest {
 
         final MediaProjection.Callback callback = getMediaProjectionCallback();
         callback.onStop();
+        verify(mNativeMock, times(1)).onStop(NATIVE_POINTER);
 
-        verify(mNativeMock).onStop(NATIVE_POINTER);
+        mScreenCapture.destroy();
+        assertEquals(1, mImageHandlerStates.size());
+        verify(mImageHandlerStates.get(0).imageReader).close();
+        verify(mVirtualDisplay).release();
     }
 
     @Test
@@ -202,5 +267,44 @@ public class ScreenCaptureTest {
         callback.onStop();
 
         verify(mNativeMock, never()).onStop(NATIVE_POINTER);
+    }
+
+    @Test
+    public void testDestroyWithoutStartCapture() {
+        mScreenCapture.destroy();
+        assertTrue(mImageHandlerStates.isEmpty());
+        verifyNoMoreInteractions(mMediaProjection, mVirtualDisplay);
+    }
+
+    @Test
+    public void testOnCapturedContentResizeDoesNothingAfterDestroy() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+        mScreenCapture.destroy();
+        callback.onCapturedContentResize(NEW_WIDTH_DP, NEW_HEIGHT_DP);
+
+        verify(mVirtualDisplay, never()).resize(anyInt(), anyInt(), anyInt());
+        verify(mVirtualDisplay, never()).setSurface(any());
+    }
+
+    @Test
+    public void destroyClosesAllImageHandlers() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+        callback.onCapturedContentResize(NEW_WIDTH_DP, NEW_HEIGHT_DP);
+        assertEquals(2, mImageHandlerStates.size());
+
+        mScreenCapture.destroy();
+
+        verify(mImageHandlerStates.get(0).imageReader).close();
+        verify(mImageHandlerStates.get(1).imageReader).close();
     }
 }
