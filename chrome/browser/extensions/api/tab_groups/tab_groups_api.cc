@@ -128,8 +128,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
     if (!include_incognito_information() && profile != browser->profile())
       continue;
 
-    if (!browser->GetFeatures()
-             .extension_window_controller()
+    if (!BrowserExtensionWindowController::From(browser)
              ->IsVisibleToTabsAPIForExtension(
                  extension(), /*allow_dev_tools_windows=*/false)) {
       continue;

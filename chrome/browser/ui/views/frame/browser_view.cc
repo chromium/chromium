@@ -3007,10 +3007,11 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
 
   last_widget_bounds_ = widget_bounds;
 
-  // `extension_window_controller()` may be null if we are in the process of
-  // creating the Browser. In that case, skip the notification.
+  // `extensions::BrowserExtensionWindowController::From()` may be null if we
+  // are in the process of creating the Browser. In that case, skip the
+  // notification.
   if (auto* const controller =
-          browser()->GetFeatures().extension_window_controller()) {
+          extensions::BrowserExtensionWindowController::From(browser())) {
     controller->NotifyWindowBoundsChanged();
   }
 }

@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalDuplicatedMediaKey) {
 
   Browser* incognito_browser = CreateIncognitoBrowser();  // Ditto.
   BrowserExtensionWindowController* controller =
-      incognito_browser->GetFeatures().extension_window_controller();
+      BrowserExtensionWindowController::From(incognito_browser);
 
   ui_controls::SendKeyPress(controller->window()->GetNativeWindow(),
                             ui::VKEY_MEDIA_NEXT_TRACK,

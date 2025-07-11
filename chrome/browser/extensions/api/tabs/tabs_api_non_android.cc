@@ -604,7 +604,7 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
        ++browser_iterator) {
     Browser* browser = *browser_iterator;
     if (windows_util::CanOperateOnWindow(
-            this, browser->GetFeatures().extension_window_controller(),
+            this, BrowserExtensionWindowController::From(browser),
             extractor.type_filters())) {
       last_focused_browser = browser;
       break;
@@ -1138,7 +1138,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
   if (show_state != ui::mojom::WindowShowState::kFullscreen &&
       show_state != ui::mojom::WindowShowState::kDefault) {
-    browser->GetFeatures().extension_window_controller()->SetFullscreenMode(
+    BrowserExtensionWindowController::From(browser)->SetFullscreenMode(
         false, extension()->url());
   }
 
@@ -1154,7 +1154,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
           browser->window()->IsMaximized()) {
         browser->window()->Restore();
       }
-      browser->GetFeatures().extension_window_controller()->SetFullscreenMode(
+      BrowserExtensionWindowController::From(browser)->SetFullscreenMode(
           true, extension()->url());
       break;
     case ui::mojom::WindowShowState::kNormal:

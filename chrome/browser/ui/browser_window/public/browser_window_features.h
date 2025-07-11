@@ -293,11 +293,6 @@ class BrowserWindowFeatures {
     return tab_group_deletion_dialog_controller_.get();
   }
 
-  // TODO(https://crbug.com/428946261): Update callers to use
-  // BrowserExtensionWindowController::From() and remove this method.
-  extensions::BrowserExtensionWindowController* extension_window_controller() {
-    return extension_window_controller_.get();
-  }
 
   SigninViewController* signin_view_controller() {
     return signin_view_controller_.get();

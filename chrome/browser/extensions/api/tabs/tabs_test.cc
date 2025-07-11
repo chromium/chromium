@@ -149,7 +149,7 @@ class TestFunctionDispatcherDelegate
 
  private:
   extensions::WindowController* GetExtensionWindowController() const override {
-    return browser_->GetFeatures().extension_window_controller();
+    return BrowserExtensionWindowController::From(browser_);
   }
 
   content::WebContents* GetAssociatedWebContents() const override {

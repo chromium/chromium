@@ -107,7 +107,7 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
   }
 
   WindowController* GetExtensionWindowController() const override {
-    return browser_->GetFeatures().extension_window_controller();
+    return BrowserExtensionWindowController::From(browser_);
   }
 
  private:
@@ -162,7 +162,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
     if (browser == nullptr) {
       return nullptr;
     }
-    return browser->GetFeatures().extension_window_controller();
+    return BrowserExtensionWindowController::From(browser);
   }
 
  private:

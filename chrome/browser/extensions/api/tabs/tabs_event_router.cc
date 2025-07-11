@@ -217,8 +217,7 @@ void TabsEventRouter::OnBrowserSetLastActive(Browser* browser) {
   TabsWindowsAPI* tabs_window_api = TabsWindowsAPI::Get(profile_);
   if (tabs_window_api) {
     tabs_window_api->windows_event_router()->OnActiveWindowChanged(
-        browser ? browser->GetFeatures().extension_window_controller()
-                : nullptr);
+        browser ? BrowserExtensionWindowController::From(browser) : nullptr);
   }
 }
 
