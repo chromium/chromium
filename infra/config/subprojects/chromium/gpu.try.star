@@ -480,6 +480,7 @@ def gpu_win_builder(*, name, **kwargs):
         os = os.WINDOWS_ANY,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
+        free_space = None,
         **kwargs
     )
 
