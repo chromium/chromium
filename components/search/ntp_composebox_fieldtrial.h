@@ -36,11 +36,11 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
   // Maximum image size downscaling target (in pixels).
-  int downscale_max_image_size = 0;
+  int downscale_max_image_size = 1;
   // Maximum image width downscaling target (in pixels).
-  int downscale_max_image_width = 0;
+  int downscale_max_image_width = 1;
   // Maximum image height downscaling target (in pixels).
-  int downscale_max_image_height = 0;
+  int downscale_max_image_height = 1;
   // Composition quality to use when encoding images.
   int image_compression_quality = 0;
 
