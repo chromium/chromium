@@ -3551,6 +3551,7 @@ component("ash") {
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/ipc/client",
+    "//ipc:mojom_constants",
     "//media",
     "//media/capture:capture_lib",
     "//net",

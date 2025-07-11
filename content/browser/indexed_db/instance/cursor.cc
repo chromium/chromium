@@ -276,7 +276,7 @@ Status Cursor::PrefetchIterationOperation(
   std::vector<IndexedDBKey> found_primary_keys;
   std::vector<IndexedDBValue> found_values;
 
-  // TODO(cmumford): Use IPC::Channel::kMaximumMessageSize
+  // TODO(cmumford): Use IPC::mojom::kChannelMaximumMessageSize
   const size_t max_size_estimate = 10 * 1024 * 1024;
   size_t size_estimate = 0;
 

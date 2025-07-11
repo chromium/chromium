@@ -22,7 +22,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -77,7 +77,7 @@ class ImageDecoderImpl : public ArcWallpaperService::ImageDecoder {
     data_decoder::DecodeImageIsolated(
         base::as_byte_span(data), data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/true,
-        static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+        static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
         /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
   }
 };

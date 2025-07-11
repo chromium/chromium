@@ -24,7 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "google_apis/credentials_mode.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -48,7 +48,7 @@ namespace {
 constexpr const char kURLLoaderDownloadSuccessHistogramName[] =
     "Ash.UserImage.URLLoaderDownloadSuccess";
 constexpr int64_t kMaxImageSizeInBytes =
-    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
+    static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize);
 
 // Contains attributes we need to know about each image we decode.
 struct ImageInfo {

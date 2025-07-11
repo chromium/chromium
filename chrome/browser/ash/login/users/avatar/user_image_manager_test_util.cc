@@ -17,7 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -80,7 +80,7 @@ gfx::ImageSkia ImageLoader::Load() {
   data_decoder::DecodeImageIsolated(
       base::as_byte_span(image_data), codec,
       /*shrink_to_fit=*/false,
-      static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+      static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
       /*desired_image_frame_size=*/gfx::Size(), future.GetCallback());
 
   // Waits until the callback is called.

@@ -12,7 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -106,7 +106,7 @@ void IconDecodeRequest::Start(const std::vector<uint8_t>& image_data,
       &GetDataDecoder(), base::as_byte_span(image_data),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true,
-      static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+      static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&IconDecodeRequest::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(),

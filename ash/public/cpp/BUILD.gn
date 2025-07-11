@@ -466,6 +466,7 @@ component("cpp") {
     "//components/sync_device_info",
     "//components/tab_groups",
     "//components/user_manager",
+    "//ipc:mojom_constants",
     "//mojo/public/cpp/bindings",
     "//net/traffic_annotation",
     "//services/data_decoder/public/cpp",

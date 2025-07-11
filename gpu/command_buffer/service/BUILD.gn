@@ -377,6 +377,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/config",
     "//gpu/ipc/common",
     "//gpu/vulkan:buildflags",
+    "//ipc:mojom_constants",
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
     "//third_party/angle:angle_version_info",

@@ -96,7 +96,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "google_apis/google_api_keys.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -158,7 +158,7 @@ const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 // and
 // kLayoutTestMaxMessageChunkSize in
 // content/shell/browser/layout_test/devtools_protocol_test_bindings.cc.
-const size_t kMaxMessageChunkSize = IPC::Channel::kMaximumMessageSize / 4;
+const size_t kMaxMessageChunkSize = IPC::mojom::kChannelMaximumMessageSize / 4;
 
 base::Value::Dict CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {

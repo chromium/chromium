@@ -29,7 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -150,7 +150,7 @@ class KioskWebAppData::IconFetcher {
         base::as_byte_span(*response_body),
         data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/false,
-        static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+        static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
         /*desired_image_frame_size=*/gfx::Size(),
         base::BindOnce(&IconFetcher::OnImageDecoded,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

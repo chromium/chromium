@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "content/public/common/content_switches.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 
@@ -21,7 +21,7 @@ class MojoInitializer {
  public:
   MojoInitializer() {
     mojo::core::Configuration config;
-    config.max_message_num_bytes = IPC::Channel::kMaximumMessageSize;
+    config.max_message_num_bytes = IPC::mojom::kChannelMaximumMessageSize;
     mojo::core::Init(config);
   }
 };

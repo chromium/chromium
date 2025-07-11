@@ -26,7 +26,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -732,7 +732,7 @@ void ArcAppIcon::DecodeImage(
         &GetDataDecoder(), base::as_byte_span(unsafe_icon_data),
         data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/false,
-        static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+        static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
         /*desired_image_frame_size=*/gfx::Size(),
         base::BindOnce(&ArcAppIcon::OnImageDecoded,
                        weak_ptr_factory_.GetWeakPtr(), request));

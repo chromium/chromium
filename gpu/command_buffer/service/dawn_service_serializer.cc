@@ -8,14 +8,14 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/decoder_client.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 
 namespace gpu::webgpu {
 
 namespace {
 
 constexpr size_t kMaxWireBufferSize =
-    std::min(IPC::Channel::kMaximumMessageSize,
+    std::min(static_cast<size_t>(IPC::mojom::kChannelMaximumMessageSize),
              static_cast<size_t>(1024 * 1024));
 
 constexpr size_t kDawnReturnCmdsOffset =
