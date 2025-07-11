@@ -3062,14 +3062,8 @@ config("symbols") {
       ldflags += [ "-gsplit-dwarf" ]
     }
 
-    # TODO(thakis): Figure out if there's a way to make this go for 32-bit,
-    # currently we get "warning:
-    # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
-    # DWARF info may be corrupt; offsets in a range list entry are in different
-    # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    _enable_gdb_index =
-        symbol_level == 2 && !is_apple && current_cpu != "x86" &&
-        current_os != "zos" && use_lld && !is_wasm
+    _enable_gdb_index = symbol_level == 2 && !is_apple && current_os != "zos" &&
+                        use_lld && !is_wasm
     if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
@@ -3082,7 +3076,7 @@ config("symbols") {
     }
   }
 
-  # Compress debug on 32-bit ARM to stay under 4GB file size limit.
+  # Compress debug on 32-bit to stay under 4GB file size limit.
   # https://b/243982712, https://crbug.com/1354616, https://crbug.com/334073642
   if (symbol_level == 2 && !use_debug_fission && !is_win &&
       (current_cpu == "arm" || current_cpu == "x86")) {
