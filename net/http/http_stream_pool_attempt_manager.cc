@@ -519,6 +519,7 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
 
 void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
   preconnect_jobs_.erase(job);
+  limit_ignoring_jobs_.erase(job);
   ip_based_pooling_disabling_jobs_.erase(job);
   alternative_service_disabling_jobs_.erase(job);
 
