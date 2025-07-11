@@ -122,6 +122,20 @@ void ActorUiStateManager::OnUiEvent(UiEvent event,
   std::move(callback).Run(MakeOkResult());
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+void ActorUiStateManager::OnGlicUpdateFloatyState(
+    glic::GlicWindowController::State floaty_state) {
+  switch (floaty_state) {
+    case glic::GlicWindowController::State::kClosed:
+      MaybeShowToast();
+      break;
+    case glic::GlicWindowController::State::kOpen:
+    case glic::GlicWindowController::State::kWaitingForGlicToLoad:
+      break;
+  }
+}
+#endif
+
 void ActorUiStateManager::MaybeShowToast() {
   // TODO(crbug.com/428014205): Implement this function.
 }

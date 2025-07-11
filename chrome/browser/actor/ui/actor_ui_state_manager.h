@@ -10,6 +10,9 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#endif
 
 namespace tabs {
 class TabInterface;
@@ -26,9 +29,12 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnActorTaskStateChange(TaskId task_id,
                               ActorTask::State task_state) override;
   void OnUiEvent(UiEvent event, UiCompleteCallback callback) override;
-  void MaybeShowToast() override;
   void NotifyUiTabController(tabs::TabInterface& tab,
                              const UiTabState& ui_tab_state) override;
+#if BUILDFLAG(ENABLE_GLIC)
+  void OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State floaty_state) override;
+#endif
 
   // Returns the tabs associated with a given task id if it exists.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
@@ -38,9 +44,15 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
  private:
   void MaybeUpdateProfileScopedUiState();
+
   // Returns completed tasks within the kCompletedTaskExpiryDelay of the
   // `current_time`.
   std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
+
+  // Shows toast that notifies user the agent is working in the background.
+  // Shows a maximum of kToastShownMax per profile.
+  // TODO(crbug.com/428014205): Define kToastShownMax.
+  void MaybeShowToast();
 
   base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
   base::OneShotTimer completed_tasks_expiry_timer_;

@@ -330,12 +330,6 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::ClosePanel() {
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiStateManager)) {
-    actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
-        actor::ActorKeyedService::Get(profile_)->GetActorUiStateManager();
-    actor_ui_state_manager->MaybeShowToast();
-  }
-
   window_controller_->Close();
   SetContextAccessIndicator(false);
   screenshot_capturer_->CloseScreenPicker();

@@ -10,6 +10,10 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/buildflags.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#endif
 
 namespace actor::ui {
 using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
@@ -48,10 +52,11 @@ class ActorUiStateManagerInterface {
   virtual void NotifyUiTabController(tabs::TabInterface& tab,
                                      const UiTabState& ui_tab_state) = 0;
 
-  // Shows toast that notifies user the agent is working in the background.
-  // Shows a maximum of kToastShownMax per profile.
-  // TODO(crbug.com/428014205): Define kToastShownMax.
-  virtual void MaybeShowToast() = 0;
+#if BUILDFLAG(ENABLE_GLIC)
+  // Called on glic window (floaty) state change.
+  virtual void OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State floaty_state) = 0;
+#endif
 };
 
 }  // namespace actor::ui

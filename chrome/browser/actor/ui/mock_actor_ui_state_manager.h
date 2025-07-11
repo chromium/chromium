@@ -10,6 +10,10 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/common/actor.mojom.h"
+#endif
 
 namespace tabs {
 class TabInterface;
@@ -34,7 +38,13 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               NotifyUiTabController,
               (tabs::TabInterface & tab, const UiTabState& ui_tab_state),
               (override));
-  MOCK_METHOD(void, MaybeShowToast, (), (override));
+
+#if BUILDFLAG(ENABLE_GLIC)
+  MOCK_METHOD(void,
+              OnGlicUpdateFloatyState,
+              (glic::GlicWindowController::State floaty_state),
+              (override));
+#endif
 };
 
 }  // namespace actor::ui

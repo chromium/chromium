@@ -12,6 +12,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -1474,6 +1476,16 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
     return;
   }
   state_ = new_state;
+
+  // Inform UI components of glic panel open/close.
+  // TODO(crbug.com/431015299): Instead of piping events through the
+  // ActorUiStateManager, consider calling the Toast and TaskIcon code directly
+  // on state change.
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiStateManager)) {
+    actor::ActorKeyedService::Get(profile_)
+        ->GetActorUiStateManager()
+        ->OnGlicUpdateFloatyState(state_);
+  }
 
   if (IsWindowOpenAndReady()) {
     glic_service_->metrics()->OnGlicWindowOpenAndReady();
