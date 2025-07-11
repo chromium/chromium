@@ -2972,7 +2972,7 @@ void RenderFrameHostImpl::WillLeaveBackForwardCacheInternal() {
 void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
   DCHECK(IsInBackForwardCache());
   base::TimeDelta evict_after =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
+      GetBackForwardCache().GetTimeToLiveInBackForwardCache(
           LoadedWithCacheControlNoStoreHeader()
               ? BackForwardCacheImpl::kInCCNSContext
               : BackForwardCacheImpl::kNotInCCNSContext);

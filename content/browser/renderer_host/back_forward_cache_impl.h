@@ -345,11 +345,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // via experiment.
   // The return value may vary depending on if the main frame of the cached page
   // has "Cache-Control: no-store" header.
-  static base::TimeDelta GetTimeToLiveInBackForwardCache(
+  base::TimeDelta GetTimeToLiveInBackForwardCache(
       CacheControlNoStoreContext ccns_context);
 
   // Gets the maximum number of entries the BackForwardCache can hold per tab.
-  static size_t GetCacheSize();
+  size_t GetCacheSize();
 
   // The back-forward cache is experimented on a limited set of URLs. This
   // method returns true if the |url| matches one of those. URL not matching
@@ -396,6 +396,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void Flush() override;
   void Flush(NotRestoredReason reason) override;
   void Prune(size_t limit, NotRestoredReason reason) override;
+  void SetEmbedderSuppliedCacheSize(
+      size_t embedder_supplied_cache_size) override;
+  void SetEmbedderSuppliedTimeToLive(
+      base::TimeDelta embedder_supplied_time_to_live) override;
   void DisableForTesting(DisableForTestingReason reason) override;
 
   // Evict all entries from the BackForwardCache that match the removal filter.
@@ -412,7 +416,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Returns true if we are managing the cache size using foreground and
   // background limits (if finch parameter "foreground_cache_size" > 0).
-  static bool UsingForegroundBackgroundCacheSizeLimit();
+  bool UsingForegroundBackgroundCacheSizeLimit();
 
   // Returns true if one of the BFCache entries has a matching
   // RFH/RFPH/RVH with the same SIG ID/RVH ID.
@@ -508,7 +512,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // with no foregrounded processes. We can be less strict on memory usage of
   // background processes because Android will kill the process if memory
   // becomes scarce.
-  static size_t GetForegroundedEntriesCacheSize();
+  size_t GetForegroundedEntriesCacheSize();
 
   // Enforces a limit on the number of entries. Which entries are counted
   // towards the limit depends on the values of `reason`.
@@ -673,6 +677,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // (instead of the reasons for the whole tree).
     std::optional<EvictionInfo> eviction_info_;
   };
+
+  std::optional<size_t> embedder_supplied_cache_size_;
+  std::optional<base::TimeDelta> embedder_supplied_time_to_live_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
 

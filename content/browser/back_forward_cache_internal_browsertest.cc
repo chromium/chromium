@@ -1189,8 +1189,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value we set in EnableFeatureAndSetParams.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 
@@ -3936,8 +3939,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TestTimeToLiveParameter) {
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value set via EnableFeatureAndSetParams by
   // parent test class `BackForwardCacheBrowserTest`.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
@@ -3958,6 +3964,76 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TestTimeToLiveParameter) {
 
   // 3) Fast forward to just before eviction is due.
   task_runner->FastForwardBy(time_to_live_in_back_forward_cache - delta);
+
+  // 4) Confirm A is still in BackForwardCache.
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 5) Fast forward to when eviction is due.
+  task_runner->FastForwardBy(delta);
+
+  // 6) Confirm A is evicted.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  EXPECT_EQ(current_frame_host(), rfh_b.get());
+
+  // 7) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kTimeout}, {},
+                    {}, {}, {}, FROM_HERE);
+}
+
+// Test that the embedder-supplied cache size takes precedence over other limits
+// including ones set by the BackForwardCacheTimeToLiveControl feature.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       TestTimeToLiveEmbedderSupplied) {
+  // Inject mock time task runner to be used in the eviction timer, so we can,
+  // check for the functionality we are interested before and after the time to
+  // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
+  // that it doesn't affect other unrelated callsites.
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  web_contents()->GetController().GetBackForwardCache().SetTaskRunnerForTesting(
+      task_runner);
+
+  base::TimeDelta original_time_to_live_in_back_forward_cache =
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
+  // This should match the value set via EnableFeatureAndSetParams by
+  // parent test class `BackForwardCacheBrowserTest`.
+  EXPECT_EQ(original_time_to_live_in_back_forward_cache, base::Seconds(3600));
+
+  // Update the time to live to be significantly lower (1m).
+  base::TimeDelta lower_time_to_live = base::Seconds(60);
+  web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedTimeToLive(lower_time_to_live);
+  EXPECT_EQ(lower_time_to_live,
+            web_contents()
+                ->GetController()
+                .GetBackForwardCache()
+                .GetTimeToLiveInBackForwardCache(
+                    BackForwardCacheImpl::kNotInCCNSContext));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // 3) Fast forward to just before eviction is due.
+  base::TimeDelta delta = base::Milliseconds(1);
+  task_runner->FastForwardBy(lower_time_to_live - delta);
 
   // 4) Confirm A is still in BackForwardCache.
   ASSERT_FALSE(rfh_a.IsDestroyed());
@@ -4223,8 +4299,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value we set in EnableFeatureAndSetParams.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 

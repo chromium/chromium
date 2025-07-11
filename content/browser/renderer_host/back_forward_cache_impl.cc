@@ -667,6 +667,7 @@ std::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
 base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
     CacheControlNoStoreContext ccns_context) {
   // We use the following order of priority if multiple values exist:
+  // - The embedder-supplied time to live.
   // - The TTL set in `kBackForwardCacheTimeToLiveControl` takes precedence over
   //   the default value.
   // - Infinite if kBackForwardCacheNoTimeEviction is enabled.
@@ -674,6 +675,9 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
   // kDefaultTimeForCacheControlNoStorePageToLiveInBackForwardCacheInSeconds
   // depending on if the page's main frame has "Cache-Control: no-store" header
   // or not.
+  if (embedder_supplied_time_to_live_.has_value()) {
+    return embedder_supplied_time_to_live_.value();
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kBackForwardCacheTimeToLiveControl)) {
@@ -695,21 +699,32 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
   }
 }
 
-// static
 size_t BackForwardCacheImpl::GetCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
+
+  if (embedder_supplied_cache_size_.has_value()) {
+    return embedder_supplied_cache_size_.value();
+  }
+
   if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
     return kBackForwardCacheSizeCacheSize.Get();
   }
+
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kBackForwardCache, "cache_size", kDefaultBackForwardCacheSize);
 }
 
-// static
 size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
   if (!IsBackForwardCacheEnabled())
     return 0;
+
+  if (embedder_supplied_cache_size_.has_value()) {
+    // If the embedder supplied a limit (which should affect `GetCacheSize()`),
+    // don't use a foreground-specific limit.
+    return 0;
+  }
+
   if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
     return kBackForwardCacheSizeForegroundCacheSize.Get();
   }
@@ -718,7 +733,6 @@ size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
       kDefaultForegroundBackForwardCacheSize);
 }
 
-// static
 bool BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit() {
   return GetForegroundedEntriesCacheSize() > 0;
 }
@@ -1377,6 +1391,26 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     prioritized_entry_ = entries_.end();
   }
   return count;
+}
+
+void BackForwardCacheImpl::SetEmbedderSuppliedCacheSize(
+    size_t embedder_supplied_cache_size) {
+  if (embedder_supplied_cache_size == GetCacheSize()) {
+    return;
+  }
+  embedder_supplied_cache_size_ = embedder_supplied_cache_size;
+  EnforceCacheSizeLimit();
+}
+
+void BackForwardCacheImpl::SetEmbedderSuppliedTimeToLive(
+    base::TimeDelta embedder_supplied_time_to_live) {
+  if (embedder_supplied_time_to_live ==
+      GetTimeToLiveInBackForwardCache(
+          CacheControlNoStoreContext::kNotInCCNSContext)) {
+    return;
+  }
+  embedder_supplied_time_to_live_ = embedder_supplied_time_to_live;
+  Flush();
 }
 
 std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
