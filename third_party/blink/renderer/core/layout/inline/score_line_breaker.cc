@@ -85,6 +85,15 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
       /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp =
       space_.GetLineClampData().LinesUntilClamp().value_or(0);
+  // If we're line-clamping with ellipsis placed as part of line-breaking, we
+  // should use ParagraphLineBreaker instead. Score line breaking will be
+  // disabled in the InlineItemsBuilder for the line-clamp container itself,
+  // but not for its descendants, so we do it here.
+  if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
+      lines_until_clamp) {
+    context.SuspendUntilEndParagraph();
+    return;
+  }
   DCHECK(!RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() ||
          lines_until_clamp == 0);
   for (;;) {

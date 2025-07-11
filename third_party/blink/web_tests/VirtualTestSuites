@@ -454,6 +454,7 @@
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-002.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-003.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-005.html",
       "external/wpt/css/css-text/white-space/text-wrap-pretty-line-clamp-crash-001.html",
       "fast/deprecated-flexbox/dynamically-change-line-clamp.html",
       "fast/deprecated-flexbox/line-clamp-crash.html",
@@ -739,6 +740,7 @@
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-002.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-003.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html",
+      "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-005.html",
       "external/wpt/css/css-text/white-space/text-wrap-pretty-line-clamp-crash-001.html",
       "fast/overflow"
     ],
