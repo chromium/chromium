@@ -121,9 +121,9 @@ TEST(NtlmBufferReaderTest, ReadBytes) {
   NtlmBufferReader reader(expected);
 
   ASSERT_TRUE(reader.ReadBytes(actual));
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(actual, expected, std::size(actual))));
+  ASSERT_EQ(base::span(actual), base::span(expected));
   ASSERT_TRUE(reader.IsEndOfBuffer());
-  UNSAFE_TODO(ASSERT_FALSE(reader.ReadBytes(base::span(actual, 1u))));
+  ASSERT_FALSE(reader.ReadBytes(base::span(actual).first(1u)));
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
@@ -445,7 +445,7 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoOtherField) {
   // Verify the domain name AvPair.
   ASSERT_EQ(TargetInfoAvId::kDomainName, av_pairs[0].avid);
   ASSERT_EQ(8, av_pairs[0].avlen);
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(buf + 4, av_pairs[0].buffer.data(), 8)));
+  ASSERT_EQ(base::span(buf).subspan(4u, 8u), base::span(av_pairs[0].buffer));
 }
 
 TEST(NtlmBufferReaderTest, ReadTargetInfoNoTerminator) {

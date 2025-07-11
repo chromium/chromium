@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,21 +52,18 @@ TEST(NetPlatformApiUtilTest, SpanWithNulToStringView) {
   EXPECT_EQ(kTest2,
             SpanMaybeWithNulToStringView(base::span_from_cstring(kTest2)));
 
-  // base::span() constructor that esctracts a length from an array refuses to
-  // take string literals, due to ambiguity around the nul. In these cases, we
-  // want not just the terminating null, but everything after it as well, so
-  // have to use the pointer+length constructor, and use UNSAFE_BUFFERS to avoid
-  // a compile error.
   const char kTest3[] = "1234\0";
+  // Document what we expect from `span_with_nul_from_cstring` here.
+  CHECK_EQ(sizeof(kTest3), base::span_with_nul_from_cstring(kTest3).size());
   EXPECT_EQ("1234", SpanMaybeWithNulToStringView(
-                        UNSAFE_BUFFERS(base::span(kTest3, sizeof(kTest3)))));
+                        base::span_with_nul_from_cstring(kTest3)));
 
   const char kTest4[] =
       "1234"
       "\0"
       "5678";
   EXPECT_EQ("1234", SpanMaybeWithNulToStringView(
-                        UNSAFE_BUFFERS(base::span(kTest4, sizeof(kTest4)))));
+                        base::span_with_nul_from_cstring(kTest4)));
 
   const char kTest5[] =
       "1234"
@@ -74,7 +72,7 @@ TEST(NetPlatformApiUtilTest, SpanWithNulToStringView) {
       "\0\0"
       "678";
   EXPECT_EQ("1234", SpanMaybeWithNulToStringView(
-                        UNSAFE_BUFFERS(base::span(kTest5, sizeof(kTest5)))));
+                        base::span_with_nul_from_cstring(kTest5)));
 }
 
 }  // namespace net
