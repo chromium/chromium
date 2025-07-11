@@ -1225,6 +1225,7 @@ class Browser : public TabStripModelObserver,
   bool SupportsWindowFeatureImpl(WindowFeature feature,
                                  bool check_can_support) const;
 
+
   // Returns true if we can start the shutdown sequence for the browser, i.e.
   // the last browser window is being closed.
   bool ShouldStartShutdown() const;
