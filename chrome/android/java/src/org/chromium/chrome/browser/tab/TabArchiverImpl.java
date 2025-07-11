@@ -160,8 +160,7 @@ public class TabArchiverImpl implements TabArchiver {
 
     private List<Tab> getTabsToArchive(TabGroupModelFilter regularTabGroupModelFilter) {
         TabModel model = regularTabGroupModelFilter.getTabModel();
-        int activeTabId = TabModelUtils.getCurrentTabId(model);
-
+        Tab activeTab = model.getTabByIdChecked(TabModelUtils.getCurrentTabId(model));
         List<Tab> tabsToArchive = new ArrayList<>();
         // Maps unique URLs to their MRU timestamp, used to declutter duplicate tabs.
         Map<GURL, Long> tabUrlToLastActiveTimestampMap = createUrlToMruTimestampMap(model);
@@ -180,8 +179,10 @@ public class TabArchiverImpl implements TabArchiver {
             }
 
             Tab tab = model.getTabAtChecked(i);
-            // The active tab is never archived.
-            if (activeTabId == tab.getId()) {
+            // The active tab is never archived, including if the active tab is actually a group.
+            if (activeTab.getId() == tab.getId()
+                    || (activeTab.getTabGroupId() != null
+                            && activeTab.getTabGroupId().equals(tab.getTabGroupId()))) {
                 continue;
             }
 
