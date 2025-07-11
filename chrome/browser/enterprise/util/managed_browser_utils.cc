@@ -429,14 +429,6 @@ jboolean JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
     Profile* profile) {
   DCHECK(profile);
 
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid) &&
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::
-              kEnterpriseUrlFilteringEventReportingOnAndroid)) {
-    return false;
-  }
-
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);

@@ -210,21 +210,15 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid) ||
-      base::FeatureList::IsEnabled(
-          enterprise_connectors::
-              kEnterpriseUrlFilteringEventReportingOnAndroid)) {
-    enterprise_connectors::ReportingEventRouter* router =
-        GetReportingEventRouter(web_contents);
+  enterprise_connectors::ReportingEventRouter* router =
+      GetReportingEventRouter(web_contents);
 
-    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-      SetReferrerChain(web_contents, page_url, referrer_chain);
-    }
-
-    router->OnUrlFilteringInterstitial(page_url, threat_type,
-                                       rt_lookup_response, referrer_chain);
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    SetReferrerChain(web_contents, page_url, referrer_chain);
   }
+
+  router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response,
+                                     referrer_chain);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)

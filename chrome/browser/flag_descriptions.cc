@@ -1443,12 +1443,6 @@ const char kManagedProfileRequiredInterstitialDescription[] =
     "required.";
 
 #if BUILDFLAG(IS_ANDROID)
-const char kEnterpriseUrlFilteringEventReportingOnAndroidName[] =
-    "Allow enterprise url filtering event reporting";
-const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[] =
-    "Enables enterprise url filtering event reporting when the "
-    "OnSecurityEventEnterpriseConnector policy is turned on ";
-
 const char kEnterpriseSecurityEventReportingOnAndroidName[] =
     "Allow enterprise security event reporting";
 const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =

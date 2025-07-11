@@ -10,10 +10,6 @@ BASE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid,
              "EnterpriseSecurityEventReportingOnAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnterpriseUrlFilteringEventReportingOnAndroid,
-             "EnterpriseUrlFilteringEventReportingOnAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnterpriseRealtimeEventReportingOnIOS,
              "EnterpriseRealtimeEventReportingOnIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
