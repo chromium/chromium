@@ -55,6 +55,7 @@ source_set("tab_helper") {
   deps = [
     ":bwg_service",
     ":bwg_service_factory",
+    ":snapshot_utils",
     "//components/google/core/common",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
@@ -62,6 +63,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/web/public",
     "//ios/web/util",
   ]
@@ -104,6 +106,17 @@ source_set("config") {
   deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
+source_set("snapshot_utils") {
+  sources = [
+    "bwg_snapshot_utils.h",
+    "bwg_snapshot_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/util",
   ]
 }
 
