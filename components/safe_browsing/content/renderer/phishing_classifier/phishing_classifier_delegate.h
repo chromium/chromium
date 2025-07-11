@@ -182,7 +182,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   bool awaiting_retry_ = false;
 
   // Trigger request type given by the client side detection host class.
-  safe_browsing::mojom::ClientSideDetectionType request_type_;
+  std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type_;
 
   // The callback from the most recent call to StartPhishingDetection.
   StartPhishingDetectionCallback callback_;

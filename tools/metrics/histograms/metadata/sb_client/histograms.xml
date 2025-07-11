@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ClassifierRequestType">
+  <variant name="" summary="all request types"/>
+  <variant name=".ForceRequest" summary="Force request"/>
+  <variant name=".FullscreenApi" summary="Fullscreen API"/>
+  <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+  <variant name=".NotificationPermissionPrompt"
+      summary="Notification permission prompt"/>
+  <variant name=".PasswordProtection" summary="Password protection requested"/>
+  <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+  <variant name=".TriggerModel" summary="Trigger model"/>
+  <variant name=".VibrationApi" summary="Vibration API"/>
+</variants>
+
 <variants name="ClientSideDetectionOnDeviceModelRequestType">
   <variant name="" summary="all request types"/>
   <variant name=".ForceRequest" summary="Force request"/>
@@ -471,19 +484,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     The counts for various reasons why an in-progress phishing classification
     was canceled.
   </summary>
-  <token key="RequestType">
-    <variant name="" summary="all request types"/>
-    <variant name=".ForceRequest" summary="Force request"/>
-    <variant name=".FullscreenApi" summary="Fullscreen API"/>
-    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
-    <variant name=".NotificationPermissionPrompt"
-        summary="Notification permission prompt"/>
-    <variant name=".PasswordProtection"
-        summary="Password protection requested"/>
-    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
-    <variant name=".TriggerModel" summary="Trigger model"/>
-    <variant name=".VibrationApi" summary="Vibration API"/>
-  </token>
+  <token key="RequestType" variants="ClassifierRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.CancelImageEmbeddingReason"
@@ -497,7 +498,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.Classifier.Event"
+<histogram name="SBClientPhishing.Classifier.Event{RequestType}"
     enum="SBPhishingClassifierEvent" expires_after="2025-12-28">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -505,6 +506,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records events in the phishing classifier including reasons that prevents
     phishing detection to complete on the renderer side.
   </summary>
+  <token key="RequestType" variants="ClassifierRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.ReadyAfterRetryTimeout"
@@ -944,7 +946,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath"
+<histogram
+    name="SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath{RequestType}"
     enum="BooleanMatched" expires_after="2026-06-11">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -952,6 +955,7 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records whether the stripped GURLs with empty path on browser and renderer
     loaded URL would have matched when the reference stripped URLs have not.
   </summary>
+  <token key="RequestType" variants="ClassifierRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration{RequestType}"

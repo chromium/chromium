@@ -207,16 +207,19 @@ void PhishingClassifierDelegate::CancelPendingClassification(
     is_classifying_ = false;
     base::UmaHistogramEnumeration("SBClientPhishing.CancelClassificationReason",
                                   reason);
-    base::UmaHistogramEnumeration(
-        "SBClientPhishing.CancelClassificationReason." +
-            GetRequestTypeName(request_type_),
-        reason);
+    if (request_type_.has_value()) {
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.CancelClassificationReason." +
+              GetRequestTypeName(request_type_.value()),
+          reason);
+    }
   }
   if (classifier_->is_ready()) {
     classifier_->CancelPendingClassification();
   }
   classifier_page_text_ = nullptr;
   awaiting_retry_ = false;
+  request_type_ = std::nullopt;
 }
 
 void PhishingClassifierDelegate::ClassificationDone(
@@ -259,7 +262,7 @@ void PhishingClassifierDelegate::ClassificationDone(
   if (result == mojom::PhishingDetectorResult::SUCCESS) {
     DCHECK_EQ(last_url_sent_to_classifier_.spec(), verdict.url());
   }
-
+  request_type_ = std::nullopt;
   std::move(callback_).Run(result, mojo_base::ProtoWrapper(verdict));
 }
 
@@ -327,10 +330,18 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
 
   GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   if (last_url_received_from_browser_ != stripped_last_load_url) {
+    bool match_on_stripped_empty_path =
+        last_url_received_from_browser_.GetWithEmptyPath() ==
+        stripped_last_load_url.GetWithEmptyPath();
     base::UmaHistogramBoolean(
         "SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath",
-        last_url_received_from_browser_.GetWithEmptyPath() ==
-            stripped_last_load_url.GetWithEmptyPath());
+        match_on_stripped_empty_path);
+    if (request_type_.has_value()) {
+      base::UmaHistogramBoolean(
+          "SBClientPhishing.PhishingClassifierMatchOnStrippedEmptyPath." +
+              GetRequestTypeName(request_type_.value()),
+          match_on_stripped_empty_path);
+    }
     RecordEvent(SBPhishingClassifierEvent::kUrlShouldNotBeClassified);
     // The browser has not yet confirmed that this URL should be classified,
     // so defer classification for now.  Note: the ref does not affect
@@ -373,6 +384,11 @@ void PhishingClassifierDelegate::OnRetryTimeout() {
 
 void PhishingClassifierDelegate::RecordEvent(SBPhishingClassifierEvent event) {
   UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.Classifier.Event", event);
+  if (request_type_.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.Classifier.Event." +
+                                  GetRequestTypeName(request_type_.value()),
+                              event);
+  }
 }
 
 void PhishingClassifierDelegate::OnDestruct() {
