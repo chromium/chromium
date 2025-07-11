@@ -3034,6 +3034,34 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.SuspiciousNotificationWarning.ShowOriginalNotifications.SuspiciousNotificationCount"
+    units="count" expires_after="2026-07-08">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records the number of suspicious notifications, displayed on a warning
+    notification, which have been suspended until the user taps to show the
+    original suspicious notifications. Logged when the user taps the &quot;Show
+    notification(s)&quot; button.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.SuspiciousNotificationWarning.ShowOriginalNotifications.SuspiciousNotificationsDroppedCount"
+    units="count" expires_after="2026-07-08">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records the number of suspicious notifications that were suspended behind a
+    warning notification and despite the user tapping to show the original
+    suspicious notifications, were unexpectedly dropped. If the expected
+    notification count matches the actual count of notifications displayed, 0 is
+    recorded. Logged when the user taps the &quot;Show notification(s)&quot;
+    button.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.SyncedEsbDialogDisabledMessageOutcome"
     enum="SyncedEsbOutcome" expires_after="2026-03-12">
   <owner>zackhan@chromium.org</owner>

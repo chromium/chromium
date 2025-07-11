@@ -87,6 +87,14 @@ public class NotificationPlatformBridgeTest {
             "/chrome/test/data/notifications/android_test.html";
     private static final int TITLE_UPDATE_TIMEOUT_SECONDS = (int) 5L;
 
+    private static final String SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME =
+            "SafeBrowsing.SuspiciousNotificationWarning."
+                    + "ShowOriginalNotifications.SuspiciousNotificationCount";
+    private static final String
+            SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME =
+                    "SafeBrowsing.SuspiciousNotificationWarning."
+                            + "ShowOriginalNotifications.SuspiciousNotificationsDroppedCount";
+
     @Before
     public void setUp() {
         SiteEngagementService.setParamValuesForTesting();
@@ -1065,6 +1073,11 @@ public class NotificationPlatformBridgeTest {
                                 SuspiciousNotificationWarningInteractions.DISMISS,
                                 SuspiciousNotificationWarningInteractions
                                         .SUPPRESS_DUPLICATE_WARNING)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 1)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                0)
                         .build();
 
         NotificationPlatformBridge notificationBridge =
@@ -1203,6 +1216,20 @@ public class NotificationPlatformBridgeTest {
                                 SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW,
                                 SuspiciousNotificationWarningInteractions
                                         .SUPPRESS_DUPLICATE_WARNING)
+                        // The first "Show notification(s)" tap is on a warning with 1 suspicious
+                        // notification.
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 1)
+                        // The second "Show notification(s)" tap is on a warning with 2 suspicious
+                        // notifications.
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 2)
+                        // There should be not be any dropped suspicious notifications for either of
+                        // the "Show notification(s)" actions.
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                0,
+                                2)
                         .build();
 
         NotificationPlatformBridge notificationBridge =
@@ -1460,6 +1487,11 @@ public class NotificationPlatformBridgeTest {
                                         .SHOW_ORIGINAL_NOTIFICATION,
                                 SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW,
                                 SuspiciousNotificationWarningInteractions.REPORT_AS_SAFE)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 1)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                0)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1543,6 +1575,11 @@ public class NotificationPlatformBridgeTest {
                                 SuspiciousNotificationWarningInteractions.UNSUBSCRIBE,
                                 SuspiciousNotificationWarningInteractions
                                         .REPORT_WARNED_NOTIFICATION_AS_SPAM)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 1)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                0)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1794,6 +1831,11 @@ public class NotificationPlatformBridgeTest {
                                         .SHOW_ORIGINAL_NOTIFICATION,
                                 SuspiciousNotificationWarningInteractions
                                         .SUPPRESS_DUPLICATE_WARNING)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 1)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                0)
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1843,6 +1885,84 @@ public class NotificationPlatformBridgeTest {
                 mNotificationTestRule.waitForNotification().notification;
         Assert.assertEquals(
                 "MyNotification3", NotificationTestUtil.getExtraTitle(originalNotification));
+
+        // Validate histogram is logged correctly.
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Verifies that when the front end storage of suspicious notification backups is deleted, the
+     * first notification is still displayed and the
+     * `SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME` histogram logs the
+     * correct number of suspicious notifications that were unexpectedly dropped.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures({
+        ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+        ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
+    })
+    public void testShowOriginalNotificationsAfterDeletingBackups() throws Exception {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions.WARNING_SHOWN,
+                                1)
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions
+                                        .SUPPRESS_DUPLICATE_WARNING,
+                                2)
+                        .expectIntRecordTimes(
+                                SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
+                                SuspiciousNotificationWarningInteractions
+                                        .SHOW_ORIGINAL_NOTIFICATION,
+                                1)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_SHOW_ORIGINALS_HISTOGRAM_NAME, 3)
+                        .expectIntRecord(
+                                SUSPICIOUS_NOTIFICATION_COUNT_DROPPED_SHOW_ORIGINALS_HISTOGRAM_NAME,
+                                2)
+                        .build();
+
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        // Display 3 suspicious notifications which are replaced by a single warning.
+        NotificationPlatformBridge notificationBridge =
+                NotificationPlatformBridge.getInstanceForTests();
+        Assert.assertNotNull(notificationBridge);
+        notificationBridge.setIsSuspiciousParameterForTesting(true);
+        showNotification("MyNotification1", "{}");
+        mNotificationTestRule.waitForNotificationCount(1);
+        showNotification("MyNotification2", "{}");
+        mNotificationTestRule.waitForNotificationManagerMutation();
+        showNotification("MyNotification3", "{}");
+        mNotificationTestRule.waitForNotificationManagerMutation();
+        Notification warningNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(
+                "Possible spam (3)", NotificationTestUtil.getExtraTitle(warningNotification));
+
+        // Delete suspicious notification backups stored in the
+        // `NotificationContentDetectionManager`.
+        NotificationContentDetectionManager.sWarningNotificationAttributesByOrigin.clear();
+
+        // Tap "Show notification(s)".
+        PendingIntent showOriginalsIntent = warningNotification.actions[1].actionIntent;
+        Assert.assertNotNull(showOriginalsIntent);
+        showOriginalsIntent.send();
+
+        // Check that the first notification was still delivered.
+        mNotificationTestRule.waitForNotificationManagerMutation();
+        Assert.assertEquals(1, mNotificationTestRule.getNotificationEntries().size());
+        Notification originalNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(
+                "MyNotification1", NotificationTestUtil.getExtraTitle(originalNotification));
 
         // Validate histogram is logged correctly.
         histogramWatcher.assertExpected();

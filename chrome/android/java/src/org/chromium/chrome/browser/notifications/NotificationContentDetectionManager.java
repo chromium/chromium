@@ -214,6 +214,8 @@ public class NotificationContentDetectionManager {
                     NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE, mWebApkPackage);
             originalNotificationBackup.putString(
                     NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID, mChannelId);
+            originalNotificationBackup.putInt(
+                    NotificationConstants.EXTRA_SUSPICIOUS_NOTIFICATION_COUNT, warningCount);
             notificationBuilder.setExtras(originalNotificationBackup);
 
             // Closing the notification should delete it.
@@ -330,7 +332,8 @@ public class NotificationContentDetectionManager {
             }
         }
 
-        void displayOriginalNotificationsFromBackups() {
+        int displayOriginalNotificationsFromBackups() {
+            int actualNumSuspiciousBackupsDisplayed = 0;
             for (String notificationId : mOriginalNotificationBackups.keySet()) {
                 // Skip the `mWarningNotificationId` because this will be displayed using the
                 // warning notification's extra Bundle.
@@ -348,7 +351,9 @@ public class NotificationContentDetectionManager {
                         notificationAttributes.mIncognito,
                         notificationAttributes.mWebApkPackage,
                         notificationAttributes.mChannelId);
+                actualNumSuspiciousBackupsDisplayed += 1;
             }
+            return actualNumSuspiciousBackupsDisplayed;
         }
     }
 
@@ -603,6 +608,17 @@ public class NotificationContentDetectionManager {
                                         warningNotificationExtras,
                                         NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID);
 
+                        int expectedNumSuspiciousNotificationsLeft = 1;
+                        if (warningNotificationExtras != null
+                                && warningNotificationExtras.containsKey(
+                                        NotificationConstants
+                                                .EXTRA_SUSPICIOUS_NOTIFICATION_COUNT)) {
+                            expectedNumSuspiciousNotificationsLeft =
+                                    warningNotificationExtras.getInt(
+                                            NotificationConstants
+                                                    .EXTRA_SUSPICIOUS_NOTIFICATION_COUNT);
+                        }
+
                         // Display the original notification, whose backup is stored in the warning
                         // notification's backup `Bundle`.
                         displayOriginalNotification(
@@ -615,14 +631,33 @@ public class NotificationContentDetectionManager {
                                 webApkPackage,
                                 channelId);
 
-                        // Display the rest of the original notifications.
+                        // Record the number of suppressed suspicious notifications that the warning
+                        // displays to the user, then subtract 1 from
+                        // `expectedNumSuspiciousNotificationsLeft` because the first suspicious
+                        // notification is displayed using the backup stored in the `Bundle`.
+                        NotificationUmaTracker.recordSuspiciousNotificationCountOnShowOriginals(
+                                expectedNumSuspiciousNotificationsLeft);
+                        expectedNumSuspiciousNotificationsLeft -= 1;
+
+                        // Display the rest of the original notifications and record the number of
+                        // suspicious notifications that the user expected to be delivered but were
+                        // not.
                         if (sWarningNotificationAttributesByOrigin.containsKey(
                                 warningNotificationOrigin)) {
-                            sWarningNotificationAttributesByOrigin
-                                    .get(warningNotificationOrigin)
-                                    .displayOriginalNotificationsFromBackups();
+                            int actualNumSuspiciousBackupsDisplayed =
+                                    sWarningNotificationAttributesByOrigin
+                                            .get(warningNotificationOrigin)
+                                            .displayOriginalNotificationsFromBackups();
+                            NotificationUmaTracker
+                                    .recordSuspiciousNotificationsDroppedCountOnShowOriginals(
+                                            expectedNumSuspiciousNotificationsLeft
+                                                    - actualNumSuspiciousBackupsDisplayed);
                             sWarningNotificationAttributesByOrigin.remove(
                                     warningNotificationOrigin);
+                        } else {
+                            NotificationUmaTracker
+                                    .recordSuspiciousNotificationsDroppedCountOnShowOriginals(
+                                            expectedNumSuspiciousNotificationsLeft);
                         }
                     }
                 });

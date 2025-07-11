@@ -684,6 +684,34 @@ public class NotificationUmaTracker {
                 count);
     }
 
+    /**
+     * Records the number of suspicious notifications from an origin, when the user taps to show the
+     * original contents of the suspicious notifications. This number is displayed on the suspicious
+     * notification warning.
+     *
+     * @param count The suspicious notification count.
+     */
+    public static void recordSuspiciousNotificationCountOnShowOriginals(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "SafeBrowsing.SuspiciousNotificationWarning."
+                        + "ShowOriginalNotifications.SuspiciousNotificationCount",
+                count);
+    }
+
+    /**
+     * Records the number of suspicious notifications that were unexpectedly not delivered to the
+     * user, when they tap to show the originals. Note: if all suspicious notifications are
+     * delivered as expected, then 0 will be logged.
+     *
+     * @param count The actual number of notifications that were not properly delivered.
+     */
+    public static void recordSuspiciousNotificationsDroppedCountOnShowOriginals(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "SafeBrowsing.SuspiciousNotificationWarning."
+                        + "ShowOriginalNotifications.SuspiciousNotificationsDroppedCount",
+                count);
+    }
+
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {
