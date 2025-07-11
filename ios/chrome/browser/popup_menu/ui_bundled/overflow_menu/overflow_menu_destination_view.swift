@@ -27,6 +27,29 @@ struct IsPressedStyle: ButtonStyle {
   }
 }
 
+/// `ViewModifier` that hides badges when button is pressed.
+struct HideBadgeOnPressModifier: ViewModifier {
+  let isPressed: Bool
+  @Binding var hideBadge: Bool
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 17, *) {
+      content.onChange(of: isPressed) { _, newValue in
+        if newValue {
+          hideBadge = true
+        }
+      }
+    } else {
+      content.onChange(of: isPressed) { newValue in
+        if newValue {
+          hideBadge = true
+        }
+      }
+    }
+  }
+}
+
 /// `PreferenceKey` holding the frame of the icon in the destination view.
 struct IconFramePreferenceKey: PreferenceKey {
   static let defaultValue: CGRect = .null
@@ -149,10 +172,6 @@ struct OverflowMenuDestinationView: View {
             }
           }
         }
-        .simultaneousGesture(
-          LongPressGesture(minimumDuration: 0).onEnded { _ in
-            hideBadge = true
-          })
       }
       .accessibilityIdentifier(accessibilityIdentifier)
       .accessibilityLabel(Text(accessibilityLabel))
@@ -166,6 +185,7 @@ struct OverflowMenuDestinationView: View {
           iconFrame = newFrame
         }
       }
+      .modifier(HideBadgeOnPressModifier(isPressed: isPressed, hideBadge: $hideBadge))
   }
 
   // The button view, which is replaced by just a plain view when this is in
