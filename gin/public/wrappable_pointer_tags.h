@@ -26,6 +26,7 @@ enum WrappablePointerTag : uint16_t {
   kChromePluginPlaceholder,            // ChromePluginPlaceholder
   kDomAutomationController,            // content::DomAutomationController
   kGpuBenchmarking,                    // content::GpuBenchmarking
+  kMojoHandle,                         // ax::MojoHandle
   kNetErrorPageController,             // NetErrorPageController
   kPDFPluginPlaceholder,               // PDFPluginPlaceholder
   kPluginPlaceholder,                  // plugins::PluginPlaceholder

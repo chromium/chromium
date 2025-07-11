@@ -6,36 +6,43 @@
 #ifndef SERVICES_ACCESSIBILITY_FEATURES_MOJO_MOJO_HANDLE_H_
 #define SERVICES_ACCESSIBILITY_FEATURES_MOJO_MOJO_HANDLE_H_
 
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "services/accessibility/features/registered_wrappable.h"
+#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
 
 namespace gin {
 class Arguments;
 }
 
 namespace ax {
-
 // Provides a MojoHandle object to the Accessibility Service's V8 Javascript.
 // This class is parallel to blink::MojoHandle, which does the same for any
 // blink renderer.
-class MojoHandle : public gin::DeprecatedWrappable<MojoHandle>,
-                   public RegisteredWrappable {
+class MojoHandle final : public gin::Wrappable<MojoHandle> {
+    CPPGC_USING_PRE_FINALIZER(MojoHandle, Dispose);
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kMojoHandle};
 
-  static gin::Handle<MojoHandle> Create(v8::Local<v8::Context> context,
-                                        mojo::ScopedHandle handle);
+  static v8::Local<v8::Object> Create(v8::Isolate* isolate,
+                                      mojo::ScopedHandle handle);
+
+  explicit MojoHandle(mojo::ScopedHandle handle);
   ~MojoHandle() override;
   MojoHandle(const MojoHandle&) = delete;
   MojoHandle& operator=(const MojoHandle&) = delete;
 
-  // gin::DeprecatedWrappable:
+  void Dispose();
+
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+  const gin::WrapperInfo* wrapper_info() const override;
 
   //
   // Methods exposed to Javascript.
@@ -68,8 +75,6 @@ class MojoHandle : public gin::DeprecatedWrappable<MojoHandle>,
   mojo::ScopedHandle TakeHandle();
 
  private:
-  MojoHandle(v8::Local<v8::Context> context, mojo::ScopedHandle handle);
-
   mojo::ScopedHandle handle_;
 };
 

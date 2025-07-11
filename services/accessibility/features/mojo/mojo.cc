@@ -78,11 +78,10 @@ void Mojo::CreateMessagePipe(gin::Arguments* arguments) {
   v8_result_dict.Set("result", result);
 
   if (result == MOJO_RESULT_OK) {
-    v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
     v8_result_dict
-        .Set("handle0", MojoHandle::Create(context, mojo::ScopedHandle::From(
+        .Set("handle0", MojoHandle::Create(isolate, mojo::ScopedHandle::From(
                                                         std::move(handle0))))
-        .Set("handle1", MojoHandle::Create(context, mojo::ScopedHandle::From(
+        .Set("handle1", MojoHandle::Create(isolate, mojo::ScopedHandle::From(
                                                         std::move(handle1))));
   }
 
