@@ -271,12 +271,11 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
         VLOG(1) << "[PermissionsAIv3] Inquire model";
 
         aiv3_handler->ExecuteModel(
-            base::BindRepeating(
-                &PredictionBasedPermissionUiSelector::
-                    OnDeviceAiv3ModelExecutionCallback,
-                weak_ptr_factory_.GetWeakPtr(),
-                /*model_inquire_start_time=*/base::TimeTicks::Now(),
-                std::move(features), std::move(request_metadata)),
+            base::BindOnce(&PredictionBasedPermissionUiSelector::
+                               OnDeviceAiv3ModelExecutionCallback,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           /*model_inquire_start_time=*/base::TimeTicks::Now(),
+                           std::move(features), std::move(request_metadata)),
             std::make_unique<SkBitmap>(snapshot));
         return;
       }
@@ -418,13 +417,13 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
       if (PermissionsAiv1Handler* aiv1_handler =
               prediction_model_handler_provider->GetPermissionsAiv1Handler()) {
         VLOG(1) << "[PermissionsAIv1] Inquire model";
+        permissions::RequestType request_type = request_metadata.request_type;
         aiv1_handler->InquireAiOnDeviceModel(
-            std::move(inner_text), request_metadata.request_type,
-            base::BindRepeating(&PredictionBasedPermissionUiSelector::
-                                    OnDeviceAiv1ModelExecutionCallback,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(features),
-                                std::move(request_metadata)));
+            std::move(inner_text), request_type,
+            base::BindOnce(&PredictionBasedPermissionUiSelector::
+                               OnDeviceAiv1ModelExecutionCallback,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(features),
+                           std::move(request_metadata)));
         return;
       }
     }
