@@ -15,7 +15,10 @@ struct HandoffButtonState {
     // Represents the state where the agent has control over the tab.
     kAgent,
   };
+
   // Whether or not the component is active.
+  // This member is intended to be used alongside the relevant tab's visibility
+  // status to determine whether or not the handoff button should be shown.
   bool is_active;
   ControlOwnership controller = ControlOwnership::kClient;
 
