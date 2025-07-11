@@ -126,7 +126,7 @@ public class TabModelRemoverUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_1.tabGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_2.tabGroupId)).thenReturn(true);
-        when(mTabGroupModelFilter.getTabGroupTitle(any())).thenReturn(TAB_GROUP_TITLE);
+        when(mTabGroupModelFilter.getTabGroupTitle(any(Token.class))).thenReturn(TAB_GROUP_TITLE);
 
         doAnswer(
                         invocation -> {

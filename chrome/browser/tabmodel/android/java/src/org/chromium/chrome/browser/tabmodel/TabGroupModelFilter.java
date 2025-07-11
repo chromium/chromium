@@ -231,6 +231,14 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
     @Nullable String getTabGroupTitle(Token tabGroupId);
 
     /**
+     * {@see #getTabGroupTitle(Token)}. This looks up the tab group via {@code groupedTab}. This is
+     * primarily to be used if the tab group has already been closed. Prefer the {@link
+     * TabGroupTitleUtils#getDisplayableTitle} or {@link #getTabGroupTitle(Token)} method in most
+     * cases.
+     */
+    @Nullable String getTabGroupTitle(Tab groupedTab);
+
+    /**
      * @deprecated Use {@link #getTabGroupTitle(Token)} instead.
      */
     @Deprecated
@@ -277,6 +285,14 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      */
     @TabGroupColorId
     int getTabGroupColorWithFallback(Token tabGroupId);
+
+    /**
+     * {@see #getTabGroupColorWithFallback(Token)}. This looks up the tab group via {@code
+     * groupedTab}. This is primarily to be used if the tab group has already been closed. Prefer
+     * the {@link #getTabGroupColorWithFallback(Token)} method in most cases.
+     */
+    @TabGroupColorId
+    int getTabGroupColorWithFallback(Tab groupedTab);
 
     /**
      * @deprecated Use {@link #getTabGroupColorWithFallback(Token)} instead.

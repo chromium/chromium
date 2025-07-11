@@ -743,6 +743,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
+    public @Nullable String getTabGroupTitle(Tab groupedTab) {
+        return null;
+    }
+
+    @Override
     public @Nullable String getTabGroupTitle(@TabId int rootId) {
         return null;
     }
@@ -771,6 +776,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
+        return TabGroupColorId.GREY;
+    }
+
+    @Override
+    public @TabGroupColorId int getTabGroupColorWithFallback(Tab groupedTab) {
         return TabGroupColorId.GREY;
     }
 

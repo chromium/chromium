@@ -173,7 +173,7 @@ public class UndoBarControllerTest {
                             mTabModel.getTabAt(0),
                             /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(
-                            mTabModel.getTabAt(0).getRootId(), "My group");
+                            mTabModel.getTabAt(0).getTabGroupId(), "My group");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -202,7 +202,8 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.setTabGroupTitle(mTabModel.getTabAt(0).getRootId(), null);
+                    mTabGroupModelFilter.setTabGroupTitle(
+                            mTabModel.getTabAt(0).getTabGroupId(), null);
                 });
     }
 
@@ -217,7 +218,8 @@ public class UndoBarControllerTest {
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ false);
-                    mTabGroupModelFilter.setTabGroupTitle(mTabModel.getTabAt(0).getRootId(), "");
+                    mTabGroupModelFilter.setTabGroupTitle(
+                            mTabModel.getTabAt(0).getTabGroupId(), "");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -246,7 +248,8 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.setTabGroupTitle(mTabModel.getTabAt(0).getRootId(), null);
+                    mTabGroupModelFilter.setTabGroupTitle(
+                            mTabModel.getTabAt(0).getTabGroupId(), null);
                 });
     }
 

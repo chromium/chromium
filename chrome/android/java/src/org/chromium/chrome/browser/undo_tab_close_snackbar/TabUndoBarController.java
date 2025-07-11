@@ -156,17 +156,17 @@ public class TabUndoBarController extends UndoBarController {
     private static class ClosureMetadata {
         public final boolean isDeletingTabGroups;
         public final boolean isTabGroupSyncEnabled;
-        public final Set<Integer> fullyClosingRootIds;
+        public final Set<Token> fullyClosingTabGroupIds;
         public final int ungroupedOrPartialGroupTabs;
 
         ClosureMetadata(
                 boolean isDeletingTabGroups,
                 boolean isTabGroupSyncEnabled,
-                Set<Integer> fullyClosingRootIds,
+                Set<Token> fullyClosingTabGroupIds,
                 int ungroupedOrPartialGroupTabs) {
             this.isDeletingTabGroups = isDeletingTabGroups;
             this.isTabGroupSyncEnabled = isTabGroupSyncEnabled;
-            this.fullyClosingRootIds = fullyClosingRootIds;
+            this.fullyClosingTabGroupIds = fullyClosingTabGroupIds;
             this.ungroupedOrPartialGroupTabs = ungroupedOrPartialGroupTabs;
         }
     }
@@ -176,7 +176,7 @@ public class TabUndoBarController extends UndoBarController {
             return new ClosureMetadata(
                     /* isDeletingTabGroups= */ false,
                     /* isTabGroupSyncEnabled= */ false,
-                    /* fullyClosingRootIds= */ new HashSet<>(),
+                    /* fullyClosingTabGroupIds= */ new HashSet<>(),
                     /* ungroupedOrPartialGroupTabs= */ 0);
         }
 
@@ -194,7 +194,7 @@ public class TabUndoBarController extends UndoBarController {
                         && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
 
         boolean isDeletingTabGroups = tabGroupSyncEnabled;
-        Set<Integer> fullyClosingRootIds = new HashSet<>();
+        Set<Token> fullyClosingTabGroupIds = new HashSet<>();
         int ungroupedOrPartialGroupTabs = 0;
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 filter.getLazyAllTabGroupIds(closedTabs, /* includePendingClosures= */ true);
@@ -207,7 +207,7 @@ public class TabUndoBarController extends UndoBarController {
             if (tabGroupId == null) {
                 ungroupedOrPartialGroupTabs++;
             } else if (tabGroupSyncEnabled && filter.isTabGroupHiding(tabGroupId)) {
-                fullyClosingRootIds.add(tab.getRootId());
+                fullyClosingTabGroupIds.add(tabGroupId);
                 isDeletingTabGroups = false;
             } else if (tabGroupIdsInComprehensiveModel.get() != null
                     && tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
@@ -215,13 +215,13 @@ public class TabUndoBarController extends UndoBarController {
                 isDeletingTabGroups = false;
             } else {
                 // We are fully deleting any tab group that reaches this point.
-                fullyClosingRootIds.add(tab.getRootId());
+                fullyClosingTabGroupIds.add(tabGroupId);
             }
         }
         return new ClosureMetadata(
                 isDeletingTabGroups,
                 tabGroupSyncEnabled,
-                fullyClosingRootIds,
+                fullyClosingTabGroupIds,
                 ungroupedOrPartialGroupTabs);
     }
 
@@ -234,7 +234,7 @@ public class TabUndoBarController extends UndoBarController {
         mIsDeletingTabGroups = closureMetadata.isDeletingTabGroups;
 
         int totalTabsCount = closedTabs.size();
-        int tabGroupsCount = closureMetadata.fullyClosingRootIds.size();
+        int tabGroupsCount = closureMetadata.fullyClosingTabGroupIds.size();
         if (tabGroupsCount == 0) {
             if (closureMetadata.ungroupedOrPartialGroupTabs == 1) {
                 return Pair.create(
@@ -250,13 +250,21 @@ public class TabUndoBarController extends UndoBarController {
             }
         } else if (tabGroupsCount == 1) {
             if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
-                int rootId = closureMetadata.fullyClosingRootIds.iterator().next();
+                Token tabGroupId = closureMetadata.fullyClosingTabGroupIds.iterator().next();
+                Tab groupedTab = null;
+                for (Tab tab : closedTabs) {
+                    if (tabGroupId.equals(tab.getTabGroupId())) {
+                        groupedTab = tab;
+                        break;
+                    }
+                }
+                assert groupedTab != null;
                 TabGroupModelFilter filter =
                         assumeNonNull(
                                 mTabModelSelector
                                         .getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(false));
-                @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
+                @Nullable String tabGroupTitle = filter.getTabGroupTitle(groupedTab);
                 if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =
                             mContext.getResources()

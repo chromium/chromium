@@ -135,13 +135,10 @@ public class HistoricalTabModelObserver implements TabModelObserver {
                 continue;
             }
 
-            // TODO(crbug.com/399354986): rootId is still the key for tab group metadata this should
-            // be migrated in the future.
-            int rootId = tab.getRootId();
             // A null title (default title) is handled in HistoricalTabSaver.
-            String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
+            String title = mTabGroupModelFilter.getTabGroupTitle(tab);
             // Give a tab group the first color in the color list as a placeholder.
-            @TabGroupColorId int color = mTabGroupModelFilter.getTabGroupColorWithFallback(rootId);
+            @TabGroupColorId int color = mTabGroupModelFilter.getTabGroupColorWithFallback(tab);
 
             List<Tab> groupTabs = new ArrayList<>();
             groupTabs.add(tab);

@@ -168,7 +168,7 @@ public class PendingTabClosureManager {
 
         @Override
         public Iterator<Tab> iterator() {
-            return ReadOnlyIterator.maybeCreate(mRewoundList.iterator());
+            return ReadOnlyIterator.maybeCreate(mRewoundTabs.iterator());
         }
 
         /**

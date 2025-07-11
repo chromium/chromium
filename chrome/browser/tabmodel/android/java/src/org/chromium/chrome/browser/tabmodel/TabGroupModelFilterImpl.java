@@ -632,8 +632,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
         boolean isChangingRootIds = tab.getRootId() != originalRootId;
-        boolean isChangingStableIds = !Objects.equals(tab.getTabGroupId(), originalTabGroupId);
-        boolean isChangingGroups = isChangingRootIds || isChangingStableIds;
+        boolean isChangingTabGroupIds = !Objects.equals(tab.getTabGroupId(), originalTabGroupId);
+        boolean isChangingGroups = isChangingRootIds || isChangingTabGroupIds;
         boolean isChangingIndex = currentIndex != originalIndex;
 
         // We need to explicitly trigger `didMoveTabOutOfGroup` if the tab is changing groups so
@@ -1407,6 +1407,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
+    public @Nullable String getTabGroupTitle(Tab groupedTab) {
+        assert groupedTab.getTabGroupId() != null;
+        return getTabGroupTitle(groupedTab.getRootId());
+    }
+
+    @Override
     public @Nullable String getTabGroupTitle(int rootId) {
         return TabGroupTitleUtils.getTabGroupTitle(rootId);
     }
@@ -1462,6 +1468,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         @TabId int rootId = getRootIdFromTabGroupId(tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
         return getTabGroupColorWithFallback(rootId);
+    }
+
+    @Override
+    public @TabGroupColorId int getTabGroupColorWithFallback(Tab groupedTab) {
+        assert groupedTab.getTabGroupId() != null;
+        return getTabGroupColorWithFallback(groupedTab.getRootId());
     }
 
     @Override
@@ -1566,9 +1578,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         deleteTabGroupCollapsed(rootId);
     }
 
-    private @TabId int getRootIdFromTabGroupId(@Nullable Token stableId) {
-        if (stableId == null) return Tab.INVALID_TAB_ID;
-        return mGroupIdToRootIdMap.getOrDefault(stableId, Tab.INVALID_TAB_ID);
+    private @TabId int getRootIdFromTabGroupId(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return Tab.INVALID_TAB_ID;
+        return mGroupIdToRootIdMap.getOrDefault(tabGroupId, Tab.INVALID_TAB_ID);
     }
 
     private @Nullable Token getTabGroupIdFromRootId(int rootId) {
