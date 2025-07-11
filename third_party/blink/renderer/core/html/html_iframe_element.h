@@ -65,6 +65,9 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   void NaturalSizingInfoChanged() override;
 
+  const V8UnionStringOrTrustedHTML* srcdoc() const;
+  void setSrcdoc(const V8UnionStringOrTrustedHTML*, ExceptionState&);
+
  private:
   void SetCollapsed(bool) override;
 
