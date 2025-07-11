@@ -85,7 +85,7 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
   return value_ptr ? *value_ptr : std::string();
 }
 
-bool IsAimAllowedByPolicy(PrefService* prefs) {
+bool IsAimAllowedByPolicy(const PrefService* prefs) {
   return prefs->GetInteger(omnibox::kAIModeSettings) == omnibox::kAIModeAllowed;
 }
 
