@@ -124,18 +124,6 @@ GeolocationPermissionContext::CreatePermissionResolver(
   }
 }
 
-std::unique_ptr<PermissionResolver>
-GeolocationPermissionContext::CreateRequestIndependentPermissionResolver()
-    const {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
-    return std::make_unique<GeolocationPermissionResolver>(
-        /*requested_precise*/ false);
-  } else {
-    return PermissionContextBase::CreateRequestIndependentPermissionResolver();
-  }
-}
-
 void GeolocationPermissionContext::UpdateTabContext(
     const PermissionRequestID& id,
     const GURL& requesting_frame,

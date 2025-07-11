@@ -324,7 +324,9 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
   auto permission_status = PermissionStatus::ASK;
   context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &context, request_id,
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::NOTIFICATIONS),
+          request_id,
           /*user_gesture=*/true, requesting_origin, embedding_origin),
       base::BindOnce(&StorePermissionStatus, &permission_status));
 
@@ -421,8 +423,9 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::NOTIFICATIONS),
+          id, /*user_gesture=*/true, url),
       base::DoNothing());
 
   // Should be blocked after 1-2 seconds, but the timer is reset whenever the
@@ -459,8 +462,9 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
             permission_context.GetContentSettingFromMap(url, url));
 
   // But 5*500ms > 2 seconds, so it should now be blocked.
-  for (int n = 0; n < 4; n++)
+  for (int n = 0; n < 4; n++) {
     task_runner->FastForwardBy(base::Milliseconds(500));
+  }
 
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
@@ -492,12 +496,16 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id1,
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::NOTIFICATIONS),
+          id1,
           /*user_gesture=*/true, url),
       base::DoNothing());
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id2,
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::NOTIFICATIONS),
+          id2,
           /*user_gesture=*/true, url),
       base::DoNothing());
 
@@ -509,8 +517,9 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   // request is auto-denied.
   for (int n = 0; n < 5; n++) {
     task_runner->FastForwardBy(base::Milliseconds(500));
-    if (permission_context.permission_set_count())
+    if (permission_context.permission_set_count()) {
       break;
+    }
   }
 
   // Only the first permission request receives a response (crbug.com/577336).

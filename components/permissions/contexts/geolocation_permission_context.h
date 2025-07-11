@@ -99,9 +99,6 @@ class GeolocationPermissionContext : public PermissionContextBase {
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor)
       const override;
 
-  std::unique_ptr<PermissionResolver>
-  CreateRequestIndependentPermissionResolver() const override;
-
  private:
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,

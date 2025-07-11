@@ -11,6 +11,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -92,8 +93,10 @@ void NfcPermissionContextTests::RequestNfcPermission(
     const GURL& requesting_frame,
     bool user_gesture) {
   nfc_permission_context_->RequestPermission(
-      std::make_unique<PermissionRequestData>(nfc_permission_context_, id,
-                                              user_gesture, requesting_frame),
+      std::make_unique<PermissionRequestData>(
+          std::make_unique<ContentSettingPermissionResolver>(
+              ContentSettingsType::MIDI_SYSEX),
+          id, user_gesture, requesting_frame),
       base::BindOnce(&NfcPermissionContextTests::PermissionResponse,
                      base::Unretained(this), id));
   content::RunAllTasksUntilIdle();

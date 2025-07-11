@@ -11,6 +11,7 @@
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -84,7 +85,9 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::IDLE_DETECTION),
+          id,
           /*user_gesture=*/true, url),
       base::DoNothing());
 
@@ -122,8 +125,9 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
             permission_context.GetContentSettingFromMap(url, url));
 
   // But 5*500ms > 2 seconds, so it should now be blocked.
-  for (int n = 0; n < 4; n++)
+  for (int n = 0; n < 4; n++) {
     task_environment()->FastForwardBy(base::Milliseconds(500));
+  }
 
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
@@ -153,13 +157,15 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id1,
-          /*user_gesture=*/true, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::IDLE_DETECTION),
+          id1, /*user_gesture=*/true, url),
       base::DoNothing());
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id2,
-          /*user_gesture=*/true, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::IDLE_DETECTION),
+          id2, /*user_gesture=*/true, url),
       base::DoNothing());
 
   EXPECT_EQ(0, permission_context.permission_set_count());
@@ -170,8 +176,9 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   // request is auto-denied.
   for (int n = 0; n < 5; n++) {
     task_environment()->FastForwardBy(base::Milliseconds(500));
-    if (permission_context.permission_set_count())
+    if (permission_context.permission_set_count()) {
       break;
+    }
   }
 
   // Only the first permission request receives a response (crbug.com/577336).

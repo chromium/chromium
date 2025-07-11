@@ -158,11 +158,10 @@ class PermissionContextBase : public content_settings::Observer {
   void AddObserver(permissions::Observer* permission_observer);
   void RemoveObserver(permissions::Observer* permission_observer);
 
+  // Creates a PermissionResolver for the PermissionDescriptorPtr. The default
+  // implementation creates a ContentSettingPermissionResolver.
   virtual std::unique_ptr<PermissionResolver> CreatePermissionResolver(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor) const;
-
-  virtual std::unique_ptr<PermissionResolver>
-  CreateRequestIndependentPermissionResolver() const;
 
   // Update the value of `last_has_device_permission_result_` and notify
   // observers if it changes.

@@ -36,6 +36,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/btm_service.h"
@@ -192,8 +193,9 @@ class StorageAccessGrantPermissionContextTest
     base::test::TestFuture<PermissionStatus> future;
     permission_context_->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
-            permission_context(), CreateFakeID(), user_gesture,
-            GetRequesterURL(), GetTopLevelURL()),
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::STORAGE_ACCESS),
+            CreateFakeID(), user_gesture, GetRequesterURL(), GetTopLevelURL()),
         future.GetCallback());
     return future;
   }
@@ -206,7 +208,9 @@ class StorageAccessGrantPermissionContextTest
     base::test::TestFuture<PermissionStatus> future;
     permission_context()->RequestPermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
-            permission_context(), CreateFakeID(),
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::STORAGE_ACCESS),
+            CreateFakeID(),
             /*user_gesture=*/true, GetRequesterURL()),
         future.GetCallback());
 
@@ -532,7 +536,9 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
       base::test::TestFuture<PermissionStatus> future;
       permission_context()->DecidePermissionForTesting(
           std::make_unique<permissions::PermissionRequestData>(
-              permission_context(), fake_id,
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  ContentSettingsType::STORAGE_ACCESS),
+              fake_id,
               /*user_gesture=*/true, requesting_origin,
               GetDummyEmbeddingUrl(grant_id)),
           future.GetCallback());
@@ -608,8 +614,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
   base::test::TestFuture<PermissionStatus> future;
   permission_context()->DecidePermissionForTesting(
       std::make_unique<permissions::PermissionRequestData>(
-          permission_context(), CreateFakeID(), /*user_gesture=*/true,
-          alternate_requester_url, GetTopLevelURL()),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::STORAGE_ACCESS),
+          CreateFakeID(), /*user_gesture=*/true, alternate_requester_url,
+          GetTopLevelURL()),
       future.GetCallback());
 
   // We should have no prompts still and our latest result should be an allow.

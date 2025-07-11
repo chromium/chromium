@@ -16,6 +16,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
@@ -85,8 +86,9 @@ class TopLevelStorageAccessPermissionContextTest
     base::test::TestFuture<PermissionStatus> future;
     permission_context->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
-            permission_context, CreateFakeID(), user_gesture, requester_url,
-            embedding_url),
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+            CreateFakeID(), user_gesture, requester_url, embedding_url),
         future.GetCallback());
     return future.Get();
   }

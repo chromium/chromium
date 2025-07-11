@@ -35,11 +35,12 @@ struct PermissionRequestData {
       const GURL& embedding_origin = GURL(),
       int request_description_permission_index = 0);
 
-  PermissionRequestData(PermissionContextBase* context,
-                        const PermissionRequestID& id,
-                        bool user_gesture,
-                        const GURL& requesting_origin,
-                        const GURL& embedding_origin = GURL());
+  PermissionRequestData(
+      std::unique_ptr<permissions::PermissionResolver> resolver,
+      const PermissionRequestID& id,
+      bool user_gesture,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin = GURL());
 
   PermissionRequestData(
       std::unique_ptr<permissions::PermissionResolver> resolver,

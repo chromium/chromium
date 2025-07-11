@@ -16,6 +16,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -131,8 +132,9 @@ class PermissionContextBasePermissionsPolicyTest
         rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
         std::make_unique<permissions::PermissionRequestData>(
-            pcb, id,
-            /*user_gesture=*/true, rfh->GetLastCommittedURL()),
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                pcb->content_settings_type()),
+            id, /*user_gesture=*/true, rfh->GetLastCommittedURL()),
         base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,
                        base::Unretained(this)));

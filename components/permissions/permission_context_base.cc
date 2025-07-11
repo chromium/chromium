@@ -606,11 +606,6 @@ void PermissionContextBase::RemoveObserver(
 std::unique_ptr<PermissionResolver>
 PermissionContextBase::CreatePermissionResolver(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor) const {
-  return CreateRequestIndependentPermissionResolver();
-}
-
-std::unique_ptr<PermissionResolver>
-PermissionContextBase::CreateRequestIndependentPermissionResolver() const {
   return std::make_unique<ContentSettingPermissionResolver>(
       content_settings_type_);
 }

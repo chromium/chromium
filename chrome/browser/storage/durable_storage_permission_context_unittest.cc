@@ -23,6 +23,7 @@
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -77,7 +78,6 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
 
 }  // namespace
 
-
 class DurableStoragePermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  protected:
@@ -103,8 +103,9 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -129,8 +130,9 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -157,8 +159,9 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -181,8 +184,9 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, url, url),
       base::DoNothing());
 
   // We shouldn't be granted.
@@ -212,8 +216,9 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
@@ -238,8 +243,9 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
-          &permission_context, id,
-          /*user_gesture=*/true, requesting_url, url),
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::DURABLE_STORAGE),
+          id, /*user_gesture=*/true, requesting_url, url),
       base::DoNothing());
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());

@@ -47,6 +47,7 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/resolvers/geolocation_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/permission_test_util.h"
@@ -258,7 +259,9 @@ void GeolocationPermissionContextTests::RequestGeolocationPermission(
     bool embedded_permission_element_initiated) {
   std::unique_ptr<permissions::PermissionRequestData> request_data =
       std::make_unique<permissions::PermissionRequestData>(
-          geolocation_permission_context_, id, user_gesture, requesting_frame);
+          std::make_unique<ContentSettingPermissionResolver>(
+              ContentSettingsType::GEOLOCATION),
+          id, user_gesture, requesting_frame);
   request_data->embedded_permission_element_initiated =
       embedded_permission_element_initiated;
   geolocation_permission_context_->RequestPermission(
