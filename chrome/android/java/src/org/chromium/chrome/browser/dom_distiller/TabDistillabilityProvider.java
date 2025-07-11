@@ -227,7 +227,10 @@ public class TabDistillabilityProvider extends EmptyTabObserver
     private void resetStateIfUrlHasChanged(Tab tab) {
         // If the current URL matches the distillation result URL, then the result is still fresh.
         // TODO(crbug.com/428169696): Use more relaxed matching to avoid #fragments resetting this.
-        if (tab.getUrl().equals(mDistillationResultUrl)) return;
+        if (mDistillationResultUrl != null
+                && mDistillationResultUrl.equalsIgnoringRef(tab.getUrl())) {
+            return;
+        }
         resetState();
     }
 }
