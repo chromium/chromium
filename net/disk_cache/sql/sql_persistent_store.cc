@@ -8,6 +8,7 @@
 #include <limits>
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,8 +67,32 @@ using EntryInfoWithIdAndKey = SqlPersistentStore::EntryInfoWithIdAndKey;
 using OptionalEntryInfoWithIdAndKey =
     SqlPersistentStore::OptionalEntryInfoWithIdAndKey;
 using IntOrError = SqlPersistentStore::IntOrError;
-
 using InitResultOrError = base::expected<InitResult, Error>;
+
+// A helper struct to bundle an operation's result with a flag indicating
+// whether an eviction check is needed. This allows the background sequence,
+// which has direct access to cache size information, to notify the main
+// sequence that an eviction might be necessary without requiring an extra
+// cross-sequence call to check the cache size.
+template <typename ResultType>
+struct ResultAndEvictionRequested {
+  ResultAndEvictionRequested(ResultType result, bool eviction_requested)
+      : result(std::move(result)), eviction_requested(eviction_requested) {}
+  ~ResultAndEvictionRequested() = default;
+  ResultAndEvictionRequested(ResultAndEvictionRequested&&) = default;
+
+  // The actual result of the operation.
+  ResultType result;
+
+  // True if the cache size has exceeded the high watermark, signaling that an
+  // eviction task should be considered.
+  bool eviction_requested;
+};
+
+using ErrorAndEvictionRequested = ResultAndEvictionRequested<Error>;
+using EntryInfoOrErrorAndEvictionRequested =
+    ResultAndEvictionRequested<EntryInfoOrError>;
+using IntOrErrorAndEvictionRequested = ResultAndEvictionRequested<IntOrError>;
 
 std::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
                                                          int64_t token_low) {
@@ -262,6 +287,10 @@ class Backend {
                 ? max_bytes
                 : PreferredCacheSize(base::SysInfo::AmountOfFreeDiskSpace(path),
                                      type)),
+        high_watermark_(max_bytes_ -
+                        max_bytes_ / kSqlBackendEvictionMarginDivisor),
+        low_watermark_(max_bytes_ -
+                       2 * (max_bytes_ / kSqlBackendEvictionMarginDivisor)),
         db_(sql::DatabaseOptions()
                 .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
@@ -290,31 +319,37 @@ class Backend {
     return result;
   }
 
-  EntryInfoOrError OpenOrCreateEntry(const CacheEntryKey& key);
+  EntryInfoOrErrorAndEvictionRequested OpenOrCreateEntry(
+      const CacheEntryKey& key);
   OptionalEntryInfoOrError OpenEntry(const CacheEntryKey& key);
-  EntryInfoOrError CreateEntry(const CacheEntryKey& key);
-  Error DoomEntry(const CacheEntryKey& key,
-                  const base::UnguessableToken& token);
-  Error DeleteDoomedEntry(const CacheEntryKey& key,
-                          const base::UnguessableToken& token);
-  Error DeleteLiveEntry(const CacheEntryKey& key);
-  Error DeleteAllEntries();
-  Error DeleteLiveEntriesBetween(base::Time initial_time,
-                                 base::Time end_time,
-                                 std::set<CacheEntryKey> excluded_keys);
+  EntryInfoOrErrorAndEvictionRequested CreateEntry(const CacheEntryKey& key);
+
+  ErrorAndEvictionRequested DoomEntry(const CacheEntryKey& key,
+                                      const base::UnguessableToken& token);
+  ErrorAndEvictionRequested DeleteDoomedEntry(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token);
+  ErrorAndEvictionRequested DeleteLiveEntry(const CacheEntryKey& key);
+
+  ErrorAndEvictionRequested DeleteAllEntries();
+  ErrorAndEvictionRequested DeleteLiveEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time,
+      base::flat_set<CacheEntryKey> excluded_keys);
   Error UpdateEntryLastUsed(const CacheEntryKey& key, base::Time last_used);
-  Error UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                     const base::UnguessableToken& token,
-                                     base::Time last_used,
-                                     scoped_refptr<net::IOBuffer> buffer,
-                                     int64_t header_size_delta);
-  Error WriteEntryData(const CacheEntryKey& key,
-                       const base::UnguessableToken& token,
-                       int64_t old_body_end,
-                       int64_t offset,
-                       scoped_refptr<net::IOBuffer> buffer,
-                       int buf_len,
-                       bool truncate);
+  ErrorAndEvictionRequested UpdateEntryHeaderAndLastUsed(
+      const CacheEntryKey& key,
+      const base::UnguessableToken& token,
+      base::Time last_used,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t header_size_delta);
+  ErrorAndEvictionRequested WriteEntryData(const CacheEntryKey& key,
+                                           const base::UnguessableToken& token,
+                                           int64_t old_body_end,
+                                           int64_t offset,
+                                           scoped_refptr<net::IOBuffer> buffer,
+                                           int buf_len,
+                                           bool truncate);
   IntOrError ReadEntryData(const base::UnguessableToken& token,
                            int64_t offset,
                            scoped_refptr<net::IOBuffer> buffer,
@@ -328,6 +363,8 @@ class Backend {
                                         base::Time end_time);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResId(
       int64_t res_id_cursor);
+  ErrorAndEvictionRequested RunEviction(
+      base::flat_set<CacheEntryKey> excluded_keys);
 
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
@@ -345,10 +382,11 @@ class Backend {
   Error DeleteLiveEntryInternal(const CacheEntryKey& key,
                                 bool& corruption_detected);
   Error DeleteAllEntriesInternal();
-  Error DeleteLiveEntriesBetweenInternal(base::Time initial_time,
-                                         base::Time end_time,
-                                         std::set<CacheEntryKey> excluded_keys,
-                                         bool& corruption_detected);
+  Error DeleteLiveEntriesBetweenInternal(
+      base::Time initial_time,
+      base::Time end_time,
+      const base::flat_set<CacheEntryKey>& excluded_keys,
+      bool& corruption_detected);
   Error UpdateEntryLastUsedInternal(const CacheEntryKey& key,
                                     base::Time last_used);
   Error UpdateEntryHeaderAndLastUsedInternal(
@@ -379,6 +417,7 @@ class Backend {
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
       Error& error_out);
+  Error RunEvictionInternal(const base::flat_set<CacheEntryKey>& excluded_keys);
 
   // Trims blobs that overlap with the new write range [offset, end), and
   // updates the total size delta.
@@ -442,8 +481,14 @@ class Backend {
     CHECK_EQ(*db_init_status_, Error::kOk);
   }
 
+  bool ShouldStartEviction() const {
+    return GetSizeOfAllEntries() > high_watermark_;
+  }
+
   const base::FilePath path_;
   const int64_t max_bytes_;
+  const int64_t high_watermark_;
+  const int64_t low_watermark_;
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<Error> db_init_status_;
@@ -556,7 +601,8 @@ void Backend::DatabaseErrorCallback(int error, sql::Statement* statement) {
   }
 }
 
-EntryInfoOrError Backend::OpenOrCreateEntry(const CacheEntryKey& key) {
+EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
+    const CacheEntryKey& key) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenOrCreateEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -572,7 +618,8 @@ EntryInfoOrError Backend::OpenOrCreateEntry(const CacheEntryKey& key) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return EntryInfoOrErrorAndEvictionRequested(std::move(result),
+                                              ShouldStartEviction());
 }
 
 EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key) {
@@ -663,7 +710,8 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
   return entry_info;
 }
 
-EntryInfoOrError Backend::CreateEntry(const CacheEntryKey& key) {
+EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
+    const CacheEntryKey& key) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.CreateEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -679,7 +727,8 @@ EntryInfoOrError Backend::CreateEntry(const CacheEntryKey& key) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return EntryInfoOrErrorAndEvictionRequested(std::move(result),
+                                              ShouldStartEviction());
 }
 
 EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
@@ -753,8 +802,9 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
   return entry_info;
 }
 
-Error Backend::DoomEntry(const CacheEntryKey& key,
-                         const base::UnguessableToken& token) {
+ErrorAndEvictionRequested Backend::DoomEntry(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DoomEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -774,7 +824,7 @@ Error Backend::DoomEntry(const CacheEntryKey& key,
                      PopulateTraceDetails(result, store_status_, dict);
                      dict.Add("corruption_detected", corruption_detected);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::DoomEntryInternal(const CacheEntryKey& key,
@@ -859,8 +909,9 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   return Error::kOk;
 }
 
-Error Backend::DeleteDoomedEntry(const CacheEntryKey& key,
-                                 const base::UnguessableToken& token) {
+ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteDoomedEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -877,7 +928,7 @@ Error Backend::DeleteDoomedEntry(const CacheEntryKey& key,
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
@@ -935,7 +986,7 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
   return transaction.Commit() ? Error::kOk : Error::kFailedToExecute;
 }
 
-Error Backend::DeleteLiveEntry(const CacheEntryKey& key) {
+ErrorAndEvictionRequested Backend::DeleteLiveEntry(const CacheEntryKey& key) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -954,7 +1005,7 @@ Error Backend::DeleteLiveEntry(const CacheEntryKey& key) {
                      PopulateTraceDetails(result, store_status_, dict);
                      dict.Add("corruption_detected", corruption_detected);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
@@ -1040,7 +1091,7 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   return Error::kOk;
 }
 
-Error Backend::DeleteAllEntries() {
+ErrorAndEvictionRequested Backend::DeleteAllEntries() {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteAllEntries", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -1055,7 +1106,7 @@ Error Backend::DeleteAllEntries() {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::DeleteAllEntriesInternal() {
@@ -1101,9 +1152,10 @@ Error Backend::DeleteAllEntriesInternal() {
   return Error::kOk;
 }
 
-Error Backend::DeleteLiveEntriesBetween(base::Time initial_time,
-                                        base::Time end_time,
-                                        std::set<CacheEntryKey> excluded_keys) {
+ErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
+    base::Time initial_time,
+    base::Time end_time,
+    base::flat_set<CacheEntryKey> excluded_keys) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
                      "data", [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -1117,7 +1169,7 @@ Error Backend::DeleteLiveEntriesBetween(base::Time initial_time,
   // DeleteLiveEntriesBetween, database corruption is ignored.
   bool corruption_detected = false;
   Error result = DeleteLiveEntriesBetweenInternal(
-      initial_time, end_time, std::move(excluded_keys), corruption_detected);
+      initial_time, end_time, excluded_keys, corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "DeleteLiveEntriesBetween", timer.Elapsed(),
       corruption_detected ? Error::kInvalidData : result);
@@ -1126,13 +1178,13 @@ Error Backend::DeleteLiveEntriesBetween(base::Time initial_time,
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::DeleteLiveEntriesBetweenInternal(
     base::Time initial_time,
     base::Time end_time,
-    std::set<CacheEntryKey> excluded_keys,
+    const base::flat_set<CacheEntryKey>& excluded_keys,
     bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
@@ -1281,11 +1333,12 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
   return change_count == 0 ? Error::kNotFound : Error::kOk;
 }
 
-Error Backend::UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
-                                            const base::UnguessableToken& token,
-                                            base::Time last_used,
-                                            scoped_refptr<net::IOBuffer> buffer,
-                                            int64_t header_size_delta) {
+ErrorAndEvictionRequested Backend::UpdateEntryHeaderAndLastUsed(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token,
+    base::Time last_used,
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t header_size_delta) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryHeaderAndLastUsed",
                      "data", [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -1305,7 +1358,7 @@ Error Backend::UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::UpdateEntryHeaderAndLastUsedInternal(
@@ -1371,13 +1424,14 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
   return Error::kOk;
 }
 
-Error Backend::WriteEntryData(const CacheEntryKey& key,
-                              const base::UnguessableToken& token,
-                              int64_t old_body_end,
-                              int64_t offset,
-                              scoped_refptr<net::IOBuffer> buffer,
-                              int buf_len,
-                              bool truncate) {
+ErrorAndEvictionRequested Backend::WriteEntryData(
+    const CacheEntryKey& key,
+    const base::UnguessableToken& token,
+    int64_t old_body_end,
+    int64_t offset,
+    scoped_refptr<net::IOBuffer> buffer,
+    int buf_len,
+    bool truncate) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.WriteEntryData", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
@@ -1398,7 +1452,7 @@ Error Backend::WriteEntryData(const CacheEntryKey& key,
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return result;
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
@@ -2188,6 +2242,99 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
   return std::nullopt;
 }
 
+ErrorAndEvictionRequested Backend::RunEviction(
+    base::flat_set<CacheEntryKey> excluded_keys) {
+  TRACE_EVENT0("disk_cache", "SqlBackend.RunEviction");
+  base::ElapsedTimer timer;
+  auto result = RunEvictionInternal(std::move(excluded_keys));
+  RecordTimeAndErrorResultHistogram("RunEviction", timer.Elapsed(), result);
+  return ErrorAndEvictionRequested(result, ShouldStartEviction());
+}
+
+Error Backend::RunEvictionInternal(
+    const base::flat_set<CacheEntryKey>& excluded_keys) {
+  int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToExecute;
+  }
+
+  std::vector<base::UnguessableToken> tokens_to_be_deleted;
+  int64_t entry_count_delta = 0;
+  // Use checked numerics to safely update the total cache size.
+  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
+  base::CheckedNumeric<int64_t> checked_removed_total_size = 0;
+  {
+    constexpr char kSqlSelectResourcesForEviction[] =
+        // clang-format off
+        "SELECT "
+            "token_high,"   // 0
+            "token_low,"    // 1
+            "cache_key,"    // 2
+            "bytes_usage "  // 3
+        "FROM resources "
+        "WHERE "
+            "doomed=? "     // 0
+        "ORDER BY last_used";
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlSelectResourcesForEviction));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResourcesForEviction));
+    statement.BindBool(0, false);
+    while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
+           statement.Step()) {
+      if (excluded_keys.contains(CacheEntryKey(statement.ColumnString(2)))) {
+        continue;
+      }
+      auto maybe_token = ToUnguessableToken(statement.ColumnInt64(0),
+                                            statement.ColumnInt64(1));
+      if (!maybe_token) {
+        continue;
+      }
+      tokens_to_be_deleted.push_back(*maybe_token);
+      --entry_count_delta;
+      const int64_t bytes_usage = statement.ColumnInt64(3);
+      checked_total_size_delta -= bytes_usage;
+      checked_removed_total_size += bytes_usage;
+      checked_removed_total_size += kSqlBackendStaticResourceSize;
+      if (!checked_total_size_delta.IsValid() ||
+          !checked_removed_total_size.IsValid()) {
+        return Error::kInvalidData;
+      }
+    }
+  }
+
+  for (const auto& token_to_be_deleted : tokens_to_be_deleted) {
+    if (Error delete_result = DeleteBlobsByToken(token_to_be_deleted);
+        delete_result != Error::kOk) {
+      return delete_result;
+    }
+    constexpr char kSqlDeleteFromResources[] =
+        // clang-format off
+        "DELETE FROM resources "
+        "WHERE "
+            "token_high=? AND "  // 0
+            "token_low=?";       // 1
+    // clang-format on
+    // Intentionally DCHECK() for performance
+    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
+    sql::Statement statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    statement.BindInt64(0, TokenHigh(token_to_be_deleted));
+    statement.BindInt64(1, TokenLow(token_to_be_deleted));
+    if (!statement.Run()) {
+      return Error::kFailedToExecute;
+    }
+  }
+  if (!UpdateStoreStatusAndCommitTransaction(
+          transaction, entry_count_delta,
+          checked_total_size_delta.ValueOrDie())) {
+    return Error::kFailedToCommitTransaction;
+  }
+  return Error::kOk;
+}
+
 bool Backend::UpdateStoreStatusAndCommitTransaction(
     sql::Transaction& transaction,
     int64_t entry_count_delta,
@@ -2314,7 +2461,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                          EntryInfoOrErrorCallback callback) override {
     backend_.AsyncCall(&Backend::OpenOrCreateEntry)
         .WithArgs(key)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void OpenEntry(const CacheEntryKey& key,
                  OptionalEntryInfoOrErrorCallback callback) override {
@@ -2326,39 +2473,39 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                    EntryInfoOrErrorCallback callback) override {
     backend_.AsyncCall(&Backend::CreateEntry)
         .WithArgs(key)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void DoomEntry(const CacheEntryKey& key,
                  const base::UnguessableToken& token,
                  ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DoomEntry)
         .WithArgs(key, token)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void DeleteDoomedEntry(const CacheEntryKey& key,
                          const base::UnguessableToken& token,
                          ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteDoomedEntry)
         .WithArgs(key, token)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void DeleteLiveEntry(const CacheEntryKey& key,
                        ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteLiveEntry)
         .WithArgs(key)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void DeleteAllEntries(ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteAllEntries)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void DeleteLiveEntriesBetween(base::Time initial_time,
                                 base::Time end_time,
-                                std::set<CacheEntryKey> excluded_keys,
+                                base::flat_set<CacheEntryKey> excluded_keys,
                                 ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::DeleteLiveEntriesBetween)
         .WithArgs(initial_time, end_time, std::move(excluded_keys))
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void UpdateEntryLastUsed(const CacheEntryKey& key,
                            base::Time last_used,
@@ -2375,8 +2522,9 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                                     ErrorCallback callback) override {
     backend_.AsyncCall(&Backend::UpdateEntryHeaderAndLastUsed)
         .WithArgs(key, token, last_used, std::move(buffer), header_size_delta)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
+
   void WriteEntryData(const CacheEntryKey& key,
                       const base::UnguessableToken& token,
                       int64_t old_body_end,
@@ -2388,7 +2536,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
     backend_.AsyncCall(&Backend::WriteEntryData)
         .WithArgs(key, token, old_body_end, offset, std::move(buffer), buf_len,
                   truncate)
-        .Then(WrapCallback(std::move(callback)));
+        .Then(WrapCallbackWithEvictionRequested(std::move(callback)));
   }
   void ReadEntryData(const base::UnguessableToken& token,
                      int64_t offset,
@@ -2424,6 +2572,27 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(res_id_cursor)
         .Then(WrapCallback(std::move(callback)));
   }
+  bool ShouldStartEviction() override {
+    return !eviction_in_progress_ && eviction_requested_;
+  }
+  void StartEviction(base::flat_set<CacheEntryKey> excluded_keys,
+                     ErrorCallback callback) override {
+    CHECK(!eviction_in_progress_);
+    eviction_in_progress_ = true;
+    backend_.AsyncCall(&Backend::RunEviction)
+        .WithArgs(std::move(excluded_keys))
+        .Then(base::BindOnce(
+            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+               ErrorCallback callback, ErrorAndEvictionRequested result) {
+              if (weak_ptr) {
+                weak_ptr->eviction_in_progress_ = false;
+                weak_ptr->eviction_requested_ = result.eviction_requested;
+                std::move(callback).Run(result.result);
+              }
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   int64_t MaxFileSize() const override { return max_file_size_; }
   int64_t MaxSize() const override { return max_size_; }
   void GetEntryCount(Int32Callback callback) const override {
@@ -2455,10 +2624,30 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         weak_factory_.GetWeakPtr(), std::move(callback));
   }
 
+  // Like `WrapCallback`, but also updates the `eviction_requested_` flag.
+  template <typename ResultType>
+  base::OnceCallback<void(ResultAndEvictionRequested<ResultType>)>
+  WrapCallbackWithEvictionRequested(
+      base::OnceCallback<void(ResultType)> callback) {
+    return base::BindOnce(
+        [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+           base::OnceCallback<void(ResultType)> callback,
+           ResultAndEvictionRequested<ResultType> result) {
+          if (weak_ptr) {
+            weak_ptr->eviction_requested_ = result.eviction_requested;
+            // We should not run the callback when `this` was deleted.
+            std::move(callback).Run(std::move(result.result));
+          }
+        },
+        weak_factory_.GetWeakPtr(), std::move(callback));
+  }
+
   base::SequenceBound<Backend> backend_;
 
   int64_t max_size_ = 0;
   int64_t max_file_size_ = 0;
+  bool eviction_in_progress_ = false;
+  bool eviction_requested_ = false;
 
   base::WeakPtrFactory<SqlPersistentStoreImpl> weak_factory_{this};
 };

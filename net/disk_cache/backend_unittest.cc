@@ -89,20 +89,6 @@ using testing::Field;
   NonEmptyCorruptSimpleCacheDoesNotRecover
 #endif
 
-// Some tests use methods that are not implemented in SQLBackend. Therefore,
-// this macro is used to skip such tests.
-// TODO(crbug.com/422065015): Remove this macro once such methods are
-// implemented.
-#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()                                 \
-  if (GetParam() == BackendToTest::kSql) {                                    \
-    LOG(INFO) << "Skipping test for SQL backend as it's not implemented yet"; \
-    return;                                                                   \
-  }
-#else
-#define SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED()
-#endif
-
 using base::Time;
 
 namespace {
@@ -3351,7 +3337,6 @@ void DiskCacheBackendTest::BackendEviction() {
 }
 
 TEST_P(DiskCacheGenericBackendTest, BackendEviction) {
-  SKIP_IF_SQL_BACKEND_NOT_IMPLEMENTED();
   BackendEviction();
 }
 

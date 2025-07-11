@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -180,10 +181,11 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Deletes all "live" (not doomed) entries whose `last_used` time falls
   // within the range [`initial_time`, `end_time`), excluding any entries whose
   // keys are present in `excluded_keys`. `callback` is invoked on completion.
-  virtual void DeleteLiveEntriesBetween(base::Time initial_time,
-                                        base::Time end_time,
-                                        std::set<CacheEntryKey> excluded_keys,
-                                        ErrorCallback callback) = 0;
+  virtual void DeleteLiveEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time,
+      base::flat_set<CacheEntryKey> excluded_keys,
+      ErrorCallback callback) = 0;
 
   // Updates the `last_used` timestamp for the entry with the specified `key`.
   // `callback` is invoked with `kOk` on success, or `kNotFound` if the entry
@@ -275,6 +277,19 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   virtual void OpenLatestEntryBeforeResId(
       int64_t res_id_cursor,
       OptionalEntryInfoWithIdAndKeyCallback callback) = 0;
+
+  // Checks if cache eviction should be initiated. This is typically called by
+  // the backend after an operation that increases the cache size. Returns true
+  // if the cache size has exceeded the high watermark and an eviction is not
+  // already in progress.
+  virtual bool ShouldStartEviction() = 0;
+
+  // Starts the eviction process to reduce the cache size. This method removes
+  // the least recently used entries until the total cache size is below the
+  // low watermark. Entries with keys in `excluded_keys` (typically active
+  // entries) will not be evicted. `callback` is invoked upon completion.
+  virtual void StartEviction(base::flat_set<CacheEntryKey> excluded_keys,
+                             ErrorCallback callback) = 0;
 
   // The maximum size of an individual cache entry's data stream.
   virtual int64_t MaxFileSize() const = 0;

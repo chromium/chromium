@@ -95,6 +95,7 @@ class DiskCacheEntryTest : public DiskCacheTestWithCache {
   void SparseClipEnd(int64_t max_index, bool expected_unsupported);
   void CacheGiantEntry();
   bool SimpleCacheMakeBadChecksumEntry(const std::string& key, int data_size);
+  void EvictOldEntries();
   bool SimpleCacheThirdStreamFileExists(const char* key);
   void SyncDoomEntry(const char* key);
   void CreateEntryWithHeaderBodyAndSideData(const std::string& key,
@@ -3740,14 +3741,13 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOptimisticCreateFailsOnOpen) {
 }
 
 // Tests that old entries are evicted while new entries remain in the index.
-// This test relies on non-mandatory properties of the simple Cache Backend:
+// This test relies on non-mandatory properties of the Simple and SQL Backend:
 // LRU eviction, specific values of high-watermark and low-watermark etc.
 // When changing the eviction algorithm, the test will have to be re-engineered.
-TEST_F(DiskCacheEntryTest, SimpleCacheEvictOldEntries) {
+void DiskCacheEntryTest::EvictOldEntries() {
   const int kMaxSize = 200 * 1024;
   const int kWriteSize = kMaxSize / 10;
   const int kNumExtraEntries = 12;
-  SetBackendToTest(BackendToTest::kSimple);
   SetMaxSize(kMaxSize);
   InitCache();
 
@@ -3786,6 +3786,11 @@ TEST_F(DiskCacheEntryTest, SimpleCacheEvictOldEntries) {
         << "Should not have evicted fresh entry " << entry_no;
     entry->Close();
   }
+}
+
+TEST_F(DiskCacheEntryTest, SimpleCacheEvictOldEntries) {
+  SetBackendToTest(BackendToTest::kSimple);
+  EvictOldEntries();
 }
 
 // Tests that if a read and a following in-flight truncate are both in progress
@@ -5693,6 +5698,11 @@ TEST_F(DiskCacheSimpleAppCachePrefetchTest, LargeFullSmallSpeculative) {
 TEST_F(DiskCacheEntryTest, SqlCacheGiantEntry) {
   SetBackendToTest(BackendToTest::kSql);
   CacheGiantEntry();
+}
+
+TEST_F(DiskCacheEntryTest, SqlCacheEvictOldEntries) {
+  SetBackendToTest(BackendToTest::kSql);
+  EvictOldEntries();
 }
 
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND

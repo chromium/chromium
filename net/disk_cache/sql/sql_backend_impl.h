@@ -184,6 +184,12 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
 
+  // Checks if the cache size has exceeded the high watermark and, if so,
+  // schedules an eviction task. This is typically called after operations that
+  // might increase the cache size. The eviction itself is run as an exclusive
+  // operation to prevent conflicts with other cache activities.
+  void MaybeTriggerEviction();
+
   // Internal helper for Open/Create/OpenOrCreate operations. It uses
   // `ExclusiveOperationCoordinator` to serialize operations on the same key and
   // to correctly handle synchronous vs. asynchronous returns.
@@ -310,6 +316,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       RangeResultCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
+  // Handles the backend logic for cache eviction. This method is scheduled as
+  // an exclusive operation to ensure no other cache activities are running. It
+  // gathers the keys of all active entries to prevent them from being evicted
+  // and then delegates the actual eviction logic to the persistent store.
+  void HandleTriggerEvictionOperation(
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
   // Applies in-flight modifications to an entry's info.
   void ApplyInFlightEntryModifications(
       const CacheEntryKey& key,
@@ -348,6 +361,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // while an entry is not actively open.
   std::map<CacheEntryKey, std::list<InFlightEntryModification>>
       in_flight_entry_modifications_;
+
+  // A flag to prevent queuing multiple eviction operations. It is set to true
+  // when an eviction operation is posted to the `ExclusiveOperationCoordinator`
+  // and reset to false when the operation begins execution. This ensures that
+  // even if `MaybeTriggerEviction()` is called multiple times while an eviction
+  // task is pending, only one will be in the queue at any time.
+  bool eviction_operation_queued_ = false;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};

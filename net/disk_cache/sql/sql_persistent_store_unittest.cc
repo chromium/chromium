@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -251,7 +252,7 @@ class SqlPersistentStoreTest : public testing::Test {
   SqlPersistentStore::Error DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
-      std::set<CacheEntryKey> excluded_keys = {}) {
+      base::flat_set<CacheEntryKey> excluded_keys = {}) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
     store_->DeleteLiveEntriesBetween(
         initial_time, end_time, std::move(excluded_keys), future.GetCallback());
@@ -1500,7 +1501,7 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   // kKey2 should be excluded.
   // Expected to delete: kKey1.
   // Expected to keep: kKey2, kKey3, kKey4, kKey5.
-  std::set<CacheEntryKey> excluded_keys = {kKey2};
+  base::flat_set<CacheEntryKey> excluded_keys = {kKey2};
   ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_keys),
             SqlPersistentStore::Error::kOk);
 
@@ -3344,6 +3345,181 @@ TEST_F(SqlPersistentStoreTest,
   FlushPendingTask();
 
   EXPECT_FALSE(callback_run);
+}
+
+TEST_F(SqlPersistentStoreTest,
+       ShouldStartEvictionReturnsTrueWhenSizeExceedsHighWatermark) {
+  // Use a small max_bytes to make it easy to cross the high watermark.
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  EXPECT_FALSE(store_->ShouldStartEviction());
+
+  // Add entries until the size is just over the high watermark.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+    // Before the size exceeds the watermark, ShouldStartEviction should be
+    // false.
+    if (GetSizeOfAllEntries() <= kHighWatermark) {
+      EXPECT_FALSE(store_->ShouldStartEviction());
+    }
+  }
+
+  // The last CreateEntry() pushed the size over the high watermark.
+  EXPECT_TRUE(store_->ShouldStartEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes - 2 * (kMaxBytes / kSqlBackendEvictionMarginDivisor);  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries until size > high watermark.
+  std::vector<CacheEntryKey> keys;
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    keys.push_back(key);
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+    task_environment_.AdvanceClock(
+        base::Seconds(1));  // To distinguish last_used
+  }
+
+  const int64_t size_before_eviction = GetSizeOfAllEntries();
+  const int32_t count_before_eviction = GetEntryCount();
+  EXPECT_GT(size_before_eviction, kHighWatermark);
+  EXPECT_TRUE(store_->ShouldStartEviction());
+
+  // Start eviction.
+  base::test::TestFuture<SqlPersistentStore::Error> future;
+  store_->StartEviction({}, future.GetCallback());
+  ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+
+  // After eviction, size should be <= low watermark.
+  const int64_t size_after_eviction = GetSizeOfAllEntries();
+  const int32_t count_after_eviction = GetEntryCount();
+  EXPECT_LE(size_after_eviction, kLowWatermark);
+  EXPECT_LT(count_after_eviction, count_before_eviction);
+
+  // Verify oldest entries are gone.
+  int evicted_count = count_before_eviction - count_after_eviction;
+  for (int j = 0; j < evicted_count; ++j) {
+    auto result = OpenEntry(keys[j]);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(result->has_value());
+  }
+
+  // Verify newest entries are still there.
+  for (size_t j = evicted_count; j < keys.size(); ++j) {
+    auto result = OpenEntry(keys[j]);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->has_value());
+  }
+
+  EXPECT_FALSE(store_->ShouldStartEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes - 2 * (kMaxBytes / kSqlBackendEvictionMarginDivisor);  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries until size > high watermark.
+  std::vector<CacheEntryKey> keys;
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    keys.push_back(key);
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+    task_environment_.AdvanceClock(
+        base::Seconds(1));  // To distinguish last_used
+  }
+
+  const int64_t size_before_eviction = GetSizeOfAllEntries();
+  const int32_t count_before_eviction = GetEntryCount();
+  EXPECT_GT(size_before_eviction, kHighWatermark);
+  EXPECT_TRUE(store_->ShouldStartEviction());
+
+  // Exclude the oldest entry.
+  base::flat_set<CacheEntryKey> excluded_keys = {keys[0]};
+
+  // Start eviction.
+  base::test::TestFuture<SqlPersistentStore::Error> future;
+  store_->StartEviction(std::move(excluded_keys), future.GetCallback());
+  ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+
+  // After eviction, size should be <= low watermark.
+  const int64_t size_after_eviction = GetSizeOfAllEntries();
+  const int32_t count_after_eviction = GetEntryCount();
+  EXPECT_LE(size_after_eviction, kLowWatermark);
+  EXPECT_LT(count_after_eviction, count_before_eviction);
+
+  // Verify the excluded entry is still there.
+  auto result = OpenEntry(keys[0]);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->has_value());
+
+  // Verify some other old entries are gone.
+  // The number of evicted entries will be different now.
+  int evicted_count = count_before_eviction - count_after_eviction;
+  // keys[0] was not evicted. So keys[1]...keys[evicted_count] should be
+  // evicted.
+  for (int j = 1; j <= evicted_count; ++j) {
+    result = OpenEntry(keys[j]);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(result->has_value());
+  }
+
+  EXPECT_FALSE(store_->ShouldStartEviction());
+}
+
+TEST_F(SqlPersistentStoreTest, ShouldStartEvictionReturnsFalseWhileInProgress) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes - kMaxBytes / kSqlBackendEvictionMarginDivisor;  // 9500
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Add entries until size > high watermark.
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i++));
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+  }
+
+  EXPECT_TRUE(store_->ShouldStartEviction());
+
+  base::test::TestFuture<SqlPersistentStore::Error> future;
+  store_->StartEviction({}, future.GetCallback());
+
+  // While eviction is in progress, ShouldStartEviction should return false.
+  EXPECT_FALSE(store_->ShouldStartEviction());
+
+  // Let eviction finish.
+  ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+
+  // After eviction, size is below watermark, so it should still be false.
+  EXPECT_FALSE(store_->ShouldStartEviction());
 }
 
 }  // namespace disk_cache
