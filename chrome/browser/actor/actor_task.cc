@@ -82,7 +82,7 @@ void ActorTask::OnFinishedActDeprecated(ActionResultCallback callback,
   std::move(callback).Run(std::move(result));
 }
 
-void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
   if (state_ == State::kPausedByClient) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
@@ -90,9 +90,10 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
     return;
   }
   SetState(State::kActing);
-  execution_engine_->Act(actions, base::BindOnce(&ActorTask::OnFinishedAct,
-                                                 weak_ptr_factory_.GetWeakPtr(),
-                                                 std::move(callback)));
+  execution_engine_->Act(
+      std::move(actions),
+      base::BindOnce(&ActorTask::OnFinishedAct, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void ActorTask::OnFinishedAct(ActCallback callback,

@@ -109,10 +109,10 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     std::optional<int> dom_node_id =
         content::GetDOMNodeId(*main_frame(), query_selector);
     ASSERT_TRUE(dom_node_id);
-    BrowserAction action = MakeClick(*main_frame(), dom_node_id.value());
-    action.set_task_id(task_id_.value());
-    TestFuture<mojom::ActionResultPtr> result;
-    actor_task().Act(action, result.GetCallback());
+    std::unique_ptr<ToolRequest> click =
+        MakeClickRequest(*main_frame(), dom_node_id.value());
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    actor_task().Act(ToRequestList(click), result.GetCallback());
     if (expected_code == mojom::ActionResultCode::kOk) {
       ExpectOkResult(result);
     } else {
@@ -172,28 +172,14 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   ASSERT_TRUE(button1_id);
   ASSERT_TRUE(button2_id);
 
-  BrowserAction action;
-  ClickAction* click1 = action.add_actions()->mutable_click();
-  click1->mutable_target()->set_content_node_id(button1_id.value());
-  click1->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          main_frame()->GetGlobalFrameToken()));
-  click1->set_click_type(ClickAction::LEFT);
-  click1->set_click_count(ClickAction::SINGLE);
-
-  ClickAction* click2 = action.add_actions()->mutable_click();
-  click2->mutable_target()->set_content_node_id(button2_id.value());
-  click2->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          main_frame()->GetGlobalFrameToken()));
-  click2->set_click_type(ClickAction::LEFT);
-  click2->set_click_count(ClickAction::SINGLE);
-
-  action.set_task_id(actor_task().id().value());
+  std::unique_ptr<ToolRequest> click1 =
+      MakeClickRequest(*main_frame(), button1_id.value());
+  std::unique_ptr<ToolRequest> click2 =
+      MakeClickRequest(*main_frame(), button2_id.value());
 
   // Execute the action
-  TestFuture<mojom::ActionResultPtr> result;
-  actor_task().Act(action, result.GetCallback());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
   ExpectOkResult(result);
 
   // Check background color changed to green
@@ -228,7 +214,6 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   // Store a pointer to the first tab.
   content::WebContents* first_tab_contents = web_contents();
   auto* tab = browser()->GetActiveTabInterface();
-  auto tab_handle = tab->GetHandle();
 
   // Create a second tab, which will be in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -246,26 +231,14 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   ASSERT_TRUE(button1_id);
   ASSERT_TRUE(button2_id);
 
-  std::string document_identifier =
-      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
-          first_tab_contents->GetPrimaryMainFrame()->GetGlobalFrameToken());
-
-  std::vector<std::unique_ptr<ToolRequest>> actions;
-
-  std::unique_ptr<ToolRequest> click1 = std::make_unique<ClickToolRequest>(
-      tab_handle, PageTarget(DomNode{*button1_id, document_identifier}),
-      MouseClickType::kLeft, MouseClickCount::kSingle);
-
-  std::unique_ptr<ToolRequest> click2 = std::make_unique<ClickToolRequest>(
-      tab_handle, PageTarget(DomNode{*button2_id, document_identifier}),
-      MouseClickType::kLeft, MouseClickCount::kSingle);
-
-  actions.push_back(std::move(click1));
-  actions.push_back(std::move(click2));
+  std::unique_ptr<ToolRequest> click1 = MakeClickRequest(
+      *first_tab_contents->GetPrimaryMainFrame(), button1_id.value());
+  std::unique_ptr<ToolRequest> click2 = MakeClickRequest(
+      *first_tab_contents->GetPrimaryMainFrame(), button2_id.value());
 
   // Execute the actions.
   TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
-  actor_task().Act(actions, result.GetCallback());
+  actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
 
   // Check that the action succeeded.
   ExpectOkResult(*result.Get<0>());

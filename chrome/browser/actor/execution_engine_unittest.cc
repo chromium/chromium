@@ -12,6 +12,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/shared_types.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/mock_event_dispatcher.h"
@@ -21,6 +23,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
@@ -32,7 +35,7 @@
 
 namespace actor {
 
-using ::optimization_guide::proto::BrowserAction;
+using ::optimization_guide::proto::Actions;
 using testing::_;
 using testing::Eq;
 using testing::Invoke;
@@ -150,12 +153,20 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  base::OnceCallback<BrowserAction()> MakeClickCallback(int content_node_id) {
+  base::OnceCallback<std::unique_ptr<ToolRequest>()> MakeClickCallback(
+      int content_node_id) {
     return base::BindLambdaForTesting([this, content_node_id]() {
-      BrowserAction action = MakeClick(*main_rfh(), content_node_id);
-      action.mutable_actions()->at(0).mutable_click()->set_tab_id(
-          GetTab()->GetHandle().raw_value());
-      return action;
+      std::string document_identifier =
+          *optimization_guide::DocumentIdentifierUserData::
+              GetDocumentIdentifier(main_rfh()->GetGlobalFrameToken());
+      actor::PageTarget target(
+          actor::DomNode{.node_id = content_node_id,
+                         .document_identifier = document_identifier});
+      std::unique_ptr<ToolRequest> request =
+          std::make_unique<actor::ClickToolRequest>(
+              GetTab()->GetHandle(), target, MouseClickType::kLeft,
+              MouseClickCount::kSingle);
+      return request;
     });
   }
 
@@ -163,15 +174,17 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   // Note: action must be generated from a callback because this method
   // navigates the render frame and the generated action must include a document
   // identifier token which is only available after the navigation.
-  bool Act(const GURL& url, base::OnceCallback<BrowserAction()> make_action) {
+  bool Act(const GURL& url,
+           base::OnceCallback<std::unique_ptr<ToolRequest>()> make_action) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
     fake_chrome_render_frame_.OverrideBinder(main_rfh());
 
-    base::test::TestFuture<mojom::ActionResultPtr> success;
-    BrowserAction action = std::move(make_action).Run();
-    task_->GetExecutionEngine()->Act(action, success.GetCallback());
-    return IsOk(*success.Get());
+    base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>>
+        success;
+    std::unique_ptr<ToolRequest> action = std::move(make_action).Run();
+    task_->Act(ToRequestList(std::move(action)), success.GetCallback());
+    return IsOk(*success.Get<0>());
   }
 
   tabs::MockTabInterface* GetTab() {
@@ -282,16 +295,14 @@ TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
-  base::test::TestFuture<mojom::ActionResultPtr> result;
+  base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  BrowserAction action = MakeClick(*main_rfh(), kFakeContentNodeId);
-  action.mutable_actions()->at(0).mutable_click()->set_tab_id(
-      GetTab()->GetHandle().raw_value());
-
-  task_->GetExecutionEngine()->Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -308,11 +319,12 @@ TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  base::test::TestFuture<mojom::ActionResultPtr> result;
-  BrowserAction action = MakeClick(*main_rfh(), kFakeContentNodeId);
-  action.mutable_actions()->at(0).mutable_click()->set_tab_id(
-      GetTab()->GetHandle().raw_value());
-  task_->GetExecutionEngine()->Act(action, result.GetCallback());
+  base::test::TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  auto execution_engine = std::make_unique<ExecutionEngine>(profile());
+  ActorTask task(std::move(execution_engine));
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(std::move(action)), result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

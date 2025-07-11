@@ -64,7 +64,7 @@ class ActorTask {
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
 
-  void Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+  void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
   // Sets State to kFinished and cancels any pending actions.

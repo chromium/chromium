@@ -275,7 +275,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
   }
 }
 
-void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                           ActorTask::ActCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(!actions.empty());

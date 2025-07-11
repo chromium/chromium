@@ -70,20 +70,19 @@ class ActorKeyedService : public KeyedService {
   TaskId CreateTask();
 
   // Executes the given ToolRequest actions using the execution engine for the
-  // given task id. The given actions vector reference is consumed as a result
-  // of calling this method.
+  // given task id.
   using PerformActionsCallback = base::OnceCallback<void(
       mojom::ActionResultCode /*result_code*/,
       std::optional<size_t> /*index_of_failing_action*/)>;
   void PerformActions(TaskId task_id,
-                      std::vector<std::unique_ptr<ToolRequest>>& actions,
+                      std::vector<std::unique_ptr<ToolRequest>>&& actions,
                       PerformActionsCallback callback);
 
   // TODO(crbug.com/411462297): DEPRECATED - to be replaced with PerformActions.
   // Executes an actor action.
   void ExecuteAction(
       TaskId task_id,
-      std::vector<std::unique_ptr<ToolRequest>>& actions,
+      std::vector<std::unique_ptr<ToolRequest>>&& actions,
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 

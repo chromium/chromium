@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_test_util.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/base64.h"
@@ -11,20 +12,39 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/shared_types.h"
+#include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/tools/attempt_login_tool_request.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/move_mouse_tool_request.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/page_tool_request.h"
+#include "chrome/browser/actor/tools/scroll_tool_request.h"
+#include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/type_tool_request.h"
+#include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_constants.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
 
 using ::content::RenderFrameHost;
+using ::content::WebContents;
 using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
@@ -36,6 +56,8 @@ using ::optimization_guide::proto::ScrollAction;
 using ::optimization_guide::proto::SelectAction;
 using ::optimization_guide::proto::TypeAction;
 using ::optimization_guide::proto::TypeAction_TypeMode;
+using tabs::TabHandle;
+using tabs::TabInterface;
 
 BrowserAction MakeClick(RenderFrameHost& rfh, int content_node_id) {
   BrowserAction action;
@@ -213,19 +235,166 @@ BrowserAction MakeAttemptLogin() {
   return action;
 }
 
+PageTarget MakeTarget(content::RenderFrameHost& rfh, int content_node_id) {
+  std::string document_identifier =
+      *DocumentIdentifierUserData::GetDocumentIdentifier(
+          rfh.GetGlobalFrameToken());
+  return PageTarget(DomNode{.node_id = content_node_id,
+                            .document_identifier = document_identifier});
+}
+
+PageTarget MakeTarget(const gfx::Point& point) {
+  return PageTarget(point);
+}
+
+TabHandle GetTab(content::RenderFrameHost& rfh) {
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  CHECK(tab);
+  return tab->GetHandle();
+}
+
+std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
+                                              int content_node_id) {
+  return std::make_unique<ClickToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, content_node_id), MouseClickType::kLeft,
+      MouseClickCount::kSingle);
+}
+
+std::unique_ptr<ToolRequest> MakeClickRequest(TabInterface& tab,
+                                              const gfx::Point& click_point) {
+  return std::make_unique<ClickToolRequest>(
+      tab.GetHandle(), MakeTarget(click_point), MouseClickType::kLeft,
+      MouseClickCount::kSingle);
+}
+
+std::unique_ptr<ToolRequest> MakeHistoryBackRequest(TabInterface& tab) {
+  return std::make_unique<HistoryToolRequest>(
+      tab.GetHandle(), HistoryToolRequest::Direction::kBack);
+}
+
+std::unique_ptr<ToolRequest> MakeHistoryForwardRequest(TabInterface& tab) {
+  return std::make_unique<HistoryToolRequest>(
+      tab.GetHandle(), HistoryToolRequest::Direction::kForward);
+}
+
+std::unique_ptr<ToolRequest> MakeMouseMoveRequest(content::RenderFrameHost& rfh,
+                                                  int content_node_id) {
+  return std::make_unique<MoveMouseToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, content_node_id));
+}
+
+std::unique_ptr<ToolRequest> MakeMouseMoveRequest(
+    TabInterface& tab,
+    const gfx::Point& move_point) {
+  return std::make_unique<MoveMouseToolRequest>(tab.GetHandle(),
+                                                MakeTarget(move_point));
+}
+std::unique_ptr<ToolRequest> MakeNavigateRequest(TabInterface& tab,
+                                                 std::string_view target_url) {
+  return std::make_unique<NavigateToolRequest>(tab.GetHandle(),
+                                               GURL(target_url));
+}
+std::unique_ptr<ToolRequest> MakeTypeRequest(content::RenderFrameHost& rfh,
+                                             int content_node_id,
+                                             std::string_view text,
+                                             bool follow_by_enter) {
+  // TODO(crbug.com/409570203): Tests should set a mode.
+  return std::make_unique<TypeToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, content_node_id), text, follow_by_enter,
+      TypeToolRequest::Mode::kReplace);
+}
+std::unique_ptr<ToolRequest> MakeTypeRequest(TabInterface& tab,
+                                             const gfx::Point& type_point,
+                                             std::string_view text,
+                                             bool follow_by_enter) {
+  return std::make_unique<TypeToolRequest>(
+      tab.GetHandle(), MakeTarget(type_point), text, follow_by_enter,
+      TypeToolRequest::Mode::kReplace);
+}
+std::unique_ptr<ToolRequest> MakeSelectRequest(content::RenderFrameHost& rfh,
+                                               int content_node_id,
+                                               std::string_view value) {
+  return std::make_unique<SelectToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, content_node_id), value);
+}
+
+std::unique_ptr<ToolRequest> MakeScrollRequest(
+    content::RenderFrameHost& rfh,
+    std::optional<int> content_node_id,
+    float scroll_offset_x,
+    float scroll_offset_y) {
+  CHECK(scroll_offset_x == 0.f || scroll_offset_y == 0.f);
+
+  int node_id =
+      content_node_id.has_value() ? *content_node_id : kRootElementDomNodeId;
+  float distance = 0.f;
+  ScrollToolRequest::Direction direction = ScrollToolRequest::Direction::kDown;
+
+  if (scroll_offset_x > 0) {
+    direction = ScrollToolRequest::Direction::kRight;
+    distance = scroll_offset_x;
+  } else if (scroll_offset_x < 0) {
+    direction = ScrollToolRequest::Direction::kLeft;
+    distance = -scroll_offset_x;
+  }
+  if (scroll_offset_y > 0) {
+    direction = ScrollToolRequest::Direction::kDown;
+    distance = scroll_offset_y;
+  } else if (scroll_offset_y < 0) {
+    direction = ScrollToolRequest::Direction::kUp;
+    distance = -scroll_offset_y;
+  }
+
+  return std::make_unique<ScrollToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, node_id), direction, distance);
+}
+std::unique_ptr<ToolRequest> MakeDragAndReleaseRequest(
+    TabInterface& tab,
+    const gfx::Point& from_point,
+    const gfx::Point& to_point) {
+  return std::make_unique<DragAndReleaseToolRequest>(
+      tab.GetHandle(), MakeTarget(from_point), MakeTarget(to_point));
+}
+std::unique_ptr<ToolRequest> MakeWaitRequest() {
+  // TODO(bokan): Move this the default in WaitToolRequest.
+  constexpr base::TimeDelta kWaitTime = base::Seconds(3);
+  return std::make_unique<WaitToolRequest>(kWaitTime);
+}
+
+std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
+                                                  bool foreground) {
+  return std::make_unique<CreateTabToolRequest>(
+      window_id.id(), foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                 : WindowOpenDisposition::NEW_BACKGROUND_TAB);
+}
+
+std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(TabInterface& tab) {
+  return std::make_unique<AttemptLoginToolRequest>(tab.GetHandle());
+}
+
+std::vector<std::unique_ptr<ToolRequest>> ToRequestList(
+    std::unique_ptr<ToolRequest> request) {
+  std::vector<std::unique_ptr<ToolRequest>> vec;
+  vec.push_back(std::move(request));
+  return vec;
+}
+
 void ExpectOkResult(const mojom::ActionResult& result) {
   EXPECT_TRUE(IsOk(result))
       << "Expected OK result, got " << ToDebugString(result);
 }
 
-void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
-  const auto& result = *(future.Get());
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr,
+                                           std::optional<size_t>>& future) {
+  const auto& result = *(future.Get<0>());
   ExpectOkResult(result);
 }
 
-void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
+void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr,
+                                              std::optional<size_t>>& future,
                        mojom::ActionResultCode expected_code) {
-  const auto& result = *(future.Get());
+  const auto& result = *(future.Get<0>());
   EXPECT_EQ(result.code, expected_code)
       << "Expected error " << base::to_underlying(expected_code) << ", got "
       << ToDebugString(result);

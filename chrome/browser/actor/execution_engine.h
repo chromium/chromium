@@ -105,8 +105,7 @@ class ExecutionEngine {
            ActionResultCallback callback);
 
   // Performs the given tool actions and invokes the callback when completed.
-  // The actions argument is consumed by this call.
-  void Act(std::vector<std::unique_ptr<ToolRequest>>& actions,
+  void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActorTask::ActCallback callback);
 
   // Gets called when a new observation is made for the actor task.

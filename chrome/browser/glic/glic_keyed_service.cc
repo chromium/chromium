@@ -422,7 +422,7 @@ void GlicKeyedService::PerformActions(
   }
 
   actor_service->PerformActions(
-      task_id, requests.value(),
+      task_id, std::move(requests.value()),
       base::BindOnce(PerformActionsFinished, std::move(callback)));
 }
 

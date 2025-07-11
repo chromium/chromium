@@ -112,7 +112,7 @@ void ActorKeyedService::ResetForTesting() {
 
 void ActorKeyedService::ExecuteAction(
     TaskId task_id,
-    std::vector<std::unique_ptr<ToolRequest>>& actions,
+    std::vector<std::unique_ptr<ToolRequest>>&& actions,
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback) {
   auto* task = GetTask(task_id);
@@ -129,9 +129,10 @@ void ActorKeyedService::ExecuteAction(
     return;
   }
 #if BUILDFLAG(ENABLE_GLIC)
-  task->Act(actions, base::BindOnce(&ActorKeyedService::OnActionFinished,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback), task_id.value()));
+  task->Act(std::move(actions),
+            base::BindOnce(&ActorKeyedService::OnActionFinished,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           task_id.value()));
 #endif
 }
 
@@ -279,7 +280,7 @@ void ActorKeyedService::OnActionFinished(
 
 void ActorKeyedService::PerformActions(
     TaskId task_id,
-    std::vector<std::unique_ptr<ToolRequest>>& actions,
+    std::vector<std::unique_ptr<ToolRequest>>&& actions,
     PerformActionsCallback callback) {
   auto* task = GetTask(task_id);
   if (!task) {
@@ -298,9 +299,10 @@ void ActorKeyedService::PerformActions(
     return;
   }
 
-  task->Act(actions, base::BindOnce(&ActorKeyedService::OnActionsFinished,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback)));
+  task->Act(
+      std::move(actions),
+      base::BindOnce(&ActorKeyedService::OnActionsFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ActorKeyedService::OnActionsFinished(

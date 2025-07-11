@@ -106,11 +106,9 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
-  ExecutionEngine& execution_engine() {
+  ActorTask& task() {
     CHECK(task_id_);
-    return *ActorKeyedService::Get(browser()->profile())
-                ->GetTask(task_id_)
-                ->GetExecutionEngine();
+    return *ActorKeyedService::Get(browser()->profile())->GetTask(task_id_);
   }
 
   net::test_server::ControllableHttpResponse& fetch_response() {
@@ -145,10 +143,10 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
 
   std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnFetch");
   ASSERT_TRUE(button_id);
-  BrowserAction action = MakeClick(*main_frame(), button_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
 
   fetch_response().WaitForRequest();
 
@@ -178,10 +176,10 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
   std::optional<int> button_id =
       GetDOMNodeId(*main_frame(), "#btnFetchAndWork");
   ASSERT_TRUE(button_id);
-  BrowserAction action = MakeClick(*main_frame(), button_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
   fetch_response().WaitForRequest();
 
   Sleep300ms();
@@ -256,10 +254,10 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
   std::optional<int> button_id =
       GetDOMNodeId(*main_frame(), "#btnFetchAndWork");
   ASSERT_TRUE(button_id);
-  BrowserAction action = MakeClick(*main_frame(), button_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
 
   // Never respond to the request
   fetch_response().WaitForRequest();
@@ -278,10 +276,10 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
 
   std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnWorkForever");
   ASSERT_TRUE(button_id);
-  BrowserAction action = MakeClick(*main_frame(), button_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
 
   // Ensure the stability monitor eventually allows completion.
   ExpectOkResult(result);
@@ -296,10 +294,10 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
 
   std::optional<int> button_id = GetDOMNodeId(*main_frame(), "#btnWorkForever");
   ASSERT_TRUE(button_id);
-  BrowserAction action = MakeClick(*main_frame(), button_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
 
   // Ensure the stability monitor eventually allows completion.
   ExpectOkResult(result);
@@ -434,10 +432,10 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityNavigationTypesTest, Test) {
     subframe_delay.emplace(web_contents(), url_subframe);
   }
 
-  BrowserAction action = MakeClick(*main_frame(), link_id.value());
-  action.set_task_id(task_id_.value());
-  TestFuture<mojom::ActionResultPtr> result;
-  execution_engine().Act(action, result.GetCallback());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), link_id.value());
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  task().Act(ToRequestList(action), result.GetCallback());
 
   if (main_frame_delay) {
     CHECK(subframe_delay);

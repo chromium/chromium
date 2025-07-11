@@ -147,7 +147,7 @@ ExtensionFunction::ResponseAction ExperimentalActorStartTaskFunction::Run() {
     std::vector<std::unique_ptr<actor::ToolRequest>> actions;
     actions.push_back(std::move(create_tab));
     actor_service->PerformActions(
-        task_id, actions,
+        task_id, std::move(actions),
         base::BindOnce(&ExperimentalActorStartTaskFunction::OnTabCreated, this,
                        browser->AsWeakPtr(), task_id));
   } else {
@@ -242,7 +242,7 @@ ExperimentalActorExecuteActionFunction::Run() {
   }
 
   actor_service->ExecuteAction(
-      actor::TaskId(action.task_id()), requests.value(),
+      actor::TaskId(action.task_id()), std::move(requests.value()),
       base::BindOnce(
           &ExperimentalActorExecuteActionFunction::OnResponseReceived, this));
 
@@ -363,7 +363,7 @@ ExperimentalActorPerformActionsFunction::Run() {
   }
 
   actor_service->PerformActions(
-      task_id, requests.value(),
+      task_id, std::move(requests.value()),
       base::BindOnce(
           &ExperimentalActorPerformActionsFunction::OnActionsFinished, this));
 
