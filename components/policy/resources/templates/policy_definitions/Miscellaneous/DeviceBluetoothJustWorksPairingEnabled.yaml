@@ -20,8 +20,8 @@ owners:
 - ghostbusters@google.com
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:140-
 tags: []
 type: main
 generate_device_proto: True
