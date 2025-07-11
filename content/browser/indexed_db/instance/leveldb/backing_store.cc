@@ -1242,6 +1242,12 @@ Status BackingStore::Initialize(bool clean_active_journal) {
   return s;
 }
 
+bool BackingStore::CanOpportunisticallyClose() const {
+  // For LevelDB, the logic here is implemented at the BucketContext level, so
+  // just return true here.
+  return true;
+}
+
 void BackingStore::TearDown(base::WaitableEvent* signal_on_destruction) {
   if (IsBlobCleanupPending()) {
     ForceRunBlobCleanup();
@@ -2978,6 +2984,13 @@ StatusOr<IndexedDBKey> BackingStore::Transaction::GetFirstPrimaryKeyForIndexKey(
   return base::unexpected(InvalidDBKeyStatus());
 }
 
+StatusOr<bool> BackingStore::DatabaseExists(std::u16string_view database_name) {
+  return GetDatabaseNames().transform(
+      [&](const std::vector<std::u16string>& names) {
+        return base::Contains(names, database_name);
+      });
+}
+
 StatusOr<std::vector<std::u16string>> BackingStore::GetDatabaseNames() {
   ASSIGN_OR_RETURN(
       std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,
@@ -4030,8 +4043,8 @@ void BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
   // During a VersionChange txn, and only a VersionChange txn, the database
   // metadata may change. VersionChange transactions also hold exclusive locks
   // over the whole database (not just a subset of object stores). So if and
-  // when `this` is rolled back, the db's metadata will be reset to the state it
-  // was in before `this` started.
+  // when `this` is rolled back, the db's metadata will be reset to the state
+  // it was in before `this` started.
   if (mode_ == blink::mojom::IDBTransactionMode::VersionChange) {
     metadata_before_transaction_.emplace(database_->metadata());
   }

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/types/expected.h"
@@ -227,18 +228,28 @@ class BackingStore {
 
   virtual ~BackingStore() = default;
 
-  // Get tasks to be run after a BackingStore no longer has any connections.
+  // The BucketContext deletes itself and the BackingStore when it has no
+  // database or blob connections active (after a short timeout). This method
+  // should return true if there are no connections and no blobs. Note that the
+  // LevelDB store just returns true because the BucketContext implements the
+  // logic for it. SQLite blobs are managed by the store itself, so this method
+  // is necessary.
+  // TODO(crbug.com/419203257): consider revisiting this logic since there's
+  // very little memory to be reclaimed by deleting the SQLite BackingStore.
+  virtual bool CanOpportunisticallyClose() const = 0;
+
   virtual void TearDown(base::WaitableEvent* signal_on_destruction) = 0;
   virtual void InvalidateBlobReferences() = 0;
+  // Get tasks to be run after a BackingStore no longer has any connections.
   virtual void StartPreCloseTasks(base::OnceClosure on_done) = 0;
   virtual void StopPreCloseTasks() = 0;
   // Gets the total size of blobs and the database for in-memory backing
   // stores.
   virtual int64_t GetInMemorySize() const = 0;
-  // Returns a list of names of existing databases, regardless of whether
-  // they're currently open.
-  [[nodiscard]] virtual StatusOr<std::vector<std::u16string>>
-  GetDatabaseNames() = 0;
+  // Returns true iff a database with the given name exists, whether or not it's
+  // currently open.
+  [[nodiscard]] virtual StatusOr<bool> DatabaseExists(
+      std::u16string_view name) = 0;
   // Returns a list of names of existing databases and their version numbers
   // (i.e. `IndexedDBDatabaseMetadata::version`), regardless of whether they're
   // currently open.

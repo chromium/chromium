@@ -166,34 +166,6 @@ DatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
-// Creates the leveldb and blob storage directories for IndexedDB.
-std::
-    tuple<base::FilePath /*leveldb_path*/, base::FilePath /*blob_path*/, Status>
-    CreateDatabaseDirectories(const base::FilePath& path_base,
-                              const storage::BucketLocator& bucket_locator) {
-  Status status;
-  if (!base::CreateDirectory(path_base)) {
-    status = Status::IOError("Unable to create IndexedDB database path");
-    LOG(ERROR) << status.ToString() << ": \"" << path_base.AsUTF8Unsafe()
-               << "\"";
-    ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
-                     bucket_locator);
-    return {base::FilePath(), base::FilePath(), status};
-  }
-
-  base::FilePath leveldb_path =
-      path_base.Append(GetLevelDBFileName(bucket_locator));
-  base::FilePath blob_path =
-      path_base.Append(GetBlobStoreFileName(bucket_locator));
-  if (IsPathTooLong(leveldb_path)) {
-    ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
-                     bucket_locator);
-    status = Status::IOError("File path too long");
-    return {base::FilePath(), base::FilePath(), status};
-  }
-  return {leveldb_path, blob_path, status};
-}
-
 }  // namespace
 
 // TODO(crbug.com/40253999): Move to blink when needed there.
@@ -689,22 +661,21 @@ void BucketContext::DeleteDatabase(
 
   // Otherwise, verify that a database with the given name exists in the backing
   // store. If not, report success.
-  base::expected<std::vector<std::u16string>, Status> names =
-      backing_store()->GetDatabaseNames();
-  if (!names.has_value()) {
+  StatusOr<bool> exists = backing_store()->DatabaseExists(name);
+  if (!exists.has_value()) {
     std::string error_message =
         "Internal error opening backing store for indexedDB.deleteDatabase.";
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
                         error_message);
     FactoryClient(std::move(factory_client)).OnError(error);
-    if (names.error().IsCorruption()) {
+    if (exists.error().IsCorruption()) {
       HandleBackingStoreCorruption(error_message);
     }
     return;
   }
 
-  if (!base::Contains(*names, name)) {
-    FactoryClient(std::move(factory_client)).OnDeleteSuccess(/*version=*/0);
+  if (!*exists) {
+    FactoryClient(std::move(factory_client)).OnDeleteSuccess(/*old_version=*/0);
     return;
   }
 
@@ -790,6 +761,11 @@ void BucketContext::OnHandleDestruction() {
 bool BucketContext::CanClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
+
+  if (backing_store_ && !backing_store_->CanOpportunisticallyClose()) {
+    return false;
+  }
+
   return !has_blobs_outstanding_ && open_handles_ <= 0 &&
          (!backing_store_ || is_doomed_ || !in_memory());
 }
@@ -970,14 +946,39 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     return {};
   }
 
+  // Construct paths and create required directories.
   base::FilePath blob_path;
   base::FilePath database_path;
-  Status status = Status::OK();
   if (!in_memory()) {
-    std::tie(database_path, blob_path, status) =
-        CreateDatabaseDirectories(data_path_, bucket_locator());
-    if (!status.ok()) {
-      return {status, CreateDefaultError(), IndexedDBDataLossInfo()};
+    // Creates the base directory if necessary, e.g.
+    // <user-data-dir>/<profile-name>/IndexedDB/
+    if (!base::CreateDirectory(data_path_)) {
+      ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
+                       bucket_locator());
+      return {Status::IOError("Unable to create IndexedDB data path"),
+              CreateDefaultError(), IndexedDBDataLossInfo()};
+    }
+
+    if (ShouldUseSqlite()) {
+      // Construct the directory path where databases are stored, e.g.
+      // <user-data-dir>/<profile-name>/IndexedDB/https_example.com/
+      database_path = data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
+    } else {
+      database_path = data_path_.Append(GetLevelDBFileName(bucket_locator()));
+      blob_path = data_path_.Append(GetBlobStoreFileName(bucket_locator()));
+    }
+
+    if (IsPathTooLong(database_path)) {
+      ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_ORIGIN_TOO_LONG,
+                       bucket_locator());
+      return {Status::IOError("File path too long"), CreateDefaultError(),
+              IndexedDBDataLossInfo()};
+    }
+    if (ShouldUseSqlite() && !base::CreateDirectory(database_path)) {
+      ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_DIRECTORY,
+                       bucket_locator());
+      return {Status::IOError("Unable to create IndexedDB database path"),
+              CreateDefaultError(), IndexedDBDataLossInfo()};
     }
   }
 
@@ -986,13 +987,13 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   std::unique_ptr<BackingStore> backing_store;
   bool disk_full = false;
   base::ElapsedTimer open_timer;
-  Status first_try_status;
+  Status status, first_try_status;
   constexpr static const int kNumOpenTries = 2;
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
     std::tie(backing_store, status, data_loss_info, disk_full) =
         ShouldUseSqlite()
-            ? sqlite::BackingStoreImpl::OpenAndVerify(data_path_,
+            ? sqlite::BackingStoreImpl::OpenAndVerify(database_path,
                                                       *blob_storage_context_)
             : level_db::BackingStore::OpenAndVerify(
                   *this, data_path_, database_path, blob_path,

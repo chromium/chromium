@@ -89,7 +89,7 @@ constexpr int kCompatibleSchemaVersion = kCurrentSchemaVersion;
 // IndexedDB metadata entry with `name`, and sets the current version in
 // `meta_table`.
 void InitializeNewDatabase(sql::Database* db,
-                           const std::u16string& name,
+                           std::u16string_view name,
                            sql::MetaTable* meta_table) {
   sql::Transaction transaction(db);
   TRANSIENT_CHECK(transaction.Begin());
@@ -215,7 +215,7 @@ void InitializeNewDatabase(sql::Database* db,
   sql::Statement statement(
       db->GetUniqueStatement("INSERT INTO indexed_db_metadata "
                              "(name, version) VALUES (?, ?)"));
-  statement.BindBlob(0, name);
+  statement.BindBlob(0, std::u16string(name));
   statement.BindInt64(1, blink::IndexedDBDatabaseMetadata::NO_VERSION);
   TRANSIENT_CHECK(statement.Run());
 
@@ -657,8 +657,8 @@ class IndexRecordIterator : public RecordIterator {
 
 // static
 StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
-    const std::u16string& name,
-    const base::FilePath& file_path,
+    std::optional<std::u16string_view> name,
+    base::FilePath path,
     BackingStoreImpl& backing_store) {
   // TODO(crbug.com/40253999): Create new tag(s) for metrics.
   constexpr sql::Database::Tag kSqlTag = "Test";
@@ -668,8 +668,11 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
                                                 .set_enable_triggers(true),
                                             kSqlTag);
 
-  // TODO(crbug.com/40253999): Support on-disk databases.
-  TRANSIENT_CHECK(db->OpenInMemory());
+  if (path.empty()) {
+    TRANSIENT_CHECK(db->OpenInMemory());
+  } else {
+    TRANSIENT_CHECK(db->Open(path));
+  }
 
   // What SQLite calls "recursive" triggers are required for SQLite to execute
   // a DELETE ON trigger after `INSERT OR REPLACE` replaces a row.
@@ -681,7 +684,8 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
 
   switch (meta_table->GetVersionNumber()) {
     case kEmptySchemaVersion:
-      InitializeNewDatabase(db.get(), name, meta_table.get());
+      TRANSIENT_CHECK(name.has_value());
+      InitializeNewDatabase(db.get(), *name, meta_table.get());
       break;
     // ...
     // Schema upgrades go here.
@@ -696,19 +700,38 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
   blink::IndexedDBDatabaseMetadata metadata =
       GenerateIndexedDbMetadata(db.get());
   // Database corruption can cause a mismatch.
-  TRANSIENT_CHECK(metadata.name == name);
+  if (name) {
+    TRANSIENT_CHECK(metadata.name == *name);
+  }
 
-  return base::WrapUnique(
-      new DatabaseConnection(std::move(db), std::move(meta_table),
-                             std::move(metadata), backing_store));
+  return base::WrapUnique(new DatabaseConnection(
+      std::move(path), std::move(db), std::move(meta_table),
+      std::move(metadata), backing_store));
+}
+
+// static
+void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
+  if (!db) {
+    return;
+  }
+
+  // TODO(crbug.com/419203257):  Consider delaying destruction by a short period
+  // in case the page reopens the same database soon.
+  DatabaseConnection* db_ptr = db.get();
+  db.reset();
+  if (db_ptr->CanBeDestroyed()) {
+    db_ptr->backing_store_->DestroyConnection(db_ptr->metadata_.name);
+  }
 }
 
 DatabaseConnection::DatabaseConnection(
+    base::FilePath path,
     std::unique_ptr<sql::Database> db,
     std::unique_ptr<sql::MetaTable> meta_table,
     blink::IndexedDBDatabaseMetadata metadata,
     BackingStoreImpl& backing_store)
-    : db_(std::move(db)),
+    : path_(path),
+      db_(std::move(db)),
       meta_table_(std::move(meta_table)),
       metadata_(std::move(metadata)),
       backing_store_(backing_store) {
@@ -723,9 +746,11 @@ DatabaseConnection::DatabaseConnection(
 }
 
 DatabaseConnection::~DatabaseConnection() {
-  // If in a zygotic state, the database should be deleted. For now, the
-  // database is only in memory, so no-op is fine.
-  // TODO(crbug.com/419203257): handle the on-disk case.
+  // If in a zygotic state, `DeleteIdbDatabase()` has been called.
+  if (IsZygotic() && !path_.empty()) {
+    db_.reset();
+    sql::Database::Delete(path_);
+  }
 }
 
 base::WeakPtr<DatabaseConnection> DatabaseConnection::GetWeakPtr() {
@@ -1437,7 +1462,7 @@ void DatabaseConnection::DeleteIdbDatabase(
   weak_factory_.InvalidateWeakPtrs();
   CHECK(!blob_writers_weak_factory_.HasWeakPtrs());
 
-  if (active_blobs_.empty()) {
+  if (CanBeDestroyed()) {
     // Fast path: skip explicitly deleting data as the whole database will be
     // dropped.
     backing_store_->DestroyConnection(metadata_.name);
@@ -1466,11 +1491,6 @@ void DatabaseConnection::DeleteIdbDatabase(
 
 void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
   CHECK_EQ(active_blobs_.erase(blob_number), 1U);
-  if (active_blobs_.empty() && IsZygotic()) {
-    backing_store_->DestroyConnection(metadata_.name);
-    // `this` is deleted.
-    return;
-  }
 
   {
     // TODO(crbug.com/419208485): If this operation happens in the middle of a
@@ -1485,6 +1505,16 @@ void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
     statement.BindInt64(0, blob_number);
     TRANSIENT_CHECK(statement.Run());
   }
+
+  if (CanBeDestroyed()) {
+    backing_store_->DestroyConnection(metadata_.name);
+    // `this` is deleted.
+    return;
+  }
+}
+
+bool DatabaseConnection::CanBeDestroyed() const {
+  return active_blobs_.empty() && !weak_factory_.HasWeakPtrs();
 }
 
 StatusOr<std::unique_ptr<BackingStore::Cursor>>

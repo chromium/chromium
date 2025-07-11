@@ -1474,7 +1474,7 @@ TEST_F(BackingStoreTest, CreateDatabase) {
   }
 }
 
-TEST_F(BackingStoreTest, GetDatabaseNames) {
+TEST_F(BackingStoreTest, DatabaseExists) {
   auto db1 = backing_store()->CreateOrOpenDatabase(u"db1");
 
   ASSERT_TRUE(db1.has_value());
@@ -1485,15 +1485,17 @@ TEST_F(BackingStoreTest, GetDatabaseNames) {
   ASSERT_TRUE(db2.has_value());
   EXPECT_GT(GetId(**db2), GetId(**db1));
 
-  // Only databases with non-default versions should be enumerated by
-  // `GetDatabaseNames()`.
-  UpdateDatabaseVersion(*db1.value(), 2);
+  // Only databases with non-default versions should be counted as existing by
+  // `DatabaseExists()`.
+  UpdateDatabaseVersion(*db1.value(), 1);
 
-  base::expected<std::vector<std::u16string>, Status> names =
-      backing_store()->GetDatabaseNames();
-  EXPECT_TRUE(names.has_value());
-  ASSERT_EQ(1U, names->size());
-  EXPECT_EQ(u"db1", names->at(0));
+  StatusOr<bool> db1_exists = backing_store()->DatabaseExists(u"db1");
+  ASSERT_TRUE(db1_exists.has_value());
+  EXPECT_TRUE(*db1_exists);
+
+  StatusOr<bool> db2_exists = backing_store()->DatabaseExists(u"db2");
+  ASSERT_TRUE(db2_exists.has_value());
+  EXPECT_FALSE(*db2_exists);
 }
 
 TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,

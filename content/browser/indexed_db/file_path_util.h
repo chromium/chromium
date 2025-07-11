@@ -45,7 +45,12 @@ base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
 
 // Returns if the given file path is too long for the current operating system's
 // file system.
-bool IsPathTooLong(const base::FilePath& leveldb_dir);
+bool IsPathTooLong(const base::FilePath& path);
+
+// Gets the relative path where all SQLite databases for the given bucket will
+// be stored. This is relative to the `data_path` concept in BucketContext.
+base::FilePath CONTENT_EXPORT
+GetSqliteDbDirectory(const storage::BucketLocator& bucket_locator);
 
 // The input correlates to any DOMString, which means it has arbitrary length
 // and may include invalid UTF16. The output is a length-constrained, valid path

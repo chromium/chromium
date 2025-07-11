@@ -15,7 +15,9 @@ BackingStoreDatabaseImpl::BackingStoreDatabaseImpl(
     base::WeakPtr<DatabaseConnection> db)
     : db_(std::move(db)) {}
 
-BackingStoreDatabaseImpl::~BackingStoreDatabaseImpl() = default;
+BackingStoreDatabaseImpl::~BackingStoreDatabaseImpl() {
+  DatabaseConnection::Release(std::move(db_));
+}
 
 const blink::IndexedDBDatabaseMetadata&
 BackingStoreDatabaseImpl::GetMetadata() {

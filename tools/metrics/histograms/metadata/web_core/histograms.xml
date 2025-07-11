@@ -271,17 +271,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength"
-    units="characters" expires_after="2025-03-09">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Length of leveldb directories that cause paths to not fit in the filesystem,
-    either because the individual component is too long or the overall path is
-    larger than MAX_PATH.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
     expires_after="2025-08-24">
   <owner>estade@chromium.org</owner>

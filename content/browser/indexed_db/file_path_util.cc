@@ -108,11 +108,11 @@ base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
   return path;
 }
 
-bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  int limit = base::GetMaximumPathComponentLength(leveldb_dir.DirName());
+bool IsPathTooLong(const base::FilePath& path) {
+  int limit = base::GetMaximumPathComponentLength(path.DirName());
   if (limit < 0) {
     DPLOG(WARNING) << "GetMaximumPathComponentLength returned -1 for "
-                   << leveldb_dir.DirName();
+                   << path.DirName();
 // In limited testing, ChromeOS returns 143, other OSes 255.
 #if BUILDFLAG(IS_CHROMEOS)
     limit = 143;
@@ -120,20 +120,21 @@ bool IsPathTooLong(const base::FilePath& leveldb_dir) {
     limit = 255;
 #endif
   }
-  size_t component_length = leveldb_dir.BaseName().value().length();
-  if (component_length > static_cast<uint32_t>(limit)) {
-    DLOG(WARNING) << "Path component length (" << component_length
-                  << ") exceeds maximum (" << limit
-                  << ") allowed by this filesystem.";
-    const int min = 140;
-    const int max = 300;
-    const int num_buckets = 12;
-    base::UmaHistogramCustomCounts(
-        "WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength",
-        component_length, min, max, num_buckets);
-    return true;
+  return path.BaseName().value().length() > static_cast<uint32_t>(limit);
+}
+
+base::FilePath GetSqliteDbDirectory(
+    const storage::BucketLocator& bucket_locator) {
+  if (ShouldUseLegacyFilePath(bucket_locator)) {
+    // All sites share a single data path for their default bucket. Append a
+    // directory for this specific site.
+    return base::FilePath().AppendASCII(
+        storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin()));
   }
-  return false;
+
+  // The base data path is already specific to the site and bucket. The SQLite
+  // DB will be stored within it.
+  return base::FilePath();
 }
 
 base::FilePath DatabaseNameToFileName(std::u16string_view db_name) {

@@ -9,9 +9,50 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content::indexed_db {
+
+TEST(FilePathUtilTest, GetSqliteDbDirectory) {
+  // First party, default bucket: need to append an origin.
+  storage::BucketLocator bucket_locator(
+      storage::BucketId::FromUnsafeValue(1),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(GURL("https://example.com/"))),
+      /*is_default=*/true);
+  EXPECT_EQ(base::FilePath::FromASCII("IndexedDB")
+                .Append(GetSqliteDbDirectory(bucket_locator)),
+            base::FilePath::FromASCII("IndexedDB")
+                .AppendASCII("https_example.com_0"));
+
+  // Non-default bucket: no origin, since the base path includes the bucket ID.
+  storage::BucketLocator bucket_locator_non_default(
+      storage::BucketId::FromUnsafeValue(2),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(GURL("https://example.com/"))),
+      /*is_default=*/false);
+  EXPECT_EQ(base::FilePath::FromASCII("2")
+                .AppendASCII("IndexedDB")
+                .Append(GetSqliteDbDirectory(bucket_locator_non_default)),
+            base::FilePath::FromASCII("2").AppendASCII("IndexedDB"));
+
+  // Third party bucket: no origin, since the base path includes the bucket ID.
+  storage::BucketLocator bucket_locator_third_party(
+      storage::BucketId::FromUnsafeValue(3),
+      blink::StorageKey::Create(
+          url::Origin::Create(GURL("https://example.com/")),
+          net::SchemefulSite(GURL("https://foo.com/")),
+          blink::mojom::AncestorChainBit::kCrossSite,
+          /*third_party_partitioning_allowed=*/true),
+      /*is_default=*/true);
+  EXPECT_EQ(base::FilePath::FromASCII("3")
+                .AppendASCII("IndexedDB")
+                .Append(GetSqliteDbDirectory(bucket_locator_third_party)),
+            base::FilePath::FromASCII("3").AppendASCII("IndexedDB"));
+}
 
 TEST(FilePathUtilTest, DatabaseNameToFileName) {
   struct {

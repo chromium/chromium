@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -49,12 +50,18 @@ class BackingStoreTransactionImpl;
 // perform the actual database operations.
 class DatabaseConnection {
  public:
-  // Opens the SQL database for the IndexedDB database with `name` at
-  // `file_path`, creating it if it doesn't exist.
+  // Opens a connection to the specified database. When `name` is present, it
+  // will create a new DB if one does not exist. When `name` is null and a DB
+  // does not exist or is not already initialized, returns an error. When `path`
+  // is empty, the database will be opened in-memory.
   static StatusOr<std::unique_ptr<DatabaseConnection>> Open(
-      const std::u16string& name,
-      const base::FilePath& file_path,
+      std::optional<std::u16string_view> name,
+      base::FilePath path,
       BackingStoreImpl& backing_store);
+
+  // Destroys the DatabaseConnection pointed to by `db`, if appropriate, i.e. if
+  // `db` is the last weak pointer.
+  static void Release(base::WeakPtr<DatabaseConnection> db);
 
   DatabaseConnection(const DatabaseConnection&) = delete;
   DatabaseConnection& operator=(const DatabaseConnection&) = delete;
@@ -213,7 +220,8 @@ class DatabaseConnection {
                                                   int64_t record_row_id);
 
  private:
-  DatabaseConnection(std::unique_ptr<sql::Database> db,
+  DatabaseConnection(base::FilePath path,
+                     std::unique_ptr<sql::Database> db,
                      std::unique_ptr<sql::MetaTable> meta_table,
                      blink::IndexedDBDatabaseMetadata metadata,
                      BackingStoreImpl& backing_store);
@@ -230,6 +238,13 @@ class DatabaseConnection {
   // when `ActiveBlobStreamer` in `active_blobs_` no longer has connections.
   void OnBlobBecameInactive(int64_t blob_number);
 
+  // The connection needs to be held open when there are active blobs or an
+  // active BackingStore::Database referencing it. This will return false if
+  // that's the case.
+  bool CanBeDestroyed() const;
+
+  // The expected path for `db_`, or empty for in-memory DBs.
+  const base::FilePath path_;
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   blink::IndexedDBDatabaseMetadata metadata_;

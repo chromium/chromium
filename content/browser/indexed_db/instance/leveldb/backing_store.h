@@ -477,6 +477,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                const std::string& message);
 
   // BackingStore:
+  bool CanOpportunisticallyClose() const override;
   void TearDown(base::WaitableEvent* signal_on_destruction) override;
   void InvalidateBlobReferences() override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
@@ -487,7 +488,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
 
-  StatusOr<std::vector<std::u16string>> GetDatabaseNames() override;
+  StatusOr<bool> DatabaseExists(std::u16string_view database_name) override;
+
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
   GetDatabaseNamesAndVersions() override;
 
@@ -560,6 +562,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // Fills in metadata for the database specified by `metadata->name` by reading
   // from disk. If no database is found, `metadata->id` will remain null.
   Status ReadMetadataForDatabaseName(DatabaseMetadata& metadata);
+
+  StatusOr<std::vector<std::u16string>> GetDatabaseNames();
 
   // LevelDBCleanupScheduler::Delegate:
   // This function updates the next run timestamp for the
