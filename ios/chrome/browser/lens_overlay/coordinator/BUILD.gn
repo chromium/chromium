@@ -150,7 +150,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:test_utils",
-    "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/lens",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",

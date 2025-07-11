@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_WEB_STATE_OBSERVER_H_
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
 
@@ -16,8 +15,7 @@ class FullscreenModel;
 @class FullscreenWebViewProxyObserver;
 
 // A WebStateObserver that updates a FullscreenModel for navigation events.
-class FullscreenWebStateObserver : public web::WebStateObserver,
-                                   public WebViewProxyTabHelper::Observer {
+class FullscreenWebStateObserver : public web::WebStateObserver {
  public:
   // Constructor for an observer that updates `controller` and `model`.
   FullscreenWebStateObserver(FullscreenController* controller,
@@ -35,11 +33,6 @@ class FullscreenWebStateObserver : public web::WebStateObserver,
                            web::NavigationContext* navigation_context) override;
   void DidStartLoading(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-
-  // WebViewProxyTabHelper::Observer:
-  void WebViewProxyChanged(WebViewProxyTabHelper* tab_helper) override;
-  void WebViewProxyTabHelperDestroyed(
-      WebViewProxyTabHelper* tab_helper) override;
 
   // The WebState being observed.
   raw_ptr<web::WebState> web_state_ = nullptr;

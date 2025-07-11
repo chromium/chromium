@@ -88,7 +88,6 @@ TEST_F(FullscreenWebStateListObserverTest, ObserveActiveWebState) {
   // FullscreenWebStateObserver for the newly activated WebState.
   auto inserted_web_state = std::make_unique<FakeWebStateWithProxy>();
   FakeWebStateWithProxy* web_state = inserted_web_state.get();
-  WebViewProxyTabHelper::CreateForWebState(web_state);
   auto passed_navigation_manager =
       std::make_unique<web::FakeNavigationManager>();
   web::FakeNavigationManager* navigation_manager =

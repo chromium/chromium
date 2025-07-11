@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -30,7 +29,6 @@ class FullscreenWebStateObserverTest : public PlatformTest {
         TestFullscreenController::FromBrowser(browser_.get());
     mediator_ = std::make_unique<TestFullscreenMediator>(
         controller, controller->getModel());
-    WebViewProxyTabHelper::CreateForWebState(&web_state_);
     observer_ = std::make_unique<FullscreenWebStateObserver>(
         controller, controller->getModel(), mediator_.get());
     // Set up a FakeNavigationManager.
