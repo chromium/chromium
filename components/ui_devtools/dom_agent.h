@@ -63,6 +63,11 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   protocol::Response dispatchKeyEvent(
       int node_id,
       std::unique_ptr<protocol::DOM::KeyEvent> event) override;
+  protocol::Response getNodeBoundsInScreen(
+      int node_id,
+      std::unique_ptr<protocol::DOM::Rect>* bounds_in_screen) override;
+  protocol::Response getDeviceScaleFactor(int node_id,
+                                          double* device_scale_factor) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;

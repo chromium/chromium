@@ -112,6 +112,15 @@ WindowElement::GetNodeWindowAndScreenBounds() const {
                         window_->GetBoundsInScreen());
 }
 
+gfx::Rect WindowElement::GetNodeBoundsInScreen() const {
+  return window_->GetBoundsInScreen();
+}
+
+double WindowElement::GetDeviceScaleFactor() const {
+  ui::Layer* layer = window_->layer();
+  return layer ? layer->device_scale_factor() : 1.0;
+}
+
 // static
 aura::Window* WindowElement::From(const UIElement* element) {
   DCHECK_EQ(UIElementType::WINDOW, element->type());

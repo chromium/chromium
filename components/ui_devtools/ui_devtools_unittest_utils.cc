@@ -60,6 +60,9 @@ std::pair<gfx::NativeWindow, gfx::Rect>
 FakeUIElement::GetNodeWindowAndScreenBounds() const {
   return {};
 }
+gfx::Rect FakeUIElement::GetNodeBoundsInScreen() const {
+  return gfx::Rect();
+}
 void FakeUIElement::AddSource(std::string path, int line) {
   UIElement::AddSource(path, line);
 }

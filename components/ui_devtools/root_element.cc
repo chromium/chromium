@@ -40,4 +40,8 @@ RootElement::GetNodeWindowAndScreenBounds() const {
   NOTREACHED();
 }
 
+gfx::Rect RootElement::GetNodeBoundsInScreen() const {
+  NOTREACHED();
+}
+
 }  // namespace ui_devtools

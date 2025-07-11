@@ -293,6 +293,23 @@ TEST_F(ViewElementTest, GetNodeWindowAndScreenBounds) {
   view()->parent()->RemoveChildView(view());
 }
 
+TEST_F(ViewElementTest, GetNodeBoundsInScreen) {
+  // For this to be meaningful, the view must be in a widget.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(params));
+  widget->Show();
+
+  widget->GetContentsView()->AddChildViewRaw(view());
+  gfx::Rect bounds(50, 60, 70, 80);
+  view()->SetBoundsRect(bounds);
+  EXPECT_EQ(view()->GetBoundsInScreen(), element()->GetNodeBoundsInScreen());
+
+  view()->parent()->RemoveChildView(view());
+}
+
 TEST_F(ViewElementTest, ColorProperty) {
   EXPECT_EQ(GetPropertyIndices(element(), "--ColorProperty").first, 0U);
   DCHECK_EQ(view()->GetColorProperty(), SK_ColorGRAY);

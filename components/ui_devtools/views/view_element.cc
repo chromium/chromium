@@ -154,6 +154,10 @@ ViewElement::GetNodeWindowAndScreenBounds() const {
                         view_->GetBoundsInScreen());
 }
 
+gfx::Rect ViewElement::GetNodeBoundsInScreen() const {
+  return view_->GetBoundsInScreen();
+}
+
 // static
 views::View* ViewElement::From(const UIElement* element) {
   DCHECK_EQ(UIElementType::VIEW, element->type());

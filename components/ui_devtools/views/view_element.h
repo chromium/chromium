@@ -40,6 +40,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  gfx::Rect GetNodeBoundsInScreen() const override;
   static views::View* From(const UIElement* element);
   void PaintRect() const override;
   bool FindMatchByElementID(const ui::ElementIdentifier& identifier) override;

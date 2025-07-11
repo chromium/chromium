@@ -84,6 +84,10 @@ WidgetElement::GetNodeWindowAndScreenBounds() const {
                         widget_->GetWindowBoundsInScreen());
 }
 
+gfx::Rect WidgetElement::GetNodeBoundsInScreen() const {
+  return widget_->GetWindowBoundsInScreen();
+}
+
 // static
 views::Widget* WidgetElement::From(const UIElement* element) {
   DCHECK_EQ(UIElementType::WIDGET, element->type());

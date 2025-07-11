@@ -159,4 +159,9 @@ bool UIElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
   return false;
 }
 
+double UIElement::GetDeviceScaleFactor() const {
+  // GetDeviceScaleFactor should only be called on window nodes.
+  NOTREACHED();
+}
+
 }  // namespace ui_devtools

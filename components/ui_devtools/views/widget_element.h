@@ -46,6 +46,7 @@ class WidgetElement : public views::WidgetRemovalsObserver,
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  gfx::Rect GetNodeBoundsInScreen() const override;
   bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
 
   static views::Widget* From(const UIElement* element);

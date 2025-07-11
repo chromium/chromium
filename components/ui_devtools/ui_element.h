@@ -121,6 +121,13 @@ class UI_DEVTOOLS_EXPORT UIElement {
   virtual std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const = 0;
 
+  // Returns the bounds of the element in screen coordinates.
+  virtual gfx::Rect GetNodeBoundsInScreen() const = 0;
+
+  // Returns the device scale factor for the backing window associated with
+  // element. Should only be called on window nodes, otherwise defaults to 1.0.
+  virtual double GetDeviceScaleFactor() const;
+
   // Returns a list of interleaved keys and values of attributes to be displayed
   // on the element in the dev tools hierarchy view.
   virtual std::vector<std::string> GetAttributes() const = 0;

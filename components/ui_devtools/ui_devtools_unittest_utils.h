@@ -71,6 +71,7 @@ class FakeUIElement : public UIElement {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  gfx::Rect GetNodeBoundsInScreen() const override;
   void AddSource(std::string path, int line);
   bool visible() const { return visible_; }
   gfx::Rect bounds() const { return bounds_; }

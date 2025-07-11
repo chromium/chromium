@@ -26,6 +26,7 @@ class UI_DEVTOOLS_EXPORT RootElement : public UIElement {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  gfx::Rect GetNodeBoundsInScreen() const override;
 };
 }  // namespace ui_devtools
 

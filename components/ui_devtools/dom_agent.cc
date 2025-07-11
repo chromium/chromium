@@ -447,4 +447,40 @@ protocol::Response DOMAgent::dispatchKeyEvent(
   return Response::Success();
 }
 
+protocol::Response DOMAgent::getNodeBoundsInScreen(
+    int node_id,
+    std::unique_ptr<protocol::DOM::Rect>* bounds_in_screen) {
+  if (node_id_to_ui_element_.count(node_id) == 0) {
+    return Response::ServerError("Element not found on node id");
+  }
+
+  UIElement* ui_element = node_id_to_ui_element_[node_id];
+  gfx::Rect bounds = ui_element->GetNodeBoundsInScreen();
+
+  *bounds_in_screen = protocol::DOM::Rect::create()
+                          .setX(bounds.x())
+                          .setY(bounds.y())
+                          .setWidth(bounds.width())
+                          .setHeight(bounds.height())
+                          .build();
+
+  return Response::Success();
+}
+
+protocol::Response DOMAgent::getDeviceScaleFactor(int node_id,
+                                                  double* device_scale_factor) {
+  if (node_id_to_ui_element_.count(node_id) == 0) {
+    return Response::ServerError("Element not found on node id");
+  }
+
+  UIElement* ui_element = node_id_to_ui_element_[node_id];
+  if (ui_element->type() != UIElementType::WINDOW) {
+    return Response::ServerError(
+        "Node ID does not correspond to a window element");
+  }
+
+  *device_scale_factor = ui_element->GetDeviceScaleFactor();
+  return Response::Success();
+}
+
 }  // namespace ui_devtools
