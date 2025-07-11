@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
@@ -400,7 +401,7 @@ struct Spec {
   };
   struct ServiceStateChanges {
     bool set_restored;
-    std::optional<int> select_dse_prepopulate_id;
+    std::optional<std::variant<int, std::string>> select_dse;
     std::optional<ChoiceMadeLocation> choice_location;
   };
   struct ExpectationsWithoutServices {
@@ -462,7 +463,7 @@ class SearchEngineChoiceEligibilityOnRestoreTest
   }
 
   void InitServicesAndUpdateState(Spec::ServiceStateChanges state_changes) {
-    ASSERT_EQ(state_changes.select_dse_prepopulate_id.has_value(),
+    ASSERT_EQ(state_changes.select_dse.has_value(),
               state_changes.choice_location.has_value());
 
     InitService({
@@ -472,20 +473,22 @@ class SearchEngineChoiceEligibilityOnRestoreTest
     });
 
     // Process the requested DSE selection & choice location.
-    if (state_changes.select_dse_prepopulate_id.has_value()) {
+    if (state_changes.select_dse.has_value()) {
       TemplateURL* t_url;
-      if (state_changes.select_dse_prepopulate_id.value() == 0) {
+      if (std::holds_alternative<std::string>(
+              state_changes.select_dse.value())) {
         TemplateURLData custom_turl_data;
-        custom_turl_data.SetURL("https://www.example.com/?q={searchTerms}");
+        custom_turl_data.SetURL(
+            std::get<std::string>(state_changes.select_dse.value()));
         t_url = template_url_service().Add(
             std::make_unique<TemplateURL>(custom_turl_data));
       } else {
+        int select_id = std::get<int>(state_changes.select_dse.value());
         auto t_urls = template_url_service().GetTemplateURLs();
         if (auto engine_it = std::ranges::find_if(
                 t_urls,
                 [&](const auto& engine) {
-                  return engine->prepopulate_id() ==
-                         *state_changes.select_dse_prepopulate_id;
+                  return engine->prepopulate_id() == select_id;
                 });
             engine_it != t_urls.cend()) {
           t_url = *engine_it;
@@ -561,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(
                               },
                           .update_service_state =
                               Spec::ServiceStateChanges{
-                                  .select_dse_prepopulate_id =
+                                  .select_dse =
                                       TemplateURLPrepopulateData::google.id,
                                   .choice_location =
                                       ChoiceMadeLocation::kChoiceScreen,
@@ -613,7 +616,7 @@ INSTANTIATE_TEST_SUITE_P(
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{
-                                 .select_dse_prepopulate_id =
+                                 .select_dse =
                                      TemplateURLPrepopulateData::google.id,
                                  .choice_location =
                                      ChoiceMadeLocation::kChoiceScreen,
@@ -665,8 +668,7 @@ INSTANTIATE_TEST_SUITE_P(
                               },
                           .update_service_state =
                               Spec::ServiceStateChanges{
-
-                                  .select_dse_prepopulate_id =
+                                  .select_dse =
                                       TemplateURLPrepopulateData::bing.id,
                                   .choice_location =
                                       ChoiceMadeLocation::kChoiceScreen,
@@ -718,7 +720,7 @@ INSTANTIATE_TEST_SUITE_P(
                       // (completed, choice valid).
                       {.update_service_state =
                            Spec::ServiceStateChanges{
-                               .select_dse_prepopulate_id =
+                               .select_dse =
                                    TemplateURLPrepopulateData::duckduckgo.id,
                                .choice_location =
                                    ChoiceMadeLocation::kChoiceScreen,
@@ -757,7 +759,7 @@ INSTANTIATE_TEST_SUITE_P(
                          .update_service_state =
                              Spec::ServiceStateChanges{
 
-                                 .select_dse_prepopulate_id =
+                                 .select_dse =
                                      TemplateURLPrepopulateData::bing.id,
                                  .choice_location =
                                      ChoiceMadeLocation::kChoiceScreen,
@@ -811,8 +813,7 @@ INSTANTIATE_TEST_SUITE_P(
              .restore_feature_enabled = true,
              .runs =
                  {
-                     // Sets up Chrome as running in France, and having
-                     // selected
+                     // Sets up Chrome as running in France, and having selected
                      // a custom search engine from the settings.
                      {
                          .update_device_state =
@@ -821,7 +822,8 @@ INSTANTIATE_TEST_SUITE_P(
                              },
                          .update_service_state =
                              Spec::ServiceStateChanges{
-                                 .select_dse_prepopulate_id = 0,
+                                 .select_dse =
+                                     "https://www.example.com/?q={searchTerms}",
                                  .choice_location =
                                      ChoiceMadeLocation::kSearchEngineSettings,
 
@@ -838,11 +840,9 @@ INSTANTIATE_TEST_SUITE_P(
                              },
                      },
                      // Simulates the device being restored, and its detection
-                     // in
-                     // this run. The old selection is marked invalid, but
-                     // since
-                     // it's a custom search engine, we can't reprompt over
-                     // it.
+                     // in this run. The old selection is marked invalid, but
+                     // since it's a custom search engine, we can't reprompt
+                     // over it.
                      {
                          .check_before_services =
                              Spec::ExpectationsWithoutServices{
@@ -872,17 +872,15 @@ INSTANTIATE_TEST_SUITE_P(
                      // Simulates the DSE being reset to Google outside of a
                      // user interface Not really sure how exactly that can
                      // happen, but we also use this made up flow to
-                     // approximate
-                     // things like a policy being lifted for example. Not
-                     // having a custom DSE active makes the profile
-                     // eligible
-                     // for the choice screen. The non-UI DSE change here
-                     // should
-                     // not affect the post-restore invalidity flag.
+                     // approximate things like a policy being lifted for
+                     // example. Not having a custom DSE active makes the
+                     // profile eligible for the choice screen. The non-UI DSE
+                     // change here should not affect the post-restore
+                     // invalidity flag.
                      {
                          .update_service_state =
                              Spec::ServiceStateChanges{
-                                 .select_dse_prepopulate_id =
+                                 .select_dse =
                                      TemplateURLPrepopulateData::google.id,
                                  .choice_location = ChoiceMadeLocation::kOther,
                              },
@@ -903,14 +901,134 @@ INSTANTIATE_TEST_SUITE_P(
                                  .is_choice_invalid = true,
                              },
                      },
-                     // Select an engine on the choice screen, it
-                     // restores the selection state to the usual
-                     // (completed,
-                     // choice valid).
+                     // Select an engine on the choice screen, it restores the
+                     // selection state to the usual (completed, choice valid).
                      {
                          .update_service_state =
                              Spec::ServiceStateChanges{
-                                 .select_dse_prepopulate_id =
+                                 .select_dse =
+                                     TemplateURLPrepopulateData::google.id,
+                                 .choice_location =
+                                     ChoiceMadeLocation::kChoiceScreen,
+                             },
+                         .expect_with_services =
+                             Spec::ExpectationsWithServices{
+                                 .static_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kAlreadyCompleted,
+                                 .dynamic_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kAlreadyCompleted,
+                                 .current_dse_prepopulate_id =
+                                     TemplateURLPrepopulateData::google.id,
+                             },
+                         .check_after_services =
+                             Spec::ExpectationsWithoutServices{
+                                 .is_choice_completed = true,
+                                 .is_choice_invalid = false,
+                             },
+                     },
+                 },
+         },
+         Spec{
+             .test_name = "customGoogle",
+             .restore_feature_enabled = true,
+             .runs =
+                 {
+                     // Sets up Chrome as running in France, and having
+                     // selected a custom search engine from the settings.
+                     {
+                         .update_device_state =
+                             Spec::DeviceStateChanges{
+                                 .country_id = CountryId("FR"),
+                             },
+                         .update_service_state =
+                             Spec::ServiceStateChanges{
+                                 .select_dse =
+                                     "https://google.fr/maps?q={searchTerms}",
+                                 .choice_location =
+                                     ChoiceMadeLocation::kSearchEngineSettings,
+
+                             },
+                         .expect_with_services =
+                             Spec::ExpectationsWithServices{
+                                 .static_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kAlreadyCompleted,
+                                 .dynamic_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kAlreadyCompleted,
+                                 .current_dse_prepopulate_id = 0,
+                             },
+                     },
+                     // Simulates the device being restored, and its detection
+                     // in this run. The old selection is marked invalid, but
+                     // since it's a custom search engine, we can't reprompt
+                     // over it.
+                     {
+                         .check_before_services =
+                             Spec::ExpectationsWithoutServices{
+                                 .is_choice_completed = true,
+                                 .is_choice_invalid = false,
+                             },
+                         .update_service_state =
+                             Spec::ServiceStateChanges{
+                                 .set_restored = true,
+                             },
+                         .expect_with_services =
+                             Spec::ExpectationsWithServices{
+                                 .static_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kEligible,
+                                 .dynamic_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kHasCustomSearchEngine,
+                                 .current_dse_prepopulate_id = 0,
+                             },
+                         .check_after_services =
+                             Spec::ExpectationsWithoutServices{
+                                 .is_choice_completed = false,
+                                 .is_choice_invalid = true,
+                             },
+                     },
+                     // Simulates the DSE being reset to Google outside of a
+                     // user interface Not really sure how exactly that can
+                     // happen, but we also use this made up flow to
+                     // approximate things like a policy being lifted for
+                     // example. Not having a custom DSE active makes the
+                     // profile eligible for the choice screen. The non-UI DSE
+                     // change here should not affect the post-restore
+                     // invalidity flag.
+                     {
+                         .update_service_state =
+                             Spec::ServiceStateChanges{
+                                 .select_dse =
+                                     TemplateURLPrepopulateData::google.id,
+                                 .choice_location = ChoiceMadeLocation::kOther,
+                             },
+                         .expect_with_services =
+                             Spec::ExpectationsWithServices{
+                                 .static_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kEligible,
+                                 .dynamic_condition =
+                                     SearchEngineChoiceScreenConditions::
+                                         kEligible,
+                                 .current_dse_prepopulate_id =
+                                     TemplateURLPrepopulateData::google.id,
+                             },
+                         .check_after_services =
+                             Spec::ExpectationsWithoutServices{
+                                 .is_choice_completed = false,
+                                 .is_choice_invalid = true,
+                             },
+                     },
+                     // Select an engine on the choice screen, it restores the
+                     // selection state to the usual (completed, choice valid).
+                     {
+                         .update_service_state =
+                             Spec::ServiceStateChanges{
+                                 .select_dse =
                                      TemplateURLPrepopulateData::google.id,
                                  .choice_location =
                                      ChoiceMadeLocation::kChoiceScreen,

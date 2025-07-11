@@ -559,10 +559,27 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 
+  ASSERT_TRUE(template_url_service->GetDefaultSearchProvider());
+
   std::unique_ptr<TemplateURLData> extension =
       GenerateDummyTemplateURLData("extension");
   template_url_service->ApplyDefaultSearchChangeForTesting(
       extension.get(), DefaultSearchManager::FROM_EXTENSION);
+
+  // DSE-controlling extensions are enabled only on Mac & Win
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/429600559): Documenting a bug, this is not the right way to
+  // set an extension-provided DSE. It needs to be registered in prefs first.
+  EXPECT_TRUE(!template_url_service->GetDefaultSearchProvider() ||
+              template_url_service->GetDefaultSearchProvider()->keyword() ==
+                  u"extension");
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  // Using a dedicated histogram tester for more more granular error reporting
+  // in the checks below.
+  // TODO(crbug.com/429600559): Revert to the usual one if we can make this
+  // extension configuration more reliable.
+  base::HistogramTester scoped_histogram_tester;
 
   // Navigate to a URL to display the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -573,7 +590,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_FALSE(
       search_engine_choice_dialog_service->IsShowingDialog(*browser()));
 
-  CheckNavigationConditionRecorded(
+  scoped_histogram_tester.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::kExtensionControlled,
       1);
 }
@@ -780,10 +798,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           guest_session->profile()));
 
-  // Complete the choice for the first guest profile and choose to save the
+  // Complete the choice for the first guest profile and choose to NOT save the
   // choice between guest sessions.
   first_service->NotifyChoiceMade(
-      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/false,
+      TemplateURLPrepopulateData::bing.id,
+      /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   EXPECT_FALSE(first_service->IsShowingDialog(*guest_session));
   EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
@@ -791,6 +810,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                 ->data()
                 .prepopulate_id,
             TemplateURLPrepopulateData::bing.id);
+  EXPECT_TRUE(guest_session->profile()->GetPrefs()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_TRUE(guest_session->profile()->GetPrefs()->HasPrefPath(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName));
 
   CloseBrowserSynchronously(guest_session);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
@@ -799,13 +822,17 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        SearchEngineChoiceIsShownOnEachGuestSession) {
   Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  EXPECT_FALSE(guest_session->profile()->GetPrefs()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(guest_session->profile()->GetPrefs()->HasPrefPath(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName));
+
   auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           guest_session->profile()));
 
-  // The search engine choice dialog doesn't get displayed for the second guest
-  // profile and the previously chosen default search engine is used.
-  EXPECT_TRUE(second_service->IsShowingDialog(*guest_session));
+  // On this new guest session the DSE effective is Google, until a choice is
+  // made.
   EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId));
   EXPECT_EQ(TemplateURLServiceFactory::GetForProfile(guest_session->profile())
@@ -813,6 +840,11 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                 ->data()
                 .prepopulate_id,
             TemplateURLPrepopulateData::google.id);
+
+  // The choice was not persisted across Guest sessions, so the
+  // the search engine choice dialog gets displayed again.
+  ASSERT_TRUE(second_service);
+  EXPECT_TRUE(second_service->IsShowingDialog(*guest_session));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
@@ -842,6 +874,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }
 
+// TODO(crbug.com/431133510): Flakiness of this test is under observation. It
+// seems to be affected by dysfunctions in Guest profile cleanup between the
+// PRE_ and normal test phases. If it does get too flaky, please only disable
+// it.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
   Browser* guest_session = CreateGuestBrowserAndLoadNTP();
@@ -888,13 +924,18 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
 struct RepromptTestParam {
   const std::string test_suffix;
+  const bool expect_prompt;
   const bool select_google_in_pre = true;
 };
 
 const RepromptTestParam kTestParams[] = {
-    {.test_suffix = "AllProfiles"},
-    {.test_suffix = "Skip3p", .select_google_in_pre = false},
-    {.test_suffix = "Skip3pButPickGoogle", .select_google_in_pre = true},
+    {.test_suffix = "AllProfiles", .expect_prompt = true},
+    {.test_suffix = "Skip3p",
+     .expect_prompt = false,
+     .select_google_in_pre = false},
+    {.test_suffix = "Skip3pButPickGoogle",
+     .expect_prompt = true,
+     .select_google_in_pre = true},
 };
 
 class SearchEngineRepromptBrowserTest
@@ -920,6 +961,7 @@ class SearchEngineRepromptBrowserTest
         /* disabled_features= */ {});
   }
 
+  bool expect_prompt() const { return GetParam().expect_prompt; }
   bool select_google_in_pre() const { return GetParam().select_google_in_pre; }
 
  private:
@@ -979,10 +1021,10 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  if (!select_google_in_pre()) {
-    EXPECT_FALSE(service->IsShowingDialog(*browser()));
-  } else {
+  if (expect_prompt()) {
     EXPECT_TRUE(service->IsShowingDialog(*browser()));
+  } else {
+    EXPECT_FALSE(service->IsShowingDialog(*browser()));
   }
 }
 
