@@ -120,8 +120,6 @@ def _replace_icons(paths, dist, config):
                                      'Assets_{}.car'.format(dist.channel))
     new_app_icon = os.path.join(packaging_dir,
                                 'app_{}.icns'.format(dist.channel))
-    new_document_icon = os.path.join(packaging_dir,
-                                     'document_{}.icns'.format(dist.channel))
 
     commands.copy_files(new_asset_catalog,
                         os.path.join(resources_dir, 'Assets.car'))
