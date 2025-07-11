@@ -10,7 +10,13 @@ crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.htm
 crbug.com/414403946 external/wpt/ai/language_detection/detector-locale.https.window.html [ Skip ]
 
 # These tests fail a 'downloadable' availability precondition, per sideloading.
-crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.js [ Failure Pass ]
-crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.js [ Failure Pass ]
-crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.js [ Failure Pass ]
-crbug.com/390246212 wpt_internal/ai/language-model-api-create-user-activation.https.window.js [ Failure Pass ]
+crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 wpt_internal/ai/language-model-api-create-user-activation.https.window.html [ Failure Pass ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`
+crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html  [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html  [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html  [ Failure Pass ]
+crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
