@@ -22,14 +22,6 @@ config("nearby_include_config") {
   ]
 }
 
-# TODO(crbug.com/362502228): Remove upon completion of BleL2capServerSocket.
-config("unused_private_field_warning") {
-  cflags = []
-  if (is_clang) {
-    cflags += [ "-Wno-unused-private-field" ]
-  }
-}
-
 config("nearby_defines") {
   defines = [ "NEARBY_CHROMIUM=1" ]
 }
@@ -1025,9 +1017,6 @@ source_set("platform_public_comm") {
   public_configs = [
     ":nearby_include_config",
     ":nearby_defines",
-
-    # TODO(crbug.com/362502228): Remove upon completion of BleL2capServerSocket.
-    ":unused_private_field_warning",
   ]
   sources = [
     "src/internal/platform/awdl.cc",
