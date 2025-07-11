@@ -1134,6 +1134,7 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(
                 allLoyaltyCardsScreenTitle.getText().toString(),
                 is(getString(R.string.autofill_bottom_sheet_all_loyalty_cards_screen_title)));
+        assertTrue(allLoyaltyCardsScreenTitle.isFocusable());
 
         // Verify that 1 loyalty card is displayed.
         RecyclerView allLoyaltyCardsContainer =
