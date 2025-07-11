@@ -31,6 +31,12 @@ base::FilePath GetCrowdStrikeZtaFilePath() {
   return base::FilePath(kZtaFilePath);
 }
 
+base::FilePath GetCrowdStrikeAgentInstallPath() {
+  static constexpr base::FilePath::CharType kCrowdstrikeAgentPath[] =
+      FILE_PATH_LITERAL("/Applications/Falcon.app");
+  return base::FilePath(kCrowdstrikeAgentPath);
+}
+
 std::string GetDeviceModel() {
   return base::SysInfo::HardwareModelName();
 }

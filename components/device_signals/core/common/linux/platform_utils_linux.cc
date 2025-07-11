@@ -57,6 +57,12 @@ std::string GetSerialNumber() {
   return ReadFile("/sys/class/dmi/id/product_serial");
 }
 
+base::FilePath GetCrowdStrikeAgentInstallPath() {
+  static constexpr base::FilePath::CharType kCrowdstrikeAgentPath[] =
+      FILE_PATH_LITERAL("/opt/CrowdStrike/");
+  return base::FilePath(kCrowdstrikeAgentPath);
+}
+
 // Implements the logic from the native client setup script. It reads the
 // setting value straight from gsettings but picks the schema relevant to the
 // currently active desktop environment.
