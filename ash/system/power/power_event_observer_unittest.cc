@@ -278,7 +278,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
 }
 
 TEST_F(PowerEventObserverTest,
-       DISABLED_DelaySuspendForCompositing_PendingDisplayRemoved) {
+       DelaySuspendForCompositing_PendingDisplayRemoved) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
