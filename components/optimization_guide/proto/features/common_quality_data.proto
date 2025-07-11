@@ -627,7 +627,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 8
+// Next ID: 9
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
@@ -647,6 +647,12 @@ message FrameData {
   // Information about paid content in the frame.  Only set
   // if paid content was checked.
   PaidContentMetadata paid_content_metadata = 6 [features = { field_presence: EXPLICIT }];
+
+  // Information about the media in the frame. This information is only added
+  // for the frame which controls the media session associated with this page.
+  // Only one frame can control the media session at a time via the media
+  // session web API.
+  MediaData media_data = 8 [features = { field_presence: EXPLICIT }];
 
   reserved 7;
 }
@@ -694,6 +700,48 @@ message DocumentIdentifier {
 message PaidContentMetadata {
   // Whether the frame contains paid content.
   bool contains_paid_content = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// The media data for a frame in the web page. If the frame has multiple media
+// elements, only one of them is controlled by the media session.
+// Next ID: 9
+message MediaData {
+  // Type of the media in the frame.
+  MediaDataType media_data_type = 1 [features = { field_presence: EXPLICIT }];
+
+  // A list of text segments which can be combined to represent the
+  // transcriptions of the media content that have been heard by the user.
+  // The transcripts are in ascending order by start timestamps.
+  repeated MediaTranscript transcripts = 2;
+
+  // The overall duration of the media.
+  int64 duration_milliseconds = 3 [features = { field_presence: EXPLICIT }];
+
+  // The current timestamp position of the media.
+  int64 current_position_milliseconds = 4 [features = { field_presence: EXPLICIT }];
+
+  // Whether the media is currently playing or paused.
+  bool is_playing = 5 [features = { field_presence: EXPLICIT }];
+
+  // The title of the media. Must be non-empty and set by the website or default
+  // to the web page title.
+  string title = 6 [features = { field_presence: EXPLICIT }];
+
+  // The artist of the media. May be empty.
+  string artist = 7 [features = { field_presence: EXPLICIT }];
+
+  // The album of the media. May be empty.
+  string album = 8 [features = { field_presence: EXPLICIT }];
+}
+
+// A segment of the media transcript.
+// Next ID: 3
+message MediaTranscript {
+  // A segment of text for the media transcript.
+  string text = 1 [features = { field_presence: EXPLICIT }];
+
+  // Non-negative time since the start of the media.
+  int64 start_timestamp_milliseconds = 2 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRowData {
@@ -1907,6 +1955,16 @@ enum FormControlType {
   FORM_CONTROL_TYPE_INPUT_WEEK = 32;
 
   FORM_CONTROL_TYPE_OUTPUT = 33;
+}
+
+// Indicates the type of media in the media data.
+// Next ID: 3
+enum MediaDataType {
+  MEDIA_DATA_TYPE_UNKNOWN = 0;
+
+  MEDIA_DATA_TYPE_VIDEO = 1;
+
+  MEDIA_DATA_TYPE_AUDIO = 2;
 }
 
 enum TableRowType {
