@@ -283,7 +283,7 @@ class AdTrackerTest : public testing::Test {
                          bool top_level = true) {
     auto* execution_context = GetExecutionContext();
     ad_tracker_->WillExecuteScript(
-        execution_context, execution_context->GetIsolate()->GetCurrentContext(),
+        execution_context, v8::Isolate::GetCurrent()->GetCurrentContext(),
         String(script_url), script_id, top_level);
   }
 

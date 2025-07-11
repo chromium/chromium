@@ -43,7 +43,7 @@ namespace web_core_test_support {
 namespace {
 
 v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
@@ -60,7 +60,7 @@ v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
 }  // namespace
 
 void InjectInternalsObject(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   ScriptState::Scope scope(script_state);
   v8::Local<v8::Value> internals = CreateInternalsObject(context);
@@ -80,7 +80,7 @@ void ResetInternalsObject(v8::Local<v8::Context> context) {
   if (context.IsEmpty())
     return;
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   ScriptState::Scope scope(script_state);
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();

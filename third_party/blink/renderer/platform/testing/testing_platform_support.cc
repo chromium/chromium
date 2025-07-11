@@ -185,7 +185,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
     };
 
     return value.Visit(Visitor{.converter = this,
-                               .isolate = context->GetIsolate(),
+                               .isolate = v8::Isolate::GetCurrent(),
                                .creation_context = context->Global()});
   }
 
@@ -195,7 +195,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
     CHECK(!val.IsEmpty());
 
     v8::Context::Scope context_scope(context);
-    auto* isolate = context->GetIsolate();
+    auto* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope handle_scope(isolate);
 
     if (val->IsBoolean()) {

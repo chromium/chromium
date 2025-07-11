@@ -22,7 +22,7 @@ namespace blink {
 namespace {
 
 String ToString(v8::Local<v8::Context> context, const ScriptValue& value) {
-  return ToCoreString(context->GetIsolate(),
+  return ToCoreString(v8::Isolate::GetCurrent(),
                       value.V8Value()->ToString(context).ToLocalChecked());
 }
 

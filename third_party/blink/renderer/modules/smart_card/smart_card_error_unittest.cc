@@ -60,7 +60,7 @@ TEST(SmartCardError, RejectWithoutScriptStateScope) {
   {
     ScriptState::Scope script_state_scope(script_state);
     script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-        script_state->GetContext()->GetIsolate());
+        script_state->GetIsolate());
   }
 
   EXPECT_TRUE(rejected);

@@ -150,7 +150,7 @@ class V8BinderContext {
                              v8::Local<v8::Object> object,
                              const char* key,
                              v8::Local<v8::Value>* value) {
-    v8::Isolate* isolate = context->GetIsolate();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
     return object
         ->GetPrivate(context,
                      v8::Private::ForApi(isolate, CreateV8String(isolate, key)))

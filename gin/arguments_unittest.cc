@@ -123,11 +123,11 @@ TEST_F(ArgumentsTest, TestGetAll) {
   v8::Local<v8::Object> object =
       object_template->NewInstance(context).ToLocalChecked();
 
-  auto do_check = [object, context](V8List& args, std::string_view key) {
+  auto do_check = [object, context, isolate](V8List& args,
+                                             std::string_view key) {
     v8::Local<v8::Value> val;
     ASSERT_TRUE(
-        object->Get(context, gin::StringToSymbol(context->GetIsolate(), key))
-            .ToLocal(&val));
+        object->Get(context, gin::StringToSymbol(isolate, key)).ToLocal(&val));
     ASSERT_TRUE(val->IsFunction());
     val.As<v8::Function>()
         ->Call(context, object, static_cast<int>(args.size()), args.data())

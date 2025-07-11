@@ -955,8 +955,8 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspended) {
   v8::Local<v8::Function> function =
       v8::Function::New(context, callback).ToLocalChecked();
   main_frame->RequestExecuteV8Function(context, function,
-                                       v8::Undefined(context->GetIsolate()), 0,
-                                       nullptr, callback_helper.Callback());
+                                       v8::Undefined(v8::Isolate::GetCurrent()),
+                                       0, nullptr, callback_helper.Callback());
   RunPendingTasks();
   EXPECT_FALSE(callback_helper.DidComplete());
 
@@ -4819,7 +4819,7 @@ class ContextLifetimeTestWebFrameClient
                  v8::Local<v8::Context> context,
                  int32_t world_id)
         : frame(frame),
-          context(context->GetIsolate(), context),
+          context(v8::Isolate::GetCurrent(), context),
           world_id(world_id) {}
 
     ~Notification() { context.Reset(); }

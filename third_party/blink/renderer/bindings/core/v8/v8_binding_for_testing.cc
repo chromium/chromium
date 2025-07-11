@@ -19,11 +19,12 @@ V8TestingScope::V8TestingScope(const KURL& url)
 
 V8TestingScope::V8TestingScope(std::unique_ptr<DummyPageHolder> holder)
     : holder_(std::move(holder)),
-      handle_scope_(GetIsolate()),
+      isolate_(GetScriptState()->GetIsolate()),
+      handle_scope_(isolate_),
       context_(GetScriptState()->GetContext()),
       context_scope_(GetContext()),
-      try_catch_(GetIsolate()),
-      microtasks_scope_(GetIsolate(),
+      try_catch_(isolate_),
+      microtasks_scope_(isolate_,
                         ToMicrotaskQueue(GetScriptState()),
                         v8::MicrotasksScope::kDoNotRunMicrotasks) {
   GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -38,7 +39,7 @@ ExecutionContext* V8TestingScope::GetExecutionContext() const {
 }
 
 v8::Isolate* V8TestingScope::GetIsolate() const {
-  return GetScriptState()->GetIsolate();
+  return isolate_;
 }
 
 v8::Local<v8::Context> V8TestingScope::GetContext() const {
@@ -76,8 +77,7 @@ V8TestingScope::~V8TestingScope() {
 }
 
 void V8TestingScope::PerformMicrotaskCheckpoint() {
-  GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
-      GetContext()->GetIsolate());
+  GetContext()->GetMicrotaskQueue()->PerformCheckpoint(isolate_);
 }
 
 }  // namespace blink

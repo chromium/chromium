@@ -620,7 +620,7 @@ MediaCapabilitiesInfo* DecodingInfo(
   CHECK(!tester.IsRejected()) << " Cant get info from rejected promise.";
 
   return NativeValueTraits<MediaCapabilitiesInfo>::NativeValue(
-      context->GetIsolate(), tester.Value().V8Value(),
+      v8::Isolate::GetCurrent(), tester.Value().V8Value(),
       context->GetExceptionState());
 }
 
@@ -638,7 +638,7 @@ MediaCapabilitiesInfo* EncodingInfo(
   CHECK(!tester.IsRejected()) << " Cant get info from rejected promise.";
 
   return NativeValueTraits<MediaCapabilitiesInfo>::NativeValue(
-      context->GetIsolate(), tester.Value().V8Value(),
+      v8::Isolate::GetCurrent(), tester.Value().V8Value(),
       context->GetExceptionState());
 }
 }  // namespace
