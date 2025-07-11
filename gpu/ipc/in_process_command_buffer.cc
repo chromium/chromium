@@ -212,13 +212,12 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   if (result == gpu::ContextResult::kSuccess) {
     capabilities_ = capabilities;
     gl_capabilities_ = gl_capabilities;
-    shared_image_interface_ =
-        base::MakeRefCounted<SharedImageInterfaceInProcess>(
-            task_sequence_, task_executor_->gpu_preferences(),
-            context_group_->feature_info()->workarounds(),
-            task_executor_->gpu_feature_info(), context_state_.get(),
-            task_executor_->shared_image_manager(),
-            /*is_for_display_compositor=*/false);
+    shared_image_interface_ = SharedImageInterfaceInProcess::Create(
+        task_sequence_, task_executor_->gpu_preferences(),
+        context_group_->feature_info()->workarounds(),
+        task_executor_->gpu_feature_info(), context_state_.get(),
+        task_executor_->shared_image_manager(),
+        /*is_for_display_compositor=*/false, task_executor_->GetTaskRunner());
   }
 
   return result;

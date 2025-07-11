@@ -8,7 +8,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -57,19 +59,8 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
   SetUpOnGpuParams& operator=(const SetUpOnGpuParams& other) = delete;
 };
 
-SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
-    SingleTaskSequence* task_sequence,
-    DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller)
-    : SharedImageInterfaceInProcess(
-          task_sequence,
-          display_controller->gpu_preferences(),
-          display_controller->gpu_driver_bug_workarounds(),
-          display_controller->gpu_feature_info(),
-          display_controller->shared_context_state(),
-          display_controller->shared_image_manager(),
-          /*is_for_display_compositor=*/true) {}
-
-SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
+scoped_refptr<SharedImageInterfaceInProcess>
+SharedImageInterfaceInProcess::Create(
     SingleTaskSequence* task_sequence,
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& gpu_workarounds,
@@ -77,26 +68,39 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     gpu::SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
     bool is_for_display_compositor,
-    OwnerThread owner_thread)
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+  // ensure Initialize() is called before pointer returned to caller
+  auto sii = base::WrapRefCounted(new SharedImageInterfaceInProcess{
+      task_sequence, shared_image_manager, std::move(gpu_task_runner)});
+  sii->Initialize(std::make_unique<SetUpOnGpuParams>(
+      gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
+      shared_image_manager, is_for_display_compositor));
+  return sii;
+}
+
+SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
+    SingleTaskSequence* task_sequence,
+    SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
     : task_sequence_(task_sequence),
       command_buffer_id_(
           DisplayCompositorMemoryAndTaskControllerOnGpu::NextCommandBufferId()),
-      shared_image_manager_(shared_image_manager),
-      owner_thread_(owner_thread) {
+      gpu_task_runner_(std::move(gpu_task_runner)),
+      shared_image_manager_(shared_image_manager) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
+}
 
-  auto params = std::make_unique<SetUpOnGpuParams>(
-      gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
-      shared_image_manager, is_for_display_compositor);
-  if (owner_thread_ == OwnerThread::kCompositor) {
-    task_sequence_->ScheduleTask(
-        base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu,
-                       base::Unretained(this), std::move(params)),
-
-        /*sync_token_fences=*/{}, SyncToken());
-  } else {
-    CHECK_EQ(owner_thread_, OwnerThread::kGpu);
+void SharedImageInterfaceInProcess::Initialize(
+    std::unique_ptr<SetUpOnGpuParams> params) {
+  if (gpu_task_runner_->BelongsToCurrentThread()) {
     SetUpOnGpu(std::move(params));
+  } else {
+    // Can't safely be called in constructor, because receiver must be
+    // retained, but constructor has zero ref-count
+    task_sequence_->ScheduleTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu, this,
+                       std::move(params)),
+        /*sync_token_fences=*/{}, SyncToken());
   }
 }
 
@@ -105,14 +109,15 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  if (owner_thread_ == OwnerThread::kCompositor) {
+  if (gpu_task_runner_->BelongsToCurrentThread()) {
+    DestroyOnGpu(&completion);
+  } else {
+    // Unretained because called in destructor, where ref-count is always zero;
+    // safe because destructor is blocked on `completion` until async task runs
     task_sequence_->ScheduleTask(
         base::BindOnce(&SharedImageInterfaceInProcess::DestroyOnGpu,
                        base::Unretained(this), &completion),
         /*sync_token_fences=*/{}, SyncToken());
-  } else {
-    CHECK_EQ(owner_thread_, OwnerThread::kGpu);
-    DestroyOnGpu(&completion);
   }
 
   completion.Wait();
@@ -128,8 +133,7 @@ SharedImageInterfaceInProcess::GetCapabilities() {
     shared_image_capabilities_ = std::make_unique<SharedImageCapabilities>();
     task_sequence_->ScheduleTask(
         base::BindOnce(&SharedImageInterfaceInProcess::GetCapabilitiesOnGpu,
-                       base::Unretained(this), &completion,
-                       shared_image_capabilities_.get()),
+                       this, &completion, shared_image_capabilities_.get()),
         /*sync_token_fences=*/{}, SyncToken());
     completion.Wait();
   }
@@ -230,13 +234,11 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   {
     base::AutoLock lock(lock_);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // SharedImageInterfaceInProcess synchronizes with the GPU thread at
-    // destruction time, cancelling tasks, before |this| is destroyed.
+    // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(
-            &SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread,
-            base::Unretained(this), mailbox, si_info, surface_handle),
+            &SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread, this,
+            mailbox, si_info, surface_handle),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
   return base::MakeRefCounted<ClientSharedImage>(
@@ -274,15 +276,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   {
     base::AutoLock lock(lock_);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
-    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
-                                       CreateSharedImageWithDataOnGpuThread,
-                                   base::Unretained(this), mailbox, si_info,
-                                   std::move(pixel_data_copy)),
-                    /*sync_token_fences=*/{},
-                    MakeSyncToken(next_fence_sync_release_++));
+    // the release ids as seen by the service.
+    ScheduleGpuTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::
+                           CreateSharedImageWithDataOnGpuThread,
+                       this, mailbox, si_info, std::move(pixel_data_copy)),
+        /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info, GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
@@ -324,14 +323,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   {
     base::AutoLock lock(lock_);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
+    // the release ids as seen by the service.
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcess::
                            CreateSharedImageWithBufferUsageOnGpuThread,
-                       base::Unretained(this), mailbox, si_info_copy,
-                       surface_handle, buffer_usage),
+                       this, mailbox, si_info_copy, surface_handle,
+                       buffer_usage),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
 
@@ -394,8 +391,8 @@ SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfo(
   task_sequence_->ScheduleTask(
       base::BindOnce(&SharedImageInterfaceInProcess::
                          GetGpuMemoryBufferHandleInfoOnGpuThread,
-                     base::Unretained(this), mailbox, &handle, &format, &size,
-                     &buffer_usage, &completion),
+                     this, mailbox, &handle, &format, &size, &buffer_usage,
+                     &completion),
       /*sync_token_fences=*/{}, SyncToken());
   completion.Wait();
   return GpuMemoryBufferHandleInfo(std::move(handle), format, size,
@@ -444,14 +441,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     base::AutoLock lock(lock_);
     SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
-    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox,
-                                   si_info_copy, std::move(buffer_handle)),
-                    /*sync_token_fences=*/{}, sync_token);
+    // the release ids as seen by the service.
+    ScheduleGpuTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::
+                           CreateSharedImageWithBufferOnGpuThread,
+                       this, mailbox, si_info_copy, std::move(buffer_handle)),
+        /*sync_token_fences=*/{}, sync_token);
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -478,14 +473,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     base::AutoLock lock(lock_);
     SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
-    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox, si_info,
-                                   std::move(buffer_handle)),
-                    /*sync_token_fences=*/{}, sync_token);
+    // the release ids as seen by the service.
+    ScheduleGpuTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::
+                           CreateSharedImageWithBufferOnGpuThread,
+                       this, mailbox, si_info, std::move(buffer_handle)),
+        /*sync_token_fences=*/{}, sync_token);
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -513,13 +506,10 @@ SharedImageInterfaceInProcess::CreateSharedImageForSoftwareCompositor(
     base::AutoLock lock(lock_);
     SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     // Note: we enqueue the task under the lock to guarantee monotonicity of
-    // the release ids as seen by the service. Unretained is safe because
-    // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-    // time, cancelling tasks, before |this| is destroyed.
+    // the release ids as seen by the service.
     ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
                                        CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox, si_info,
-                                   std::move(handle)),
+                                   this, mailbox, si_info, std::move(handle)),
                     /*sync_token_fences=*/{}, sync_token);
   }
   return base::MakeRefCounted<ClientSharedImage>(
@@ -591,13 +581,11 @@ void SharedImageInterfaceInProcess::UpdateSharedImage(
   DCHECK(!acquire_fence);
   base::AutoLock lock(lock_);
   // Note: we enqueue the task under the lock to guarantee monotonicity of
-  // the release ids as seen by the service. Unretained is safe because
-  // InProcessCommandBuffer synchronizes with the GPU thread at destruction
-  // time, cancelling tasks, before |this| is destroyed.
+  // the release ids as seen by the service.
   ScheduleGpuTask(
       base::BindOnce(
-          &SharedImageInterfaceInProcess::UpdateSharedImageOnGpuThread,
-          base::Unretained(this), mailbox),
+          &SharedImageInterfaceInProcess::UpdateSharedImageOnGpuThread, this,
+          mailbox),
       /*sync_token_fences=*/{sync_token},
       MakeSyncToken(next_fence_sync_release_++));
 }
@@ -621,8 +609,8 @@ void SharedImageInterfaceInProcess::DestroySharedImage(
   // before sync token is released.
   ScheduleGpuTask(
       base::BindOnce(
-          &SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread,
-          base::Unretained(this), mailbox),
+          &SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread, this,
+          mailbox),
       /*sync_token_fences=*/{sync_token}, SyncToken());
 }
 

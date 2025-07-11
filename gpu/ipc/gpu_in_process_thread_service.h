@@ -71,6 +71,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
   void PostNonNestableToClient(base::OnceClosure callback) override;
   scoped_refptr<SharedContextState> GetSharedContextState() override;
   scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override;
 
  private:
   const raw_ptr<GpuInProcessThreadServiceDelegate> delegate_;

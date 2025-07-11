@@ -5,8 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -26,7 +30,6 @@ class SharedContextState;
 class SharedImageFactory;
 class SharedImageManager;
 class SingleTaskSequence;
-class DisplayCompositorMemoryAndTaskControllerOnGpu;
 struct GpuPreferences;
 class GpuDriverBugWorkarounds;
 struct GpuFeatureInfo;
@@ -38,27 +41,14 @@ struct SyncToken;
 class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
     : public SharedImageInterface {
  public:
-  // Specifies which thread owns this class.
-  enum class OwnerThread { kGpu, kCompositor };
-
-  // The callers must guarantee that the instances passed via pointers are kept
+  // Callers must guarantee that the instances passed via pointers are kept
   // alive for as long as the instance of this class is alive. This can be
   // achieved by ensuring that the ownership of the created
   // SharedImageInterfaceInProcess is the same as the ownership of the passed in
-  // pointers.
-  SharedImageInterfaceInProcess(
-      SingleTaskSequence* task_sequence,
-      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller);
-  // The callers must guarantee that the instances passed via pointers are kept
-  // alive for as long as the instance of this class is alive. This can be
-  // achieved by ensuring that the ownership of the created
-  // SharedImageInterfaceInProcess is the same as the ownership of the passed in
-  // pointers.
-  // The owner thread parameter specifies which thread owns this class. Note
-  // that parts of the initialization and destruction must take place on the
-  // gpu thread, so this enum determines whether a ScheduleTask is required in
-  // order to complete construction/destruction.
-  SharedImageInterfaceInProcess(
+  // pointers. The `gpu_task_runner` is the task runner that `ScheduleGpuTask()`
+  // schedules on; it is used to ensure that some parts of initialization and
+  // destruction happen on the GPU thread.
+  static scoped_refptr<SharedImageInterfaceInProcess> Create(
       SingleTaskSequence* task_sequence,
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& gpu_workarounds,
@@ -66,7 +56,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       gpu::SharedContextState* context_state,
       SharedImageManager* shared_image_manager,
       bool is_for_display_compositor,
-      OwnerThread owner_thread = OwnerThread::kCompositor);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
@@ -139,10 +129,19 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   ~SharedImageInterfaceInProcess() override;
 
  private:
+  // Private to ensure `Initialize()` is always called after construction.
+  SharedImageInterfaceInProcess(
+      SingleTaskSequence* task_sequence,
+      SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+
   // Parameters needed to be passed in to set up the class on the GPU.
   // Needed since we cannot pass refcounted instances (e.g.
   // gpu::SharedContextState) to base::BindOnce as raw pointers.
   struct SetUpOnGpuParams;
+
+  // Set up GPU state.
+  void Initialize(std::unique_ptr<SetUpOnGpuParams> params);
 
   void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
@@ -208,6 +207,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // Accessed on any thread.
   base::Lock lock_;
   uint64_t next_fence_sync_release_ GUARDED_BY(lock_) = 1;
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   // Accessed on compositor thread.
   // This is used to get NativePixmap, and is only used when SharedImageManager
@@ -219,8 +219,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   ScopedSyncPointClientState sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
-  // Specifies which thread owns this object.
-  const OwnerThread owner_thread_;
 };
 
 }  // namespace gpu

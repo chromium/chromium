@@ -139,12 +139,12 @@ class GmbVideoFramePoolContext
     // TODO(bialpio): Move construction to the viz thread once it is no longer
     // necessary to dereference `shared_context_state_` to grab the memory
     // tracker from it.
-    sii_in_process_ = base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
+    sii_in_process_ = gpu::SharedImageInterfaceInProcess::Create(
         sequence_.get(), gpu_service_->gpu_preferences(),
         gpu_service_->gpu_driver_bug_workarounds(),
         gpu_service_->gpu_feature_info(), shared_context_state_.get(),
         gpu_service_->shared_image_manager(),
-        /*is_for_display_compositor=*/false);
+        /*is_for_display_compositor=*/false, gpu_service_->main_runner());
     DCHECK(sii_in_process_);
 
     initialized_ = true;
