@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gin/wrappable.h"
-#include "gin/public/wrappable_pointer_tags.h"
-#include "v8/include/v8-cppgc.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2271,22 +2269,22 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
 
 namespace {
 
-class GinWrappable : public gin::Wrappable<GinWrappable> {
+class GinWrappable : public gin::DeprecatedWrappable<GinWrappable> {
  public:
-  GinWrappable() = default;
   static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
-    auto* instance = cppgc::MakeGarbageCollected<GinWrappable>(
-        isolate->GetCppHeap()->GetAllocationHandle());
+    auto* instance = new GinWrappable();
     return instance->GetWrapper(isolate).ToLocalChecked();
   }
+  ~GinWrappable() override = default;
 
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin}, gin::kTestGinWrappable};
-
-  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
  private:
+  GinWrappable() = default;
 };
+
+gin::DeprecatedWrapperInfo GinWrappable::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
 
 }  // namespace
 
