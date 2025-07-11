@@ -103,12 +103,6 @@ bool LevelDbTombstoneSweeper::RequiresMetadata() const {
 void LevelDbTombstoneSweeper::SetMetadata(
     const std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* metadata) {
   database_metadata_ = metadata;
-  total_indices_ = 0;
-  for (const std::unique_ptr<IndexedDBDatabaseMetadata>& db : *metadata) {
-    for (const auto& [id, object_store] : db->object_stores) {
-      total_indices_ += object_store.indexes.size();
-    }
-  }
 }
 
 LevelDbTombstoneSweeper::SweepState::SweepState() = default;
@@ -148,14 +142,15 @@ Status LevelDbTombstoneSweeper::FlushDeletions() {
 }
 
 bool LevelDbTombstoneSweeper::ShouldContinueIteration(
+    const leveldb::Iterator& iterator,
     LevelDbTombstoneSweeper::SweepStatus* sweep_status,
     Status* leveldb_status,
     int* round_iterations) {
   ++num_iterations_;
   ++(*round_iterations);
 
-  if (!iterator_->Valid()) {
-    *leveldb_status = iterator_->status();
+  if (!iterator.Valid()) {
+    *leveldb_status = iterator.status();
     if (!leveldb_status->ok()) {
       *sweep_status = SweepStatus::DONE_ERROR;
       return false;
@@ -180,13 +175,6 @@ LevelDbTombstoneSweeper::SweepStatus LevelDbTombstoneSweeper::DoSweep(
   SweepStatus sweep_status;
   if (database_metadata_->empty()) {
     return SweepStatus::DONE;
-  }
-
-  if (!iterator_) {
-    leveldb::ReadOptions iterator_options;
-    iterator_options.fill_cache = false;
-    iterator_options.verify_checksums = true;
-    iterator_.reset(database()->NewIterator(iterator_options));
   }
 
   if (!sweep_state_.database_it) {
@@ -256,33 +244,36 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     LevelDbTombstoneSweeper::SweepStatus* sweep_status,
     Status* leveldb_status,
     int* round_iterations) {
+  std::unique_ptr<leveldb::Iterator> iterator(
+      database()->NewIterator({.verify_checksums = true, .fill_cache = false}));
+
   // If the sweeper exited early from an index scan, continue where it left off.
   if (sweep_state_.index_it_key) {
-    iterator_->Seek(sweep_state_.index_it_key->Encode());
-    if (!ShouldContinueIteration(sweep_status, leveldb_status,
+    iterator->Seek(sweep_state_.index_it_key->Encode());
+    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                  round_iterations)) {
       return false;
     }
     // Start at the first unvisited value.
-    iterator_->Next();
-    if (!ShouldContinueIteration(sweep_status, leveldb_status,
+    iterator->Next();
+    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                  round_iterations)) {
       return false;
     }
   } else {
-    iterator_->Seek(
+    iterator->Seek(
         IndexDataKey::EncodeMinKey(database_id, object_store_id, index.id));
-    if (!ShouldContinueIteration(sweep_status, leveldb_status,
+    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                  round_iterations)) {
       return false;
     }
   }
 
-  while (iterator_->Valid()) {
-    leveldb::Slice key_slice = iterator_->key();
+  while (iterator->Valid()) {
+    leveldb::Slice key_slice = iterator->key();
     std::string_view index_key_str = leveldb_env::MakeStringView(key_slice);
     std::string_view index_value_str =
-        leveldb_env::MakeStringView(iterator_->value());
+        leveldb_env::MakeStringView(iterator->value());
     // See if we've reached the end of the current index or all indexes.
     sweep_state_.index_it_key.emplace(IndexDataKey());
     if (!IndexDataKey::Decode(&index_key_str,
@@ -295,8 +286,8 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     std::unique_ptr<IndexedDBKey> primary_key;
 
     if (!DecodeVarInt(&index_value_str, &index_data_version)) {
-      iterator_->Next();
-      if (!ShouldContinueIteration(sweep_status, leveldb_status,
+      iterator->Next();
+      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                    round_iterations)) {
         return false;
       }
@@ -310,8 +301,8 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     Status s(
         database()->Get(leveldb::ReadOptions(), exists_key, &exists_value));
     if (!s.ok()) {
-      iterator_->Next();
-      if (!ShouldContinueIteration(sweep_status, leveldb_status,
+      iterator->Next();
+      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                    round_iterations)) {
         return false;
       }
@@ -321,8 +312,8 @@ bool LevelDbTombstoneSweeper::IterateIndex(
     int64_t decoded_exists_version;
     if (!DecodeInt(&exists_value_piece, &decoded_exists_version) ||
         !exists_value_piece.empty()) {
-      iterator_->Next();
-      if (!ShouldContinueIteration(sweep_status, leveldb_status,
+      iterator->Next();
+      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                    round_iterations)) {
         return false;
       }
@@ -335,13 +326,12 @@ bool LevelDbTombstoneSweeper::IterateIndex(
       ++tombstones_found_;
     }
 
-    iterator_->Next();
-    if (!ShouldContinueIteration(sweep_status, leveldb_status,
+    iterator->Next();
+    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
                                  round_iterations)) {
       return false;
     }
   }
-  ++indices_scanned_;
   sweep_state_.index_it_key = std::nullopt;
   return true;
 }

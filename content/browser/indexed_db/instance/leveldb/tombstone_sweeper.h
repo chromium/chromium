@@ -128,7 +128,8 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
 
   Status FlushDeletions();
 
-  bool ShouldContinueIteration(SweepStatus* sweep_status,
+  bool ShouldContinueIteration(const leveldb::Iterator& iterator,
+                               SweepStatus* sweep_status,
                                Status* leveldb_status,
                                int* round_iters);
 
@@ -149,15 +150,11 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
   const int max_round_iterations_;
   const int max_iterations_;
 
-  int indices_scanned_ = 0;
-  int total_indices_ = 0;
-
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;
 
   raw_ptr<const std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>>
       database_metadata_ = nullptr;
-  std::unique_ptr<leveldb::Iterator> iterator_;
 
   SweepState sweep_state_;
 

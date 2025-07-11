@@ -102,3 +102,43 @@ async function runRollbackTest(numEntries, sweeperDelay) {
     }
   });
 }
+
+// Regression test for crbug.com/413540372.
+// The browser test creates an object store with indexes and generates
+// tombstones through update operations and triggers the sweeper through a read
+// call. The tombstone sweeper completes one run and waits for any incoming
+// calls. While the sweeper is paused, an update to the database is called with
+// the same version. In the regression scenario, the sweeper still runs with an
+// iterator based on an outdated snapshot of the database, it reads the stale
+// index data and incorrectly deletes proper values as tombstones.
+async function runInterleavedTest(
+    numEntries, delayBeforeInterleavedUpdates, delayToFinishSweeper) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await promiseDeleteThenOpenDb(dbName, createDatabaseCallback);
+      let currentVersion = 0;
+      await putItems(currentVersion, numEntries);
+      ++currentVersion;
+      await putItems(currentVersion, numEntries);
+      await getIndexCount();
+
+      // Allow time for the sweeper to start.
+      await delay(delayBeforeInterleavedUpdates);
+
+      // Call put() with the same version on 100 items.
+      await putItems(currentVersion, 100);
+
+      // Wait for the sweeper to finish.
+      await delay(delayToFinishSweeper);
+
+      let count = await getIndexCount(currentVersion);
+      if (count !== numEntries) {
+        reject(new Error(`Expected ${numEntries} entries, got ${count}`));
+      }
+      resolve();
+    } catch (error) {
+      console.error('Error during interleaved operations test:', error);
+      reject(error);
+    }
+  });
+}

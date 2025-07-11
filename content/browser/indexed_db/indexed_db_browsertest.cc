@@ -717,6 +717,32 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
                                          delay_for_sweeper_run)));
 }
 
+// Regression test for crbug.com/413540372.
+// More details in `index_deletion_regression_tests.js`.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
+                       TransactionInterleavedWithSweeper) {
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
+
+  int num_entries = content::indexed_db::level_db::LevelDBCleanupScheduler::
+                        kTombstoneThreshold +
+                    1;
+  int delay_before_interleaved_updates =
+      content::indexed_db::level_db::LevelDBCleanupScheduler::kDeferTime
+          .InMilliseconds() +
+      100;
+  int delay_to_finish_sweeper =
+      content::indexed_db::level_db::LevelDBCleanupScheduler::kDeferTime
+          .InMilliseconds() *
+      5;
+
+  ASSERT_TRUE(ExecJs(
+      shell(), base::StringPrintf("runInterleavedTest(%d, %d, %d)", num_entries,
+                                  delay_before_interleaved_updates,
+                                  delay_to_finish_sweeper)));
+}
+
 class IndexedDBBrowserTestWithCorruptLevelDB : public
     IndexedDBBrowserTestWithPreexistingLevelDB {
   std::string EnclosingLevelDBDir() override { return "corrupt_leveldb"; }
