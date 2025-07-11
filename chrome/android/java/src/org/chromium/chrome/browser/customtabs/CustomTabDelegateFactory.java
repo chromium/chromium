@@ -504,7 +504,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mIntentDataProvider, mActivityType);
         return new ChromeContextMenuPopulatorFactory(
-                createTabContextMenuItemDelegate(tab), mShareDelegateSupplier, contextMenuMode);
+                createTabContextMenuItemDelegate(tab),
+                mShareDelegateSupplier,
+                contextMenuMode,
+                mIntentDataProvider.getCustomContentActions());
     }
 
     @Override

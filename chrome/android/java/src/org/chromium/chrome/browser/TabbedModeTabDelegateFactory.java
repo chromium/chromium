@@ -50,9 +50,11 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.List;
+
 /**
- * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a
- * {@link ChromeTabbedActivity}.
+ * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a {@link
+ * ChromeTabbedActivity}.
  */
 public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Activity mActivity;
@@ -171,7 +173,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mSnackbarManagerSupplier,
                         () -> mBottomSheetController),
                 mShareDelegateSupplier,
-                ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                /* customContentActions= */ List.of());
     }
 
     @Override

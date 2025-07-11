@@ -44,6 +44,7 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.WindowManager;
 
+import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
@@ -2021,6 +2022,43 @@ public class CustomTabIntentDataProviderTest {
                 "Should resolve to the on state",
                 CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON,
                 dataProvider.getOpenInBrowserButtonState());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    public void testGetCustomConentActions_noneDefined() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue("Should return an empty list", dataProvider.getCustomContentActions().isEmpty());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    public void testGetCustomContentActions_returnsListOfCustomContentAction_whenDefined() {
+        int id = 1;
+        String label = "Pin Image";
+        var pendingIntent = mock(PendingIntent.class);
+        @CustomTabsIntent.ContentTargetType
+        int targetType = CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE;
+
+        CustomContentAction action =
+                new CustomContentAction.Builder(id, label, pendingIntent, targetType).build();
+
+        Intent intent =
+                new CustomTabsIntent.Builder().addCustomContentAction(action).build().intent;
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                "There should be one custom content action in the returned list.",
+                1,
+                dataProvider.getCustomContentActions().size());
+        assertEquals(
+                "The id of the one and only custom content action should be == id (1).",
+                id,
+                dataProvider.getCustomContentActions().get(0).getId());
     }
 
     @Test

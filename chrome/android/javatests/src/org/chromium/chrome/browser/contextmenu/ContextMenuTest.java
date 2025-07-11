@@ -1145,7 +1145,8 @@ public class ContextMenuTest {
                 new ChromeContextMenuPopulatorFactory(
                         mItemDelegate,
                         () -> mShareDelegate,
-                        ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
+                        ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                        /* customContentActions= */ List.of());
         Integer[] expectedItems = {
             R.id.contextmenu_share_highlight,
             R.id.contextmenu_remove_highlight,

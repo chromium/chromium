@@ -309,6 +309,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.ContextMenu.SelectedContextualCustomActionType"
+    enum="ContextualCustomActionType" expires_after="2025-10-30">
+  <owner>adelm@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records when a custom content action is selected from the context menu in a
+    Custom Tab, broken down by the type of content the action was for (e.g. Link
+    or Image). This allows for tracking overall engagement with custom actions
+    of different types.
+  </summary>
+</histogram>
+
 <histogram
     name="CustomTabs.DetachedResourceRequest.Duration.{DetachedResourceRequestFinalStatus}{DetachedResourceRequestSource}"
     units="ms" expires_after="2024-03-17">

@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ContextualCustomActionType) -->
+
+<enum name="ContextualCustomActionType">
+  <int value="0" label="Link"/>
+  <int value="1" label="Image"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextualCustomActionType) -->
+
 <enum name="CustomTabsAuthScheme">
   <int value="0" label="Other/Custom"/>
   <int value="1" label="HTTP"/>
