@@ -51,10 +51,27 @@ template <typename T>
 using NotReachedTagForTestsOr = std::variant<T, NotReachedTagForTests>;
 
 // The centralized helper to create `PrefetchStreamingURLLoader` and its
-// corresponding `PrefetchResponseReader`.
+// corresponding `PrefetchResponseReader`, without `PrefetchContainer`.
 std::tuple<scoped_refptr<PrefetchResponseReader>,
            base::WeakPtr<PrefetchStreamingURLLoader>>
 CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const network::ResourceRequest& prefetch_request,
+    NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
+    NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+    NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
+        on_receive_redirect,
+    NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
+    std::optional<PrefetchErrorOnResponseReceived> error_on_response_received =
+        std::nullopt,
+    base::TimeDelta timeout_duration = {});
+
+// The centralized helper to create `PrefetchStreamingURLLoader` associated with
+// - `PrefetchContainer` (possibly nullptr) and
+// - `PrefetchResponseReader` (always non-nullptr).
+base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    base::WeakPtr<PrefetchResponseReader> response_reader,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const network::ResourceRequest& prefetch_request,
     NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
