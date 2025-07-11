@@ -23,6 +23,7 @@ enum WrappablePointerTag : uint16_t {
   kFirstPointerTag = 1501,
   kAutomationPosition = 1501,          // ui::AutomationPosition
   kChromePluginPlaceholder,            // ChromePluginPlaceholder
+  kDomAutomationController,            // content::DomAutomationController
   kGamepadControllerBindings,          // content::GameControllerBindings
   kGpuBenchmarking,                    // content::GpuBenchmarking
   kNetErrorPageController,             // NetErrorPageController

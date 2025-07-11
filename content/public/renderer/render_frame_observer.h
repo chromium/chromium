@@ -370,6 +370,10 @@ class CONTENT_EXPORT RenderFrameObserver {
   explicit RenderFrameObserver(RenderFrame* render_frame);
   virtual ~RenderFrameObserver();
 
+  // This method exists for subclasses of Oilpan objects that need to clean up
+  // the RenderFrameObserver in their pre-finalizer.
+  void Dispose();
+
  private:
   friend class RenderFrameImpl;
 

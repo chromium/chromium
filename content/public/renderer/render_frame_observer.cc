@@ -20,10 +20,15 @@ RenderFrameObserver::RenderFrameObserver(RenderFrame* render_frame)
 }
 
 RenderFrameObserver::~RenderFrameObserver() {
+  Dispose();
+}
+
+void RenderFrameObserver::Dispose() {
   if (render_frame_) {
     RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame_);
     impl->RemoveObserver(this);
   }
+  render_frame_ = nullptr;
 }
 
 bool RenderFrameObserver::OnAssociatedInterfaceRequestForFrame(
