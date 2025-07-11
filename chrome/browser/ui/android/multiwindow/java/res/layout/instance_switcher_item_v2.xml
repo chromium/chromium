@@ -26,17 +26,17 @@ found in the LICENSE file.
 
     <LinearLayout
         android:id="@+id/text"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/favicon"
         android:layout_toStartOf="@id/last_accessed"
         android:layout_centerVertical="true"
         android:orientation="vertical"
-        android:layout_marginEnd="16dp" >
+        android:layout_marginEnd="8dp" >
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:maxLines="1"
@@ -46,7 +46,7 @@ found in the LICENSE file.
             app:leading="@dimen/text_size_large_leading" />
         <TextView
             android:id="@+id/desc"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:maxLines="1"
