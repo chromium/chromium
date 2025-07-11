@@ -104,7 +104,7 @@
   <message name ="IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_BODY" desc="The body of the error dialog when entreprise group is closed.">
     When a group is closed, it limits who can join
   </message>
-  <message name ="IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_HEADER" desc="The header of the error dialog when enterprise turns off sharing.">
+  <message name ="IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_HEADER" desc="The header of the error dialog when enterprise turns off sharing." formatter_data="android_java">
     Your organization limits what you can share
   </message>
   <message name ="IDS_COLLABORATION_ENTREPRISE_SHARING_OFF_BODY" desc="The body of the error dialog when enterprise turns off sharing.">

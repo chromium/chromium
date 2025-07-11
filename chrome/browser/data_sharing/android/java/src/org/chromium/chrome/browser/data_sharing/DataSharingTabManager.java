@@ -47,6 +47,7 @@ import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
+import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -769,6 +770,9 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.ACTIVITY_LOGS_TITLE,
                                 R.string.data_sharing_shared_tab_groups_activity)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.SHARING_DISABLED_DESCRIPTION,
+                                R.string.collaboration_entreprise_sharing_off_header)
                         .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =
@@ -842,6 +846,11 @@ public class DataSharingTabManager {
                         }
                     }
                 };
+
+        boolean isSharingDisabled =
+                mCollaborationService != null
+                        && mCollaborationService.getServiceStatus().collaborationStatus
+                                == CollaborationStatus.DISABLED_FOR_POLICY;
         DataSharingManageUiConfig manageConfig =
                 new DataSharingManageUiConfig.Builder()
                         .setGroupToken(new GroupToken(collaborationId, null))
@@ -849,6 +858,7 @@ public class DataSharingTabManager {
                         .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
                         .setActivityLogsUrl(getActivityLogsUrl())
                         .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
+                        .setIsSharingDisabled(isSharingDisabled)
                         .build();
         return uiDelegate.showManageFlow(manageConfig);
     }
