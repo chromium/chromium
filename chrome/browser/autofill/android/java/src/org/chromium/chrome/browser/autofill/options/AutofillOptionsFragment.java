@@ -44,6 +44,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     @IntDef({
         AutofillOptionsReferrer.SETTINGS,
         AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
+        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT,
         AutofillOptionsReferrer.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -54,7 +55,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         /** Corresponds to an external link opening Chrome. */
         int DEEP_LINK_TO_SETTINGS = 1;
 
-        int COUNT = 2;
+        /** Payment methods fragment in Chrome settings. */
+        int PAYMENT_METHODS_FRAGMENT = 2;
+
+        int COUNT = 3;
     }
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

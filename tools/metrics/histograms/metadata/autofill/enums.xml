@@ -2410,6 +2410,8 @@ Called by update_autofill_enums.py.-->
 <enum name="AutofillOptionsReferrer">
   <int value="0" label="User entered the autofill options via main settings."/>
   <int value="1" label="User entered the autofill options via deep link."/>
+  <int value="2"
+      label="User entered the autofill options via payment methods."/>
 </enum>
 
 <enum name="AutofillOtpAuthEvent">

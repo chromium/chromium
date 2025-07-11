@@ -32,7 +32,7 @@ public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     private TextViewWithClickableSpans mSummaryView;
 
     /** Constructor for inflating from XML. */
-    public ClickableSpansTextMessagePreference(Context context, AttributeSet attrs) {
+    public ClickableSpansTextMessagePreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.clickable_spans_text_message_preference_layout);
         setSelectable(false);

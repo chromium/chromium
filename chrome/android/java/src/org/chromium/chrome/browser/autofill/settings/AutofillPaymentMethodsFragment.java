@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
@@ -60,6 +62,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -161,9 +164,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         if (disabledSettingsInThirdPartyMode()) {
             // Add the information string at the top.
-            Preference disabled_settings_info_pref = new Preference(getStyledContext());
+            ClickableSpansTextMessagePreference disabled_settings_info_pref =
+                    new ClickableSpansTextMessagePreference(getStyledContext(), null);
             disabled_settings_info_pref.setKey(DISABLED_SETTINGS_INFO);
             disabled_settings_info_pref.setSummary(getDisableSettingsExplanation());
+            disabled_settings_info_pref.setOnPreferenceClickListener(null);
             getPreferenceScreen().addPreference(disabled_settings_info_pref);
         }
 
@@ -744,6 +749,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     }
 
     private void onLinkToAutofillOptionsClicked(View unusedView) {
-        // TODO(crbug.com/428918449): Implement.
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
+                getPreferenceManager().getContext(),
+                AutofillOptionsFragment.class,
+                AutofillOptionsFragment.createRequiredArgs(
+                        AutofillOptionsReferrer.PAYMENT_METHODS_FRAGMENT));
     }
 }

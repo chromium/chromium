@@ -32,6 +32,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.intent.Intents;
@@ -1588,6 +1590,29 @@ public class AutofillPaymentMethodsFragmentTest {
         assertNotNull(
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.DISABLED_SETTINGS_INFO));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
+    })
+    public void testDisabledSettingsText_linksToAutofillOptionsPage() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
+                            AndroidAutofillAvailabilityStatus.AVAILABLE);
+                });
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        String disabledSettingsText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.autofill_disable_settings_explanation);
+        String matcherText = disabledSettingsText.replaceAll("<link>|</link>", "");
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {
