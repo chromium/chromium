@@ -257,6 +257,9 @@ void ManagementUI::GetLocalizedStrings(
       {kProfileReportingExtension, IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION},
       {kProfileReportingPolicy, IDS_MANAGEMENT_PROFILE_REPORTING_POLICY},
       {kProfileReportingLearnMore, IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE},
+      {"promotionBannerTitle", IDS_MANAGEMENT_BANNER_PROMOTION_TITLE},
+      {"promotionBannerDesc", IDS_MANAGEMENT_BANNER_PROMOTION_DESC},
+      {"promotionBannerBtn", IDS_MANAGEMENT_BANNER_PROMOTION_BTN},
   };
   for (auto i : kLocalizedStrings) {
     strings.push_back(i);

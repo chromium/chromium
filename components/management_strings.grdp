@@ -486,4 +486,15 @@
   <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_TAB_TITLE" desc="The title of the tab of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
     Profile management
   </message>
+
+  <!-- Promotion banner -->
+  <message name="IDS_MANAGEMENT_BANNER_PROMOTION_TITLE" desc="The title of the promotion banner on chrome://management page.">
+    Easily manage how your employees browse the web
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_PROMOTION_DESC" desc="The description of the promotion banner on chrome://management page.">
+    Chrome Enterprise Core lets you manage browser policies, apps, and extensions from the cloud
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_PROMOTION_BTN" desc="The text of the button to redirect to the guide page from the promotion banner on chrome://management page.">
+    Try Chrome Enterprise Core
+  </message>
 </grit-part>
