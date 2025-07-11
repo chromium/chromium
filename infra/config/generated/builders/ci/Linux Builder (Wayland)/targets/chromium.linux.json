@@ -964,7 +964,8 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_weston.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_weston.filter",
+          "--disable-accelerated-subwindows-for-testing"
         ],
         "isolate_profile_data": true,
         "merge": {

@@ -732,6 +732,10 @@ ci.thin_tester(
                 # https://crbug.com/1192997
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_weston.filter",
+                    # TODO(crbug.com/334413759) Until bubble subsurfaces can be
+                    # properly tested using weston, disable the feature when
+                    # running tests there.
+                    "--disable-accelerated-subwindows-for-testing",
                 ],
             ),
             "ozone_x11_unittests": targets.remove(

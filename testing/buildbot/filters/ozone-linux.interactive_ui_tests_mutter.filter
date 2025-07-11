@@ -56,3 +56,8 @@
 # Failing on try bot due to DCHECK
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
+
+# TODO(crbug.com/334413759) The test can fail due to delays in omnibox popup
+# being launched when it is an accelerated bubble and so the subsequent click
+# to unselect it can fail.
+-*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*

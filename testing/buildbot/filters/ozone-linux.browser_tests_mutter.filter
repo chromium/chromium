@@ -60,3 +60,8 @@
 -SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
 
 -TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+
+# TODO(crbug.com/334413759) The test fails due to a DCHECK in
+# wm::FocusController only on the try bots with OzoneBubblesUsePlatformWidgets
+# enabled.
+-PermissionElementBrowserTest.TabSwitchingClosesPrompt
