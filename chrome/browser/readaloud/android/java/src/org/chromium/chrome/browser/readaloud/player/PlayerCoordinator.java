@@ -72,7 +72,12 @@ public class PlayerCoordinator implements Player {
                         delegate.getLayoutManager(),
                         this,
                         delegate.getUserEducationHelper());
-        mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
+        mMediator =
+                new PlayerMediator(
+                        /* coordinator= */ this,
+                        delegate,
+                        model,
+                        delegate.getBottomControlsStacker());
         mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mDelegate = delegate;
         mActivityLifecycleDispatcher = delegate.getActivityLifecycleDispatcher();
@@ -156,8 +161,8 @@ public class PlayerCoordinator implements Player {
     }
 
     @Override
-    public void restoreMiniPlayer() {
-        mMiniPlayer.show(/* animate= */ true);
+    public void restoreMiniPlayer(boolean animate) {
+        mMiniPlayer.show(animate);
         mMediator.setHiddenAndPlaying(false);
     }
 
@@ -211,7 +216,7 @@ public class PlayerCoordinator implements Player {
     @Override
     public void restorePlayers() {
         if (mRestoreMiniPlayer) {
-            restoreMiniPlayer();
+            restoreMiniPlayer(true);
             mRestoreMiniPlayer = false;
         } else if (mRestoreExpandedPlayer) {
             mExpandedPlayer.show();

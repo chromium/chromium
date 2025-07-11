@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
-import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYBACK_CREATION;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
 
@@ -218,10 +218,23 @@ public class MiniPlayerLayout extends LinearLayout {
 
         assert yOffset <= 0;
 
-        mYOffset = -yOffset;
-        MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
-        mlp.bottomMargin = mYOffset;
-        setLayoutParams(mlp);
+        Runnable marginChangeRunnable =
+                () -> {
+                    if (mYOffset == yOffset) return;
+                    mYOffset = -yOffset;
+                    MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
+                    mlp.bottomMargin = mYOffset;
+                    setLayoutParams(mlp);
+                };
+
+        // Changing the margin in the middle of layout is not likely to work properly; changing
+        // layout-affecting properties mid-layout has undefined behavior. So defer the update until
+        // the next frame.
+        if (isInLayout()) {
+            postOnAnimation(marginChangeRunnable);
+        } else {
+            marginChangeRunnable.run();
+        }
     }
 
     void setInteractionHandler(InteractionHandler handler) {

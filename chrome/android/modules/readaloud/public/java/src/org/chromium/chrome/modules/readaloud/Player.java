@@ -164,7 +164,7 @@ public interface Player {
     default void playbackFailed() {}
 
     /** Show mini player. Assumes the playback is running. */
-    default void restoreMiniPlayer() {}
+    default void restoreMiniPlayer(boolean animate) {}
 
     /** Only called after playback is released and no more events are coming. */
     default void recordPlaybackDuration() {}

@@ -183,7 +183,7 @@ public class PlayerCoordinatorUnitTest {
 
     @Test
     public void testRestoreMiniPlayer() {
-        mPlayerCoordinator.restoreMiniPlayer();
+        mPlayerCoordinator.restoreMiniPlayer(true);
         verify(mMiniPlayer).show(eq(true));
         verify(mMediator).setHiddenAndPlaying(eq(false));
     }
