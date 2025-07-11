@@ -10,15 +10,19 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
 namespace WTF {
+template <typename T>
+int* const ValueInstanceCount<T>::kDeletedValue =
+    reinterpret_cast<int*>(static_cast<uintptr_t>(-1));
+}  // namespace WTF
+
+namespace blink {
 
 static_assert(!WTF::IsTraceable<LinkedHashSet<int>>::value,
               "LinkedHashSet must not be traceable.");
 static_assert(!WTF::IsTraceable<LinkedHashSet<String>>::value,
               "LinkedHashSet must not be traceable.");
 
-template <typename T>
-int* const ValueInstanceCount<T>::kDeletedValue =
-    reinterpret_cast<int*>(static_cast<uintptr_t>(-1));
+using WTF::ValueInstanceCount;
 
 TEST(LinkedHashSetTest, CopyConstructAndAssignInt) {
   using Set = LinkedHashSet<ValueInstanceCount<int>>;
@@ -874,12 +878,6 @@ struct EmptyString {
   bool empty_ = false;
 };
 
-}  // namespace WTF
-
-namespace blink {
-
-using WTF::EmptyString;
-
 template <>
 struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
   static unsigned GetHash(const EmptyString&) { return 0; }
@@ -893,10 +891,6 @@ struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
     return empty;
   }
 };
-
-}  // namespace blink
-
-namespace WTF {
 
 TEST(LinkedHashSetTest, Swap) {
   using Set = LinkedHashSet<int, CustomHashTraitsForInt>;
@@ -962,6 +956,7 @@ TEST(LinkedHashSetTest, IteratorsConvertToConstVersions) {
 }
 
 TEST(LinkedHashSetRefPtrTest, WithRefPtr) {
+  using WTF::DummyRefCounted;
   using Set = LinkedHashSet<scoped_refptr<DummyRefCounted>>;
   int expected = 1;
   // LinkedHashSet stores each object twice.
@@ -997,6 +992,7 @@ TEST(LinkedHashSetRefPtrTest, WithRefPtr) {
 }
 
 TEST(LinkedHashSetRefPtrTest, ExerciseValuePeekInType) {
+  using WTF::DummyRefCounted;
   using Set = LinkedHashSet<scoped_refptr<DummyRefCounted>>;
   Set set;
   bool is_deleted = false;
@@ -1109,6 +1105,7 @@ TEST(LinkedHashSetTranslatorTest, ComplexityTranslator) {
 }
 
 TEST(LinkedHashSetCountCopyTest, MoveConstructionShouldNotMakeCopy) {
+  using WTF::CountCopy;
   using Set = LinkedHashSet<CountCopy>;
   Set set;
   int counter = 0;
@@ -1120,6 +1117,7 @@ TEST(LinkedHashSetCountCopyTest, MoveConstructionShouldNotMakeCopy) {
 }
 
 TEST(LinkedHashSetCountCopyTest, MoveAssignmentShouldNotMakeACopy) {
+  using WTF::CountCopy;
   using Set = LinkedHashSet<CountCopy>;
   Set set;
   int counter = 0;
@@ -1142,4 +1140,4 @@ TEST(LinkedHashSetEmptyTest, EmptyString) {
   set.insert(EmptyString());
 }
 
-}  // namespace WTF
+}  // namespace blink
