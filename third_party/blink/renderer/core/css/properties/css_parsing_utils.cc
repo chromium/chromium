@@ -139,6 +139,12 @@ bool IsOverflowKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kUnsafe, CSSValueID::kSafe>(id);
 }
 
+bool IsMasonryDirectionOrFillKeyword(CSSValueID id) {
+  return IdentMatches<CSSValueID::kRow, CSSValueID::kRowReverse,
+                      CSSValueID::kColumn, CSSValueID::kColumnReverse,
+                      CSSValueID::kNormal, CSSValueID::kReverse>(id);
+}
+
 bool IsIdent(const CSSValue& value, CSSValueID id) {
   const auto* ident = DynamicTo<CSSIdentifierValue>(value);
   return ident && ident->GetValueID() == id;
@@ -6815,7 +6821,8 @@ CSSValue* ConsumeGridLine(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
-                               TrackListType track_list_type) {
+                               TrackListType track_list_type,
+                               bool is_masonry_shorthand) {
   bool allow_grid_line_names = track_list_type != TrackListType::kGridAuto;
   if (!allow_grid_line_names && stream.Peek().GetType() == kLeftBracketToken) {
     return nullptr;
@@ -6841,6 +6848,11 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
   bool all_tracks_are_auto_repeat_or_fixed_sized = true;
   auto IsRangeAtEnd = [](CSSParserTokenStream& stream) -> bool {
     return stream.AtEnd() || stream.Peek().GetType() == kDelimiterToken;
+  };
+  auto HasMoreMasonryValues = [](CSSParserTokenStream& stream,
+                                 bool is_masonry_shorthand) -> bool {
+    return (is_masonry_shorthand &&
+            IsMasonryDirectionOrFillKeyword(stream.Peek().Id()));
   };
 
   do {
@@ -6890,9 +6902,13 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream& stream,
         AppendLineNames(stream, context, is_subgrid_track_list, values);
     if (is_subgrid_track_list && !did_append_line_names &&
         stream.Peek().FunctionId() != CSSValueID::kRepeat) {
-      return IsRangeAtEnd(stream) ? values : nullptr;
+      return (IsRangeAtEnd(stream) ||
+              HasMoreMasonryValues(stream, is_masonry_shorthand))
+                 ? values
+                 : nullptr;
     }
-  } while (!IsRangeAtEnd(stream));
+  } while (!(IsRangeAtEnd(stream) ||
+             HasMoreMasonryValues(stream, is_masonry_shorthand)));
 
   return values;
 }
@@ -6973,16 +6989,18 @@ bool ParseGridTemplateAreasRow(const String& grid_row_names,
 }
 
 CSSValue* ConsumeGridTemplatesRowsOrColumns(CSSParserTokenStream& stream,
-                                            const CSSParserContext& context) {
+                                            const CSSParserContext& context,
+                                            bool is_masonry_shorthand) {
   switch (stream.Peek().Id()) {
     case CSSValueID::kNone:
       return ConsumeIdent(stream);
     case CSSValueID::kSubgrid:
       return ConsumeGridTrackList(stream, context,
-                                  TrackListType::kGridTemplateSubgrid);
+                                  TrackListType::kGridTemplateSubgrid,
+                                  is_masonry_shorthand);
     default:
-      return ConsumeGridTrackList(stream, context,
-                                  TrackListType::kGridTemplate);
+      return ConsumeGridTrackList(stream, context, TrackListType::kGridTemplate,
+                                  is_masonry_shorthand);
   }
 }
 
@@ -7071,6 +7089,43 @@ bool ConsumeGridTemplateShorthand(bool important,
   }
 
   return false;
+}
+
+CSSValue* ParseMasonryTemplateAreasValue(const String& masonry_template_areas,
+                                         bool is_template_columns) {
+  NamedGridAreaMap grid_area_map;
+  wtf_size_t row_count = 0;
+  wtf_size_t column_count = 0;
+
+  if (is_template_columns) {
+    // For template-columns, we treat the `masonry_template_areas` string
+    // as a single row of grid areas and use the function below to construct the
+    // `grid_area_map`.
+    if (!css_parsing_utils::ParseGridTemplateAreasRow(
+            masonry_template_areas, grid_area_map, row_count, column_count)) {
+      return nullptr;
+    }
+    ++row_count;
+  } else {
+    // For template-rows, we need to convert the `masonry_template_areas` string
+    // into appropriate row values. For example, we want to transform "a b c"
+    // into separate row strings: "a", "b", "c".
+    Vector<String> rows =
+        ParseGridTemplateAreasColumnNames(masonry_template_areas);
+    for (const String& row : rows) {
+      if (!css_parsing_utils::ParseGridTemplateAreasRow(
+              row, grid_area_map, row_count, column_count)) {
+        return nullptr;
+      }
+      ++row_count;
+    }
+  }
+  if (row_count == 0) {
+    return nullptr;
+  }
+  DCHECK(column_count);
+  return MakeGarbageCollected<cssvalue::CSSGridTemplateAreasValue>(
+      grid_area_map, row_count, column_count);
 }
 
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream& stream,

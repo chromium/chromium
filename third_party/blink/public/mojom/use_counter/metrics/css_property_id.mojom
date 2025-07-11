@@ -938,6 +938,7 @@ enum CSSSampleId {
     kTimelineTriggerExitRangeEnd = 876,
     kTimelineTriggerTimeline = 877,
     kTimelineTrigger = 878,
+    kMasonry = 879,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -4902,4 +4902,41 @@ CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
   return list;
 }
 
+CSSValueList* ComputedStyleUtils::ValuesForMasonryShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  const CSSValue* template_area_values =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  DCHECK(template_area_values);
+  // Note: `shorthand.properties()[1]` is intentionally not used here because it
+  // always refers to `grid-template-columns`.
+  // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
+  // `GetCSSPropertyGridTemplateRows()` depending on the `masonry-direction`,
+  // since `grid-template-rows` is not listed in the `masonry` shorthand
+  // property.
+  const CSSValue* masonry_direction_values =
+      shorthand.properties()[2]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  DCHECK(masonry_direction_values);
+  const CSSValue* masonry_template_tracks_values =
+      CSSOMUtils::IsMasonryColumnDirectionValue(masonry_direction_values)
+          ? GetCSSPropertyGridTemplateColumns().CSSValueFromComputedStyle(
+                style, layout_object, allow_visited_style, value_phase)
+          : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(
+                style, layout_object, allow_visited_style, value_phase);
+  DCHECK(masonry_template_tracks_values);
+  const CSSValue* masonry_fill_values =
+      shorthand.properties()[3]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  DCHECK(masonry_fill_values);
+
+  return CSSOMUtils::ComputedValueForMasonryShorthand(
+      masonry_template_tracks_values, template_area_values,
+      masonry_direction_values, masonry_fill_values);
+}
+
 }  // namespace blink

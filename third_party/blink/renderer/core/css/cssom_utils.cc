@@ -71,6 +71,16 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 }
 
 // static
+bool CSSOMUtils::IsMasonryColumnDirectionValue(
+    const CSSValue* masonry_direction_values) {
+  const auto* masonry_direction_value =
+      DynamicTo<CSSIdentifierValue>(masonry_direction_values);
+  return masonry_direction_value &&
+         (masonry_direction_value->GetValueID() == CSSValueID::kColumn ||
+          masonry_direction_value->GetValueID() == CSSValueID::kColumnReverse);
+}
+
+// static
 String CSSOMUtils::NamedGridAreaTextForPosition(
     const NamedGridAreaMap& grid_area_map,
     wtf_size_t row,
@@ -83,6 +93,30 @@ String CSSOMUtils::NamedGridAreaTextForPosition(
     }
   }
   return ".";
+}
+
+// static
+String CSSOMUtils::SerializeGridAreaText(
+    const cssvalue::CSSGridTemplateAreasValue* template_areas,
+    wtf_size_t fixed_index,
+    bool is_row) {
+  const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
+  const wtf_size_t count =
+      is_row ? template_areas->ColumnCount() : template_areas->RowCount();
+  StringBuilder result;
+  for (wtf_size_t i = 0; i < count; ++i) {
+    if (is_row) {
+      result.Append(
+          NamedGridAreaTextForPosition(grid_area_map, fixed_index, i));
+    } else {
+      result.Append(
+          NamedGridAreaTextForPosition(grid_area_map, i, fixed_index));
+    }
+    if (i != count - 1) {
+      result.Append(' ');
+    }
+  }
+  return result.ReleaseString();
 }
 
 // static
@@ -138,8 +172,6 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
   const cssvalue::CSSGridTemplateAreasValue* template_areas =
       DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
   DCHECK(template_areas);
-  const NamedGridAreaMap& grid_area_map = template_areas->GridAreaMap();
-  const wtf_size_t grid_area_column_count = template_areas->ColumnCount();
 
   // Handle [ <line-names>? <string> <track-size>? <line-names>? ]+
   CSSValueList* template_row_list = CSSValueList::CreateSpaceSeparated();
@@ -149,17 +181,11 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
       template_row_list->Append(*row_value);
       continue;
     }
-    StringBuilder grid_area_text;
-    for (wtf_size_t column = 0; column < grid_area_column_count; ++column) {
-      grid_area_text.Append(
-          NamedGridAreaTextForPosition(grid_area_map, row, column));
-      if (column != grid_area_column_count - 1) {
-        grid_area_text.Append(' ');
-      }
-    }
+    String grid_area_text =
+        SerializeGridAreaText(template_areas, row, /*is_row=*/true);
     DCHECK(!grid_area_text.empty());
     template_row_list->Append(
-        *MakeGarbageCollected<CSSStringValue>(grid_area_text.ReleaseString()));
+        *MakeGarbageCollected<CSSStringValue>(grid_area_text));
     ++row;
 
     // Omit `auto` values.
@@ -181,6 +207,46 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
   if (!has_initial_template_columns) {
     list->Append(*template_column_values);
   }
+
+  return list;
+}
+
+// static
+CSSValueList* CSSOMUtils::ComputedValueForMasonryShorthand(
+    const CSSValue* masonry_template_tracks_values,
+    const CSSValue* template_area_values,
+    const CSSValue* masonry_direction_values,
+    const CSSValue* masonry_fill_values) {
+  const bool has_initial_masonry_template_tracks =
+      IsNoneValue(masonry_template_tracks_values);
+  const bool has_initial_template_areas = IsNoneValue(template_area_values);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (has_initial_template_areas && has_initial_masonry_template_tracks) {
+    list->Append(*template_area_values);
+  }
+
+  if (!has_initial_template_areas) {
+    // If we have template columns, we can serialize the template areas as is.
+    // Otherwise, for template rows, we need to serialize multiple string tokens
+    // into a single space-separated string.
+    if (IsMasonryColumnDirectionValue(masonry_direction_values)) {
+      list->Append(*template_area_values);
+    } else {
+      const cssvalue::CSSGridTemplateAreasValue* template_areas =
+          DynamicTo<cssvalue::CSSGridTemplateAreasValue>(template_area_values);
+      DCHECK(template_areas);
+      String template_area_text = SerializeGridAreaText(
+          template_areas, /*fixed_index=*/0, /*is_row=*/false);
+      list->Append(*MakeGarbageCollected<CSSStringValue>(template_area_text));
+    }
+  }
+
+  if (!has_initial_masonry_template_tracks) {
+    list->Append(*masonry_template_tracks_values);
+  }
+
+  list->Append(*masonry_direction_values);
+  list->Append(*masonry_fill_values);
 
   return list;
 }

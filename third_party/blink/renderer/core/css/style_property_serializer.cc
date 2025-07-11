@@ -641,6 +641,8 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(marginBlockShorthand());
     case CSSPropertyID::kMarginInline:
       return Get2Values(marginInlineShorthand());
+    case CSSPropertyID::kMasonry:
+      return GetShorthandValueForMasonry(masonryShorthand());
     case CSSPropertyID::kMasonryFlow:
       return GetShorthandValue(masonryFlowShorthand());
     case CSSPropertyID::kOffset:
@@ -2473,6 +2475,37 @@ String StylePropertySerializer::GetShorthandValueForGridLine(
   }
 
   return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForMasonry(
+    const StylePropertyShorthand& shorthand) const {
+  const auto* template_area_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  DCHECK(template_area_values);
+  // Note: `shorthand.properties()[1]` is intentionally not used here because it
+  // always refers to `grid-template-columns`.
+  // Instead, we use `GetCSSPropertyGridTemplateColumns()` or
+  // `GetCSSPropertyGridTemplateRows()` depending on the `masonry-direction`,
+  // since `grid-template-rows` is not listed in the `masonry` shorthand
+  // property.
+  const auto* masonry_direction_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  DCHECK(masonry_direction_values);
+  const auto* masonry_template_tracks_values =
+      CSSOMUtils::IsMasonryColumnDirectionValue(masonry_direction_values)
+          ? property_set_.GetPropertyCSSValue(
+                GetCSSPropertyGridTemplateColumns())
+          : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());
+  DCHECK(masonry_template_tracks_values);
+  const auto* masonry_fill_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+  DCHECK(masonry_fill_values);
+
+  const CSSValueList* masonry_list =
+      CSSOMUtils::ComputedValueForMasonryShorthand(
+          masonry_template_tracks_values, template_area_values,
+          masonry_direction_values, masonry_fill_values);
+  return masonry_list->CssText();
 }
 
 String StylePropertySerializer::GetShorthandValueForGridTemplate(

@@ -325,6 +325,7 @@ maskPosition
 maskRepeat
 maskSize
 maskType
+masonry
 masonryDirection
 masonryFill
 masonryFlow
