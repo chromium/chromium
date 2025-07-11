@@ -273,12 +273,13 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kInactive);
 }
 
-class ActorUiStateManagerUiTabScopedTest
+class ActorUiStateManagerActorTaskUiTabScopedTest
     : public ActorUiStateManagerTest,
       public testing::WithParamInterface<
           std::tuple<ActorTask::State, UiTabState>> {};
 
-TEST_P(ActorUiStateManagerUiTabScopedTest, OnActorTaskState_UpdateTabScopedUi) {
+TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
+       OnActorTaskState_UpdateTabScopedUi) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   MockTabInterface mock_tab;
   actor_keyed_service()->GetTask(task_id)->AddToTabSet(mock_tab.GetHandle());
@@ -287,7 +288,8 @@ TEST_P(ActorUiStateManagerUiTabScopedTest, OnActorTaskState_UpdateTabScopedUi) {
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
 }
 
-const auto kTestValues = std::vector<std::tuple<ActorTask::State, UiTabState>>{
+const auto kActorTaskTestValues = std::vector<
+    std::tuple<ActorTask::State, UiTabState>>{
     {ActorTask::State::kCreated,
      UiTabState{
          .agent_overlay = AgentOverlayState(/*is_active=*/true),
@@ -316,9 +318,55 @@ const auto kTestValues = std::vector<std::tuple<ActorTask::State, UiTabState>>{
      UiTabState{.agent_overlay = AgentOverlayState(/*is_active=*/false),
                 .handoff_button = {.is_active = false}}}};
 
-INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerUiTabScopedTest,
-                         ActorUiStateManagerUiTabScopedTest,
-                         ValuesIn(kTestValues));
+INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerActorTaskUiTabScopedTest,
+                         ActorUiStateManagerActorTaskUiTabScopedTest,
+                         ValuesIn(kActorTaskTestValues));
+
+class ActorUiStateManagerUiEventUiTabScopedTest
+    : public ActorUiStateManagerTest,
+      public testing::WithParamInterface<std::tuple<UiEvent, UiTabState>> {};
+
+TEST_P(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnActorTaskState_UpdateTabScopedUi) {
+  auto [ui_event, expected_ui_tab_state] = GetParam();
+  actor_ui_state_manager()->OnUiEvent(ui_event, base::DoNothing());
+  EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
+}
+
+MockTabInterface g_mock_tab;
+const auto kUiEventTestValues = [] {
+  TaskId task_id(123);
+  PageTarget page_target(gfx::Point(100, 200));
+  return std::vector<std::tuple<UiEvent, UiTabState>>{
+      {StartingToActOnTab{g_mock_tab.GetHandle(), task_id},
+       UiTabState{
+           .agent_overlay = AgentOverlayState(/*is_active=*/true),
+           .handoff_button =
+               {.is_active = true,
+                .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+      {StoppedActingOnTab{g_mock_tab.GetHandle()},
+       UiTabState{.agent_overlay = AgentOverlayState(/*is_active=*/false),
+                  .handoff_button = {.is_active = false}}},
+      {MouseMove{g_mock_tab.GetHandle(), page_target},
+       UiTabState{
+           .agent_overlay = AgentOverlayState(
+               /*is_active=*/true, /*mouse_down=*/false, page_target),
+           .handoff_button =
+               {.is_active = true,
+                .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+      {MouseClick{g_mock_tab.GetHandle(), MouseClickType::kLeft,
+                  MouseClickCount::kSingle},
+       UiTabState{
+           .agent_overlay =
+               AgentOverlayState(/*is_active=*/true, /*mouse_down=*/true),
+           .handoff_button = {
+               .is_active = true,
+               .controller = HandoffButtonState::ControlOwnership::kAgent}}}};
+}();
+
+INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerUiEventUiTabScopedTest,
+                         ActorUiStateManagerUiEventUiTabScopedTest,
+                         ValuesIn(kUiEventTestValues));
 
 }  // namespace
 }  // namespace actor::ui

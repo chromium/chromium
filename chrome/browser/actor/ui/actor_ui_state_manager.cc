@@ -39,9 +39,44 @@ const UiTabState& GetPausedUiTabState() {
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
       .agent_overlay = AgentOverlayState(/*is_active=*/false),
-      .handoff_button = {.is_active = false}};
+      .handoff_button = {
+          .is_active = false,
+          .controller = HandoffButtonState::ControlOwnership::kClient}};
   return kCompletedState;
 }
+
+struct TabUiUpdate {
+  raw_ptr<TabInterface> tab;
+  UiTabState ui_tab_state;
+};
+
+struct ProfileUiUpdate {};
+using UiUpdate = std::variant<TabUiUpdate, ProfileUiUpdate>;
+
+constexpr Visitor GetNewUiStateFn{
+    [](const StartTask& e) -> UiUpdate { return ProfileUiUpdate{}; },
+    [](const StartingToActOnTab& e) -> UiUpdate {
+      return TabUiUpdate{e.tab_handle.Get(), GetAgentControlledUiTabState()};
+    },
+    [](const StoppedActingOnTab& e) -> UiUpdate {
+      return TabUiUpdate{e.tab_handle.Get(), GetCompletedUiTabState()};
+    },
+    [](const TaskStateChanged& e) -> UiUpdate {
+      // TODO(crbug.com/424495020): Move this out of this block, implementation
+      // is incorrect atm.
+      return ProfileUiUpdate{};
+    },
+    [](const MouseClick& e) -> UiUpdate {
+      UiTabState ui_tab_state = GetAgentControlledUiTabState();
+      ui_tab_state.agent_overlay.mouse_down = true;
+      return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+    },
+    [](const MouseMove& e) -> UiUpdate {
+      UiTabState ui_tab_state = GetAgentControlledUiTabState();
+      ui_tab_state.agent_overlay.mouse_target = e.target;
+      return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+    },
+};
 
 }  // namespace
 
@@ -106,19 +141,20 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 
 void ActorUiStateManager::OnUiEvent(UiEvent event,
                                     UiCompleteCallback callback) {
+  const UiUpdate new_ui_state = std::visit(GetNewUiStateFn, event);
   // TODO(crbug.com/424495020): Return a callback from the Ui state once
   // successful.
-  std::visit(Visitor{
-                 [this](const StartTask& e) {
-                   this->MaybeUpdateProfileScopedUiState();
-                 },
-                 [](const StartingToActOnTab& e) {},
-                 [](const StoppedActingOnTab& e) {},
-                 [](const TaskStateChanged& e) {},
-                 [](const MouseClick& e) {},
-                 [](const MouseMove& e) {},
-             },
-             event);
+  std::visit(Visitor{[this](const TabUiUpdate& ret) {
+                       if (ret.tab) {
+                         this->NotifyUiTabController(*ret.tab,
+                                                     ret.ui_tab_state);
+                       }
+                     },
+                     [this](const ProfileUiUpdate& ret) {
+                       this->MaybeUpdateProfileScopedUiState();
+                     }},
+             new_ui_state);
+
   std::move(callback).Run(MakeOkResult());
 }
 
