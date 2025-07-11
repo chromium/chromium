@@ -4564,38 +4564,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
                   ->IsEnabled());
 }
 
-// This policy was not released and should be cleaned up.
-// TODO(crbug.com/427723401): Remove this test with GenAiLensOverlaySettings
-// cleanup.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       UnreleasedEnterprisePolicy) {
-  Profile* profile = browser()->profile();
-
-  // The default policy is to allow the feature to be enabled.
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
-
-  profile->GetPrefs()->SetInteger(
-      lens::prefs::kGenAiLensOverlaySettings,
-      static_cast<int>(
-          lens::prefs::GenAiLensOverlaySettingsPolicyValue::kDisabled));
-  EXPECT_FALSE(browser()
-                   ->GetFeatures()
-                   .lens_overlay_entry_point_controller()
-                   ->IsEnabled());
-
-  profile->GetPrefs()->SetInteger(
-      lens::prefs::kGenAiLensOverlaySettings,
-      static_cast<int>(lens::prefs::GenAiLensOverlaySettingsPolicyValue::
-                           kAllowedWithoutLogging));
-  EXPECT_TRUE(browser()
-                  ->GetFeatures()
-                  .lens_overlay_entry_point_controller()
-                  ->IsEnabled());
-}
-
 class LensOverlayControllerEntrypointsBrowserTest
     : public LensOverlayControllerBrowserTest,
       public ::testing::WithParamInterface<bool> {

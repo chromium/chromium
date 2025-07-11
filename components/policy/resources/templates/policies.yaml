@@ -1313,7 +1313,7 @@ policies:
   1312: NTPSharepointCardVisible
   1313: SharedWorkerBlobURLFixEnabled
   1314: DeviceNativeClientForceAllowed
-  1315: GenAiLensOverlaySettings
+  1315: ''
   1316: PasswordManagerPasskeysEnabled
   1317: FilePickerChooseFromDriveSettings
   1318: LiveTranslateEnabled

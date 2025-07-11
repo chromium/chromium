@@ -2358,9 +2358,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLensOverlaySettings,
     lens::prefs::kLensOverlaySettings,
     base::Value::Type::INTEGER},
-  { key::kGenAiLensOverlaySettings,
-    lens::prefs::kGenAiLensOverlaySettings,
-    base::Value::Type::INTEGER},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

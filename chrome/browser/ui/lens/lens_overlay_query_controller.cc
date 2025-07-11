@@ -132,8 +132,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             "nothing without explicit user action, so there is no setting to "
             "disable the feature."
           chrome_policy {
-            GenAiLensOverlaySettings {
-              GenAiLensOverlaySettings: 1
+            LensOverlaySettings {
+              LensOverlaySettings: 1
             }
           }
         }

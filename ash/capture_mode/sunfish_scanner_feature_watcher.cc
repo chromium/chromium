@@ -75,8 +75,6 @@ void SunfishScannerFeatureWatcher::OnActiveUserPrefServiceChanged(
   // Sunfish prefs:
   pref_change_registrar_.Add(lens::prefs::kLensOverlaySettings,
                              update_feature_states);
-  pref_change_registrar_.Add(lens::prefs::kGenAiLensOverlaySettings,
-                             update_feature_states);
 
   // Scanner prefs:
   pref_change_registrar_.Add(prefs::kScannerEnabled, update_feature_states);
