@@ -9382,6 +9382,34 @@ PseudoElement* Element::GetPseudoElement(
   return nullptr;
 }
 
+CSSPseudoElement* Element::pseudo(const AtomicString& type) {
+  PseudoId pseudo_id = CSSPseudoElement::ConvertTypeToSupportedPseudoId(type);
+  if (pseudo_id == kPseudoIdInvalid) {
+    return nullptr;
+  }
+  EnsureElementRareData();
+  if (CSSPseudoElement* css_pseudo_element =
+          GetElementRareData()->GetCSSPseudoElement(pseudo_id)) {
+    return css_pseudo_element;
+  }
+  auto* css_pseudo_element =
+      MakeGarbageCollected<CSSPseudoElement>(*this, pseudo_id);
+  GetElementRareData()->CacheCSSPseudoElement(pseudo_id, *css_pseudo_element);
+  return css_pseudo_element;
+}
+
+void Element::CacheCSSPseudoElement(PseudoId pseudo_id,
+                                    CSSPseudoElement& pseudo_element) {
+  EnsureElementRareData().CacheCSSPseudoElement(pseudo_id, pseudo_element);
+}
+
+CSSPseudoElement* Element::GetCSSPseudoElement(PseudoId pseudo_id) const {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetCSSPseudoElement(pseudo_id);
+  }
+  return nullptr;
+}
+
 bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
   ElementRareDataVector* data = GetElementRareData();
   return data && data->HasScrollButtonOrMarkerGroupPseudos();

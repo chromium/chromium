@@ -1415,6 +1415,10 @@
       status: "stable",
     },
     {
+      name: "CSSPseudoElementInterface",
+      status: "experimental",
+    },
+    {
       // Enables the :has-slotted pseudo-selector.
       // https://chromestatus.com/feature/5134941143433216
       name: "CSSPseudoHasSlotted",

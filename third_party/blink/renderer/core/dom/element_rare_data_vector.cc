@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
@@ -464,6 +465,24 @@ ScrollMarkerGroupData*
 ElementRareDataVector::GetScrollMarkerGroupContainerData() const {
   return static_cast<ScrollMarkerGroupData*>(
       GetField(FieldId::kScrollMarkerGroupContainerData));
+}
+
+void ElementRareDataVector::CacheCSSPseudoElement(
+    PseudoId pseudo_id,
+    CSSPseudoElement& pseudo_element) {
+  auto& data =
+      EnsureField<CSSPseudoElementsCacheData>(FieldId::kCSSPseudoElementData);
+  data.CacheCSSPseudoElement(pseudo_id, pseudo_element);
+}
+
+CSSPseudoElement* ElementRareDataVector::GetCSSPseudoElement(
+    PseudoId pseudo_id) const {
+  auto* data = static_cast<CSSPseudoElementsCacheData*>(
+      GetField(FieldId::kCSSPseudoElementData));
+  if (!data) {
+    return {};
+  }
+  return data->GetCSSPseudoElement(pseudo_id);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

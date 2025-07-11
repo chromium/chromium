@@ -67,6 +67,8 @@ dictionary SetHTMLUnsafeOptions {
     [Affects=Nothing] boolean hasAttribute(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
 
+    [RuntimeEnabled=CSSPseudoElementInterface] CSSPseudoElement? pseudo(CSSOMString type);
+
     Attr? getAttributeNode(DOMString name);
     Attr? getAttributeNodeNS(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] Attr? setAttributeNode(Attr attr);

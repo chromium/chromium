@@ -65,6 +65,8 @@ blink_core_sources_dom = [
   "comment.cc",
   "comment.h",
   "create_element_flags.h",
+  "css_pseudo_element.cc",
+  "css_pseudo_element.h",
   "dataset_dom_string_map.cc",
   "dataset_dom_string_map.h",
   "decoded_data_document_parser.cc",
