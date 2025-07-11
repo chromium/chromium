@@ -53,6 +53,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   EncoderStatus InitializeVideoEncoder(
       const VideoEncodeAccelerator::Config& config) override;
 
+  EncoderStatus::Or<size_t> GetEncodedBitstreamWrittenBytesCount(
+      const ScopedD3D12ResourceMap& metadata) override;
+
   EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 

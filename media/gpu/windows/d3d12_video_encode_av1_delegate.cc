@@ -846,22 +846,22 @@ D3D12VideoEncodeAV1Delegate::EncodeImpl(
   return metadata;
 }
 
-EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
-    base::span<uint8_t> bitstream_buffer) {
-  CHECK(software_brc_);
-
-  auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
-  if (!metadata_or_error.has_value()) {
-    return std::move(metadata_or_error).error();
+EncoderStatus::Or<size_t>
+D3D12VideoEncodeAV1Delegate::GetEncodedBitstreamWrittenBytesCount(
+    const ScopedD3D12ResourceMap& metadata) {
+  if (metadata.data().size() <
+      sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA) +
+          sizeof(D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA) +
+          sizeof(
+              D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES) +
+          sizeof(D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES)) {
+    return EncoderStatus::Codes::kEncoderHardwareDriverError;
   }
-  ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
+
   size_t compressed_size =
       reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
           metadata.data().data())
           ->EncodedBitstreamWrittenBytesCount;
-  DVLOG(4) << base::StringPrintf("%s: compressed_size = %lu", __func__,
-                                 compressed_size);
-
   auto subregions =
       reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
           metadata.data().data())
@@ -874,9 +874,40 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
             "D3D12VideoEncodeAV1Delegate: unexpected number of subregions."};
   }
 
+  size_t suregion_size =
+      reinterpret_cast<const D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA*>(
+          metadata.data()
+              .subspan(sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA))
+              .data())
+          ->bSize;
+  // Some Intel drivers may return incorrect EncodedBitstreamWrittenBytesCount,
+  // so use subregion size as the authoritative one when they differ.
+  if (suregion_size != 0 && suregion_size != compressed_size) {
+    compressed_size = suregion_size;
+  }
+  return compressed_size;
+}
+
+EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
+    base::span<uint8_t> bitstream_buffer) {
+  CHECK(software_brc_);
+
+  auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
+  if (!metadata_or_error.has_value()) {
+    return std::move(metadata_or_error).error();
+  }
+  ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
+  auto compressed_size_or_size = GetEncodedBitstreamWrittenBytesCount(metadata);
+  if (!compressed_size_or_size.has_value()) {
+    return std::move(compressed_size_or_size).error();
+  }
+  size_t compressed_size = std::move(compressed_size_or_size).value();
+  DVLOG(4) << base::StringPrintf("%s: compressed_size = %lu", __func__,
+                                 compressed_size);
+
   size_t post_encode_values_offset =
       sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA) +
-      subregions * sizeof(D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA) +
+      1 /*subregions*/ * sizeof(D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA) +
       sizeof(
           D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES);
 

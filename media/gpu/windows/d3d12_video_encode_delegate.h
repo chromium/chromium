@@ -128,6 +128,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   virtual EncoderStatus InitializeVideoEncoder(
       const VideoEncodeAccelerator::Config& config) = 0;
 
+  virtual EncoderStatus::Or<size_t> GetEncodedBitstreamWrittenBytesCount(
+      const ScopedD3D12ResourceMap& metadata);
+
   virtual EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer);
 

@@ -27,6 +27,18 @@ constexpr uint32_t kInputFrameWidth = 1280;
 constexpr uint32_t kInputFrameHeight = 720;
 constexpr VideoCodecProfile kAV1Profile = AV1PROFILE_PROFILE_MAIN;
 
+class MockD3D12VideoEncodeAV1Delegate : public D3D12VideoEncodeAV1Delegate {
+ public:
+  explicit MockD3D12VideoEncodeAV1Delegate(
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device)
+      : D3D12VideoEncodeAV1Delegate(std::move(video_device)) {}
+
+  MOCK_METHOD(EncoderStatus::Or<size_t>,
+              GetEncodedBitstreamWrittenBytesCount,
+              (const ScopedD3D12ResourceMap& metadata),
+              (override));
+};
+
 class D3D12VideoEncodeAV1DelegateTest
     : public D3D12VideoEncodeDelegateTestBase {
  public:
@@ -92,10 +104,15 @@ class D3D12VideoEncodeAV1DelegateTest
         }));
 
     encoder_delegate_ =
-        std::make_unique<D3D12VideoEncodeAV1Delegate>(video_device3_);
+        std::make_unique<MockD3D12VideoEncodeAV1Delegate>(video_device3_);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));
+  }
+
+  MockD3D12VideoEncodeAV1Delegate* GetMockDelegate() {
+    return static_cast<MockD3D12VideoEncodeAV1Delegate*>(
+        encoder_delegate_.get());
   }
 
   VideoEncodeAccelerator::Config GetDefaultConfig() const {
@@ -113,16 +130,15 @@ class D3D12VideoEncodeAV1DelegateTest
   void UpdatePostEncodeValues(
       D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
       D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS& post_encode_flags) {
-    static_cast<D3D12VideoEncodeAV1Delegate*>(encoder_delegate_.get())
-        ->UpdateFrameHeaderPostEncode(post_encode_flags, post_encode_values,
-                                      frame_header_);
+    GetMockDelegate()->UpdateFrameHeaderPostEncode(
+        post_encode_flags, post_encode_values, frame_header_);
   }
 
   void UpdateLoopRestoration(
       const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
       AV1BitstreamBuilder::FrameHeader& frame_header) {
-    static_cast<D3D12VideoEncodeAV1Delegate*>(encoder_delegate_.get())
-        ->UpdateFrameHeaderLoopRestoration(restoration_config, frame_header);
+    GetMockDelegate()->UpdateFrameHeaderLoopRestoration(restoration_config,
+                                                        frame_header);
   }
 
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
@@ -170,6 +186,8 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
         .WillRepeatedly(
             [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+    EXPECT_CALL(*GetMockDelegate(), GetEncodedBitstreamWrittenBytesCount(_))
+        .WillRepeatedly(Return(kStreamSize));
 
     auto result = encoder_delegate_->Encode(
         input_frame.Get(), 0 /*input_frame_subresource*/,

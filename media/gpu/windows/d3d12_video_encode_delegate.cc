@@ -417,6 +417,17 @@ bool D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator==(
   }
 }
 
+EncoderStatus::Or<size_t>
+D3D12VideoEncodeDelegate::GetEncodedBitstreamWrittenBytesCount(
+    const ScopedD3D12ResourceMap& metadata) {
+  if (metadata.data().size() < sizeof(D3D12_VIDEO_ENCODER_OUTPUT_METADATA)) {
+    return EncoderStatus::Codes::kEncoderHardwareDriverError;
+  }
+  return reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
+             metadata.data().data())
+      ->EncodedBitstreamWrittenBytesCount;
+}
+
 EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
     base::span<uint8_t> bitstream_buffer) {
   auto metadata_or_error = video_encoder_wrapper_->GetEncoderOutputMetadata();
@@ -424,9 +435,11 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
     return std::move(metadata_or_error).error();
   }
   ScopedD3D12ResourceMap metadata = std::move(metadata_or_error).value();
-  uint32_t size = reinterpret_cast<const D3D12_VIDEO_ENCODER_OUTPUT_METADATA*>(
-                      metadata.data().data())
-                      ->EncodedBitstreamWrittenBytesCount;
+  auto size_or_error = GetEncodedBitstreamWrittenBytesCount(metadata);
+  if (!size_or_error.has_value()) {
+    return std::move(size_or_error).error();
+  }
+  size_t size = std::move(size_or_error).value();
   D3D12_RANGE written_range{};
   metadata.Commit(&written_range);
   EncoderStatus status =
