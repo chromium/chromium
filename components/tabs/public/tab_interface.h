@@ -140,6 +140,11 @@ class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
   // widget visibility or occlusion of the window.
   virtual bool IsVisible() const = 0;
 
+  // Returns true if the tab is selected in its browser window. Note that
+  // "selected" is distinct from "activated" -- multiple tabs may be selected at
+  // a time, and a selected tab is not necessarily active.
+  virtual bool IsSelected() const = 0;
+
   // Register for these two callbacks to detect changes to IsVisible().
   using DidBecomeVisibleCallback = base::RepeatingCallback<void(TabInterface*)>;
   virtual base::CallbackListSubscription RegisterDidBecomeVisible(

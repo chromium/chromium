@@ -230,6 +230,7 @@ class TabAndroid : public tabs::TabInterface,
   base::CallbackListSubscription RegisterWillDeactivate(
       WillDeactivateCallback callback) override;
   bool IsVisible() const override;
+  bool IsSelected() const override;
   base::CallbackListSubscription RegisterDidBecomeVisible(
       DidBecomeVisibleCallback callback) override;
   base::CallbackListSubscription RegisterWillBecomeHidden(

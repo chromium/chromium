@@ -72,6 +72,13 @@ bool TabInterfaceAndroid::IsVisible() const {
   return weak_tab_android_->IsVisible();
 }
 
+bool TabInterfaceAndroid::IsSelected() const {
+  if (!weak_tab_android_) {
+    return false;
+  }
+  return weak_tab_android_->IsSelected();
+}
+
 base::CallbackListSubscription TabInterfaceAndroid::RegisterDidBecomeVisible(
     DidBecomeVisibleCallback callback) {
   if (!weak_tab_android_) {

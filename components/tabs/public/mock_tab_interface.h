@@ -35,6 +35,7 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (WillDeactivateCallback),
               (override));
   MOCK_METHOD(bool, IsVisible, (), (const, override));
+  MOCK_METHOD(bool, IsSelected, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterDidBecomeVisible,
               (DidBecomeVisibleCallback),

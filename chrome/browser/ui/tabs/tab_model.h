@@ -128,6 +128,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   base::CallbackListSubscription RegisterWillDeactivate(
       TabInterface::WillDeactivateCallback callback) override;
   bool IsVisible() const override;
+  bool IsSelected() const override;
   base::CallbackListSubscription RegisterDidBecomeVisible(
       DidBecomeVisibleCallback callback) override;
   base::CallbackListSubscription RegisterWillBecomeHidden(

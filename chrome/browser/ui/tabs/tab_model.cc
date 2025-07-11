@@ -226,6 +226,12 @@ bool TabModel::IsVisible() const {
   return contents_->GetVisibility() != content::Visibility::HIDDEN;
 }
 
+bool TabModel::IsSelected() const {
+  TabStripModel* tab_strip = GetModelForTabInterface();
+  const int index = tab_strip->GetIndexOfTab(this);
+  return GetModelForTabInterface()->IsTabSelected(index);
+}
+
 base::CallbackListSubscription TabModel::RegisterDidBecomeVisible(
     TabInterface::DidBecomeVisibleCallback callback) {
   return did_become_visible_callback_list_.Add(std::move(callback));
