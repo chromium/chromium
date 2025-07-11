@@ -20,6 +20,8 @@ namespace web_app {
 
 namespace {
 
+using SessionType = IwaCacheClient::SessionType;
+
 // This function is blocking, should be called only by
 // `CleanupBundleCacheCommand::StartWithLock`.
 CleanupBundleCacheResult CleanupBundleCacheCommandImpl(
@@ -62,19 +64,27 @@ CleanupBundleCacheResult CleanupBundleCacheCommandImpl(
       failed_to_cleaned_up_directories});
 }
 
-std::string CleanupBundleCacheCommandErrorToString(
-    const CleanupBundleCacheError& error) {
-  switch (error.type()) {
-    case CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles:
-      return "Could not delete bundles, number of failed directories: " +
-             base::NumberToString(
-                 error.number_of_failed_to_cleaned_up_directories());
-    case CleanupBundleCacheError::Type::kSystemShutdown:
-      return "System is shutting down";
-  }
+}  // namespace
+
+std::string CleanupBundleCacheSuccess::ToString() const {
+  return "Successfully finished cleanup, number of cleaned up directories: " +
+         base::NumberToString(number_of_cleaned_up_directories_);
 }
 
-}  // namespace
+std::string CleanupBundleCacheError::ToString() const {
+  std::string result = "Failed to finish cleanup: ";
+  switch (type_) {
+    case CleanupBundleCacheError::Type::kCouldNotDeleteAllBundles:
+      result +=
+          "Could not delete bundles, number of failed directories: " +
+          base::NumberToString(number_of_failed_to_cleaned_up_directories_);
+      break;
+    case CleanupBundleCacheError::Type::kSystemShutdown:
+      result += "System is shutting down";
+      break;
+  }
+  return result;
+}
 
 CleanupBundleCacheCommand::CleanupBundleCacheCommand(
     const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
@@ -108,12 +118,6 @@ void CleanupBundleCacheCommand::StartWithLock(
 
 void CleanupBundleCacheCommand::CommandComplete(
     const CleanupBundleCacheResult& result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Cleanup bundle cache for "
-               << IwaCacheClient::SessionTypeToString(session_type_)
-               << " failed: "
-               << CleanupBundleCacheCommandErrorToString(result.error());
-  }
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);

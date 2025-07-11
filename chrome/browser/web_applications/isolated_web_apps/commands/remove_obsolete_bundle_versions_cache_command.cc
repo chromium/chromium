@@ -81,20 +81,32 @@ base::expected<base::Version, RemoveObsoleteBundleVersionsError> GetIwaVersion(
 
 }  // namespace
 
-std::string RemoveObsoleteBundleVersionsErrorToString(
-    RemoveObsoleteBundleVersionsError error) {
-  switch (error.type()) {
+std::string RemoveObsoleteBundleVersionsSuccess::ToString() const {
+  return "Successfully finished versions cleanup, number of removed obsolete "
+         "versions: " +
+         base::NumberToString(number_of_removed_versions_);
+}
+
+std::string RemoveObsoleteBundleVersionsError::ToString() const {
+  std::string result = "Failed to finish versions cleanup: ";
+  switch (type_) {
     case RemoveObsoleteBundleVersionsError::Type::kSystemShutdown:
-      return "System is shutting down";
+      result += "System is shutting down";
+      break;
     case RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled:
-      return "IWA is not installed";
+      result += "IWA is not installed";
+      break;
     case RemoveObsoleteBundleVersionsError::Type::kInstalledVersionNotCached:
-      return "Installed version not cached";
+      result += "Installed version not cached";
+      break;
     case RemoveObsoleteBundleVersionsError::Type::kCouldNotDeleteAllVersions:
-      return "Could not delete all previous versions, number of failed "
-             "versions to delete: " +
-             base::NumberToString(error.number_of_failed_remove_versions());
+      result +=
+          "Could not delete all previous versions, number of failed versions "
+          "to delete: " +
+          base::NumberToString(number_of_failed_to_remove_versions_);
+      break;
   }
+  return result;
 }
 
 RemoveObsoleteBundleVersionsCacheCommand::

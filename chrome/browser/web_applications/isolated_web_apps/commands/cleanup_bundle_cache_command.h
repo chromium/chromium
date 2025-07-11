@@ -28,6 +28,8 @@ class CleanupBundleCacheSuccess {
     return number_of_cleaned_up_directories_;
   }
 
+  std::string ToString() const;
+
  private:
   size_t number_of_cleaned_up_directories_ = 0;
 };
@@ -55,6 +57,8 @@ class CleanupBundleCacheError {
     return number_of_failed_to_cleaned_up_directories_;
   }
 
+  std::string ToString() const;
+
  private:
   Type type_;
   // Valid only for `kCouldNotDeleteAllBundles` failure.
@@ -63,8 +67,6 @@ class CleanupBundleCacheError {
 
 using CleanupBundleCacheResult =
     base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>;
-
-using SessionType = IwaCacheClient::SessionType;
 
 // Cleans all IWA cached bundles for `session_type` which are not in the
 // `iwas_to_keep_in_cache`. During the cleanup, this class iterates through all
@@ -77,7 +79,7 @@ class CleanupBundleCacheCommand
 
   CleanupBundleCacheCommand(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
-      SessionType session_type,
+      IwaCacheClient::SessionType session_type,
       Callback callback);
   CleanupBundleCacheCommand(const CleanupBundleCacheCommand&) = delete;
   CleanupBundleCacheCommand& operator=(const CleanupBundleCacheCommand&) =
@@ -94,7 +96,7 @@ class CleanupBundleCacheCommand
 
   std::unique_ptr<AllAppsLock> lock_;
   const std::vector<web_package::SignedWebBundleId> iwas_to_keep_in_cache_;
-  const SessionType session_type_;
+  const IwaCacheClient::SessionType session_type_;
 
   base::WeakPtrFactory<CleanupBundleCacheCommand> weak_ptr_factory_{this};
 };

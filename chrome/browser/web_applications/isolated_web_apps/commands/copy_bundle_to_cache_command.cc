@@ -140,10 +140,6 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void CopyBundleToCacheCommand::CommandComplete(
     const CopyBundleToCacheResult& result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Copy IWA bundle to cache failed: "
-               << CopyBundleToCacheErrorToString(result.error());
-  }
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);

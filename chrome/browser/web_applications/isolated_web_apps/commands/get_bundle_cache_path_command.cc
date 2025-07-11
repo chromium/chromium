@@ -139,10 +139,6 @@ void GetBundleCachePathCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void GetBundleCachePathCommand::CommandComplete(
     const GetBundleCachePathResult& result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Get IWA bundle from cache failed: "
-               << GetBundleCachePathErrorToString(result.error());
-  }
   CompleteAndSelfDestruct(
       result.has_value() ? CommandResult::kSuccess : CommandResult::kFailure,
       result);

@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -582,6 +584,16 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                 base::test::HasValue());
   }
 
+  void CheckCacheManagerDebugOperationResult(const std::string& operation_name,
+                                             const std::string& result) {
+    base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
+    base::Value::List* operations_results =
+        debug_value.GetDict().FindList(kOperationsResults);
+    ASSERT_TRUE(operations_results);
+    EXPECT_TRUE(operations_results->contains(
+        base::Value::Dict().Set(operation_name, result)));
+  }
+
   WebAppProvider& provider() {
     auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
@@ -745,6 +757,10 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
   // After session start the previously cached bundle version should be deleted.
   WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
   CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
+  CheckCacheManagerDebugOperationResult(
+      kRemoveObsoleteIwaVersionCache,
+      "Successfully finished versions cleanup, number of removed obsolete "
+      "versions: 1");
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, PRE_UpdateNotFound) {
@@ -816,6 +832,16 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, UpdateTaskIsTriggeredAutomatically) {
   CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
 
+IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, GetDebugValue) {
+  LaunchSession(kWebBundleId);
+  AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+
+  base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
+  EXPECT_EQ(debug_value.GetDict().FindBool(kBundleCacheIsEnabled), true);
+  EXPECT_NE(debug_value.GetDict().Find(kOperationsResults), nullptr);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaCacheOneAppTest,
@@ -856,6 +882,9 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 
   // Cache for `kWebBundleId` should be removed.
   WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckCacheManagerDebugOperationResult(
+      kCleanupManagedGuestSessionOrphanedIwas,
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
@@ -1009,6 +1038,9 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
   LaunchSession(kWebBundleId);
 
   WaitUntilPathDoesNotExist(kiosk_bundle);
+  CheckCacheManagerDebugOperationResult(
+      kRemoveCacheForIwaKioskDeletedFromPolicy,
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
@@ -1026,12 +1058,19 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
 
 IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
                        RemoveObsoleteMgsCache) {
+  if (IsManagedGuestSession()) {
+    // MGS is cleaned only if it is not configured.
+    return;
+  }
   base::FilePath mgs_bundle = CreateBundlePath(
       kWebBundleId2, kUpdateVersion, SessionType::kManagedGuestSession);
 
   LaunchSession(kWebBundleId);
 
   WaitUntilPathDoesNotExist(mgs_bundle);
+  CheckCacheManagerDebugOperationResult(
+      kRemoveManagedGuestSessionCache,
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,

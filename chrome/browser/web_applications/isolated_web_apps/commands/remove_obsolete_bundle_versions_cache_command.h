@@ -32,6 +32,8 @@ class RemoveObsoleteBundleVersionsSuccess {
     return number_of_removed_versions_;
   }
 
+  std::string ToString() const;
+
  private:
   size_t number_of_removed_versions_;
 };
@@ -61,18 +63,17 @@ class RemoveObsoleteBundleVersionsError {
 
   Type type() const { return type_; }
 
-  size_t number_of_failed_remove_versions() const {
+  size_t number_of_failed_to_remove_versions() const {
     return number_of_failed_to_remove_versions_;
   }
+
+  std::string ToString() const;
 
  private:
   Type type_;
   // Valid only for `kCouldNotDeleteAllVersions` failure.
   size_t number_of_failed_to_remove_versions_;
 };
-
-std::string RemoveObsoleteBundleVersionsErrorToString(
-    RemoveObsoleteBundleVersionsError error);
 
 using RemoveObsoleteBundleVersionsResult =
     base::expected<RemoveObsoleteBundleVersionsSuccess,

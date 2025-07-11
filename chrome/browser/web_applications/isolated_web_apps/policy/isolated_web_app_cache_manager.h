@@ -21,6 +21,17 @@ class Profile;
 namespace web_app {
 class WebAppProvider;
 
+inline constexpr char kBundleCacheIsEnabled[] = "iwa_bundle_cache_is_enabled";
+inline constexpr char kOperationsResults[] = "operations_results";
+inline constexpr char kRemoveManagedGuestSessionCache[] =
+    "remove_managed_guest_session_cache";
+inline constexpr char kRemoveCacheForIwaKioskDeletedFromPolicy[] =
+    "remove_cache_for_iwa_kiosk_deleted_from_policy";
+inline constexpr char kCleanupManagedGuestSessionOrphanedIwas[] =
+    "cleanup_managed_guest_session_orphaned_iwas";
+inline constexpr char kRemoveObsoleteIwaVersionCache[] =
+    "remove_obsolete_iwa_version_cache";
+
 // Controls whether IWA bundle cache directories should be cleaned or not. If
 // `IsIwaBundleCacheEnabled()` returns false, this class will not clean up
 // anything.
@@ -39,28 +50,26 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  base::Value GetDebugValue() const;
+
  private:
   // If Managed Guest Session is not in configured on the device anymore, remove
   // all IWA bundle cache for it.
   void MaybeRemoveManagedGuestSessionCache();
-  void OnMaybeRemoveManagedGuestSessionCache(
-      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
-          result);
+  void OnMaybeRemoveManagedGuestSessionCache(CleanupBundleCacheResult result);
 
   // If some IWA kiosks are not in the policy list anymore, remove their bundles
   // from cache.
   void RemoveCacheForIwaKioskDeletedFromPolicy();
   void OnRemoveCacheForIwaKioskDeletedFromPolicy(
-      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
-          result);
+      CleanupBundleCacheResult result);
 
   // Cleans IWA bundle cache for the IWAs which are not in the policy list for
   // current Managed Guest Session. Does nothing when called outside of the
   // Managed Guest Session.
   void CleanupManagedGuestSessionOrphanedIwas();
   void OnCleanupManagedGuestSessionOrphanedIwas(
-      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
-          result);
+      CleanupBundleCacheResult result);
 
   void TriggerIwaUpdateCheck(const WebApp& iwa);
 
@@ -74,6 +83,10 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   raw_ptr<WebAppProvider> provider_ = nullptr;
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  // Log all the operations results using `operations_results_` for the debug
+  // purpose.
+  base::Value::List operations_results_;
 
   base::WeakPtrFactory<IwaBundleCacheManager> weak_ptr_factory_{this};
 };
