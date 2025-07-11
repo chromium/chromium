@@ -4,22 +4,34 @@
 
 #include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 
+#include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
+#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
 namespace password_manager {
 
 namespace {
 
+using autofill::FieldGlobalId;
 using autofill::FormData;
+using autofill::FormGlobalId;
+using testing::Return;
+using testing::ReturnRef;
+
+constexpr char kTestOtpUrl[] = "https://www.otp-obsessed.com/verification";
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
 
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(void, InformPasswordChangeServiceOfOtpPresent, (), (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(SmsOtpBackend*, GetSmsOtpBackend, (), (const, override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 }  // namespace
 
@@ -27,11 +39,17 @@ class OtpManagerTest : public testing::Test {
  public:
   OtpManagerTest() : otp_manager_(&mock_client_) {}
 
+  void SetUp() override {
+    ON_CALL(mock_client_, GetLastCommittedURL)
+        .WillByDefault(ReturnRef(test_otp_url_));
+  }
+
  protected:
   MockPasswordManagerClient mock_client_;
   OtpManager otp_manager_;
 
  private:
+  GURL test_otp_url_ = GURL(kTestOtpUrl);
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
 };
 
@@ -112,5 +130,71 @@ TEST_F(OtpManagerTest, FormManagerdDeletedWhenOtpFieldIsNoLongerParsedAsSuch) {
       form, {{form.fields()[0].global_id(), autofill::UNKNOWN_TYPE}});
   EXPECT_TRUE(otp_manager_.form_managers().empty());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MockSmsOtpBackend : public SmsOtpBackend {
+ public:
+  MockSmsOtpBackend() = default;
+
+  MOCK_METHOD(void,
+              RetrieveSmsOtp,
+              (base::OnceCallback<void(const OtpFetchReply&)>),
+              (override));
+};
+
+class OtpManagerTestWithSmsBackend : public OtpManagerTest {
+ public:
+  void SetUp() override {
+    OtpManagerTest::SetUp();
+    ON_CALL(mock_client_, GetSmsOtpBackend)
+        .WillByDefault(Return(&sms_otp_backend_));
+  }
+
+ protected:
+  MockSmsOtpBackend sms_otp_backend_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kAndroidSmsOtpFilling};
+};
+
+TEST_F(OtpManagerTestWithSmsBackend, OtpFillingWithOtpValueRetrieved) {
+  // Simulate OTP backend providing a value.
+  std::string otp_value = "123456";
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(testing::Invoke(
+          [&otp_value](
+              base::OnceCallback<void(const OtpFetchReply&)> callback) {
+            std::move(callback).Run(OtpFetchReply(otp_value,
+                                                  /*request_complete=*/true));
+          }));
+
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+      "some_label", "some_name", "some_value",
+      autofill::FormControlType::kInputText)});
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  // A field parsed as an OTP field is eligible for OTP filling.
+  EXPECT_TRUE(otp_manager_.IsFieldEligibleForOtpFilling(
+      form.global_id(), form.fields()[0].global_id()));
+  base::test::TestFuture<std::vector<std::string>> completion_future;
+  otp_manager_.GetOtpSuggestions(form.global_id(), form.fields()[0].global_id(),
+                                 completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Wait());
+  std::vector<std::string> expected_otp_values = {otp_value};
+  std::vector<std::string> received_otp_values = completion_future.Take();
+  EXPECT_EQ(expected_otp_values, received_otp_values);
+
+  FormGlobalId unrelated_form_id = autofill::test::MakeFormGlobalId();
+  EXPECT_FALSE(otp_manager_.IsFieldEligibleForOtpFilling(
+      unrelated_form_id, form.fields()[0].global_id()));
+  FieldGlobalId unrelated_field_id = autofill::test::MakeFieldGlobalId();
+  EXPECT_FALSE(otp_manager_.IsFieldEligibleForOtpFilling(form.global_id(),
+                                                         unrelated_field_id));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

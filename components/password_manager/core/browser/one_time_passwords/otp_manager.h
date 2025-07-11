@@ -50,6 +50,10 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
 #endif  // defined(UNIT_TEST)
 
  private:
+  // Returns a manager for a form, if it exists, or nullptr otherwise.
+  OtpFormManager* GetManagerForForm(
+      const autofill::FormGlobalId& form_id) const;
+
   // The client that owns this class and is guaranteed to outlive it.
   const raw_ptr<PasswordManagerClient> client_;
 

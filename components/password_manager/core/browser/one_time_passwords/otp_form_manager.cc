@@ -16,6 +16,8 @@ namespace password_manager {
 
 namespace {
 
+using autofill::FieldGlobalId;
+
 // TODO(crbug.com/415274388): Evaluate if FieldInfoManager needs to be improved
 // to track more user inputs.
 OtpSource DetermineWhereOtpWasLikelySent(FieldInfoManager* field_info_manager,
@@ -82,8 +84,27 @@ void OtpFormManager::ProcessUpdatedPredictions(
   RetrieveOtpValue();
 }
 
+bool OtpFormManager::IsFieldEligibleForOtpFilling(
+    const FieldGlobalId& field_id) const {
+  return (std::ranges::find(otp_field_ids_, field_id) !=
+          otp_field_ids_.end()) &&
+         (sms_otp_retrieval_in_progress_ || !otp_suggestions_.empty());
+}
+
+void OtpFormManager::GetOtpSuggestions(
+    const FieldGlobalId& field_id,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  CHECK(IsFieldEligibleForOtpFilling(field_id));
+  if (!sms_otp_retrieval_in_progress_) {
+    std::move(callback).Run(otp_suggestions_);
+  } else {
+    pending_suggestion_callback_ = std::move(callback);
+  }
+}
+
 void OtpFormManager::RetrieveOtpValue() {
   if (sms_otp_backend_) {
+    sms_otp_retrieval_in_progress_ = true;
     sms_otp_backend_->RetrieveSmsOtp(
         base::BindOnce(&OtpFormManager::OnOtpRetrievalComplete,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -91,7 +112,14 @@ void OtpFormManager::RetrieveOtpValue() {
 }
 
 void OtpFormManager::OnOtpRetrievalComplete(const OtpFetchReply& reply) {
-  // TODO(crbug.com/415273276): Propagate values into the filling delegate.
+  sms_otp_retrieval_in_progress_ = false;
+  if (reply.otp_value.has_value()) {
+    otp_suggestions_.push_back(reply.otp_value.value());
+  }
+
+  if (pending_suggestion_callback_) {
+    std::move(pending_suggestion_callback_).Run(otp_suggestions_);
+  }
 
   // TODO(crbug.com/415272524): Record metrics on how often the retrieval
   // succeeds or fails, in combination with the OTP source.

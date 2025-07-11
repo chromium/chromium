@@ -42,6 +42,16 @@ class OtpFormManager {
   void ProcessUpdatedPredictions(
       const std::vector<autofill::FieldGlobalId>& otp_field_ids);
 
+  // Returns true if the field was parsed to an OTP field, and the OTP value
+  // was either retrieved successfully, or the retrieval is still ongoing.
+  bool IsFieldEligibleForOtpFilling(
+      const autofill::FieldGlobalId& field_id) const;
+
+  // Invokes `callback` with the OTP suggestions for a given field.
+  void GetOtpSuggestions(
+      const autofill::FieldGlobalId& field_id,
+      base::OnceCallback<void(std::vector<std::string>)> callback);
+
 #if defined(UNIT_TEST)
   const std::vector<autofill::FieldGlobalId>& otp_field_ids() const {
     return otp_field_ids_;
@@ -69,6 +79,15 @@ class OtpFormManager {
   OtpSource otp_source_;
 
   raw_ptr<SmsOtpBackend> sms_otp_backend_ = nullptr;
+  bool sms_otp_retrieval_in_progress_ = false;
+
+  // Fetched OTP values.
+  std::vector<std::string> otp_suggestions_;
+
+  // A callback stored when suggestions are queried before the OTP retrieval is
+  // finished.
+  base::OnceCallback<void(std::vector<std::string>)>
+      pending_suggestion_callback_;
 
   base::WeakPtrFactory<OtpFormManager> weak_ptr_factory_{this};
 };

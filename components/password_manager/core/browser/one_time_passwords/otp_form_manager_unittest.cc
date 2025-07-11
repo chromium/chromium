@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -36,17 +37,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(SmsOtpBackend*, GetSmsOtpBackend, (), (const, override));
 #endif  // BUILDFLAG(IS_ANDROID)
-};
-
-class MockSmsOtpBackend : public SmsOtpBackend {
- public:
-  MockSmsOtpBackend() = default;
-
-  MOCK_METHOD(
-      void,
-      RetrieveSmsOtp,
-      (base::OnceCallback<void(const password_manager::OtpFetchReply&)>),
-      (override));
 };
 
 FieldInfo CreatePhoneNumberFieldInfo() {
@@ -82,7 +72,6 @@ class OtpFormManagerTest : public testing::Test {
   std::vector<FieldGlobalId> field_ids_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
   GURL test_otp_url_ = GURL(kTestOtpUrl);
-  MockSmsOtpBackend sms_otp_backend_;
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
@@ -152,14 +141,34 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(OtpFormManagerTest, SmsOtpBackendUsedForSmsOtpRetrieval) {
-  base::test::ScopedFeatureList scoped_feature_list_(
-      features::kAndroidSmsOtpFilling);
+class MockSmsOtpBackend : public SmsOtpBackend {
+ public:
+  MockSmsOtpBackend() = default;
 
+  MOCK_METHOD(void,
+              RetrieveSmsOtp,
+              (base::OnceCallback<void(const OtpFetchReply&)>),
+              (override));
+};
+
+class OtpFormManagerTestWithSmsBackend : public OtpFormManagerTest {
+ public:
+  void SetUp() override {
+    OtpFormManagerTest::SetUp();
+    ON_CALL(client_, GetLastCommittedURL)
+        .WillByDefault(ReturnRef(test_otp_url_));
+    ON_CALL(client_, GetSmsOtpBackend).WillByDefault(Return(&sms_otp_backend_));
+  }
+
+ protected:
+  MockSmsOtpBackend sms_otp_backend_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kAndroidSmsOtpFilling};
+};
+
+TEST_F(OtpFormManagerTestWithSmsBackend, SmsOtpBackendUsedForSmsOtpRetrieval) {
   // Check that the backend is called on the form manager creation.
-  EXPECT_CALL(client_, GetLastCommittedURL)
-      .WillRepeatedly(ReturnRef(test_otp_url_));
-  EXPECT_CALL(client_, GetSmsOtpBackend).WillOnce(Return(&sms_otp_backend_));
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp);
   OtpFormManager form_manager(form_id_, field_ids_, &client_);
 
@@ -169,6 +178,48 @@ TEST_F(OtpFormManagerTest, SmsOtpBackendUsedForSmsOtpRetrieval) {
                                     FormPredictions());
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp);
   form_manager.ProcessUpdatedPredictions({autofill::test::MakeFieldGlobalId()});
+}
+
+TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingWithOtpValueRetrieved) {
+  std::string otp_value = "123456";
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(testing::Invoke(
+          [&otp_value](
+              base::OnceCallback<void(const OtpFetchReply&)> callback) {
+            std::move(callback).Run(OtpFetchReply(otp_value,
+                                                  /*request_complete=*/true));
+          }));
+  FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
+  OtpFormManager form_manager(form_id_, {otp_field_id}, &client_);
+
+  // A field not parsed as an OTP field is not eligible for OTP filling.
+  FieldGlobalId some_other_field_id = autofill::test::MakeFieldGlobalId();
+  EXPECT_FALSE(form_manager.IsFieldEligibleForOtpFilling(some_other_field_id));
+
+  // A field parsed as an OTP field is eligible for OTP filling.
+  EXPECT_TRUE(form_manager.IsFieldEligibleForOtpFilling(otp_field_id));
+  base::test::TestFuture<std::vector<std::string>> completion_future;
+  form_manager.GetOtpSuggestions(otp_field_id, completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Wait());
+  std::vector<std::string> expected_otp_values = {otp_value};
+  std::vector<std::string> received_otp_values = completion_future.Take();
+  EXPECT_EQ(expected_otp_values, received_otp_values);
+}
+
+TEST_F(OtpFormManagerTestWithSmsBackend, OtpFillingEligibilityOtpValueMissing) {
+  // Simulate OTP retieval request not providing a value.
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(testing::Invoke(
+          [](base::OnceCallback<void(const OtpFetchReply&)> callback) {
+            std::move(callback).Run(OtpFetchReply(/*otp_value=*/std::nullopt,
+                                                  /*request_complete=*/true));
+          }));
+  FieldGlobalId otp_field_id = autofill::test::MakeFieldGlobalId();
+  OtpFormManager form_manager(form_id_, {otp_field_id}, &client_);
+
+  FieldGlobalId some_other_field_id = autofill::test::MakeFieldGlobalId();
+  EXPECT_FALSE(form_manager.IsFieldEligibleForOtpFilling(some_other_field_id));
+  EXPECT_FALSE(form_manager.IsFieldEligibleForOtpFilling(otp_field_id));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
