@@ -4457,7 +4457,6 @@ static_library("browser") {
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/webui/access_code_cast",
-      "//chrome/browser/ui/webui/access_code_cast:impl",
       "//chrome/browser/ui/webui/actor_internals",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
@@ -4691,10 +4690,6 @@ static_library("browser") {
       "//chrome/browser/ui/tabs/tab_strip_api:impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/promos:impl",
-
-      # TODO(crbug.com/364667551): It includes
-      # //c/b/signin/identity_manager_factory.h.
-      "//chrome/browser/ui/webui/access_code_cast:impl",
     ]
 
     #!is_android
