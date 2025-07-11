@@ -498,11 +498,12 @@ auto ToDoNothingCallback(
   return std::apply(
       [](auto&&... args) {
         if constexpr (is_once) {
-          return BindOnce([](TransformToUnwrappedType<is_once, BoundArgs>...,
-                             UnboundArgs...) {},
-                          std::move(args)...);
+          return base::BindOnce(
+              [](TransformToUnwrappedType<is_once, BoundArgs>...,
+                 UnboundArgs...) {},
+              std::move(args)...);
         } else {
-          return BindRepeating(
+          return base::BindRepeating(
               [](TransformToUnwrappedType<is_once, BoundArgs>...,
                  UnboundArgs...) {},
               std::move(args)...);

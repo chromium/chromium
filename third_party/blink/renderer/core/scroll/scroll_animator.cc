@@ -99,7 +99,7 @@ ScrollResult ScrollAnimator::UserScroll(
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
 
-  ScrollableArea::ScrollCallback run_on_return(BindOnce(
+  ScrollableArea::ScrollCallback run_on_return(blink::BindOnce(
       [](ScrollableArea::ScrollCallback callback,
          ScrollableArea::ScrollCompletionMode mode) {
         if (callback) {

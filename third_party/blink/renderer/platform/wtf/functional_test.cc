@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 
-namespace WTF {
+namespace blink {
 
 class HasWeakPtrSupport {
  public:
@@ -55,17 +55,13 @@ class HasWeakPtrSupport {
   base::WeakPtrFactory<HasWeakPtrSupport> weak_ptr_factory_{this};
 };
 
-}  // namespace WTF
-
-namespace WTF {
 namespace {
 
 TEST(FunctionalTest, WeakPtr) {
   HasWeakPtrSupport obj;
   int counter = 0;
-  base::RepeatingClosure bound =
-      WTF::BindRepeating(&HasWeakPtrSupport::Increment, obj.GetWeakPtr(),
-                         WTF::Unretained(&counter));
+  base::RepeatingClosure bound = blink::BindRepeating(
+      &HasWeakPtrSupport::Increment, obj.GetWeakPtr(), Unretained(&counter));
 
   bound.Run();
   EXPECT_FALSE(bound.IsCancelled());
@@ -85,13 +81,13 @@ TEST(FunctionalTest, RawPtr) {
   int i = 123;
   raw_ptr<int> p = &i;
 
-  auto callback = WTF::BindRepeating(PingPong, WTF::Unretained(p));
+  auto callback = BindRepeating(PingPong, Unretained(p));
   int res = callback.Run();
   EXPECT_EQ(123, res);
 }
 
 void MakeClosure(base::OnceClosure** closure_out) {
-  *closure_out = new base::OnceClosure(WTF::BindOnce([] {}));
+  *closure_out = new base::OnceClosure(BindOnce([] {}));
   LEAK_SANITIZER_IGNORE_OBJECT(*closure_out);
 }
 
@@ -101,7 +97,7 @@ TEST(FunctionalTest, ThreadRestriction) {
   base::Thread thread("testing");
   thread.Start();
   thread.task_runner()->PostTask(
-      FROM_HERE, ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
+      FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
                      &MakeClosure, CrossThreadUnretained(&closure))));
   thread.Stop();
 
@@ -111,4 +107,4 @@ TEST(FunctionalTest, ThreadRestriction) {
 }
 
 }  // namespace
-}  // namespace WTF
+}  // namespace blink

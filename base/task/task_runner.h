@@ -158,10 +158,10 @@ class BASE_EXPORT TaskRunner
     auto* result = new std::unique_ptr<TaskReturnType>();
     return PostTaskAndReply(
         from_here,
-        BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
-                 std::move(task), result),
-        BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
-                 std::move(reply), Owned(result)));
+        base::BindOnce(&internal::ReturnAsParamAdapter<TaskReturnType>,
+                       std::move(task), result),
+        base::BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
+                       std::move(reply), Owned(result)));
   }
 
  protected:

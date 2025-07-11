@@ -108,7 +108,7 @@ RepeatingCallback<void(T)> BarrierCallback(
     return BindRepeating(&internal::ShouldNeverRun<T>);
   }
 
-  return BindRepeating(
+  return base::BindRepeating(
       &internal::BarrierCallbackInfo<T, DoneArg>::Run,
       std::make_unique<internal::BarrierCallbackInfo<T, DoneArg>>(
           num_callbacks, std::move(done_callback)));

@@ -431,10 +431,10 @@ void PaintTiming::MarkPaintTimingInternal() {
                   .InMillisecondsF();
         }
 
-        auto flush =
-            BindOnce(std::move(flush_paint_timings),
-                     frame_timing_details.presentation_feedback.timestamp,
-                     paint_timing_info);
+        auto flush = blink::BindOnce(
+            std::move(flush_paint_timings),
+            frame_timing_details.presentation_feedback.timestamp,
+            paint_timing_info);
 
         if (coarsen) {
           // 12.3.2 Wait until the current high resolution time is

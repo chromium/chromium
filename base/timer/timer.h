@@ -294,7 +294,8 @@ class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
              TimeDelta delay,
              Receiver* receiver,
              void (Receiver::*method)()) {
-    Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
+    Start(posted_from, delay,
+          base::BindRepeating(method, base::Unretained(receiver)));
   }
 
   const RepeatingClosure& user_task() const LIFETIME_BOUND {

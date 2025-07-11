@@ -82,8 +82,8 @@ base::OnceCallback<Signature> CoerceFunctorForCrossThreadBind(
 template <typename FunctionType, typename... Ps>
 auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
   static_assert(
-      WTF::internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
-                                               std::decay_t<Ps>...>::ok,
+      internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
+                                          std::decay_t<Ps>...>::ok,
       "A bound argument uses a bad pattern.");
   return internal::MakeCrossThreadFunction(
       base::BindRepeating(internal::CoerceFunctorForCrossThreadBind(
@@ -95,8 +95,8 @@ auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
 template <typename FunctionType, typename... Ps>
 auto CrossThreadBindOnce(FunctionType&& function, Ps&&... parameters) {
   static_assert(
-      WTF::internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
-                                               std::decay_t<Ps>...>::ok,
+      internal::CheckGCedTypeRestrictions<std::index_sequence_for<Ps...>,
+                                          std::decay_t<Ps>...>::ok,
       "A bound argument uses a bad pattern.");
   return internal::MakeCrossThreadOnceFunction(
       base::BindOnce(internal::CoerceFunctorForCrossThreadBind(

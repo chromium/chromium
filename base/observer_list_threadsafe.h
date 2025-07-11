@@ -179,16 +179,16 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
             static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
             current_notification->from_here,
-            BindOnce(&Self::NotifyWrapper, this,
-                     // While `observer` may be dangling, we pass it and
-                     // check it wasn't deallocated in NotifyWrapper() which can
-                     // check `observers_` to verify presence (the owner of the
-                     // observer is responsible for removing it from that list
-                     // before deallocation).
-                     UnsafeDangling(observer),
-                     NotificationData(this, observer_id,
-                                      current_notification->from_here,
-                                      notification_data->method)));
+            base::BindOnce(&Self::NotifyWrapper, this,
+                           // While `observer` may be dangling, we pass it and
+                           // check it wasn't deallocated in NotifyWrapper()
+                           // which can check `observers_` to verify presence
+                           // (the owner of the observer is responsible for
+                           // removing it from that list before deallocation).
+                           UnsafeDangling(observer),
+                           NotificationData(this, observer_id,
+                                            current_notification->from_here,
+                                            notification_data->method)));
       }
     }
 
@@ -231,22 +231,22 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   template <typename Method, typename... Params>
   void Notify(const Location& from_here, Method m, Params&&... params) {
     RepeatingCallback<void(ObserverType*)> method =
-        BindRepeating(&Dispatcher<ObserverType, Method>::Run, m,
-                      std::forward<Params>(params)...);
+        base::BindRepeating(&Dispatcher<ObserverType, Method>::Run, m,
+                            std::forward<Params>(params)...);
 
     AutoLock lock(lock_);
     for (const auto& observer : observers_) {
       observer.second.task_runner->PostTask(
           from_here,
-          BindOnce(&Self::NotifyWrapper, this,
-                   // While `observer.first` may be dangling, we pass it and
-                   // check it wasn't deallocated in NotifyWrapper() which can
-                   // check `observers_` to verify presence (the owner of the
-                   // observer is responsible for removing it from that list
-                   // before deallocation).
-                   UnsafeDangling(observer.first),
-                   NotificationData(this, observer.second.observer_id,
-                                    from_here, method)));
+          base::BindOnce(&Self::NotifyWrapper, this,
+                         // While `observer.first` may be dangling, we pass it
+                         // and check it wasn't deallocated in NotifyWrapper()
+                         // which can check `observers_` to verify presence (the
+                         // owner of the observer is responsible for removing it
+                         // from that list before deallocation).
+                         UnsafeDangling(observer.first),
+                         NotificationData(this, observer.second.observer_id,
+                                          from_here, method)));
     }
   }
 

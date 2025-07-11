@@ -95,8 +95,8 @@ OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
   added_entry_in_latest_frame_ = false;
 
   auto callback =
-      BindOnce(&TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
-               WrapWeakPersistent(this), frame_index_++);
+      blink::BindOnce(&TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
+                      WrapWeakPersistent(this), frame_index_++);
   if (!callback_manager_) {
     return callback;
   }
