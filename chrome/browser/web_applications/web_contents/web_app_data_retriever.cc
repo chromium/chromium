@@ -185,7 +185,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
                                    const IconUrlSizeSet& extra_icon_urls,
-                                   bool skip_page_favicons,
+                                   bool download_page_favicons,
                                    bool fail_all_if_any_fail,
                                    GetIconsCallback callback) {
   DCHECK(!web_contents->IsBeingDestroyed());
@@ -205,7 +205,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
   }
 
   IconDownloaderOptions options = {
-      .skip_page_favicons = skip_page_favicons,
+      .download_page_favicons = download_page_favicons,
       .fail_all_if_any_fail = fail_all_if_any_fail};
   icon_downloader_ = std::make_unique<WebAppIconDownloader>();
   icon_downloader_->Start(

@@ -252,7 +252,6 @@ void ManifestSilentUpdateCommand::StashNewManifestJson(
   // TODO(msiem): Change icon downloading options if needed while implementing
   // other parts of the command.
   WebAppInstallInfoConstructOptions construct_options;
-  construct_options.skip_page_favicons = true;
   construct_options.fail_all_if_any_fail = true;
 
   // The `background_installation` and `install_source` fields here don't matter

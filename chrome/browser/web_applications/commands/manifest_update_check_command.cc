@@ -199,7 +199,6 @@ void ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo(
   }
 
   WebAppInstallInfoConstructOptions construct_options;
-  construct_options.skip_page_favicons = true;
   construct_options.fail_all_if_any_fail = true;
   construct_options.record_icon_results_on_update = true;
 

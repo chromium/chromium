@@ -106,7 +106,7 @@ void InstallPlaceholderJob::FetchCustomIcon(const GURL& url, int retries_left) {
 
   data_retriever_->GetIcons(
       web_contents_.get(), {IconUrlWithSize::CreateForUnspecifiedSize(url)},
-      /*skip_page_favicons=*/true,
+      /*download_page_favicons=*/false,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallPlaceholderJob::OnCustomIconFetched,
                      weak_factory_.GetWeakPtr(), url, retries_left));

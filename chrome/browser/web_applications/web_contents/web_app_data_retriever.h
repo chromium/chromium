@@ -85,7 +85,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // the retrieved icons.
   virtual void GetIcons(content::WebContents* web_contents,
                         const IconUrlSizeSet& extra_favicon_urls,
-                        bool skip_page_favicons,
+                        bool download_page_favicons,
                         bool fail_all_if_any_fail,
                         GetIconsCallback callback);
 

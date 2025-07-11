@@ -524,8 +524,8 @@ void FetchManifestAndInstallCommand::OnDidCheckForIntentToPlayStore(
   // `opt_manifest_`.
   CHECK(opt_manifest_);
   WebAppInstallInfoConstructOptions construct_options;
-  construct_options.skip_page_favicons =
-      skip_page_favicons_on_initial_download_;
+  construct_options.download_page_favicons =
+      !skip_page_favicons_on_initial_download_;
   construct_options.fail_all_if_any_fail = false;
 
   // Only use the fallback information if the installation is for a path that
@@ -586,7 +586,7 @@ void FetchManifestAndInstallCommand::OnInstallInfoObtainedMergeAndShowDialog(
       web_app_info_->is_diy_app = true;
       data_retriever_->GetIcons(
           web_contents_.get(), {},
-          /*skip_page_favicons=*/false,
+          /*download_page_favicons=*/true,
           /*fail_all_if_any_fail=*/false,
           base::BindOnce(&FetchManifestAndInstallCommand::
                              OnIconsDownloadedForFallbackInfoShowDialog,

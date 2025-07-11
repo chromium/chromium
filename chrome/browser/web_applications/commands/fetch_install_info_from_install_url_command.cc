@@ -162,7 +162,7 @@ void FetchInstallInfoFromInstallUrlCommand::
   // create a WebAppInstallInfo from it.
   if (opt_manifest) {
     WebAppInstallInfoConstructOptions construct_options;
-    construct_options.skip_page_favicons = !opt_manifest->icons.empty();
+    construct_options.download_page_favicons = opt_manifest->icons.empty();
 
     manifest_to_install_info_job_ =
         ManifestToWebAppInstallInfoJob::CreateAndStart(
@@ -183,7 +183,7 @@ void FetchInstallInfoFromInstallUrlCommand::
 
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/false,
+      /*download_page_favicons=*/true,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(
           &FetchInstallInfoFromInstallUrlCommand::OnIconsRetrievedForNoManifest,

@@ -351,7 +351,7 @@ void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
     blink::mojom::ManifestPtr opt_manifest) {
   CHECK(opt_manifest);
   WebAppInstallInfoConstructOptions construct_options;
-  construct_options.skip_page_favicons = !opt_manifest->icons.empty();
+  construct_options.download_page_favicons = opt_manifest->icons.empty();
   // For installations triggered via policy with `install_as_shortcut` set to
   // true, the app needs resources fetched from the manifest and it should also
   // behave like DIY apps.

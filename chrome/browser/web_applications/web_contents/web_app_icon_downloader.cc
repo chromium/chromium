@@ -84,14 +84,14 @@ void WebAppIconDownloader::Start(
   // Favicons are supported only in HTTP or HTTPS WebContents.
   const GURL& url = web_contents->GetLastCommittedURL();
   if (!url.is_empty() && !url.inner_url() && !url.SchemeIsHTTPOrHTTPS()) {
-    options_.skip_page_favicons = true;
+    options_.download_page_favicons = false;
   }
 
   // The call to `GetFaviconURLsFromWebContents()` is to allow this method to
   // be mocked by unit tests.
   const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
-  if (!options_.skip_page_favicons && !favicon_urls.empty()) {
+  if (options_.download_page_favicons && !favicon_urls.empty()) {
     std::vector<IconUrlWithSize> combined_icon_infos(
         extra_icon_urls_with_sizes.begin(), extra_icon_urls_with_sizes.end());
     combined_icon_infos.reserve(combined_icon_infos.size() +

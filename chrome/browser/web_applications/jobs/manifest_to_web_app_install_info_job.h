@@ -41,8 +41,9 @@ struct WebAppInstallInfoConstructOptions {
   // between whether icons were generated because they failed to download or
   // because there were no icon urls to download.
   bool bypass_icon_generation_if_no_url = false;
-  // Skip downloading favicons from the WebContents.
-  bool skip_page_favicons = true;
+  // Download favicons also from the page if set as part of the icon
+  // downloading.
+  bool download_page_favicons = false;
   // If the download should end early if any failures occur.
   bool fail_all_if_any_fail = false;
   // Record results of icon downloading on manifest update, should only be

@@ -318,14 +318,12 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  bool skip_page_favicons = true;
-  bool fail_all_if_any_fail = false;
-
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(),
                      /*extra_favicon_urls=*/IconUrlSizeSet(),
-                     skip_page_favicons, fail_all_if_any_fail,
+                     /*download_page_favicons=*/false,
+                     /*fail_all_if_any_fail=*/false,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,
                              DownloadedIconsHttpResults icons_http_results) {

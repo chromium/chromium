@@ -655,7 +655,7 @@ class InstallIsolatedWebAppCommandHelperManifestIconsTest
         GetIcons(_,
                  UnorderedElementsAre(
                      IconUrlWithSize::CreateForUnspecifiedSize(image_url)),
-                 /*skip_page_favicons=*/true,
+                 /*download_page_favicons=*/false,
                  /*fail_all_if_any_fail=*/true, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<4>(IconsDownloadedResult::kCompleted, icons,
                                      http_result));

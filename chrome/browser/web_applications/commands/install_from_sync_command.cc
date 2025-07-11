@@ -320,7 +320,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   // TODO(dmurph): Also use favicons. https://crbug.com/1328977.
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/true,
+      /*download_page_favicons=*/false,
       /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo,
                      weak_ptr_factory_.GetWeakPtr()));

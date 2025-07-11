@@ -28,8 +28,8 @@ namespace web_app {
 enum class IconsDownloadedResult;
 
 struct IconDownloaderOptions {
-  // If favicons from the current WebContents should not be downloaded.
-  bool skip_page_favicons = false;
+  // If favicons from the current WebContents need to be downloaded.
+  bool download_page_favicons = true;
   // If the download should end early if any failures occur.
   bool fail_all_if_any_fail = false;
 };

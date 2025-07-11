@@ -176,7 +176,7 @@ class FakeWebContentsManager::FakeWebAppIconDownloader
     }
 
     // Add favicon if requested & available.
-    if (!options.skip_page_favicons) {
+    if (options.download_page_favicons) {
       GURL url = manager_->loaded_urls_[web_contents];
       CHECK(url.is_valid() || url.is_empty())
           << "No url has been loaded on this web contents. " << url.spec();
@@ -309,7 +309,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
 
   void GetIcons(content::WebContents* web_contents,
                 const IconUrlSizeSet& extra_favicon_urls,
-                bool skip_page_favicons,
+                bool download_page_favicons,
                 bool fail_all_if_any_fail,
                 GetIconsCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -321,7 +321,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
         base::DoNothingWithBoundArgs(std::move(fake_downloader));
     downloader_ptr->Start(web_contents, extra_favicon_urls,
                           std::move(callback).Then(std::move(owning_callback)),
-                          {.skip_page_favicons = skip_page_favicons,
+                          {.download_page_favicons = download_page_favicons,
                            .fail_all_if_any_fail = fail_all_if_any_fail});
   }
 
