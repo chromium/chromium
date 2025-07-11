@@ -89,6 +89,9 @@ source_set("ui_event_types") {
   ]
   public_deps = [
     "//base",
+
+    # ActorTask::State isn't in actor:types
+    "//chrome/browser/actor:actor",
     "//chrome/browser/actor:types",
   ]
   deps = [ "//components/tabs:public" ]

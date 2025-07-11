@@ -39,6 +39,15 @@ TEST_F(UiEventDebugStringTest, StartTask) {
   EXPECT_EQ(DebugString(StartTask(TaskId(123))), "StartTask[id=123]");
 }
 
+TEST_F(UiEventDebugStringTest, TaskStateChanged) {
+  EXPECT_EQ(
+      DebugString(TaskStateChanged(TaskId(123), ActorTask::State::kActing)),
+      "TaskStateChanged[task_id=123, state=Acting]");
+  EXPECT_EQ(DebugString(TaskStateChanged(TaskId(8675),
+                                         ActorTask::State::kPausedByClient)),
+            "TaskStateChanged[task_id=8675, state=PausedByClient]");
+}
+
 TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
   EXPECT_EQ(DebugString(StartingToActOnTab(Handle(), TaskId(123))),
             "StartingToActOnTab[task_id=123, tab=5555]");
