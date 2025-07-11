@@ -155,22 +155,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
-    protected boolean hasFeatures(Account account, String[] features) {
-        if (hasGetAccountsPermission()) {
-            try {
-                return mAccountManager.hasFeatures(account, features, null, null).getResult();
-            } catch (AuthenticatorException | IOException | OperationCanceledException e) {
-                Log.e(TAG, "Error while checking features: ", e);
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean hasFeature(Account account, String feature) {
-        return hasFeatures(account, new String[] {feature});
-    }
-
     @Override
     public @CapabilityResponse int hasCapability(@Nullable Account account, String capability) {
         RecordHistogram.recordEnumeratedHistogram(

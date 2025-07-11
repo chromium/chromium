@@ -122,15 +122,10 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
-    @Override
-    public boolean hasFeature(Account account, String feature) {
-        // Account features aren't supported in FakeAccountManagerDelegate.
-        return false;
-    }
 
     @Override
     public @CapabilityResponse int hasCapability(Account account, String capability) {
-        return hasFeature(account, capability) ? CapabilityResponse.YES : CapabilityResponse.NO;
+        return CapabilityResponse.NO;
     }
 
     @Override

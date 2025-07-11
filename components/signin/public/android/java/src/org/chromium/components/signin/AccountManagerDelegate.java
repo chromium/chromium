@@ -72,10 +72,6 @@ public interface AccountManagerDelegate {
     @WorkerThread
     void invalidateAccessToken(String authToken) throws AuthException;
 
-    /** Check whether the given account has a specific feature. */
-    @WorkerThread
-    boolean hasFeature(Account account, String feature);
-
     /**
      * Returns a {@link CapabilityResponse} which indicates whether the account has the requested
      * capability or has exception.
