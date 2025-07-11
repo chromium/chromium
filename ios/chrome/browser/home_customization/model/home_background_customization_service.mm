@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/base64.h"
 #import "base/logging.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -13,6 +15,12 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "url/gurl.h"
+
+namespace {
+// Keys for user-uploaded background dictionary serialization.
+const char kImagePathKey[] = "image_path";
+const char kFramingDataKey[] = "framing_data";
+}  // namespace
 
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
     PrefService* pref_service)
@@ -28,6 +36,7 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kIosSavedThemeSpecificsIos,
                                std::string());
+  registry->RegisterDictionaryPref(prefs::kIosUserUploadedBackground);
 }
 
 std::optional<sync_pb::NtpCustomBackground>
@@ -112,4 +121,17 @@ void HomeBackgroundCustomizationService::NotifyObserversOfBackgroundChange() {
   for (HomeBackgroundCustomizationServiceObserver& observer : observers_) {
     observer.OnBackgroundChanged();
   }
+}
+
+void HomeBackgroundCustomizationService::SetCurrentUserUploadedBackground(
+    const std::string& image_path,
+    const base::Value::Dict& framing_data) {
+  base::Value::Dict background_data;
+  background_data.Set(kImagePathKey, image_path);
+  background_data.Set(kFramingDataKey, framing_data.Clone());
+
+  pref_service_->SetDict(prefs::kIosUserUploadedBackground,
+                         std::move(background_data));
+
+  NotifyObserversOfBackgroundChange();
 }

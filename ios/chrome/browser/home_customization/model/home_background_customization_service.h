@@ -8,6 +8,7 @@
 #import <string>
 
 #import "base/observer_list.h"
+#import "base/values.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
@@ -60,6 +61,14 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void SetBackgroundColor(
       SkColor color,
       sync_pb::UserColorTheme::BrowserColorVariant color_variant);
+
+  /// Sets the background to a user-uploaded photo.
+  /// - `image_path` is the file path to the saved image in the profile
+  /// directory.
+  /// - `framing_data` contains the coordinates for how the image should be
+  /// framed.
+  void SetCurrentUserUploadedBackground(const std::string& image_path,
+                                        const base::Value::Dict& framing_data);
 
   // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
   void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);

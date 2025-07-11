@@ -402,6 +402,10 @@ inline constexpr char kIosChooseFromDriveFilePickerPolicySettings[] =
 inline constexpr char kIosSavedThemeSpecificsIos[] =
     "ios.saved_theme_specifics_ios";
 
+// Dictionary pref storing user-uploaded background image path and framing data.
+inline constexpr char kIosUserUploadedBackground[] =
+    "ios.user_uploaded_background";
+
 // String preference containing the default account to use for saving images to
 // Google Photos.
 inline constexpr char kIosSaveToPhotosDefaultGaiaId[] =
