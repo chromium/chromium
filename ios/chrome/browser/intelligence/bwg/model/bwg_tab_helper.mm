@@ -165,7 +165,8 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
-    [bwg_commands_handler_ startBWGFlow];
+    [bwg_commands_handler_
+        startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
   }
 }
 

@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_util.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -2484,7 +2485,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Starts ask BWG.
 - (void)startAskBWG {
   [self dismissMenu];
-  [self.BWGHandler startBWGFlow];
+  [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OverflowMenu];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

@@ -1,3 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
 ]

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -382,7 +383,7 @@ const CGFloat kLargeButtonImagePadding = 8;
   RecordAIHubAction(IOSAIHubAction::kGemini);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    [weakSelf.BWGHandler startBWGFlow];
+    [weakSelf.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::AIHub];
   }];
 }
 

@@ -126,6 +126,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -2956,11 +2957,11 @@ enum class ToolbarKind {
 
 #pragma mark - BWGCommands
 
-- (void)startBWGFlow {
-  _BWGCoordinator = [[BWGCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                  fromEntryPoint:bwg::EntryPointOverflow];
+- (void)startBWGFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
+  _BWGCoordinator =
+      [[BWGCoordinator alloc] initWithBaseViewController:self.viewController
+                                                 browser:self.browser
+                                          fromEntryPoint:entryPoint];
   _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
   [_BWGCoordinator start];
 }
@@ -3068,12 +3069,7 @@ enum class ToolbarKind {
     BOOL isNTP = NTPHelper && NTPHelper->IsActive();
 
     if (!isNTP) {
-      _BWGCoordinator = [[BWGCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                      fromEntryPoint:bwg::EntryPointPromo];
-      _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
-      [_BWGCoordinator start];
+      [self startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
     }
   }
 }

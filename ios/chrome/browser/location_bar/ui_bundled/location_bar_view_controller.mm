@@ -19,6 +19,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -1029,7 +1030,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 - (void)handlePageActionMenuEntrypointTapped {
   // TODO(crbug.com/402827015): Log opens.
   if (IsDirectBWGEntryPoint()) {
-    [self.BWGHandler startBWGFlow];
+    [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
   } else {
     [self.pageActionMenuHandler showPageActionMenu];
   }

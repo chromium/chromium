@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -68,7 +69,7 @@ void DiamondPrototypeStartGemini(bool from_tab_grid,
   } else {
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
-    [BWGCommandsHandler startBWGFlow];
+    [BWGCommandsHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::Diamond];
   }
 }
 

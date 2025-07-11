@@ -280,7 +280,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Promo"/>
   <int value="1" label="Overflow Menu"/>
   <int value="2" label="AI Hub"/>
-  <int value="3" label="Omnibox Chip"/>
+  <int value="3" label="Omnibox Chip (Skipped AI Hub)"/>
+  <int value="4" label="Tab Reopen"/>
 </enum>
 
 <enum name="iOSCredentialIdentityStoreErrorForReporting">

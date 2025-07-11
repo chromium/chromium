@@ -114,7 +114,7 @@
 
   // If promo was shown outside the promos manager, ensure the promo doesn't
   // show through the promos manager.
-  if (_entryPoint != bwg::EntryPointPromo) {
+  if (_entryPoint != bwg::EntryPoint::Promo) {
     _prefService->SetBoolean(prefs::kIOSBWGManualPromo, true);
     _tracker->UnregisterPriorityNotificationHandler(
         feature_engagement::kIPHIOSBWGPromoFeature);
@@ -167,7 +167,7 @@
 #pragma mark - BWGNavigationControllerDelegate
 
 - (void)promoWasDismissed:(BWGNavigationController*)navigationController {
-  if (_entryPoint == bwg::EntryPointPromo) {
+  if (_entryPoint == bwg::EntryPoint::Promo) {
     [self.promosUIHandler promoWasDismissed];
   }
 }
@@ -188,7 +188,7 @@
   BOOL forcePromo = ShouldForceBWGPromo();
   BOOL promoTriggered = _tracker->HasEverTriggered(
       feature_engagement::kIPHIOSBWGPromoFeature, true);
-  BOOL isPromoEntry = _entryPoint == bwg::EntryPointPromo;
+  BOOL isPromoEntry = _entryPoint == bwg::EntryPoint::Promo;
 
   return isPromoEntry || (!promoTriggered && !promoShownManually) || forcePromo;
 }
