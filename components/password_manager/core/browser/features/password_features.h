@@ -16,6 +16,10 @@ namespace password_manager::features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kActorLogin);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables filling of OTPs received via SMS on Android.
 BASE_DECLARE_FEATURE(kAndroidSmsOtpFilling);
