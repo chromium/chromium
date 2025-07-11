@@ -511,7 +511,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void NotifyReadyToActivate() override;
   void NotifyReadyToDraw() override;
   void NotifyAllTileTasksCompleted() override;
-  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
+  void NotifyTileStateChanged(const Tile* tile,
+                              bool update_damage,
+                              bool set_needs_redraw) override;
   std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
       TreePriority tree_priority,
       RasterTilePriorityQueue::Type type) override;
@@ -680,7 +682,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool visible() const { return visible_; }
 
   void SetNeedsOneBeginImplFrame();
-  void SetNeedsRedraw(bool animation_only = false);
+  void SetNeedsRedraw(bool animation_only, bool skip_if_inside_draw) override;
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
 

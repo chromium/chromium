@@ -94,8 +94,10 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
       CleanUpAndEndTest();
       return;
     }
-    if (!begin_frame_driven_drawing_)
-      host_impl->SetNeedsRedraw();
+    if (!begin_frame_driven_drawing_) {
+      host_impl->SetNeedsRedraw(/*animation_only=*/false,
+                                /*skip_if_inside_draw=*/false);
+    }
     if (full_damage_each_frame_)
       host_impl->SetFullViewportDamage();
   }

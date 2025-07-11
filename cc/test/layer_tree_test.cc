@@ -359,8 +359,11 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->UpdateAnimationState(this, has_unfinished_animation);
   }
 
-  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override {
-    LayerTreeHostImpl::NotifyTileStateChanged(tile, update_damage);
+  void NotifyTileStateChanged(const Tile* tile,
+                              bool update_damage,
+                              bool set_needs_redraw) override {
+    LayerTreeHostImpl::NotifyTileStateChanged(tile, update_damage,
+                                              set_needs_redraw);
     test_hooks_->NotifyTileStateChangedOnThread(this, tile, update_damage);
   }
 

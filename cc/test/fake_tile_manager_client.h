@@ -21,7 +21,9 @@ class FakeTileManagerClient : public TileManagerClient {
   void NotifyReadyToActivate() override {}
   void NotifyReadyToDraw() override {}
   void NotifyAllTileTasksCompleted() override {}
-  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override {}
+  void NotifyTileStateChanged(const Tile* tile,
+                              bool update_damage,
+                              bool set_needs_redraw) override {}
   std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
       TreePriority tree_priority,
       RasterTilePriorityQueue::Type type) override;
@@ -38,6 +40,7 @@ class FakeTileManagerClient : public TileManagerClient {
   int GetMSAASampleCountForRaster(
       const DisplayItemList& display_list) const override;
   bool HasPendingTree() override;
+  void SetNeedsRedraw(bool animation_only, bool skip_if_inside_draw) override {}
 
  private:
   gfx::ColorSpace color_space_;

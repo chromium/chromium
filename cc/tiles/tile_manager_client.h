@@ -42,7 +42,12 @@ class CC_EXPORT TileManagerClient {
   // - Tile resources freed.
   // - Tile marked for on-demand raster.
   virtual void NotifyTileStateChanged(const Tile* tile,
-                                      bool update_damage = true) = 0;
+                                      bool update_damage,
+                                      bool set_needs_redraw) = 0;
+
+  // This triggers Scheduler::ProcessScheduledActions().
+  virtual void SetNeedsRedraw(bool animation_only,
+                              bool skip_if_inside_draw) = 0;
 
   // Given an empty raster tile priority queue, this will build a priority queue
   // that will return tiles in the order in which they should be rasterized.

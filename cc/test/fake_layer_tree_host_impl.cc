@@ -84,8 +84,10 @@ void FakeLayerTreeHostImpl::EnsureSyncTree() {
 }
 
 void FakeLayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
-                                                   bool update_damage) {
-  LayerTreeHostImpl::NotifyTileStateChanged(tile, update_damage);
+                                                   bool update_damage,
+                                                   bool set_needs_redraw) {
+  LayerTreeHostImpl::NotifyTileStateChanged(tile, update_damage,
+                                            set_needs_redraw);
   notify_tile_state_changed_called_ = update_damage;
 }
 
