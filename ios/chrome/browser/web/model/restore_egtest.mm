@@ -27,6 +27,7 @@ using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::NTPCollectionView;
 using chrome_test_util::OmniboxText;
+using chrome_test_util::ShowTabsButton;
 
 namespace {
 
@@ -286,7 +287,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
                                               kPageOneTitle)),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+      performAction:grey_tap()];
 
   // Go back to error page.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
@@ -327,7 +330,8 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
                                                 kPageTwoTitle)),
                                             grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+
+    [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
         performAction:grey_tap()];
   }
   [self triggerRestore];
@@ -342,7 +346,8 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
                                                 kPageTwoTitle)),
                                             grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+
+    [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
         performAction:grey_tap()];
   }
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
