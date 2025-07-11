@@ -17,25 +17,9 @@ struct AccountQuery: EntityQuery {
   }
 
   func defaultResult() async -> AccountDetail? {
-    let noAccountName = String(
-      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
-
-    let noAccount = AccountDetail(id: "Default", email: noAccountName)
-
-    guard let accounts = try? await suggestedEntities()
-    else { return noAccount }
-
-    // If available, return the primary account as default result.
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-    else { return noAccount }
-    guard let primaryAccount = sharedDefaults.object(forKey: "ios.primary_account") as? String
-    else { return noAccount }
-    for account in accounts {
-      if account.id == primaryAccount {
-        return AccountDetail(id: account.id, email: account.email)
-      }
-    }
-    return noAccount
+    let defaultAccountName = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_DEFAULT_ACCOUNT_LABEL")
+    return AccountDetail(id: "Default", email: defaultAccountName)
   }
 }
 
@@ -63,7 +47,11 @@ struct AccountDetail: AppEntity {
 
     let noAccountName = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
-    accountsDetail.append(AccountDetail(id: "Default", email: noAccountName))
+    let defaultAccountName = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_DEFAULT_ACCOUNT_LABEL")
+
+    accountsDetail.append(AccountDetail(id: "Default", email: defaultAccountName))
+    accountsDetail.append(AccountDetail(id: "No account", email: noAccountName))
 
     for (key, value) in accounts {
       if let email = value["email"] as? String {
