@@ -58,6 +58,7 @@ void PrefetchContainerObserver::OnDeterminedHead(
 }
 
 void PrefetchContainerObserver::OnPrefetchCompletedOrFailed(
+    PrefetchContainer& prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status,
     const std::optional<int>& response_code) {
   if (on_prefetch_completed_or_failed_) {

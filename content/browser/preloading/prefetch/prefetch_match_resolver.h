@@ -48,6 +48,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
                                PreloadingEligibility eligibility) override;
   void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
+      PrefetchContainer& prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override;
 

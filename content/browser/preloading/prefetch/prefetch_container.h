@@ -237,7 +237,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Each callback is called at most once in the lifecycle of a container.
   //
   // Be careful about using this. This is designed only for
-  // `PrefetchMatchResolver`.
+  // `PrefetchMatchResolver` and some other prefetch-internal classes.
   class Observer : public base::CheckedObserver {
    public:
     // Called at the head of dtor.
@@ -254,6 +254,7 @@ class CONTENT_EXPORT PrefetchContainer {
     virtual void OnDeterminedHead(PrefetchContainer& prefetch_container) = 0;
     // Called when load of prefetch completed or failed.
     virtual void OnPrefetchCompletedOrFailed(
+        PrefetchContainer& prefetch_container,
         const network::URLLoaderCompletionStatus& completion_status,
         const std::optional<int>& response_code) = 0;
   };

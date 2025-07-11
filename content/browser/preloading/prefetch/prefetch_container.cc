@@ -1403,7 +1403,8 @@ void PrefetchContainer::OnPrefetchComplete(
     response_code = GetNonRedirectHead()->headers->response_code();
   }
   for (auto& observer : observers_) {
-    observer.OnPrefetchCompletedOrFailed(completion_status, response_code);
+    observer.OnPrefetchCompletedOrFailed(*this, completion_status,
+                                         response_code);
   }
 
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
