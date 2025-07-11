@@ -103,6 +103,17 @@ public class BuildConfig {
     public static String APK_ASSETS_SUFFIX = null;
 #endif
 
+    // Use in conjunction with FEATURE_PC check to limit desktop-only
+    // features to devices with build flag. Should only be used in
+    // DeviceInfo.java since this is the source of truth for isDesktop check.
+    // (TODO: crbug.com/430983585) Clean up this flag once the desktop
+    // build is fully functional.
+#if defined(_IS_DESKTOP_ANDROID)
+    public static boolean IS_DESKTOP_ANDROID = true;
+#else
+    public static boolean IS_DESKTOP_ANDROID;
+#endif
+
     // Controls whether or not StrictModeContext is a no-op.
 #if defined(_DISABLE_STRICT_MODE_CONTEXT)
     public static boolean DISABLE_STRICT_MODE_CONTEXT = true;

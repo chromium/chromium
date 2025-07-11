@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.chromium.build.BuildConfig;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.PackageManagerWrapper;
@@ -33,6 +34,9 @@ public class OverrideContextWrapperTestRule implements TestRule {
 
         public void setIsDesktop(boolean isDesktop) {
             this.mIsDesktop = isDesktop;
+            // (TODO: crbug.com/430983585) Clean up this flag once the desktop
+            // build is fully functional.
+            BuildConfig.IS_DESKTOP_ANDROID = isDesktop;
         }
 
         @Override
@@ -66,6 +70,7 @@ public class OverrideContextWrapperTestRule implements TestRule {
             public void evaluate() throws Throwable {
                 // Before
                 Context contextToRestore = ContextUtils.getApplicationContext();
+                boolean isDesktopToRestore = BuildConfig.IS_DESKTOP_ANDROID;
                 mContext = new OverrideTestContext(contextToRestore);
                 ContextUtils.initApplicationContextForTests(mContext);
 
@@ -77,6 +82,8 @@ public class OverrideContextWrapperTestRule implements TestRule {
                 if (contextToRestore != null) {
                     ContextUtils.initApplicationContextForTests(contextToRestore);
                 }
+                // Also reset IS_DESKTOP_ANDROID to its original value.
+                BuildConfig.IS_DESKTOP_ANDROID = isDesktopToRestore;
             }
         };
     }
