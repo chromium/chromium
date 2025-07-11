@@ -249,7 +249,7 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
       std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
           account_info_,
           /*is_OIDC_account=*/false,
-          /*turn_sync_on_signed_profile=*/false,
+          /*user_already_signed_in=*/false,
           /*profile_creation_required_by_policy*/
           profile_creation_required_by_policy_,
           /*show_link_data_option=*/!managed_profile_already_exists &&

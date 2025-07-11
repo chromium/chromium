@@ -1741,7 +1741,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
           account_info.account_id,
           TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
           /*is_sync_promo=*/false,
-          /*turn_sync_on_signed_profile=*/true));
+          /*user_already_signed_in=*/true));
   ASSERT_NO_FATAL_FAILURE(
       ClickSyncButton(coordinator->GetProfileMenuViewBaseForTesting()));
 }
@@ -1827,7 +1827,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
                        account_info.account_id,
                        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        /*is_sync_promo=*/false,
-                       /*turn_sync_on_signed_profile=*/true));
+                       /*user_already_signed_in=*/true));
   ASSERT_NO_FATAL_FAILURE(
       ClickSyncButton(coordinator->GetProfileMenuViewBaseForTesting()));
 }

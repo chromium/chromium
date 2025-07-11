@@ -52,7 +52,7 @@ class SigninUiDelegate {
       const CoreAccountId& account_id,
       TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
       bool is_sync_promo,
-      bool turn_sync_on_signed_profile);
+      bool user_already_signed_in);
 
  protected:
   static Browser* EnsureBrowser(Profile* profile);

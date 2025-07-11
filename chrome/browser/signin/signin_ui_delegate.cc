@@ -16,12 +16,12 @@ void SigninUiDelegate::ShowTurnSyncOnUI(
     const CoreAccountId& account_id,
     TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode,
     bool is_sync_promo,
-    bool turn_sync_on_signed_profile) {
+    bool user_already_signed_in) {
   // TurnSyncOnHelper is suicidal (it will delete itself once it finishes
   // enabling sync).
   new TurnSyncOnHelper(profile, EnsureBrowser(profile), access_point,
                        promo_action, account_id, signin_aborted_mode,
-                       is_sync_promo, turn_sync_on_signed_profile);
+                       is_sync_promo, user_already_signed_in);
 }
 
 // static

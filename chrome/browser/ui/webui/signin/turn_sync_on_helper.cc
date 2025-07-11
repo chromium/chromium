@@ -184,14 +184,14 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
     base::OnceClosure callback,
-    bool turn_sync_on_signed_profile)
+    bool user_already_signed_in)
     : delegate_(std::move(delegate)),
       profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       signin_access_point_(signin_access_point),
       signin_promo_action_(signin_promo_action),
       signin_aborted_mode_(signin_aborted_mode),
-      turn_sync_on_signed_profile_(turn_sync_on_signed_profile),
+      user_already_signed_in_(user_already_signed_in),
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
@@ -230,7 +230,7 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     bool is_sync_promo,
-    bool turn_sync_on_signed_profile)
+    bool user_already_signed_in)
     : TurnSyncOnHelper(profile,
                        signin_access_point,
                        signin_promo_action,
@@ -239,9 +239,9 @@ TurnSyncOnHelper::TurnSyncOnHelper(
                        std::make_unique<TurnSyncOnHelperDelegateImpl>(
                            browser,
                            is_sync_promo,
-                           turn_sync_on_signed_profile),
+                           user_already_signed_in),
                        base::OnceClosure(),
-                       turn_sync_on_signed_profile) {
+                       user_already_signed_in) {
   // If this is a promo, the account should not be removed on abort.
   CHECK(!is_sync_promo ||
         signin_aborted_mode == SigninAbortedMode::KEEP_ACCOUNT);
@@ -333,7 +333,7 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
       if (delegate_->IsProfileCreationRequiredByPolicy() &&
           !enterprise_util::UserAcceptedAccountManagement(profile_)) {
         signin_aborted_mode_ = SigninAbortedMode::REMOVE_ACCOUNT;
-      } else if (!turn_sync_on_signed_profile_) {
+      } else if (!user_already_signed_in_) {
         signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY;
       }
       base::RecordAction(

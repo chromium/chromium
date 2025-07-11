@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
                        account_info_.account_id,
                        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        /*is_sync_promo=*/true,
-                       /*turn_sync_on_signed_profile=*/false));
+                       /*user_already_signed_in=*/false));
   ClickSigninButton();
   // `Signin.SyncOptIn.Offered` should NOT be recorded if the sync opt-in is
   // not directly offered from the profile menu.
@@ -1835,7 +1835,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuSigninAccessPointTest,
                        account_info_.account_id,
                        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        /*is_sync_promo=*/false,
-                       /*turn_sync_on_signed_profile=*/true));
+                       /*user_already_signed_in=*/true));
   ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
   const ProfileMenuViewBase::ActionableItem actionable_item =
       IsNewPromoVariantEnabled()
@@ -1870,7 +1870,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuSigninAccessPointTest,
                        account_info_.account_id,
                        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        /*is_sync_promo=*/false,
-                       /*turn_sync_on_signed_profile=*/true));
+                       /*user_already_signed_in=*/true));
   ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
   const ProfileMenuViewBase::ActionableItem actionable_item =
       GetParam() ? ProfileMenuViewBase::ActionableItem::kHistorySyncOptInButton

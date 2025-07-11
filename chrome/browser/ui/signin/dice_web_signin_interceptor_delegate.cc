@@ -73,7 +73,7 @@ class OidcEnterpriseSigninInterceptionHandle
             std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
                 bubble_parameters.intercepted_account,
                 /*is_OIDC_account=*/true,
-                /*turn_sync_on_signed_profile=*/false,
+                /*user_already_signed_in=*/false,
                 /*profile_creation_required_by_policy=*/true,
                 /*show_link_data_option=*/false,
                 /*process_user_choice_callback=*/
@@ -158,7 +158,7 @@ class ForcedEnterpriseSigninInterceptionHandle
                 /*is_OIDC_account=*/bubble_parameters.interception_type ==
                     WebSigninInterceptor::SigninInterceptionType::
                         kEnterpriseOIDC,
-                /*turn_sync_on_signed_profile=*/false,
+                /*user_already_signed_in=*/false,
                 profile_creation_required_by_policy_, show_link_data_option_,
                 /*process_user_choice_callback=*/
                 base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
