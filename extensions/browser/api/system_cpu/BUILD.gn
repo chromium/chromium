@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions_core,
        "Cannot depend on extensions because enable_extensions_core=false.")
+assert(!is_fuchsia, "Fuchsia does not support extensions.")
 
 source_set("system_cpu") {
   sources = [
@@ -27,10 +28,6 @@ source_set("system_cpu") {
 
   if (is_chromeos) {
     deps = [ "//chromeos/system" ]
-  }
-
-  if (is_fuchsia) {
-    sources += [ "cpu_info_provider_fuchsia.cc" ]
   }
 
   if (is_mac) {
