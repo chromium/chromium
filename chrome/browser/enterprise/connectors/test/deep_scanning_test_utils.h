@@ -200,9 +200,6 @@ class EventReportValidator : public EventReportValidatorBase {
   void ExpectActiveUser(const std::string& user);
   void ExpectSourceActiveUser(const std::string& user);
 
-  // Closure to run once all expected events are validated.
-  void SetDoneClosure(base::RepeatingClosure closure);
-
  private:
   void ValidateReport(const base::Value::Dict* report);
   void ValidateFederatedOrigin(const base::Value::Dict* value);

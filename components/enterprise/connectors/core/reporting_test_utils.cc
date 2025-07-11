@@ -315,6 +315,10 @@ void EventReportValidatorBase::ExpectURLFilteringInterstitialEventWithReferrers(
       });
 }
 
+void EventReportValidatorBase::SetDoneClosure(base::RepeatingClosure closure) {
+  done_closure_ = std::move(closure);
+}
+
 void EventReportValidatorBase::ExpectLoginEvent(
     const std::string& expected_url,
     const bool expected_is_federated,
@@ -492,6 +496,9 @@ void EventReportValidatorBase::ExpectPasswordReuseEvent(
         ValidateField(event, kKeyProfileUserName, expected_profile_username);
         ValidateField(event, kKeyProfileIdentifier,
                       expected_profile_identifier);
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
       });
 }
 void EventReportValidatorBase::ExpectPasswordChangedEvent(
@@ -511,7 +518,6 @@ void EventReportValidatorBase::ExpectPasswordChangedEvent(
                 request.events().Get(0).password_changed_event();
             EXPECT_THAT(password_changed_event,
                         EqualsProto(expected_password_changed_event));
-
             if (!done_closure_.is_null()) {
               done_closure_.Run();
             }
@@ -535,7 +541,6 @@ void EventReportValidatorBase::ExpectPasswordReuseEvent(
                 request.events().Get(0).password_reuse_event();
             EXPECT_THAT(password_reuse_event,
                         EqualsProto(expected_password_reuse_event));
-
             if (!done_closure_.is_null()) {
               done_closure_.Run();
             }
@@ -568,6 +573,9 @@ void EventReportValidatorBase::ExpectPassowrdChangedEvent(
         ValidateField(event, kKeyProfileUserName, expected_profile_username);
         ValidateField(event, kKeyProfileIdentifier,
                       expected_profile_identifier);
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
       });
 }
 
@@ -650,7 +658,7 @@ void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
         ValidateField(event, kKeyEventResult, result);
         const base::Value::List* referrers = event->FindList(kReferrers);
         ASSERT_TRUE(referrers);
-        for (const auto & referrer : *referrers) {
+        for (const auto& referrer : *referrers) {
           ValidateReferrer(&referrer.GetDict(), expected_referrers);
         }
         if (!done_closure_.is_null()) {

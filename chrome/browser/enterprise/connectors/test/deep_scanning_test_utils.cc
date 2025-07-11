@@ -738,10 +738,6 @@ void EventReportValidator::ValidateDataMaskingAttributes(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
-  done_closure_ = std::move(closure);
-}
-
 EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
                                                        bool browser_test)
     : profile_(profile),

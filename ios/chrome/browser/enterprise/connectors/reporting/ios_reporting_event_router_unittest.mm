@@ -166,6 +166,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEvent) {
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::LoginEvent expected_event;
 
   if (use_proto_format()) {
@@ -185,6 +187,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEvent) {
   reporting_event_router_->OnLoginEvent(GURL("https://www.example.com/"),
                                         url::SchemeHostPort().IsValid(),
                                         url::SchemeHostPort(), u"Fakeuser");
+  run_loop.Run();
 }
 
 // Tests that no matchting Url pattern for login events reporting.
@@ -210,6 +213,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::LoginEvent expected_event;
 
   if (use_proto_format()) {
@@ -229,6 +234,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEventWithEmailAsLoginUsername) {
   reporting_event_router_->OnLoginEvent(
       GURL("https://www.example.com/"), url::SchemeHostPort().IsValid(),
       url::SchemeHostPort(), u"Fakeuser@example.com");
+  run_loop.Run();
 }
 
 // Tests that the login events on federated login are reported as expected.
@@ -239,6 +245,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
       /*enabled_opt_in_events=*/{{kKeyLoginEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::LoginEvent expected_event;
 
   if (use_proto_format()) {
@@ -262,6 +270,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnLoginEventFederated) {
   reporting_event_router_->OnLoginEvent(GURL("https://www.example.com/"),
                                         federated_origin.IsValid(),
                                         federated_origin, u"Fakeuser");
+  run_loop.Run();
 }
 
 // Tests that the password breaching events are reported as expected.
@@ -277,6 +286,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnPasswordBreach) {
       /*enabled_opt_in_events=*/{{kKeyPasswordBreachEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectPasswordBreachEvent(
       "SAFETY_CHECK",
       {
@@ -291,6 +302,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnPasswordBreach) {
           {GURL("https://first.example.com"), u"first_user_name"},
           {GURL("https://second.example.com"), u"second_user_name@gmail.com"},
       });
+  run_loop.Run();
 }
 
 // Tests that the password breaching events with no matching url pattern.
@@ -334,6 +346,8 @@ TEST_P(IOSReportingEventRouterTest,
   // The event is only enabled on secondexample.com, so expect only the
   // information related to that origin to be reported.
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectPasswordBreachEvent(
       "SAFETY_CHECK",
       {
@@ -347,6 +361,7 @@ TEST_P(IOSReportingEventRouterTest,
           {GURL("https://firstexample.com"), u"first_user_name"},
           {GURL("https://secondexample.com"), u"second_user_name"},
       });
+  run_loop.Run();
 }
 
 // Test that the url filtering reporting events are blocked as expected.
@@ -373,6 +388,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
@@ -390,6 +407,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
       referrer_chain);
+  run_loop.Run();
 }
 
 // Test that the url filtering reporting events are warned as expected.
@@ -416,6 +434,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
@@ -433,6 +453,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
       referrer_chain);
+  run_loop.Run();
 }
 
 // Test that the url filtering reporting events are bypassed as expected.
@@ -459,6 +480,8 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
@@ -476,6 +499,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
       referrer_chain);
+  run_loop.Run();
 }
 
 // Test that the url filtering reporting events with unknown action taken by
@@ -504,6 +528,8 @@ TEST_P(IOSReportingEventRouterTest,
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   safe_browsing::RTLookupResponse response;
@@ -518,6 +544,7 @@ TEST_P(IOSReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain);
+  run_loop.Run();
 }
 
 // Tests that interstitial reporting events are warned as expected.
@@ -533,6 +560,8 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0);
@@ -540,6 +569,7 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain);
+  run_loop.Run();
 }
 
 // Tests that interstitial reporting events blocked as expected.
@@ -555,6 +585,8 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0);
@@ -562,6 +594,7 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain);
+  run_loop.Run();
 }
 
 // Tests that interstitial reporting events bypassed as expected.
@@ -577,6 +610,8 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0);
@@ -584,6 +619,7 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
       GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain);
+  run_loop.Run();
 }
 
 // Tests that password reuse reporting events warned as expected.
@@ -599,12 +635,15 @@ TEST_P(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectPasswordReuseEvent(
       "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
       profile_->GetProfileName(), GetProfileIdentifier());
   reporting_event_router_->OnPasswordReuse(
       GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
       /*warning_shown*/ true);
+  run_loop.Run();
 }
 
 // Tests that password reuse reporting events allowed as expected.
@@ -620,12 +659,15 @@ TEST_P(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectPasswordReuseEvent(
       "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
       profile_->GetProfileName(), GetProfileIdentifier());
   reporting_event_router_->OnPasswordReuse(
       GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
       /*warning_shown*/ false);
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,

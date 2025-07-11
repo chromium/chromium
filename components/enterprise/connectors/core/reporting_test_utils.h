@@ -124,6 +124,9 @@ class EventReportValidatorBase {
       int expected_net_error_code,
       const ::chrome::cros::reporting::proto::UrlInfo& expected_referrers);
 
+  // Closure to run once all expected events are validated.
+  void SetDoneClosure(base::RepeatingClosure closure);
+
  protected:
   void ValidateField(const base::Value::Dict* value,
                      const std::string& field_key,
