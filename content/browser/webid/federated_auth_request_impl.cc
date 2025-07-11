@@ -518,15 +518,14 @@ void FederatedAuthRequestImpl::RequestToken(
   if (IsFedCmMultipleIdentityProvidersEnabled() && unique_idps.empty()) {
     // At this point either all IDPs are signed out or mediation:silent was used
     // and there are no returning accounts.
-    bool should_delay_callback =
-        mediation_requirement_ == MediationRequirement::kSilent ? false : true;
     auto result = mediation_requirement_ == MediationRequirement::kSilent
                       ? FederatedAuthRequestResult::kSilentMediationFailure
                       : FederatedAuthRequestResult::kNotSignedInWithIdp;
     auto token_status = mediation_requirement_ == MediationRequirement::kSilent
                             ? TokenStatus::kSilentMediationFailure
                             : TokenStatus::kNotSignedInWithIdp;
-    CompleteRequestWithError(result, token_status, should_delay_callback);
+    CompleteRequestWithError(result, token_status,
+                             /*should_delay_callback=*/true);
     return;
   }
 
@@ -1049,10 +1048,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
-      // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
-      // following without privacy cost:
-      // 1. Reject the promise immediately without delay
-      // 2. Not to show any UI to respect `mediation: silent`
+      // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
+      // any UI to respect `mediation: silent`.
       render_frame_host().AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Silent mediation issue: the user has used FedCM with multiple "

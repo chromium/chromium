@@ -2880,9 +2880,13 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
@@ -2925,10 +2929,13 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
 
@@ -2968,9 +2975,13 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
@@ -3010,9 +3021,13 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
@@ -3079,9 +3094,13 @@ TEST_F(FederatedAuthRequestImplTest,
   multiple_accounts[1]->idp_claimed_login_state = LoginState::kSignIn;
   configuration.idp_info[kProviderUrlFull].accounts = multiple_accounts;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
@@ -3127,7 +3146,11 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       IdpNetworkRequestManager::ParseStatus::kNoResponseError;
 
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_accounts_dialog());
@@ -4966,7 +4989,11 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationMultiIdpValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_TRUE(did_show_accounts_dialog());
@@ -5035,7 +5062,8 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationMultiIdpValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
 
-  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
 
   // Accounts still need to be fetched since there could have been a single
   // returning account.
@@ -5112,7 +5140,11 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       IdpNetworkRequestManager::ParseStatus::kNoResponseError;
 
-  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, configuration);
+  EXPECT_FALSE(auth_helper_->was_callback_called());
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(configuration, expectations);
 
   // Accounts still need to be fetched since there could have been a single
   // returning account.

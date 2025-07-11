@@ -642,17 +642,13 @@ void FedCmAccountsFetcher::HandleAccountsFetchFailure(
   if (params_.mediation_requirement == MediationRequirement::kSilent) {
     // By this moment we know that the user has granted permission in the
     // past for the RP/IdP. Because otherwise we have returned already in
-    // `ShouldFailBeforeFetchingAccounts`. It means that we can do the
-    // following without privacy cost:
-    // 1. Reject the promise immediately without delay
-    // 2. Not to show any UI to respect `mediation: silent`
-    // TODO(crbug.com/40266561): validate the statement above with
-    // stakeholders
+    // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
+    // any UI to respect `mediation: silent`.
     federated_auth_request_impl_->OnFetchDataForIdpFailed(
         std::move(idp_info),
         FederatedAuthRequestResult::kSilentMediationFailure,
         TokenStatus::kSilentMediationFailure,
-        /*should_delay_callback=*/false);
+        /*should_delay_callback=*/true);
     return;
   }
 
