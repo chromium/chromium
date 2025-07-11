@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
     ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
     ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
     ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+    ListItemType.CONTEXT_MENU_SUBMENU_HEADER,
 })
 public @interface ListItemType {
     int DIVIDER = 0;
@@ -35,4 +36,5 @@ public @interface ListItemType {
     int CONTEXT_MENU_ITEM_WITH_CHECKBOX = 4;
     int CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON = 5;
     int CONTEXT_MENU_ITEM_WITH_SUBMENU = 6;
+    int CONTEXT_MENU_SUBMENU_HEADER = 7;
 }
