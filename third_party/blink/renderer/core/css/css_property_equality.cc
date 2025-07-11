@@ -693,7 +693,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
              a.InternalVisitedStrokePaint().EqualTypeOrColor(
                  b.InternalVisitedStrokePaint());
     case CSSPropertyID::kStrokeDasharray:
-      return a.StrokeDashArray() == b.StrokeDashArray();
+      return base::ValuesEquivalent(a.StrokeDashArray(), b.StrokeDashArray());
     case CSSPropertyID::kStrokeDashoffset:
       return a.StrokeDashOffset() == b.StrokeDashOffset();
     case CSSPropertyID::kStrokeLinecap:

@@ -285,12 +285,15 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
 }
 
 DashArray SVGLayoutSupport::ResolveSVGDashArray(
-    const SVGDashArray& svg_dash_array,
+    const SVGDashArray* svg_dash_array,
     const ComputedStyle& style,
     const SVGViewportResolver& viewport_resolver) {
   DashArray dash_array;
-  for (const Length& dash_length : svg_dash_array.data) {
-    dash_array.push_back(ValueForLength(dash_length, viewport_resolver, style));
+  if (svg_dash_array) {
+    for (const Length& dash_length : *svg_dash_array) {
+      dash_array.push_back(
+          ValueForLength(dash_length, viewport_resolver, style));
+    }
   }
   return dash_array;
 }
@@ -310,7 +313,7 @@ void SVGLayoutSupport::ApplyStrokeStyleToStrokeData(StrokeData& stroke_data,
   stroke_data.SetMiterLimit(style.StrokeMiterLimit());
 
   DashArray dash_array =
-      ResolveSVGDashArray(*style.StrokeDashArray(), style, viewport_resolver);
+      ResolveSVGDashArray(style.StrokeDashArray(), style, viewport_resolver);
   float dash_offset =
       ValueForLength(style.StrokeDashOffset(), viewport_resolver, style);
   // Apply scaling from 'pathLength'.

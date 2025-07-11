@@ -133,8 +133,9 @@ bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
 
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray: {
-      if (style.StrokeDashArray())
-        result.AppendVector(style.StrokeDashArray()->data);
+      if (const SVGDashArray* array = style.StrokeDashArray()) {
+        result.AppendVector(*array);
+      }
       return true;
     }
 
@@ -206,7 +207,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
       builder.SetStrokeDashArray(
           length_list.empty()
               ? nullptr
-              : base::MakeRefCounted<SVGDashArray>(std::move(length_list)));
+              : MakeGarbageCollected<SVGDashArray>(length_list));
       return;
 
     case CSSPropertyID::kObjectPosition:

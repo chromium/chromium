@@ -92,7 +92,7 @@ class CORE_EXPORT SVGLayoutSupport {
                                            const LayoutObject&,
                                            float dash_scale_factor);
 
-  static DashArray ResolveSVGDashArray(const SVGDashArray&,
+  static DashArray ResolveSVGDashArray(const SVGDashArray*,
                                        const ComputedStyle&,
                                        const SVGViewportResolver&);
 

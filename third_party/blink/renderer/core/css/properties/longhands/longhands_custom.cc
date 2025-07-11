@@ -9475,7 +9475,7 @@ const CSSValue* StrokeDasharray::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::StrokeDashArrayToCSSValueList(
-      *style.StrokeDashArray(), style);
+      style.StrokeDashArray(), style);
 }
 
 const CSSValue* StrokeDashoffset::ParseSingleValue(

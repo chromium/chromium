@@ -426,4 +426,6 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const Length&);
 
 }  // namespace blink
 
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::Length)
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_

@@ -293,7 +293,7 @@ static void WriteStyle(StringBuilder& ts, const LayoutObject& object) {
       double stroke_width =
           ValueForLength(style.StrokeWidth(), viewport_resolver);
       DashArray dash_array = SVGLayoutSupport::ResolveSVGDashArray(
-          *style.StrokeDashArray(), style, viewport_resolver);
+          style.StrokeDashArray(), style, viewport_resolver);
 
       WriteIfNotDefault(ts, "opacity", style.StrokeOpacity(), 1.0f);
       WriteIfNotDefault(ts, "stroke width", stroke_width, 1.0);

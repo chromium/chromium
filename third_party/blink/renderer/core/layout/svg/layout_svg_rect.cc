@@ -151,7 +151,7 @@ bool LayoutSVGRect::DefinitelyHasSimpleStroke() const {
   // miterlimits, the join style used might not be correct (e.g. a miterlimit
   // of 1.4142135 should result in bevel joins, but may be drawn using miter
   // joins).
-  return !style.HasDashArray() && style.JoinStyle() == kMiterJoin &&
+  return !style.StrokeDashArray() && style.JoinStyle() == kMiterJoin &&
          style.StrokeMiterLimit() >= 1.5;
 }
 

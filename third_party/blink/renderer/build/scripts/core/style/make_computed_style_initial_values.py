@@ -30,6 +30,7 @@ class ComputedStyleInitialValuesWriter(json5_generator.Writer):
             # among self._includes as this could make the compiler throw errors.
             if property_.default_value == 'nullptr' and \
                     not property_.unwrapped_type_name == 'CursorList' and \
+                    not property_.unwrapped_type_name == 'SVGDashArray' and \
                     not property_.unwrapped_type_name == 'AppliedTextDecorationVector' and \
                     self.is_not_template_class(property_.unwrapped_type_name):
                 self._forward_declarations.add(property_.unwrapped_type_name)

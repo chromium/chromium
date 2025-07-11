@@ -294,8 +294,8 @@ class StyleBuilderConverter {
   static float ConvertWordSpacing(StyleResolverState&, const CSSValue&);
   template <CSSValueID IdForNone>
   static AtomicString ConvertString(StyleResolverState&, const CSSValue&);
-  static scoped_refptr<SVGDashArray> ConvertStrokeDasharray(StyleResolverState&,
-                                                            const CSSValue&);
+  static SVGDashArray* ConvertStrokeDasharray(StyleResolverState&,
+                                              const CSSValue&);
   static StyleColor ConvertStyleColor(StyleResolverState&,
                                       const CSSValue&,
                                       bool for_visited_link = false);

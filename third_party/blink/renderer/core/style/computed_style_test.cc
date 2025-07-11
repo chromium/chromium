@@ -1535,28 +1535,13 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
     EXPECT_FALSE(diff.HasDifference());                            \
   }
 
-// Ensures ref-counted values are compared by their values, not by pointers.
-#define TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(type, field_name)              \
-  {                                                                        \
-    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();          \
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();          \
-    scoped_refptr<type> value1 = base::MakeRefCounted<type>();             \
-    scoped_refptr<type> value2 = base::MakeRefCounted<type>(value1->data); \
-    builder1.Set##field_name(value1);                                      \
-    builder2.Set##field_name(value2);                                      \
-    const ComputedStyle* style1 = builder1.TakeStyle();                    \
-    const ComputedStyle* style2 = builder2.TakeStyle();                    \
-    auto diff = style1->VisualInvalidationDiff(document, *style2);         \
-    EXPECT_FALSE(diff.HasDifference());                                    \
-  }
-
 TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
   Document& document = GetDocument();
   TEST_STYLE_VALUE_NO_DIFF(StrokeOpacity);
   TEST_STYLE_VALUE_NO_DIFF(StrokeMiterLimit);
   TEST_STYLE_VALUE_NO_DIFF(StrokeWidth);
   TEST_STYLE_VALUE_NO_DIFF(StrokeDashOffset);
-  TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(SVGDashArray, StrokeDashArray);
+  TEST_STYLE_VALUE_NO_DIFF(StrokeDashArray);
 
   TEST_STYLE_VALUE_NO_DIFF(StrokePaint);
   TEST_STYLE_VALUE_NO_DIFF(InternalVisitedStrokePaint);

@@ -919,7 +919,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return StrokePaint().HasCurrentColor() ||
            InternalVisitedStrokePaint().HasCurrentColor();
   }
-  bool HasDashArray() const { return !StrokeDashArray()->data.empty(); }
 
   bool IsCaretColorAuto() const { return CaretColor().IsAutoColor(); }
 

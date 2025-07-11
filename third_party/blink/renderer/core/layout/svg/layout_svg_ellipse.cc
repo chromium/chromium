@@ -170,7 +170,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
   NOT_DESTROYED();
-  return !StyleRef().HasDashArray();
+  return !StyleRef().StrokeDashArray();
 }
 
 }  // namespace blink

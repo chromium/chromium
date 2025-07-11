@@ -3548,14 +3548,15 @@ CSSValueList* ComputedStyleUtils::ValueForBorderRadiusShorthand(
 }
 
 CSSValue* ComputedStyleUtils::StrokeDashArrayToCSSValueList(
-    const SVGDashArray& dashes,
+    const SVGDashArray* dashes,
     const ComputedStyle& style) {
-  if (dashes.data.empty()) {
+  if (!dashes) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
+  DCHECK(!dashes->empty());
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const Length& dash_length : dashes.data) {
+  for (const Length& dash_length : *dashes) {
     list->Append(*ZoomAdjustedPixelValueForLength(dash_length, style));
   }
 

@@ -2603,19 +2603,19 @@ float StyleBuilderConverter::ConvertWordSpacing(StyleResolverState& state,
       state.CssToLengthConversionData());
 }
 
-scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
+SVGDashArray* StyleBuilderConverter::ConvertStrokeDasharray(
     StyleResolverState& state,
     const CSSValue& value) {
   const auto* dashes = DynamicTo<CSSValueList>(value);
   if (!dashes) {
-    return EmptyDashArray();
+    return nullptr;
   }
+  DCHECK(dashes->length());
 
-  scoped_refptr<SVGDashArray> array = base::MakeRefCounted<SVGDashArray>();
-
-  wtf_size_t length = dashes->length();
-  for (wtf_size_t i = 0; i < length; ++i) {
-    array->data.push_back(
+  SVGDashArray* array = MakeGarbageCollected<SVGDashArray>();
+  array->ReserveInitialCapacity(dashes->length());
+  for (wtf_size_t i = 0; i < dashes->length(); ++i) {
+    array->push_back(
         ConvertLength(state, To<CSSPrimitiveValue>(dashes->Item(i))));
   }
 

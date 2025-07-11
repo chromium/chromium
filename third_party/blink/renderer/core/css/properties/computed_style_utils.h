@@ -312,7 +312,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                  CSSValuePhase value_phase);
   static CSSValueList* ValueForBorderRadiusShorthand(const ComputedStyle&);
   static CSSValueList* ValueForCornerShapeShorthand(const ComputedStyle&);
-  static CSSValue* StrokeDashArrayToCSSValueList(const SVGDashArray&,
+  static CSSValue* StrokeDashArrayToCSSValueList(const SVGDashArray*,
                                                  const ComputedStyle&);
   static const CSSValue* ValueForSVGPaint(const SVGPaint&,
                                           const ComputedStyle&);

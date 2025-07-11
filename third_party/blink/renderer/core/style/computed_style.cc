@@ -975,7 +975,8 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
     if (HasStroke() != other.HasStroke()) {
       return true;
     }
-    if (HasDashArray() != other.HasDashArray()) {
+    if (static_cast<bool>(StrokeDashArray()) !=
+        static_cast<bool>(other.StrokeDashArray())) {
       return true;
     }
   }
