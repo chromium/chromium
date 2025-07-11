@@ -322,6 +322,14 @@ FormData CreateTestLoyaltyCardFormData() {
   return form;
 }
 
+FormData CreateTestEmailOrLoyaltyCardFormData() {
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
+  form.set_fields(
+      {CreateTestFormField("Email or member number:", "email_or_member_number",
+                           /*value=*/"", FormControlType::kInputText)});
+  return form;
+}
+
 FormData CreateTestMerchantPromoCodeFormData() {
   FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
   form.set_fields(

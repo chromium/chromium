@@ -1361,18 +1361,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
 
-  // Try to show Touch to Fill.
-  if (touch_to_fill_delegate_ &&
-      (touch_to_fill_delegate_->IsShowingTouchToFill() ||
-       (form_element_was_clicked &&
-        touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
-    // Touch To Fill surface is shown, so abort showing regular Autofill UI.
-    // Now the flow is controlled by the `touch_to_fill_delegate_` instead
-    // of `external_delegate_`.
-    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions),
-                            std::nullopt);
-    return;
-  }
   // Only offer plus address suggestions together with address suggestions if
   // these exist. Otherwise, plus address suggestions will be generated and
   // shown alongside single field form fill suggestions. Plus address
@@ -1409,6 +1397,26 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
         suggestions_context, password_form_classification.type,
         form.global_id(), field.global_id(), std::move(callback));
 
+    return;
+  }
+
+  // Touch to fill is not shown if other address suggestions are available for
+  // EMAIL_OR_LOYALTY_MEMBERSHIP_ID fields.
+  const bool has_address_suggestions_on_email_or_loyalty_card_field =
+      autofill_field &&
+      (autofill_field->Type().GetStorableType() ==
+       EMAIL_OR_LOYALTY_MEMBERSHIP_ID) &&
+      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return GetFillingProductFromSuggestionType(suggestion.type) ==
+               FillingProduct::kAddress;
+      });
+  if (touch_to_fill_delegate_ &&
+      (touch_to_fill_delegate_->IsShowingTouchToFill() ||
+       (form_element_was_clicked &&
+        !has_address_suggestions_on_email_or_loyalty_card_field &&
+        touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions),
+                            std::nullopt);
     return;
   }
 

@@ -2163,6 +2163,9 @@ TEST_F(BrowserAutofillManagerTestValuables,
   manager().AddSeenFormStructure(std::move(form_structure));
 
   FormsSeen({form_data});
+  // TTF bottom sheet should not be shown when address suggestions are
+  // available.
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill).Times(0);
   OnAskForValuesToFill(form_data, form_data.fields()[0]);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -8381,6 +8384,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
       .Times(0);
+  // TTF bottom sheet should not be shown when plus address suggestions are
+  // available.
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill).Times(0);
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -8388,8 +8394,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                   kNoPasswordForm, SuggestionType::kFillExistingPlusAddress));
 
   // Set up our form data. Notably, the first field is an email address.
-  FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  FormData form =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+                                     .autocomplete_attribute = "email"}}});
   form.set_name(u"MyForm");
   form.set_url(GURL("https://myform.com/form.html"));
   form.set_action(GURL("https://myform.com/submit.html"));

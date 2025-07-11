@@ -201,6 +201,10 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
  public:
   TouchToFillDelegateAndroidImplUnitTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableLoyaltyCardsFilling,
+         features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+        {});
     // Some date after in the 2000s because Autofill doesn't allow expiration
     // dates before 2000.
     task_environment_.AdvanceClock(base::Days(365 * 50));
@@ -322,8 +326,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableLoyaltyCardsFilling};
+  base::test::ScopedFeatureList features_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
@@ -1199,6 +1202,48 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
   EXPECT_CALL(*browser_autofill_manager_,
               LogAndRecordLoyaltyCardFill(kLoyaltyCard, _, _));
   touch_to_fill_delegate_->LoyaltyCardSuggestionSelected(kLoyaltyCard);
+}
+
+class TouchToFillDelegateAndroidImplEmailOrLoyaltyCardUnitTest
+    : public TouchToFillDelegateAndroidImplUnitTest {
+ protected:
+  void SetUp() override {
+    TouchToFillDelegateAndroidImplUnitTest::SetUp();
+    ConfigureForEmailOrLoyaltyCards();
+  }
+
+  void ConfigureForEmailOrLoyaltyCards() {
+    LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+    // The touch-to-fill bottom sheet is shown only if the user has at least
+    // 1 saved loyalty card.
+    test_api(*autofill_client_.GetValuablesDataManager())
+        .AddLoyaltyCard(loyalty_card);
+    form_ = test::CreateTestEmailOrLoyaltyCardFormData();
+    test_api(form_).field(0).set_is_focusable(true);
+    // The current URL matches the loyalty card merchant domain.
+    autofill_client_.set_last_committed_primary_main_frame_url(
+        GURL("https://domain.example"));
+  }
+};
+
+// Make sure the TTF bottom sheet if offered on EMAIL_OR_LOYALTY_MEMBERSHIP_ID
+// fields.
+TEST_F(TouchToFillDelegateAndroidImplEmailOrLoyaltyCardUnitTest,
+       PassTheLoyaltyCardsToTheClient) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  std::vector<LoyaltyCard> loyalty_cards{card2, card1};
+  // Makes sure there is at least one affiliated card available.
+  autofill_client_.set_last_committed_primary_main_frame_url(
+      card1.merchant_domains()[0]);
+  test_api(*autofill_client_.GetValuablesDataManager())
+      .SetLoyaltyCards(loyalty_cards);
+
+  // Cards must be sorted by merchant name.
+  EXPECT_CALL(payments_autofill_client(),
+              ShowTouchToFillLoyaltyCard(_, ElementsAre(card1, card2)));
+
+  TryToShowTouchToFill(/*expected_success=*/true);
 }
 
 class TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest
