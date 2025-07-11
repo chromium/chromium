@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -47,7 +43,7 @@ void ICOImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   fast_reader_.SetData(data);
 
   for (BMPReaders::iterator i(bmp_readers_.begin()); i != bmp_readers_.end();
-       ++i) {
+       UNSAFE_TODO(++i)) {
     if (*i) {
       (*i)->SetData(data);
     }
@@ -292,7 +288,7 @@ bool ICOImageDecoder::ProcessDirectoryEntries() {
   // Make sure the specified image offsets are past the end of the directory
   // entries.
   for (IconDirectoryEntries::iterator i(dir_entries_.begin());
-       i != dir_entries_.end(); ++i) {
+       i != dir_entries_.end(); UNSAFE_TODO(++i)) {
     if (i->image_offset_ < decoded_offset_) {
       return SetFailed();
     }
@@ -364,7 +360,7 @@ ICOImageDecoder::ImageType ICOImageDecoder::ImageTypeAtIndex(wtf_size_t index) {
   }
   char buffer[4];
   const char* data = fast_reader_.GetConsecutiveData(image_offset, 4, buffer);
-  return strncmp(data, "\x89PNG", 4) ? BMP : PNG;
+  return UNSAFE_TODO(strncmp(data, "\x89PNG", 4)) ? BMP : PNG;
 }
 
 }  // namespace blink

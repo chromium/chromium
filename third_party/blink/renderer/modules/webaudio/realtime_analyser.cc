@@ -23,11 +23,6 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/realtime_analyser.h"
 
 #include <limits.h>
@@ -36,6 +31,7 @@
 #include <bit>
 #include <complex>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -58,7 +54,7 @@ void ApplyWindow(float* p, size_t n) {
     double x = static_cast<double>(i) / static_cast<double>(n);
     double window =
         a0 - a1 * cos(kTwoPiDouble * x) + a2 * cos(kTwoPiDouble * 2.0 * x);
-    p[i] *= static_cast<float>(window);
+    UNSAFE_TODO(p[i]) *= static_cast<float>(window);
   }
 }
 
@@ -156,11 +152,11 @@ void RealtimeAnalyser::GetFloatTimeDomainData(
 
     for (unsigned i = 0; i < len; ++i) {
       // Buffer access is protected due to modulo operation.
-      float value =
+      float value = UNSAFE_TODO(
           input_buffer[(i + write_index - fft_size + kInputBufferSize) %
-                       kInputBufferSize];
+                       kInputBufferSize]);
 
-      destination[i] = value;
+      UNSAFE_TODO(destination[i]) = value;
     }
   }
 }
@@ -183,15 +179,15 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
 
     for (unsigned i = 0; i < len; ++i) {
       // Buffer access is protected due to modulo operation.
-      float value =
+      float value = UNSAFE_TODO(
           input_buffer[(i + write_index - fft_size + kInputBufferSize) %
-                       kInputBufferSize];
+                       kInputBufferSize]);
 
       // Scale from nominal -1 -> +1 to unsigned byte.
       double scaled_value = 128 * (value + 1);
 
       // Clip to valid range.
-      destination[i] =
+      UNSAFE_TODO(destination[i]) =
           static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
@@ -208,14 +204,14 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
   DCHECK_LE(write_index + frames_to_process, input_buffer_.size());
 
   // Perform real-time analysis
-  float* dest = input_buffer_.Data() + write_index;
+  float* dest = UNSAFE_TODO(input_buffer_.Data() + write_index);
 
   // Clear the bus and downmix the input according to the down mixing rules.
   // Then save the result in the m_inputBuffer at the appropriate place.
   down_mix_bus_->Zero();
   down_mix_bus_->SumFrom(*bus);
-  memcpy(dest, down_mix_bus_->Channel(0)->Data(),
-         frames_to_process * sizeof(*dest));
+  UNSAFE_TODO(memcpy(dest, down_mix_bus_->Channel(0)->Data(),
+                     frames_to_process * sizeof(*dest)));
 
   write_index += frames_to_process;
   if (write_index >= kInputBufferSize) {
@@ -239,13 +235,14 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   // temporary buffer.
   unsigned write_index = GetWriteIndex();
   if (write_index < fft_size) {
-    memcpy(temp_p, input_buffer + write_index - fft_size + kInputBufferSize,
-           sizeof(*temp_p) * (fft_size - write_index));
-    memcpy(temp_p + fft_size - write_index, input_buffer,
-           sizeof(*temp_p) * write_index);
+    UNSAFE_TODO(memcpy(temp_p,
+                       input_buffer + write_index - fft_size + kInputBufferSize,
+                       sizeof(*temp_p) * (fft_size - write_index)));
+    UNSAFE_TODO(memcpy(temp_p + fft_size - write_index, input_buffer,
+                       sizeof(*temp_p) * write_index));
   } else {
-    memcpy(temp_p, input_buffer + write_index - fft_size,
-           sizeof(*temp_p) * fft_size);
+    UNSAFE_TODO(memcpy(temp_p, input_buffer + write_index - fft_size,
+                       sizeof(*temp_p) * fft_size));
   }
 
   // Window the input samples.
@@ -277,10 +274,13 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   DCHECK_GE(imag.size(), n);
   const float* imag_p_data = imag.Data();
   for (size_t i = 0; i < n; ++i) {
-    std::complex<double> c(real_p_data[i], imag_p_data[i]);
+    std::complex<double> c(UNSAFE_TODO(real_p_data[i]),
+                           UNSAFE_TODO(imag_p_data[i]));
     double scalar_magnitude = abs(c) * magnitude_scale;
-    destination[i] = EnsureFinite(
-        static_cast<float>(k * destination[i] + (1 - k) * scalar_magnitude), 0);
+    UNSAFE_TODO(destination[i]) =
+        EnsureFinite(static_cast<float>(k * UNSAFE_TODO(destination[i]) +
+                                        (1 - k) * scalar_magnitude),
+                     0);
   }
 }
 
@@ -298,7 +298,7 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
     unsigned char* destination = destination_array->Data();
 
     for (unsigned i = 0; i < len; ++i) {
-      float linear_value = source[i];
+      float linear_value = UNSAFE_TODO(source[i]);
       double db_mag = audio_utilities::LinearToDecibels(linear_value);
 
       // The range m_minDecibels to m_maxDecibels will be scaled to byte values
@@ -307,7 +307,7 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
           UCHAR_MAX * (db_mag - min_decibels) * range_scale_factor;
 
       // Clip to valid range.
-      destination[i] =
+      UNSAFE_TODO(destination[i]) =
           static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
@@ -322,9 +322,9 @@ void RealtimeAnalyser::ConvertFloatToDb(DOMFloat32Array* destination_array) {
     float* destination = destination_array->Data();
 
     for (unsigned i = 0; i < len; ++i) {
-      float linear_value = source[i];
+      float linear_value = UNSAFE_TODO(source[i]);
       double db_mag = audio_utilities::LinearToDecibels(linear_value);
-      destination[i] = static_cast<float>(db_mag);
+      UNSAFE_TODO(destination[i]) = static_cast<float>(db_mag);
     }
   }
 }

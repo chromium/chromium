@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
 #include <limits>
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -92,8 +88,10 @@ void ReadYUV(size_t max_decoded_bytes,
 
   void* planes[3];
   planes[0] = planes_data.get();
-  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.height();
-  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.height();
+  planes[1] = UNSAFE_TODO(static_cast<char*>(planes[0]) +
+                          row_bytes[0] * y_size.height());
+  planes[2] = UNSAFE_TODO(static_cast<char*>(planes[1]) +
+                          row_bytes[1] * u_size.height());
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));

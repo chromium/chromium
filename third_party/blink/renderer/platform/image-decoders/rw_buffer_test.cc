@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -23,7 +19,7 @@ const char gABC[] = "abcdefghijklmnopqrstuvwxyz";
 void check_abcs(const char buffer[], size_t size) {
   ASSERT_EQ(size % 26, 0u);
   for (size_t offset = 0; offset < size; offset += 26) {
-    EXPECT_TRUE(!memcmp(&buffer[offset], gABC, 26));
+    UNSAFE_TODO(EXPECT_TRUE(!memcmp(&buffer[offset], gABC, 26)));
   }
 }
 

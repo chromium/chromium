@@ -28,15 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
 
 #include <limits>
 #include <memory>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -102,11 +99,11 @@ TEST(TextCodecUTF8, DecodeOverflow) {
                 FlushBehavior::kDoNotFlush, false, saw_error);
   EXPECT_FALSE(saw_error);
 
-  EXPECT_DEATH_IF_SUPPORTED(
+  UNSAFE_TODO(EXPECT_DEATH_IF_SUPPORTED(
       codec->Decode(base::as_bytes(
                         base::span("", std::numeric_limits<wtf_size_t>::max())),
                     FlushBehavior::kDataEOF, false, saw_error),
-      "");
+      ""));
 }
 
 }  // namespace

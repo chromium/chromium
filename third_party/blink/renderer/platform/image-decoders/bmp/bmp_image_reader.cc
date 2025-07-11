@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -60,7 +56,7 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
       img_data_offset_(img_data_offset),
       is_in_ico_(is_in_ico) {
   // Clue-in decodeBMP() that we need to detect the correct info header size.
-  memset(&info_header_, 0, sizeof(info_header_));
+  UNSAFE_TODO(memset(&info_header_, 0, sizeof(info_header_)));
 }
 
 BMPImageReader::~BMPImageReader() = default;
@@ -588,8 +584,8 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
   auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
   const char* buffer = fast_reader_.GetConsecutiveData(
       info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
-  auto profile = ColorProfile::Create(
-      base::as_bytes(base::span(buffer, info_header_.profile_size)));
+  auto profile = ColorProfile::Create(base::as_bytes(
+      UNSAFE_TODO(base::span(buffer, info_header_.profile_size))));
   if (!profile) {
     return parent_->SetFailed();
   }
@@ -613,8 +609,8 @@ bool BMPImageReader::ProcessBitmasks() {
     // 24/32 bits: MSB <- [AAAAAAAA] RRRRRRRR GGGGGGGG BBBBBBBB -> LSB
     const int num_bits = (info_header_.bit_count == 16) ? 5 : 8;
     for (int i = 0; i <= 2; ++i) {
-      bit_masks_[i] = ((uint32_t{1} << (num_bits * (3 - i))) - 1) ^
-                      ((uint32_t{1} << (num_bits * (2 - i))) - 1);
+      UNSAFE_TODO(bit_masks_[i]) = ((uint32_t{1} << (num_bits * (3 - i))) - 1) ^
+                                   ((uint32_t{1} << (num_bits * (2 - i))) - 1);
     }
   } else if (!HasRGBMasksInHeader()) {
     // For HasRGBMasksInHeader() bitmaps, this was already done when we read the
@@ -691,29 +687,31 @@ bool BMPImageReader::ProcessBitmasks() {
     // specify a bogus alpha channel in bits that don't exist in the pixel
     // data (for example, bits 25-31 in a 24-bit RGB format).
     if (info_header_.bit_count < 32) {
-      bit_masks_[i] &= ((uint32_t{1} << info_header_.bit_count) - 1);
+      UNSAFE_TODO(bit_masks_[i]) &=
+          ((uint32_t{1} << info_header_.bit_count) - 1);
     }
 
     // For empty masks (common on the alpha channel, especially after the
     // trimming above), quickly clear the shift and LUT address and
     // continue, to avoid an infinite loop in the counting code below.
-    uint32_t temp_mask = bit_masks_[i];
+    uint32_t temp_mask = UNSAFE_TODO(bit_masks_[i]);
     if (!temp_mask) {
-      bit_shifts_right_[i] = 0;
-      lookup_table_addresses_[i] = nullptr;
+      UNSAFE_TODO(bit_shifts_right_[i]) = 0;
+      UNSAFE_TODO(lookup_table_addresses_[i]) = nullptr;
       continue;
     }
 
     // Make sure bitmask does not overlap any other bitmasks.
     for (int j = 0; j < i; ++j) {
-      if (temp_mask & bit_masks_[j]) {
+      if (temp_mask & UNSAFE_TODO(bit_masks_[j])) {
         return parent_->SetFailed();
       }
     }
 
     // Count offset into pixel data.
-    for (bit_shifts_right_[i] = 0; !(temp_mask & 1); temp_mask >>= 1) {
-      ++bit_shifts_right_[i];
+    for (UNSAFE_TODO(bit_shifts_right_[i]) = 0; !(temp_mask & 1);
+         temp_mask >>= 1) {
+      ++UNSAFE_TODO(bit_shifts_right_[i]);
     }
 
     // Count size of mask.
@@ -730,13 +728,14 @@ bool BMPImageReader::ProcessBitmasks() {
     // Since RGBABuffer tops out at 8 bits per channel, adjust the shift
     // amounts to use the most significant 8 bits of the channel.
     if (num_bits >= 8) {
-      bit_shifts_right_[i] += (num_bits - 8);
+      UNSAFE_TODO(bit_shifts_right_[i]) += (num_bits - 8);
       num_bits = 0;
     }
 
     // Calculate LUT address.
-    lookup_table_addresses_[i] =
-        num_bits ? (nBitTo8BitlookupTable + (1 << num_bits) - 2) : nullptr;
+    UNSAFE_TODO(lookup_table_addresses_[i]) =
+        num_bits ? (UNSAFE_TODO(nBitTo8BitlookupTable + (1 << num_bits) - 2))
+                 : nullptr;
   }
 
   // We've now decoded all the non-image data we care about.  Skip anything
@@ -973,8 +972,8 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
-          if (color_indexes[which] < color_table_.size()) {
-            SetI(color_indexes[which]);
+          if (UNSAFE_TODO(color_indexes[which]) < color_table_.size()) {
+            SetI(UNSAFE_TODO(color_indexes[which]));
           } else {
             SetRGBA(0, 0, 0, 255);
           }

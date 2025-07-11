@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace WTF {
@@ -19,20 +15,20 @@ template <size_t buffer_size, size_t alignment, typename CopyMethod>
 void TestCopyImpl(CopyMethod copy) {
   alignas(alignment) unsigned char src[buffer_size];
   for (size_t i = 0; i < buffer_size; ++i)
-    src[i] = static_cast<char>(i + 1);
+    UNSAFE_TODO(src[i]) = static_cast<char>(i + 1);
   // Allocating extra memory before and after the buffer to make sure the
   // atomic memcpy doesn't exceed the buffer in any direction.
   alignas(alignment) unsigned char tgt[buffer_size + (2 * sizeof(size_t))];
-  memset(tgt, 0, buffer_size + (2 * sizeof(size_t)));
-  copy(tgt + sizeof(size_t), src);
+  UNSAFE_TODO(memset(tgt, 0, buffer_size + (2 * sizeof(size_t))));
+  copy(UNSAFE_TODO(tgt + sizeof(size_t)), src);
   // Check nothing before the buffer was changed
   size_t v;
-  memcpy(&v, tgt, sizeof(size_t));
+  UNSAFE_TODO(memcpy(&v, tgt, sizeof(size_t)));
   EXPECT_EQ(0u, v);
   // Check buffer was copied correctly
-  EXPECT_TRUE(!memcmp(src, tgt + sizeof(size_t), buffer_size));
+  UNSAFE_TODO(EXPECT_TRUE(!memcmp(src, tgt + sizeof(size_t), buffer_size)));
   // Check nothing after the buffer was changed
-  memcpy(&v, tgt + sizeof(size_t) + buffer_size, sizeof(size_t));
+  UNSAFE_TODO(memcpy(&v, tgt + sizeof(size_t) + buffer_size, sizeof(size_t)));
   EXPECT_EQ(0u, v);
 }
 
@@ -124,17 +120,18 @@ void TestAtomicMemzero() {
   // Allocating extra memory before and after the buffer to make sure the
   // AtomicMemzero doesn't exceed the buffer in any direction.
   alignas(alignment) unsigned char buf[buffer_size + (2 * sizeof(size_t))];
-  memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t)));
-  AtomicMemzero<buffer_size, alignment>(buf + sizeof(size_t));
+  UNSAFE_TODO(memset(buf, ~uint8_t{0}, buffer_size + (2 * sizeof(size_t))));
+  AtomicMemzero<buffer_size, alignment>(UNSAFE_TODO(buf + sizeof(size_t)));
   // Check nothing before the buffer was changed
   size_t v;
-  memcpy(&v, buf, sizeof(size_t));
+  UNSAFE_TODO(memcpy(&v, buf, sizeof(size_t)));
   EXPECT_EQ(~size_t{0}, v);
   // Check buffer was copied correctly
   static const unsigned char for_comparison[buffer_size] = {};
-  EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size));
+  UNSAFE_TODO(
+      EXPECT_TRUE(!memcmp(buf + sizeof(size_t), for_comparison, buffer_size)));
   // Check nothing after the buffer was changed
-  memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t));
+  UNSAFE_TODO(memcpy(&v, buf + sizeof(size_t) + buffer_size, sizeof(size_t)));
   EXPECT_EQ(~size_t{0}, v);
 }
 

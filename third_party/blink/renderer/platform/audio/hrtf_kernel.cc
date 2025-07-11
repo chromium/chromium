@@ -26,17 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/audio_channel.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -100,7 +96,7 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
     float x = 1.0f - static_cast<float>(i - (truncated_response_length -
                                              number_of_fade_out_frames)) /
                          number_of_fade_out_frames;
-    impulse_response[i] *= x;
+    UNSAFE_TODO(impulse_response[i]) *= x;
   }
 
   fft_frame_ = std::make_unique<FFTFrame>(fft_size);

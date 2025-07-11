@@ -26,15 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -54,14 +50,16 @@ void ReverbAccumulationBuffer::ReadAndClear(float* destination,
   uint32_t number_of_frames2 = number_of_frames - number_of_frames1;
 
   float* source = buffer_.Data();
-  memcpy(destination, source + read_index_, sizeof(float) * number_of_frames1);
-  memset(source + read_index_, 0, sizeof(float) * number_of_frames1);
+  UNSAFE_TODO(memcpy(destination, source + read_index_,
+                     sizeof(float) * number_of_frames1));
+  UNSAFE_TODO(
+      memset(source + read_index_, 0, sizeof(float) * number_of_frames1));
 
   // Handle wrap-around if necessary
   if (number_of_frames2 > 0) {
-    memcpy(destination + number_of_frames1, source,
-           sizeof(float) * number_of_frames2);
-    memset(source, 0, sizeof(float) * number_of_frames2);
+    UNSAFE_TODO(memcpy(destination + number_of_frames1, source,
+                       sizeof(float) * number_of_frames2));
+    UNSAFE_TODO(memset(source, 0, sizeof(float) * number_of_frames2));
   }
 
   read_index_ = (read_index_ + number_of_frames) % buffer_length;
@@ -96,13 +94,14 @@ uint32_t ReverbAccumulationBuffer::Accumulate(float* source,
   DCHECK_LE(number_of_frames1 + write_index, buffer_length);
   DCHECK_LE(number_of_frames2, buffer_length);
 
-  vector_math::Vadd(source, 1, destination + write_index, 1,
-                    destination + write_index, 1, number_of_frames1);
+  vector_math::Vadd(source, 1, UNSAFE_TODO(destination + write_index), 1,
+                    UNSAFE_TODO(destination + write_index), 1,
+                    number_of_frames1);
 
   // Handle wrap-around if necessary
   if (number_of_frames2 > 0) {
-    vector_math::Vadd(source + number_of_frames1, 1, destination, 1,
-                      destination, 1, number_of_frames2);
+    vector_math::Vadd(UNSAFE_TODO(source + number_of_frames1), 1, destination,
+                      1, destination, 1, number_of_frames2);
   }
 
   return write_index;

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 
+#include "base/compiler_specific.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -67,8 +63,8 @@ TEST(FastSharedBufferReaderTest, nonSequentialReads) {
          data_position += sizeof(temp_buffer)) {
       const char* block = reader.GetConsecutiveData(
           data_position, sizeof(temp_buffer), temp_buffer);
-      ASSERT_FALSE(
-          memcmp(block, reference_data + data_position, sizeof(temp_buffer)));
+      UNSAFE_TODO(ASSERT_FALSE(
+          memcmp(block, reference_data + data_position, sizeof(temp_buffer))));
     }
   }
 }
@@ -91,9 +87,9 @@ TEST(FastSharedBufferReaderTest, readBackwards) {
       const char* block =
           reader.GetConsecutiveData(sizeof(reference_data) - data_offset,
                                     sizeof(temp_buffer), temp_buffer);
-      ASSERT_FALSE(memcmp(block,
-                          reference_data + sizeof(reference_data) - data_offset,
-                          sizeof(temp_buffer)));
+      UNSAFE_TODO(ASSERT_FALSE(
+          memcmp(block, reference_data + sizeof(reference_data) - data_offset,
+                 sizeof(temp_buffer))));
     }
   }
 }
@@ -108,7 +104,7 @@ TEST(FastSharedBufferReaderTest, byteByByte) {
   for (auto segment_reader : reader_struct.segment_readers) {
     FastSharedBufferReader reader(segment_reader);
     for (size_t i = 0; i < sizeof(reference_data); ++i) {
-      ASSERT_EQ(reference_data[i], reader.GetOneByte(i));
+      UNSAFE_TODO(ASSERT_EQ(reference_data[i], reader.GetOneByte(i)));
     }
   }
 }
@@ -127,7 +123,7 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
     FastSharedBufferReader reader(segment_reader);
     char buffer[kDataSize] = {};
     const char* result = reader.GetConsecutiveData(0, kDataSize, buffer);
-    ASSERT_FALSE(memcmp(result, reference_data, kDataSize));
+    UNSAFE_TODO(ASSERT_FALSE(memcmp(result, reference_data, kDataSize)));
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -351,7 +347,7 @@ class MultiBufferDataSourceTest : public testing::Test {
   void ReceiveDataLow(int size) {
     EXPECT_TRUE(active_loader());
     auto data = base::HeapArray<char>::Uninit(size);
-    memset(data.data(), 0xA5, size);  // Arbitrary non-zero value.
+    UNSAFE_TODO(memset(data.data(), 0xA5, size));  // Arbitrary non-zero value.
 
     data_provider()->DidReceiveData(data);
   }

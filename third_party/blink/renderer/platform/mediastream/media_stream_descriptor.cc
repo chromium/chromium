@@ -29,13 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -165,12 +161,14 @@ MediaStreamDescriptor::MediaStreamDescriptor(
   DCHECK(id_.length());
   for (MediaStreamComponentVector::const_iterator iter =
            audio_components.begin();
-       iter != audio_components.end(); ++iter)
+       iter != audio_components.end(); UNSAFE_TODO(++iter)) {
     audio_components_.push_back((*iter));
+  }
   for (MediaStreamComponentVector::const_iterator iter =
            video_components.begin();
-       iter != video_components.end(); ++iter)
+       iter != video_components.end(); UNSAFE_TODO(++iter)) {
     video_components_.push_back((*iter));
+  }
 }
 
 void MediaStreamDescriptor::Trace(Visitor* visitor) const {

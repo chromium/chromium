@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +38,8 @@ TEST(PluginDataTest, UpdatePluginList) {
       WTF::BindRepeating(
           [](mojo::Receiver<mojom::blink::PluginRegistry>* registry_receiver,
              const char* interface, mojo::ScopedMessagePipeHandle pipe) {
-            if (!strcmp(interface, mojom::blink::PluginRegistry::Name_)) {
+            if (!UNSAFE_TODO(
+                    strcmp(interface, mojom::blink::PluginRegistry::Name_))) {
               registry_receiver->Bind(
                   mojo::PendingReceiver<mojom::blink::PluginRegistry>(
                       std::move(pipe)));

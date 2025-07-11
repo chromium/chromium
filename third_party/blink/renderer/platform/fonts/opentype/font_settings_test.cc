@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +15,7 @@ namespace {
 template <typename T, typename U>
 scoped_refptr<T> MakeSettings(std::initializer_list<U> items) {
   scoped_refptr<T> settings = T::Create();
-  for (auto item = items.begin(); item != items.end(); ++item) {
+  for (auto item = items.begin(); item != items.end(); UNSAFE_TODO(++item)) {
     settings->Append(*item);
   }
   return settings;

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
+#include "base/compiler_specific.h"
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,7 +133,7 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   uint8_t* data = static_cast<uint8_t*>(buffer->Data());
 
   // Set buffer to white pixels.
-  memset(data, 0xff, buffer_size);
+  UNSAFE_TODO(memset(data, 0xff, buffer_size));
   AllowSharedBufferSource* destination =
       MakeGarbageCollected<AllowSharedBufferSource>(buffer);
 
@@ -151,10 +147,10 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   // Check that after copyTo() all the pixels are black.
   for (int y = 0; y < media_frame->coded_size().height(); y++) {
     for (int x = 0; x < media_frame->coded_size().width(); x++) {
-      uint8_t* addr = &data[y * media_frame->stride(0) + x * 4];
+      uint8_t* addr = &UNSAFE_TODO(data[y * media_frame->stride(0) + x * 4]);
       ASSERT_EQ(addr[0], 0) << " R x: " << x << " y: " << y;
-      ASSERT_EQ(addr[1], 0) << " G x: " << x << " y: " << y;
-      ASSERT_EQ(addr[2], 0) << " B x: " << x << " y: " << y;
+      UNSAFE_TODO(ASSERT_EQ(addr[1], 0)) << " G x: " << x << " y: " << y;
+      UNSAFE_TODO(ASSERT_EQ(addr[2], 0)) << " B x: " << x << " y: " << y;
     }
   }
 

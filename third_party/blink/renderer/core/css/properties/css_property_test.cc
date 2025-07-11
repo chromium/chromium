@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
@@ -319,12 +315,12 @@ TEST_F(CSSPropertyTest, AlternativePropertyData) {
                 alternative.GetPropertyNameAtomicString());
       EXPECT_EQ(property.GetPropertyNameString(),
                 alternative.GetPropertyNameString());
-      EXPECT_EQ(std::strcmp(property.GetPropertyName(),
-                            alternative.GetPropertyName()),
-                0);
-      EXPECT_EQ(std::strcmp(property.GetJSPropertyName(),
-                            alternative.GetJSPropertyName()),
-                0);
+      UNSAFE_TODO(EXPECT_EQ(std::strcmp(property.GetPropertyName(),
+                                        alternative.GetPropertyName()),
+                            0));
+      UNSAFE_TODO(EXPECT_EQ(std::strcmp(property.GetJSPropertyName(),
+                                        alternative.GetJSPropertyName()),
+                            0));
 
       // Alternative properties should should also use the same CSSSampleId.
       EXPECT_EQ(GetCSSSampleId(property_id), GetCSSSampleId(alternative_id));

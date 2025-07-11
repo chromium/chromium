@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,7 +158,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   segment_reader = nullptr;
   parkable_image = nullptr;
 
-  EXPECT_FALSE(memcmp(data, sk_data->bytes(), kDataSize));
+  UNSAFE_TODO(EXPECT_FALSE(memcmp(data, sk_data->bytes(), kDataSize)));
 }
 
 }  // namespace blink

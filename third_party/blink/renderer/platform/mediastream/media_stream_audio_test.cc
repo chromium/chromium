@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -117,7 +113,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
       // from the very first sample.
       float* const data = audio_bus_->channel(0);
       for (int i = 0; i < buffer_size; ++i)
-        data[i] = ++sample_count_;
+        UNSAFE_TODO(data[i]) = ++sample_count_;
       CHECK_LT(sample_count_, kMaxValueSafelyConvertableToFloat);
       MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_,
                                                   base::TimeTicks::Now(), {});
@@ -213,7 +209,7 @@ class FakeMediaStreamAudioSink final : public WebMediaStreamAudioSink {
                kMaxValueSafelyConvertableToFloat);
       for (int i = 0; i < audio_bus.frames(); ++i) {
         const float expected_sample_value = expected_sample_count_;
-        ASSERT_EQ(expected_sample_value, data[i]);
+        UNSAFE_TODO(ASSERT_EQ(expected_sample_value, data[i]));
         ++expected_sample_count_;
       }
     }

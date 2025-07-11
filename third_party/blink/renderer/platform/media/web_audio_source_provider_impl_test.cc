@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,8 +103,9 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     EXPECT_EQ(bus1->channels(), bus2->channels());
     EXPECT_EQ(bus1->frames(), bus2->frames());
     for (int ch = 0; ch < bus1->channels(); ++ch) {
-      if (memcmp(bus1->channel(ch), bus2->channel(ch),
-                 sizeof(*bus1->channel(ch)) * bus1->frames()) != 0) {
+      if (UNSAFE_TODO(memcmp(bus1->channel(ch), bus2->channel(ch),
+                             sizeof(*bus1->channel(ch)) * bus1->frames())) !=
+          0) {
         return false;
       }
     }

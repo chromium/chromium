@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -291,7 +287,7 @@ TEST_F(MultiBufferTest, ReadAll) {
       EXPECT_EQ(buffer[17], 17);
       for (int64_t i = 0; i < bytes_read; i++) {
         uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+        UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
         pos++;
       }
     } else {
@@ -322,7 +318,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
       pos++;
     }
   }
@@ -353,7 +349,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
       pos++;
     }
   }
@@ -385,7 +381,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer2) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
       pos++;
     }
   }
@@ -529,7 +525,7 @@ class ReadHelper {
     if (bytes_read) {
       for (int64_t i = 0; i < bytes_read; i++) {
         unsigned char expected = (pos_ * 15485863) >> 16;
-        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos_;
+        UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos_;
         pos_++;
       }
       CHECK_EQ(pos_, reader_.Tell());

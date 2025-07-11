@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // A benchmark to verify style performance (and also hooks into layout,
 // but not generally layout itself). This isolates style from paint etc.,
 // for more stable benchmarking and profiling. Note that this test
@@ -17,6 +12,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_view_util.h"
@@ -268,8 +264,9 @@ static void MeasureAndPrintStyleForDumpedPage(const char* filename,
       MeasureStyleForDumpedPage(filename, parse_only, &reporter);
   if (result.skipped) {
     char msg[256];
-    snprintf(msg, sizeof(msg), "Skipping %s test because %s could not be read",
-             label, filename);
+    UNSAFE_TODO(snprintf(msg, sizeof(msg),
+                         "Skipping %s test because %s could not be read", label,
+                         filename));
     GTEST_SKIP_(msg);
   }
 

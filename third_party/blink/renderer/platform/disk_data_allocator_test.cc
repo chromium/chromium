@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 
 #include <cstring>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -108,7 +104,7 @@ TEST_F(DiskDataAllocatorTest, ReadWrite) {
   auto read_data = std::vector<char>(kSize);
   allocator.Read(*metadata, base::as_writable_bytes(base::span(read_data)));
 
-  EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize)));
 }
 
 TEST_F(DiskDataAllocatorTest, ReadWriteDiscardMultiple) {
@@ -135,7 +131,7 @@ TEST_F(DiskDataAllocatorTest, ReadWriteDiscardMultiple) {
     auto read_data = std::vector<char>(size);
     allocator.Read(*p.first, base::as_writable_bytes(base::span(read_data)));
 
-    EXPECT_EQ(0, memcmp(&read_data[0], &p.second[0], size));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(&read_data[0], &p.second[0], size)));
   }
 
   base::RandomShuffle(data_written.begin(), data_written.end());
@@ -340,7 +336,7 @@ TEST_F(DiskDataAllocatorTest, ProvideValidFile) {
   auto read_data = std::vector<char>(kSize);
   allocator.Read(*metadata, base::as_writable_bytes(base::span(read_data)));
 
-  EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize)));
 }
 
 TEST_F(DiskDataAllocatorTest, WriteWithLimitedCapacity) {

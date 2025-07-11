@@ -22,15 +22,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -133,13 +129,15 @@ TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
       TransformOperations to_ops;
       from_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(test_transforms[i][0][0]),
-              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][0]),
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][1]),
+              UNSAFE_TODO(test_transforms[i])[0][2],
               TransformOperation::kTranslate3D));
       to_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(test_transforms[i][1][0]),
-              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][0]),
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][1]),
+              UNSAFE_TODO(test_transforms[i])[1][2],
               TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }
@@ -193,13 +191,15 @@ TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
       TransformOperations to_ops;
       from_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(test_transforms[i][0][0]),
-              Length::Fixed(test_transforms[i][0][1]), test_transforms[i][0][2],
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][0]),
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[0][1]),
+              UNSAFE_TODO(test_transforms[i])[0][2],
               TransformOperation::kTranslate3D));
       to_ops.Operations().push_back(
           MakeGarbageCollected<TranslateTransformOperation>(
-              Length::Fixed(test_transforms[i][1][0]),
-              Length::Fixed(test_transforms[i][1][1]), test_transforms[i][1][2],
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][0]),
+              Length::Fixed(UNSAFE_TODO(test_transforms[i])[1][1]),
+              UNSAFE_TODO(test_transforms[i])[1][2],
               TransformOperation::kTranslate3D));
       EmpiricallyTestBounds(from_ops, to_ops, progress[j][0], progress[j][1]);
     }

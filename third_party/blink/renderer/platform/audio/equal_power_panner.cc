@@ -23,16 +23,12 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/equal_power_panner.h"
 
 #include <algorithm>
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -112,28 +108,32 @@ void EqualPowerPanner::Pan(double azimuth,
 
   if (number_of_input_channels == 1) {  // For mono source case.
     while (n--) {
-      const float input_l = *source_l++;
+      const float input_l = *UNSAFE_TODO(source_l++);
 
-      *destination_l++ = static_cast<float>(input_l * desired_gain_l);
-      *destination_r++ = static_cast<float>(input_l * desired_gain_r);
+      *UNSAFE_TODO(destination_l++) =
+          static_cast<float>(input_l * desired_gain_l);
+      *UNSAFE_TODO(destination_r++) =
+          static_cast<float>(input_l * desired_gain_r);
     }
   } else {               // For stereo source case.
     if (azimuth <= 0) {  // from -90 -> 0
       while (n--) {
-        const float input_l = *source_l++;
-        const float input_r = *source_r++;
+        const float input_l = *UNSAFE_TODO(source_l++);
+        const float input_r = *UNSAFE_TODO(source_r++);
 
-        *destination_l++ =
+        *UNSAFE_TODO(destination_l++) =
             static_cast<float>(input_l + input_r * desired_gain_l);
-        *destination_r++ = static_cast<float>(input_r * desired_gain_r);
+        *UNSAFE_TODO(destination_r++) =
+            static_cast<float>(input_r * desired_gain_r);
       }
     } else {  // from 0 -> +90
       while (n--) {
-        const float input_l = *source_l++;
-        const float input_r = *source_r++;
+        const float input_l = *UNSAFE_TODO(source_l++);
+        const float input_r = *UNSAFE_TODO(source_r++);
 
-        *destination_l++ = static_cast<float>(input_l * desired_gain_l);
-        *destination_r++ =
+        *UNSAFE_TODO(destination_l++) =
+            static_cast<float>(input_l * desired_gain_l);
+        *UNSAFE_TODO(destination_r++) =
             static_cast<float>(input_r + input_l * desired_gain_r);
       }
     }
@@ -177,12 +177,14 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
     for (int k = 0; k < n; ++k) {
       double desired_gain_l;
       double desired_gain_r;
-      const float input_l = *source_l++;
+      const float input_l = *UNSAFE_TODO(source_l++);
 
       CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
                            number_of_input_channels);
-      *destination_l++ = static_cast<float>(input_l * desired_gain_l);
-      *destination_r++ = static_cast<float>(input_l * desired_gain_r);
+      *UNSAFE_TODO(destination_l++) =
+          static_cast<float>(input_l * desired_gain_l);
+      *UNSAFE_TODO(destination_r++) =
+          static_cast<float>(input_l * desired_gain_r);
     }
   } else {  // For stereo source case.
     for (int k = 0; k < n; ++k) {
@@ -192,16 +194,18 @@ void EqualPowerPanner::PanWithSampleAccurateValues(
       CalculateDesiredGain(desired_gain_l, desired_gain_r, azimuth[k],
                            number_of_input_channels);
       if (azimuth[k] <= 0) {  // from -90 -> 0
-        const float input_l = *source_l++;
-        const float input_r = *source_r++;
-        *destination_l++ =
+        const float input_l = *UNSAFE_TODO(source_l++);
+        const float input_r = *UNSAFE_TODO(source_r++);
+        *UNSAFE_TODO(destination_l++) =
             static_cast<float>(input_l + input_r * desired_gain_l);
-        *destination_r++ = static_cast<float>(input_r * desired_gain_r);
+        *UNSAFE_TODO(destination_r++) =
+            static_cast<float>(input_r * desired_gain_r);
       } else {  // from 0 -> +90
-        const float input_l = *source_l++;
-        const float input_r = *source_r++;
-        *destination_l++ = static_cast<float>(input_l * desired_gain_l);
-        *destination_r++ =
+        const float input_l = *UNSAFE_TODO(source_l++);
+        const float input_r = *UNSAFE_TODO(source_r++);
+        *UNSAFE_TODO(destination_l++) =
+            static_cast<float>(input_l * desired_gain_l);
+        *UNSAFE_TODO(destination_r++) =
             static_cast<float>(input_r + input_l * desired_gain_r);
       }
     }

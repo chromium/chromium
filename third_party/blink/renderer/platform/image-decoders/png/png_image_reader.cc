@@ -36,15 +36,11 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_reader.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
@@ -237,10 +233,10 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
       ReadAsConstPngBytep(reader, ihdr_offset_, kHeaderSize, read_buffer);
   png_byte* header = reinterpret_cast<png_byte*>(read_buffer);
   if (chunk != header) {
-    memcpy(header, chunk, kHeaderSize);
+    UNSAFE_TODO(memcpy(header, chunk, kHeaderSize));
   }
-  png_save_uint_32(header + 8, frame_rect.width());
-  png_save_uint_32(header + 12, frame_rect.height());
+  png_save_uint_32(UNSAFE_TODO(header + 8), frame_rect.width());
+  png_save_uint_32(UNSAFE_TODO(header + 12), frame_rect.height());
   // IHDR has been modified, so tell libpng to ignore CRC errors.
   png_set_crc_action(png_, PNG_CRC_QUIET_USE, PNG_CRC_QUIET_USE);
   png_process_data(png_, info_, header, kHeaderSize);
@@ -255,7 +251,7 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
 // - The length of |chunk| must be >= 8
 // - The length of |tag| must be = 4
 static inline bool IsChunk(const png_byte* chunk, const char* tag) {
-  return memcmp(chunk + 4, tag, 4) == 0;
+  return UNSAFE_TODO(memcmp(chunk + 4, tag, 4)) == 0;
 }
 
 bool PNGImageReader::ProgressivelyDecodeFirstFrame(
@@ -269,7 +265,7 @@ bool PNGImageReader::ProgressivelyDecodeFirstFrame(
     const png_byte* chunk = ReadAsConstPngBytep(reader, offset, 8, read_buffer);
 
     // A large length would have been rejected in Parse.
-    const png_uint_32 length = png_get_uint_32(chunk);
+    const png_uint_32 length = UNSAFE_TODO(png_get_uint_32(chunk));
     DCHECK_LE(length, PNG_UINT_31_MAX);
 
     // When an fcTL or IEND chunk is encountered, the frame data has ended.
@@ -342,7 +338,7 @@ void PNGImageReader::DecodeFrame(const FastSharedBufferReader& reader,
 
   while (offset < end_offset) {
     const png_byte* chunk = ReadAsConstPngBytep(reader, offset, 8, read_buffer);
-    const png_uint_32 length = png_get_uint_32(chunk);
+    const png_uint_32 length = UNSAFE_TODO(png_get_uint_32(chunk));
     DCHECK_LE(length, PNG_UINT_31_MAX);
 
     if (IsChunk(chunk, "fdAT")) {
@@ -372,12 +368,12 @@ static bool CheckCrc(const FastSharedBufferReader& reader,
   char crc_buffer[4];
   const png_byte* crc_position = ReadAsConstPngBytep(
       reader, chunk_start + 8 + chunk_length, 4, crc_buffer);
-  png_uint_32 crc = png_get_uint_32(crc_position);
+  png_uint_32 crc = UNSAFE_TODO(png_get_uint_32(crc_position));
   return crc == crc32(crc32(0, Z_NULL, 0), chunk, chunk_length + 4);
 }
 
 bool PNGImageReader::CheckSequenceNumber(const png_byte* position) {
-  png_uint_32 sequence = png_get_uint_32(position);
+  png_uint_32 sequence = UNSAFE_TODO(png_get_uint_32(position));
   if (sequence != next_sequence_number_ || sequence > PNG_UINT_31_MAX) {
     return false;
   }
@@ -445,7 +441,7 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
     }
     const png_byte* chunk = ReadAsConstPngBytep(reader, read_offset_,
                                                 kChunkHeaderSize, read_buffer);
-    const wtf_size_t length = png_get_uint_32(chunk);
+    const wtf_size_t length = UNSAFE_TODO(png_get_uint_32(chunk));
     if (length > PNG_UINT_31_MAX) {
       return false;
     }
@@ -614,7 +610,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
        read_offset_ += length + 12) {
     const png_byte* chunk =
         ReadAsConstPngBytep(reader, read_offset_, 8, read_buffer);
-    length = png_get_uint_32(chunk);
+    length = UNSAFE_TODO(png_get_uint_32(chunk));
     if (length > PNG_UINT_31_MAX) {
       return false;
     }
@@ -665,12 +661,12 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
       }
       chunk =
           ReadAsConstPngBytep(reader, read_offset_ + 8, length, read_buffer);
-      reported_frame_count_ = png_get_uint_32(chunk);
+      reported_frame_count_ = UNSAFE_TODO(png_get_uint_32(chunk));
       if (!reported_frame_count_ || reported_frame_count_ > PNG_UINT_31_MAX) {
         ignore_animation_ = true;
         continue;
       }
-      png_uint_32 repetition_count = png_get_uint_32(chunk + 4);
+      png_uint_32 repetition_count = UNSAFE_TODO(png_get_uint_32(chunk + 4));
       if (repetition_count > PNG_UINT_31_MAX) {
         ignore_animation_ = true;
         continue;
@@ -708,7 +704,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
       };
       // Determine if the chunk type of |chunk| is "critical".
       // (Ancillary bit == 0; the chunk is required for display).
-      bool is_critical_chunk = (chunk[4] & 1u << 5) == 0;
+      bool is_critical_chunk = (UNSAFE_TODO(chunk[4]) & 1u << 5) == 0;
       if (is_critical_chunk || is_necessary_ancillary(chunk)) {
         png_process_data(png_, info_, const_cast<png_byte*>(chunk), 8);
         ProcessData(reader, read_offset_ + 8, length + 4);
@@ -749,12 +745,12 @@ bool PNGImageReader::ParseFrameInfo(const png_byte* data) {
     return false;
   }
 
-  png_uint_32 frame_width = png_get_uint_32(data + 4);
-  png_uint_32 frame_height = png_get_uint_32(data + 8);
-  png_uint_32 x_offset = png_get_uint_32(data + 12);
-  png_uint_32 y_offset = png_get_uint_32(data + 16);
-  png_uint_16 delay_numerator = png_get_uint_16(data + 20);
-  png_uint_16 delay_denominator = png_get_uint_16(data + 22);
+  png_uint_32 frame_width = UNSAFE_TODO(png_get_uint_32(data + 4));
+  png_uint_32 frame_height = UNSAFE_TODO(png_get_uint_32(data + 8));
+  png_uint_32 x_offset = UNSAFE_TODO(png_get_uint_32(data + 12));
+  png_uint_32 y_offset = UNSAFE_TODO(png_get_uint_32(data + 16));
+  png_uint_16 delay_numerator = UNSAFE_TODO(png_get_uint_16(data + 20));
+  png_uint_16 delay_denominator = UNSAFE_TODO(png_get_uint_16(data + 22));
 
   if (!CheckSequenceNumber(data)) {
     return false;
@@ -791,7 +787,7 @@ bool PNGImageReader::ParseFrameInfo(const png_byte* data) {
     kAPNG_DISPOSE_OP_BACKGROUND = 1,
     kAPNG_DISPOSE_OP_PREVIOUS = 2,
   };
-  const png_byte& dispose_op = data[24];
+  const png_byte& dispose_op = UNSAFE_TODO(data[24]);
   switch (dispose_op) {
     case kAPNG_DISPOSE_OP_NONE:
       new_frame_.disposal_method = ImageFrame::DisposalMethod::kDisposeKeep;
@@ -812,7 +808,7 @@ bool PNGImageReader::ParseFrameInfo(const png_byte* data) {
     kAPNG_BLEND_OP_SOURCE = 0,
     kAPNG_BLEND_OP_OVER = 1,
   };
-  const png_byte& blend_op = data[25];
+  const png_byte& blend_op = UNSAFE_TODO(data[25]);
   switch (blend_op) {
     case kAPNG_BLEND_OP_SOURCE:
       new_frame_.alpha_blend = ImageFrame::AlphaBlendSource::kBlendAtopBgcolor;

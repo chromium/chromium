@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/fuzzing/internals_fuzzing.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -48,7 +44,7 @@ ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
     }
   }
 
-  std::vector<uint8_t> data(bytes, bytes + num_bytes);
+  std::vector<uint8_t> data(bytes, UNSAFE_TODO(bytes + num_bytes));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
+
+#include "base/compiler_specific.h"
 
 namespace blink {
 
@@ -42,7 +39,7 @@ const char* FastSharedBufferReader::GetConsecutiveData(size_t data_position,
   // Use the cached segment if it can serve the request.
   if (data_position >= data_position_ &&
       data_position + length <= data_position_ + segment_length_) {
-    return segment_ + data_position - data_position_;
+    return UNSAFE_TODO(segment_ + data_position - data_position_);
   }
 
   // Return a pointer into |data_| if the request doesn't span segments.
@@ -53,14 +50,14 @@ const char* FastSharedBufferReader::GetConsecutiveData(size_t data_position,
 
   for (char* dest = buffer;;) {
     size_t copy = std::min(length, segment_length_);
-    memcpy(dest, segment_, copy);
+    UNSAFE_TODO(memcpy(dest, segment_, copy));
     length -= copy;
     if (!length) {
       return buffer;
     }
 
     // Continue reading the next segment.
-    dest += copy;
+    UNSAFE_TODO(dest += copy);
     GetSomeDataInternal(data_position_ + copy);
   }
 }

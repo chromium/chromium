@@ -28,16 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 
 #include <algorithm>
 #include <cfloat>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -165,9 +161,9 @@ UInt128& UInt128::operator/=(const uint32_t divisor) {
   uint32_t quotient[4];
   uint32_t remainder = 0;
   for (int i = 3; i >= 0; --i) {
-    const uint64_t work = MakeUInt64(dividend[i], remainder);
+    const uint64_t work = MakeUInt64(UNSAFE_TODO(dividend[i]), remainder);
     remainder = static_cast<uint32_t>(work % divisor);
-    quotient[i] = static_cast<uint32_t>(work / divisor);
+    UNSAFE_TODO(quotient[i]) = static_cast<uint32_t>(work / divisor);
   }
   low_ = MakeUInt64(quotient[0], quotient[1]);
   high_ = MakeUInt64(quotient[2], quotient[3]);

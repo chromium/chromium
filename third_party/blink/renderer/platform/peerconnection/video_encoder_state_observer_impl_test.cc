@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
 #include <array>
 #include <queue>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
@@ -55,7 +51,7 @@ void FillSimulcastStreams(webrtc::VideoCodec& video_codec,
   CHECK_LE(num_simulcast_streams, std::size(video_codec.simulcastStream));
   video_codec.numberOfSimulcastStreams = num_simulcast_streams;
   for (unsigned int i = 0; i < num_simulcast_streams; i++) {
-    webrtc::SimulcastStream& ss = video_codec.simulcastStream[i];
+    webrtc::SimulcastStream& ss = UNSAFE_TODO(video_codec.simulcastStream[i]);
     const int log_scale = num_simulcast_streams - i - 1;
     ss.width = video_codec.width >> log_scale;
     ss.height = video_codec.height >> log_scale;
@@ -91,7 +87,7 @@ webrtc::VideoCodec CreateStreamCodec(const webrtc::VideoCodec& codec,
                                      bool is_highest_quality_stream) {
   webrtc::VideoCodec codec_params = codec;
   const webrtc::SimulcastStream& stream_params =
-      codec.simulcastStream[stream_idx];
+      UNSAFE_TODO(codec.simulcastStream[stream_idx]);
 
   codec_params.numberOfSimulcastStreams = 0;
   codec_params.width = stream_params.width;
@@ -106,7 +102,7 @@ webrtc::VideoCodec CreateStreamCodec(const webrtc::VideoCodec& codec,
   if (codec.GetScalabilityMode().has_value()) {
     bool only_active_stream = true;
     for (int i = 0; i < codec.numberOfSimulcastStreams; ++i) {
-      if (i != stream_idx && codec.simulcastStream[i].active) {
+      if (i != stream_idx && UNSAFE_TODO(codec.simulcastStream[i]).active) {
         only_active_stream = false;
         break;
       }
@@ -145,7 +141,7 @@ void FillSpatialLayers(webrtc::VideoCodec& video_codec,
                        unsigned int num_temporal_layers) {
   CHECK_LE(num_spatial_layers, std::size(video_codec.simulcastStream));
   for (unsigned int i = 0; i < num_spatial_layers; i++) {
-    webrtc::SpatialLayer& sl = video_codec.spatialLayers[i];
+    webrtc::SpatialLayer& sl = UNSAFE_TODO(video_codec.spatialLayers[i]);
     const int log_scale = num_spatial_layers - i - 1;
     sl.width = video_codec.width >> log_scale;
     sl.height = video_codec.height >> log_scale;
@@ -612,13 +608,14 @@ TEST_F(VideoEncoderStateObserverImplTest,
     for (size_t sid = 0; sid < kSpatialLayers; sid++) {
       const bool keyframe = i % kKeyFrameInterval == 0 && sid == 0;
       observer_->OnEncodedImage(
-          kEncoderId, EncodeResult{.width = vp9.spatialLayers[sid].width,
-                                   .height = vp9.spatialLayers[sid].height,
-                                   .keyframe = keyframe,
-                                   .spatial_index = sid,
-                                   .rtp_timestamp = rtp_timestamp,
-                                   .encode_end_time = base::TimeTicks::Now(),
-                                   .is_hardware_accelerated = true});
+          kEncoderId,
+          EncodeResult{.width = UNSAFE_TODO(vp9.spatialLayers[sid]).width,
+                       .height = UNSAFE_TODO(vp9.spatialLayers[sid]).height,
+                       .keyframe = keyframe,
+                       .spatial_index = sid,
+                       .rtp_timestamp = rtp_timestamp,
+                       .encode_end_time = base::TimeTicks::Now(),
+                       .is_hardware_accelerated = true});
     }
   }
 
@@ -673,13 +670,14 @@ TEST_F(VideoEncoderStateObserverImplTest,
         }
         const bool keyframe = i == 0 && sid == bottom_sid;
         observer_->OnEncodedImage(
-            kEncoderId, EncodeResult{.width = vp9.spatialLayers[sid].width,
-                                     .height = vp9.spatialLayers[sid].height,
-                                     .keyframe = keyframe,
-                                     .spatial_index = sid,
-                                     .rtp_timestamp = rtp_timestamp,
-                                     .encode_end_time = base::TimeTicks::Now(),
-                                     .is_hardware_accelerated = true});
+            kEncoderId,
+            EncodeResult{.width = UNSAFE_TODO(vp9.spatialLayers[sid]).width,
+                         .height = UNSAFE_TODO(vp9.spatialLayers[sid]).height,
+                         .keyframe = keyframe,
+                         .spatial_index = sid,
+                         .rtp_timestamp = rtp_timestamp,
+                         .encode_end_time = base::TimeTicks::Now(),
+                         .is_hardware_accelerated = true});
       }
     }
 
@@ -688,8 +686,9 @@ TEST_F(VideoEncoderStateObserverImplTest,
     const auto& [stats_key, video_stats] = processing_stats_.back();
     EXPECT_EQ(stats_key.is_decode, false);
     EXPECT_EQ(stats_key.codec_profile, media::VP9PROFILE_PROFILE0);
-    EXPECT_EQ(stats_key.pixel_size, vp9.spatialLayers[top_sid].width *
-                                        vp9.spatialLayers[top_sid].height);
+    UNSAFE_TODO(EXPECT_EQ(
+        stats_key.pixel_size,
+        vp9.spatialLayers[top_sid].width * vp9.spatialLayers[top_sid].height));
     EXPECT_EQ(stats_key.hw_accelerated, true);
 
     EXPECT_EQ(video_stats.frame_count, StatsCollector::kMinSamplesThreshold);

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 
 #include <cmath>
 #include <limits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
@@ -25,7 +21,7 @@ namespace {
 float MaxAmplitude(const float* audio_data, int length) {
   float max = 0.0f;
   for (int i = 0; i < length; ++i) {
-    const float absolute = fabsf(audio_data[i]);
+    const float absolute = fabsf(UNSAFE_TODO(audio_data[i]));
     if (absolute > max)
       max = absolute;
   }

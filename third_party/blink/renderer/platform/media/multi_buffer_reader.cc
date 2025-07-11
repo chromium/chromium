@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 
 #include <stddef.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -108,8 +104,8 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, uint8_t* data, int64_t len) {
     }
     const auto tocopy =
         std::min<size_t>(len - bytes_read, buffer->size() - offset);
-    memcpy(data, buffer->data().data() + offset, tocopy);
-    data += tocopy;
+    UNSAFE_TODO(memcpy(data, buffer->data().data() + offset, tocopy));
+    UNSAFE_TODO(data += tocopy);
     bytes_read += tocopy;
     if (bytes_read == len) {
       break;

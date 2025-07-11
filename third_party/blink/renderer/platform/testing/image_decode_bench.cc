@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Provides a minimal wrapping of the Blink image decoders. Used to perform
 // a non-threaded, memory-to-memory image decode using micro second accuracy
 // clocks to measure image decode time.
@@ -19,6 +14,7 @@
 #include <fstream>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_executor.h"
@@ -50,7 +46,7 @@ struct ImageMeta {
 };
 
 void DecodeFailure(ImageMeta* image) {
-  fprintf(stderr, "Failed to decode image %s\n", image->name);
+  UNSAFE_TODO(fprintf(stderr, "Failed to decode image %s\n", image->name));
   exit(3);
 }
 
@@ -88,16 +84,19 @@ void ImageDecodeBenchMain(int argc, char* argv[]) {
   int option, iterations = 1;
 
   auto usage_exit = [&] {
-    fprintf(stderr, "Usage: %s [-i iterations] file [file...]\n", argv[0]);
+    UNSAFE_TODO(
+        fprintf(stderr, "Usage: %s [-i iterations] file [file...]\n", argv[0]));
     exit(1);
   };
 
   for (option = 1; option < argc; ++option) {
-    if (argv[option][0] != '-')
+    if (UNSAFE_TODO(argv[option])[0] != '-') {
       break;  // End of optional arguments.
-    if (std::string(argv[option]) != "-i")
+    }
+    if (std::string(UNSAFE_TODO(argv[option])) != "-i") {
       usage_exit();
-    iterations = (++option < argc) ? atoi(argv[option]) : 0;
+    }
+    iterations = (++option < argc) ? atoi(UNSAFE_TODO(argv[option])) : 0;
     if (iterations < 1)
       usage_exit();
   }
@@ -113,7 +112,7 @@ void ImageDecodeBenchMain(int argc, char* argv[]) {
   // Bench each image file.
 
   while (option < argc) {
-    const char* name = argv[option++];
+    const char* name = UNSAFE_TODO(argv[option++]);
 
     // Read entire file content into |data| (a contiguous block of memory) then
     // decode it to verify the image and record its ImageMeta data.
@@ -134,7 +133,7 @@ void ImageDecodeBenchMain(int argc, char* argv[]) {
     // Results to stdout.
 
     double average_time = total_time / iterations;
-    printf("%f %f %s\n", total_time, average_time, name);
+    UNSAFE_TODO(printf("%f %f %s\n", total_time, average_time, name));
   }
 }
 

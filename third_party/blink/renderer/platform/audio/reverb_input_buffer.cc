@@ -26,12 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/reverb_input_buffer.h"
+
+#include "base/compiler_specific.h"
 
 namespace blink {
 
@@ -45,7 +42,8 @@ void ReverbInputBuffer::Write(const float* source_p, size_t number_of_frames) {
 
   CHECK_LE(new_index, buffer_length);
 
-  memcpy(buffer_.Data() + index, source_p, sizeof(float) * number_of_frames);
+  UNSAFE_TODO(memcpy(buffer_.Data() + index, source_p,
+                     sizeof(float) * number_of_frames));
 
   if (new_index >= buffer_length) {
     new_index = 0;
@@ -61,7 +59,7 @@ float* ReverbInputBuffer::DirectReadFrom(size_t* read_index,
   DCHECK_LE(*read_index + number_of_frames, buffer_length);
 
   float* source_p = buffer_.Data();
-  float* p = source_p + *read_index;
+  float* p = UNSAFE_TODO(source_p + *read_index);
 
   // Update readIndex
   *read_index = (*read_index + number_of_frames) % buffer_length;

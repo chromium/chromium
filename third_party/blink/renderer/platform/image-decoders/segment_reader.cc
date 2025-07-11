@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -51,8 +47,8 @@ base::span<const uint8_t> BufferGetSomeData(Iter& iter,
 template <class Iter>
 sk_sp<SkData> BufferCopyAsSkData(Iter iter, size_t available) {
   sk_sp<SkData> data = SkData::MakeUninitialized(available);
-  auto dst =
-      base::span(static_cast<uint8_t*>(data->writable_data()), available);
+  auto dst = UNSAFE_TODO(
+      base::span(static_cast<uint8_t*>(data->writable_data()), available));
   do {
     auto src = *iter;
     dst.copy_prefix_from(src);
@@ -103,7 +99,7 @@ sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
   char* buffer = static_cast<char*>(data->writable_data());
   size_t offset = 0;
   for (const auto& span : *shared_buffer_) {
-    memcpy(buffer + offset, span.data(), span.size());
+    UNSAFE_TODO(memcpy(buffer + offset, span.data(), span.size()));
     offset += span.size();
   }
 

@@ -1,12 +1,8 @@
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/thread_manager.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
@@ -307,7 +303,7 @@ void ThreadManager::ExecuteShutdownTaskQueueAction(
   if (task_queues_.size() > 1) {
     wtf_size_t queue_index = action.task_queue_id() % task_queues_.size();
     task_queues_[queue_index].reset();
-    task_queues_.erase(task_queues_.begin() + queue_index);
+    task_queues_.erase(UNSAFE_TODO(task_queues_.begin() + queue_index));
   }
 }
 
@@ -328,7 +324,7 @@ void ThreadManager::ExecuteCancelTaskAction(
     // If it is already running, it is a parent task and will be deleted when
     // it is done.
     if (!pending_tasks_[task_index]->is_running_) {
-      pending_tasks_.erase(pending_tasks_.begin() + task_index);
+      pending_tasks_.erase(UNSAFE_TODO(pending_tasks_.begin() + task_index));
     }
   }
 }
@@ -403,7 +399,7 @@ void ThreadManager::DeleteTask(Task* task) {
     i++;
   }
   if (i < pending_tasks_.size())
-    pending_tasks_.erase(pending_tasks_.begin() + i);
+    pending_tasks_.erase(UNSAFE_TODO(pending_tasks_.begin() + i));
 }
 
 scoped_refptr<TaskQueueWithVoters> ThreadManager::GetTaskQueueFor(

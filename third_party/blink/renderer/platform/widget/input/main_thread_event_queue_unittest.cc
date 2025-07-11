@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1548,16 +1544,17 @@ TEST_F(MainThreadEventQueueTest,
         }
         // Simulates two new blocking touchmove events enqueued while the
         // first touchmove is being dispatched.
-        test.HandleEvent(touch_moves[1],
+        test.HandleEvent(UNSAFE_TODO(touch_moves[1]),
                          blink::mojom::InputEventResultState::kNotConsumed);
-        test.HandleEvent(touch_moves[2],
+        test.HandleEvent(UNSAFE_TODO(touch_moves[2]),
                          blink::mojom::InputEventResultState::kNotConsumed);
-      } else if (touch_id == touch_moves[1].unique_touch_event_id) {
+      } else if (touch_id ==
+                 UNSAFE_TODO(touch_moves[1]).unique_touch_event_id) {
         // Simulates two new blocking touchmove events enqueued while the
         // second touchmove is being dispatched.
-        test.HandleEvent(touch_moves[3],
+        test.HandleEvent(UNSAFE_TODO(touch_moves[3]),
                          blink::mojom::InputEventResultState::kNotConsumed);
-        test.HandleEvent(touch_moves[4],
+        test.HandleEvent(UNSAFE_TODO(touch_moves[4]),
                          blink::mojom::InputEventResultState::kNotConsumed);
       }
     }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #include <string>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -49,8 +45,8 @@ WebMessagePayload DecodeWithV8(const TransferableMessage& message) {
           message.array_buffer_contents_array[0]->contents;
       v8::Local<v8::ArrayBuffer> message_as_array_buffer =
           v8::ArrayBuffer::New(isolate, big_buffer.size());
-      memcpy(message_as_array_buffer->GetBackingStore()->Data(),
-             big_buffer.data(), big_buffer.size());
+      UNSAFE_TODO(memcpy(message_as_array_buffer->GetBackingStore()->Data(),
+                         big_buffer.data(), big_buffer.size()));
       deserializer.TransferArrayBuffer(0, message_as_array_buffer);
     }
     EXPECT_TRUE(deserializer.ReadHeader(context).ToChecked());
@@ -69,8 +65,8 @@ WebMessagePayload DecodeWithV8(const TransferableMessage& message) {
       auto js_array_buffer = value.As<v8::ArrayBuffer>()->GetBackingStore();
       std::vector<uint8_t> array_buffer_contents;
       array_buffer_contents.resize(js_array_buffer->ByteLength());
-      memcpy(array_buffer_contents.data(), js_array_buffer->Data(),
-             js_array_buffer->ByteLength());
+      UNSAFE_TODO(memcpy(array_buffer_contents.data(), js_array_buffer->Data(),
+                         js_array_buffer->ByteLength()));
       result = WebMessageArrayBufferPayload::CreateForTesting(
           std::move(array_buffer_contents));
     }
@@ -117,9 +113,9 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
               // Create a new JS ArrayBuffer, then transfer into serializer.
               v8::Local<v8::ArrayBuffer> message_as_array_buffer =
                   v8::ArrayBuffer::New(isolate, array_buffer->GetLength());
-              array_buffer->CopyInto(base::span(
+              array_buffer->CopyInto(UNSAFE_TODO(base::span(
                   reinterpret_cast<uint8_t*>(message_as_array_buffer->Data()),
-                  message_as_array_buffer->ByteLength()));
+                  message_as_array_buffer->ByteLength())));
               if (transferable) {
                 serializer.TransferArrayBuffer(0, message_as_array_buffer);
                 // Copy data into a new array_buffer_contents_array slot.
@@ -139,7 +135,8 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
         message);
 
     std::pair<uint8_t*, size_t> buffer = serializer.Release();
-    result = std::vector<uint8_t>(buffer.first, buffer.first + buffer.second);
+    result = std::vector<uint8_t>(buffer.first,
+                                  UNSAFE_TODO(buffer.first + buffer.second));
     free(buffer.first);
   }
   isolate->Dispose();

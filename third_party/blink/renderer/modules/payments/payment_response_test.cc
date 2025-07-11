@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/payments/payment_response.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -107,7 +103,8 @@ MATCHER_P(ArrayBufferEqualTo, other_buffer, "equal to") {
   }
 
   uint8_t* data = (uint8_t*)arg->Data();
-  return std::equal(data, data + arg->ByteLength(), std::begin(other_buffer));
+  return std::equal(data, UNSAFE_TODO(data + arg->ByteLength()),
+                    std::begin(other_buffer));
 }
 
 // Calls getClientExtensionResults on the given public_key_credential.

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,10 +28,10 @@ Vector<char> ReadFile(StringView file_name) {
 
 Vector<char> ReadFile(const char* dir, const char* file_name) {
   StringBuilder file_path;
-  if (strncmp(dir, "web_tests/", 10) == 0) {
+  if (UNSAFE_TODO(strncmp(dir, "web_tests/", 10)) == 0) {
     file_path.Append(test::BlinkWebTestsDir());
     file_path.Append('/');
-    file_path.Append(dir + 10);
+    file_path.Append(UNSAFE_TODO(dir + 10));
   } else {
     file_path.Append(test::BlinkRootDir());
     file_path.Append('/');
@@ -59,8 +55,8 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
 
 unsigned HashBitmap(const SkBitmap& bitmap) {
   return StringHasher::HashMemory(
-      {static_cast<const uint8_t*>(bitmap.getPixels()),
-       bitmap.computeByteSize()});
+      UNSAFE_TODO({static_cast<const uint8_t*>(bitmap.getPixels()),
+                   bitmap.computeByteSize()}));
 }
 
 void CreateDecodingBaseline(DecoderCreator create_decoder,
@@ -502,7 +498,8 @@ static void VerifyFramesMatch(const char* file,
       uint8_t* pixel_a = reinterpret_cast<uint8_t*>(&color_a);
       uint8_t* pixel_b = reinterpret_cast<uint8_t*>(&color_b);
       for (int channel = 0; channel < 4; ++channel) {
-        const int difference = abs(pixel_a[channel] - pixel_b[channel]);
+        const int difference =
+            abs(UNSAFE_TODO(pixel_a[channel]) - UNSAFE_TODO(pixel_b[channel]));
         if (difference > max_difference) {
           max_difference = difference;
         }

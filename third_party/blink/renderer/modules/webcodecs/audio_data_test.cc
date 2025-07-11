@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/test_helpers.h"
@@ -50,7 +46,8 @@ class AudioDataTest : public testing::Test {
  protected:
   void VerifyPlanarData(float* data, float start_value, int count) {
     for (int i = 0; i < count; ++i)
-      ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
+      UNSAFE_TODO(ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon))
+          << "i=" << i;
   }
 
   AllowSharedBufferSource* CreateDefaultData() {
@@ -61,9 +58,10 @@ class AudioDataTest : public testing::Test {
     auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
     for (int ch = 0; ch < channels; ++ch) {
       float* plane_start =
-          reinterpret_cast<float*>(buffer->Data()) + ch * frames;
+          UNSAFE_TODO(reinterpret_cast<float*>(buffer->Data()) + ch * frames);
       for (int i = 0; i < frames; ++i) {
-        plane_start[i] = static_cast<float>((i + ch * frames) * kIncrement);
+        UNSAFE_TODO(plane_start[i]) =
+            static_cast<float>((i + ch * frames) * kIncrement);
       }
     }
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -496,9 +494,11 @@ TEST_F(AudioDataTest, Interleaved) {
     int block_index = i * kInterleavedChannels;
     int16_t base_value = kOffset + i;
 
-    EXPECT_EQ(copy[block_index], base_value);                    // channel 0
-    EXPECT_EQ(copy[block_index + 1], base_value + kFrames);      // channel 1
-    EXPECT_EQ(copy[block_index + 2], base_value + 2 * kFrames);  // channel 2
+    UNSAFE_TODO(EXPECT_EQ(copy[block_index], base_value));  // channel 0
+    UNSAFE_TODO(
+        EXPECT_EQ(copy[block_index + 1], base_value + kFrames));  // channel 1
+    UNSAFE_TODO(EXPECT_EQ(copy[block_index + 2],
+                          base_value + 2 * kFrames));  // channel 2
   }
 }
 
@@ -605,27 +605,27 @@ class AudioDataConversionTest : public testing::Test {
 
     ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
     for (int i = 0; i < kFrames; ++i) {
-      plane_start[i] = SourceTraits::kMinValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
     }
     if (use_frame_count) {
-      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
     }
 
-    plane_start += kFrames;
+    UNSAFE_TODO(plane_start += kFrames);
 
     for (int i = 0; i < kFrames; ++i) {
-      plane_start[i] = SourceTraits::kMaxValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
     }
     if (use_frame_count) {
-      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -646,18 +646,20 @@ class AudioDataConversionTest : public testing::Test {
 
     ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
     for (int i = 0; i < kTotalSamples; i += 2) {
-      plane_start[i] = SourceTraits::kMinValue;
-      plane_start[i + 1] = SourceTraits::kMaxValue;
+      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
+      UNSAFE_TODO(plane_start[i + 1]) = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
       plane_start[0] = SourceTraits::kZeroPointValue;
-      plane_start[1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[1]) = SourceTraits::kZeroPointValue;
     }
 
     if (use_frame_count) {
-      plane_start[kTotalSamples - 2] = SourceTraits::kZeroPointValue;
-      plane_start[kTotalSamples - 1] = SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kTotalSamples - 2]) =
+          SourceTraits::kZeroPointValue;
+      UNSAFE_TODO(plane_start[kTotalSamples - 1]) =
+          SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -713,7 +715,7 @@ class AudioDataConversionTest : public testing::Test {
 
     // `kChannelToCopy` should only contain kMaxValue
     for (int i = 0; i < frames_to_copy; ++i) {
-      ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue);
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue));
     }
   }
 
@@ -757,8 +759,8 @@ class AudioDataConversionTest : public testing::Test {
     // The interleaved data should have kMinValue in
     // channel 0 and kMaxValue in channel 1.
     for (int i = 0; i < total_frames; i += 2) {
-      ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue);
-      ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue);
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue));
+      UNSAFE_TODO(ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue));
     }
   }
 

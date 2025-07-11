@@ -28,16 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -551,7 +547,7 @@ class DepthStencilTrackingGLES2Interface
 
   void GenRenderbuffers(GLsizei n, GLuint* renderbuffers) override {
     for (GLsizei i = 0; i < n; ++i)
-      renderbuffers[i] = next_gen_renderbuffer_id_++;
+      UNSAFE_TODO(renderbuffers[i]) = next_gen_renderbuffer_id_++;
   }
 
   GLuint StencilAttachment() const { return stencil_attachment_; }

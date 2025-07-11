@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/iir_filter.h"
 
 #include <algorithm>
 #include <complex>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -50,7 +46,7 @@ static std::complex<double> EvaluatePolynomial(const double* coef,
   std::complex<double> result = 0;
 
   for (int k = order; k >= 0; --k) {
-    result = result * z + std::complex<double>(coef[k]);
+    result = result * z + std::complex<double>(UNSAFE_TODO(coef[k]));
   }
 
   return result;
@@ -89,33 +85,34 @@ void IIRFilter::Process(const float* source_p,
   for (size_t n = 0; n < frames_to_process; ++n) {
     // To help minimize roundoff, we compute using double's, even though the
     // filter coefficients only have single precision values.
-    double yn = feedforward[0] * source_p[n];
+    double yn = feedforward[0] * UNSAFE_TODO(source_p[n]);
 
     // Run both the feedforward and feedback terms together, when possible.
     for (int k = 1; k < min_length; ++k) {
       int m = (buffer_index_ - k) & (kBufferLength - 1);
-      yn += feedforward[k] * x_buffer[m];
-      yn -= feedback[k] * y_buffer[m];
+      yn += UNSAFE_TODO(feedforward[k]) * UNSAFE_TODO(x_buffer[m]);
+      yn -= UNSAFE_TODO(feedback[k]) * UNSAFE_TODO(y_buffer[m]);
     }
 
     // Handle any remaining feedforward or feedback terms.
     for (int k = min_length; k < feedforward_length; ++k) {
-      yn +=
-          feedforward[k] * x_buffer[(buffer_index_ - k) & (kBufferLength - 1)];
+      yn += UNSAFE_TODO(feedforward[k]) *
+            UNSAFE_TODO(x_buffer[(buffer_index_ - k) & (kBufferLength - 1)]);
     }
 
     for (int k = min_length; k < feedback_length; ++k) {
-      yn -= feedback[k] * y_buffer[(buffer_index_ - k) & (kBufferLength - 1)];
+      yn -= UNSAFE_TODO(feedback[k]) *
+            UNSAFE_TODO(y_buffer[(buffer_index_ - k) & (kBufferLength - 1)]);
     }
 
     // Save the current input and output values in the memory buffers for the
     // next output.
-    x_buffer_[buffer_index_] = source_p[n];
+    x_buffer_[buffer_index_] = UNSAFE_TODO(source_p[n]);
     y_buffer_[buffer_index_] = yn;
 
     buffer_index_ = (buffer_index_ + 1) & (kBufferLength - 1);
 
-    dest_p[n] = yn;
+    UNSAFE_TODO(dest_p[n]) = yn;
   }
 }
 
@@ -138,13 +135,13 @@ void IIRFilter::GetFrequencyResponse(int n_frequencies,
   // 1/z.
 
   for (int k = 0; k < n_frequencies; ++k) {
-    if (frequency[k] < 0 || frequency[k] > 1) {
+    if (UNSAFE_TODO(frequency[k]) < 0 || UNSAFE_TODO(frequency[k]) > 1) {
       // Out-of-bounds frequencies should return NaN.
-      mag_response[k] = std::nanf("");
-      phase_response[k] = std::nanf("");
+      UNSAFE_TODO(mag_response[k]) = std::nanf("");
+      UNSAFE_TODO(phase_response[k]) = std::nanf("");
     } else {
       // zRecip = 1/z = exp(-j*frequency)
-      double omega = -kPiDouble * frequency[k];
+      double omega = -kPiDouble * UNSAFE_TODO(frequency[k]);
       std::complex<double> z_recip =
           std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
 
@@ -153,8 +150,8 @@ void IIRFilter::GetFrequencyResponse(int n_frequencies,
       std::complex<double> denominator =
           EvaluatePolynomial(feedback_->Data(), z_recip, feedback_->size() - 1);
       std::complex<double> response = numerator / denominator;
-      mag_response[k] = static_cast<float>(abs(response));
-      phase_response[k] =
+      UNSAFE_TODO(mag_response[k]) = static_cast<float>(abs(response));
+      UNSAFE_TODO(phase_response[k]) =
           static_cast<float>(fdlibm::atan2(imag(response), real(response)));
     }
   }

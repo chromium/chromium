@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 #include <cstddef>
@@ -45,7 +40,7 @@ namespace WTF {
 
 SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
   DCHECK(!IsEnd());
-  ++segment_it_;
+  UNSAFE_TODO(++segment_it_);
   Init(0);
   return *this;
 }
@@ -112,7 +107,7 @@ SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
                         [](const size_t& position, const Segment& segment) {
                           return position < segment.start_position();
                         });
-  --it;
+  UNSAFE_TODO(--it);
   return Iterator(it, position - it->start_position(), this);
 }
 

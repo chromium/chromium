@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
 #include <array>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -62,7 +58,7 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.scenario = mojom::NotificationScenario::INCOMING_CALL;
 
   const char data[] = "mock binary notification data";
-  notification_data.data.assign(data, data + std::size(data));
+  notification_data.data.assign(data, UNSAFE_TODO(data + std::size(data)));
 
   notification_data.actions.resize(2);
   notification_data.actions[0] = blink::mojom::NotificationAction::New();

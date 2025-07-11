@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_disposition.h"
@@ -136,17 +132,17 @@ TEST(ParsedContentHeaderFieldParametersTest, BeginEnd) {
   EXPECT_EQ(i->name, "a");
   EXPECT_EQ(i->value, "b");
 
-  ++i;
+  UNSAFE_TODO(++i);
   ASSERT_NE(i, t->end());
   EXPECT_EQ(i->name, "a");
   EXPECT_EQ(i->value, "c");
 
-  ++i;
+  UNSAFE_TODO(++i);
   ASSERT_NE(i, t->end());
   EXPECT_EQ(i->name, "b");
   EXPECT_EQ(i->value, "d");
 
-  ++i;
+  UNSAFE_TODO(++i);
   ASSERT_EQ(i, t->end());
 }
 

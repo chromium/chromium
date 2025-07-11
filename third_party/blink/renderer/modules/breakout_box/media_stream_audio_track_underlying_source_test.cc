@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/audio_buffer.h"
@@ -121,7 +117,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 
     float* bus_channel = bus->channel(channel);
     for (int i = 0; i < bus->frames(); ++i) {
-      bus_channel[i] = value;
+      UNSAFE_TODO(bus_channel[i]) = value;
     }
   }
 
@@ -135,7 +131,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
       const float* buffer_channel =
           reinterpret_cast<float*>(buffer->channel_data()[ch]);
       for (int i = 0; i < bus.frames(); ++i) {
-        if (bus_channel[i] != buffer_channel[i]) {
+        if (UNSAFE_TODO(bus_channel[i]) != UNSAFE_TODO(buffer_channel[i])) {
           return false;
         }
       }

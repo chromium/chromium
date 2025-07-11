@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -89,7 +85,7 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
 
   EXPECT_EQ(1u, data->data_.size());
   EXPECT_EQ(12u, data->data_[0]->size());
-  EXPECT_EQ(0, memcmp(data->data_[0]->data(), "abcdefps1ps2", 12));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(data->data_[0]->data(), "abcdefps1ps2", 12)));
 
   auto large_data = base::HeapArray<char>::WithSize(
       BlobBytesProvider::kMaxConsolidatedItemSizeInBytes);

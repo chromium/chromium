@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -134,7 +130,7 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
     return SetFailed();
   }
 
-  img_data_offset = BMPImageReader::ReadUint32(&file_header[10]);
+  img_data_offset = BMPImageReader::ReadUint32(&UNSAFE_TODO(file_header[10]));
   decoded_offset_ += kSizeOfFileHeader;
   return true;
 }
@@ -149,7 +145,7 @@ bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
   file_header = fast_reader.GetConsecutiveData(decoded_offset_,
                                                kSizeOfFileHeader, buffer);
   file_type = (static_cast<uint16_t>(file_header[0]) << 8) |
-              static_cast<uint8_t>(file_header[1]);
+              static_cast<uint8_t>(UNSAFE_TODO(file_header[1]));
   return true;
 }
 

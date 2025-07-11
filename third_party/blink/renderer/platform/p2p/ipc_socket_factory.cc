@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/p2p/ipc_socket_factory.h"
 
 #include <stddef.h>
@@ -494,7 +489,8 @@ int IpcPacketSocket::SendToInternal(
   send_bytes_available_ -= data_size;
 
   uint64_t packet_id = client_->Send(
-      address_chrome, base::span(static_cast<const uint8_t*>(data), data_size),
+      address_chrome,
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), data_size)),
       options);
 
   // Ensure packet_id is not 0. It can't be the case according to

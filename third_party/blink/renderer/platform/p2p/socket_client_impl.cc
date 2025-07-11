@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/p2p/socket_client_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -116,7 +112,8 @@ void P2PSocketClientImpl::SendWithPacketId(
     const auto& storage = batched_packets_storage_.back();
     batched_send_packets_.emplace_back(
         network::mojom::blink::P2PSendPacket::New(
-            base::span<const uint8_t>(storage.begin(), storage.end()),
+            UNSAFE_TODO(
+                base::span<const uint8_t>(storage.begin(), storage.end())),
             network::P2PPacketInfo(address, options, packet_id)));
     if (options.last_packet_in_batch) {
       DoSendBatch();

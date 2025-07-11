@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notimplemented.h"
-#include "services/webnn/public/mojom/webnn_device.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
 #include <limits.h>
 
@@ -17,6 +11,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
@@ -34,6 +29,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_device.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
@@ -59,6 +55,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -67,7 +64,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/ml_graph_transformer.h"
@@ -197,8 +193,8 @@ Vector<T> GetArrayBufferViewValues(
     MaybeShared<DOMArrayBufferView> array_buffer_view) {
   Vector<T> values(base::checked_cast<wtf_size_t>(
       array_buffer_view->byteLength() / array_buffer_view->TypeSize()));
-  memcpy(values.data(), array_buffer_view->BaseAddress(),
-         array_buffer_view->byteLength());
+  UNSAFE_TODO(memcpy(values.data(), array_buffer_view->BaseAddress(),
+                     array_buffer_view->byteLength()));
   return values;
 }
 
