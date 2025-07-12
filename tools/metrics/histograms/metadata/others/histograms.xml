@@ -8661,6 +8661,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.Time.RenderProcess.Termination" units="ms"
+    expires_after="2026-07-11">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Measures the time from when a renderer process shutdown is initiated via
+    RenderProcessHost::Shutdown() until the process has actually terminated.
+    High values can indicate a hung or busy renderer. Recorded per process.
+  </summary>
+</histogram>
+
 <histogram name="Shutdown.WindowClose.Time2" units="ms"
     expires_after="2025-12-28">
   <owner>etienneb@chromium.org</owner>

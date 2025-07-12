@@ -3735,6 +3735,11 @@ bool RenderProcessHostImpl::Shutdown(int exit_code) {
   if (!child_process_launcher_.get())
     return false;
 
+  // If a shutdown is already in progress, don't restart the timer.
+  if (!shutdown_requested_) {
+    shutdown_start_time_ = base::TimeTicks::Now();
+  }
+
   shutdown_exit_code_ = exit_code;
   shutdown_requested_ = true;
   return child_process_launcher_->Terminate(exit_code);
@@ -5109,6 +5114,13 @@ void RenderProcessHostImpl::ProcessDied(
   // The OnChannelError notification can fire multiple times due to nested
   // sync calls to a renderer. If we don't have a valid channel here it means
   // we already handled the error.
+
+  // If the shutdown was intentional, record the time it took.
+  if (shutdown_requested_) {
+    base::UmaHistogramMediumTimes(
+        "Shutdown.Time.RenderProcess.Termination",
+        base::TimeTicks::Now() - shutdown_start_time_);
+  }
 
   // It should not be possible for us to be called re-entrantly.
   DCHECK(!within_process_died_observer_);

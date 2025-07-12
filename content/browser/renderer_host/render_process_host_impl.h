@@ -1389,6 +1389,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Records the last time we regarded the child process active.
   base::TimeTicks child_process_activity_time_;
 
+  // The time that a shutdown of the renderer process was requested.
+  base::TimeTicks shutdown_start_time_;
+
   std::string unresponsive_document_javascript_call_stack_;
   blink::LocalFrameToken unresponsive_document_token_;
 
