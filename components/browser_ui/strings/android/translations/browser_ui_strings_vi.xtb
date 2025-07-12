@@ -62,6 +62,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1704230497453185209">Không cho phép trang web phát âm thanh</translation>
 <translation id="1717218214683051432">Cảm biến chuyển động</translation>
 <translation id="1717996979683942279">Khi bạn bật chế độ này, các trang web có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn. Khi bạn tắt chế độ này, các trang web không thể quản lý các cửa sổ trên tất cả màn hình của bạn.</translation>
+<translation id="1738912554587725807">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng</translation>
 <translation id="1743802530341753419">Hỏi trước khi cho phép trang web kết nối với một thiết bị (khuyên dùng)</translation>
 <translation id="1777815584158991902">Bảng nguồn cấp dữ liệu Khám phá ở dưới cùng</translation>
 <translation id="1779089405699405702">Bộ giải mã hình ảnh</translation>
@@ -355,6 +356,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
 <translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
+<translation id="512938610812707830">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng đã mở toàn bộ</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

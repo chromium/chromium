@@ -625,6 +625,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3530767473765895035">Gérer les comptes sur cet appareil…</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3533860663366814939">Ouvrez les réglages de remplissage automatique des mots de passe</translation>
+<translation id="3546122170015471515">Aperçus Maps sur Google.com</translation>
 <translation id="3547356470684043247">Lisez les évaluations des clients sur les produits, les services ou l'expérience pour vous aider à prendre des décisions éclairées à l'aide de leurs avis</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="355765753469272474">Annuler</translation>
@@ -1097,6 +1098,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5454211924362324495">Pour empêcher d'autres personnes d'utiliser votre mot de passe, <ph name="BEGIN_LINK" />modifiez-le sur <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Ajouter à votre recherche</translation>
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
+<translation id="5467163657366219870">Désactiver les aperçus Maps</translation>
 <translation id="5478327362747197944">Créez des événements d'agenda directement en cliquant sur une date dans une page Web.</translation>
 <translation id="5482922178977937393">Souhaitez-vous recevoir des notifications sur les actualités, les sports et bien plus encore en fonction de vos centres d'intérêt?</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
@@ -1186,6 +1188,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5756525336488841345">Masquer les favoris</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="57586589942790530">Numéro de carte incorrect</translation>
+<translation id="5758759241456233788">Les aperçus Maps sont désactivés. Réactivez-les dans les paramètres.</translation>
 <translation id="5759484603608560822">Masquer les téléchargements</translation>
 <translation id="5767099457279594162">Le mot de passe n'a pas été partagé</translation>
 <translation id="5779117921996157216">{count,plural, =1{Vous avez {count} mot de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}one{Vous avez {count} mot de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}other{Vous avez {count} mots de passe compromis, ce qui pourrait compromettre votre sécurité. Modifiez-les maintenant pour rester en sécurité.}}</translation>
@@ -1556,6 +1559,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7176183551031110427">Dézoomer</translation>
 <translation id="7186568385131859684">Contrôlez la manière dont l'historique de navigation est utilisé avec vos autres données dans les services Google</translation>
 <translation id="719133302483559673">Gérez vos centres d'intérêt et vos préférences.</translation>
+<translation id="7203496777391039568">Les données de votre organisation sont confidentielles et en sécurité</translation>
 <translation id="720399613139435155">Échec de la traduction</translation>
 <translation id="7204922488054642675">Actualités personnalisées</translation>
 <translation id="7206979415662233817">Conditions d'utilisation</translation>

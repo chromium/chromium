@@ -63,6 +63,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1704230497453185209">Huwag payagan ang mga site na mag-play ng tunog</translation>
 <translation id="1717218214683051432">Mga sensor ng paggalaw</translation>
 <translation id="1717996979683942279">Kapag naka-on, posibleng hilingin ng mga site na pamahalaan ang mga window sa lahat ng iyong screen. Kapag naka-off, hindi mapapamahalaan ng mga site ang mga window sa lahat ng iyong screen.</translation>
+<translation id="1738912554587725807">Bottom sheet ng mga koleksyon ng tema para sa hitsura ng page ng bagong tab</translation>
 <translation id="1743802530341753419">Magtanong bago payagan ang mga site na kumonekta sa isang device (inirerekomenda)</translation>
 <translation id="1777815584158991902">Bottom sheet ng feed ng Discover</translation>
 <translation id="1779089405699405702">Pang-decode ng larawan</translation>
@@ -356,6 +357,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="5100237604440890931">Naka-collapse - i-click upang palawakin</translation>
 <translation id="5116239826668864748">Magagamit mo ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
+<translation id="512938610812707830">Binuksan nang buo ang bottom sheet ng mga koleksyon ng tema para sa hitsura ng page ng bagong tab</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pagbaba ng presyo sa iyong mga nakabukas na tab}one{Pagbaba ng presyo sa iyong mga nakabukas na tab}other{na Pagbaba ng presyo sa iyong mga nakabukas na tab}}</translation>
 <translation id="5186036860380548585">Available ang opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>

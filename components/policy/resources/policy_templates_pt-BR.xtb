@@ -2123,6 +2123,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2436302465999055995">Tornar o <ph name="LACROS_NAME" /> o único navegador disponível (ainda não implementado)</translation>
 <translation id="2439187682308339104">Não permitir que nenhum site solicite acesso a dispositivos HID pela API WebHID</translation>
 <translation id="2439733504887695659">Ativar a opção de dispensar alertas de senha comprometida para as credenciais inseridas</translation>
+<translation id="2446029789419870019">Permitir o uso do recurso e o aprimoramento dos modelos de IA</translation>
 <translation id="2446244536806499267">Não considerar o usuário como inativo enquanto o áudio é reproduzido</translation>
 <translation id="2452225615952836461">Sempre usar letra maiúscula para os métodos de solicitação</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
@@ -2313,6 +2314,7 @@ Quando ela for definida como falsa, o recurso de conjuntos de sites relacionados
 <translation id="2568488785376704318">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Desativar a resposta falada</translation>
 <translation id="2570181623957732921">Ativar a <ph name="DESK_API_NAME" /> para uma lista de domínios de terceiros</translation>
+<translation id="2571821662934804440">Permitir o uso do recurso sem aprimorar os modelos de IA</translation>
 <translation id="2573850437942404034">Não permitir</translation>
 <translation id="2575198840408498393">Desativar a criação de perfis de roaming</translation>
 <translation id="25765864042030871">O uso dos manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> está sendo descontinuado. O disparo depende da <ph name="PERMISSIONS_POLICY_NAME" /> do <ph name="UNLOAD_EVENT_NAME" />. Por padrão, eles são permitidos pela política. No futuro, eles serão desativados gradualmente por padrão, e os sites precisarão ativá-los explicitamente usando cabeçalhos da <ph name="PERMISSIONS_POLICY_NAME" />. Essa política corporativa pode ser usada para desativar a descontinuação gradual, forçando o padrão a permanecer como ativado.
@@ -3009,6 +3011,7 @@ Quando a política é desativada ou deixada sem definição, ela não aciona a c
 O relatório tem informações sobre o uso e o estado do perfil, incluindo, entre outros, a versão do sistema operacional, a versão do navegador, as extensões instaladas e as políticas aplicadas.
 
 Esta política só pode ser definida como uma política do usuário em nuvem.</translation>
+<translation id="3062559845875011810">Não permitir o recurso</translation>
 <translation id="3063302084011279315">Desativar o Screencast</translation>
 <translation id="3063307261083019730">Não permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam armazenadas no cache de avanço e retorno.</translation>
 <translation id="3064530882228745118">Usar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
@@ -4389,6 +4392,19 @@ Quando a política for definida para:
 * filtrar sites com conteúdo adulto: sites pornográficos serão filtrados.
 
 A política se aplica ao URL que o usuário acessa e aos iframes. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre esta e pode ser usada para substituir os vereditos da API Google Safe Search.</translation>
+<translation id="4049706391182174257">Esta política controla a disponibilidade do recurso de mudança automatizada de senha do <ph name="PRODUCT_NAME" />.
+
+Se ela for ativada, um usuário pode acionar um processo em que o navegador tenta mudar a senha em um site automaticamente. Esse processo é gerenciado pela IA generativa. A nova senha é salva no gerenciador de senhas do navegador.
+
+Se a política for definida como 0, o recurso será habilitado, e dados relevantes poderão ser usados pelo Google para aprimorar os modelos de IA. Esses dados podem incluir comandos, entradas, respostas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, respostas, materiais de origem e feedback por escrito) para aprimorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo Google Admin Console e para contas de ensino gerenciadas pelo Google Workspace.
+
+Se a política for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política GenAiDefaultSettings.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Ativar oclusão de janelas</translation>
 <translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
@@ -4717,6 +4733,7 @@ Esta política foi usada para desativar o upgrade automático de conteúdo misto
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="4275048399551500192">Não mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
 <translation id="4278656834593750050">Ativar sons de carregamento</translation>
+<translation id="4281322231545828290">Ativar mudança automática de senha</translation>
 <translation id="4282243913059705499">Sempre mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas</translation>
 <translation id="4285510855646731405">Google Agenda (compatível desde a versão 135)</translation>
 <translation id="4285674129118156176">Permitir que usuários sem afiliação utilizem o ARC</translation>

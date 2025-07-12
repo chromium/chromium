@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Поделиться <ph name="TABS_COUNT_ONE" /> выбранной вкладкой}one{Поделиться <ph name="TABS_COUNT_MANY" /> выбранной вкладкой}few{Поделиться <ph name="TABS_COUNT_MANY" /> выбранными вкладками}many{Поделиться <ph name="TABS_COUNT_MANY" /> выбранными вкладками}other{Поделиться <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Группа обновлена <ph name="NUM_YEARS_ONE" /> год назад}one{Группа обновлена <ph name="NUM_YEARS_MANY" /> год назад}few{Группа обновлена <ph name="NUM_YEARS_MANY" /> года назад}many{Группа обновлена <ph name="NUM_YEARS_MANY" /> лет назад}other{Группа обновлена <ph name="NUM_YEARS_MANY" /> года назад}}</translation>
 <translation id="7773714564112603605">Удалить вкладку и группу</translation>
+<translation id="7774428938729954687">Восстановить и открыть вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="7792771145871471484">Подробнее.</translation>
 <translation id="7792860826279960128">Нижний экран с информацией об изменениях в общей группе вкладок открыт наполовину</translation>
 <translation id="7825973332242257878">Группы вкладок</translation>

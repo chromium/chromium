@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717996979683942279">オンにすると、サイトは全ディスプレイのウィンドウ管理をリクエストできます。オフにすると、サイトは全ディスプレイのウィンドウ管理を行えません。</translation>
+<translation id="1738912554587725807">新しいタブページの外観テーマ コレクションのボトムシート</translation>
 <translation id="1743802530341753419">サイトがデバイスに接続する前に確認する（推奨）</translation>
 <translation id="1777815584158991902">Discover フィードのボトムシート</translation>
 <translation id="1779089405699405702">画像デコーダー</translation>
@@ -356,6 +357,7 @@
 <translation id="5100237604440890931">折りたたまれています - クリックすると展開します。</translation>
 <translation id="5116239826668864748">メッセージ、ドキュメント、他のアプリでタップしたリンクを常に Chrome で開くよう設定できます</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
+<translation id="512938610812707830">新しいタブページの外観テーマ コレクションのボトムシートが画面全体に表示されています</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開いているタブの値下げ情報}other{開いているタブの値下げ情報}}</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>

@@ -232,6 +232,7 @@
 <translation id="3785324443014631273">സൈൻ ഇൻ ചെയ്യുന്നതിലെ പിശക് മൂലം ChromeOS Flex-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome-ന് Windows 10 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
+<translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="383928141529488001">Bluetooth ഉപകരണങ്ങൾ 
  അടുത്തറിയാൻ Google Chrome-ന് Bluetooth ആക്‌സസ് ആവശ്യമാണ്. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">ദയവായി എല്ലാ Google Chrome വിന്‍‌ഡോകളും അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -318,6 +319,7 @@
 <translation id="4895437082222824641">പുതിയ Chrome &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="4918844574251943176">ചിത്രം പകർത്തി</translation>
 <translation id="492720062778050435">ഈ വിപുലീകരണം അവലോകനം ചെയ്യണമെന്ന് Chrome നിർദ്ദേശിക്കുന്നു</translation>
+<translation id="4946912144186040233">Chrome ഫോമുകൾ നന്നായി മനസ്സിലാക്കുന്നു, നിങ്ങൾക്കായി അവ വേഗത്തിൽ സ്വയമേവ പൂരിപ്പിക്കുകയും ചെയ്യും. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="4953650215774548573">Google Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="495931528404527476">Chrome-ൽ</translation>
 <translation id="4969674060580488087">നിങ്ങളുടെ അക്കൗണ്ടിന്റെ സൈൻ ഇൻ വിശദാംശങ്ങൾ കാലഹരണപ്പെട്ടതിനാൽ ChromeOS Flex-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
@@ -326,6 +328,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">“Google Password Manager-ൽ” ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="504867494566807945">ഏത് ആപ്പിൽ നിന്നും Chrome-ൽ ലിങ്കുകൾ തുറക്കുക. കൂടാതെ എളുപ്പത്തിലുള്ള ആക്‌സസിനായി, അത് നിങ്ങളുടെ ടാസ്‌ക്‌ബാറിൽ പിൻ ചെയ്യും.</translation>
+<translation id="5049567194145991071">നിങ്ങൾ 'മനസ്സിലായി' ക്ലിക്ക് ചെയ്യുമ്പോൾ, Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോഴെല്ലാം നിങ്ങളുടെ Google Account-ൽ പാസ്‌വേഡുകളും മറ്റും നിങ്ങൾക്ക് സംരക്ഷിക്കാനും ഉപയോഗിക്കാനും കഴിയും. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> അക്കൗണ്ടിൽ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="5120334927898581447">നിങ്ങൾ മറ്റ് Google സേവനങ്ങളിലേക്ക് സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5126049312684316860">നിങ്ങൾ സന്ദർശിക്കാനിടയുള്ള കൂടുതൽ പേജുകൾ Chrome മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നു, ഇതുവഴി നിങ്ങൾ ആ പേജുകൾ സന്ദർശിക്കുമ്പോൾ അവ അതിവേഗം ലോഡ് ചെയ്യും</translation>
@@ -514,6 +517,7 @@
 <translation id="7481213027396403996">Chrome-ന്റെ ഏറ്റവും ശക്‌തമായ സുരക്ഷ നേടുക</translation>
 <translation id="749228101751499733">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ, Chrome-ൽ നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള പാസ്‌വേഡുകളും മറ്റും ഉപയോഗിക്കാനാകും. <ph name="SHORTCUT" /> എന്നതിന് നിങ്ങളുടെ Google സേവനങ്ങൾ ക്രമീകരണം മാറ്റാനാകും.</translation>
 <translation id="7496017508659652909">ബ്രൗസ് ചെയ്യലും തിരയലും വേഗത്തിലാക്കുന്നതിന്, പേജുകൾ Chrome മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നു. <ph name="BEGIN_LINK" />മുൻകൂട്ടി ലോഡ് ചെയ്ത പേജുകളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome ഫോമുകൾ നന്നായി മനസ്സിലാക്കുന്നു, നിങ്ങൾക്കായി അവ വേഗത്തിൽ സ്വയമേവ പൂരിപ്പിക്കുകയും ചെയ്യും. ഈ ക്രമീകരണം ഓണാണ്.</translation>
 <translation id="7514258452813684157">Google അപ്ഡേറ്റർ സേവനം</translation>
 <translation id="7515191208480168435">എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യാൻ നിങ്ങൾക്ക് Google Lens പിൻ ചെയ്യാം</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -546,6 +550,7 @@
 <translation id="7801699035218095297">പാസ്‌വേഡുകൾ പകർത്താൻ Google Chrome ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="7808348361785373670">Chrome-ൽ നിന്ന് നീക്കംചെയ്യുക...</translation>
 <translation id="7825851276765848807">വ്യക്തമല്ലാത്ത പിശക് കാരണം ഇൻസ്റ്റലേഷൻ പരാജയപ്പെട്ടു. ദയവായി Google Chrome വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
+<translation id="7826342993930002256">നിങ്ങളുടെ Chrome, എല്ലായിടത്തും</translation>
 <translation id="7827099906024714326">നിങ്ങളുടെ Google Account-ൽ ചില ഡാറ്റ സംരക്ഷിക്കുന്നതിനും അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഉപയോഗിക്കുന്നതിനും മുമ്പ് ഇത് നിങ്ങൾ തന്നെയാണെന്ന് Chrome-ന് പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്. നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്താൽ ഈ ഡാറ്റ ഇല്ലാതാക്കും.</translation>
 <translation id="7845233973568007926">ഇൻസ്റ്റാൾ ചെയ്തതിന് നന്ദി. <ph name="BUNDLE_NAME" /> ഉപയോഗിക്കും മുമ്പ് നിങ്ങളുടെ കമ്പ്യൂട്ടർ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7872446069773932638">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>

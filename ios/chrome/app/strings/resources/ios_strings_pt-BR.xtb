@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Abrir em…</translation>
 <translation id="2120553909046681540">Sua organização desativou a navegação anônima.</translation>
 <translation id="2122754583996902531">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">As conversas da sua organização não são usadas para melhorar nossos modelos. O Gemini pode conter informações imprecisas, inclusive sobre pessoas. Por isso, cheque o conteúdo. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Pesquisar o texto que você copiou</translation>
 <translation id="2147127444698817042">Disponível apenas no iPhone</translation>
 <translation id="2148799636999124959">Faça login em sites e apps com rapidez usando as senhas salvas.</translation>
@@ -382,6 +383,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2468444275314013497">Parece que está tudo certo com seu navegador</translation>
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Você pode definir um lembrete para rever esta página mais tarde</translation>
+<translation id="2478246185006364308">Termos do Google</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484459871750294497">Como posso ativar esse recurso?</translation>
@@ -623,6 +625,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3530767473765895035">Gerenciar contas neste dispositivo…</translation>
 <translation id="3533436815740441613">Nova guia</translation>
 <translation id="3533860663366814939">Abra as configurações de preenchimento automático e senhas</translation>
+<translation id="3546122170015471515">Maps Previews no Google.com</translation>
 <translation id="3547356470684043247">Leia avaliações de produtos, serviços ou experiências para tomar decisões informadas</translation>
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="355765753469272474">Desfazer</translation>
@@ -1095,6 +1098,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Mude sua senha em <ph name="WEBSITE" /><ph name="END_LINK" /> para impedir que ela seja usada por outras pessoas</translation>
 <translation id="5457082343331641453">Adicionar à pesquisa</translation>
 <translation id="5457226814769348910">Abrir versão off-line</translation>
+<translation id="5467163657366219870">Desativar Maps Previews</translation>
 <translation id="5478327362747197944">Crie eventos do Google Agenda clicando em uma data em uma página da Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, esportes e muito mais com base nos seus interesses?</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
@@ -1151,6 +1155,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5656431592348714536">Agenda aprimorada</translation>
 <translation id="5657156137487675418">Permitir todos os cookies</translation>
 <translation id="5659593005791499971">E-mail</translation>
+<translation id="5665739277590037307">Os <ph name="GOOGLE_TERMS" /> e a <ph name="GEMINI_APPS_PRIVACY" /> se aplicam. O Gemini pode cometer erros. Por isso, é bom checar as respostas.</translation>
 <translation id="5666313630530585305">Faça login em um site.</translation>
 <translation id="5669335982068190158">A conta foi desconectada como parte da redefinição do iPhone. Toque em "Continuar" abaixo para fazer login.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5756525336488841345">Ocultar Favoritos</translation>
 <translation id="5758631781033351321">Você vai encontrar sua lista de leituras aqui</translation>
 <translation id="57586589942790530">Número de cartão inválido</translation>
+<translation id="5758759241456233788">Maps Previews desativados. Ative de novo nas configurações.</translation>
 <translation id="5759484603608560822">Ocultar Downloads</translation>
 <translation id="5767099457279594162">A senha não foi compartilhada</translation>
 <translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
@@ -1324,6 +1330,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6331836477476466332">Um navegador mais seguro e avançado para você</translation>
 <translation id="6335744088476213315">Este card mostra produtos que você viu recentemente e que talvez sejam do seu interesse. Você pode monitorá-los para receber alertas de reduções no preço</translation>
 <translation id="6337234675334993532">Criptografia</translation>
+<translation id="6337313937331295309">Aviso de privacidade dos apps do Gemini</translation>
 <translation id="633809752005859102">Algo deu errado. Estamos trabalhando para resolver isso.</translation>
 <translation id="6339793034470834130">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPhone no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
 <translation id="6340285871011301182">A tradução parcial não está disponível.</translation>
@@ -1552,6 +1559,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7176183551031110427">Diminuir zoom</translation>
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
+<translation id="7203496777391039568">A privacidade e segurança dos dados da sua organização ficam garantidas</translation>
 <translation id="720399613139435155">Falha na tradução</translation>
 <translation id="7204922488054642675">Notícias personalizadas</translation>
 <translation id="7206979415662233817">Termos de Serviço</translation>
@@ -1568,6 +1576,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7266578100016339897">Isso ajuda você a se organizar. É possível mudar essa definição a qualquer momento nas configurações.</translation>
 <translation id="7272437679830969316">Não é possível confirmar sua identidade. Senha não copiada.</translation>
 <translation id="728025568708172005">Mostrar a região</translation>
+<translation id="7281202269687163394">Sua privacidade e o Gemini.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7300448350764260141">Adicione mais uma camada de proteção contra ameaças on-line.</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>

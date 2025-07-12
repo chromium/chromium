@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хуваалцах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хуваалцах}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жилийн өмнө шинэчилсэн}other{<ph name="NUM_YEARS_MANY" /> жилийн өмнө шинэчилсэн}}</translation>
 <translation id="7773714564112603605">Табыг хасаж, бүлгийг устгах</translation>
+<translation id="7774428938729954687">Сэргээж, <ph name="TAB_TITLE" /> табыг нээх</translation>
 <translation id="7792771145871471484">Зөвлөмжийг шалгах.</translation>
 <translation id="7792860826279960128">Хуваалцсан табын бүлгийн өөрчлөлтийн талаарх мэдэгдлийг хагас өндрөөр нээсэн</translation>
 <translation id="7825973332242257878">Табын бүлгүүд</translation>

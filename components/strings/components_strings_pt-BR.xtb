@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (brilhante)</translation>
 <translation id="1070901266639972381">Noite</translation>
 <translation id="1073690811593784042">Vidro (colorido)</translation>
+<translation id="1074287282535157335">Pague em 4 parcelas ou mensalmente (opção sujeita à qualificação)</translation>
 <translation id="1074497978438210769">Não seguro</translation>
 <translation id="1074779248866616641">Resultado</translation>
 <translation id="1075364221219156102">Usar uma chave de acesso</translation>
@@ -657,6 +658,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2102134110707549001">Sugerir senha forte…</translation>
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2102519472192754194">Navegadores da Web</translation>
+<translation id="2103210856015238101">Cartões fidelidade disponíveis para preenchimento com um toque abertos no tamanho máximo.</translation>
 <translation id="2105838220373099643">Jogos de RPG</translation>
 <translation id="2107021941795971877">Compatibilidades de impressão</translation>
 <translation id="2108755909498034140">Reiniciar seu computador</translation>
@@ -1118,6 +1120,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2902312830803030883">Mais ações</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Sua organização limita o que pode ser compartilhado</translation>
 <translation id="2905107382358353958">Alerta sobre a nova configuração de pagamento</translation>
 <translation id="2909946352844186028">Foi detectada uma alteração na rede.</translation>
 <translation id="2911255567212929079">Aprendizado de máquina e inteligência artificial</translation>
@@ -1296,6 +1299,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3190736958609431397">Não acompanhar</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando você está usando o dispositivo ativamente</translation>
 <translation id="3201482403106004262">Ocorreu um erro com a pesquisa.</translation>
@@ -1772,6 +1776,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3963721102035795474">Modo leitor</translation>
 <translation id="3965672182149944205">Salvar endereço?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
+<translation id="396761677631735618">Cartões fidelidade disponíveis para preenchimento com um toque abertos na metade do tamanho.</translation>
 <translation id="3969869202926863008">Acesso à rede local</translation>
 <translation id="3970239200223030389">Data de emissão</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1892,6 +1897,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4165986682804962316">Configurações de sites</translation>
 <translation id="4169189393773057143">Gerencie cartões de fidelidade ou desative essas sugestões na Carteira do Google</translation>
 <translation id="4169535189173047238">Não permitir</translation>
+<translation id="4170851022123611628">A lista de cartões fidelidade está fechada.</translation>
 <translation id="4171400957073367226">Assinatura de verificação inválida</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Fechaduras e chaveiros</translation>
@@ -2095,6 +2101,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4493480324863638523">URL inválido. É necessário um URL com um esquema padrão, como http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Consulte os temas de anúncio nas configurações e bloqueie os que não quer compartilhar com sites. O Chrome também exclui automaticamente temas de anúncios com mais de quatro semanas.</translation>
+<translation id="4497010149473852018">Cartões fidelidade disponíveis para preenchimento com um toque. Teclado oculto.</translation>
 <translation id="4500587658229086076">conteúdo não seguro</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> pessoas</translation>
 <translation id="450602096898954067">Os dados podem ser acessados por revisores treinados para melhorar o recurso</translation>
@@ -4710,6 +4717,7 @@ Mais detalhes:
 <translation id="8975263830901772334">Nomes de arquivos impressos</translation>
 <translation id="8982884016487650216">O PDF foi carregado</translation>
 <translation id="8983369100812962543">Agora você pode redimensionar o app</translation>
+<translation id="8984785270737450103">O compartilhamento está desativado no momento</translation>
 <translation id="8985112471026018799">Salve o cartão para agilizar o pagamento</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para ver seu histórico de navegação no Chrome</translation>
 <translation id="8987663052629670333">Serviços de impressão de fotos</translation>

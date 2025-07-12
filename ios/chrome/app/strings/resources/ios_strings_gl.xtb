@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Abrir en…</translation>
 <translation id="2120553909046681540">A túa organización desactivou a navegación privada.</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Os chats da túa organización non se usan para mellorar os nosos modelos. Gemini pode mostrar información inexacta, mesmo sobre persoas, polo que é recomendable que a verifiques. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="2147127444698817042">Só está dispoñible en iPhone</translation>
 <translation id="2148799636999124959">Inicia sesión de forma rápida en sitios e aplicacións cos contrasinais que teñas gardados.</translation>
@@ -382,6 +383,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2468444275314013497">Todo en orde co navegador</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Podes definir un recordatorio para volver visitar esta páxina máis tarde</translation>
+<translation id="2478246185006364308">Condicións de Google</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2484459871750294497">Como podo activar esta función?</translation>
@@ -623,6 +625,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3530767473765895035">Xestionar contas neste dispositivo…</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
 <translation id="3533860663366814939">Abre a opción de AutoFill &amp; Passwords (Autocompletar e contrasinais)</translation>
+<translation id="3546122170015471515">Vista previa de Maps en google.com</translation>
 <translation id="3547356470684043247">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
 <translation id="355765753469272474">Desfacer</translation>
@@ -1095,6 +1098,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
+<translation id="5467163657366219870">Desactivar vista previa de Maps</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
 <translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -1151,6 +1155,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5656431592348714536">Calendario mellorado</translation>
 <translation id="5657156137487675418">Permitir todas as cookies</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
+<translation id="5665739277590037307">Aplícanse as <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. Gemini pode cometer erros, polo que é recomendable que verifiques as respostas.</translation>
 <translation id="5666313630530585305">Inicia sesión nun sitio web.</translation>
 <translation id="5669335982068190158">Pechouse sesión como parte do restablecemento do iPhone. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5756525336488841345">Ocultar Marcadores</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
 <translation id="57586589942790530">Número de tarxeta non válido</translation>
+<translation id="5758759241456233788">A vista previa de Maps está desactivada. Actívaa de novo en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar Descargas</translation>
 <translation id="5767099457279594162">O contrasinal non se compartiu</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tes {count} contrasinal vulnerado que podería poñer en perigo a túa seguranza. Cámbiao xa para non correr riscos.}other{Tes {count} contrasinais vulnerados que poderían poñer en perigo a túa seguranza. Cámbiaos xa para non correr riscos.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6331836477476466332">Un navegador máis seguro e potente para ti</translation>
 <translation id="6335744088476213315">Nesta tarxeta móstranse os produtos que viches recentemente e dos que pode que che interese facer un seguimento para recibir alertas de baixada de prezo</translation>
 <translation id="6337234675334993532">Encriptado</translation>
+<translation id="6337313937331295309">Aviso de privacidade das aplicacións Gemini</translation>
 <translation id="633809752005859102">Produciuse un erro. Trataremos de solucionalo.</translation>
 <translation id="6339793034470834130">Para usar a ferramenta Web Inspector, conéctate a Safari desde o ordenador mediante un cable e accede ao teu iPhone desde o menú Develop (Programación). Podes activar ese menú desde a sección Advanced (Configuración avanzada) dos axustes de Safari no teu ordenador.</translation>
 <translation id="6340285871011301182">Non está dispoñible a tradución parcial.</translation>
@@ -1552,6 +1559,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7176183551031110427">Afastar</translation>
 <translation id="7186568385131859684">Controla como se utiliza o historial de navegación xunto con outros datos nos servizos de Google</translation>
 <translation id="719133302483559673">Xestiona os teus intereses e preferencias.</translation>
+<translation id="7203496777391039568">Os datos da túa organización son privados e están protexidos</translation>
 <translation id="720399613139435155">Produciuse un erro durante a tradución</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
 <translation id="7206979415662233817">Condicións de servizo</translation>
@@ -1568,6 +1576,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
 <translation id="728025568708172005">Iniciar introdución</translation>
+<translation id="7281202269687163394">A túa privacidade e Gemini.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>

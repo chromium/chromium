@@ -1120,6 +1120,7 @@
 <translation id="2902312830803030883">Још радњи</translation>
 <translation id="2903493209154104877">Адресе</translation>
 <translation id="290376772003165898">Ова страница није на језику <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Ваша организација ограничава садржај који можете да делите</translation>
 <translation id="2905107382358353958">Обавештење о новом подешавању плаћања</translation>
 <translation id="2909946352844186028">Откривена је промена на мрежи.</translation>
 <translation id="2911255567212929079">Машинско учење и вештачка интелигенција</translation>
@@ -3555,6 +3556,7 @@
 <translation id="6970885655016700774">Тканина (архива)</translation>
 <translation id="6971439137020188025">Брзо направите нову Google презентацију у Презентацијама</translation>
 <translation id="6972629891077993081">Уређаји са интерфејсом</translation>
+<translation id="6972867931824045907">Да бисте користили привремену меморију, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Наведени су и фиксни прокси сервери и URL адреса .pac скрипте.</translation>
 <translation id="6973988895180423160">3,5×5 in</translation>
 <translation id="6978121630131642226">Претраживачи</translation>
@@ -4715,6 +4717,7 @@
 <translation id="8975263830901772334">Називи датотека које штампате</translation>
 <translation id="8982884016487650216">Учитавање PDF-а је завршено</translation>
 <translation id="8983369100812962543">Сада можете да промените величину апликације</translation>
+<translation id="8984785270737450103">Дељење је тренутно искључено</translation>
 <translation id="8985112471026018799">Сачувајте картицу да бисте брже плаћали</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прегледали историју прегледања у Chrome-у</translation>
 <translation id="8987663052629670333">Услуге израде фотографија</translation>

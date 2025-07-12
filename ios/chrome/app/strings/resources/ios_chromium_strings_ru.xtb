@@ -254,6 +254,7 @@
 
 Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Включите уведомления Chromium на своем устройстве.</translation>
+<translation id="7195217321165708458">Gemini в Chromium</translation>
 <translation id="7219205286115692265">Вы сможете быстрее открывать Chromium на главном экране iPad.</translation>
 <translation id="7222001353246886083">Искать "${searchPhrase}" в Chromium</translation>
 <translation id="7228180817326917122">Совет по работе с Chromium: выберите удобное расположение адресной строки</translation>

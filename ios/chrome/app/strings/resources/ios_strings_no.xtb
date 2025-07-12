@@ -625,6 +625,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3530767473765895035">Administrer kontoer på denne enheten…</translation>
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3533860663366814939">Åpne innstillingene for autofyll og passord</translation>
+<translation id="3546122170015471515">Forhåndsvisninger i Maps på Google.com</translation>
 <translation id="3547356470684043247">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller erfaringer for å gjøre det lettere å ta beslutninger</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="355765753469272474">Angre</translation>
@@ -1097,6 +1098,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5454211924362324495">For å forhindre andre fra å bruke passordet ditt, <ph name="BEGIN_LINK" />endre det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Legg til i søket</translation>
 <translation id="5457226814769348910">Åpne versjon uten nett</translation>
+<translation id="5467163657366219870">Slå av forhåndsvisninger i Maps</translation>
 <translation id="5478327362747197944">Opprett kalenderaktiviteter direkte ved å klikke på datoer på nettsider.</translation>
 <translation id="5482922178977937393">Vil du ha varsler om nyheter, sport med mer basert på interessene dine?</translation>
 <translation id="5483838506518938965">Du er klar</translation>
@@ -1186,6 +1188,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5756525336488841345">Skjul bokmerker</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
 <translation id="57586589942790530">Ugyldig kortnummer</translation>
+<translation id="5758759241456233788">Forhåndsvisninger i Maps er av. Slå dem på igjen i innstillingene.</translation>
 <translation id="5759484603608560822">Skjul nedlastinger</translation>
 <translation id="5767099457279594162">Passordet ble ikke delt</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
@@ -1556,6 +1559,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7176183551031110427">Zoom ut</translation>
 <translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
 <translation id="719133302483559673">Administrer interessene og preferansene dine.</translation>
+<translation id="7203496777391039568">Organisasjonens data er private og sikre</translation>
 <translation id="720399613139435155">Kunne ikke oversette</translation>
 <translation id="7204922488054642675">Nyheter tilpasset deg</translation>
 <translation id="7206979415662233817">Vilkår for bruk</translation>

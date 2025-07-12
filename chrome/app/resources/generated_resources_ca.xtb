@@ -1200,6 +1200,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1822635184853104396">Mostra l'historial de baixades complet en una pestanya nova</translation>
 <translation id="1823768272150895732">Tipus de lletra</translation>
 <translation id="1823781806707127806">Afegeix les dades de navegació existents al perfil gestionat</translation>
+<translation id="1824499847634940868">Revisa l'actualització de l'aplicació</translation>
 <translation id="18245044880483936">Les dades de la còpia de seguretat no compten per a la quota d'emmagatzematge de Drive del teu fill.</translation>
 <translation id="1824870205483790748">Fixa el grup a la barra d'adreces d'interès</translation>
 <translation id="1825073796163165618">Activa els enllaços</translation>
@@ -3403,6 +3404,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3373196968211632036">Steam per a Chromebook (beta) no està disponible als Comptes de Google per a infants</translation>
 <translation id="3373701465337594448">Quan aquesta opció està activada, aquí es mostra una llista dels llocs web que visites i que determinen els teus interessos</translation>
 <translation id="3374294321938930390">S'ha mogut <ph name="BOOKMARK_TITLE" /> a <ph name="NEW_FOLDER_TITLE" />.</translation>
+<translation id="3376035595160918049">Revisa l'actualització de l'aplicació</translation>
 <translation id="3378517653648586174">Certificats locals</translation>
 <translation id="3378572629723696641">És possible que aquesta extensió estigui malmesa.</translation>
 <translation id="3378627645871606983">Els permisos autoritzats per a Steam s'apliquen a tots els jocs i les aplicacions de Steam.</translation>
@@ -8193,6 +8195,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> s'ha afegit de manera remota</translation>
 <translation id="6790820461102226165">Afegeix una persona...</translation>
+<translation id="6792351896138862473">No es pot obrir l'aplicació de quiosc no admesa. Notifica aquest problema a l'administrador.</translation>
 <translation id="6793610798874309813">El PIN pot tenir 4 caràcters o més</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> s'ha copiat al porta-retalls</translation>
@@ -10351,6 +10354,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8283802069507225582">Per continuar des d'on ho has deixat en altres dispositius, sincronitza l'historial i les pestanyes amb <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítols</translation>
+<translation id="8285625579699113397">El teu compte</translation>
 <translation id="8286036467436129157">Inicia la sessió</translation>
 <translation id="8286227656784970313">Utilitza el diccionari del sistema</translation>
 <translation id="828642162569365647">Aquesta contrasenya o aquest PIN protegeix les teves dades en aquest <ph name="DEVICE_TYPE" /> i la informació a què accedeixes des del telèfon. Hauràs de desbloquejar el teu <ph name="DEVICE_TYPE" /> cada vegada que s'activi des del mode Repòs.</translation>

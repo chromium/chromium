@@ -1209,6 +1209,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1822635184853104396">Mở toàn bộ nhật ký tải xuống trong một thẻ mới</translation>
 <translation id="1823768272150895732">Phông chữ</translation>
 <translation id="1823781806707127806">Thêm dữ liệu duyệt web hiện có vào hồ sơ được quản lý</translation>
+<translation id="1824499847634940868">Xem xét bản cập nhật ứng dụng</translation>
 <translation id="18245044880483936">Dữ liệu sao lưu sẽ không tính vào định mức bộ nhớ Drive của con bạn.</translation>
 <translation id="1824870205483790748">Ghim nhóm vào thanh dấu trang</translation>
 <translation id="1825073796163165618">Kích hoạt đường liên kết</translation>
@@ -3417,6 +3418,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3373196968211632036">Không sử dụng được Steam dành cho Chromebook (Beta) cho Tài khoản Google của trẻ</translation>
 <translation id="3373701465337594448">Khi chế độ cài đặt này bật, danh sách trang web bạn truy cập đoán được mối quan tâm của bạn sẽ xuất hiện ở đây</translation>
 <translation id="3374294321938930390">Đã di chuyển "<ph name="BOOKMARK_TITLE" />" vào "<ph name="NEW_FOLDER_TITLE" />".</translation>
+<translation id="3376035595160918049">Xem xét bản cập nhật ứng dụng</translation>
 <translation id="3378517653648586174">Chứng chỉ trên thiết bị</translation>
 <translation id="3378572629723696641">Tiện ích này có thể đã bị hỏng.</translation>
 <translation id="3378627645871606983">Quyền cấp cho Steam áp dụng cho tất cả trò chơi và ứng dụng trên Steam.</translation>
@@ -8208,6 +8210,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6790497603648687708">Đã thêm <ph name="EXTENSION_NAME" /> từ xa</translation>
 <translation id="6790820461102226165">Thêm người...</translation>
+<translation id="6792351896138862473">Không thể khởi chạy ứng dụng kiosk không được hỗ trợ. Hãy thông báo cho quản trị viên của bạn về vấn đề này.</translation>
 <translation id="6793610798874309813">Mã PIN có thể gồm 4 ký tự trở lên</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395">Đã sao chép <ph name="DOWNLOAD_URL" /> vào bảng nhớ tạm</translation>
@@ -10366,6 +10369,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8283802069507225582">Để tiếp tục nội dung bạn đang xem dở trên các thiết bị khác, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tất cả trang web <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Phụ đề</translation>
+<translation id="8285625579699113397">Tài khoản của bạn</translation>
 <translation id="8286036467436129157">Đăng nhập</translation>
 <translation id="8286227656784970313">Sử dụng từ điển của hệ thống</translation>
 <translation id="828642162569365647">Mật khẩu hoặc mã PIN này bảo vệ dữ liệu của bạn trên <ph name="DEVICE_TYPE" /> này và mọi thông tin bạn truy cập từ điện thoại của mình. Bạn sẽ cần mở khoá mỗi lần <ph name="DEVICE_TYPE" /> thoát khỏi chế độ ngủ.</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब शेयर करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> साल पहले अपडेट किया गया}one{<ph name="NUM_YEARS_MANY" /> साल पहले अपडेट किया गया}other{<ph name="NUM_YEARS_MANY" /> साल पहले अपडेट किया गया}}</translation>
 <translation id="7773714564112603605">टैब हटाएं और ग्रुप मिटाएं</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> टैब को वापस लाएं और खोलें</translation>
 <translation id="7792771145871471484">सुझावों की समीक्षा करें.</translation>
 <translation id="7792860826279960128">शेयर किए गए टैब ग्रुप में बदलावों की सूचना वाली विंडो आधी स्क्रीन पर दिख रही है</translation>
 <translation id="7825973332242257878">टैब ग्रुप</translation>

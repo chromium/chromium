@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">ಲೋಹ (ಹೊಳಪು)</translation>
 <translation id="1070901266639972381">ರಾತ್ರಿ</translation>
 <translation id="1073690811593784042">ಗ್ಲಾಸ್ (ಬಣ್ಣದ)</translation>
+<translation id="1074287282535157335">4 ಕಂತು ಅಥವಾ ಮಾಸಿಕವಾಗಿ ಪಾವತಿಸಿ (ಅರ್ಹತೆಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ)</translation>
 <translation id="1074497978438210769">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="1074779248866616641">ಫಲಿತಾಂಶ</translation>
 <translation id="1075364221219156102">ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
 <translation id="2102495993840063010">Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="2102519472192754194">ವೆಬ್ ಬ್ರೌಸರ್‌ಗಳು</translation>
+<translation id="2103210856015238101">ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆದ ಸ್ಪರ್ಶದ ಮೂಲಕ ಭರ್ತಿ ಮಾಡಲು ಲಭ್ಯವಿರುವ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು.</translation>
 <translation id="2105838220373099643">ಪಾತ್ರಾಭಿನಯದ ಗೇಮ್‌ಗಳು</translation>
 <translation id="2107021941795971877">ಪ್ರಿಂಟ್ ಬೆಂಬಲಗಳು</translation>
 <translation id="2108755909498034140">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -1295,6 +1297,7 @@
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
 <translation id="3190736958609431397">ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="3194737229810486521">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹಣೆ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತದೆ</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ನಲ್ಲಿ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ನೀವು ಈ ಸಾಧನವನ್ನು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವಾಗ ತಿಳಿದುಕೊಳ್ಳಲು ಕೇಳಬಹುದು</translation>
 <translation id="3201482403106004262">ಸಮೀಕ್ಷೆಯಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
@@ -1770,6 +1773,7 @@
 <translation id="3963721102035795474">ರೀಡರ್‌ ಮೋಡ್‌</translation>
 <translation id="3965672182149944205">ವಿಳಾಸವನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="3966044442021752214">ಉತ್ಪನ್ನದ ಸುರಕ್ಷತೆ</translation>
+<translation id="396761677631735618">ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿರುವ ಸ್ಪರ್ಶದ ಮೂಲಕ ಭರ್ತಿ ಮಾಡಲು ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="3969869202926863008">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="3970239200223030389">ವಿತರಿಸಿದ ದಿನಾಂಕ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -1890,6 +1894,7 @@
 <translation id="4165986682804962316">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4169189393773057143">Google Wallet ನಲ್ಲಿ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಅಥವಾ ಈ ಸಲಹೆಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="4169535189173047238">ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="4170851022123611628">ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="4171400957073367226">ತಪ್ಪು ಪರಿಶೀಲನೆ ಸಹಿ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">ಬೀಗಗಳು ಮತ್ತು ಬೀಗ ತಯಾರಕರು</translation>
@@ -2093,6 +2098,7 @@
 <translation id="449126573531210296">ನಿಮ್ಮ Google ಖಾತೆಯ ಜೊತೆಗೆ ಸಿಂಕ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಿ</translation>
 <translation id="4493480324863638523">ಅಮಾನ್ಯ URL. ಪ್ರಮಾಣಿತ ವ್ಯವಸ್ಥೆಯೊಂದಿಗಿನ URL ಆಗಿರಬೇಕು, ಉದಾ. http://example.com or https://example.com.</translation>
 <translation id="4494323206460475851">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆ್ಯಡ್ ವಿಷಯವನ್ನು ನೋಡಬಹುದು ಮತ್ತು ಸೈಟ್‌ಗಳೊಂದಿಗೆ ನೀವು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸದ ವಿಷಯಗಳನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು. Chrome ಸಹ 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಆ್ಯಡ್ ವಿಷಯವನ್ನು ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ.</translation>
+<translation id="4497010149473852018">ಸ್ಪರ್ಶದ ಮೂಲಕ ಭರ್ತಿ ಮಾಡಲು ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳು ಲಭ್ಯವಿದೆ. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4500587658229086076">ಅಸುರಕ್ಷಿತ ಕಂಟೆಂಟ್‌</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> ಜನರು</translation>
 <translation id="450602096898954067">ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕಾಗಿ, ತರಬೇತಿ ಪಡೆದ ರಿವ್ಯೂವರ್‌ಗಳು ಡೇಟಾವನ್ನು ನೋಡಬಹುದು</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ શેર કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> વર્ષ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
 <translation id="7773714564112603605">ટૅબ કાઢી નાખો અને ગ્રૂપ ડિલીટ કરો</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> ટૅબ રિસ્ટોર કરો અને ખોલો</translation>
 <translation id="7792771145871471484">સૂચનોનો રિવ્યૂ કરો.</translation>
 <translation id="7792860826279960128">શેર કરેલા ટૅબના ગ્રૂપમાં કરવામાં આવેલા ફેરફારો સંબંધિત નોટિસવાળું ટૅબ અડધી ઊંચાઈએ ખોલવામાં આવ્યું</translation>
 <translation id="7825973332242257878">ટૅબના ગ્રૂપ</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பகிரும்}other{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பகிரும்}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> வருடத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_YEARS_MANY" /> வருடங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="7773714564112603605">பக்கத்தை அகற்றி குழுவை நீக்கு</translation>
+<translation id="7774428938729954687">மீட்டெடுத்து <ph name="TAB_TITLE" /> பக்கத்தைத் திறக்கும்</translation>
 <translation id="7792771145871471484">பரிந்துரைகளை சரிபார்க்கும்.</translation>
 <translation id="7792860826279960128">பகிர்ந்த பக்கக் குழு தொடர்பான மாற்றங்கள் குறித்த அறிவிப்பு பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="7825973332242257878">பக்கக் குழுக்கள்</translation>

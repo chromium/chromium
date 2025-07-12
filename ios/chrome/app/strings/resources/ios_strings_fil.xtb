@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Buksan sa…</translation>
 <translation id="2120553909046681540">In-off ng iyong organisasyon ang pribadong pag-browse.</translation>
 <translation id="2122754583996902531">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Hindi ginagamit ang mga chat ng iyong organisayon para mapahusay ang aming mga modelo. Puwedeng magpakita ng hindi tumpak na impormasyon ang Gemini, kabilang ang tungkol sa mga tao, kaya i-double check ito. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Maghanap para sa Text na Kinopya Mo</translation>
 <translation id="2147127444698817042">Available lang sa iPhone</translation>
 <translation id="2148799636999124959">Mabilis na mag-sign in sa mga site at app gamit ang iyong mga naka-save na password.</translation>
@@ -382,6 +383,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2468444275314013497">Mukhang ligtas ang iyong browser</translation>
 <translation id="2473876017985765807">May na-save ka nang password para sa <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puwede kang magtakda ng paalalang bisitahin ulit ang page na ito sa ibang pagkakataon</translation>
+<translation id="2478246185006364308">Mga Tuntunin ng Google</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2484459871750294497">Paano ko ie-enable ang feature na ito?</translation>
@@ -623,6 +625,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3530767473765895035">Pamahalaan ang mga account sa device na ito…</translation>
 <translation id="3533436815740441613">Bagong Tab</translation>
 <translation id="3533860663366814939">Buksan ang mga setting ng Autofill &amp; Password</translation>
+<translation id="3546122170015471515">Mga Preview ng Maps sa Google.com</translation>
 <translation id="3547356470684043247">Magbasa ng mga pagsusuri ng customer sa mga produkto, serbisyo, o experience para makatulong na mapagbatayan mo ng iyong mga desisyon ang mga review</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
 <translation id="355765753469272474">I-undo</translation>
@@ -1095,6 +1098,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5454211924362324495">Para mapigilan ang ibang tao na gamitin ang iyong password, <ph name="BEGIN_LINK" />palitan ito sa <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Idagdag sa paghahanap mo</translation>
 <translation id="5457226814769348910">Buksan sa Offline Version</translation>
+<translation id="5467163657366219870">I-off ang Mga Preview ng Maps</translation>
 <translation id="5478327362747197944">Direktang gumawa ng mga event sa Calendar sa pamamagitan ng pag-click sa isang petsa sa web page.</translation>
 <translation id="5482922178977937393">Gusto mo ba ng mga notification para sa balita, sports, at higit pa batay sa iyong mga interes?</translation>
 <translation id="5483838506518938965">Handa ka na</translation>
@@ -1151,6 +1155,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5656431592348714536">Pinahusay na Kalendaryo</translation>
 <translation id="5657156137487675418">Pahintulutan ang lahat ng cookies</translation>
 <translation id="5659593005791499971">Email</translation>
+<translation id="5665739277590037307">Nalalapat ang <ph name="GOOGLE_TERMS" /> at <ph name="GEMINI_APPS_PRIVACY" />. Puwedeng magkamali ang Gemini, kaya i-double check ito.</translation>
 <translation id="5666313630530585305">Mag-sign in sa isang website.</translation>
 <translation id="5669335982068190158">Na-sign out ka bilang bahagi ng pag-reset ng iyong iPhone. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5756525336488841345">I-hide ang Mga Bookmark</translation>
 <translation id="5758631781033351321">Makikita mo rito ang iyong listahan ng babasahin</translation>
 <translation id="57586589942790530">Di-wasto ang numero ng card</translation>
+<translation id="5758759241456233788">Naka-off ang Mga Preview ng Maps. I-on ulit ito sa Mga Setting.</translation>
 <translation id="5759484603608560822">I-hide ang Mga Download</translation>
 <translation id="5767099457279594162">Hindi na-share ang password</translation>
 <translation id="5779117921996157216">{count,plural, =1{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>
@@ -1324,6 +1330,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6331836477476466332">Isang mas ligtas at mas mahusay na browser para sa iyo</translation>
 <translation id="6335744088476213315">Ipinapakita ng card na ito ang mga produktong tiningnan mo kamakailan at baka interesado kang subaybayan para makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
+<translation id="6337313937331295309">Notification ng Privacy sa Mga Gemini App</translation>
 <translation id="633809752005859102">Nagkaroon ng malaking problema. Gagawan namin iyon ng paraan.</translation>
 <translation id="6339793034470834130">Para gamitin ang Web Inspector, kumonekta sa Safari sa iyong computer gamit ang isang cable at i-access ang iyong iPhone mula sa menu ng Mag-develop. Puwede mong i-enable ang menu ng mag-develop sa seksyong Advanced ng mga setting ng Safari sa iyong computer.</translation>
 <translation id="6340285871011301182">Hindi available ang bahagyang pagsasalin.</translation>
@@ -1552,6 +1559,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7176183551031110427">Mag-zoom out</translation>
 <translation id="7186568385131859684">Kontrolin kung paano ginagamit ang history ng pag-browse kasama ng iba mo pang data sa mga serbisyo ng Google</translation>
 <translation id="719133302483559673">Pamahalaan ang iyong mga interes at preference.</translation>
+<translation id="7203496777391039568">Pribado at secure ang data ng iyong organisasyon</translation>
 <translation id="720399613139435155">Hindi na-translate</translation>
 <translation id="7204922488054642675">Naka-personalize na balita</translation>
 <translation id="7206979415662233817">Mga tuntunin ng serbisyo</translation>
@@ -1568,6 +1576,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7266578100016339897">Makakatulong ito sa iyong manatiling organisado. Puwede mo itong baguhin sa mga setting anumang oras.</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="728025568708172005">Simulan ang tour</translation>
+<translation id="7281202269687163394">Ang iyong privacy at Gemini.</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>
 <translation id="7300448350764260141">Magdagdag pa ng proteksyon laban sa mga banta online.</translation>
 <translation id="7311244614769792472">Walang nakitang resulta</translation>

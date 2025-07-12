@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Ava …</translation>
 <translation id="2120553909046681540">Teie organisatsioon lülitas privaatse sirvimise välja.</translation>
 <translation id="2122754583996902531">Teie brauserit hallatakse. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Teie organisatsiooni vestlusi ei kasutata meie mudelite täiustamiseks. Gemini võib kuvada ebatäpset teavet (sh inimeste kohta), seetõttu kontrollige see üle. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Otsi kopeeritud teksti</translation>
 <translation id="2147127444698817042">Saadaval ainult iPhone'is</translation>
 <translation id="2148799636999124959">Salvestatud paroolide abil saate saitidele ja rakendustesse kiiresti sisse logida.</translation>
@@ -382,6 +383,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2468444275314013497">Teie brauser näib turvaline</translation>
 <translation id="2473876017985765807">Salvestasite saidi <ph name="WEBSITE" /> jaoks juba parooli</translation>
 <translation id="247430852844518481">Saate määrata meeldetuletuse selle lehe hiljem külastamiseks</translation>
+<translation id="2478246185006364308">Google'i tingimused</translation>
 <translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2484459871750294497">Kuidas saan selle funktsiooni lubada?</translation>
@@ -623,6 +625,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3530767473765895035">Kontode haldamine selles seadmes …</translation>
 <translation id="3533436815740441613">Uus vaheleht</translation>
 <translation id="3533860663366814939">Avage seadetest Autofill &amp; Passwords</translation>
+<translation id="3546122170015471515">Kaartide eelvaated saidil Google.com</translation>
 <translation id="3547356470684043247">Lugege klientide hinnanguid toodetele, teenustele või kogemustele, et saaksite arvustuste abil teha teadlikumaid otsuseid</translation>
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
 <translation id="355765753469272474">Võta tagasi</translation>
@@ -1095,6 +1098,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5454211924362324495">Kui soovite, et teised ei saaks teie parooli kasutada, <ph name="BEGIN_LINK" />muutke seda saidil <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Täiendage otsingut</translation>
 <translation id="5457226814769348910">Ava võrguühenduseta versioon</translation>
+<translation id="5467163657366219870">Lülita kaartide eelvaated välja</translation>
 <translation id="5478327362747197944">Looge kalendrisündmusi otse veebilehelt, klõpsates selles sisalduval kuupäeval.</translation>
 <translation id="5482922178977937393">Kas soovite märguandeid uudiste, spordi ja muu kohta, mis põhinevad teie huvidel?</translation>
 <translation id="5483838506518938965">Olete valmis</translation>
@@ -1151,6 +1155,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5656431592348714536">Täiustatud kalender</translation>
 <translation id="5657156137487675418">Luba kõik küpsised</translation>
 <translation id="5659593005791499971">E-post</translation>
+<translation id="5665739277590037307">Kohalduvad <ph name="GOOGLE_TERMS" /> ja <ph name="GEMINI_APPS_PRIVACY" />. Gemini võib teha vigu, seega kontrollige see teave üle.</translation>
 <translation id="5666313630530585305">Logige veebisaidile sisse.</translation>
 <translation id="5669335982068190158">Teid logiti iPhone'i lähtestamise käigus välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5756525336488841345">Peida valik „Järjehoidjad“</translation>
 <translation id="5758631781033351321">Oma lugemisloendi leiate siit</translation>
 <translation id="57586589942790530">Kehtetu kaardinumber</translation>
+<translation id="5758759241456233788">Kaartide eelvaated on välja lülitatud. Lülitage need seadetes uuesti sisse.</translation>
 <translation id="5759484603608560822">Peida valik „Allalaadimised“</translation>
 <translation id="5767099457279594162">Parooli ei jagatud</translation>
 <translation id="5779117921996157216">{count,plural, =1{Teil on {count} ohustatud parool, mis võib teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage see kohe.}other{Teil on {count} ohustatud parooli, mis võivad teie turvalisuse ohtu seada. Turvalisuse tagamiseks parandage need kohe.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6331836477476466332">Teie turvalisem ja võimsam brauser</translation>
 <translation id="6335744088476213315">Sellel kaardil kuvatakse tooted, mida olete hiljuti vaadanud ning mille jälgimisest ja hinnalanguse märguannetest võite huvitatud olla</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
+<translation id="6337313937331295309">Gemini rakenduste privaatsusteatis</translation>
 <translation id="633809752005859102">Midagi läks väga valesti. Töötame selle kallal.</translation>
 <translation id="6339793034470834130">Veebiinspektori kasutamiseks looge oma arvutis kaabli abil ühendus Safariga ja avage oma iPhone menüüs Develop. Arendusmenüü saate lubada oma arvuti Safari seadete jaotises Advanced.</translation>
 <translation id="6340285871011301182">Osaline tõlge pole saadaval.</translation>
@@ -1552,6 +1559,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7176183551031110427">Suumi välja</translation>
 <translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
 <translation id="719133302483559673">Hallake oma huvisid ja eelistusi.</translation>
+<translation id="7203496777391039568">Teie organisatsiooni andmed on privaatsed ja kaitstud</translation>
 <translation id="720399613139435155">Tõlkimine ebaõnnestus</translation>
 <translation id="7204922488054642675">Isikupärastatud uudised</translation>
 <translation id="7206979415662233817">Teenusetingimused</translation>
@@ -1568,6 +1576,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7266578100016339897">See aitab segadust vältida. Seda saab igal ajal seadetes muuta.</translation>
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
 <translation id="728025568708172005">Alusta tutvustust</translation>
+<translation id="7281202269687163394">Teie privaatsus ja Gemini.</translation>
 <translation id="7293429513719260019">Valige keel</translation>
 <translation id="7300448350764260141">Lisage täiendav kaitsekiht võrguohtude eest.</translation>
 <translation id="7311244614769792472">Tulemusi ei leitud</translation>

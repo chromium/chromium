@@ -10364,6 +10364,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8283802069507225582">To pick up where you left off on other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">all <ph name="WEBSITE_1" /> sites</translation>
 <translation id="8284326494547611709">Captions</translation>
+<translation id="8285625579699113397">Your account</translation>
 <translation id="8286036467436129157">Sign In</translation>
 <translation id="8286227656784970313">Use system dictionary</translation>
 <translation id="828642162569365647">This password or PIN protects your data on this <ph name="DEVICE_TYPE" /> and any information that you access from your phone. You'll need to unlock each time your <ph name="DEVICE_TYPE" /> wakes from sleep.</translation>

@@ -625,6 +625,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3530767473765895035">Gestiona els comptes en aquest dispositiu…</translation>
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3533860663366814939">Obre la configuració d'Emplenament automàtic i contrasenyes</translation>
+<translation id="3546122170015471515">Previsualització de Maps a Google.com</translation>
 <translation id="3547356470684043247">Llegeix les avaluacions dels clients sobre productes, serveis o experiències per ajudar-te a prendre decisions</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
 <translation id="355765753469272474">Desfés</translation>
@@ -1097,6 +1098,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5454211924362324495">Per evitar que altres persones utilitzin la teva contrasenya, <ph name="BEGIN_LINK" />canvia-la a <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5457226814769348910">Obre la versió sense connexió</translation>
+<translation id="5467163657366219870">Desactiva Previsualització de Maps</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
 <translation id="5482922178977937393">Vols rebre notificacions de notícies, esports i més temes segons els teus interessos?</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
@@ -1186,6 +1188,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5756525336488841345">Amaga l'opció Adreces d'interès</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
 <translation id="57586589942790530">El número de targeta no és vàlid</translation>
+<translation id="5758759241456233788">L'opció Previsualització de Maps està desactivada. Torna a activar-la a Configuració.</translation>
 <translation id="5759484603608560822">Amaga l'opció Baixades</translation>
 <translation id="5767099457279594162">La contrasenya no s'ha compartit</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tens {count} contrasenya en perill que podria posar en risc la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes en perill que podrien posar en risc la teva seguretat. Corregeix el problema per protegir-te.}}</translation>
@@ -1556,6 +1559,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7176183551031110427">Redueix</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
+<translation id="7203496777391039568">Mantenim la privadesa i la seguretat de les dades de la teva organització</translation>
 <translation id="720399613139435155">Ha fallat la traducció</translation>
 <translation id="7204922488054642675">Notícies personalitzades</translation>
 <translation id="7206979415662233817">Condicions del servei</translation>

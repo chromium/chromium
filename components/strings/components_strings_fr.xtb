@@ -1118,6 +1118,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="290376772003165898">La page n'est pas en <ph name="LANGUAGE" /> ?</translation>
+<translation id="2904180982022726666">Votre organisation limite ce que vous pouvez partager</translation>
 <translation id="2905107382358353958">Alerte concernant le nouveau paramètre de paiement</translation>
 <translation id="2909946352844186028">Un changement de réseau a été détecté.</translation>
 <translation id="2911255567212929079">Machine learning et intelligence artificielle</translation>
@@ -4710,6 +4711,7 @@ Informations supplémentaires :
 <translation id="8975263830901772334">Noms des fichiers que vous imprimez</translation>
 <translation id="8982884016487650216">Chargement du PDF terminé</translation>
 <translation id="8983369100812962543">Vous pouvez désormais redimensionner l'appli</translation>
+<translation id="8984785270737450103">Le partage est actuellement désactivé</translation>
 <translation id="8985112471026018799">Enregistrez la carte pour payer plus rapidement</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour afficher votre historique de navigation dans Chrome</translation>
 <translation id="8987663052629670333">Services d'impression photo</translation>

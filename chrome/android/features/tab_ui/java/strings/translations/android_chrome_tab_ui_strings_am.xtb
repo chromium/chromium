@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን አጋራ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን አጋራ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን አጋራ}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_YEARS_ONE" /> ዓመት በፊት ተዘምኗል}one{ከ<ph name="NUM_YEARS_MANY" /> ዓመት በፊት ተዘምኗል}other{ከ<ph name="NUM_YEARS_MANY" /> ዓመታት በፊት ተዘምኗል}}</translation>
 <translation id="7773714564112603605">ትርን አስወግድ እና ቡድንን ሰርዝ</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> ትርን ወደነበረበት ይመልሱ እና ይክፈቱ</translation>
 <translation id="7792771145871471484">ጥቆማ ሐሳቦችን ይገምግሙ።</translation>
 <translation id="7792860826279960128">ስለ በግማሽ ቁመት ላይ የተጋራ የትር ቡድን ለውጦች ማሳወቂያ</translation>
 <translation id="7825973332242257878">የትር ቡድኖች</translation>

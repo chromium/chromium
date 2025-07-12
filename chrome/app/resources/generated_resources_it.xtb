@@ -1200,6 +1200,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1822635184853104396">Mostra la cronologia dei download completa in una nuova scheda</translation>
 <translation id="1823768272150895732">Carattere</translation>
 <translation id="1823781806707127806">Aggiungi dati di navigazione esistenti al profilo gestito</translation>
+<translation id="1824499847634940868">Rivedi aggiornamento dell'app</translation>
 <translation id="18245044880483936">I dati di backup non incidono sulla quota di spazio di archiviazione di Drive di tuo figlio.</translation>
 <translation id="1824870205483790748">Blocca il gruppo sulla barra dei preferiti</translation>
 <translation id="1825073796163165618">Attiva link</translation>
@@ -3404,6 +3405,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3373196968211632036">Steam per Chromebook (beta) non è disponibile per gli Account Google di bambini</translation>
 <translation id="3373701465337594448">Quando l'opzione è attiva, viene visualizzato qui un elenco di siti che ipotizza i tuoi interessi</translation>
 <translation id="3374294321938930390">Preferito "<ph name="BOOKMARK_TITLE" />" spostato in "<ph name="NEW_FOLDER_TITLE" />".</translation>
+<translation id="3376035595160918049">Rivedi aggiornamento dell'app</translation>
 <translation id="3378517653648586174">Certificati locali</translation>
 <translation id="3378572629723696641">Questa estensione potrebbe essere stata danneggiata.</translation>
 <translation id="3378627645871606983">Le autorizzazioni concesse per Steam si applicano a tutti i giochi e a tutte le app Steam.</translation>
@@ -8191,6 +8193,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
+<translation id="6792351896138862473">Impossibile avviare l'app kiosk non supportata. Segnala questo problema all'amministratore.</translation>
 <translation id="6793610798874309813">Il PIN deve essere composto da almeno 4 caratteri</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395">URL <ph name="DOWNLOAD_URL" /> copiato negli appunti</translation>
@@ -10347,6 +10350,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8283802069507225582">Per riprendere da dove avevi interrotto su altri dispositivi, sincronizza la cronologia e le schede con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sottotitoli codificati</translation>
+<translation id="8285625579699113397">Il tuo account</translation>
 <translation id="8286036467436129157">Accedi</translation>
 <translation id="8286227656784970313">Utilizza dizionario di sistema</translation>
 <translation id="828642162569365647">La password o il PIN protegge i tuoi dati memorizzati su questo <ph name="DEVICE_TYPE" /> e qualsiasi informazione a cui accedi dal telefono. Dovrai sbloccare il tuo <ph name="DEVICE_TYPE" /> ogni volta che si riattiva dalla sospensione.</translation>
@@ -11050,7 +11054,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 Potrebbero essere incluse informazioni su software installati, file, browser, sistema operativo del dispositivo e indirizzi IP.</translation>
 <translation id="876956356450740926">Esegui strumenti per sviluppatori, IDE ed editor. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directory principale dell'estensione</translation>
-<translation id="8773535891252326047">Link copiato per l'evidenziazione</translation>
+<translation id="8773535891252326047">Link al testo evidenziato copiato</translation>
 <translation id="8774379074441005279">Conferma il ripristino</translation>
 <translation id="8774934320277480003">Margine superiore</translation>
 <translation id="8775144690796719618">URL non valido</translation>

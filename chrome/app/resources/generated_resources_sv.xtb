@@ -1209,6 +1209,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1822635184853104396">Visa fullständig nedladdningshistorik på en ny flik</translation>
 <translation id="1823768272150895732">Teckensnitt</translation>
 <translation id="1823781806707127806">Lägg till befintlig webbinformation i hanterad profil</translation>
+<translation id="1824499847634940868">Granska appuppdatering</translation>
 <translation id="18245044880483936">Säkerhetskopierad data tar inte upp lagringsutrymme på barnets Drive.</translation>
 <translation id="1824870205483790748">Fäst gruppen i bokmärkesfältet</translation>
 <translation id="1825073796163165618">Aktivera länkar</translation>
@@ -3417,6 +3418,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3373196968211632036">Steam för Chromebook (beta) är inte tillgängligt för Google-konton som tillhör barn</translation>
 <translation id="3373701465337594448">När detta är aktiverat visas en lista över webbplatser som du besöker som gissar dina intressen</translation>
 <translation id="3374294321938930390"><ph name="BOOKMARK_TITLE" /> har flyttats till <ph name="NEW_FOLDER_TITLE" />.</translation>
+<translation id="3376035595160918049">Granska appuppdatering</translation>
 <translation id="3378517653648586174">Lokala certifikat</translation>
 <translation id="3378572629723696641">Det här tillägget kan vara skadat.</translation>
 <translation id="3378627645871606983">De behörigheter som beviljats Steam gäller för alla spel och appar från Steam.</translation>
@@ -8208,6 +8210,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> har lagts till via fjärranslutning</translation>
 <translation id="6790820461102226165">Lägg till person …</translation>
+<translation id="6792351896138862473">Det går inte att starta en kioskapp som inte stöds. Meddela administratören om problemet.</translation>
 <translation id="6793610798874309813">Pinkoden kan bestå av fyra tecken eller fler</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> har kopierats till urklipp</translation>

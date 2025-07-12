@@ -4640,7 +4640,7 @@
 <translation id="4207932031282227921">అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి F6ను నొక్కండి</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />లో వెతకండి</translation>
 <translation id="4209092469652827314">పెద్దది</translation>
-<translation id="4209251085232852247">ఆఫ్ చేయబడింది</translation>
+<translation id="4209251085232852247">ఆఫ్ అయింది</translation>
 <translation id="4210048056321123003">వర్చువల్ మెషిన్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4210380525132844778">కారణం: <ph name="RULE" />ను "<ph name="LIST_NAME" />" లిస్ట్‌లో చూడవచ్చు.</translation>
 <translation id="4211362364312260125">సహాయకరమైన టెక్నాలజీ కోసం వెబ్ పేజీలలో ముఖ్యమైన ల్యాండ్‌మార్క్‌ను గుర్తించండి</translation>
@@ -10357,6 +10357,7 @@
 <translation id="8283802069507225582">ఇతర డివైజ్‌లలో మీరు ఆపివేసిన చోటు నుండే మళ్లీ కొనసాగించడానికి, మీ హిస్టరీని, ట్యాబ్‌లను <ph name="ACCOUNT_EMAIL" />‌కు సింక్ చేయండి</translation>
 <translation id="8284279544186306258">అన్ని <ph name="WEBSITE_1" /> వెబ్‌సైట్‌లు</translation>
 <translation id="8284326494547611709">క్యాప్షన్‌లు</translation>
+<translation id="8285625579699113397">మీ ఖాతా</translation>
 <translation id="8286036467436129157">సైన్ ఇన్ చేయండి</translation>
 <translation id="8286227656784970313">సిస్టమ్‌ నిఘంటువును ఉపయోగించండి</translation>
 <translation id="828642162569365647">ఈ పాస్‌వర్డ్ లేదా పిన్ ఈ <ph name="DEVICE_TYPE" />‌లో మీ డేటాను, మీ ఫోన్‌లో మీరు యాక్సెస్ చేసే ఏ సమాచారాన్ని అయినా రక్షిస్తుంది. మీ <ph name="DEVICE_TYPE" /> స్లీప్ నుండి మేల్కొన్న ప్రతిసారి మీరు అన్‌లాక్ చేయాల్సి ఉంటుంది.</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব শেয়ার করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব শেয়ার করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব শেয়ার করুন}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছর আগে আপডেট হয়েছে}one{<ph name="NUM_YEARS_MANY" /> বছর আগে আপডেট করা হয়েছে}other{<ph name="NUM_YEARS_MANY" /> বছর আগে আপডেট করা হয়েছে}}</translation>
 <translation id="7773714564112603605">ট্যাব সরান ও গ্রুপ মুছে দিন</translation>
+<translation id="7774428938729954687">ফিরিয়ে আনুন এবং <ph name="TAB_TITLE" /> ট্যাব খুলুন</translation>
 <translation id="7792771145871471484">সাজেশন পর্যালোচনা করুন।</translation>
 <translation id="7792860826279960128">শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সম্পর্কে বিজ্ঞপ্তি অর্ধেক স্ক্রিন জুড়ে দেখানো হচ্ছে</translation>
 <translation id="7825973332242257878">ট্যাব গ্রুপ</translation>

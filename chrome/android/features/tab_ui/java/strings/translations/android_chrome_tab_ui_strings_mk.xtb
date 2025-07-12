@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Споделете <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Споделете <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Споделете <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Ажурирано пред <ph name="NUM_YEARS_ONE" /> година}one{Ажурирано пред <ph name="NUM_YEARS_MANY" /> година}other{Ажурирано пред <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="7773714564112603605">Отстранете ја картичката и избришете ја групата</translation>
+<translation id="7774428938729954687">Вратете и отворете <ph name="TAB_TITLE" /> картичка</translation>
 <translation id="7792771145871471484">Прегледајте ги предлозите.</translation>
 <translation id="7792860826279960128">Известување за промените во споделената група картички на половина екран</translation>
 <translation id="7825973332242257878">Групи картички</translation>

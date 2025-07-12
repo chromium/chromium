@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Otvoriť v aplikácii…</translation>
 <translation id="2120553909046681540">Vaša organizácia vypla anonymné prehliadanie.</translation>
 <translation id="2122754583996902531">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Naše modely sa nezlepšujú pomocou četov vašej organizácie. Gemini môže zobrazovať nepresné informácie (aj o ľuďoch), preto si jeho odpovede overujte. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Vyhľadať skopírovaný text</translation>
 <translation id="2147127444698817042">K dispozícii len v iPhone</translation>
 <translation id="2148799636999124959">Uloženými heslami sa môžete rýchlo prihlasovať na weboch a v aplikáciách.</translation>
@@ -382,6 +383,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2468444275314013497">Váš prehliadač je v poriadku</translation>
 <translation id="2473876017985765807">Už ste si uložili heslo pre web <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Môžete si nastaviť pripomenutie, aby ste sa na túto stránku vrátili neskôr</translation>
+<translation id="2478246185006364308">zmluvné podmienky spoločnosti Google</translation>
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2484459871750294497">Ako povolím túto funkciu?</translation>
@@ -623,6 +625,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3530767473765895035">Spravovať účty v tomto zariadení…</translation>
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3533860663366814939">Otvorte nastavenia automatického dopĺňania a hesiel</translation>
+<translation id="3546122170015471515">Predbežné verzie Máp na Google.com</translation>
 <translation id="3547356470684043247">Prečítajte si hodnotenia zákazníkov týkajúce sa výrobkov, služieb alebo ich skúseností. Na základe týchto recenzií sa potom budete môcť informovane rozhodovať.</translation>
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="355765753469272474">Späť</translation>
@@ -1095,6 +1098,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5454211924362324495">Ak nechcete, aby ostatní používali vaše heslo, <ph name="BEGIN_LINK" />zmeňte si ho na <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Pridajte do vyhľadávania</translation>
 <translation id="5457226814769348910">Otvoriť offline verziu</translation>
+<translation id="5467163657366219870">Vypnúť predbežné verzie Máp</translation>
 <translation id="5478327362747197944">Vytvorte udalosti v kalendári priamo kliknutím na dátum na webovej stránke.</translation>
 <translation id="5482922178977937393">Chcete dostávať upozornenia na správy, šport a ďalší obsah na základe svojich záujmov?</translation>
 <translation id="5483838506518938965">Všetko je nastavené</translation>
@@ -1151,6 +1155,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5656431592348714536">Zlepšený kalendár</translation>
 <translation id="5657156137487675418">Povoliť všetky súbory cookie</translation>
 <translation id="5659593005791499971">E-mail</translation>
+<translation id="5665739277590037307">Platia <ph name="GOOGLE_TERMS" /> a <ph name="GEMINI_APPS_PRIVACY" />. Gemini môže robiť chyby, preto si jeho odpovede overujte.</translation>
 <translation id="5666313630530585305">Prihláste sa na webe.</translation>
 <translation id="5669335982068190158">V rámci resetovania iPhonu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5756525336488841345">Skryť Záložky</translation>
 <translation id="5758631781033351321">Tu nájdete svoj čitateľský zoznam</translation>
 <translation id="57586589942790530">Neplatné číslo karty</translation>
+<translation id="5758759241456233788">Predbežné verzie Máp sú vypnuté. Môžete ich znova zapnúť v Nastaveniach.</translation>
 <translation id="5759484603608560822">Skryť položku Stiahnuté</translation>
 <translation id="5767099457279594162">Heslo nebolo zdieľané</translation>
 <translation id="5779117921996157216">{count,plural, =1{Máte {count} odhalené heslo, ktoré môže ohroziť vaše zabezpečenie. Zmeňte ho, aby ste boli v bezpečí.}few{Máte {count} odhalené heslá, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}many{You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}other{Máte {count} odhalených hesiel, ktoré môžu ohroziť vaše zabezpečenie. Zmeňte ich, aby ste boli v bezpečí.}}</translation>
@@ -1324,6 +1330,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6331836477476466332">Bezpečnejší a výkonnejší prehliadač pre vás</translation>
 <translation id="6335744088476213315">Na tejto karte sú výrobky, ktoré ste si nedávno zobrazili a ktoré by ste možno chceli sledovať, aby ste mohli dostávať upozornenia na pokles ceny</translation>
 <translation id="6337234675334993532">Šifrovanie</translation>
+<translation id="6337313937331295309">oznámenie o ochrane súkromia v aplikáciách Gemini</translation>
 <translation id="633809752005859102">Niečo sa vážne pokazilo. Na riešení pracujeme.</translation>
 <translation id="6339793034470834130">Ak chcete používať kontrolu internetu, pripojte sa k prehliadaču Safari v počítači káblom a z ponuky Vývoj prejdite do iPhonu. Ponuku Vývoj môžete v počítači povoliť v nastaveniach prehliadača Safari v sekcii Rozšírené.</translation>
 <translation id="6340285871011301182">Čiastočný preklad nie je k dispozícii.</translation>
@@ -1552,6 +1559,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7176183551031110427">Oddialiť</translation>
 <translation id="7186568385131859684">Ovládajte, ako sa história prehliadania používa s inými údajmi v službách Googlu</translation>
 <translation id="719133302483559673">Spravujte svoje záujmy a predvoľby.</translation>
+<translation id="7203496777391039568">Údaje vašej organizácie sú súkromné a zabezpečené</translation>
 <translation id="720399613139435155">Nepodarilo sa preložiť</translation>
 <translation id="7204922488054642675">Vlastné nastavenie správ</translation>
 <translation id="7206979415662233817">Zmluvné podmienky</translation>
@@ -1568,6 +1576,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7266578100016339897">Pomôže vám to udržať si poriadok. V nastaveniach to môžete kedykoľvek zmeniť.</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="728025568708172005">Spustiť prehliadku</translation>
+<translation id="7281202269687163394">Ochrana vášho súkromia a Gemini</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="7300448350764260141">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>

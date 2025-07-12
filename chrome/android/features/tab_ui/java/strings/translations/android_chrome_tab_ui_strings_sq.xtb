@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ndaj <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Ndaj <ph name="TABS_COUNT_MANY" /> skedat e zgjedhura}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Përditësuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Përditësuar <ph name="NUM_YEARS_MANY" /> vjet më parë}}</translation>
 <translation id="7773714564112603605">Hiq skedën dhe fshi grupin</translation>
+<translation id="7774428938729954687">Restauro dhe hap skedën <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Rishiko sugjerimet.</translation>
 <translation id="7792860826279960128">Njoftim për ndryshimet në grupin e ndarë të skedave në gjysmë lartësi</translation>
 <translation id="7825973332242257878">Grupet e skedave</translation>

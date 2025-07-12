@@ -1118,6 +1118,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2903493209154104877">Indirizzi</translation>
 <translation id="290376772003165898">La pagina non è in <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">La tua organizzazione limita ciò che puoi condividere</translation>
 <translation id="2905107382358353958">Avviso relativo a nuova impostazione di pagamento</translation>
 <translation id="2909946352844186028">È stato rilevato un cambio di rete.</translation>
 <translation id="2911255567212929079">Machine learning e intelligenza artificiale</translation>
@@ -4705,6 +4706,7 @@ Ulteriori dettagli:
 <translation id="8975263830901772334">Nomi dei file che stampi</translation>
 <translation id="8982884016487650216">Caricamento PDF terminato</translation>
 <translation id="8983369100812962543">Ora puoi ridimensionare l'app</translation>
+<translation id="8984785270737450103">Al momento la condivisione è disattivata</translation>
 <translation id="8985112471026018799">Salva la carta per velocizzare i pagamenti</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per visualizzare la tua cronologia di navigazione in Chrome</translation>
 <translation id="8987663052629670333">Servizi di stampa fotografica</translation>

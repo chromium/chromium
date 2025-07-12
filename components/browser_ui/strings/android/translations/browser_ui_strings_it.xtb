@@ -63,6 +63,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1704230497453185209">Non consentire ai siti di riprodurre l'audio</translation>
 <translation id="1717218214683051432">Sensori di movimento</translation>
 <translation id="1717996979683942279">Quando l'opzione è attiva, i siti possono chiedere di gestire le finestre su tutti i tuoi schermi. Quando l'opzione è disattivata, i siti non possono gestire le finestre su tutti i tuoi schermi.</translation>
+<translation id="1738912554587725807">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda</translation>
 <translation id="1743802530341753419">Chiedi prima di consentire ai siti di connettersi a un dispositivo (opzione consigliata)</translation>
 <translation id="1777815584158991902">Riquadro inferiore del Feed personalizzato</translation>
 <translation id="1779089405699405702">Decoder di immagini</translation>
@@ -356,6 +357,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5100237604440890931">Compresso. Fai clic per espandere.</translation>
 <translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
+<translation id="512938610812707830">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

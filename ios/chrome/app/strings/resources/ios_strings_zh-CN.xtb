@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2120553909046681540">您的组织关闭了无痕浏览。</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">我们不会使用贵组织的对话内容来改进模型。Gemini 显示的信息（包括与人相关的信息）不一定准确，请注意核查。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="2147127444698817042">仅适用于 iPhone</translation>
 <translation id="2148799636999124959">使用您已保存的密码快速登录网站和应用。</translation>
@@ -382,6 +383,7 @@
 <translation id="2468444275314013497">您的浏览器看起来很安全</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="247430852844518481">您可以设置提醒，以便日后再次访问此页面</translation>
+<translation id="2478246185006364308">Google 条款</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何启用此功能？</translation>
@@ -623,6 +625,7 @@
 <translation id="3530767473765895035">管理此设备上的账号…</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
 <translation id="3533860663366814939">打开“自动填充与密码”设置</translation>
+<translation id="3546122170015471515">Google.com 上的地图预览</translation>
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
@@ -1095,6 +1098,7 @@
 <translation id="5454211924362324495">为防止他人使用您的密码，请<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 更改密码<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5457226814769348910">打开离线版</translation>
+<translation id="5467163657366219870">关闭地图预览</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
@@ -1151,6 +1155,7 @@
 <translation id="5656431592348714536">增强型日历</translation>
 <translation id="5657156137487675418">允许所有 Cookie</translation>
 <translation id="5659593005791499971">邮箱</translation>
+<translation id="5665739277590037307">需遵守《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 的回答未必正确无误，请注意核查。</translation>
 <translation id="5666313630530585305">登录相应网站。</translation>
 <translation id="5669335982068190158">您在 iPhone 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@
 <translation id="5756525336488841345">隐藏“书签”</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="57586589942790530">卡号无效</translation>
+<translation id="5758759241456233788">地图预览已关闭，您可以在“设置”中重新开启此功能。</translation>
 <translation id="5759484603608560822">隐藏“下载内容”</translation>
 <translation id="5767099457279594162">未能分享密码</translation>
 <translation id="5779117921996157216">{count,plural, =1{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
@@ -1324,6 +1330,7 @@
 <translation id="6331836477476466332">更安全、更强大的浏览器</translation>
 <translation id="6335744088476213315">此卡片会显示您最近看过并可能想跟踪以获取降价提醒的商品</translation>
 <translation id="6337234675334993532">加密</translation>
+<translation id="6337313937331295309">Gemini 应用隐私权声明</translation>
 <translation id="633809752005859102">出错了，我们马上处理。</translation>
 <translation id="6339793034470834130">如需使用网页检查器，请使用数据线连接到计算机上的 Safari，并从“开发”菜单中访问 iPhone。您可在计算机上 Safari 设置中的“高级”部分内启用“开发”菜单。</translation>
 <translation id="6340285871011301182">无法进行局部翻译。</translation>
@@ -1552,6 +1559,7 @@
 <translation id="7176183551031110427">缩小</translation>
 <translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
+<translation id="7203496777391039568">组织数据的保密性和安全性有保障</translation>
 <translation id="720399613139435155">翻译失败</translation>
 <translation id="7204922488054642675">个性化新闻</translation>
 <translation id="7206979415662233817">服务条款</translation>
@@ -1568,6 +1576,7 @@
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="728025568708172005">开始导览</translation>
+<translation id="7281202269687163394">您的隐私权与 Gemini。</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="7300448350764260141">增添一层额外的安全保障，防范在线威胁。</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>

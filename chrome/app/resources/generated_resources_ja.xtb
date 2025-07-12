@@ -1199,6 +1199,7 @@
 <translation id="1822635184853104396">新しいタブですべてのダウンロード履歴を表示する</translation>
 <translation id="1823768272150895732">フォント</translation>
 <translation id="1823781806707127806">既存の閲覧データを管理対象プロファイルに追加する</translation>
+<translation id="1824499847634940868">アプリの更新を確認</translation>
 <translation id="18245044880483936">バックアップ データは、お子様のドライブの保存容量にはカウントされません。</translation>
 <translation id="1824870205483790748">ブックマーク バーにグループを固定</translation>
 <translation id="1825073796163165618">リンクを有効にする</translation>
@@ -3396,6 +3397,7 @@
 <translation id="3373196968211632036">Steam for Chromebook（ベータ版）は、お子様の Google アカウントではご利用いただけません</translation>
 <translation id="3373701465337594448">この設定が有効な場合、閲覧履歴に基づいたウェブサイトのリストがここに表示されます。</translation>
 <translation id="3374294321938930390">「<ph name="BOOKMARK_TITLE" />」を「<ph name="NEW_FOLDER_TITLE" />」に移動しました。</translation>
+<translation id="3376035595160918049">アプリの更新を確認</translation>
 <translation id="3378517653648586174">ローカル証明書</translation>
 <translation id="3378572629723696641">この拡張機能は破損している可能性があります。</translation>
 <translation id="3378627645871606983">Steam に対して許可した権限は、すべての Steam ゲームとアプリに適用されます。</translation>
@@ -8177,6 +8179,7 @@
 <translation id="6790428901817661496">再生</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> がリモートで追加されました</translation>
 <translation id="6790820461102226165">ユーザーを追加...</translation>
+<translation id="6792351896138862473">サポートされていないためキオスクアプリを起動できません。管理者にこの問題を報告してください。</translation>
 <translation id="6793610798874309813">PIN は 4 文字以上で入力してください</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395">「<ph name="DOWNLOAD_URL" />」をクリップボードにコピーしました</translation>

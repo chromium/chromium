@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Opna í…</translation>
 <translation id="2120553909046681540">Fyrirtækið þitt slökkti á óskráðri vefnotkun.</translation>
 <translation id="2122754583996902531">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Spjall innan fyrirtækisins þíns er ekki notað til að bæta líkön okkar. Gemini kann að birta rangar upplýsingar, þ.m.t. um fólk, svo að þú skalt gæta þess að fara yfir öll svör sem þú færð. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
 <translation id="2147127444698817042">Aðeins í boði í iPhone</translation>
 <translation id="2148799636999124959">Skráðu þig inn á vefsvæði og forrit á fljótan hátt með vistuðum aðgangsorðum.</translation>
@@ -382,6 +383,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2468444275314013497">Vafrinn er í góðu lagi</translation>
 <translation id="2473876017985765807">Þú hefur þegar vistað aðgangsorð fyrir <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Þú getur stillt áminningu um að skoða þessa síðu aftur síðar</translation>
+<translation id="2478246185006364308">Skilmálar Google</translation>
 <translation id="2479148705183875116">Opna stillingar</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2484459871750294497">Hvernig kveiki ég á þessum eiginleika?</translation>
@@ -1153,6 +1155,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5656431592348714536">Endurbætt Dagatal</translation>
 <translation id="5657156137487675418">Leyfa öll fótspor</translation>
 <translation id="5659593005791499971">Netfang</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gilda. Gemini getur gert mistök svo að þú skalt gæta þess að fara yfir öll svör sem þú færð.</translation>
 <translation id="5666313630530585305">Skráðu þig inn á vefsvæði.</translation>
 <translation id="5669335982068190158">Þú varst skráð(ur) út í tengslum við endurstillingu iPhone. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig inn.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1327,6 +1330,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6331836477476466332">Öruggari og öflugri vafri fyrir þig</translation>
 <translation id="6335744088476213315">Þetta spjald sýnir vörur sem þú hefur skoðað nýlega og gætir haft áhuga á að vakta til að fá tilkynningar þegar verð á þeim lækkar</translation>
 <translation id="6337234675334993532">Dulkóðun</translation>
+<translation id="6337313937331295309">upplýsingar um persónuvernd Gemini-forrita</translation>
 <translation id="633809752005859102">Eitthvað fór mikið úrskeiðis. Við vinnum í þessu.</translation>
 <translation id="6339793034470834130">Til að nota Web Inspector skaltu tengjast Safari í tölvunni með snúru og fá aðgang að iPhone frá valmyndinni „Develop“. Þú getur virkjað valmyndina „Develop“ í hlutanum „Advanced“ í stillingum Safari í tölvunni.</translation>
 <translation id="6340285871011301182">Þýðing að hluta til ekki í boði.</translation>
@@ -1572,6 +1576,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7266578100016339897">Þetta hjálpar þér að halda skipulagi. Þú getur breytt þessu í stillingum hvenær sem er.</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="728025568708172005">Sýndu mér leiðina</translation>
+<translation id="7281202269687163394">Friðhelgi þín og Gemini</translation>
 <translation id="7293429513719260019">Velja tungumál</translation>
 <translation id="7300448350764260141">Auktu vörn gegn netógnum.</translation>
 <translation id="7311244614769792472">Engar niðurstöður fundust</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1026101648481255140">Ituloy ang Pag-install</translation>
 <translation id="1029669172902658969">Ilunsad ulit para ma-update ang &amp;ChromiumOS</translation>
+<translation id="103359417695385097">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-off ang setting na ito.</translation>
 <translation id="1040916596585577953">Inirerekomenda ng Chromium na suriin mo ang extension na ito</translation>
 <translation id="1042552502243217427">Kapag humiling ang isang site na pribadong mag-preload ng mga link sa page nito, gumagamit ang Chromium ng mga server ng Google. Maitatago nito ang iyong pagkakakilanlan sa na-preload na site, pero malalaman ng Google kung anong mga site ang na-preload.</translation>
 <translation id="1051793555070215510">Tulungan kaming pahusayin ang Incognito sa pamamagitan ng pagsagot sa 1 minutong survey na ito.</translation>
@@ -101,6 +102,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2241627712206172106">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chromium sa paraang gusto nila.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Inirerekomenda ng Chromium na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
+<translation id="232860113504534383">Ang Chromium mo, sa lahat ng lugar</translation>
 <translation id="2343156876103232566">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chromium sa parehong device.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2361918034042471035">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chromium</translation>
@@ -211,6 +213,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3790262771324122253">Alamin kung bakit bina-block ng Chromium ang ilang pag-download</translation>
 <translation id="379589255253486813">Ipapaalam sa iyo ng Chromium kung may anumang nangangailangan ng iyong pagsusuri</translation>
 <translation id="3802055581630249637">Nagpi-preload ang Chromium ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
+<translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
@@ -279,6 +282,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4598116752460667024">Maghanap ng anumang proseso mula sa listahan.</translation>
 <translation id="4613863813562375431">Bersyon ng ChromiumOS</translation>
 <translation id="4621240073146040695">Halos napapanahon na! Muling ilunsad ang Chromium upang tapusin ang pag-a-update.</translation>
+<translation id="4654936675281451226">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-on ang setting na ito.</translation>
 <translation id="4665829708273112819">Babala: Hindi mapipigilan ng Chromium ang pag-record ng mga extension sa iyong history ng pag-browse. Para i-disable ang extension na ito sa Incognito mode, i-unselect ang opsyong ito.</translation>
 <translation id="4673151026126227699">Kung magbabahagi ka rin ng mga ulat ng paggamit sa Chromium, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
 <translation id="4677944499843243528">Mukhang ginagamit ang profile ng iba pang proseso ng Chromium (<ph name="PROCESS_ID" />) sa iba pang computer (<ph name="HOST_NAME" />).  Ni-lock ng Chromium ang profile upang hindi ito ma-corrupt.  Kung nakakatiyak ka na walang ibang mga proseso ang gumagamit sa profile na ito, maaari mong i-unlock ang profile at ilunsad muli ang Chromium.</translation>
@@ -515,6 +519,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7828947555739565424">Mayroon nang profile sa Chromium na gumagamit ng account na ito sa device na ito</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7859018312476869945">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chromium kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
+<translation id="786097294490253281">Kapag na-click mo ang 'OK,' mase-save at magagamit mo ang mga password at makakagawa ka ng higit pa sa iyong Google Account kapag naka-sign in ka sa Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Hindi ma-update ang Chromium sa pinakabagong bersyon, kaya may napapalampas kang mga bagong feature at pag-aayos sa seguridad.</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
 <translation id="7888981273428720788">Itakda ang Chromium bilang iyong default</translation>

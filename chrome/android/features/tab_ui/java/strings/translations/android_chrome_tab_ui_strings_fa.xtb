@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{هم‌رسانی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش به‌روز شده است}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش به‌روز شده است}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش به‌روز شده است}}</translation>
 <translation id="7773714564112603605">برداشتن برگه و حذف گروه</translation>
+<translation id="7774428938729954687">بازیابی و باز کردن زبانه <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">پیشنهاد‌ها مرور شود.</translation>
 <translation id="7792860826279960128">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت نیمه باز شده است</translation>
 <translation id="7825973332242257878">گروه برگه</translation>

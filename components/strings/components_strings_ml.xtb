@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">മെറ്റൽ (ഗ്ലോസി)</translation>
 <translation id="1070901266639972381">രാത്രി</translation>
 <translation id="1073690811593784042">ഗ്ലാസ് (നിറമുള്ളത്)</translation>
+<translation id="1074287282535157335">4 ഗഡുക്കളായി അല്ലെങ്കിൽ പ്രതിമാസം പേ ചെയ്യുക (യോഗ്യതയ്‌ക്ക് വിധേയമാണ്)</translation>
 <translation id="1074497978438210769">സുരക്ഷിതമല്ല</translation>
 <translation id="1074779248866616641">ഫലം</translation>
 <translation id="1075364221219156102">ഒരു പാസ്‌കീ ഉപയോഗിക്കുക</translation>
@@ -657,6 +658,7 @@
 <translation id="2102134110707549001">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
 <translation id="2102495993840063010">Android ആപ്‌സ്</translation>
 <translation id="2102519472192754194">വെബ് ബ്രൗസറുകൾ</translation>
+<translation id="2103210856015238101">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ ലോയൽറ്റി കാർഡുകൾ പൂർണ്ണമായി തുറന്നിരിക്കുന്നു.</translation>
 <translation id="2105838220373099643">റോൾ പ്ലേയിംഗ് ഗെയിമുകൾ</translation>
 <translation id="2107021941795971877">പ്രിന്റ് സപ്പോർട്ടുകൾ</translation>
 <translation id="2108755909498034140">നിങ്ങളുടെ കമ്പ്യൂട്ടർ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">ആഡ് മെഷർമെന്റ്</translation>
 <translation id="3190736958609431397">ട്രാക്ക് ചെയ്യുന്നത് അവസാനിപ്പിക്കുക</translation>
 <translation id="3194737229810486521">നിങ്ങളുടെ ഉപകരണത്തിൽ ശാശ്വതമായി ഡാറ്റ സംഭരിക്കാന്‍ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> എന്നതിലെ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3201482403106004262">സർവേയിൽ ഒരു പിശക് സംഭവിച്ചു.</translation>
@@ -1772,6 +1775,7 @@
 <translation id="3963721102035795474">റീഡർ മോഡ്</translation>
 <translation id="3965672182149944205">വിലാസം സംരക്ഷിക്കണോ?</translation>
 <translation id="3966044442021752214">ഉൽപ്പന്ന സുരക്ഷ</translation>
+<translation id="396761677631735618">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ ലോയൽറ്റി കാർഡുകൾ പകുതി തുറന്നിരിക്കുന്നു.</translation>
 <translation id="3969869202926863008">പ്രാദേശിക നെറ്റ്‌വർക്ക് ആക്‌സസ്</translation>
 <translation id="3970239200223030389">ഇഷ്യൂ ചെയ്ത തീയതി</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
@@ -1892,6 +1896,7 @@
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
 <translation id="4169189393773057143">ലോയൽറ്റി കാർഡുകൾ മാനേജ് ചെയ്യുക അല്ലെങ്കിൽ Google Wallet-ൽ ഈ നിർദ്ദേശങ്ങൾ ഓഫാക്കുക</translation>
 <translation id="4169535189173047238">അനുവദിക്കരുത്</translation>
+<translation id="4170851022123611628">ലോയൽറ്റി കാർഡുകളുടെ ലിസ്റ്റ് അടച്ചിരിക്കുന്നു.</translation>
 <translation id="4171400957073367226">മോശം പരിശോധിച്ചുറപ്പിക്കൽ സിഗ്‌നേച്ചർ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">പൂട്ടുകളും പൂട്ട്‌നിർമ്മിക്കുന്നവരും</translation>
@@ -2095,6 +2100,7 @@
 <translation id="449126573531210296">സമന്വയിപ്പിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
 <translation id="4493480324863638523">URL അസാധുവാണ്. സ്‌റ്റാൻഡേർഡ് സ്‌കീം ഉള്ള URL ആയിരിക്കണം, ഉദാ. http://example.com അല്ലെങ്കിൽ https://example.com.</translation>
 <translation id="4494323206460475851">നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ പരസ്യ വിഷയങ്ങൾ കാണാനും സൈറ്റുകളുമായി പങ്കിടാൻ താൽപ്പര്യമില്ലാത്തവ ബ്ലോക്ക് ചെയ്യാനുമാകും. 4 ആഴ്ചയിലധികം പഴക്കമുള്ള പരസ്യ വിഷയങ്ങൾ Chrome-ഉം സ്വയമേവ ഇല്ലാതാക്കുന്നു.</translation>
+<translation id="4497010149473852018">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ ലോയൽറ്റി കാർഡുകൾ. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
 <translation id="4500587658229086076">സുരക്ഷിതമല്ലാത്ത ഉള്ളടക്കം</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> ആളുകൾ</translation>
 <translation id="450602096898954067">ഈ ഫീച്ചർ മെച്ചപ്പെടുത്തുന്നതിന്, പരിശീലനം ലഭിച്ച റിവ്യൂവർമാർ ഡാറ്റ നോക്കിയേക്കാം</translation>

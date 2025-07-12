@@ -625,6 +625,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3530767473765895035">Administrar cuentas en este dispositivo…</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
 <translation id="3533860663366814939">Abre la configuración de Autorrelleno y contraseñas</translation>
+<translation id="3546122170015471515">Versiones preliminares de Maps en Google.com</translation>
 <translation id="3547356470684043247">Leer evaluaciones de los clientes sobre productos, servicios o experiencias para tomar decisiones fundamentadas</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
@@ -1097,6 +1098,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5454211924362324495">Para evitar que otras personas usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Agregar a la búsqueda</translation>
 <translation id="5457226814769348910">Versión sin conexión</translation>
+<translation id="5467163657366219870">Desactivar las versiones preliminares de Maps</translation>
 <translation id="5478327362747197944">Crea eventos de calendario directamente haciendo clic en una fecha en una página web.</translation>
 <translation id="5482922178977937393">¿Te gustaría recibir notificaciones sobre noticias, deportes y mucho más en función de tus intereses?</translation>
 <translation id="5483838506518938965">Terminaste</translation>
@@ -1186,6 +1188,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5756525336488841345">Ocultar la opción Favoritos</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
 <translation id="57586589942790530">Número de tarjeta no válido</translation>
+<translation id="5758759241456233788">Las versiones preliminares de Maps están desactivadas. Vuelve a activarlas en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar la opción Descargas</translation>
 <translation id="5767099457279594162">No se compartió la contraseña</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tienes {count} contraseña hackeada que podría poner en riesgo tu seguridad. Cámbiala ahora para mantener tu cuenta segura.}other{Tienes {count} contraseñas hackeadas que podrían poner en riesgo tu seguridad. Cámbialas ahora para mantener tu cuenta segura.}}</translation>
@@ -1556,6 +1559,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7176183551031110427">Alejar</translation>
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
 <translation id="719133302483559673">Administra tus intereses y preferencias.</translation>
+<translation id="7203496777391039568">Los datos de tu organización se mantienen privados y seguros</translation>
 <translation id="720399613139435155">Se produjo un error al traducir</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
 <translation id="7206979415662233817">Condiciones del Servicio</translation>

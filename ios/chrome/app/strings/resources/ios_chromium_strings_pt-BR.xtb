@@ -254,6 +254,7 @@ Considerações:
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão desativadas nas configurações do dispositivo no momento.</translation>
+<translation id="7195217321165708458">Gemini no Chromium</translation>
 <translation id="7219205286115692265">Acesse o Chromium com mais rapidez no Dock da tela inicial do iPad.</translation>
 <translation id="7222001353246886083">Pesquisar ${searchphrase} no Chromium</translation>
 <translation id="7228180817326917122">Dica do Chromium: escolha a posição da barra de endereço</translation>

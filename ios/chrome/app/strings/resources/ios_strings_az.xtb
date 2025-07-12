@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Burada açın:</translation>
 <translation id="2120553909046681540">Təşkilatınız şəxsi brauzinqi deaktiv edib.</translation>
 <translation id="2122754583996902531">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Təşkilatınızın söhbətləri modellərimizi təkmilləşdirmək üçün istifadə olunmur. Gemini insanlar haqqındakı məlumatlar da daxil olmaqla qeyri-dəqiq məlumatlar göstərə bilər, ona görə də məlumatları yenidən yoxlayın. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Kopyalanmış Mətni Axtarın</translation>
 <translation id="2147127444698817042">Yalnız iPhone-da əlçatandır</translation>
 <translation id="2148799636999124959">Saxlanılmış parollarınızla saytlara və tətbiqlərə sürətlə daxil olun.</translation>
@@ -382,6 +383,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2468444275314013497">Brauzer təhlükəsiz görünür</translation>
 <translation id="2473876017985765807">Artıq <ph name="WEBSITE" /> üçün parolu yadda saxlamısınız</translation>
 <translation id="247430852844518481">Bu səhifəyə daha sonra yenidən daxil olmaq üçün xatırladıcı ayarlaya bilərsiniz</translation>
+<translation id="2478246185006364308">Google şərtləri</translation>
 <translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="2484459871750294497">Bu funksiyanı necə aktivləşdirim?</translation>
@@ -623,6 +625,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3530767473765895035">Bu cihazdakı hesabları idarə edin…</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3533860663366814939">Avtodoldurma və parol ayarlarını açın</translation>
+<translation id="3546122170015471515">Google.com-da Xəritə Önizləmələri</translation>
 <translation id="3547356470684043247">Rəy əsasında qərar vermək üçün məhsul, xidmət və ya təcrübələrlə bağlı müştəri dəyərləndirmələrini oxuyun</translation>
 <translation id="3557336313807607643">Kontakta əlavə edin</translation>
 <translation id="355765753469272474">Geri qaytarın</translation>
@@ -1095,6 +1098,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5454211924362324495">Digərlərinin paroldan istifadə etməməsi üçün <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> veb-saytında onu dəyişin<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Axtarışa əlavə edin</translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
+<translation id="5467163657366219870">Xəritə Önizləmələrini deaktiv edin</translation>
 <translation id="5478327362747197944">Veb-səhifədə tarixə klikləməklə Təqvim tədbiri yaradın.</translation>
 <translation id="5482922178977937393">Maraqlarınıza əsasən xəbərlər, idman və s. haqqında bildiriş almaq istərdiniz?</translation>
 <translation id="5483838506518938965">Hər şey hazırdır</translation>
@@ -1151,6 +1155,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5656431592348714536">Təkmilləşdirilmiş Təqvim</translation>
 <translation id="5657156137487675418">Bütün kukilərə icazə verin</translation>
 <translation id="5659593005791499971">E-poçt</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> və <ph name="GEMINI_APPS_PRIVACY" /> tətbiq olunur. Gemini səhvlərə yol verə bilər, ona görə də yenidən yoxlayın.</translation>
 <translation id="5666313630530585305">Veb-sayta daxil olun.</translation>
 <translation id="5669335982068190158">iPhone sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5756525336488841345">Əlfəcinləri gizlədin</translation>
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>
 <translation id="57586589942790530">Yanlış kart nömrəsi</translation>
+<translation id="5758759241456233788">Xəritə Önizləmələri deaktivdir. Onu yenidən aktiv etmək üçün Ayarlara daxil olun.</translation>
 <translation id="5759484603608560822">Endirmələri gizlədin</translation>
 <translation id="5767099457279594162">Parol paylaşılmadı</translation>
 <translation id="5779117921996157216">{count,plural, =1{Təhlükəsizliyi riskə atan {count} oğurlanmış parolunuz var. Təhlükəsizlik üçün bunu indi həll edin.}other{Təhlükəsizliyi riskə atan {count} oğurlanmış parolunuz var. Təhlükəsizlik üçün bunları indi həll edin.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6331836477476466332">Sizin üçün daha təhlükəsiz, daha güclü brauzer</translation>
 <translation id="6335744088476213315">Bu kart yaxın vaxtlarda baxdığınız məhsulları göstərir. Qiymət endirimi xəbərdarlığı almaq üçün onu izləmək istəyə bilərsiniz</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
+<translation id="6337313937331295309">Gemini Tətbiqi üzrə Məxfilik Bildirişi</translation>
 <translation id="633809752005859102">Nəsə həqiqətən yanlış oldu. Üzərində işləyəcik.</translation>
 <translation id="6339793034470834130">Web Inspector üçün kabel ilə kompüterdə Safari-yə qoşulun və Develop menyusundan iPhone-a daxil olun. Kompüterdə Safari ayarlarının Təkmil bölməsində develop menyusunu aktivləşdirə bilərsiniz.</translation>
 <translation id="6340285871011301182">Qismən tərcümə əlçatan deyil.</translation>
@@ -1552,6 +1559,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7176183551031110427">Uzaqlaşdırın</translation>
 <translation id="7186568385131859684">Brauzer tarixçəsinin Google xidmətlərindəki digər data ilə necə istifadə olunduğuna nəzarət edin</translation>
 <translation id="719133302483559673">Maraq və tərcihlərinizi idarə edin.</translation>
+<translation id="7203496777391039568">Təşkilatınızın datası məxfi və təhlükəsizdir</translation>
 <translation id="720399613139435155">Tərcümə uğursuz oldu</translation>
 <translation id="7204922488054642675">Fərdiləşdirilmiş xəbərlər</translation>
 <translation id="7206979415662233817">Xidmət şərtləri</translation>
@@ -1568,6 +1576,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="728025568708172005">Mənə ətrafı göstərin</translation>
+<translation id="7281202269687163394">Məxfiliyiniz və Gemini.</translation>
 <translation id="7293429513719260019">Dil seçin</translation>
 <translation id="7300448350764260141">Onlayn təhlükələrə qarşı əlavə qoruma səviyyəsi əlavə edin.</translation>
 <translation id="7311244614769792472">Nəticə tapılmadı</translation>

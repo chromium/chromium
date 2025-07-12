@@ -625,6 +625,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3530767473765895035">Tvarkyti paskyras šiame įrenginyje…</translation>
 <translation id="3533436815740441613">Naujas skirtukas</translation>
 <translation id="3533860663366814939">Atidarykite automatinio pildymo ir slaptažodžių nustatymus</translation>
+<translation id="3546122170015471515">Žemėlapių peržiūros Google.com</translation>
 <translation id="3547356470684043247">Perskaitykite klientų pateiktus produktų, paslaugų ar funkcijų įvertinimus, kurie padės priimti sprendimus</translation>
 <translation id="3557336313807607643">Pridėti prie kontaktų</translation>
 <translation id="355765753469272474">Anuliuoti</translation>
@@ -1097,6 +1098,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5454211924362324495">Jei nenorite, kad kiti asmenys naudotų jūsų slaptažodį, <ph name="BEGIN_LINK" />pakeiskite jį <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Pridėkite prie paieškos</translation>
 <translation id="5457226814769348910">Atidaryti versiją neprisijungus</translation>
+<translation id="5467163657366219870">Išjungti Žemėlapių peržiūras</translation>
 <translation id="5478327362747197944">Kurkite Kalendoriaus įvykius tiesiogiai spustelėdami datą tinklalapyje.</translation>
 <translation id="5482922178977937393">Ar norėtumėte gauti pranešimus apie naujienas, sportą ir kt. pagal savo pomėgius?</translation>
 <translation id="5483838506518938965">Viskas nustatyta</translation>
@@ -1186,6 +1188,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5756525336488841345">Slėpti žymes</translation>
 <translation id="5758631781033351321">Čia rasite skaitymo sąrašą</translation>
 <translation id="57586589942790530">Netinkamas kortelės numeris</translation>
+<translation id="5758759241456233788">Žemėlapių peržiūros išjungtos. Įjunkite jas nustatymuose.</translation>
 <translation id="5759484603608560822">Slėpti atsisiuntimus</translation>
 <translation id="5767099457279594162">Slaptažodis nebuvo bendrinamas</translation>
 <translation id="5779117921996157216">{count,plural, =1{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}one{Turite {count} pažeistą slaptažodį, dėl kurio gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}few{Turite {count} pažeistus slaptažodžius, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}many{Turite {count} pažeisto slaptažodžio, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}other{Turite {count} pažeistų slaptažodžių, dėl kurių gali kilti saugos pavojus. Pataisykite dabar, kad užtikrintumėte saugą.}}</translation>
@@ -1556,6 +1559,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7176183551031110427">Tolinti</translation>
 <translation id="7186568385131859684">Valdykite, kaip naršymo istorija naudojama su kitais duomenimis „Google“ paslaugose</translation>
 <translation id="719133302483559673">Tvarkykite pomėgius ir nuostatas.</translation>
+<translation id="7203496777391039568">Užtikrinamas organizacijos duomenų privatumas ir sauga</translation>
 <translation id="720399613139435155">Išversti nepavyko</translation>
 <translation id="7204922488054642675">Suasmenintos naujienos</translation>
 <translation id="7206979415662233817">Paslaugų teikimo sąlygos</translation>

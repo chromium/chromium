@@ -9251,6 +9251,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Sinhronizovano je sa ostalim uređajima na nalogu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Informacije o potvrdi autentičnosti EAP mreže</translation>
+<translation id="754225194829660954">Izvor: <ph name="DISPLAY_INITIATOR_ORIGIN" /></translation>
 <translation id="7542619176101025604"><ph name="ACTION_NAME" /> – zakačeno</translation>
 <translation id="7543104066686362383">Omogućavanje funkcija za otklanjanje grešaka na ovom <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaju</translation>
 <translation id="7544227555407951270">Registruj uređaj</translation>
@@ -10801,6 +10802,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8602851771975208551">Drugi program na računaru je dodao aplikaciju koja može da promeni način na koji Chrome funkcioniše.</translation>
 <translation id="8605428685123651449">SQLite memorija</translation>
 <translation id="8607171490667464784">Dok je neaktivan i troši bateriju</translation>
+<translation id="8607661817136110841">Vaše grupe kartica</translation>
 <translation id="8607828412110648570">Proverite da li je Bluetooth uređaj u režimu uparivanja i u blizini. Uparujte samo sa uređajima u koje imate poverenja. Upareni uređaji su vidljivi svim nalozima na ovom Chromebook-u. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Dodajte Kerberos tiket</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>

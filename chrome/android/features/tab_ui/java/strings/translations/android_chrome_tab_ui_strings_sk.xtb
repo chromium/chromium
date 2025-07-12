@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Zdieľať <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zdieľať <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Share <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zdieľať <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Aktualizované pred <ph name="NUM_YEARS_ONE" /> rokom}few{Aktualizované pred <ph name="NUM_YEARS_MANY" /> rokmi}many{Aktualizované pred <ph name="NUM_YEARS_MANY" /> roka}other{Aktualizované pred <ph name="NUM_YEARS_MANY" /> rokmi}}</translation>
 <translation id="7773714564112603605">Odstráni sa karta aj skupina</translation>
+<translation id="7774428938729954687">Obnoviť a otvoriť kartu <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Prezrieť návrhy.</translation>
 <translation id="7792860826279960128">Upozornenie na zmeny zdieľanej skupiny kariet je otvorené na polovičnú výšku</translation>
 <translation id="7825973332242257878">Skupiny kariet</translation>

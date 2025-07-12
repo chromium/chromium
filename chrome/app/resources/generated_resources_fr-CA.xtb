@@ -1201,6 +1201,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1822635184853104396">L'historique complet des téléchargements s'affiche dans un nouvel onglet</translation>
 <translation id="1823768272150895732">Police</translation>
 <translation id="1823781806707127806">Ajouter des données de navigation existantes au profil géré</translation>
+<translation id="1824499847634940868">Examiner la mise à jour de l'appli</translation>
 <translation id="18245044880483936">Les données des sauvegardes ne sont pas prises en compte dans le quota de stockage Google Disque de votre enfant.</translation>
 <translation id="1824870205483790748">Épingler le groupe à la barre de favoris</translation>
 <translation id="1825073796163165618">Activer les liens</translation>
@@ -3407,6 +3408,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3373196968211632036">Steam pour Chromebook (Bêta) n'est pas offert pour les comptes Google enfants</translation>
 <translation id="3373701465337594448">Lorsque cette option est activée, une liste des sites visités qui prennent en considération vos centres d’intérêt apparaît ici</translation>
 <translation id="3374294321938930390">« <ph name="BOOKMARK_TITLE" /> » déplacé vers « <ph name="NEW_FOLDER_TITLE" /> ».</translation>
+<translation id="3376035595160918049">Examiner la mise à jour de l'appli</translation>
 <translation id="3378517653648586174">Certificats locaux</translation>
 <translation id="3378572629723696641">Cette extension a peut-être été corrompue.</translation>
 <translation id="3378627645871606983">Les autorisations accordées pour Steam s'appliquent à toutes les applications et à tous les jeux Steam.</translation>
@@ -8198,6 +8200,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a été ajoutée à distance</translation>
 <translation id="6790820461102226165">Ajouter un personne...</translation>
+<translation id="6792351896138862473">Impossible de lancer l'appli kiosque non prise en charge. Informez votre administrateur de ce problème.</translation>
 <translation id="6793610798874309813">Votre NIP peut comporter quatre caractères ou plus</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> copiée dans le presse-papiers</translation>
@@ -10352,6 +10355,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8283802069507225582">Pour reprendre là où vous vous êtes arrêté sur d'autres appareils, synchronisez votre historique et vos onglets avec votre adresse <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sous-titres</translation>
+<translation id="8285625579699113397">Votre compte</translation>
 <translation id="8286036467436129157">Se connecter</translation>
 <translation id="8286227656784970313">Utiliser le dictionnaire système</translation>
 <translation id="828642162569365647">Ce mot de passe ou ce NIP protège vos données sur ce <ph name="DEVICE_TYPE" /> et tous les renseignements auxquels vous accédez à partir de votre téléphone. Vous devrez déverrouiller votre <ph name="DEVICE_TYPE" /> chaque fois qu'il s'activera.</translation>

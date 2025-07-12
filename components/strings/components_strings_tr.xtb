@@ -330,7 +330,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1555191101192706055">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, internette gezinme şeklinizi etkileyen (ör. ana sayfanızı değiştirme veya ziyaret ettiğiniz sitelerde eksta reklam gösterme) zararlı yazılımlar yüklemeniz için sizi kandırabilir.</translation>
 <translation id="1559231233244409191">Karton (Üç Duvarlı)</translation>
 <translation id="1559447966090556585">Bildirim alınsın mı?</translation>
-<translation id="1559486004335285648">Ödeme bilgilerini otomatik olarak doldurun</translation>
+<translation id="1559486004335285648">Ödeme bilgilerini otomatik doldur</translation>
 <translation id="1559528461873125649">Belirtilen dosya veya dizin yok</translation>
 <translation id="1559572115229829303">&lt;p&gt;Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamadı.&lt;/p&gt;
 
@@ -1118,6 +1118,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2903493209154104877">Adresler</translation>
 <translation id="290376772003165898">Sayfa <ph name="LANGUAGE" /> dilinde değil mi?</translation>
+<translation id="2904180982022726666">Paylaşabilecekleriniz kuruluşunuz tarafından kısıtlanmıştır</translation>
 <translation id="2905107382358353958">Yeni ödeme ayarıyla ilgili uyarı</translation>
 <translation id="2909946352844186028">Bir ağ değişikliği algılandı.</translation>
 <translation id="2911255567212929079">Makine Öğrenimi ve Yapay Zeka</translation>
@@ -4710,6 +4711,7 @@ Ek ayrıntılar:
 <translation id="8975263830901772334">Yazdırdığınız dosyaların adları</translation>
 <translation id="8982884016487650216">PDF'nin yüklenmesi tamamlandı</translation>
 <translation id="8983369100812962543">Artık uygulamayı yeniden boyutlandırabilirsiniz</translation>
+<translation id="8984785270737450103">Paylaşım şu anda kapalı</translation>
 <translation id="8985112471026018799">Daha hızlı ödeme yapmak için kartı kaydedin</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'daki tarama geçmişinizi görmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="8987663052629670333">Fotoğraf Baskısı Hizmetleri</translation>

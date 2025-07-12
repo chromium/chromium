@@ -1120,6 +1120,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2902312830803030883">Još radnji</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ova stranica nije na jeziku <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Vaša organizacija ograničava sadržaj koji možete da delite</translation>
 <translation id="2905107382358353958">Obaveštenje o novom podešavanju plaćanja</translation>
 <translation id="2909946352844186028">Otkrivena je promena na mreži.</translation>
 <translation id="2911255567212929079">Mašinsko učenje i veštačka inteligencija</translation>
@@ -3555,6 +3556,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6970885655016700774">Tkanina (arhiva)</translation>
 <translation id="6971439137020188025">Brzo napravite novu Google prezentaciju u Prezentacijama</translation>
 <translation id="6972629891077993081">Uređaji sa interfejsom</translation>
+<translation id="6972867931824045907">Da biste koristili privremenu memoriju, odobrite Chrome-u pristup u: <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Navedeni su i fiksni proksi serveri i URL adresa .pac skripte.</translation>
 <translation id="6973988895180423160">3,5×5 in</translation>
 <translation id="6978121630131642226">Pretraživači</translation>
@@ -4715,6 +4717,7 @@ Dodatni detalji:
 <translation id="8975263830901772334">Nazivi datoteka koje štampate</translation>
 <translation id="8982884016487650216">Učitavanje PDF-a je završeno</translation>
 <translation id="8983369100812962543">Sada možete da promenite veličinu aplikacije</translation>
+<translation id="8984785270737450103">Deljenje je trenutno isključeno</translation>
 <translation id="8985112471026018799">Sačuvajte karticu da biste brže plaćali</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pregledali istoriju pregledanja u Chrome-u</translation>
 <translation id="8987663052629670333">Usluge izrade fotografija</translation>

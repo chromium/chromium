@@ -228,6 +228,7 @@
 <translation id="3785324443014631273">O ChromeOS Flex não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">O Google Chrome exige o Windows 10 ou versão mais recente.</translation>
+<translation id="3810973564298564668">Gerenciar</translation>
 <translation id="383928141529488001">O Google Chrome precisa acessar o Bluetooth para buscar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
@@ -314,6 +315,7 @@
 <translation id="4895437082222824641">Abrir link em nova &amp;guia do Chrome</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="492720062778050435">O Chrome recomenda que você verifique essa extensão.</translation>
+<translation id="4946912144186040233">O Chrome entende melhor os formulários e pode preenchê-los automaticamente com mais rapidez. Esta configuração está desativada.</translation>
 <translation id="4953650215774548573">Definir o Chrome como seu navegador padrão</translation>
 <translation id="495931528404527476">No Google Chrome</translation>
 <translation id="4969674060580488087">O ChromeOS Flex não pôde sincronizar seus dados porque os detalhes de login da sua conta estão desatualizados.</translation>
@@ -322,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Clique em "Gerenciador de senhas do Google"</translation>
 <translation id="504867494566807945">Abra links no Chrome a partir de qualquer app. E para facilitar o acesso, ele fica fixado na barra de tarefas.</translation>
+<translation id="5049567194145991071">Ao clicar em "Entendi", você poderá salvar e usar senhas e outros dados na sua Conta do Google sempre que fizer login no Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Digite a senha longa para usar e salvar os dados do Chrome na sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Fazer login no Chrome ao acessar Serviços do Google</translation>
 <translation id="5126049312684316860">O Chrome pré-carrega mais páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas</translation>
@@ -506,6 +509,7 @@
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="749228101751499733">Com sua Conta do Google conectada, você poderá usar as senhas e outros dados dela no Chrome. <ph name="SHORTCUT" /> pode mudar as configurações dos Serviços do Google.</translation>
 <translation id="7496017508659652909">O Chrome pré-carrega páginas, deixando a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">O Chrome entende melhor os formulários e pode preenchê-los automaticamente com mais rapidez. Esta configuração está ativada.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Você pode fixar o Google Lens para facilitar o acesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -538,6 +542,7 @@
 <translation id="7801699035218095297">O Google Chrome está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="7808348361785373670">Remover do Chrome</translation>
 <translation id="7825851276765848807">Houve uma falha na instalação devido a um erro não-especificado. Baixe o Chrome novamente.</translation>
+<translation id="7826342993930002256">Seu Google Chrome, em qualquer lugar</translation>
 <translation id="7827099906024714326">O Chrome precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>

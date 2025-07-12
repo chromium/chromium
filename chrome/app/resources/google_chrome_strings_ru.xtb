@@ -228,6 +228,7 @@
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Для Google Chrome требуется ОС Windows 10 или более поздней версии.</translation>
+<translation id="3810973564298564668">Управление</translation>
 <translation id="383928141529488001">Чтобы найти устройства, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закройте все окна Chrome и повторите попытку снова.</translation>
 <translation id="3873044882194371212">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
@@ -313,6 +314,7 @@
 <translation id="4895437082222824641">Открыть ссылку в новой вкладке браузера Chrome</translation>
 <translation id="4918844574251943176">Изображение скопировано.</translation>
 <translation id="492720062778050435">Chrome рекомендует проверить это расширение.</translation>
+<translation id="4946912144186040233">Chrome лучше определяет формы и быстрее их заполняет. Параметр отключен.</translation>
 <translation id="4953650215774548573">Сделать Google Chrome браузером по умолчанию</translation>
 <translation id="495931528404527476">В Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
@@ -321,6 +323,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Выберите "Google Менеджер паролей".</translation>
 <translation id="504867494566807945">Открывайте ссылки в Chrome из любых приложений. Для быстрого доступа браузер закрепляется на панели задач.</translation>
+<translation id="5049567194145991071">Нажав "ОК", вы сможете сохранять пароли и другие данные в аккаунте Google и использовать их, когда вошли в Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Чтобы использовать и сохранять данные Chrome в аккаунте <ph name="USER_EMAIL" />, введите кодовую фразу.</translation>
 <translation id="5120334927898581447">Входить в Chrome при входе в другие сервисы Google</translation>
 <translation id="5126049312684316860">Chrome предварительно загружает ещё больше страниц, которые вы с большой вероятностью посетите, чтобы они открылись быстрее.</translation>
@@ -505,6 +508,7 @@
 <translation id="7481213027396403996">Обеспечьте максимальную защиту в Chrome</translation>
 <translation id="749228101751499733">Когда выполнен вход, в Chrome вам доступны пароли и другая информация, сохраненная в аккаунте Google. Изменить настройки сервисов Google можно с помощью сочетания <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">Chrome предварительно загружает страницы, ускоряя работу браузера и поиск. Подробнее <ph name="BEGIN_LINK" />о предзагрузке страниц<ph name="END_LINK" />…</translation>
+<translation id="7510927761955779701">Chrome лучше определяет формы и быстрее их заполняет. Параметр включен.</translation>
 <translation id="7514258452813684157">Сервис Google Updater</translation>
 <translation id="7515191208480168435">Вы можете закрепить Google Объектив для быстрого доступа.</translation>
 <translation id="7535429826459677826">Google Chrome для разработчиков</translation>
@@ -537,6 +541,7 @@
 <translation id="7801699035218095297">Google Chrome пытается скопировать пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="7808348361785373670">Удалить из Chrome</translation>
 <translation id="7825851276765848807">Не удалось выполнить установку из-за неизвестной ошибки. Скачайте Google Chrome ещё раз.</translation>
+<translation id="7826342993930002256">Синхронизация Chrome на всех устройствах</translation>
 <translation id="7827099906024714326">Чтобы некоторая информация была сохранена в аккаунте Google и стала доступна на всех ваших устройствах, нужно подтвердить личность в Chrome. Если выйти сейчас, эти данные будут удалены.</translation>
 <translation id="7845233973568007926">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите компьютер.</translation>
 <translation id="7872446069773932638">Скачивание… Осталось: <ph name="SECONDS" /> сек.</translation>

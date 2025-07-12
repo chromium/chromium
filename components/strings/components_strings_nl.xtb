@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metaal (glanzend)</translation>
 <translation id="1070901266639972381">Nacht</translation>
 <translation id="1073690811593784042">Glas (gekleurd)</translation>
+<translation id="1074287282535157335">Betaal in 4 termijnen of maandelijks (als je hiervoor in aanmerking komt)</translation>
 <translation id="1074497978438210769">Niet beveiligd</translation>
 <translation id="1074779248866616641">Resultaat</translation>
 <translation id="1075364221219156102">Een toegangssleutel gebruiken</translation>
@@ -657,6 +658,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2102134110707549001">Sterk wachtwoord voorstellen…</translation>
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2102519472192754194">Webbrowsers</translation>
+<translation id="2103210856015238101">Lijst met klantenkaarten die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="2105838220373099643">Roleplaying-games</translation>
 <translation id="2107021941795971877">Afdruksteunen</translation>
 <translation id="2108755909498034140">Je computer opnieuw opstarten</translation>
@@ -1294,6 +1296,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
 <translation id="3190736958609431397">Niet meer volgen</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vraagt toestemming om gegevens permanent op je apparaat op te slaan</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="3201482403106004262">Er is een fout opgetreden in de enquête.</translation>
@@ -1768,6 +1771,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3963721102035795474">Lezermodus</translation>
 <translation id="3965672182149944205">Adres opslaan?</translation>
 <translation id="3966044442021752214">Productveiligheid</translation>
+<translation id="396761677631735618">Lijst met klantenkaarten die kunnen worden ingevuld via aanraking, is op halve hoogte geopend.</translation>
 <translation id="3969869202926863008">Toegang tot lokaal netwerk</translation>
 <translation id="3970239200223030389">Uitgiftedatum</translation>
 <translation id="397105322502079400">Berekenen...</translation>
@@ -1887,6 +1891,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4169189393773057143">Beheer klantenkaarten of zet deze suggesties uit in Google Wallet</translation>
 <translation id="4169535189173047238">Niet toestaan</translation>
+<translation id="4170851022123611628">Lijst met klantenkaarten is gesloten.</translation>
 <translation id="4171400957073367226">Onjuiste verificatiehandtekening</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Sloten en slotenmakers</translation>
@@ -2090,6 +2095,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="449126573531210296">Gesynchroniseerde wachtwoorden versleutelen met je Google-account</translation>
 <translation id="4493480324863638523">Ongeldige URL. Dit moet een URL met een standaardschema zijn, zoals http://example.com of https://example.com.</translation>
 <translation id="4494323206460475851">Je kunt advertentieonderwerpen zien in je instellingen en de onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert advertentieonderwerpen die ouder zijn dan 4 weken ook automatisch.</translation>
+<translation id="4497010149473852018">Klantenkaarten die kunnen worden ingevuld via aanraking. Toetsenbord verborgen.</translation>
 <translation id="4500587658229086076">onveilige content</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> mensen</translation>
 <translation id="450602096898954067">Gegevens kunnen worden bekeken door reviewers om deze functie te verbeteren</translation>

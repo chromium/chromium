@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Maak oop in …</translation>
 <translation id="2120553909046681540">Jou organisasie het private blaai afgeskakel.</translation>
 <translation id="2122754583996902531">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Jou organisasie se kletse word nie gebruik om ons modelle te verbeter nie. Gemini kan dalk onakkurate inligting wys, insluitend oor mense, so jy moet dit dubbelkontroleer. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Soek vir teks wat jy gekopieer het</translation>
 <translation id="2147127444698817042">Net op iPhone beskikbaar</translation>
 <translation id="2148799636999124959">Meld vinnig by werwe en apps aan met jou gestoorde wagwoorde.</translation>
@@ -382,6 +383,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2468444275314013497">Jou blaaier lyk goed</translation>
 <translation id="2473876017985765807">Jy het reeds 'n wagwoord gestoor vir <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Jy kan ’n onthounota stel om hierdie bladsy later weer te besoek</translation>
+<translation id="2478246185006364308">Google-bepalings</translation>
 <translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2484459871750294497">Hoe aktiveer ek hierdie kenmerk?</translation>
@@ -623,6 +625,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3530767473765895035">Bestuur rekeninge op hierdie toestel …</translation>
 <translation id="3533436815740441613">Nuwe oortjie</translation>
 <translation id="3533860663366814939">Maak Outovul- en Wagwoordinstellings oop</translation>
+<translation id="3546122170015471515">Maps-voorskou op Google.com</translation>
 <translation id="3547356470684043247">Lees klantevaluasies van produkte, dienste of ervarings om te help om jou besluite met resensies in te lig</translation>
 <translation id="3557336313807607643">Voeg by kontakte</translation>
 <translation id="355765753469272474">Ontdoen</translation>
@@ -1095,6 +1098,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Verander jou wagwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te keer dat ander dit gebruik</translation>
 <translation id="5457082343331641453">Voeg by jou soektog</translation>
 <translation id="5457226814769348910">Maak vanlyn weergawe oop</translation>
+<translation id="5467163657366219870">Skakel Maps-voorskou af</translation>
 <translation id="5478327362747197944">Skep kalendergeleenthede direk deur ’n datum op ’n webbladsy te klik.</translation>
 <translation id="5482922178977937393">Wil jy gegrond op jou belangstellings kennisgewings vir nuus, sport, en meer ontvang?</translation>
 <translation id="5483838506518938965">Jy's gereed!</translation>
@@ -1151,6 +1155,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5656431592348714536">Versterkte Kalender</translation>
 <translation id="5657156137487675418">Laat alle webkoekies toe</translation>
 <translation id="5659593005791499971">E-pos</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> en <ph name="GEMINI_APPS_PRIVACY" /> geld. Gemini kan foute maak, daarom moet jy dit dubbelkontroleer.</translation>
 <translation id="5666313630530585305">Meld by ’n webwerf aan.</translation>
 <translation id="5669335982068190158">Jy is as deel van jou iPhone-terugestelling afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5756525336488841345">Versteek boekmerke</translation>
 <translation id="5758631781033351321">Jy sal jou leeslys hier kry</translation>
 <translation id="57586589942790530">Ongeldige kaartnommer</translation>
+<translation id="5758759241456233788">Maps-voorskou is af. Skakel dit weer in Instellings aan.</translation>
 <translation id="5759484603608560822">Versteek aflaaie</translation>
 <translation id="5767099457279594162">Wagwoord is nie gedeel nie</translation>
 <translation id="5779117921996157216">{count,plural, =1{Jy het {count} gekompromitteerde wagwoord wat jou sekuriteit in gevaar kan stel. Stel dit nou reg om veilig te bly.}other{Jy het {count} gekompromitteerde wagwoorde wat jou sekuriteit in gevaar kan stel. Stel hulle nou reg om veilig te bly.}}</translation>
@@ -1324,6 +1330,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6331836477476466332">’n Veiliger, kragtiger blaaier vir jou</translation>
 <translation id="6335744088476213315">Hierdie kaart wys produkte waarna jy onlangs gekyk het en stel dalk belang in nasporing om opletberigte oor prysverlagings te kry</translation>
 <translation id="6337234675334993532">Enkriptering</translation>
+<translation id="6337313937331295309">Gemini-apps se privaatheidkennisgewing</translation>
 <translation id="633809752005859102">Iets het baie verkeerd geloop. Ons sal daaraan werk.</translation>
 <translation id="6339793034470834130">Om die Webinspekteur te gebruik, moet jy met ’n kabel aan Safari op jou rekenaar koppel en deur die Develop-kieslys toegang tot jou iPhone kry. Jy kan die Develop-kieslys in die Advanced-afdeling van Safari-instellings op jou rekenaar aktiveer.</translation>
 <translation id="6340285871011301182">Gedeeltelike vertaling is nie beskikbaar nie.</translation>
@@ -1552,6 +1559,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7176183551031110427">Zoem uit</translation>
 <translation id="7186568385131859684">Beheer hoe blaaigeskiedenis met jou ander data oral in Google-dienste gebruik word</translation>
 <translation id="719133302483559673">Bestuur jou belangstellings en voorkeure.</translation>
+<translation id="7203496777391039568">Jou organisasie se data is privaat en veilig</translation>
 <translation id="720399613139435155">Kon nie vertaal nie</translation>
 <translation id="7204922488054642675">Gepersonaliseerde nuus</translation>
 <translation id="7206979415662233817">Diensbepalings</translation>
@@ -1568,6 +1576,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7266578100016339897">Dit help jou om georganiseerd te bly. Jy kan dit enige tyd in instellings verander.</translation>
 <translation id="7272437679830969316">Kan nie jou identiteit verifieer nie. Wagwoord is nie gekopieer nie.</translation>
 <translation id="728025568708172005">Wys my alles</translation>
+<translation id="7281202269687163394">Jou privaatheid en Gemini.</translation>
 <translation id="7293429513719260019">Kies taal</translation>
 <translation id="7300448350764260141">Voeg ’n ekstra laag beskerming teen aanlynbedreigings by.</translation>
 <translation id="7311244614769792472">Geen resultate gekry nie</translation>

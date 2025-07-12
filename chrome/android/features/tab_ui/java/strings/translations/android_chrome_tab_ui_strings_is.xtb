@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deila <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Deila <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Deila <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Uppfært fyrir <ph name="NUM_YEARS_ONE" /> ári}one{Uppfært fyrir <ph name="NUM_YEARS_MANY" /> ári}other{Uppfært fyrir <ph name="NUM_YEARS_MANY" /> árum}}</translation>
 <translation id="7773714564112603605">Fjarlægja flipa og eyða hóp</translation>
+<translation id="7774428938729954687">Endurheimta og opna <ph name="TAB_TITLE" /> flipa</translation>
 <translation id="7792771145871471484">Skoða tillögurnar.</translation>
 <translation id="7792860826279960128">Tilkynning um breytingar á sameiginlegum flipahópi, opin til hálfs</translation>
 <translation id="7825973332242257878">Flipahópar</translation>

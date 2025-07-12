@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="1605405588277479165">Isključeno – Ne preporučuje se</translation>
 <translation id="1605658421715042784">Kopiraj sliku</translation>
+<translation id="1606899876897213121">Zatvorite rezime nedavnih aktivnosti</translation>
 <translation id="1612754831519568745">Bezbedno pregledanje je trenutno isključeno. Dobijte zaštitu od opasnih sajtova, preuzimanja i dodataka.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Izaberite Dodaj u Google kalendar ili Dodaj u Apple Calendar.</translation>
@@ -293,6 +294,7 @@
 <translation id="2119636449201577317">Otvori u…</translation>
 <translation id="2120553909046681540">Organizacija je isključila privatno pregledanje.</translation>
 <translation id="2122754583996902531">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Konverzacije vaše organizacije ne koristimo za poboljšavanje modela. Gemini može da prikaže netačne informacije, uključujući informacije o ljudima, pa ih proverite. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Potražite tekst koji ste kopirali</translation>
 <translation id="2147127444698817042">Dostupno samo na iPhone-u</translation>
 <translation id="2148799636999124959">Lako se prijavljujte na sajtove i u aplikacije pomoću sačuvanih lozinki.</translation>
@@ -382,6 +384,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2468444275314013497">Pregledač deluje u redu</translation>
 <translation id="2473876017985765807">Već ste sačuvali lozinku za <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Možete da podesite podsetnik da biste ponovo posetili ovu stranicu kasnije</translation>
+<translation id="2478246185006364308">Google uslovi</translation>
 <translation id="2479148705183875116">Idi u Podešavanja</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2484459871750294497">Kako da omogućim ovu funkciju?</translation>
@@ -405,6 +408,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
 <translation id="2577522251608256362">Deo grada</translation>
 <translation id="2579713773888829241">Deljeni Diskovi</translation>
+<translation id="2583688836549072561">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />, nova aktivnost.</translation>
 <translation id="2593272815202181319">Fiksne širine</translation>
 <translation id="2601778637777010194">Pratite pad cena proizvoda</translation>
 <translation id="260378315836159338">U vrhu ekrana dodirnite +</translation>
@@ -570,6 +574,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3273510436356991673">Prilagodite početni ekran</translation>
 <translation id="3277021493514034324">Adresa sajta je kopirana</translation>
 <translation id="3280562213547448728">Glasovna pretraga</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, nova aktivnost</translation>
 <translation id="3305294846493618482">još</translation>
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3312300514034250578">Poboljšano bezbedno pregledanje</translation>
@@ -1153,6 +1158,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5656431592348714536">Poboljšani kalendar</translation>
 <translation id="5657156137487675418">Dozvoli sve kolačiće</translation>
 <translation id="5659593005791499971">Imejl</translation>
+<translation id="5665739277590037307">Primenjuju se <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini može da pogreši, zato proverite odgovore.</translation>
 <translation id="5666313630530585305">Prijavite se na veb-sajt.</translation>
 <translation id="5669335982068190158">Odjavljeni ste u sklopu resetovanja iPhone-a. Dodirnite Nastavi u nastavku da biste se prijavili.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1327,6 +1333,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6331836477476466332">Bezbedniji i moćniji pregledač za vas</translation>
 <translation id="6335744088476213315">Ova kartica prikazuje proizvode koje ste nedavno pregledali i koje možda želite da pratite radi obaveštenja o padu cene.</translation>
 <translation id="6337234675334993532">Šifrovanje</translation>
+<translation id="6337313937331295309">Obaveštenje o privatnosti Gemini aplikacija</translation>
 <translation id="633809752005859102">Nešto stvarno nije u redu. Poradićemo na tome.</translation>
 <translation id="6339793034470834130">Da biste koristili Veb-inspektor, povežite se sa Safari-jem na računaru pomoću kabla i pristupite iPhone-u iz menija za programiranje. Meni za programiranje možete da omogućite u odeljku Napredno u podešavanjima Safari-ja na računaru.</translation>
 <translation id="6340285871011301182">Delimično prevođenje nije dostupno.</translation>
@@ -1572,6 +1579,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7266578100016339897">To vam pomaže da ostanete organizovani. To možete da promenite u podešavanjima u bilo kom trenutku.</translation>
 <translation id="7272437679830969316">Verifikacija identiteta nije uspela. Lozinka nije kopirana.</translation>
 <translation id="728025568708172005">Pokaži mi</translation>
+<translation id="7281202269687163394">Vaša privatnost i Gemini.</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7300448350764260141">Dodajte još jedan nivo zaštite od onlajn pretnji.</translation>
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
@@ -1639,6 +1647,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
+<translation id="7566349809380613217">Otvorite deljenu grupu <ph name="GROUP_TITLE" /> koja sadrži <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Obeleživači su skriveni</translation>
 <translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="7582666837709186351">Prevodite tekst na slikama ili u okolini pomoću kamere.</translation>

@@ -625,6 +625,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3530767473765895035">Upravljanje računima na uređaju…</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3533860663366814939">Otvorite postavke za automatsko popunjavanje i lozinke</translation>
+<translation id="3546122170015471515">Pregled Mapa na Google.com</translation>
 <translation id="3547356470684043247">Putem recenzija pročitajte korisničke procjene proizvoda, usluga ili iskustva da lakše donesete odluku</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="355765753469272474">Opozovi</translation>
@@ -1097,6 +1098,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5454211924362324495">Da spriječite druge da koriste vašu lozinku, <ph name="BEGIN_LINK" />promijenite lozinku na <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Dodajte u pretraživanje</translation>
 <translation id="5457226814769348910">Otvori offline verziju</translation>
+<translation id="5467163657366219870">Isključi Pregled Mapa</translation>
 <translation id="5478327362747197944">Kreirajte događaje u Kalendaru direktno klikom na datum na web stranici.</translation>
 <translation id="5482922178977937393">Želite li primati obavještenja za vijesti, sportove i drugo na osnovu svojih interesovanja?</translation>
 <translation id="5483838506518938965">Spremni ste za rad</translation>
@@ -1186,6 +1188,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5756525336488841345">Sakrij oznake</translation>
 <translation id="5758631781033351321">Listu za čitanje ćete pronaći ovdje</translation>
 <translation id="57586589942790530">Nevažeći broj kartice</translation>
+<translation id="5758759241456233788">Pregled Mapa je isključen. Uključite ga ponovo u Postavkama.</translation>
 <translation id="5759484603608560822">Sakrij preuzimanja</translation>
 <translation id="5767099457279594162">Lozinka nije podijeljena</translation>
 <translation id="5779117921996157216">{count,plural, =1{Imate {count} ugroženu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}one{Imate {count} ugroženu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}few{Imate {count} ugrožene lozinke koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}other{Imate {count} ugroženih lozinki koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}}</translation>
@@ -1556,6 +1559,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7176183551031110427">Umanjivanje</translation>
 <translation id="7186568385131859684">Upravljajte načinom na koji se historija pregledanja koristi s drugim podacima na Googleovim uslugama</translation>
 <translation id="719133302483559673">Upravljajte interesovanjima i postavkama.</translation>
+<translation id="7203496777391039568">Podaci vaše organizacije su privatni i zaštićeni</translation>
 <translation id="720399613139435155">Prevod nije uspio</translation>
 <translation id="7204922488054642675">Personalizirane vijesti</translation>
 <translation id="7206979415662233817">Uslovi korištenja usluge</translation>

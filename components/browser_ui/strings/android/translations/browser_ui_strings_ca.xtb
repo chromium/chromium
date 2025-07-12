@@ -63,6 +63,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="1704230497453185209">No permetis que els llocs web reprodueixin so</translation>
 <translation id="1717218214683051432">Sensors de moviment</translation>
 <translation id="1717996979683942279">Quan aquesta opció està activada, els llocs web poden demanar permís per gestionar finestres en totes les pantalles. Quan aquesta opció està desactivada, els llocs web no poden gestionar finestres en totes les pantalles.</translation>
+<translation id="1738912554587725807">Full inferior de les col·leccions de temes per a l'aparença de la pàgina Pestanya nova</translation>
 <translation id="1743802530341753419">Pregunta abans de permetre que els llocs web es connectin a un dispositiu (opció recomanada)</translation>
 <translation id="1777815584158991902">Full inferior del feed de Discover</translation>
 <translation id="1779089405699405702">Descodificador d'imatges</translation>
@@ -356,6 +357,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="5100237604440890931">Vista replegada (feu clic per desplegar-la)</translation>
 <translation id="5116239826668864748">Pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
+<translation id="512938610812707830">Full inferior de les col·leccions de temes per a l'aparença de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baixada de preu en les pestanyes obertes}other{Baixades de preu en les pestanyes obertes}}</translation>
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

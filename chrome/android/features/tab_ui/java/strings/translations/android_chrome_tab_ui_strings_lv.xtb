@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Kopīgot <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Atjaunināta pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Atjaunināta pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Atjaunināta pirms <ph name="NUM_YEARS_MANY" /> gada}other{Atjaunināta pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
 <translation id="7773714564112603605">Noņemt cilni un dzēst grupu</translation>
+<translation id="7774428938729954687">Atjaunot un atvērt cilni “<ph name="TAB_TITLE" />”</translation>
 <translation id="7792771145871471484">Pārskatīt ieteikumus.</translation>
 <translation id="7792860826279960128">Paziņojums par kopīgotās ciļņu grupas izmaiņām ir atvērts pusekrāna augstumā</translation>
 <translation id="7825973332242257878">Ciļņu grupas</translation>

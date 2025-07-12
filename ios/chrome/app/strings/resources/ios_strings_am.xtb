@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">ክፈት በ…</translation>
 <translation id="2120553909046681540">የእርስዎ ድርጅት የግል አሰሳን አጥፍቷል።</translation>
 <translation id="2122754583996902531">የእርስዎ አሳሽ ይተዳደራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">የድርጅትዎ ውይይቶች የእኛን ሞዴሎች ለማሻሻል ጥቅም ላይ አይውሉም። Gemini ስለ ሰዎች ያለ መረጃን ጨምሮ ትክክል ያልሆነ መረጃን ሊያሳይ ይችላል፣ ስለዚህ በድጋሚ ያረጋግጡት። <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">የቀዱትን ጽሁፍ ይፈልጉ</translation>
 <translation id="2147127444698817042">የሚገኘው በiPhone ላይ ብቻ ነው</translation>
 <translation id="2148799636999124959">በተቀመጡ የይለፍ ቃላትዎ ወደ ጣቢያዎች እና ወደ መተግበሪያዎች በፍጥነት በመለያ ይግቡ።</translation>
@@ -382,6 +383,7 @@
 <translation id="2468444275314013497">የእርስዎ አሳሽ ጥሩ ይመስላል</translation>
 <translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
 <translation id="247430852844518481">ይህን ገፅ በኋላ እንደገና ለመጎብኘት አስታዋሽ ማቀናበር ይችላሉ</translation>
+<translation id="2478246185006364308">የGoogle ደንቦች</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2484459871750294497">እንዴት ይሄን ባህሪ ላንቃው?</translation>
@@ -623,6 +625,7 @@
 <translation id="3530767473765895035">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያስተዳድሩ…</translation>
 <translation id="3533436815740441613">አዲስ ትር</translation>
 <translation id="3533860663366814939">የራስ-ሙላ እና የይለፍ ቃል ቅንብሮችን ይሙሉ</translation>
+<translation id="3546122170015471515">Google.com ላይ ያሉ የካርታዎች ቅድመ እይታዎች</translation>
 <translation id="3547356470684043247">ውሳኔዎችዎን በግምገማዎች ለማገዝ፣ የደንበኛ የምርቶችን፣ የአገልግሎቶችን ወይም የተሞክሮዎችን ግምገማዎች ያንብቡ</translation>
 <translation id="3557336313807607643">ወደ እውቂያዎች አክል</translation>
 <translation id="355765753469272474">ቀልብስ</translation>
@@ -1095,6 +1098,7 @@
 <translation id="5454211924362324495">ሌሎች የእርስዎን የይለፍ ቃል እንዳይጠቀሙ ለማስቆም <ph name="BEGIN_LINK" /> <ph name="WEBSITE" /> ላይ ይለውጡት<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">ወደ ፍለጋዎ ያክሉ</translation>
 <translation id="5457226814769348910">ከመስመር ውጭ ስሪትን ክፈት</translation>
+<translation id="5467163657366219870">የካርታዎች ቅድመ እይታዎችን አጥፋ</translation>
 <translation id="5478327362747197944">በድረ-ገጽ ውስጥ አንድ ቀን ላይ ጠቅ በማድረግ የቀን መቁጠሪያ ክስተቶችን በቀጥታ ይፍጠሩ።</translation>
 <translation id="5482922178977937393">በዝንባሌዎችዎ ላይ በመመስረት ለዜና፣ ለስፖርት እና ለሌሎችም ማሳወቂያዎች እንዲደርሱዎት ይፈልጋሉ?</translation>
 <translation id="5483838506518938965">በቃ ጨርሰዋል</translation>
@@ -1151,6 +1155,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5656431592348714536">የተሻሻለ ቀን መቁጠሪያ</translation>
 <translation id="5657156137487675418">ሁሉንም ኩኪዎች ፍቀድ</translation>
 <translation id="5659593005791499971">ኢሜይል</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> እና <ph name="GEMINI_APPS_PRIVACY" /> ተፈጻሚ ይሆናሉ። Gemini ስሕተት ሊሠራ ይችላል፣ ስለዚህ በድጋሚ ያረጋግጡት።</translation>
 <translation id="5666313630530585305">ወደ ድር ጣቢያ ይግቡ።</translation>
 <translation id="5669335982068190158">እንደ የእርስዎ iPhone ዳግም ማስጀመር አንድ አካል ከመለያዎ ዘግተው እንዲወጡ ተደርገዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5756525336488841345">ዕልባቶችን ደብቅ</translation>
 <translation id="5758631781033351321">የእርስዎን ንባብ ዝርዝር እዚህ ያገኛሉ</translation>
 <translation id="57586589942790530">ልክ ያልሆነ የካርድ ቁጥር</translation>
+<translation id="5758759241456233788">የካርታዎች ቅድመ እይታ ጠፍቷል። ቅንብሮች ውስጥ መልሰው ያብሩት።</translation>
 <translation id="5759484603608560822">ውርዶችን ደብቅ</translation>
 <translation id="5767099457279594162">የይለፍ ቃል አልተጋራም</translation>
 <translation id="5779117921996157216">{count,plural, =1{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} የተጠለፈ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}one{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} የተጠለፈ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}other{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገቡ የሚችሉ {count} የተጠለፉ የይለፍ ቃላት አሉዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን እነሱን ያስተካክሉ።}}</translation>
@@ -1324,6 +1330,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6331836477476466332">ይበልጥ ደህንነቱ የተጠበቀ የበለጠ ኃይል ያለው አሳሽ ለእርስዎ</translation>
 <translation id="6335744088476213315">ይህ ካርድ በቅርቡ የተመለከቷቸውን እና የዋጋ ቅነሳ ማንቂያዎችን ለማግኘት መከታተል የሚፈልጓቸውን ምርቶች ያሳያል</translation>
 <translation id="6337234675334993532">ምስጠራ</translation>
+<translation id="6337313937331295309">የGemini መተግበሪያ የግላዊነት ማስታወቂያ</translation>
 <translation id="633809752005859102">የሆነ ከበድ ያለ ችግር ተፈጥሯል። ችግሩን ለመቅረፍ እየሰራን ነው።</translation>
 <translation id="6339793034470834130">የድር አጣሪውን ለመጠቀም ገመድ በመጠቀም በኮምፒውተርዎ ላይ ከSafari ጋር ይገናኙ እና ከገንባ ምናሌው የእርስዎን iPhone ይድረሱ። በኮምፒውተርዎ ላይ በSafari ቅንብሮች የላቀ ክፍል ውስጥ የገንባ ምናሌውን ማንቃት ይችላሉ።</translation>
 <translation id="6340285871011301182">ከፊል ትርጉም አይገኝም።</translation>
@@ -1552,6 +1559,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7176183551031110427">አሳንስ</translation>
 <translation id="7186568385131859684">በመላ የGoogle አገልግሎቶች ውስጥ ከሌላ ውሂብዎ ጋር የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="719133302483559673">የእርስዎን ዝንባሌዎች እና ምርጫዎች ያስተዳድሩ።</translation>
+<translation id="7203496777391039568">የድርጅትዎ ውሂብ የግል እና ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="720399613139435155">ትርጉም አልተሳካም</translation>
 <translation id="7204922488054642675">ግላዊነት የተላበሰ ዜና</translation>
 <translation id="7206979415662233817">የአገልግሎት ውል</translation>
@@ -1568,6 +1576,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7266578100016339897">ይህ እንደተደራጁ እንዲቆዩ ያግዝዎታል። ይህን በቅንብሮች ውስጥ በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="728025568708172005">ዞር ዞር አድርገህ አሳየኝ</translation>
+<translation id="7281202269687163394">የእርስዎ ግላዊነት እና Gemini።</translation>
 <translation id="7293429513719260019">ቋንቋ ይምረጡ</translation>
 <translation id="7300448350764260141">ከመስመር ላይ ዛቻዎች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ።</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>

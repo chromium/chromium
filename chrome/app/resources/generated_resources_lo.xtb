@@ -1207,6 +1207,7 @@
 <translation id="1822635184853104396">ສະແດງປະຫວັດດາວໂຫຼດແບບເຕັມໃນແຖບໃໝ່</translation>
 <translation id="1823768272150895732">ຟອນ</translation>
 <translation id="1823781806707127806">ເພີ່ມຂໍ້ມູນການທ່ອງເວັບທີ່ມີຢູ່ໃສ່ໃນໂປຣໄຟລ໌ທີ່ມີການຈັດການ</translation>
+<translation id="1824499847634940868">ກວດສອບການອັບເດດແອັບ</translation>
 <translation id="18245044880483936">ຂໍ້ມູນສຳຮອງຈະບໍ່ນັບຮວມໂຄຕ້າບ່ອນຈັດເກັບຂໍ້ມູນ Drive ຂອງລູກທ່ານ.</translation>
 <translation id="1824870205483790748">ປັກໝຸດກຸ່ມໃສ່ແຖບບຸກມາກ</translation>
 <translation id="1825073796163165618">ເປີດການນຳໃຊ້ລິ້ງ</translation>
@@ -3416,6 +3417,7 @@
 <translation id="3373196968211632036">Steam ສຳລັບ Chromebook (ເບຕ້າ) ແມ່ນບໍ່ສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີ Google ເດັກນ້ອຍ</translation>
 <translation id="3373701465337594448">ເມື່ອເປີດໃຊ້, ລາຍຊື່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງເຊິ່ງຄາດເດົາຄວາມສົນໃຈຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="3374294321938930390">ຍ້າຍ '<ph name="BOOKMARK_TITLE" />' ໄປໃສ່ '<ph name="NEW_FOLDER_TITLE" />' ແລ້ວ.</translation>
+<translation id="3376035595160918049">ກວດສອບການອັບເດດແອັບ</translation>
 <translation id="3378517653648586174">ໃບຮັບຮອງໃນເຄື່ອງ</translation>
 <translation id="3378572629723696641">ສ່ວນຂະຫຍາຍນີ້ອາດຈະຖືກລົບກວນເສຍຫາຍ.</translation>
 <translation id="3378627645871606983">ສິດທີ່ອະນຸຍາດສຳລັບ Steam ແມ່ນມີຜົນກັບເກມ ແລະ ແອັບ Steam ທັງໝົດ.</translation>
@@ -8206,6 +8208,7 @@
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ຖືກເພີ່ມເຂົ້າຈາກທາງໄກແລ້ວ</translation>
 <translation id="6790820461102226165">ເພີ່ມບຸກຄົນ...</translation>
+<translation id="6792351896138862473">ບໍ່ສາມາດເປີດໃຊ້ແອັບ kiosk ທີ່ບໍ່ຮອງຮັບໄດ້. ໃຫ້ແຈ້ງເຕືອນຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກ່ຽວກັບບັນຫານີ້.</translation>
 <translation id="6793610798874309813">PIN ຂອງທ່ານສາມາດມີໄດ້ 4 ຕົວອັກສອນຂຶ້ນໄປ</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395">ສຳເນົາ <ph name="DOWNLOAD_URL" /> ໃສ່ຄລິບບອດແລ້ວ</translation>
@@ -10358,6 +10361,7 @@
 <translation id="8283802069507225582">ເພື່ອດຳເນີນການຕໍ່ຈາກບ່ອນທີ່ທ່ານຄ້າງໄວ້ຢູ່ອຸປະກອນອື່ນໆ, ໃຫ້ຊິ້ງຂໍ້ມູນປະຫວັດ ແລະ ແຖບຂອງທ່ານໃສ່ <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">ທຸກເວັບໄຊທ໌ <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">ຄໍາບັນຍາຍພາບ</translation>
+<translation id="8285625579699113397">ບັນຊີຂອງທ່ານ</translation>
 <translation id="8286036467436129157">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8286227656784970313">ໃຊ້ພົດຈະນານຸກົມ​ຂອງລະ​ບົບ</translation>
 <translation id="828642162569365647">ລະຫັດຜ່ານ ຫຼື PIN ນີ້ຈະປົກປ້ອງຂໍ້ມູນຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ນີ້ ແລະ ຂໍ້ມູນໃດກໍຕາມທີ່ທ່ານເຂົ້າເຖິງຈາກໂທລະສັບຂອງທ່ານ. ທ່ານຈະຕ້ອງປົດລັອກແຕ່ລະເທື່ອທີ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານຕື່ນຈາກການນອນ.</translation>

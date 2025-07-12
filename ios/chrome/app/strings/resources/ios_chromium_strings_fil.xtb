@@ -254,6 +254,7 @@ Mga bagay na dapat isaalang-alang:
 
 Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Kasalukuyang naka-off ang mga notification sa Chromium sa mga setting ng iyong device.</translation>
+<translation id="7195217321165708458">Gemini sa Chromium</translation>
 <translation id="7219205286115692265">Mas mabilis na i-access ang Chromium mula sa dock ng home screen ng iyong iPad.</translation>
 <translation id="7222001353246886083">Hanapin ang ${searchPhrase} sa Chromium</translation>
 <translation id="7228180817326917122">Tip sa Chromium: Piliin ang posisyon ng iyong address bar</translation>

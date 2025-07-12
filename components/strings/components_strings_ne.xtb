@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">मेटल (ग्लसी)</translation>
 <translation id="1070901266639972381">राति</translation>
 <translation id="1073690811593784042">ग्लास (रङ्गीन)</translation>
+<translation id="1074287282535157335">४ किस्तामा वा मासिक रूपमा भुक्तानी गर्नुहोस् (यो लाभ लिन योग्यताका मापदण्ड पूरा गर्नु पर्ने हुन्छ)</translation>
 <translation id="1074497978438210769">सुरक्षित छैन</translation>
 <translation id="1074779248866616641">परिणाम</translation>
 <translation id="1075364221219156102">कुनै पासकी प्रयोग गर्नुहोस्</translation>
@@ -657,6 +658,7 @@
 <translation id="2102134110707549001">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्…</translation>
 <translation id="2102495993840063010">Android एपहरू</translation>
 <translation id="2102519472192754194">वेब ब्राउजरहरू</translation>
+<translation id="2103210856015238101">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="2105838220373099643">भूमिका निभाउनु पर्ने गेमहरू</translation>
 <translation id="2107021941795971877">मुद्रणसम्बन्धी सहायता प्रदान गर्ने सेवा</translation>
 <translation id="2108755909498034140">आफ्नो कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
@@ -1118,6 +1120,7 @@
 <translation id="2902312830803030883">थप कारबाहीहरू</translation>
 <translation id="2903493209154104877">ठेगानाहरू</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" /> भाषामा पृष्ठ छैन?</translation>
+<translation id="2904180982022726666">तपाईंको सङ्गठनले तपाईंले सेयर गर्न पाउने कुराहरूको सीमा तोकेको छ</translation>
 <translation id="2905107382358353958">नयाँ भुक्तानीसम्बन्धी सेटिङ मिलाउने अलर्ट</translation>
 <translation id="2909946352844186028">एउटा नेटवर्क परिवर्तन पत्ता लागेको थियो।</translation>
 <translation id="2911255567212929079">मेसिन लर्निङ र आर्टिफिसियल इन्टेलिजेन्स</translation>
@@ -1293,6 +1296,7 @@
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3190736958609431397">ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3194737229810486521"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा डेटा भण्डारण गर्न चाहन्छ</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> मा <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छ</translation>
 <translation id="3201482403106004262">सर्वेक्षणमा कुनै त्रुटि भयो।</translation>
@@ -1769,6 +1773,7 @@
 <translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3965672182149944205">यो ठेगाना सेभ गर्ने हो?</translation>
 <translation id="3966044442021752214">उत्पादनको सुरक्षा</translation>
+<translation id="396761677631735618">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3969869202926863008">स्थानीय नेटवर्कको एक्सेस</translation>
 <translation id="3970239200223030389">जारी मिति</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
@@ -1890,6 +1895,7 @@
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
 <translation id="4169189393773057143">Google Wallet मा लोयल्टी कार्डहरू व्यवस्थापन गर्नुहोस् वा यी सुझावहरू अफ गर्नुहोस्</translation>
 <translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
+<translation id="4170851022123611628">लोयल्टी कार्डहरूको सूची बन्द गरिएको छ।</translation>
 <translation id="4171400957073367226">खराब रूजू हस्ताक्षर।</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">लक तथा लकस्मिथहरू</translation>
@@ -2093,6 +2099,7 @@
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="4493480324863638523">अमान्य URL। अनिवार्य रूपमा मानक योजनाबमोजिमको URL हुनु पर्छ, जस्तै, http://example.com वा https://example.com।</translation>
 <translation id="4494323206460475851">तपाईं सेटिङमा गई विज्ञापनका विषयहरू हेर्न र आफूले साइटहरूसँग सेयर गर्न नचाहेका विषयहरू ब्लक गर्न सक्नुहुन्छ। Chrome ले विज्ञापनका ४ हप्ताभन्दा पुराना विषयहरू पनि स्वतः मेटाउँछ।</translation>
+<translation id="4497010149473852018">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
 <translation id="4500587658229086076">असुरक्षित सामग्री</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> मान्छेहरू</translation>
 <translation id="450602096898954067">यो सुविधा अझ राम्रो बनाउने प्रयोजनका लागि प्रशिक्षित समीक्षकहरू उक्त जानकारीको समीक्षा गर्न सक्छन्</translation>
@@ -4706,6 +4713,7 @@
 <translation id="8975263830901772334">तपाईंले प्रिन्ट गर्ने फाइलका नामहरू</translation>
 <translation id="8982884016487650216">PDF लोड गरिसकियो</translation>
 <translation id="8983369100812962543">तपाईं अब एपको आकार बदल्न सक्नुहुन्छ</translation>
+<translation id="8984785270737450103">सेयर गर्ने सुविधा हाल अफ गरिएको छ</translation>
 <translation id="8985112471026018799">अझ छिटो चेकआउट गर्न कार्ड सेभ गर्नुहोस्</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफ्नो ब्राउजिङ इतिहास हेर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8987663052629670333">फोटो प्रिन्टसम्बन्धी सेवाहरू</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ibahagi ang <ph name="TABS_COUNT_ONE" /> piniling tab}one{Ibahagi ang <ph name="TABS_COUNT_MANY" /> piniling tab}other{Ibahagi ang <ph name="TABS_COUNT_MANY" /> na piniling tab}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Na-update <ph name="NUM_YEARS_ONE" /> taon ang nakalipas}one{Na-update <ph name="NUM_YEARS_MANY" /> taon ang nakalipas}other{Na-update <ph name="NUM_YEARS_MANY" /> na taon ang nakalipas}}</translation>
 <translation id="7773714564112603605">Alisin ang tab at i-delete ang grupo</translation>
+<translation id="7774428938729954687">I-restore at buksan ang tab ng <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">Suriin ang mga suhestyon.</translation>
 <translation id="7792860826279960128">Binuksan ang abiso tungkol sa mga pagbabago sa Naka-share na Grupo ng Tab nang kalahati ang taas</translation>
 <translation id="7825973332242257878">Mga grupo ng tab</translation>

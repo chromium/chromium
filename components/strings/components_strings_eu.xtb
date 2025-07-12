@@ -1118,6 +1118,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2902312830803030883">Ekintza gehiago</translation>
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="290376772003165898">Ez al da <ph name="LANGUAGE" /> orriko hizkuntza?</translation>
+<translation id="2904180982022726666">Erakundeak parteka dezakezuna mugatzen du</translation>
 <translation id="2905107382358353958">Ordainketa-ezarpen berri bati buruzko alerta</translation>
 <translation id="2909946352844186028">Aldaketa bat hauteman da sarean.</translation>
 <translation id="2911255567212929079">Ikasketa automatikoa eta adimen artifiziala</translation>
@@ -4703,6 +4704,7 @@ Xehetasun gehiago:
 <translation id="8975263830901772334">Inprimatzen dituzun fitxategien izenak</translation>
 <translation id="8982884016487650216">Kargatu da PDFa</translation>
 <translation id="8983369100812962543">Orain, aplikazioaren tamaina alda dezakezu</translation>
+<translation id="8984785270737450103">Partekatzeko aukera desaktibatuta dago une honetan</translation>
 <translation id="8985112471026018799">Gorde txartela bizkorrago ordaintzeko</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" arakatze-historia Chrome-n ikusteko</translation>
 <translation id="8987663052629670333">Argazkiak inprimatzeko zerbitzuak</translation>

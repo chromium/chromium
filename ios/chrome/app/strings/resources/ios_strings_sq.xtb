@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Hape në…</translation>
 <translation id="2120553909046681540">Organizata jote ka çaktivizuar shfletimin privat.</translation>
 <translation id="2122754583996902531">Shfletuesi yt është i menaxhuar. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Bisedat e organizatës sate nuk përdoren për të përmirësuar modelet tona. Gemini mund të shfaqë informacione të pasakta, duke përfshirë edhe për njerëzit, prandaj kontrolloji përsëri. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Kërko për tekstin që kopjove</translation>
 <translation id="2147127444698817042">Ofrohet vetëm në iPhone</translation>
 <translation id="2148799636999124959">Identifikohu me shpejtësi në sajte dhe aplikacione me fjalëkalimet e tua të ruajtura.</translation>
@@ -382,6 +383,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2468444275314013497">Shfletuesi yt duket në rregull</translation>
 <translation id="2473876017985765807">Ke ruajtur tashmë një fjalëkalim për <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Mund të caktosh një alarm rikujtues për ta vizituar përsëri këtë faqe më vonë</translation>
+<translation id="2478246185006364308">Kushtet e Google</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2484459871750294497">Si ta aktivizoj këtë veçori?</translation>
@@ -623,6 +625,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3530767473765895035">Menaxho llogaritë në këtë pajisje…</translation>
 <translation id="3533436815740441613">Skedë e re</translation>
 <translation id="3533860663366814939">Hap cilësimet e "Plotësimit automatik" dhe "Fjalëkalimit"</translation>
+<translation id="3546122170015471515">"Variantet paraprake të Maps" në Google.com</translation>
 <translation id="3547356470684043247">Lexo vlerësimet e klientëve për produktet, shërbimet ose përvojat për të marrë informacione për vendimet e tua në lidhje me komentet</translation>
 <translation id="3557336313807607643">Shto te kontaktet</translation>
 <translation id="355765753469272474">Zhbëj</translation>
@@ -1095,6 +1098,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5454211924362324495">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, <ph name="BEGIN_LINK" />ndryshoje atë në <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Shto në kërkimin tënd</translation>
 <translation id="5457226814769348910">Hap versionin offline</translation>
+<translation id="5467163657366219870">Çaktivizo "Variantet paraprake të Maps"</translation>
 <translation id="5478327362747197944">Krijo drejtpërdrejt ngjarje të "Kalendarit" duke klikuar në një datë në një faqe uebi.</translation>
 <translation id="5482922178977937393">Dëshiron të marrësh njoftime për lajmet, sportet etj. bazuar në interesat e tu?</translation>
 <translation id="5483838506518938965">Je plotësisht gati</translation>
@@ -1151,6 +1155,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5656431592348714536">Kalendari i përmirësuar</translation>
 <translation id="5657156137487675418">Lejo të gjitha kukit</translation>
 <translation id="5659593005791499971">Mail-i</translation>
+<translation id="5665739277590037307">Zbatohen <ph name="GOOGLE_TERMS" /> dhe <ph name="GEMINI_APPS_PRIVACY" />. Gemini mund të bëjë gabime, kështu që kontrolloje përsëri.</translation>
 <translation id="5666313630530585305">Identifikohu te një uebsajt.</translation>
 <translation id="5669335982068190158">Ke dalë si pjesë e rivendosjes së iPhone. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5756525336488841345">Fshih "Faqeshënuesit"</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
 <translation id="57586589942790530">Numër karte i pavlefshëm</translation>
+<translation id="5758759241456233788">"Variantet paraprake të Maps" është joaktive. Aktivizoji përsëri te Settings.</translation>
 <translation id="5759484603608560822">Fshih "Shkarkimet"</translation>
 <translation id="5767099457279594162">Fjalëkalimi nuk është ndarë</translation>
 <translation id="5779117921996157216">{count,plural, =1{Ke {count} fjalëkalim të komprometuar që mund ta rrezikojë sigurinë tënde. Rregulloje tani për të qëndruar i sigurt.}other{Ke {count} fjalëkalime të komprometuara që mund ta rrezikojnë sigurinë tënde. Rregulloji tani për të qëndruar i sigurt.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6331836477476466332">Një shfletues më i sigurt dhe më i fuqishëm për ty</translation>
 <translation id="6335744088476213315">Kjo kartë shfaq produktet që ke shikuar së fundi dhe që mund të të interesojnë t'i gjurmosh për të marrë sinjalizime për rëniet e çmimeve</translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
+<translation id="6337313937331295309">Njoftimi i privatësisë për aplikacionet Gemini</translation>
 <translation id="633809752005859102">Diçka shkoi me të vërtetë keq. Do të merremi ne me këtë.</translation>
 <translation id="6339793034470834130">Për të përdorur Web Inspector, lidhu me Safari në kompjuterin tënd duke përdorur një kabllo dhe qasu te telefoni yt iPhone nga menyja Develop. Mund ta aktivizosh menynë Develop në seksionin Advanced të cilësimeve të Safari në kompjuterin tënd.</translation>
 <translation id="6340285871011301182">Përkthimi i pjesshëm nuk ofrohet.</translation>
@@ -1552,6 +1559,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7176183551031110427">Zvogëlo</translation>
 <translation id="7186568385131859684">Kontrollo se si përdoret historiku i shfletimit me të dhënat e tua të tjera nëpër shërbimet e Google</translation>
 <translation id="719133302483559673">Menaxho interesat dhe preferencat e tua.</translation>
+<translation id="7203496777391039568">Të dhënat e organizatës sate janë private dhe të sigurta</translation>
 <translation id="720399613139435155">Përkthimi dështoi</translation>
 <translation id="7204922488054642675">Lajme të personalizuara</translation>
 <translation id="7206979415662233817">Kushtet e shërbimit</translation>
@@ -1568,6 +1576,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7266578100016339897">Kjo të ndihmon të qëndrosh i organizuar. Mund ta ndryshosh këtë te cilësimet në çdo kohë.</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
 <translation id="728025568708172005">Fillo turneun</translation>
+<translation id="7281202269687163394">Privatësia jote dhe Gemini.</translation>
 <translation id="7293429513719260019">Zgjidh gjuhën</translation>
 <translation id="7300448350764260141">Shto një shtresë shtesë mbrojtjeje ndaj kërcënimeve online.</translation>
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>

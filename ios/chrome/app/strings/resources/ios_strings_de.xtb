@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Öffnen in…</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
 <translation id="2122754583996902531">Dein Browser wird verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Die Chats deiner Organisation werden nicht zur Optimierung unserer Modelle verwendet. Da Gemini Fehler machen kann, auch bei Informationen über Personen, solltest du die Antworten überprüfen. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Nach von dir kopiertem Text suchen</translation>
 <translation id="2147127444698817042">Nur für iPhone</translation>
 <translation id="2148799636999124959">Zum schnellen Anmelden auf Websites und in Apps.</translation>
@@ -382,6 +383,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="247430852844518481">Du kannst eine Erinnerung festlegen, um später noch einmal auf diese Seite zuzugreifen</translation>
+<translation id="2478246185006364308">Google-Nutzungsbedingungen</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484459871750294497">Wie aktiviere ich diese Funktion?</translation>
@@ -623,6 +625,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3530767473765895035">Konten auf diesem Gerät verwalten…</translation>
 <translation id="3533436815740441613">Neuer Tab</translation>
 <translation id="3533860663366814939">„Autom. ausfüllen &amp; Passwörter“ öffnen</translation>
+<translation id="3546122170015471515">Maps-Vorabversion auf Google.com</translation>
 <translation id="3547356470684043247">Kundenbewertungen und ‑rezensionen zu Produkten, Dienstleistungen oder Angeboten lesen, um fundiertere Entscheidungen zu treffen</translation>
 <translation id="3557336313807607643">Zu Kontakten hinzufügen</translation>
 <translation id="355765753469272474">Rückgängig</translation>
@@ -1095,6 +1098,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
 <translation id="5457226814769348910">Offlineversion öffnen</translation>
+<translation id="5467163657366219870">Maps-Vorabversion deaktivieren</translation>
 <translation id="5478327362747197944">Du kannst Kalendertermine durch Klicken auf ein Datum auf einer Webseite direkt erstellen.</translation>
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
 <translation id="5483838506518938965">Fertig!</translation>
@@ -1151,6 +1155,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5656431592348714536">Verbesserter Kalender</translation>
 <translation id="5657156137487675418">Alle Cookies zulassen</translation>
 <translation id="5659593005791499971">E-Mail</translation>
+<translation id="5665739277590037307">Es gelten die <ph name="GOOGLE_TERMS" /> und die <ph name="GEMINI_APPS_PRIVACY" />. Da Gemini Fehler machen kann, solltest du die Antworten überprüfen.</translation>
 <translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
 <translation id="5669335982068190158">Du wurdest beim Zurücksetzen deines iPhones abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5756525336488841345">Lesezeichen ausblenden</translation>
 <translation id="5758631781033351321">Hier wird deine Leseliste angezeigt</translation>
 <translation id="57586589942790530">Ungültige Kartennummer</translation>
+<translation id="5758759241456233788">Maps-Vorabversion deaktiviert. Du kannst sie in den Einstellungen wieder aktivieren.</translation>
 <translation id="5759484603608560822">Downloads ausblenden</translation>
 <translation id="5767099457279594162">Passwort wurde nicht geteilt</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du nutzt {count} kompromittiertes Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} kompromittierte Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6331836477476466332">Ein sicherer und leistungsstarker Browser für dich</translation>
 <translation id="6335744088476213315">Auf dieser Karte findest du kürzlich von dir angesehene Produkte, die du möglicherweise beobachten möchtest, um Benachrichtigungen zu Preissenkungen zu erhalten</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
+<translation id="6337313937331295309">Datenschutzhinweise für Gemini-Apps</translation>
 <translation id="633809752005859102">Es ist ein schwerwiegendes Problem aufgetreten. Wir arbeiten daran.</translation>
 <translation id="6339793034470834130">Wenn du den Web Inspector verwenden möchtest, musst du auf einem Computer mithilfe eines Kabels eine Verbindung zu Safari herstellen und über das Menü „Entwickler“ auf das iPhone zugreifen. Du kannst das Menü „Entwickler“ im Bereich „Erweitert“ in den Safari-Einstellungen auf deinem Computer aktivieren.</translation>
 <translation id="6340285871011301182">Teilweise Übersetzung ist nicht verfügbar.</translation>
@@ -1552,6 +1559,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7176183551031110427">Herauszoomen</translation>
 <translation id="7186568385131859684">Festlegen, wie der Browserverlauf mit deinen anderen Daten in Google-Diensten verwendet wird</translation>
 <translation id="719133302483559673">Verwalte deine Interessen und Einstellungen.</translation>
+<translation id="7203496777391039568">Deine Unternehmensdaten bleiben privat und geschützt</translation>
 <translation id="720399613139435155">Fehler beim Übersetzen</translation>
 <translation id="7204922488054642675">Personalisierte Nachrichten</translation>
 <translation id="7206979415662233817">Nutzungsbedingungen</translation>
@@ -1568,6 +1576,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="728025568708172005">Tour starten</translation>
+<translation id="7281202269687163394">Datenschutz und Gemini.</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>

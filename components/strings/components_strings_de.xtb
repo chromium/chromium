@@ -1118,6 +1118,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="290376772003165898">Diese Seite ist nicht auf <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">Deine Organisation legt fest, was du teilen kannst</translation>
 <translation id="2905107382358353958">Benachrichtigung über neue Zahlungseinstellung</translation>
 <translation id="2909946352844186028">Eine Netzwerkänderung ist aufgetreten.</translation>
 <translation id="2911255567212929079">Maschinelles Lernen und künstliche Intelligenz</translation>
@@ -4708,6 +4709,7 @@ Weitere Details:
 <translation id="8975263830901772334">Namen von Dateien, die du druckst</translation>
 <translation id="8982884016487650216">Laden des PDFs abgeschlossen</translation>
 <translation id="8983369100812962543">Du kannst die Größe der App jetzt ändern</translation>
+<translation id="8984785270737450103">Das Teilen ist derzeit deaktiviert</translation>
 <translation id="8985112471026018799">Karte zum schnelleren Bezahlen speichern</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um deinen Browserverlauf in Chrome aufzurufen</translation>
 <translation id="8987663052629670333">Fotodruck</translation>

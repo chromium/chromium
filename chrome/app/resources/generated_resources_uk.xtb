@@ -9402,7 +9402,7 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7645681574855902035">Скасовується резервне копіювання Linux</translation>
 <translation id="7646425900255826066">Увійшовши в Chrome, ви можете зберігати паролі за допомогою Google Менеджера паролів</translation>
-<translation id="7646499124171960488">Попереджає про небезпечні загальнодоступні сайти</translation>
+<translation id="7646499124171960488">Попереджати про небезпечні загальнодоступні сайти</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="7647403192093989392">Немає останніх дій</translation>
 <translation id="7648023614017258011">Chrome перевіряє пакет встановлення</translation>
@@ -10367,6 +10367,7 @@
 <translation id="8283802069507225582">Щоб продовжувати роботу з місця, де ви зупинилися на інших пристроях, увімкніть синхронізацію історії і вкладок в обліковому записі <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субтитри</translation>
+<translation id="8285625579699113397">Ваш обліковий запис</translation>
 <translation id="8286036467436129157">Вхід</translation>
 <translation id="8286227656784970313">Використовувати системний словник</translation>
 <translation id="828642162569365647">Цей пароль або PIN-код захищає дані на цьому пристрої <ph name="DEVICE_TYPE" /> та інформацію, до якої ви отримуєте доступ із телефона. Розблоковувати пристрій потрібно щоразу, коли <ph name="DEVICE_TYPE" /> виводиться з режиму сну.</translation>

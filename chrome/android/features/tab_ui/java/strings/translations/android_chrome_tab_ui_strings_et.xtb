@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaga <ph name="TABS_COUNT_ONE" /> valitud vahelehte}other{Jaga <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{Värskendati <ph name="NUM_YEARS_ONE" /> aasta tagasi}other{Värskendati <ph name="NUM_YEARS_MANY" /> aastat tagasi}}</translation>
 <translation id="7773714564112603605">Eemaldage vaheleht ja kustutage grupp</translation>
+<translation id="7774428938729954687">Teenuse <ph name="TAB_TITLE" /> vahelehe taastamine ja avamine</translation>
 <translation id="7792771145871471484">Vaadake soovitused üle.</translation>
 <translation id="7792860826279960128">Teade, kui jagatud vahelehegruppide muutused on avatud poolel kõrgusel</translation>
 <translation id="7825973332242257878">Vahelehegrupid</translation>

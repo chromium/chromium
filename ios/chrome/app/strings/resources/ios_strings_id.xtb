@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Buka di…</translation>
 <translation id="2120553909046681540">Organisasi Anda menonaktifkan penjelajahan rahasia.</translation>
 <translation id="2122754583996902531">Browser Anda dikelola. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Percakapan organisasi Anda tidak digunakan untuk meningkatkan kualitas model kami. Gemini mungkin menampilkan info yang tidak akurat, termasuk tentang orang, jadi periksa kembali responsnya.<ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Telusuri Teks yang Anda Salin</translation>
 <translation id="2147127444698817042">Hanya tersedia di iPhone</translation>
 <translation id="2148799636999124959">Login dengan cepat ke situs dan aplikasi menggunakan sandi tersimpan.</translation>
@@ -382,6 +383,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2468444275314013497">Browser Anda aman</translation>
 <translation id="2473876017985765807">Anda sudah menyimpan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Anda dapat menyetel pengingat untuk membuka kembali halaman ini nanti</translation>
+<translation id="2478246185006364308">Persyaratan Google</translation>
 <translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2484459871750294497">Bagaimana cara mengaktifkan fitur ini?</translation>
@@ -623,6 +625,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3530767473765895035">Kelola akun di perangkat ini…</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
 <translation id="3533860663366814939">Buka setelan Autofill &amp; Password</translation>
+<translation id="3546122170015471515">Pratinjau Maps di Google.com</translation>
 <translation id="3547356470684043247">Baca evaluasi pelanggan terkait produk, layanan, atau pengalaman untuk membantu menentukan keputusan Anda dengan ulasan</translation>
 <translation id="3557336313807607643">Tambahkan ke kontak</translation>
 <translation id="355765753469272474">Urungkan</translation>
@@ -1095,6 +1098,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5454211924362324495">Untuk mencegah orang lain menggunakan sandi Anda, <ph name="BEGIN_LINK" />ubah sandi di <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Tambahkan ke penelusuran</translation>
 <translation id="5457226814769348910">Buka Versi Offline</translation>
+<translation id="5467163657366219870">Nonaktifkan Pratinjau Maps</translation>
 <translation id="5478327362747197944">Buat acara Kalender secara langsung dengan mengklik tanggal di halaman web.</translation>
 <translation id="5482922178977937393">Ingin mendapatkan notifikasi untuk berita, olahraga, dan lainnya berdasarkan minat Anda?</translation>
 <translation id="5483838506518938965">Anda sudah siap</translation>
@@ -1151,6 +1155,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5656431592348714536">Kalender yang Ditingkatkan</translation>
 <translation id="5657156137487675418">Izinkan semua cookie</translation>
 <translation id="5659593005791499971">Email</translation>
+<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> dan <ph name="GEMINI_APPS_PRIVACY" /> berlaku. Gemini dapat membuat kesalahan, jadi periksa kembali responsnya.</translation>
 <translation id="5666313630530585305">Login ke situs.</translation>
 <translation id="5669335982068190158">Anda telah logout sebagai bagian dari proses reset iPhone. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5756525336488841345">Sembunyikan Bookmark</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="57586589942790530">Nomor kartu tidak valid</translation>
+<translation id="5758759241456233788">Pratinjau Maps nonaktif. Aktifkan kembali di Setelan.</translation>
 <translation id="5759484603608560822">Sembunyikan Download</translation>
 <translation id="5767099457279594162">Sandi tidak dibagikan</translation>
 <translation id="5779117921996157216">{count,plural, =1{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}other{Anda memiliki {count} sandi yang telah dibobol yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}}</translation>
@@ -1324,6 +1330,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6331836477476466332">Browser yang lebih aman dan canggih untuk Anda</translation>
 <translation id="6335744088476213315">Kartu ini menampilkan produk yang baru-baru ini Anda lihat dan mungkin ingin Anda pantau untuk mendapatkan notifikasi penurunan harga</translation>
 <translation id="6337234675334993532">Enkripsi</translation>
+<translation id="6337313937331295309">Pemberitahuan Privasi Aplikasi Gemini</translation>
 <translation id="633809752005859102">Terjadi error. Kami akan mengatasinya.</translation>
 <translation id="6339793034470834130">Untuk menggunakan Web Inspector, hubungkan ke Safari di komputer Anda menggunakan kabel dan akses iPhone Anda dari menu Pengembangan. Anda dapat mengaktifkan menu pengembangan di bagian Lanjutan setelan Safari di komputer.</translation>
 <translation id="6340285871011301182">Terjemahan sebagian tidak tersedia.</translation>
@@ -1552,6 +1559,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7176183551031110427">Perkecil</translation>
 <translation id="7186568385131859684">Kontrol cara histori penjelajahan digunakan dengan data Anda yang lain di berbagai layanan Google</translation>
 <translation id="719133302483559673">Kelola minat dan preferensi Anda.</translation>
+<translation id="7203496777391039568">Privasi dan keamanan data organisasi Anda tetap terjaga</translation>
 <translation id="720399613139435155">Terjemahan gagal</translation>
 <translation id="7204922488054642675">Berita yang dipersonalisasi</translation>
 <translation id="7206979415662233817">Persyaratan layanan</translation>
@@ -1568,6 +1576,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7266578100016339897">Tindakan ini membantu Anda tetap teratur. Anda dapat mengubahnya di setelan kapan saja.</translation>
 <translation id="7272437679830969316">Tidak dapat memverifikasi identitas. Sandi tidak disalin.</translation>
 <translation id="728025568708172005">Mulai Tur Terpandu</translation>
+<translation id="7281202269687163394">Privasi Anda &amp; Gemini.</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7300448350764260141">Berikan lapisan perlindungan tambahan terhadap ancaman online.</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>

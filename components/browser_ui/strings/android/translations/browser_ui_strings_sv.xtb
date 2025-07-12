@@ -63,6 +63,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="1704230497453185209">Tillåt inte att webbplatser spelar upp ljud</translation>
 <translation id="1717218214683051432">Rörelsesensorer</translation>
 <translation id="1717996979683942279">När detta är aktiverat kan webbplatser begära att hantera fönster på alla skärmar. När detta är inaktiverat kan inte webbplatser hantera fönster på alla skärmar.</translation>
+<translation id="1738912554587725807">Ark på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik</translation>
 <translation id="1743802530341753419">Fråga innan webbplatser tillåts ansluta till en enhet (rekommenderas)</translation>
 <translation id="1777815584158991902">Arket på nedre delen av skärmen för flödet Upptäck</translation>
 <translation id="1779089405699405702">Bildavkodare</translation>
@@ -356,6 +357,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5100237604440890931">Vyn har komprimerats. Expandera den genom att klicka.</translation>
 <translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
+<translation id="512938610812707830">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över hela skärmen</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sänkt pris på öppna flikar}other{Sänkta priser på öppna flikar}}</translation>
 <translation id="5186036860380548585">Alternativet visas högt upp på skärmen</translation>
 <translation id="5197729504361054390">Kontakterna du väljer delas med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -625,6 +625,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3530767473765895035">Gestionar las cuentas de este dispositivo…</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
 <translation id="3533860663366814939">Abre los ajustes de Autorrelleno y contraseñas</translation>
+<translation id="3546122170015471515">Vistas previas de Maps en Google.com</translation>
 <translation id="3547356470684043247">Lee las evaluaciones de los clientes sobre productos, servicios o experiencias y toma decisiones más fundamentadas con las reseñas</translation>
 <translation id="3557336313807607643">Añadir a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
@@ -1097,6 +1098,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5454211924362324495">Para impedir que otros usuarios usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Añadir algo a tu búsqueda</translation>
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
+<translation id="5467163657366219870">Desactivar Vistas previas de Maps</translation>
 <translation id="5478327362747197944">Crea eventos del calendario directamente haciendo clic en una fecha en una página web.</translation>
 <translation id="5482922178977937393">¿Quieres recibir notificaciones de noticias, deportes y más según tus intereses?</translation>
 <translation id="5483838506518938965">Ya has terminado</translation>
@@ -1186,6 +1188,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5756525336488841345">Ocultar Marcadores</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="57586589942790530">Número de tarjeta no válido</translation>
+<translation id="5758759241456233788">Vistas previas de Maps desactivadas. Vuelve a activarlas en Configuración.</translation>
 <translation id="5759484603608560822">Ocultar Descargas</translation>
 <translation id="5767099457279594162">No se ha compartido la contraseña</translation>
 <translation id="5779117921996157216">{count,plural, =1{Tienes {count} contraseña vulnerada que podría poner en riesgo tu seguridad. Soluciona el problema para protegerte.}other{Tienes {count} contraseñas vulneradas que podrían poner en riesgo tu seguridad. Soluciona el problema para protegerte.}}</translation>
@@ -1556,6 +1559,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7176183551031110427">Reducir</translation>
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
 <translation id="719133302483559673">Gestiona tus intereses y preferencias.</translation>
+<translation id="7203496777391039568">Los datos de tu organización son privados y están protegidos</translation>
 <translation id="720399613139435155">No se ha podido traducir</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
 <translation id="7206979415662233817">Términos del servicio</translation>

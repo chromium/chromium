@@ -63,6 +63,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="1704230497453185209">Ne pas autoriser les sites à faire jouer des sons</translation>
 <translation id="1717218214683051432">Capteurs de mouvements</translation>
 <translation id="1717996979683942279">Lorsque cette option est activée, les sites peuvent demander à gérer les fenêtres sur tous vos écrans. Lorsqu'elle est désactivée, les sites ne peuvent pas gérer les fenêtres sur tous vos écrans.</translation>
+<translation id="1738912554587725807">Zone de contenu dans le bas de l'écran concernant les collections de thèmes de l'apparence de la page Nouvel onglet</translation>
 <translation id="1743802530341753419">Demander avant d'autoriser des sites à se connecter à un appareil (recommandé)</translation>
 <translation id="1777815584158991902">Zone de contenu dans le bas de l'écran concernant le flux Découvertes</translation>
 <translation id="1779089405699405702">Décodeur d’image</translation>
@@ -356,6 +357,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5100237604440890931">Réduit : cliquer pour développer</translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
+<translation id="512938610812707830">Zone de contenu dans le bas de l'écran concernant les collections de thèmes de l'apparence de la page Nouvel onglet ouverte à pleine hauteur</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix sur vos onglets ouverts}one{Baisse de prix sur vos onglets ouverts}other{Baisses de prix sur vos onglets ouverts}}</translation>
 <translation id="5186036860380548585">Option accessible près du haut de l'écran</translation>
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

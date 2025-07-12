@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deel <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Deel <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> jaar gelede opgedateer}other{<ph name="NUM_YEARS_MANY" /> jaar gelede opgedateer}}</translation>
 <translation id="7773714564112603605">Verwyder oortjie en vee groep uit</translation>
+<translation id="7774428938729954687">Stel <ph name="TAB_TITLE" />-oortjie terug en maak dit oop</translation>
 <translation id="7792771145871471484">Gaan die voorstelle na.</translation>
 <translation id="7792860826279960128">Kennisgewing oor Gedeelde Oortjiegroep-veranderinge teen halwe hoogte</translation>
 <translation id="7825973332242257878">Oortjiegroepe</translation>

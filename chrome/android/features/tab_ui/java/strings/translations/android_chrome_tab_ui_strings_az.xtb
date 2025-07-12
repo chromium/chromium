@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı paylaşın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı paylaşın}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> il əvvəl yenilənib}other{<ph name="NUM_YEARS_MANY" /> il əvvəl yenilənib}}</translation>
 <translation id="7773714564112603605">Tabı və qrupu silin</translation>
+<translation id="7774428938729954687"><ph name="TAB_TITLE" /> tabını bərpa edin və açın</translation>
 <translation id="7792771145871471484">Təklifləri nəzərdən keçirin.</translation>
 <translation id="7792860826279960128">Yarım hündürlükdə Paylaşılan Tab Qrupu dəyişiklikləri haqqında bildiriş</translation>
 <translation id="7825973332242257878">Tab qrupları</translation>

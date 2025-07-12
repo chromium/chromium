@@ -1118,6 +1118,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2902312830803030883">Máis accións</translation>
 <translation id="2903493209154104877">Enderezos</translation>
 <translation id="290376772003165898">A páxina non está en <ph name="LANGUAGE" />?</translation>
+<translation id="2904180982022726666">A túa organización limita o que podes compartir</translation>
 <translation id="2905107382358353958">Alerta sobre unha nova configuración de pago</translation>
 <translation id="2909946352844186028">Detectouse un cambio de rede.</translation>
 <translation id="2911255567212929079">Aprendizaxe automática e intelixencia artificial</translation>
@@ -4708,6 +4709,7 @@ Detalles adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros que imprimes</translation>
 <translation id="8982884016487650216">Carga do PDF completada</translation>
 <translation id="8983369100812962543">Xa podes cambiar o tamaño da aplicación</translation>
+<translation id="8984785270737450103">A opción de compartir está desactivada neste momento</translation>
 <translation id="8985112471026018799">Garda a tarxeta para tramitar a compra máis rapidamente</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para consultar o teu historial de navegación en Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="8987663052629670333">Servizos de impresión de fotos</translation>

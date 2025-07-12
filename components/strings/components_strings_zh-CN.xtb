@@ -1118,6 +1118,7 @@
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="290376772003165898">网页的源语言不是<ph name="LANGUAGE" />？</translation>
+<translation id="2904180982022726666">您所在的组织限制了您可分享的内容</translation>
 <translation id="2905107382358353958">关于新付款设置的提醒</translation>
 <translation id="2909946352844186028">检测到了网络变化。</translation>
 <translation id="2911255567212929079">机器学习与人工智能</translation>
@@ -2578,7 +2579,7 @@
 <translation id="5329858041417644019">您的浏览器不受管理</translation>
 <translation id="5331585574693522196">设为默认</translation>
 <translation id="5332219387342487447">送货方式</translation>
-<translation id="5332769172018416402">发消息请求</translation>
+<translation id="5332769172018416402">发消息申请</translation>
 <translation id="533323551986281710">商务底部动作条已全屏打开</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
@@ -4705,6 +4706,7 @@
 <translation id="8975263830901772334">已打印的文件的名称</translation>
 <translation id="8982884016487650216">PDF 已加载完毕</translation>
 <translation id="8983369100812962543">现在，您可以调整应用大小</translation>
+<translation id="8984785270737450103">目前已关闭分享功能</translation>
 <translation id="8985112471026018799">保存卡信息可更快地结账</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可查看您在 Chrome 中的浏览记录</translation>
 <translation id="8987663052629670333">照片打印服务</translation>

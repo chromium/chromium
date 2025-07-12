@@ -1200,6 +1200,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1822635184853104396">Mostrar histórico de transferências completo num novo separador</translation>
 <translation id="1823768272150895732">Tipo de letra</translation>
 <translation id="1823781806707127806">Adicionar dados de navegação existentes ao perfil gerido</translation>
+<translation id="1824499847634940868">Rever atualização da app</translation>
 <translation id="18245044880483936">Os dados da cópia de segurança não são contabilizados para a quota do armazenamento do Drive da criança.</translation>
 <translation id="1824870205483790748">Fixar grupo na barra de marcadores</translation>
 <translation id="1825073796163165618">Ativar links</translation>
@@ -3406,6 +3407,7 @@ Quer pará-lo?</translation>
 <translation id="3373196968211632036">O Steam para o Chromebook (beta) não está disponível para Contas Google de crianças</translation>
 <translation id="3373701465337594448">Quando a opção está ativada, é apresentada aqui uma lista de sites que visita e que adivinham os seus interesses</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" movido para "<ph name="NEW_FOLDER_TITLE" />".</translation>
+<translation id="3376035595160918049">Rever atualização da app</translation>
 <translation id="3378517653648586174">Certificados locais</translation>
 <translation id="3378572629723696641">Esta extensão pode ter sido danificada.</translation>
 <translation id="3378627645871606983">As autorizações que foram permitidas para o Steam aplicam-se a todos os jogos e apps do Steam.</translation>
@@ -6685,7 +6687,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5687606994963670306">O Chrome elimina automaticamente os sites com mais de 30 dias. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode impedir que um site lhe sugira anúncios. Saiba mais sobre a <ph name="BEGIN_LINK" />gestão da privacidade dos anúncios no Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Certifique-se de que o dispositivo está ligado à corrente e não o desligue. A instalação pode demorar até 20 minutos. O dispositivo será automaticamente encerrado quando a instalação for concluída.</translation>
 <translation id="5689233503102158537">alt + retrocesso</translation>
-<translation id="5689516760719285838">Local</translation>
+<translation id="5689516760719285838">Localização</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> já configurou o Voice Match com o Assistente noutro dispositivo. Estas gravações anteriores foram utilizadas para criar um modelo de voz neste dispositivo.</translation>
 <translation id="56907980372820799">Associar dados</translation>
 <translation id="5691581861107245578">Obtenha sugestões de emojis com base no que está a escrever.</translation>
@@ -8201,6 +8203,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> foi adicionado remotamente</translation>
 <translation id="6790820461102226165">Adicionar pessoa...</translation>
+<translation id="6792351896138862473">Não é possível iniciar a app de quiosque não compatível. Notifique o administrador acerca deste problema.</translation>
 <translation id="6793610798874309813">O PIN pode ter 4 ou mais carateres</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> copiado para a área de transferência</translation>

@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享 <ph name="TABS_COUNT_ONE" /> 個選取的分頁}other{分享 <ph name="TABS_COUNT_MANY" /> 個選取的分頁}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前更新}other{<ph name="NUM_YEARS_MANY" /> 年前更新}}</translation>
 <translation id="7773714564112603605">移除分頁並刪除群組</translation>
+<translation id="7774428938729954687">還原並開啟「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="7792771145871471484">查看建議項目。</translation>
 <translation id="7792860826279960128">共用分頁群組異動通知已開啟，並顯示在畫面下半部</translation>
 <translation id="7825973332242257878">分頁群組</translation>

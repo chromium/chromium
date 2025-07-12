@@ -293,6 +293,7 @@
 <translation id="2119636449201577317">Deschide în…</translation>
 <translation id="2120553909046681540">Organizația ta a dezactivat navigarea privată.</translation>
 <translation id="2122754583996902531">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Chaturile organizației tale nu se folosesc pentru a ne îmbunătăți modelele. Gemini poate să afișeze informații inexacte, inclusiv despre persoane, așadar verifică încă o dată răspunsurile. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Caută textul pe care l-ai copiat</translation>
 <translation id="2147127444698817042">Disponibilă numai pe iPhone</translation>
 <translation id="2148799636999124959">Conectează-te cu ușurință la site-uri și aplicații cu parolele salvate.</translation>
@@ -382,6 +383,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2468444275314013497">Browserul pare în regulă</translation>
 <translation id="2473876017985765807">Ai salvat deja o parolă pentru <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Poți seta un memento pentru a reveni la această pagină mai târziu</translation>
+<translation id="2478246185006364308">Termenii Google</translation>
 <translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2484459871750294497">Cum activez această funcție?</translation>
@@ -623,6 +625,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3530767473765895035">Gestionează conturile de pe acest dispozitiv…</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
 <translation id="3533860663366814939">Deschide Setările pentru completare automată și parole</translation>
+<translation id="3546122170015471515">Previzualizări Maps pe Google.com</translation>
 <translation id="3547356470684043247">Citește evaluările clienților pentru produse, servicii sau experiențe ca să iei decizii informate cu ajutorul recenziilor</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="355765753469272474">Anulează</translation>
@@ -1095,6 +1098,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5454211924362324495">Pentru a împiedica alte persoane să-ți folosească parola, <ph name="BEGIN_LINK" />schimb-o pe <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Adaugă la căutare</translation>
 <translation id="5457226814769348910">Deschide versiunea offline</translation>
+<translation id="5467163657366219870">Dezactivează Previzualizările Maps</translation>
 <translation id="5478327362747197944">Creează evenimente în calendar direct dând clic pe o dată dintr-o pagină web.</translation>
 <translation id="5482922178977937393">Vrei să primești notificări pentru știri, sport și altele pe baza intereselor tale?</translation>
 <translation id="5483838506518938965">Ați terminat</translation>
@@ -1151,6 +1155,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5656431592348714536">Calendar îmbunătățit</translation>
 <translation id="5657156137487675418">Permiteți toate cookie-urile</translation>
 <translation id="5659593005791499971">Adresă de e-mail</translation>
+<translation id="5665739277590037307">Se aplică <ph name="GOOGLE_TERMS" /> și <ph name="GEMINI_APPS_PRIVACY" />. Gemini poate să facă greșeli, așadar verifică încă o dată răspunsurile.</translation>
 <translation id="5666313630530585305">Conectează-te la un site.</translation>
 <translation id="5669335982068190158">Te-ai deconectat în cadrul resetării dispozitivului iPhone. Atinge Continuă pentru a te conecta.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1183,6 +1188,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5756525336488841345">Ascunde marcajele</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="57586589942790530">Numărul cardului nu este valid</translation>
+<translation id="5758759241456233788">Previzualizările Maps sunt dezactivate. Activează-le din nou în Setări.</translation>
 <translation id="5759484603608560822">Ascunde descărcările</translation>
 <translation id="5767099457279594162">Nu s-a permis accesul la parolă</translation>
 <translation id="5779117921996157216">{count,plural, =1{Ai {count} parolă compromisă care îți poate periclita securitatea. Remediază problema acum pentru a rămâne în siguranță.}few{Ai {count} parole compromise care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}other{Ai {count} de parole compromise care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}}</translation>
@@ -1324,6 +1330,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6331836477476466332">Un browser mai sigur și mai puternic pentru tine</translation>
 <translation id="6335744088476213315">Acest card afișează produsele pe care le-ai văzut recent și pe care ai putea să le urmărești pentru a primi alerte privind scăderea de preț</translation>
 <translation id="6337234675334993532">Criptare</translation>
+<translation id="6337313937331295309">Notificare privind confidențialitatea în Aplicațiile Gemini</translation>
 <translation id="633809752005859102">A apărut o eroare. Ne vom ocupa de asta.</translation>
 <translation id="6339793034470834130">Pentru a folosi Web Inspector, conectează-te la Safari pe computer printr-un cablu și accesează iPhone-ul din meniul Dezvoltare. Poți activa meniul Dezvoltare din secțiunea Avansat a setărilor Safari de pe computer.</translation>
 <translation id="6340285871011301182">Traducerea parțială nu este disponibilă.</translation>
@@ -1552,6 +1559,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7176183551031110427">Micșorează</translation>
 <translation id="7186568385131859684">Alege modul în care se folosește istoricul de navigare împreună cu celelalte date ale tale din serviciile Google</translation>
 <translation id="719133302483559673">Gestionează-ți interesele și preferințele.</translation>
+<translation id="7203496777391039568">Datele organizației tale sunt private și în siguranță</translation>
 <translation id="720399613139435155">Traducere nereușită</translation>
 <translation id="7204922488054642675">Știri personalizate</translation>
 <translation id="7206979415662233817">Termeni și condiții</translation>
@@ -1568,6 +1576,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7266578100016339897">Astfel, îți vei putea menține organizarea. Poți modifica oricând opțiunea din Setări.</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="728025568708172005">Arată-mi împrejurimile</translation>
+<translation id="7281202269687163394">Confidențialitatea ta și Gemini.</translation>
 <translation id="7293429513719260019">Selectează limba</translation>
 <translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>

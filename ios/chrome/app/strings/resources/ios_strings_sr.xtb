@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
 <translation id="1605658421715042784">Копирај слику</translation>
+<translation id="1606899876897213121">Затворите резиме недавних активности</translation>
 <translation id="1612754831519568745">Безбедно прегледање је тренутно искључено. Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
@@ -293,6 +294,7 @@
 <translation id="2119636449201577317">Отвори у…</translation>
 <translation id="2120553909046681540">Организација је искључила приватно прегледање.</translation>
 <translation id="2122754583996902531">Прегледачем се управља. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="21243612977487926">Конверзације ваше организације не користимо за побољшавање модела. Gemini може да прикаже нетачне информације, укључујући информације о људима, па их проверите. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="2147127444698817042">Доступно само на iPhone-у</translation>
 <translation id="2148799636999124959">Лако се пријављујте на сајтове и у апликације помоћу сачуваних лозинки.</translation>
@@ -382,6 +384,7 @@
 <translation id="2468444275314013497">Прегледач делује у реду</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Можете да подесите подсетник да бисте поново посетили ову страницу касније</translation>
+<translation id="2478246185006364308">Google услови</translation>
 <translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2484459871750294497">Како да омогућим ову функцију?</translation>
@@ -405,6 +408,7 @@
 <translation id="2559843230610279254">Група картица, <ph name="GROUP_TITLE" />, картица: <ph name="TABS_NUMBER" />.</translation>
 <translation id="2577522251608256362">Део града</translation>
 <translation id="2579713773888829241">Дељени Дискови</translation>
+<translation id="2583688836549072561">Група картица, <ph name="GROUP_TITLE" />, картица: <ph name="TABS_NUMBER" />, нова активност.</translation>
 <translation id="2593272815202181319">Фиксне ширине</translation>
 <translation id="2601778637777010194">Пратите пад цена производа</translation>
 <translation id="260378315836159338">У врху екрана додирните +</translation>
@@ -570,6 +574,7 @@
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
 <translation id="3280562213547448728">Гласовна претрага</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, нова активност</translation>
 <translation id="3305294846493618482">још</translation>
 <translation id="3311748811247479259">Искључено</translation>
 <translation id="3312300514034250578">Побољшано безбедно прегледање</translation>
@@ -1153,6 +1158,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5656431592348714536">Побољшани календар</translation>
 <translation id="5657156137487675418">Дозволи све колачиће</translation>
 <translation id="5659593005791499971">Имејл</translation>
+<translation id="5665739277590037307">Примењују се <ph name="GOOGLE_TERMS" /> и <ph name="GEMINI_APPS_PRIVACY" />. Gemini може да погреши, зато проверите одговоре.</translation>
 <translation id="5666313630530585305">Пријавите се на веб-сајт.</translation>
 <translation id="5669335982068190158">Одјављени сте у склопу ресетовања iPhone-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1327,6 +1333,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6331836477476466332">Безбеднији и моћнији прегледач за вас</translation>
 <translation id="6335744088476213315">Ова картица приказује производе које сте недавно прегледали и које можда желите да пратите ради обавештења о паду цене.</translation>
 <translation id="6337234675334993532">Шифровање</translation>
+<translation id="6337313937331295309">Обавештење о приватности Gemini апликација</translation>
 <translation id="633809752005859102">Нешто стварно није у реду. Порадићемо на томе.</translation>
 <translation id="6339793034470834130">Да бисте користили Веб-инспектор, повежите се са Safari-јем на рачунару помоћу кабла и приступите iPhone-у из менија за програмирање. Мени за програмирање можете да омогућите у одељку Напредно у подешавањима Safari-ја на рачунару.</translation>
 <translation id="6340285871011301182">Делимично превођење није доступно.</translation>
@@ -1572,6 +1579,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7266578100016339897">То вам помаже да останете организовани. То можете да промените у подешавањима у било ком тренутку.</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
 <translation id="728025568708172005">Покажи ми</translation>
+<translation id="7281202269687163394">Ваша приватност и Gemini.</translation>
 <translation id="7293429513719260019">Изаберите језик</translation>
 <translation id="7300448350764260141">Додајте још један ниво заштите од онлајн претњи.</translation>
 <translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
@@ -1639,6 +1647,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7557508262441527045">Одјављени сте</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
+<translation id="7566349809380613217">Отворите дељену групу <ph name="GROUP_TITLE" /> која садржи <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Обележивачи су скривени</translation>
 <translation id="7577900504646297215">Управљајте интересовањима</translation>
 <translation id="7582666837709186351">Преводите текст на сликама или у околини помоћу камере.</translation>

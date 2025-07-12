@@ -175,6 +175,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب ٹیب کا اشتراک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب ٹیبز کا اشتراک کریں}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پہلے اپ ڈیٹ کیا گیا}other{‫<ph name="NUM_YEARS_MANY" /> سال پہلے اپ ڈیٹ کیا گیا}}</translation>
 <translation id="7773714564112603605">ٹیب کو ہٹائیں اور گروپ کو حذف کریں</translation>
+<translation id="7774428938729954687">‫<ph name="TAB_TITLE" /> ٹیب بحال کریں اور کھولیں</translation>
 <translation id="7792771145871471484">تجاویز کا جائزہ لیں۔</translation>
 <translation id="7792860826279960128">آدھی اسکرین پر مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس</translation>
 <translation id="7825973332242257878">ٹیب گروپس</translation>

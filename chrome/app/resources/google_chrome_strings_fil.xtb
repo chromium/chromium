@@ -232,6 +232,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3785324443014631273">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil sa error sa pag-sign in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Nagre-require ang Google Chrome ng Windows 10 o mas bago.</translation>
+<translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="383928141529488001">Kailangan ng Google Chrome ng access sa Bluetooth para i-explore ang 
  mga Bluetooth device. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Mangyaring isara lahat ng mga window ng Google Chrome at muling subukan.</translation>
@@ -318,6 +319,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4895437082222824641">Buksan ang link sa bagong &amp;tab ng Chrome</translation>
 <translation id="4918844574251943176">Nakopya na ang larawan</translation>
 <translation id="492720062778050435">Inirerekomenda ng Chrome na suriin mo ang extension na ito</translation>
+<translation id="4946912144186040233">Mas naiintindihan ng Chrome ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-off ang setting na ito.</translation>
 <translation id="4953650215774548573">Itakda ang Google Chrome bilang iyong default na browser</translation>
 <translation id="495931528404527476">Sa Chrome</translation>
 <translation id="4969674060580488087">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
@@ -326,6 +328,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">I-click ang “Google Password Manager”</translation>
 <translation id="504867494566807945">Magbukas ng mga link sa Chrome mula sa anumang app. Para sa madaling pag-access, ipi-pin ito sa iyong taskbar.</translation>
+<translation id="5049567194145991071">Kapag na-click mo ang 'OK,' mase-save at magagamit mo ang mga password at makakagawa ka ng higit pa sa iyong Google Account kapag naka-sign in ka sa Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mong <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Mag-sign in sa Chrome kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
 <translation id="5126049312684316860">Nagpi-preload ang Chrome ng mas marami pang page na malamang na bibisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
@@ -514,6 +517,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="749228101751499733">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chrome. Gamit ang <ph name="SHORTCUT" />, puwede mong baguhin ang iyong mga setting ng Mga serbisyo ng Google.</translation>
 <translation id="7496017508659652909">Nagpe-preload ang Chrome ng mga page na mas nagpapabilis sa pag-browse at paghahanap. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pag-preload ng mga page<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Mas naiintindihan ng Chrome ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-on ang setting na ito.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Puwede mong i-pin ang Google Lens para sa madaling pag-access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -546,6 +550,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7801699035218095297">Sinusubukan ng Google Chrome na kopyahin ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="7808348361785373670">Alisin sa Chrome...</translation>
 <translation id="7825851276765848807">Nabigo ang pag-install dahil sa hindi natukoy na error. Paki-download muli ang Google Chrome.</translation>
+<translation id="7826342993930002256">Ang Chrome mo, sa lahat ng lugar</translation>
 <translation id="7827099906024714326">Kailangang i-verify ng Chrome na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
