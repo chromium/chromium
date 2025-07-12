@@ -244,7 +244,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
               compose::ComposeHintMetadata compose_hint_metadata;
               compose_hint_metadata.set_decision(
                   compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
-              metadata->SetAnyMetadataForTesting(compose_hint_metadata);
+              metadata->set_any_metadata(
+                  optimization_guide::AnyWrapProto(compose_hint_metadata));
               return optimization_guide::OptimizationGuideDecision::kTrue;
             });
   }
