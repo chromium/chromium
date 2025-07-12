@@ -1483,6 +1483,9 @@ std::optional<LayoutUnit> ResolveItemToleranceLength(
   if (item_tolerance.IsNormal()) {
     return std::nullopt;
   }
+  if (item_tolerance.IsInfinite()) {
+    return LayoutUnit::Max();
+  }
   return MinimumValueForLength(item_tolerance.GetLength(),
                                available_size.ClampIndefiniteToZero());
 }
