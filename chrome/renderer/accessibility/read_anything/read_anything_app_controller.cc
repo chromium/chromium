@@ -619,6 +619,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     VLOG(1) << "On active tree changed with same id: " << tree_id;
     return;
   }
+  VLOG(1) << "On active tree changed with new id: " << tree_id;
   RecordNumSelections();
 
   // Cancel any running draw timers.
@@ -661,6 +662,7 @@ void ReadAnythingAppController::RecordNumSelections() {
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // Cancel any running draw timers.
+  VLOG(1) << "OnAXTreeDestroyed: " << tree_id;
   post_user_entry_draw_timer_->Stop();
   model_.OnAXTreeDestroyed(tree_id);
 }
@@ -717,6 +719,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.set_distillation_in_progress(true);
+  VLOG(1) << "Distilling tree with ID: " << tree->GetAXTreeID();
   distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
 }
 
