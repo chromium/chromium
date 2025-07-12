@@ -536,7 +536,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMasonryFill:
       return a.MasonryFill() == b.MasonryFill();
     case CSSPropertyID::kItemTolerance:
-      return a.ItemTolerance() == b.ItemTolerance();
+      return a.GetItemTolerance() == b.GetItemTolerance();
     case CSSPropertyID::kMathShift:
       return a.MathShift() == b.MathShift();
     case CSSPropertyID::kMathStyle:

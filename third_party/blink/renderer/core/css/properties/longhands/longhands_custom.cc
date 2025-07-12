@@ -6914,7 +6914,7 @@ const CSSValue* ItemTolerance::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForItemTolerance(style.ItemTolerance(),
+  return ComputedStyleUtils::ValueForItemTolerance(style.GetItemTolerance(),
                                                    style);
 }
 

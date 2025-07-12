@@ -2197,10 +2197,14 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
 }
 
 CSSValue* ComputedStyleUtils::ValueForItemTolerance(
-    const std::optional<Length>& slack_length,
+    const ItemTolerance& item_tolerance,
     const ComputedStyle& style) {
-  return slack_length ? ZoomAdjustedPixelValueForLength(*slack_length, style)
-                      : CSSIdentifierValue::Create(CSSValueID::kNormal);
+  if (item_tolerance.IsNormal()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  } else if (item_tolerance.IsInfinite()) {
+    return CSSIdentifierValue::Create(CSSValueID::kInfinite);
+  }
+  return ZoomAdjustedPixelValueForLength(item_tolerance.GetLength(), style);
 }
 
 static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {

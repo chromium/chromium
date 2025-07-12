@@ -1767,16 +1767,15 @@ ScrollMarkerGroup* StyleBuilderConverter::ConvertScrollMarkerGroup(
   return MakeGarbageCollected<ScrollMarkerGroup>(position, mode);
 }
 
-std::optional<Length> StyleBuilderConverter::ConvertItemTolerance(
+ItemTolerance StyleBuilderConverter::ConvertItemTolerance(
     const StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value &&
-      identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return std::nullopt;
+  if (identifier_value) {
+    return ItemTolerance(identifier_value->GetValueID());
   }
 
-  return ConvertLength(state, value);
+  return ItemTolerance(ConvertLength(state, value));
 }
 
 StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(

@@ -1478,11 +1478,13 @@ LayoutUnit ResolveRowGapForMulticol(const ComputedStyle& style,
 std::optional<LayoutUnit> ResolveItemToleranceLength(
     const ComputedStyle& style,
     LayoutUnit available_size) {
-  if (const auto& item_tolerance = style.ItemTolerance()) {
-    return MinimumValueForLength(*item_tolerance,
-                                 available_size.ClampIndefiniteToZero());
+  // TODO (celestepan): Account for when item-tolerance is set to infinite.
+  const ItemTolerance& item_tolerance = style.GetItemTolerance();
+  if (item_tolerance.IsNormal()) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  return MinimumValueForLength(item_tolerance.GetLength(),
+                               available_size.ClampIndefiniteToZero());
 }
 
 LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle& style,

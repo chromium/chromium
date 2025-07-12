@@ -33,6 +33,7 @@ class StyleColor;
 class StyleIntrinsicLength;
 class StylePropertyShorthand;
 class StyleTimeline;
+class ItemTolerance;
 
 enum class CSSGapDecorationPropertyDirection : int;
 
@@ -163,7 +164,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&,
                                          bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
-  static CSSValue* ValueForItemTolerance(const std::optional<Length>&,
+  static CSSValue* ValueForItemTolerance(const ItemTolerance&,
                                          const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
