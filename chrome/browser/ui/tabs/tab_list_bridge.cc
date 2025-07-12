@@ -41,7 +41,13 @@ void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {}
 void TabListBridge::CloseTab(tabs::TabHandle tab) {}
 
 std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
-  return {};
+  std::vector<tabs::TabInterface*> all_tabs;
+  size_t tab_count = tab_strip_->count();
+  all_tabs.reserve(tab_count);
+  for (size_t i = 0; i < tab_count; ++i) {
+    all_tabs.push_back(tab_strip_->GetTabAtIndex(i));
+  }
+  return all_tabs;
 }
 
 void TabListBridge::PinTab(tabs::TabHandle tab) {}

@@ -9,11 +9,26 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 
 // TODO(devlin): Would it make sense to port this to instead be a
 // TabListInterface browsertest, and use it on all relevant platforms?
 using TabListBridgeBrowserTest = InProcessBrowserTest;
+
+// A helpful matcher for tabs having an expected URL. Since we assume the
+// TabInterface works, this is sufficient to meaningfully describe tabs in
+// expectations.
+MATCHER_P(MatchesTab, expected_url, "") {
+  const GURL& actual_url = arg->GetContents()->GetLastCommittedURL();
+  bool match = testing::ExplainMatchResult(testing::Eq(expected_url),
+                                           actual_url, result_listener);
+  if (!match) {
+    *result_listener << " Actual URL: " << actual_url;
+  }
+  return match;
+}
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTab) {
   const GURL url1("http://one.example");
@@ -31,11 +46,11 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTab) {
 
   tabs::TabInterface* tab1 = tab_list_interface->GetTab(0);
   ASSERT_TRUE(tab1);
-  EXPECT_EQ(url1, tab1->GetContents()->GetLastCommittedURL());
+  EXPECT_THAT(tab1, MatchesTab(url1));
 
   tabs::TabInterface* tab2 = tab_list_interface->GetTab(1);
   ASSERT_TRUE(tab2);
-  EXPECT_EQ(url2, tab2->GetContents()->GetLastCommittedURL());
+  EXPECT_THAT(tab2, MatchesTab(url2));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveIndex) {
@@ -64,4 +79,33 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTabCount) {
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_EQ(2, tab_list_interface->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetAllTabs) {
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+  const GURL url3("http://three.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Navigate to one.example. This should be the only tab, initially.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url1)));
+
+  // Open two more tabs, for a total of three. All should be returned (in
+  // order).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url1), MatchesTab(url2),
+                                   MatchesTab(url3)));
 }
