@@ -32,9 +32,6 @@ class PixAccountLinkingManagerTest : public testing::Test {
 
   PixAccountLinkingManagerTest() {
     manager_ = std::make_unique<PixAccountLinkingManager>(&client_);
-    multiple_request_payments_network_interface_ = std::make_unique<
-        MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
-        *identity_test_env_.identity_manager(), *payments_data_manager_);
   }
 
   void SetUp() override {
@@ -50,6 +47,9 @@ class PixAccountLinkingManagerTest : public testing::Test {
     device_delegate_ = std::make_unique<MockDeviceDelegate>();
     ON_CALL(client_, GetDeviceDelegate)
         .WillByDefault(testing::Return(device_delegate_.get()));
+    multiple_request_payments_network_interface_ = std::make_unique<
+        MockMultipleRequestFacilitatedPaymentsNetworkInterface>(
+        *identity_test_env_.identity_manager(), *payments_data_manager_);
     ON_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(
             multiple_request_payments_network_interface_.get()));
