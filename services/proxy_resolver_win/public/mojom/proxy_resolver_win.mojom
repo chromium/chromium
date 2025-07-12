@@ -9,6 +9,7 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "url/mojom/url.mojom";
 
 // Keep in sync with net::WinHttpStatus. See /net code for details.
+// LINT.IfChange(WinHttpStatus)
 enum WinHttpStatus {
   kOk,
   kAborted,
@@ -22,7 +23,7 @@ enum WinHttpStatus {
   kWinHttpGetProxyResultFailed,
   kEmptyProxyList,
 };
-
+// LINT.ThenChange(//net/proxy_resolution/win/winhttp_status.h:WinHttpStatus)
 // This defines a simple interface for asynchronously resolving a proxy using
 // WinHttp APIs.
 [ServiceSandbox=sandbox.mojom.Sandbox.kWindowsSystemProxyResolver]

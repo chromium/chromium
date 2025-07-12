@@ -3784,6 +3784,24 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<!-- LINT.IfChange(WinHttpStatus) -->
+
+<enum name="WinHttpStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Aborted"/>
+  <int value="2" label="WinHttpOpenFailed"/>
+  <int value="3" label="WinHttpSetTimeoutsFailed"/>
+  <int value="4" label="WinHttpSetStatusCallbackFailed"/>
+  <int value="5" label="WinHttpGetIEProxyConfigForCurrentUserFailed"/>
+  <int value="6" label="WinHttpCreateProxyResolverFailed"/>
+  <int value="7" label="WinHttpGetProxyForURLExFailed"/>
+  <int value="8" label="StatusCallbackFailed"/>
+  <int value="9" label="WinHttpGetProxyResultFailed"/>
+  <int value="10" label="EmptyProxyList"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom:WinHttpStatus) -->
+
 <enum name="ZeroRttState">
   <int value="0" label="Attempted and succeeded"/>
   <int value="1" label="Attempted and rejected"/>

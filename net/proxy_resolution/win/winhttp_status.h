@@ -12,40 +12,47 @@ namespace net {
 // by the Windows error code, which will be supplied alongside this enum.
 //
 // Keep in sync with proxy_resolver_win.mojom.WinHttpStatus.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WinHttpStatus)
 enum class WinHttpStatus {
   // No Error.
-  kOk,
+  kOk = 0,
 
   // Aborted by caller.
-  kAborted,
+  kAborted = 1,
 
   // WinHttpOpen() API failed.
-  kWinHttpOpenFailed,
+  kWinHttpOpenFailed = 2,
 
   // WinHttpSetTimeouts() API failed.
-  kWinHttpSetTimeoutsFailed,
+  kWinHttpSetTimeoutsFailed = 3,
 
   // WinHttpSetStatusCallback() API failed.
-  kWinHttpSetStatusCallbackFailed,
+  kWinHttpSetStatusCallbackFailed = 4,
 
   // WinHttpGetIEProxyConfigForCurrentUser() API failed.
-  kWinHttpGetIEProxyConfigForCurrentUserFailed,
+  kWinHttpGetIEProxyConfigForCurrentUserFailed = 5,
 
   // WinHttpCreateProxyResolver() API failed.
-  kWinHttpCreateProxyResolverFailed,
+  kWinHttpCreateProxyResolverFailed = 6,
 
   // WinHttpGetProxyForURLEx() API failed.
-  kWinHttpGetProxyForURLExFailed,
+  kWinHttpGetProxyForURLExFailed = 7,
 
   // Proxy resolution callback returned an error.
-  kStatusCallbackFailed,
+  kStatusCallbackFailed = 8,
 
   // WinHttpGetProxyResult() API failed.
-  kWinHttpGetProxyResultFailed,
+  kWinHttpGetProxyResultFailed = 9,
 
   // WinHttpGetProxyResult() API unexpectedly returned an empty list.
-  kEmptyProxyList,
+  kEmptyProxyList = 10,
+
+  kMaxValue = kEmptyProxyList,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:WinHttpStatus)
 
 }  // namespace net
 

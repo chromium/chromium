@@ -3216,6 +3216,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState"
+    enum="WinHttpStatus" expires_after="2026-07-04">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/services/proxy_resolver_win/OWNERS</owner>
+  <summary>
+    Logs the status of WinHTTP session initialization for proxy resolution on
+    Windows. This entry is recorded when the WinHTTP session is initialized,
+    which involves opening the session, configuring timeouts, and registering
+    the status callback.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpRequestSSLUpgradeDecision"
     enum="HttpRequestSSLUpgradeDecision" expires_after="2025-11-16">
   <owner>cthomp@chromium.org</owner>

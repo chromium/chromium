@@ -25,6 +25,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -33,6 +34,7 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 #include "net/test/test_with_task_environment.h"
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
 #include "services/proxy_resolver_win/winhttp_api_wrapper.h"
@@ -384,6 +386,10 @@ class WindowsSystemProxyResolverImplTest : public testing::Test {
     return winhttp_api_wrapper_.get();
   }
 
+  net::WinHttpStatus CallEnsureInitialized() {
+    return proxy_resolver_->EnsureInitialized();
+  }
+
   void ValidateProxyResult(base::OnceClosure closure,
                            const net::ProxyList& expected_proxy_list,
                            net::WinHttpStatus expected_winhttp_status,
@@ -643,6 +649,63 @@ TEST_F(WindowsSystemProxyResolverImplTest, GetProxyForUrlMultipleResults) {
   expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
 
   DoGetProxyForUrlTest(expected_proxy_list);
+}
+
+TEST_F(WindowsSystemProxyResolverImplTest, EnsureInitializedSuccess) {
+  base::HistogramTester histogram_tester;
+
+  net::WinHttpStatus status = CallEnsureInitialized();
+
+  EXPECT_EQ(status, net::WinHttpStatus::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState",
+      net::WinHttpStatus::kOk, 1);
+}
+
+TEST_F(WindowsSystemProxyResolverImplTest,
+       EnsureInitializedFailsWithWinHttpOpen) {
+  base::HistogramTester histogram_tester;
+
+  winhttp_api_wrapper()->set_call_winhttp_open_success(false);
+
+  net::WinHttpStatus status = CallEnsureInitialized();
+
+  EXPECT_EQ(status, net::WinHttpStatus::kWinHttpOpenFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState",
+      net::WinHttpStatus::kWinHttpOpenFailed, 1);
+}
+
+TEST_F(WindowsSystemProxyResolverImplTest,
+       EnsureInitializedFailsWithWinHttpSetTimeouts) {
+  base::HistogramTester histogram_tester;
+
+  winhttp_api_wrapper()->set_call_winhttp_set_timeouts_success(false);
+
+  net::WinHttpStatus status = CallEnsureInitialized();
+
+  EXPECT_EQ(status, net::WinHttpStatus::kWinHttpSetTimeoutsFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState",
+      net::WinHttpStatus::kWinHttpSetTimeoutsFailed, 1);
+}
+
+TEST_F(WindowsSystemProxyResolverImplTest,
+       EnsureInitializedFailsWithWinHttpSetStatusCallback) {
+  base::HistogramTester histogram_tester;
+
+  winhttp_api_wrapper()->set_call_winhttp_set_status_callback_success(false);
+
+  net::WinHttpStatus status = CallEnsureInitialized();
+
+  EXPECT_EQ(status, net::WinHttpStatus::kWinHttpSetStatusCallbackFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState",
+      net::WinHttpStatus::kWinHttpSetStatusCallbackFailed, 1);
 }
 
 }  // namespace proxy_resolver_win
