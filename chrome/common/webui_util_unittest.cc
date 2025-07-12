@@ -42,13 +42,12 @@ class WebUIUtilTest : public ::testing::Test,
 TEST_P(WebUIUtilTest, ShouldUseCodeCacheForWebUIUrl) {
   // Only specifically targeted resources should participate if the restricted
   // code cache flag is enabled.
-  EXPECT_TRUE(chrome::ShouldUseCodeCacheForWebUIUrl(
+  EXPECT_TRUE(ShouldUseCodeCacheForWebUIUrl(
       content::GetWebUIURL(base::StrCat({"host", kResource1}))));
-  EXPECT_TRUE(chrome::ShouldUseCodeCacheForWebUIUrl(
+  EXPECT_TRUE(ShouldUseCodeCacheForWebUIUrl(
       content::GetWebUIURL(base::StrCat({"host", kResource2}))));
-  EXPECT_EQ(!GetParam(),
-            chrome::ShouldUseCodeCacheForWebUIUrl(
-                content::GetWebUIURL(base::StrCat({"host", kResource3}))));
+  EXPECT_EQ(!GetParam(), ShouldUseCodeCacheForWebUIUrl(content::GetWebUIURL(
+                             base::StrCat({"host", kResource3}))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

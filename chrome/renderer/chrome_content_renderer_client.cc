@@ -1305,7 +1305,7 @@ ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
 bool ChromeContentRendererClient::ShouldUseCodeCacheWithHashing(
     const blink::WebURL& request_url) const {
   if (content::HasWebUIScheme(request_url)) {
-    return chrome::ShouldUseCodeCacheForWebUIUrl(GURL(request_url));
+    return ShouldUseCodeCacheForWebUIUrl(GURL(request_url));
   }
   return true;
 }

@@ -13,8 +13,6 @@
 #include "content/public/common/url_utils.h"
 #include "url/gurl.h"
 
-namespace chrome {
-
 bool ShouldUseCodeCacheForWebUIUrl(const GURL& request_url) {
   DCHECK(content::HasWebUIScheme(request_url));
   if (base::FeatureList::IsEnabled(features::kRestrictedWebUICodeCache)) {
@@ -26,5 +24,3 @@ bool ShouldUseCodeCacheForWebUIUrl(const GURL& request_url) {
   }
   return true;
 }
-
-}  // namespace chrome
