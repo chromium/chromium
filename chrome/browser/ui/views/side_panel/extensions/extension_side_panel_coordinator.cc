@@ -44,6 +44,18 @@ bool IsSidePanelEnabled(const api::side_panel::PanelOptions& options) {
          options.path.has_value();
 }
 
+GURL GetSidePanelURL(const Extension& extension,
+                     const api::side_panel::PanelOptions& options) {
+  // A side panel URL can be either an external HTTP/HTTPS URL or an extension
+  // URL.
+  GURL absolute_url = GURL(*options.path);
+  if (absolute_url.SchemeIs(url::kHttpScheme) ||
+      absolute_url.SchemeIs(url::kHttpsScheme)) {
+    return absolute_url;
+  }
+  return extension.GetResourceURL(*options.path);
+}
+
 }  // namespace
 
 ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
@@ -82,7 +94,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
                   *extension,
                   ExtensionTabUtil::GetTabId(tab_interface_->GetContents()));
     if (IsSidePanelEnabled(options)) {
-      side_panel_url_ = extension->GetResourceURL(*options.path);
+      side_panel_url_ = GetSidePanelURL(*extension, options);
       CreateAndRegisterEntry();
     }
   }
@@ -144,7 +156,7 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
   // Update the URL if the path was specified.
   GURL previous_url = side_panel_url_;
   if (updated_options.path.has_value()) {
-    side_panel_url_ = extension_->GetResourceURL(*updated_options.path);
+    side_panel_url_ = GetSidePanelURL(*extension_, updated_options);
   }
 
   // Deregister the SidePanelEntry if `enabled` is false.
@@ -205,7 +217,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
   host_ = ExtensionViewHostFactory::CreateSidePanelHost(
-      side_panel_url_, browser_, tab_interface_);
+      *extension_, side_panel_url_, browser_, tab_interface_);
 
   // `host_` could be null if `side_panel_url_` is invalid or if the extension
   // is not currently enabled. The latter can happen when the extension has

@@ -50,9 +50,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
   {
     // Create a side panel host with a browser passed in.
     std::unique_ptr<ExtensionViewHost> host =
-        ExtensionViewHostFactory::CreateSidePanelHost(extension->url(),
-                                                      browser(),
-                                                      /*web_contents=*/nullptr);
+        ExtensionViewHostFactory::CreateSidePanelHost(
+            *extension, extension->url(), browser(),
+            /*tab_interface=*/nullptr);
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
     EXPECT_EQ(mojom::ViewType::kExtensionSidePanel,
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
     // Create a side panel host with a tab based WebContents passed in.
     std::unique_ptr<ExtensionViewHost> host =
         ExtensionViewHostFactory::CreateSidePanelHost(
-            extension->url(), /*browser=*/nullptr,
+            *extension, extension->url(), /*browser=*/nullptr,
             browser()->tab_strip_model()->GetActiveTab());
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
