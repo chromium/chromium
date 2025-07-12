@@ -307,7 +307,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeSafeAreaConstraint,
     &kEdgeToEdgeTablet,
     &kEdgeToEdgeUseBackupNavbarInsets,
-    &kEdgeToEdgeWebOptIn,
     &kEducationalTipDefaultBrowserPromoCard,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
@@ -981,10 +980,6 @@ BASE_FEATURE(kEdgeToEdgeTablet,
 
 BASE_FEATURE(kEdgeToEdgeUseBackupNavbarInsets,
              "EdgeToEdgeUseBackupNavbarInsets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEdgeToEdgeWebOptIn,
-             "EdgeToEdgeWebOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEducationalTipDefaultBrowserPromoCard,

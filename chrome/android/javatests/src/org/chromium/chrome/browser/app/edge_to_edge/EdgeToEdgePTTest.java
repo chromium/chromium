@@ -140,10 +140,7 @@ public class EdgeToEdgePTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
-    })
+    @EnableFeatures({ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE})
     public void fromNtpToOptInPage() {
         // Start the page on NTP, chin is not visible.
         var newTabPage = mCtaTestRule.startOnNtp();
@@ -168,7 +165,6 @@ public class EdgeToEdgePTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN})
     public void fromBlankPageToOptInPage() {
         // Start the page on NTP, chin is not visible.
         var blankPage = mCtaTestRule.startOnBlankPage();

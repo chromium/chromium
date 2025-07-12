@@ -51,10 +51,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for credit card accessory views. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
-})
+@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class CreditCardAccessoryIntegrationTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =

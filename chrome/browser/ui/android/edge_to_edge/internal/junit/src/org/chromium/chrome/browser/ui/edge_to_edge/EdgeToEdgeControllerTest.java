@@ -96,7 +96,6 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
         shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
 @EnableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
     ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
 })
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})

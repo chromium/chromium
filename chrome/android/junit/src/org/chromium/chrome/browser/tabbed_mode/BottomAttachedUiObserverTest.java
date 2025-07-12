@@ -410,10 +410,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
-    })
+    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(

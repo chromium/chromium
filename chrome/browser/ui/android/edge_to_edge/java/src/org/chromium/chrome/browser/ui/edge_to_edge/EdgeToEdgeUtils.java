@@ -211,14 +211,6 @@ public class EdgeToEdgeUtils {
         return DisplayUtil.getCurrentSmallestScreenWidth(context) < widthThreshold;
     }
 
-    /**
-     * Whether drawing the website that has `viewport-fit=cover` fully edge to edge, removing the
-     * bottom chin.
-     */
-    public static boolean isEdgeToEdgeWebOptInEnabled() {
-        return isBottomChinFeatureEnabled() && ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
-    }
-
     /** Whether edge-to-edge should be enabled everywhere. */
     @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isEdgeToEdgeEverywhereEnabled() {
@@ -377,7 +369,7 @@ public class EdgeToEdgeUtils {
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
-        return isEdgeToEdgeWebOptInEnabled() && getWasViewportFitCover(tab);
+        return getWasViewportFitCover(tab);
     }
 
     /**
@@ -394,9 +386,6 @@ public class EdgeToEdgeUtils {
         }
         if (tab.shouldEnableEmbeddedMediaExperience()) {
             return isDrawKeyNativePageToEdgeEnabled();
-        }
-        if (!isEdgeToEdgeWebOptInEnabled()) {
-            return false;
         }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
