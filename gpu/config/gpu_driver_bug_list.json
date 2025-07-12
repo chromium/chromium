@@ -3599,6 +3599,40 @@
       "features": [
         "force_rgb10a2_overlay_support"
       ]
+    },
+    {
+      "id": 453,
+      "cr_bugs": [415086846, 423655169, 423663681],
+      "description": "NV12 upload (creating a texture with init data or using UpdateSubresource) fails on a range of NVidia drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+            "op": "between",
+            "value": "32.0.15.7500",
+            "value2": "32.0.15.7658"
+      },
+      "features": [
+        "disable_nv12_upload"
+      ]
+    },
+    {
+      "id": 454,
+      "cr_bugs": [415086846, 423655169, 423663681],
+      "description": "NV12 upload (creating a texture with init data or using UpdateSubresource) fails on a range of NVidia drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+            "op": "between",
+            "value": "32.0.15.7216",
+            "value2": "32.0.15.7327"
+      },
+      "features": [
+        "disable_nv12_upload"
+      ]
     }
   ]
 }

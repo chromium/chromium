@@ -92,6 +92,14 @@ int GetMaxTemporalLayer(
 
 }  // namespace
 
+bool SupportsSharedImageEncoding(
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
+  if (workarounds.disable_nv12_upload) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing);
+}
+
 // static
 MediaFoundationVideoEncoderSharedState*
 MediaFoundationVideoEncoderSharedState::GetInstance(
@@ -209,16 +217,18 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
         }
       }
 
-      if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
-        std::ranges::copy(
-            kSupportedPixelFormatsD3DVideoProcessing,
-            std::back_inserter(profile.gpu_supported_pixel_formats));
+      if (SupportsSharedImageEncoding(workarounds_)) {
+        if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
+          std::ranges::copy(
+              kSupportedPixelFormatsD3DVideoProcessing,
+              std::back_inserter(profile.gpu_supported_pixel_formats));
+        }
       }
 
       VideoEncodeAccelerator::SupportedProfile portrait_profile(profile);
       portrait_profile.max_resolution.Transpose();
 
-      if (base::FeatureList::IsEnabled(kMediaFoundationSharedImageEncode)) {
+      if (SupportsSharedImageEncoding(workarounds_)) {
         profile.supports_gpu_shared_images = true;
       }
 

@@ -1215,7 +1215,7 @@ void MediaFoundationVideoEncodeAccelerator::SetCommandBufferHelperCB(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
-  if (!base::FeatureList::IsEnabled(kMediaFoundationSharedImageEncode)) {
+  if (!SupportsSharedImageEncoding(workarounds_)) {
     return;
   }
 
@@ -1985,7 +1985,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     return E_FAIL;
   }
 
-  if (!base::FeatureList::IsEnabled(kMediaFoundationSharedImageEncode)) {
+  if (!SupportsSharedImageEncoding(workarounds_)) {
     return S_OK;
   }
 
