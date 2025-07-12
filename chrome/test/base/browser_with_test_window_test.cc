@@ -318,14 +318,20 @@ void BrowserWithTestWindowTest::LogIn(std::string_view email,
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
                                                      Profile* profile) {
   CHECK(profile);
+
+  auto* user_manager = user_manager::UserManager::Get();
+  const AccountId account_id =
+      user_manager->FindUser(AccountId::FromUserEmail(email))->GetAccountId();
   // TODO(b/40225390): Unset for_test explicit param after subclasses are
   // migrated.
-  AccountId account_id = AccountId::FromUserEmail(email);
-  ash::AnnotatedAccountId::Set(profile, account_id,
-                               /*for_test=*/false);
+  // Some subclasses are migrated to annotate it at earlier stage,
+  // so annotate it only when it is not yet for transition period.
+  if (!ash::AnnotatedAccountId::Get(profile)) {
+    ash::AnnotatedAccountId::Set(profile, account_id,
+                                 /*for_test=*/false);
+  }
   // Do not use the member directly, because another UserManager instance
   // may be injected.
-  auto* user_manager = user_manager::UserManager::Get();
   user_manager->OnUserProfileCreated(account_id, profile->GetPrefs());
   GetSessionControllerClient()->SetUnownedUserPrefService(account_id,
                                                           profile->GetPrefs());

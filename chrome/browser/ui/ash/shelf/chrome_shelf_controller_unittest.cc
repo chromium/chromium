@@ -93,6 +93,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
@@ -152,6 +153,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -1511,8 +1513,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   // Overwrite the Setup function to enable multi profile and needed objects.
   void SetUp() override {
     // Initialize the rest.
+    ash::ProfileHelper::Get();  // Instantiate
+    ash::BrowserContextHelper::Get()->SetUseAnnotatedAccountIdForTesting();
     ChromeShelfControllerTestBase::SetUp();
-
     // Ensure there are multiple profiles. User 0 is created during setup.
     CreateMultiUserProfile("user1@example.com", GaiaId("fakegaia1"));
     ASSERT_TRUE(SessionControllerClientImpl::IsMultiProfileAvailable());
@@ -1591,12 +1594,22 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    TestingProfile* profile =
-        BrowserWithTestWindowTest::CreateProfile(profile_name);
+    const user_manager::User* user =
+        user_manager()->FindUser(AccountId::FromUserEmail(profile_name));
+    CHECK(user);
+
+    // TODO: move to the parent class.
+    TestingProfile* profile = nullptr;
+    {
+      ash::ScopedAccountIdAnnotator annotator(
+          profile_manager()->profile_manager(), user->GetAccountId());
+      profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
+    }
     StartWebAppProvider(profile);
 
     if (MultiUserWindowManagerHelper::GetInstance()) {
-      MultiUserWindowManagerHelper::GetInstance()->AddUser(profile);
+      MultiUserWindowManagerHelper::GetInstance()->AddUser(
+          user->GetAccountId());
     }
     if (shelf_controller_) {
       shelf_controller_->AdditionalUserAddedToSession(profile);

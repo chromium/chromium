@@ -48,6 +48,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
  private:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    ash::ProfileHelper::Get();  // Instantiate.
     // Create secondary user/profile.
     LogIn(kTestAccount2, kFakeGaia2);
     second_profile_ = CreateProfile(kTestAccount2);
@@ -70,8 +71,11 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
         AccountId::FromUserEmail(profile_name));
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
     // Force creation of MultiProfileSupport.
-    GetMultiUserWindowManager();
-    MultiProfileSupport::GetInstanceForTest()->AddUser(profile);
+    if (!MultiUserWindowManagerHelper::GetInstance()) {
+      GetMultiUserWindowManager();
+    } else {
+      MultiProfileSupport::GetInstanceForTest()->AddUser(user->GetAccountId());
+    }
     return profile;
   }
 

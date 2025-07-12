@@ -92,9 +92,9 @@ void MultiUserWindowManagerHelper::Init() {
   }
 }
 
-void MultiUserWindowManagerHelper::AddUser(content::BrowserContext* profile) {
+void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {
   if (multi_profile_support_) {
-    multi_profile_support_->AddUser(profile);
+    multi_profile_support_->AddUser(account_id);
   }
 }
 

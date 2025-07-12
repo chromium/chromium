@@ -90,6 +90,8 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -220,7 +222,7 @@ class ChromeShelfControllerUserSwitchObserver
 
  private:
   // Add a user to the session.
-  void AddUser(Profile* profile);
+  void AddUser(const AccountId& account_id, Profile* profile);
 
   // The owning ChromeShelfController.
   raw_ptr<ChromeShelfController> controller_;
@@ -231,41 +233,41 @@ class ChromeShelfControllerUserSwitchObserver
 
   // Users which were just added to the system, but which profiles were not yet
   // (fully) loaded.
-  std::set<std::string> added_user_ids_waiting_for_profiles_;
+  std::set<AccountId> added_user_ids_waiting_for_profiles_;
 };
 
 void ChromeShelfControllerUserSwitchObserver::UserAddedToSession(
     const user_manager::User* active_user) {
-  Profile* profile =
-      multi_user_util::GetProfileFromAccountId(active_user->GetAccountId());
-  // If we do not have a profile yet, we postpone forwarding the notification
-  // until it is loaded.
-  if (!profile) {
-    added_user_ids_waiting_for_profiles_.insert(
-        active_user->GetAccountId().GetUserEmail());
+  const AccountId& account_id = active_user->GetAccountId();
+  if (active_user->is_profile_created()) {
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    AddUser(active_user->GetAccountId(), profile);
   } else {
-    AddUser(profile);
+    // If we do not have a profile yet, we postpone forwarding the notification
+    // until it is loaded.
+    added_user_ids_waiting_for_profiles_.insert(account_id);
   }
 }
 
 void ChromeShelfControllerUserSwitchObserver::OnUserProfileReadyToSwitch(
     Profile* profile) {
-  if (!added_user_ids_waiting_for_profiles_.empty()) {
-    // Check if the profile is from a user which was on the waiting list.
-    // TODO(alemate): added_user_ids_waiting_for_profiles_ should be
-    // a set<AccountId>
-    std::string user_id =
-        multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
-    auto it = std::ranges::find(added_user_ids_waiting_for_profiles_, user_id);
-    if (it != added_user_ids_waiting_for_profiles_.end()) {
-      added_user_ids_waiting_for_profiles_.erase(it);
-      AddUser(profile->GetOriginalProfile());
-    }
+  if (added_user_ids_waiting_for_profiles_.empty()) {
+    return;
+  }
+  // Check if the profile is from a user which was on the waiting list.
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
+  CHECK(account_id);
+  if (added_user_ids_waiting_for_profiles_.erase(*account_id)) {
+    AddUser(*account_id, profile);
   }
 }
 
-void ChromeShelfControllerUserSwitchObserver::AddUser(Profile* profile) {
-  MultiUserWindowManagerHelper::GetInstance()->AddUser(profile);
+void ChromeShelfControllerUserSwitchObserver::AddUser(
+    const AccountId& account_id,
+    Profile* profile) {
+  MultiUserWindowManagerHelper::GetInstance()->AddUser(account_id);
   controller_->AdditionalUserAddedToSession(profile->GetOriginalProfile());
 }
 

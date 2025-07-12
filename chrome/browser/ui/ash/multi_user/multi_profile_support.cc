@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -38,8 +39,8 @@
 class AppObserver : public extensions::AppWindowRegistry::Observer {
  public:
   explicit AppObserver(extensions::AppWindowRegistry* registry,
-                       const std::string& user_id)
-      : user_id_(user_id) {
+                       const AccountId& account_id)
+      : account_id_(account_id) {
     app_window_registry_observer_.Observe(registry);
   }
 
@@ -53,11 +54,11 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
     aura::Window* window = app_window->GetNativeWindow();
     DCHECK(window);
     MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
-        window, AccountId::FromUserEmail(user_id_));
+        window, account_id_);
   }
 
  private:
-  std::string user_id_;
+  AccountId account_id_;
 
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
@@ -97,32 +98,30 @@ void MultiProfileSupport::Init() {
   BrowserList::AddObserver(this);
 
   // Add an app window observer & all already running apps.
-  Profile* profile =
-      multi_user_util::GetProfileFromAccountId(current_account_id);
-  if (profile) {
-    AddUser(profile);
-  }
+  AddUser(current_account_id);
 }
 
-void MultiProfileSupport::AddUser(content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  const AccountId& account_id(
-      multi_user_util::GetAccountIdFromProfile(profile));
-  if (account_id_to_app_observer_.find(account_id) !=
-      account_id_to_app_observer_.end()) {
-    return;
-  }
+void MultiProfileSupport::AddUser(const AccountId& account_id) {
+  // AddUser must not be called twice for the same account_id.
+  CHECK(account_id_to_app_observer_.find(account_id) ==
+        account_id_to_app_observer_.end());
 
-  account_id_to_app_observer_[account_id] = std::make_unique<AppObserver>(
-      extensions::AppWindowRegistry::Get(profile), account_id.GetUserEmail());
+  // This must be called after User's Profile gets ready.
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile);
+
+  auto app_observer = std::make_unique<AppObserver>(
+      extensions::AppWindowRegistry::Get(profile), account_id);
+  auto* app_observer_ptr = app_observer.get();
+  account_id_to_app_observer_.try_emplace(account_id, std::move(app_observer));
 
   // Account all existing application windows of this user accordingly.
   const extensions::AppWindowRegistry::AppWindowList& app_windows =
       extensions::AppWindowRegistry::Get(profile)->app_windows();
-  extensions::AppWindowRegistry::AppWindowList::const_iterator it =
-      app_windows.begin();
-  for (; it != app_windows.end(); ++it) {
-    account_id_to_app_observer_[account_id]->OnAppWindowAdded(*it);
+  for (extensions::AppWindow* app_window : app_windows) {
+    app_observer_ptr->OnAppWindowAdded(app_window);
   }
 
   // Account all existing browser windows of this user accordingly.

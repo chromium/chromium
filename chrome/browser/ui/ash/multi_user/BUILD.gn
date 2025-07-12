@@ -40,6 +40,7 @@ static_library("multi_user") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/prefs",
     "//components/user_manager",

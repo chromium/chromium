@@ -126,6 +126,7 @@ static_library("shelf") {
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/default_pinned_apps",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/scalable_iph",

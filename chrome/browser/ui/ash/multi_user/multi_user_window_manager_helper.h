@@ -16,10 +16,6 @@ namespace ash {
 class MultiUserWindowManager;
 }
 
-namespace content {
-class BrowserContext;
-}
-
 namespace aura {
 class Window;
 }
@@ -70,7 +66,8 @@ class MultiUserWindowManagerHelper {
   // known to the manager. Note: This function is not implemented as a
   // SessionStateObserver to coordinate the timing of the addition with other
   // modules.
-  void AddUser(content::BrowserContext* profile);
+  // This must be called after User's profile gets ready.
+  void AddUser(const AccountId& account_id);
 
   // A query call for a given window to see if it is on the given user's
   // desktop.

@@ -21,10 +21,6 @@ class MultiUserWindowManager;
 class MultiProfileSupportTest;
 }  // namespace ash
 
-namespace content {
-class BrowserContext;
-}
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -49,7 +45,7 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
   // Initializes the manager after its creation. Should only be called once.
   void Init();
 
-  void AddUser(content::BrowserContext* context);
+  void AddUser(const AccountId& account_id);
   ash::MultiUserWindowManager* multi_user_window_manager() {
     return multi_user_window_manager_.get();
   }
