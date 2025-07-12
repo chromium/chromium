@@ -17,11 +17,14 @@ function getReportHtml(this: TraceReportListElement) {
     </div>`;
   }
 
-  return html`${this.traces_.map((traceReport: ClientTraceReport) => html`
-    <trace-report
-        .trace="${traceReport}"
-        @show-toast="${this.showToastHandler_}">
-    </trace-report>`)}`;
+  return html`
+      <trace-report .isHeader="${true}"></trace-report>
+    ${this.traces_.map((traceReport: ClientTraceReport) => html`
+      <trace-report
+          .trace="${traceReport}"
+          @show-toast="${this.showToastHandler_}"
+          @refresh-traces-request="${this.onRefreshTracesClick_}">
+      </trace-report>`)}`;
   // clang-format on
 }
 

@@ -12,18 +12,15 @@
 
 :host {
   display: grid;
-  grid-template-columns: repeat(3, 1fr) 3fr auto auto auto;
+  grid-template-columns: repeat(3, 1fr) 3fr 1fr 250px 150px;
   grid-auto-flow: column;
   gap: 0 12px;
   padding: 8px 16px;
-  margin-bottom: 12px;
   background-color: var(--cr-card-background-color);
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-  border-radius: 4px;
-  height: 52px;
   align-items: center;
   min-width: 0;
   position: relative;
+  border-bottom: var(--cr-separator-line);
 }
 
 :host > div {
@@ -52,7 +49,7 @@
 }
 
 .upload-state-card {
-  width: 250px;
+  flex: 1;
   white-space: nowrap;
   font-weight: bold;
   border-radius: 1000px;
@@ -103,7 +100,7 @@
 }
 
 .actions-container {
-  width: 150px;
+  flex: 1;
   justify-content: end;
   display: flex;
 }
@@ -121,7 +118,9 @@
 }
 
 .info {
+  font-weight: bold;
   font-size: 13px;
+  white-space: nowrap;
   color: var(--cr-secondary-text-color);
 }
 

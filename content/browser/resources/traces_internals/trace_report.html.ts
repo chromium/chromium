@@ -10,22 +10,21 @@ import {ReportUploadState} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportElement) {
   // clang-format off
-  return html`
-    ${this.isLoading_ ? html`<div class="spinner"></div>` :
-    html`
-    <div>
+  return this.isHeader ? html`
+    <div class="info">Trace ID</div>
+    <div class="info">Date created</div>
+    <div class="info">Scenario</div>
+    <div class="info">Triggered rule</div>
+    <div class="info">Uncompressed size</div>` : (this.trace !== null ?
+    html`<div>
       <button class="clickable-field copiable"
           title="${getTokenAsUuidString(this.trace.uuid)}"
           @click="${this.onCopyUuidClick_}">
         ${getTokenAsUuidString(this.trace.uuid)}
       </button>
-      <div class="info">Trace ID</div>
     </div>
-    <div>
-      <div class="value">
-        ${this.dateToString_(this.trace.creationTime)}
-      </div>
-      <div class="info">Date created</div>
+    <div class="value">
+      ${this.dateToString_(this.trace.creationTime)}
     </div>
     <div>
       <button class="clickable-field copiable"
@@ -33,7 +32,6 @@ export function getHtml(this: TraceReportElement) {
           @click="${this.onCopyScenarioClick_}">
         ${this.trace.scenarioName}
       </button>
-      <div class="info">Scenario</div>
     </div>
     <div>
       <button class="clickable-field copiable" title="${this.trace.uploadRuleName}"
@@ -45,33 +43,31 @@ export function getHtml(this: TraceReportElement) {
           Value: ${this.trace.uploadRuleValue}
         </div>
       ` : nothing}
-      <div class="info">Triggered rule</div>
     </div>
-    <div>
-      <div class="value">${this.getTraceSize_()}</div>
-      <div class="info">Uncompressed size</div>
-    </div>
-    <div class="upload-state-card ${this.getStateCssClass_()}"
-      title="${this.getStateText_()}">
-      ${this.getStateText_()}
+    <div class="value">${this.getTraceSize_(this.trace)}</div>
+    <div class="upload-state-card ${this.getStateCssClass_(this.trace)}"
+      title="${this.getStateText_(this.trace)}">
+      ${this.getStateText_(this.trace)}
     </div>
     <div class="actions-container">
-      <cr-icon-button class="action-button" title="Upload Trace"
+    <cr-icon-button class="action-button" title="Upload Trace"
           iron-icon="trace-report-icons:cloud_upload"
-          ?hidden="${!this.uploadStateEqual_(ReportUploadState.kNotUploaded)}"
-          ?disabled="${!this.isManualUploadPermitted_()}"
+          ?hidden="${!this.uploadStateEqual_(
+            this.trace, ReportUploadState.kNotUploaded)}"
+          ?disabled="${this.isManualUploadDisabled_(this.trace)}"
           @click="${this.onUploadTraceClick_}">
       </cr-icon-button>
       <cr-icon-button class="action-button download"
-          iron-icon="cr:file-download" title="${this.getDownloadTooltip_()}"
+          iron-icon="cr:file-download" title="${
+            this.getDownloadTooltip_(this.trace)}"
           @click="${this.onDownloadTraceClick_}"
-          ?disabled="${this.isDownloadDisabled_()}">
+          ?disabled="${this.isDownloadDisabled_(this.trace)}">
       </cr-icon-button>
       <cr-icon-button class="action-button" iron-icon="cr:delete"
           title="Delete Trace" @click="${this.onDeleteTraceClick_}"
-          ?disabled="${this.isLoading_}">
+          ?disabled="${this.isLoading}">
       </cr-icon-button>
     </div>
-  `}`;
+    ` : nothing);
   // clang-format on
 }
