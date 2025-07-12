@@ -22,7 +22,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -222,26 +221,13 @@ class BlobURLTest : public testing::Test {
         blob_remote.InitWithNewPipeAndPassReceiver());
 
     base::RunLoop register_loop;
-    base::UnguessableToken agent = base::UnguessableToken::Create();
-    url_store.Register(std::move(blob_remote), url, agent,
-                       net::SchemefulSite(origin), register_loop.QuitClosure());
+    url_store.Register(std::move(blob_remote), url,
+                       register_loop.QuitClosure());
     register_loop.Run();
 
-    base::RunLoop resolve_loop;
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
     url_store.ResolveAsURLLoaderFactory(
-        url, url_loader_factory.BindNewPipeAndPassReceiver(),
-        base::BindOnce(
-            [](base::OnceClosure done,
-               const base::UnguessableToken& agent_registered,
-               const std::optional<base::UnguessableToken>&
-                   unsafe_agent_cluster_id,
-               const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
-              EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
-              std::move(done).Run();
-            },
-            resolve_loop.QuitClosure(), agent));
-    resolve_loop.Run();
+        url, url_loader_factory.BindNewPipeAndPassReceiver());
 
     mojo::PendingRemote<network::mojom::URLLoader> url_loader;
     network::TestURLLoaderClient url_loader_client;

@@ -87,19 +87,13 @@ bool BlobUrlRegistry::AddUrlMapping(
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const blink::StorageKey& storage_key,
     const url::Origin& renderer_origin,
-    int render_process_host_id,
-    // TODO(crbug.com/40775506): Remove these once experiment is over.
-    const base::UnguessableToken& unsafe_agent_cluster_id,
-    const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
+    int render_process_host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
   if (IsUrlMapped(blob_url, storage_key) ==
       BlobUrlRegistry::MappingStatus::kIsMapped) {
     return false;
   }
-  url_to_unsafe_agent_cluster_id_[blob_url] = unsafe_agent_cluster_id;
-  if (unsafe_top_level_site)
-    url_to_unsafe_top_level_site_[blob_url] = *unsafe_top_level_site;
   url_to_blob_[blob_url] = std::move(blob);
   url_to_storage_key_[blob_url] = storage_key;
   url_to_origin_[blob_url] = renderer_origin;
@@ -119,8 +113,6 @@ bool BlobUrlRegistry::RemoveUrlMapping(const GURL& blob_url,
     return false;
   }
   url_to_blob_.erase(blob_it);
-  url_to_unsafe_agent_cluster_id_.erase(blob_url);
-  url_to_unsafe_top_level_site_.erase(blob_url);
   url_to_storage_key_.erase(blob_url);
   url_to_origin_.erase(blob_url);
   url_to_render_process_host_id_.erase(blob_url);
@@ -186,29 +178,6 @@ BlobUrlRegistry::MappingStatus BlobUrlRegistry::IsUrlMapped(
     return fallback_->IsUrlMapped(blob_url, storage_key);
   }
   return BlobUrlRegistry::MappingStatus::kNotMappedOther;
-}
-
-// TODO(crbug.com/40775506): Remove this once experiment is over.
-std::optional<base::UnguessableToken> BlobUrlRegistry::GetUnsafeAgentClusterID(
-    const GURL& blob_url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = url_to_unsafe_agent_cluster_id_.find(blob_url);
-  if (it != url_to_unsafe_agent_cluster_id_.end())
-    return it->second;
-  if (fallback_)
-    return fallback_->GetUnsafeAgentClusterID(blob_url);
-  return std::nullopt;
-}
-
-std::optional<net::SchemefulSite> BlobUrlRegistry::GetUnsafeTopLevelSite(
-    const GURL& blob_url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = url_to_unsafe_top_level_site_.find(blob_url);
-  if (it != url_to_unsafe_top_level_site_.end())
-    return it->second;
-  if (fallback_)
-    return fallback_->GetUnsafeTopLevelSite(blob_url);
-  return std::nullopt;
 }
 
 mojo::PendingRemote<blink::mojom::Blob> BlobUrlRegistry::GetBlobFromUrl(

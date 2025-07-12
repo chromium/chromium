@@ -215,9 +215,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kHidDeviceOpen,
           WebFeature::kControlledNonBlobURLWorkerWillBeUncontrolled,
           WebFeature::kSameSiteCookieInclusionChangedByCrossSiteRedirect,
-          WebFeature::
-              kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory,
-          WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
           WebFeature::kSearchEventFired,
           WebFeature::kReadOrWriteWebDatabase,
           WebFeature::kExternalProtocolBlockedBySandbox,

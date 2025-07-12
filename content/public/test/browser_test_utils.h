@@ -2206,9 +2206,6 @@ class BlobURLStoreInterceptor
   void Register(
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const GURL& url,
-      // TODO(crbug.com/40775506): Remove these once experiment is over.
-      const base::UnguessableToken& unsafe_agent_cluster_id,
-      const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
 
  private:

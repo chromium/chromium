@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -56,20 +55,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void Register(
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const GURL& url,
-      // TODO(crbug.com/40775506): Remove these once experiment is over.
-      const base::UnguessableToken& unsafe_agent_cluster_id,
-      const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      ResolveAsURLLoaderFactoryCallback callback) override;
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
   void ResolveAsBlobURLToken(
       const GURL& url,
       mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
-      bool is_top_level_navigation,
-      ResolveAsBlobURLTokenCallback callback) override;
+      bool is_top_level_navigation) override;
 
  private:
   // Checks if the passed in url is a valid blob url for this blob url store.
@@ -85,14 +80,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void FinishResolveAsURLLoaderFactory(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      ResolveAsURLLoaderFactoryCallback callback,
       bool has_storage_access_handle);
 
   void FinishResolveAsBlobURLToken(
       const GURL& url,
       mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
       bool is_top_level_navigation,
-      ResolveAsBlobURLTokenCallback callback,
       bool has_storage_access_handle);
 
   const blink::StorageKey storage_key_;

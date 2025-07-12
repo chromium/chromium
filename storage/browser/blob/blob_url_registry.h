@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "net/base/schemeful_site.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -94,15 +93,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // matching StorageKey to succeed. `origin` is the origin of the Blob URL, and
   // `render_process_host_id` is the ID of the process where the blob URL
   // registration comes from.
-  bool AddUrlMapping(
-      const GURL& url,
-      mojo::PendingRemote<blink::mojom::Blob> blob,
-      const blink::StorageKey& storage_key,
-      const url::Origin& renderer_origin,
-      int render_process_host_id,
-      // TODO(crbug.com/40775506): Remove these once experiment is over.
-      const base::UnguessableToken& unsafe_agent_cluster_id,
-      const std::optional<net::SchemefulSite>& unsafe_top_level_site);
+  bool AddUrlMapping(const GURL& url,
+                     mojo::PendingRemote<blink::mojom::Blob> blob,
+                     const blink::StorageKey& storage_key,
+                     const url::Origin& renderer_origin,
+                     int render_process_host_id);
 
   // Removes the given URL mapping associated with `storage_key`. Returns false
   // if the URL wasn't mapped.
@@ -112,12 +107,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // associated with `storage_key`.
   MappingStatus IsUrlMapped(const GURL& blob_url,
                             const blink::StorageKey& storage_key) const;
-
-  // TODO(crbug.com/40775506): Remove this once experiment is over.
-  std::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
-      const GURL& blob_url) const;
-  std::optional<net::SchemefulSite> GetUnsafeTopLevelSite(
-      const GURL& blob_url) const;
 
   // Returns the blob from the given url. Returns a null remote if the mapping
   // doesn't exist.
@@ -162,9 +151,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   base::WeakPtr<BlobUrlRegistry> fallback_;
 
   std::map<GURL, mojo::PendingRemote<blink::mojom::Blob>> url_to_blob_;
-  // TODO(crbug.com/40775506): Remove this once experiment is over.
-  std::map<GURL, base::UnguessableToken> url_to_unsafe_agent_cluster_id_;
-  std::map<GURL, net::SchemefulSite> url_to_unsafe_top_level_site_;
   std::map<base::UnguessableToken,
            std::pair<GURL, mojo::PendingRemote<blink::mojom::Blob>>>
       token_to_url_and_blob_;

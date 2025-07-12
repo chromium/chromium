@@ -4171,13 +4171,9 @@ blink::mojom::BlobURLStore* BlobURLStoreInterceptor::GetForwardingInterface() {
 void BlobURLStoreInterceptor::Register(
     mojo::PendingRemote<blink::mojom::Blob> blob,
     const GURL& url,
-    // TODO(crbug.com/40775506): Remove these once experiment is over.
-    const base::UnguessableToken& unsafe_agent_cluster_id,
-    const std::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
-  GetForwardingInterface()->Register(
-      std::move(blob), target_url_, unsafe_agent_cluster_id,
-      unsafe_top_level_site, std::move(callback));
+  GetForwardingInterface()->Register(std::move(blob), target_url_,
+                                     std::move(callback));
 }
 
 BlobURLStoreInterceptor::BlobURLStoreInterceptor(GURL target_url)

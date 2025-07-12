@@ -11,12 +11,8 @@ namespace blink {
 void FakeBlobURLStore::Register(
     mojo::PendingRemote<mojom::blink::Blob> blob,
     const KURL& url,
-    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-    const base::UnguessableToken& unsafe_agent_cluster_id,
-    const std::optional<BlinkSchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
   registrations.insert(url, mojo::Remote<mojom::blink::Blob>(std::move(blob)));
-  agent_registrations.insert(url, unsafe_agent_cluster_id);
   std::move(callback).Run();
 }
 
@@ -27,16 +23,14 @@ void FakeBlobURLStore::Revoke(const KURL& url) {
 
 void FakeBlobURLStore::ResolveAsURLLoaderFactory(
     const KURL&,
-    mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>,
-    ResolveAsURLLoaderFactoryCallback callback) {
+    mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>) {
   NOTREACHED();
 }
 
 void FakeBlobURLStore::ResolveAsBlobURLToken(
     const KURL&,
     mojo::PendingReceiver<mojom::blink::BlobURLToken>,
-    bool is_top_level_navigation,
-    ResolveAsBlobURLTokenCallback callback) {
+    bool is_top_level_navigation) {
   NOTREACHED();
 }
 
