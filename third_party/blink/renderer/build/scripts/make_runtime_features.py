@@ -53,6 +53,13 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
     def __init__(self, json5_file_path, output_dir):
         super(BaseRuntimeFeatureWriter, self).__init__(json5_file_path,
                                                        output_dir)
+
+        for path in json5_file_path:
+            file_root, file_ext = os.path.splitext(path)
+            override_file_path = f"{file_root}.override{file_ext}"
+            if os.path.exists(override_file_path):
+                self.json5_file.load_override_file(override_file_path)
+
         # Subclasses should add generated output files and their contents to this dict.
         self._outputs = {}
         assert self.file_basename

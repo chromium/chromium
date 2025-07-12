@@ -2,7 +2,11 @@
   parameters: {
     param1: {
       valid_values: ["valid", "values"],
-      valid_keys: ["random", "keys"],
+      valid_keys: ["random", "keys", "default"],
+    },
+    param2: {
+      valid_values: ["single", "value"],
+      valid_keys: ["key", "default"],
     }
   },
 
@@ -14,6 +18,10 @@
     {
       name: "item2",
       param1: {"random": "values", "default": "valid"},
+    },
+    {
+      name: "item3",
+      param1: {"keys": "valid", "default": "values"},
     },
   ],
 }

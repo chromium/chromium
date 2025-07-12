@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import json5
-
+import os
 
 class RuntimeEnabledFeatures(object):
     """Represents a set of definitions of runtime enabled features."""
@@ -29,9 +29,18 @@ class RuntimeEnabledFeatures(object):
             with open(filepath, encoding='utf-8') as file_obj:
                 datastore = json5.load(file_obj)
 
-            for entry in datastore["data"]:
-                assert entry["name"] not in cls._features
-                cls._features[entry["name"]] = entry
+                for entry in datastore["data"]:
+                    assert entry["name"] not in cls._features
+                    cls._features[entry["name"]] = entry
+
+            file_root, file_ext = os.path.splitext(filepath)
+            override_file_path = f"{file_root}.override{file_ext}"
+            if os.path.exists(override_file_path):
+                with open(override_file_path, encoding='utf-8') as file_obj:
+                    datastore = json5.load(file_obj)
+
+                    for entry in datastore["data"]:
+                        cls._features[entry["name"]] = entry
 
         cls._is_initialized = True
 
