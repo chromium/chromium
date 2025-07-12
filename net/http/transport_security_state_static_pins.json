@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2025-07-11 12:55 UTC
+// Last updated: 2025-07-12 12:56 UTC
 //
 {
   "pinsets": [
@@ -39,8 +39,7 @@
       "name": "test",
       "static_spki_hashes": [
         "TestSPKI"
-      ],
-      "report_uri": "http://report-example.test/test"
+      ]
     },
     {
       "name": "google",
@@ -56,8 +55,7 @@
         "GlobalSignExtendedValidationCA",
         "GlobalSignExtendedValidationCA_G2",
         "GlobalSignExtendedValidationCA_SHA256_G2"
-      ],
-      "report_uri": "http://clients3.google.com/cert_upload_json"
+      ]
     },
     {
       "name": "facebook",
