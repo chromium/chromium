@@ -668,6 +668,19 @@ class PixelTestPages():
                 pixel_delta_threshold=0,
                 edge_threshold=90),
             browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage('pixel_background.html',
+            base_name + '_SolidColorBackground' + '_TreesInViz',
+            crop_action=ca.FixedRectCropAction(500, 500, 600, 600),
+            # Small Fuchsia screens result in an incomplete capture
+            # without this.
+            should_capture_full_screenshot_func=CaptureFullScreenshotOnFuchsia,
+            browser_args=['--enable-features=TreesInViz']),
+        PixelTestPage('pixel_render_passes.html',
+            base_name + '_RenderPasses' + '_TreesInViz',
+            crop_action=ca.FixedRectCropAction(3, 90, 485, 245),
+            requires_fullscreen_os_screenshot_func=\
+            RequiresFullScreenOSScreenshot,
+            browser_args=['--enable-features=TreesInViz']),
     ]
 
   @staticmethod
