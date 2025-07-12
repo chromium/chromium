@@ -253,12 +253,15 @@ TEST_F(MultipleRequestsTest, RequestCanceled) {
   IssueOAuthToken();
   EXPECT_EQ(2U, operations_size());
 
-  // Cancel the second request.
+  // Cancel the second request (it is invalidated but is still being tracked).
   payments_network_interface_base_->CancelRequestWithId(id2);
-  EXPECT_EQ(1U, operations_size());
+  EXPECT_EQ(2U, operations_size());
 
   // Simulate response for first request is received.
   ReturnResponseForOperation(id1, net::HTTP_OK, "{}");
+  EXPECT_EQ(1U, operations_size());
+  // Simulate response for second request is received.
+  ReturnResponseForOperation(id2, net::HTTP_OK, "{}");
   EXPECT_EQ(0U, operations_size());
 }
 

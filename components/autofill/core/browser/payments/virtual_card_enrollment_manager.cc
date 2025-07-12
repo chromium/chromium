@@ -191,15 +191,14 @@ void VirtualCardEnrollmentManager::Enroll(
   if (base::FeatureList::IsEnabled(
           features::
               kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    request_id_ =
-        autofill_client_->GetPaymentsAutofillClient()
-            ->GetMultipleRequestPaymentsNetworkInterface()
-            ->UpdateVirtualCardEnrollment(
-                request_details,
-                base::BindOnce(&VirtualCardEnrollmentManager::
-                                   OnDidGetUpdateVirtualCardEnrollmentResponse,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               VirtualCardEnrollmentRequestType::kEnroll));
+    autofill_client_->GetPaymentsAutofillClient()
+        ->GetMultipleRequestPaymentsNetworkInterface()
+        ->UpdateVirtualCardEnrollment(
+            request_details,
+            base::BindOnce(&VirtualCardEnrollmentManager::
+                               OnDidGetUpdateVirtualCardEnrollmentResponse,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           VirtualCardEnrollmentRequestType::kEnroll));
   } else {
     payments_network_interface_->UpdateVirtualCardEnrollment(
         request_details,
@@ -238,15 +237,14 @@ void VirtualCardEnrollmentManager::Unenroll(
   if (base::FeatureList::IsEnabled(
           features::
               kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    request_id_ =
-        autofill_client_->GetPaymentsAutofillClient()
-            ->GetMultipleRequestPaymentsNetworkInterface()
-            ->UpdateVirtualCardEnrollment(
-                request_details,
-                base::BindOnce(&VirtualCardEnrollmentManager::
-                                   OnDidGetUpdateVirtualCardEnrollmentResponse,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               VirtualCardEnrollmentRequestType::kUnenroll));
+    autofill_client_->GetPaymentsAutofillClient()
+        ->GetMultipleRequestPaymentsNetworkInterface()
+        ->UpdateVirtualCardEnrollment(
+            request_details,
+            base::BindOnce(&VirtualCardEnrollmentManager::
+                               OnDidGetUpdateVirtualCardEnrollmentResponse,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           VirtualCardEnrollmentRequestType::kUnenroll));
   } else {
     payments_network_interface_->UpdateVirtualCardEnrollment(
         request_details,
@@ -383,15 +381,12 @@ void VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted(
 }
 
 void VirtualCardEnrollmentManager::Reset() {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::
               kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    autofill_client_->GetPaymentsAutofillClient()
-        ->GetMultipleRequestPaymentsNetworkInterface()
-        ->CancelRequestWithId(request_id_);
-  } else {
     payments_network_interface_->CancelRequest();
   }
+  // Invalidating all WeakPtrs effectively cancels any pending requests.
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
   enroll_response_details_received_ = false;
@@ -442,7 +437,8 @@ bool VirtualCardEnrollmentManager::ShouldContinueExistingDownstreamEnrollment(
   }
 
   bool downstream_enrollment_has_started =
-      state_.virtual_card_enrollment_fields.credit_card == credit_card &&
+      state_.virtual_card_enrollment_fields.credit_card.MatchingCardDetails(
+          credit_card) &&
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
           VirtualCardEnrollmentSource::kDownstream;
   if (!downstream_enrollment_has_started) {
@@ -494,13 +490,14 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   if (base::FeatureList::IsEnabled(
           features::
               kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)) {
-    request_id_ = autofill_client_->GetPaymentsAutofillClient()
-                      ->GetMultipleRequestPaymentsNetworkInterface()
-                      ->GetVirtualCardEnrollmentDetails(
-                          request_details,
-                          base::BindOnce(&VirtualCardEnrollmentManager::
-                                             OnDidGetDetailsForEnrollResponse,
-                                         weak_ptr_factory_.GetWeakPtr()));
+    autofill_client_->GetPaymentsAutofillClient()
+        ->GetMultipleRequestPaymentsNetworkInterface()
+        ->GetVirtualCardEnrollmentDetails(
+            request_details,
+            base::BindOnce(
+                &VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse,
+                weak_ptr_factory_.GetWeakPtr()));
+
   } else {
     payments_network_interface_->GetVirtualCardEnrollmentDetails(
         request_details,

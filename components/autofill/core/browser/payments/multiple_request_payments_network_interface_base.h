@@ -50,6 +50,11 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
 
     const RequestId& StartOperation();
 
+    // Invalidate the operation so that after it is finished, no result should
+    // be reported (no PaymentsRequest::RespondToDelegate call for this
+    // operation).
+    void InvalidateOperation();
+
     void OnSimpleLoaderCompleteInternalForTesting(int response_code,
                                                   const std::string& data) {
       OnSimpleLoaderCompleteInternal(response_code, data);
@@ -127,10 +132,6 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
   // operation, ensuring that an access token is available before sending the
   // request. Takes ownership of `request`.
   RequestId IssueRequest(std::unique_ptr<PaymentsRequest> request);
-
-  // Cancels all current requests and resets the
-  // MultipleRequestPaymentsNetworkInterfaceBase.
-  void CancelRequests();
 
   // Cancels only the request with `id`.
   void CancelRequestWithId(const RequestId& id);

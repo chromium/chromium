@@ -415,11 +415,6 @@ class VirtualCardEnrollmentManager {
   // The timestamp when a GetDetailsForEnrollment request is sent.
   std::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
 
-  // Used to track the ongoing payments server request. Currently the
-  // VirtualCardEnrollmentManager doesn't track multiple virtual card enrollment
-  // related requests.
-  payments::MultipleRequestPaymentsNetworkInterface::RequestId request_id_;
-
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };
 
