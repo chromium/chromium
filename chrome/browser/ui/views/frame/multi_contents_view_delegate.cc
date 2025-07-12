@@ -14,10 +14,8 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 
-MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(
-    TabStripModel& tab_strip_model,
-    Browser& browser)
-    : tab_strip_model_(tab_strip_model), browser_(browser) {}
+MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(Browser& browser)
+    : browser_(browser), tab_strip_model_(*browser.tab_strip_model()) {}
 
 void MultiContentsViewDelegateImpl::WebContentsFocused(
     content::WebContents* web_contents) {

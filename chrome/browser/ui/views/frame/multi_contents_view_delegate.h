@@ -26,8 +26,7 @@ class MultiContentsViewDelegate
 
 class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
  public:
-  explicit MultiContentsViewDelegateImpl(TabStripModel& tab_strip_model,
-                                         Browser& browser);
+  explicit MultiContentsViewDelegateImpl(Browser& browser);
   MultiContentsViewDelegateImpl(const MultiContentsViewDelegateImpl&) = delete;
   MultiContentsViewDelegateImpl& operator=(
       const MultiContentsViewDelegateImpl&) = delete;
@@ -40,10 +39,9 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
                       const std::vector<GURL>& urls) override;
 
  private:
-  const raw_ref<TabStripModel> tab_strip_model_;
-
   // TODO(crbug.com/431000266): Use a browser window feature instead.
   const raw_ref<Browser> browser_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DELEGATE_H_

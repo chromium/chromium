@@ -65,22 +65,16 @@ class MultiContentsView : public views::View,
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
 
+  ContentsContainerView* GetActiveContentsContainerView();
+
   // Returns the currently active ContentsWebView.
   ContentsWebView* GetActiveContentsView();
 
   // Returns the currently inactive ContentsWebView.
   ContentsWebView* GetInactiveContentsView();
 
-  ContentsContainerView* GetActiveContentsContainerView();
-
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
-
-  // Assigns the given |web_contents| to the ContentsContainerView's
-  // ContentsWebView at |index| in contents_container_views_. |index| must be
-  // either 0 or 1 as we currently only support two contents. If |index| is 1
-  // and we are not currently in a split view, displays the split views.
-  void SetWebContentsAtIndex(content::WebContents* web_contents, int index);
 
   // Show the split view without set any WebContents and update the size of
   // contents views based on `ratio`, this is used to prepare the layout and
@@ -90,6 +84,12 @@ class MultiContentsView : public views::View,
   // Preserves the active WebContents and hides the second ContentsContainerView
   // and resize handle.
   void CloseSplitView();
+
+  // Assigns the given |web_contents| to the ContentsContainerView's
+  // ContentsWebView at |index| in contents_container_views_. |index| must be
+  // either 0 or 1 as we currently only support two contents. If |index| is 1
+  // and we are not currently in a split view, displays the split views.
+  void SetWebContentsAtIndex(content::WebContents* web_contents, int index);
 
   // Sets the index of the active contents view within contents_views_.
   void SetActiveIndex(int index);

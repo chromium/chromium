@@ -983,8 +983,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto multi_contents_view = std::make_unique<MultiContentsView>(
-        this, std::make_unique<MultiContentsViewDelegateImpl>(
-                  *browser_->tab_strip_model(), *browser_));
+        this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
     multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
@@ -1660,25 +1659,10 @@ void BrowserView::SetTopControlsGestureScrollInProgress(bool in_progress) {
 
 std::vector<StatusBubble*> BrowserView::GetStatusBubbles() {
   std::vector<StatusBubble*> status_bubbles;
-  if (multi_contents_view_) {
-    if (multi_contents_view_->IsInSplitView()) {
-      if (StatusBubble* active_bubble =
-              multi_contents_view_->GetActiveContentsView()
-                  ->GetStatusBubble()) {
-        status_bubbles.push_back(active_bubble);
-      }
-      if (StatusBubble* inactive_bubble =
-              multi_contents_view_->GetInactiveContentsView()
-                  ->GetStatusBubble()) {
-        status_bubbles.push_back(inactive_bubble);
-      }
-    } else if (StatusBubble* active_bubble =
-                   multi_contents_view_->GetActiveContentsView()
-                       ->GetStatusBubble()) {
-      status_bubbles.push_back(active_bubble);
+  for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
+    if (StatusBubble* bubble = contents_web_view->GetStatusBubble()) {
+      status_bubbles.push_back(bubble);
     }
-  } else if (StatusBubble* bubble = contents_web_view_->GetStatusBubble()) {
-    status_bubbles.push_back(bubble);
   }
   return status_bubbles;
 }

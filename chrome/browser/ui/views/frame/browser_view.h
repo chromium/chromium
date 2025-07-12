@@ -203,11 +203,11 @@ class BrowserView : public BrowserWindow,
   // Returns an empty size if this browser is not for a web app.
   gfx::Size GetWebAppFrameToolbarPreferredSize() const;
 
-  // Returns the ContentsContainerView for the active tab.
-  ContentsContainerView* GetActiveContentsContainerView();
-
   // Returns all the ContentsContainerViews that belong to this browser.
   std::vector<ContentsContainerView*> GetContentsContainerViews();
+
+  // Returns the ContentsContainerView for the active tab.
+  ContentsContainerView* GetActiveContentsContainerView();
 
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
