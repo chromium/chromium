@@ -16,9 +16,13 @@ found in the LICENSE file.
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Theme.Chromium.WithWindowAnimation"
-        parent="Base.Theme.Chromium.WithWindowAnimation"/>
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge"/>
-    <style name="Theme.Chromium.Activity.Fullscreen"
-        parent="Base.Theme.Chromium.Activity.Fullscreen" />
+    <style name="Theme.Chromium.WithWindowAnimation" parent="Base.Theme.Chromium.WithWindowAnimation">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+    <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.Theme.Chromium.Activity.Fullscreen">
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
 </resources>
