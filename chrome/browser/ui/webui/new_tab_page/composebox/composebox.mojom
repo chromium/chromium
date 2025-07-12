@@ -8,4 +8,6 @@ module composebox.mojom;
 interface ComposeboxPageHandler {
     // Called when a user has started a composebox session.
     NotifySessionStarted();
+    // Called when a user ends a composebox session.
+    NotifySessionAbandoned();
 };

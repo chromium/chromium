@@ -177,4 +177,35 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert.
     await fileUploadClickEventPromise;
   });
+
+  test('session abandoned on esc click', async () => {
+    // Arrange.
+    createComposeboxElement();
+
+    // Assert call has not occurred.
+    assertEquals(handler.getCallCount('notifySessionAbandoned'), 0);
+
+    // Assert call occurs.
+    composeboxElement.$.composebox.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Escape'}));
+    await microtasksFinished();
+    assertEquals(handler.getCallCount('notifySessionAbandoned'), 1);
+  });
+
+  test('session abandoned on cancel button click', async () => {
+    // Arrange.
+    createComposeboxElement();
+
+    // Assert call has not occurred.
+    assertEquals(handler.getCallCount('notifySessionAbandoned'), 0);
+
+    // Close composebox.
+    const whenToggleComposebox =
+        eventToPromise('toggle-composebox', composeboxElement);
+    const cancelIcon = $$<HTMLElement>(composeboxElement, '#cancelIcon');
+    assertTrue(!!cancelIcon);
+    cancelIcon.click();
+    await whenToggleComposebox;
+    assertEquals(handler.getCallCount('notifySessionAbandoned'), 1);
+  });
 });

@@ -19,6 +19,7 @@ class ComposeboxHandler : public composebox::mojom::ComposeboxPageHandler {
 
   // composebox::mojom::ComposeboxPageHandler:
   void NotifySessionStarted() override;
+  void NotifySessionAbandoned() override;
 
  private:
   mojo::Receiver<composebox::mojom::ComposeboxPageHandler> handler_;
