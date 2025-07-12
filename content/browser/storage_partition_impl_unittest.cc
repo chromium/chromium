@@ -2315,7 +2315,8 @@ TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
     base::ScopedTempDir temp_dir;
     CHECK(temp_dir.CreateUniqueTempDir());
     remote_service->BindLocalStorageControl(
-        temp_dir.GetPath(), storage_control.BindNewPipeAndPassReceiver());
+        temp_dir.GetPath(), storage::mojom::StorageLifecycle::kInitializing,
+        storage_control.BindNewPipeAndPassReceiver());
     storage_control.FlushForTesting();
   }
 }

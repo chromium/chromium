@@ -4,8 +4,9 @@
 
 #include "components/services/storage/storage_service_impl.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -78,7 +79,8 @@ StorageServiceImpl::StorageServiceImpl(
     mojo::PendingReceiver<mojom::StorageService> receiver,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : receiver_(this, std::move(receiver)),
-      io_task_runner_(std::move(io_task_runner)) {}
+      io_task_runner_(std::move(io_task_runner)),
+      creation_time_(base::Time::Now()) {}
 
 StorageServiceImpl::~StorageServiceImpl() {
   // ShutDown storages before we destroy the service. We transfer ownership of
@@ -127,7 +129,10 @@ void StorageServiceImpl::SetDataDirectory(
 
 void StorageServiceImpl::BindLocalStorageControl(
     const std::optional<base::FilePath>& path,
+    mojom::StorageLifecycle lifecycle,
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
+  base::TimeDelta timedelta = base::Time::Now() - creation_time_;
+
   if (path.has_value()) {
     if (!path->IsAbsolute()) {
       // Refuse to bind LocalStorage for relative paths.
@@ -135,13 +140,19 @@ void StorageServiceImpl::BindLocalStorageControl(
     }
 
     auto iter = persistent_local_storage_map_.find(*path);
-    bool found = iter != persistent_local_storage_map_.end();
     // The map shouldn't contain an entry for this path. We should only bind a
-    // LocalStorage mojom::Receiver once.
-    CHECK(!found, base::NotFatalUntil::M140);
-    // TODO(crbug.com/396030877): Remove this workaround to remove the
-    // pre-existing LocalStorage once the issue is resolved.
-    if (found) {
+    // LocalStorage mojom::Receiver once. If this doesn't occur, we collect
+    // a crash dump to help diagnose the issue and safely shut down the existing
+    // local storage instance.
+    // TODO(crbug.com/396030877): Remove this DWoC and workaround once the issue
+    // is resolved.
+    if (iter != persistent_local_storage_map_.end()) {
+      SCOPED_CRASH_KEY_NUMBER("396030877", "local_storage_lifecycle",
+                              static_cast<int>(lifecycle));
+      SCOPED_CRASH_KEY_NUMBER("396030877", "local_storage_timedelta",
+                              timedelta.InMilliseconds());
+      base::debug::DumpWithoutCrashing();
+
       ShutDownAndRemoveLocalStorage(iter->second);
     }
   }
@@ -160,7 +171,10 @@ void StorageServiceImpl::BindLocalStorageControl(
 
 void StorageServiceImpl::BindSessionStorageControl(
     const std::optional<base::FilePath>& path,
+    mojom::StorageLifecycle lifecycle,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver) {
+  base::TimeDelta timedelta = base::Time::Now() - creation_time_;
+
   if (path.has_value()) {
     if (!path->IsAbsolute()) {
       // Refuse to bind SessionStorage for relative paths.
@@ -168,13 +182,19 @@ void StorageServiceImpl::BindSessionStorageControl(
     }
 
     auto iter = persistent_session_storage_map_.find(*path);
-    bool found = iter != persistent_session_storage_map_.end();
     // The map shouldn't contain an entry for this path. We should only bind a
-    // SessionStorage mojom::Receiver once.
-    CHECK(!found, base::NotFatalUntil::M140);
-    // TODO(crbug.com/396030877): Remove this workaround to remove the
-    // pre-existing SessionStorage once the issue is resolved.
-    if (found) {
+    // a SessionStorage mojom::Receiver once. If this doesn't occur, we collect
+    // a crash dump to help diagnose the issue and safely shut down the existing
+    // session storage instance.
+    // TODO(crbug.com/396030877): Remove this DWoC and workaround once the issue
+    // is resolved.
+    if (iter != persistent_session_storage_map_.end()) {
+      SCOPED_CRASH_KEY_NUMBER("396030877", "session_storage_lifecycle",
+                              static_cast<int>(lifecycle));
+      SCOPED_CRASH_KEY_NUMBER("396030877", "session_storage_timedelta",
+                              timedelta.InMilliseconds());
+      base::debug::DumpWithoutCrashing();
+
       ShutDownAndRemoveSessionStorage(iter->second);
     }
   }

@@ -45,6 +45,8 @@
 
 namespace content {
 
+using StorageLifecycle = storage::mojom::StorageLifecycle;
+
 namespace {
 
 void AdaptSessionStorageUsageInfo(
@@ -71,6 +73,18 @@ void AdaptStorageUsageInfo(
                         info->last_modified);
   }
   std::move(callback).Run(result);
+}
+
+StorageLifecycle GetStorageLifecycle(bool recovering,
+                                     bool storage_service_remote_was_bound) {
+  if (recovering) {
+    return storage_service_remote_was_bound
+               ? StorageLifecycle::kRecovering
+               : StorageLifecycle::kRecoveringWithUnboundStorageService;
+  }
+  return storage_service_remote_was_bound
+             ? StorageLifecycle::kInitializing
+             : StorageLifecycle::kInitializingWithUnboundStorageService;
 }
 
 }  // namespace
@@ -106,8 +120,13 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
     return;
   }
 
-  MaybeBindSessionStorageControl();
-  MaybeBindLocalStorageControl();
+  // Binding Session or Local storage will result in the storage service getting
+  // bound. So, we capture this state before those calls.
+  StorageLifecycle lifecycle = GetStorageLifecycle(
+      /*recovering=*/false, partition_->IsStorageServiceRemoteValid());
+
+  MaybeBindSessionStorageControl(lifecycle);
+  MaybeBindLocalStorageControl(lifecycle);
 }
 
 DOMStorageContextWrapper::~DOMStorageContextWrapper() {
@@ -337,7 +356,12 @@ bool DOMStorageContextWrapper::IsRequestValid(
 
 void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   DCHECK(partition_);
-  MaybeBindSessionStorageControl();
+
+  // Binding Session storage will result in the storage service getting bound.
+  // So, we capture this state before that call.
+  StorageLifecycle lifecycle = GetStorageLifecycle(
+      /*recovering=*/true, partition_->IsStorageServiceRemoteValid());
+  MaybeBindSessionStorageControl(lifecycle);
 
   // Make sure the service is aware of namespaces we asked a previous instance
   // to create, so it can properly service renderers trying to manipulate those
@@ -350,12 +374,13 @@ void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   partition_->ResetSessionStorageConnections();
 }
 
-void DOMStorageContextWrapper::MaybeBindSessionStorageControl() {
+void DOMStorageContextWrapper::MaybeBindSessionStorageControl(
+    StorageLifecycle lifecycle) {
   if (!partition_)
     return;
   session_storage_control_.reset();
   partition_->GetStorageService()->BindSessionStorageControl(
-      partition_->GetStoragePartitionPath(),
+      partition_->GetStoragePartitionPath(), lifecycle,
       session_storage_control_.BindNewPipeAndPassReceiver());
   session_storage_control_.set_disconnect_handler(
       base::BindOnce(&DOMStorageContextWrapper::OnSessionStorageDisconnected,
@@ -365,17 +390,23 @@ void DOMStorageContextWrapper::MaybeBindSessionStorageControl() {
 void DOMStorageContextWrapper::OnLocalStorageDisconnected() {
   DCHECK(partition_);
 
-  MaybeBindLocalStorageControl();
+  // Binding Local storage will result in the storage service getting bound. So,
+  // we capture this state before that call.
+  StorageLifecycle lifecycle = GetStorageLifecycle(
+      /*recovering=*/true, partition_->IsStorageServiceRemoteValid());
+  MaybeBindLocalStorageControl(lifecycle);
+
   partition_->ResetLocalStorageConnections();
 }
 
-void DOMStorageContextWrapper::MaybeBindLocalStorageControl() {
+void DOMStorageContextWrapper::MaybeBindLocalStorageControl(
+    StorageLifecycle lifecycle) {
   if (!partition_) {
     return;
   }
   local_storage_control_.reset();
   partition_->GetStorageService()->BindLocalStorageControl(
-      partition_->GetStoragePartitionPath(),
+      partition_->GetStoragePartitionPath(), lifecycle,
       local_storage_control_.BindNewPipeAndPassReceiver());
   local_storage_control_.set_disconnect_handler(
       base::BindOnce(&DOMStorageContextWrapper::OnLocalStorageDisconnected,

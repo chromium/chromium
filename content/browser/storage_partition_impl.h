@@ -406,6 +406,8 @@ class CONTENT_EXPORT StoragePartitionImpl
     return shared_storage_header_observer_.get();
   }
 
+  bool IsStorageServiceRemoteValid() const;
+
   // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
 
