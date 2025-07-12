@@ -5,6 +5,8 @@
 #ifndef BASE_MEMORY_COORDINATOR_TEST_MEMORY_CONSUMER_REGISTRY_H_
 #define BASE_MEMORY_COORDINATOR_TEST_MEMORY_CONSUMER_REGISTRY_H_
 
+#include <stddef.h>
+
 #include <vector>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
@@ -30,6 +32,8 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
 
   // Invokes DoReleaseMemory() on all consumers.
   void NotifyReleaseMemory();
+
+  size_t size() const { return memory_consumers_.size(); }
 
  private:
   std::vector<RegisteredMemoryConsumer> memory_consumers_;

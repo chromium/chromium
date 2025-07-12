@@ -17,6 +17,8 @@ TestMemoryConsumerRegistry::TestMemoryConsumerRegistry() {
 
 TestMemoryConsumerRegistry::~TestMemoryConsumerRegistry() {
   MemoryConsumerRegistry::Set(nullptr);
+
+  CHECK(memory_consumers_.empty());
 }
 
 void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(

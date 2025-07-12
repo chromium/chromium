@@ -87,6 +87,7 @@ class BASE_EXPORT MemoryConsumer {
 
  private:
   friend class RegisteredMemoryConsumer;
+  friend class AsyncMemoryConsumerRegistration;
 
   // Instructs this consumer to update its internal memory limit. See the class
   // comment above for a detailed description of how this limit works.
