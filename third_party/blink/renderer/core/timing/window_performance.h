@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -158,6 +159,21 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void AddSoftNavigationEntry(const AtomicString& name,
                               base::TimeTicks start_time,
                               const DOMPaintTimingInfo& paint_timing_info);
+
+  // For soft navigations and back-forward cache restoration. This increments
+  // the navigation ID, as specified in
+  // https://w3c.github.io/performance-timeline/.
+  void IncrementNavigationId() {
+    navigation_id_generator_.IncrementNavigationId();
+  }
+
+  // Returns the navigation ID, as specified in
+  // https://w3c.github.io/performance-timeline/; this appears as navigationId
+  // in https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry
+  // instances.
+  uint32_t NavigationId() const override {
+    return navigation_id_generator_.NavigationId();
+  }
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
@@ -287,6 +303,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   Member<ResponsivenessMetrics> responsiveness_metrics_;
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
+
+  // Implements the "assign a new navigation id" algorithm described in
+  // https://w3c.github.io/performance-timeline/
+  NavigationIdGenerator navigation_id_generator_;
 };
 
 }  // namespace blink

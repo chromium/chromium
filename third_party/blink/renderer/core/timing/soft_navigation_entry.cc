@@ -13,8 +13,13 @@ SoftNavigationEntry::SoftNavigationEntry(
     AtomicString name,
     double start_time,
     const DOMPaintTimingInfo& paint_timing_info,
-    DOMWindow* source)
-    : PerformanceEntry(name, start_time, start_time, source) {
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0,
+                       name,
+                       start_time,
+                       source,
+                       navigation_id) {
   SetPaintTimingInfo(paint_timing_info);
 }
 

@@ -28,7 +28,8 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
       const AtomicString& identifier,
       Element* last_painted_element,
       DOMHighResTimeStamp first_render_time,
-      DOMWindow* source);
+      DOMWindow* source,
+      uint32_t navigation_id);
   PerformanceContainerTiming(const AtomicString& name,
                              DOMHighResTimeStamp start_time,
                              DOMHighResTimeStamp end_time,
@@ -37,7 +38,8 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
                              const AtomicString& identifier,
                              Element* last_painted_element,
                              DOMHighResTimeStamp first_render_time,
-                             DOMWindow* source);
+                             DOMWindow* source,
+                             uint32_t navigation_id);
 
   ~PerformanceContainerTiming() override;
 

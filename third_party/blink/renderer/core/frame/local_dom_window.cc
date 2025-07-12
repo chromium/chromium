@@ -259,8 +259,7 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
       token_(frame.GetLocalFrameToken()),
       network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
       closewatcher_stack_(
-          MakeGarbageCollected<CloseWatcher::WatcherStack>(this)),
-      navigation_id_(CreateCanonicalUUIDString()) {}
+          MakeGarbageCollected<CloseWatcher::WatcherStack>(this)) {}
 
 void LocalDOMWindow::BindContentSecurityPolicy() {
   DCHECK(!GetContentSecurityPolicy()->IsBound());
@@ -2688,10 +2687,6 @@ void LocalDOMWindow::SetStorageAccessApiStatus(
       break;
     }
   }
-}
-
-void LocalDOMWindow::GenerateNewNavigationId() {
-  navigation_id_ = CreateCanonicalUUIDString();
 }
 
 void LocalDOMWindow::SetHasBeenRevealed(bool revealed) {

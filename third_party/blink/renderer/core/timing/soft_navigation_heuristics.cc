@@ -431,9 +431,11 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   // re-write history when we get a new navigationId with a timeOrigin in the
   // past.
   ++soft_navigation_count_;
-  window_->GenerateNewNavigationId();
 
-  context->SetNavigationId(window_->GetNavigationId());
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+  CHECK(performance);
+  performance->IncrementNavigationId();
+  context->SetNavigationId(performance->NavigationId());
 
   context_for_first_contentful_paint_ = context;
 }
@@ -565,7 +567,7 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
         .first_contentful_paint =
             loader->GetTiming().MonotonicTimeToPseudoWallTime(
                 context->FirstContentfulPaint()),
-        .navigation_id = context->GetNavigationId().Utf8()};
+        .navigation_id = context->NavigationId()};
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(metrics);
   }

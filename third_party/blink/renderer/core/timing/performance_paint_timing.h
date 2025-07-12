@@ -19,7 +19,8 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
 
   PerformancePaintTiming(PaintType,
                          const DOMPaintTimingInfo& paint_timing_info,
-                         DOMWindow* source);
+                         DOMWindow* source,
+                         uint32_t navigation_id);
   ~PerformancePaintTiming() override;
 
   const AtomicString& entryType() const override;

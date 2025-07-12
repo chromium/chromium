@@ -19,8 +19,14 @@ InteractionContentfulPaint::InteractionContentfulPaint(
     const AtomicString& id,
     const String& url,
     Element* element,
-    DOMWindow* source)
-    : PerformanceEntry(g_empty_atom, start_time, start_time, source, true),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0,
+                       g_empty_atom,
+                       start_time,
+                       source,
+                       navigation_id,
+                       true),
       size_(size),
       render_time_(render_time),
       load_time_(load_time),

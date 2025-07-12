@@ -36,7 +36,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
  public:
   PerformanceNavigationTiming(LocalDOMWindow&,
                               mojom::blink::ResourceTimingInfoPtr,
-                              base::TimeTicks time_origin);
+                              base::TimeTicks time_origin,
+                              uint32_t navigation_id);
   ~PerformanceNavigationTiming() override;
 
   // Attributes inherited from PerformanceEntry.

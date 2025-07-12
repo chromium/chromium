@@ -29,7 +29,8 @@ PerformanceScriptTiming::PerformanceScriptTiming(
     ScriptTimingInfo* info,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    DOMWindow* source)
+    DOMWindow* source,
+    uint32_t navigation_id)
     : PerformanceEntry((info->EndTime() - info->StartTime()).InMilliseconds(),
                        performance_entry_names::kScript,
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -37,7 +38,8 @@ PerformanceScriptTiming::PerformanceScriptTiming(
                            info->StartTime(),
                            false,
                            cross_origin_isolated_capability),
-                       source) {
+                       source,
+                       navigation_id) {
   info_ = info;
   if (!info_->Window() || !source) {
     window_attribution_ = V8ScriptWindowAttribution::Enum::kOther;

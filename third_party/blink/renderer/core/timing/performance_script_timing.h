@@ -30,7 +30,8 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   PerformanceScriptTiming(ScriptTimingInfo* info,
                           base::TimeTicks time_origin,
                           bool cross_origin_isolated_capability,
-                          DOMWindow* source);
+                          DOMWindow* source,
+                          uint32_t navigation_id);
   ~PerformanceScriptTiming() override;
 
   const AtomicString& entryType() const override;

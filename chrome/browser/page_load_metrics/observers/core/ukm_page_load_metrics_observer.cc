@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -65,6 +64,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/blink/blink_features.h"
@@ -96,23 +96,6 @@ static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
 const char kHistogramSoftNavigationCount[] =
     "PageLoad.Experimental.SoftNavigations.Count";
-
-template <size_t N>
-uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
-  static_assert(N <= 8u,
-                "Error: Can't pack more than 8 bytes into a uint64_t.");
-  uint64_t result = 0;
-  for (auto byte : bytes) {
-    result = (result << 8) | byte;
-  }
-  return result;
-}
-
-uint64_t StrToHash64Bit(std::string_view str) {
-  auto bytes = base::as_byte_span(str);
-  const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::span(digest).first<8>());
-}
 
 bool IsSupportedProtocol(page_load_metrics::NetworkProtocol protocol) {
   switch (protocol) {
@@ -655,8 +638,7 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     ukm::SourceId ukm_source_id,
     page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   ukm::builders::SoftNavigation builder(ukm_source_id);
-  builder.SetNavigationId(
-      StrToHash64Bit(soft_navigation_metrics.navigation_id));
+  builder.SetNavigationId(soft_navigation_metrics.navigation_id);
 
   builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
 
@@ -1040,7 +1022,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
   // Record last soft navigation metrics.
   if (GetDelegate().GetSoftNavigationMetrics().count >= 1 &&
-      !GetDelegate().GetSoftNavigationMetrics().navigation_id.empty()) {
+      GetDelegate().GetSoftNavigationMetrics().navigation_id !=
+          blink::kNavigationIdDefaultValue) {
     RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
                                 GetDelegate().GetSoftNavigationMetrics());
   }

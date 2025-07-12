@@ -217,14 +217,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
-  const std::string initial_navigation_id =
-      GetNavigationId("first_nav").ExtractString();
+  const int initial_navigation_id = GetNavigationId("first_nav").ExtractInt();
   // Navigate away and back 3 times. The 1st time is to verify the
   // navigation id is incremented. The 2nd time is to verify that the id is
   // incremented on the same restored document. The 3rd time is to
   // verify the increment does not stop at 2.
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  std::string prev_navigation_id = initial_navigation_id;
+  int prev_navigation_id = initial_navigation_id;
 
   for (int i = 1; i <= 3; i++) {
     // Navigate away
@@ -246,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineNavigationIdBrowserTest,
     // Verify navigation id is re-generated each time in case back/forward
     // cache feature is enabled. Verify navigation id is not changed in case
     // back/forward cache feature is not enabled.
-    std::string curr_navigation_id =
+    int curr_navigation_id =
         GetNavigationId("subsequent_nav" + base::NumberToString(i))
-            .ExtractString();
+            .ExtractInt();
     EXPECT_NE(curr_navigation_id, prev_navigation_id);
     EXPECT_NE(curr_navigation_id, initial_navigation_id);
 
@@ -378,8 +377,8 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
   // back-forward-cache-restoration type. Each entry is created when there is
   // a back/forward cache restoration.
   void CheckEntries(const base::Value::List lst,
-                    const std::string& initial_navigation_id) const {
-    std::string prev_navigation_id = initial_navigation_id;
+                    int initial_navigation_id) const {
+    int prev_navigation_id = initial_navigation_id;
 
     for (const auto& i : lst) {
       auto* dict = i.GetIfDict();
@@ -388,7 +387,7 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
       EXPECT_EQ("back-forward-cache-restoration",
                 *dict->FindString("entryType"));
 
-      const std::string* curr_navigation_id = dict->FindString("navigationId");
+      std::optional<int> curr_navigation_id = dict->FindInt("navigationId");
       // This verifies the navigation id changes each time a back/forward
       // restoration happens.
       EXPECT_NE(prev_navigation_id, *curr_navigation_id);
@@ -420,8 +419,8 @@ IN_PROC_BROWSER_TEST_F(
   SetBackForwardCacheRestorationBufferSize(buffer_size);
   RegisterPerformanceObservers(num_of_loops);
 
-  std::string initial_navigation_id =
-      GetNavigationId("initial_navigation_id").ExtractString();
+  int initial_navigation_id =
+      GetNavigationId("initial_navigation_id").ExtractInt();
   for (int i = 0; i < num_of_loops; i++) {
     // Navigate away
     ASSERT_TRUE(NavigateToURL(shell(), url2));

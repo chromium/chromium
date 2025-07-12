@@ -54,7 +54,8 @@ class UserTiming final : public GarbageCollected<UserTiming> {
                               const V8UnionDoubleOrString* end,
                               const ScriptValue& detail,
                               ExceptionState&,
-                              DOMWindow* source);
+                              DOMWindow* source,
+                              uint32_t navigation_id);
   void ClearMeasures(const AtomicString& measure_name);
 
   PerformanceEntryVector GetMarks() const;

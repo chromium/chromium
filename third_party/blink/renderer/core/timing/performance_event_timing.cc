@@ -23,11 +23,12 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     EventTimingReportingInfo reporting_info,
     bool cancelable,
     Node* target,
-    DOMWindow* source) {
+    DOMWindow* source,
+    uint32_t navigation_id) {
   CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, std::move(reporting_info),
-      cancelable, target, source);
+      cancelable, target, source, navigation_id);
 }
 
 // static
@@ -37,7 +38,7 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           *entry->GetEventTimingReportingInfo(), entry->cancelable(),
-          entry->target(), entry->source());
+          entry->target(), entry->source(), entry->navigationId());
   first_input->SetDuration(entry->duration_);
   if (entry->HasKnownInteractionID()) {
     first_input->SetInteractionIdAndOffset(entry->interactionId(),
@@ -74,14 +75,16 @@ PerformanceEventTiming::PerformanceEventTiming(
     EventTimingReportingInfo reporting_info,
     bool cancelable,
     Node* target,
-    DOMWindow* source)
+    DOMWindow* source,
+    uint32_t navigation_id)
     : PerformanceEntry(
+          /*duration=*/0.0,
           event_type,
           DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(
                   reporting_info.creation_time),
-          0.0,
-          source),
+          source,
+          navigation_id),
       entry_type_(entry_type),
       cancelable_(cancelable),
       target_(target),

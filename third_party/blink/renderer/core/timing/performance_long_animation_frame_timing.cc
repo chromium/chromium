@@ -25,7 +25,8 @@ PerformanceLongAnimationFrameTiming::Create(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     DOMWindow* source,
-    const std::optional<DOMPaintTimingInfo>& paint_timing_info) {
+    const std::optional<DOMPaintTimingInfo>& paint_timing_info,
+    uint32_t navigation_id) {
   Performance* performance =
       DOMWindowPerformance::performance(*source->ToLocalDOMWindow());
   DOMHighResTimeStamp startTime =
@@ -36,7 +37,7 @@ PerformanceLongAnimationFrameTiming::Create(
   PerformanceLongAnimationFrameTiming* entry =
       MakeGarbageCollected<PerformanceLongAnimationFrameTiming>(
           duration, startTime, info, time_origin,
-          cross_origin_isolated_capability, source);
+          cross_origin_isolated_capability, source, navigation_id);
   if (paint_timing_info.has_value()) {
     entry->SetPaintTimingInfo(*paint_timing_info);
   }
@@ -49,11 +50,13 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
     AnimationFrameTimingInfo* info,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    DOMWindow* source)
+    DOMWindow* source,
+    uint32_t navigation_id)
     : PerformanceEntry(duration,
                        AtomicString("long-animation-frame"),
                        startTime,
-                       source),
+                       source,
+                       navigation_id),
       render_start_(Performance::MonotonicTimeToDOMHighResTimeStamp(
           time_origin,
           info->RenderStartTime(),
@@ -78,7 +81,8 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
   for (ScriptTimingInfo* script : info->Scripts()) {
     if (security_origin->CanAccess(script->GetSecurityOrigin())) {
       scripts_.push_back(MakeGarbageCollected<PerformanceScriptTiming>(
-          script, time_origin, cross_origin_isolated_capability, source));
+          script, time_origin, cross_origin_isolated_capability, source,
+          navigation_id));
     }
   }
 }

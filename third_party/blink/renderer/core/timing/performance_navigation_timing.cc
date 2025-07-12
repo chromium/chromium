@@ -44,12 +44,14 @@ V8PerformanceTimingConfidenceValue::Enum GetNavigationConfidenceString(
 PerformanceNavigationTiming::PerformanceNavigationTiming(
     LocalDOMWindow& window,
     mojom::blink::ResourceTimingInfoPtr resource_timing,
-    base::TimeTicks time_origin)
+    base::TimeTicks time_origin,
+    uint32_t navigation_id)
     : PerformanceResourceTiming(std::move(resource_timing),
                                 AtomicString("navigation"),
                                 time_origin,
                                 window.CrossOriginIsolatedCapability(),
-                                &window),
+                                &window,
+                                navigation_id),
       ExecutionContextClient(&window),
       navigation_delivery_type_(
           window.document()->Loader()->GetNavigationDeliveryType()),

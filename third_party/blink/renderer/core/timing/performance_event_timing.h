@@ -94,7 +94,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                                         EventTimingReportingInfo reporting_info,
                                         bool cancelable,
                                         Node* target,
-                                        DOMWindow* source);
+                                        DOMWindow* source,
+                                        uint32_t navigation_id);
 
   static PerformanceEventTiming* CreateFirstInputTiming(
       PerformanceEventTiming* entry);
@@ -106,7 +107,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          EventTimingReportingInfo repoerting_info,
                          bool cancelable,
                          Node* target,
-                         DOMWindow* source);
+                         DOMWindow* source,
+                         uint32_t navigation_id);
 
   ~PerformanceEventTiming() override;
 

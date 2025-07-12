@@ -26,7 +26,8 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
                              const AtomicString& id,
                              const String& url,
                              Element* element,
-                             DOMWindow* source);
+                             DOMWindow* source,
+                             uint32_t navigation_id);
   ~InteractionContentfulPaint() override;
 
   const AtomicString& entryType() const override;

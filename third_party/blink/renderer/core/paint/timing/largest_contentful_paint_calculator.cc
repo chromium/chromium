@@ -26,6 +26,13 @@ constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
 
 constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 
+// A fixed navigationId for when we're emitting soft-navs related LCP trace
+// events; this is a valid UUIDv4. But, there is no corresponding navigation for
+// this ID, and therefore, DevTools will ignore these events.
+// TODO: Remove this once we introduce new trace events for soft-navs.
+constexpr const char kFixedNavigationIdForSoftNavs[] =
+    "deadbeef-dead-beef-dead-beefdeadbeef";
+
 }  // namespace
 
 LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
@@ -356,10 +363,16 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
   value->SetBoolean("isOutermostMainFrame",
                     window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
+  // Set navigationId to this fixed string for soft navs, to avoid that the
+  // event gets associated with the hard navigation (e.g., in DevTools).
   value->SetString("navigationId", is_triggered_by_soft_navigation
-                                       ? window->GetNavigationId()
+                                       ? kFixedNavigationIdForSoftNavs
                                        : IdentifiersFactory::LoaderId(
                                              window->document()->Loader()));
+  // TODO(crbug.com/426595418): Clean up this field once we support an
+  // event for soft lcp to be issued (Interaction Contentful Paint).
+  value->SetInteger("performanceTimelineNavigationId",
+                    window_performance_->NavigationId());
   return value;
 }
 
@@ -377,11 +390,16 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetBoolean("isOutermostMainFrame",
                     window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
+  // Set navigationId to this fixed string for soft navs, to avoid that the
+  // event gets associated with the hard navigation (e.g., in DevTools).
   value->SetString("navigationId", is_triggered_by_soft_navigation
-                                       ? window->GetNavigationId()
+                                       ? kFixedNavigationIdForSoftNavs
                                        : IdentifiersFactory::LoaderId(
                                              window->document()->Loader()));
-
+  // TODO(crbug.com/426595418): Clean up this field once we support an
+  // event for soft lcp to be issued (Interaction Contentful Paint).
+  value->SetInteger("performanceTimelineNavigationId",
+                    window_performance_->NavigationId());
   value->SetDouble("imageDiscoveryTime",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
                        largest_image->media_timing->DiscoveryTime()));

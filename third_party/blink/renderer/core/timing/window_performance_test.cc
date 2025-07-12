@@ -178,7 +178,8 @@ class WindowPerformanceTest : public testing::Test,
 
     return PerformanceEventTiming::Create(
         name, reporting_info, false, nullptr,
-        LocalDOMWindow::From(GetScriptState()));
+        LocalDOMWindow::From(GetScriptState()),
+        performance_->NavigationId());
   }
 
   HeapVector<Member<PerformanceEventTiming>>*
@@ -296,6 +297,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
   WindowPerformance* perf =
       DOMWindowPerformance::performance(*page_holder->GetFrame().DomWindow());
   PerformanceTiming* timing = perf->timing();
+  uint64_t navigation_id = perf->NavigationId();
 
   auto* document_loader = page_holder->GetFrame().Loader().GetDocumentLoader();
   ASSERT_TRUE(document_loader);
@@ -317,6 +319,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
 
   EXPECT_EQ(perf, DOMWindowPerformance::performance(
                       *page_holder->GetFrame().DomWindow()));
+  EXPECT_EQ(navigation_id, perf->NavigationId());
   EXPECT_EQ(timing, perf->timing());
   EXPECT_EQ(page_holder->GetFrame().DomWindow(), perf->DomWindow());
   EXPECT_EQ(page_holder->GetFrame().DomWindow(), timing->DomWindow());
@@ -2188,4 +2191,47 @@ TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());
+
+class WindowPerformanceNavigationIdTest : public testing::Test {
+ protected:
+  test::TaskEnvironment task_environment_;
+};
+
+TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
+  // Initial navigation: randomly generated IDs, assumed to be hard nav.
+  std::vector<uint32_t> ids;
+  for (int i = 0; i < 100; ++i) {
+    // Making a new scope is like a hard nav (the ID gets generated via the
+    // constructor of LocalDOMWindow).
+    V8TestingScope scope;
+    const WindowPerformance* performance =
+        DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
+    ASSERT_TRUE(performance);
+    ids.push_back(performance->NavigationId());
+  }
+  // We allow 10 collisions, since the IDs are randomly generated between 100
+  // and 10000.
+  auto last = std::unique(ids.begin(), ids.end());
+  auto num_collisions = std::distance(last, ids.end());
+  EXPECT_LT(num_collisions, 10u);
+  ids.erase(last, ids.end());
+  // The IDs are not in sorted order.
+  std::vector<uint32_t> sorted_ids(ids.begin(), ids.end());
+  std::sort(sorted_ids.begin(), sorted_ids.end());
+  EXPECT_NE(sorted_ids, ids);
+}
+
+TEST_F(WindowPerformanceNavigationIdTest, NavigationIdSoftNavigations) {
+  // Initial navigation: randomly generated ID, assumed to be hard nav.
+  V8TestingScope scope;
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
+  uint32_t navigation_id1 = performance->NavigationId();
+
+  // Soft navigation or back-forward cache restoration: incremented ID.
+  performance->IncrementNavigationId();
+  uint32_t navigation_id3 = performance->NavigationId();
+  EXPECT_NE(navigation_id1, navigation_id3);
+  EXPECT_LT(navigation_id1, navigation_id3);
+}
 }  // namespace blink

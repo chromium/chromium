@@ -12,8 +12,13 @@ BackForwardCacheRestoration::BackForwardCacheRestoration(
     DOMHighResTimeStamp start_time,
     DOMHighResTimeStamp pageshow_event_start,
     DOMHighResTimeStamp pageshow_event_end,
-    DOMWindow* source)
-    : PerformanceEntry(g_empty_atom, start_time, pageshow_event_start, source),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(g_empty_atom,
+                       start_time,
+                       pageshow_event_start,
+                       source,
+                       navigation_id),
       pageshow_event_start_(pageshow_event_start),
       pageshow_event_end_(pageshow_event_end) {}
 BackForwardCacheRestoration::~BackForwardCacheRestoration() = default;

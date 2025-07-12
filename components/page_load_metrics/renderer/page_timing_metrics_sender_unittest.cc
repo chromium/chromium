@@ -46,9 +46,9 @@ class PageTimingMetricsSenderTest : public testing::Test {
             PageTimingMetadataRecorder::MonotonicTiming())) {}
 
   mojom::SoftNavigationMetrics CreateEmptySoftNavigationMetrics() {
-    return mojom::SoftNavigationMetrics(blink::kSoftNavigationCountDefaultValue,
-                                        base::Milliseconds(0), std::string(),
-                                        CreateLargestContentfulPaintTiming());
+    return mojom::SoftNavigationMetrics(
+        blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
+        blink::kNavigationIdDefaultValue, CreateLargestContentfulPaintTiming());
   }
 
  protected:

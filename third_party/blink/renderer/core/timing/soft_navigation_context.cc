@@ -257,7 +257,7 @@ void SoftNavigationContext::WriteIntoTrace(
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
 
   dict.Add("softNavContextId", context_id_);
-  dict.Add("navigationId", navigation_id_);
+  dict.Add("performanceTimelineNavigationId", navigation_id_);
   dict.Add("initialURL", initial_url_);
   dict.Add("mostRecentURL", most_recent_url_);
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
@@ -83,10 +84,15 @@ TEST_F(PerformanceObserverTest, ObserveWithBufferedFlag) {
   options->setBuffered(true);
   EXPECT_EQ(0, NumPerformanceEntries());
 
+  auto* window = LocalDOMWindow::From(scope.GetScriptState());
+  ASSERT_TRUE(window);
+  auto* performance = DOMWindowPerformance::performance(*window);
+  ASSERT_TRUE(performance);
+
   // add a layout-shift to performance so getEntries() returns it
   auto* entry =
       LayoutShift::Create(0.0, 1234, true, 5678, LayoutShift::AttributionList(),
-                          LocalDOMWindow::From(scope.GetScriptState()));
+                          window, performance->NavigationId());
   base_->AddToLayoutShiftBuffer(*entry);
 
   // call observe with the buffered flag

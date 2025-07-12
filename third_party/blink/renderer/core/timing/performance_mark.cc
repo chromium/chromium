@@ -25,8 +25,9 @@ PerformanceMark::PerformanceMark(
     base::TimeTicks unsafe_time_for_traces,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state,
-    DOMWindow* source)
-    : PerformanceEntry(name, start_time, start_time, source),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(/*duration=*/0.0, name, start_time, source, navigation_id),
       serialized_detail_(std::move(serialized_detail)),
       unsafe_time_for_traces_(unsafe_time_for_traces) {}
 
@@ -99,7 +100,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
 
   return MakeGarbageCollected<PerformanceMark>(
       mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
-      exception_state, LocalDOMWindow::From(script_state));
+      exception_state, LocalDOMWindow::From(script_state),
+      performance->NavigationId());
 }
 
 const AtomicString& PerformanceMark::entryType() const {

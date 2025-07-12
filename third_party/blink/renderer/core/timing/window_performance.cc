@@ -443,7 +443,7 @@ void WindowPerformance::CreateNavigationTimingInstance(
   }
 
   navigation_timing_ = MakeGarbageCollected<PerformanceNavigationTiming>(
-      *DomWindow(), std::move(info), time_origin_);
+      *DomWindow(), std::move(info), time_origin_, NavigationId());
 }
 
 void WindowPerformance::OnBodyLoadFinished(int64_t encoded_body_size,
@@ -635,7 +635,8 @@ void WindowPerformance::EventTimingProcessingStart(
   // fires.
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, reporting_info, event.cancelable(),
-      hit_test_target ? hit_test_target->ToNode() : nullptr, DomWindow());
+      hit_test_target ? hit_test_target->ToNode() : nullptr, DomWindow(),
+      NavigationId());
 
   event_timing_entries_.push_back(entry);
   current_event_ = &event;
@@ -1311,7 +1312,7 @@ void WindowPerformance::QueueLongAnimationFrameTiming(
   if (auto* window = DomWindow()) {
     AddLongAnimationFrameEntry(PerformanceLongAnimationFrameTiming::Create(
         info, time_origin_, cross_origin_isolated_capability_, window,
-        paint_timing_info));
+        paint_timing_info, NavigationId()));
   }
 }
 
@@ -1356,7 +1357,7 @@ void WindowPerformance::AddElementTiming(
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, paint_timing_info.presentation_time, coarsened_load_time,
       identifier, intrinsic_size.width(), intrinsic_size.height(), id, element,
-      DomWindow());
+      DomWindow(), NavigationId());
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
@@ -1384,7 +1385,8 @@ void WindowPerformance::AddContainerTiming(
   PerformanceContainerTiming* entry = PerformanceContainerTiming::Create(
       AtomicString("container-paints"), paint_timing_info.presentation_time,
       rect, size, identifier, last_painted_element,
-      first_paint_timing_info.presentation_time, DomWindow());
+      first_paint_timing_info.presentation_time, DomWindow(),
+      NavigationId());
   TRACE_EVENT2("loading", "PerformanceContainerTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
@@ -1425,7 +1427,8 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
                                                 base::TimeTicks timestamp) {
   VisibilityStateEntry* entry = MakeGarbageCollected<VisibilityStateEntry>(
       PageHiddenStateString(!is_visible),
-      MonotonicTimeToDOMHighResTimeStamp(timestamp), DomWindow());
+      MonotonicTimeToDOMHighResTimeStamp(timestamp), DomWindow(),
+      NavigationId());
 
   if (HasObserverFor(PerformanceEntry::kVisibilityState)) {
     NotifyObserversOfEntry(*entry);
@@ -1446,7 +1449,7 @@ void WindowPerformance::AddSoftNavigationEntry(
   }
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
       name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      DomWindow());
+      DomWindow(), NavigationId());
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
     UseCounter::Count(GetExecutionContext(),
@@ -1502,7 +1505,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
       paint_timing_info.has_value() ? paint_timing_info->presentation_time
                                     : load_timestamp,
       paint_timing_info.has_value() ? paint_timing_info->presentation_time : 0,
-      paint_size, load_timestamp, id, url, element, DomWindow());
+      paint_size, load_timestamp, id, url, element, DomWindow(),
+      NavigationId());
 
   if (paint_timing_info) {
     entry->SetPaintTimingInfo(paint_timing_info.value());
@@ -1554,7 +1558,8 @@ void WindowPerformance::OnInteractionContentfulPaintUpdated(
       paint_timing_info.has_value() ? paint_timing_info->presentation_time
                                     : load_timestamp,
       paint_timing_info.has_value() ? paint_timing_info->presentation_time : 0,
-      paint_size, load_timestamp, id, url, element, DomWindow());
+      paint_size, load_timestamp, id, url, element, DomWindow(),
+      NavigationId());
 
   if (paint_timing_info) {
     entry->SetPaintTimingInfo(paint_timing_info.value());

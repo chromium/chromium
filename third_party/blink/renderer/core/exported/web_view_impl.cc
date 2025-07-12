@@ -2756,7 +2756,10 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
       // new navigation ID to identify the navigation.
       if (RuntimeEnabledFeatures::
               BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
-        window->GenerateNewNavigationId();
+        WindowPerformance* performance =
+            DOMWindowPerformance::performance(*window);
+        DCHECK(performance);
+        performance->IncrementNavigationId();
       }
 
       window->DispatchPersistedPageshowEvent(navigation_start);

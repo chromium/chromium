@@ -233,7 +233,8 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
                                         const V8UnionDoubleOrString* end,
                                         const ScriptValue& detail,
                                         ExceptionState& exception_state,
-                                        DOMWindow* source) {
+                                        DOMWindow* source,
+                                        uint32_t navigation_id) {
   double start_time =
       start ? GetTimeOrFindMarkTime(measure_name, start, exception_state) : 0;
   if (exception_state.HadException())
@@ -300,9 +301,9 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
                     unsafe_end_time);
   }
 
-  PerformanceMeasure* measure =
-      PerformanceMeasure::Create(script_state, measure_name, start_time,
-                                 end_time, detail, exception_state, source);
+  PerformanceMeasure* measure = PerformanceMeasure::Create(
+      script_state, measure_name, start_time, end_time, detail, exception_state,
+      source, navigation_id);
   if (!measure)
     return nullptr;
   InsertPerformanceEntry(measures_map_, measures_buffer_, *measure);

@@ -321,16 +321,6 @@ TEST_F(LocalDOMWindowTest, ConsoleMessageCategory) {
               *message_storage->at(i)->Category());
   }
 }
-TEST_F(LocalDOMWindowTest, NavigationId) {
-  String navigation_id1 = GetFrame().DomWindow()->GetNavigationId();
-  GetFrame().DomWindow()->GenerateNewNavigationId();
-  String navigation_id2 = GetFrame().DomWindow()->GetNavigationId();
-  GetFrame().DomWindow()->GenerateNewNavigationId();
-  String navigation_id3 = GetFrame().DomWindow()->GetNavigationId();
-  EXPECT_NE(navigation_id1, navigation_id2);
-  EXPECT_NE(navigation_id1, navigation_id3);
-  EXPECT_NE(navigation_id2, navigation_id3);
-}
 
 TEST_F(LocalDOMWindowTest, StorageAccessApiStatus) {
   EXPECT_EQ(GetFrame().DomWindow()->GetStorageAccessApiStatus(),

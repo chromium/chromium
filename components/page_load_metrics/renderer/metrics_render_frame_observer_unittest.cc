@@ -104,7 +104,7 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
   mojom::SoftNavigationMetricsPtr fake_soft_navigation_metrics_ =
       mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
                                         base::Milliseconds(0),
-                                        std::string(),
+                                        blink::kNavigationIdDefaultValue,
                                         CreateLargestContentfulPaintTiming());
 };
 
@@ -195,7 +195,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics =
       mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
-                                        base::Milliseconds(0), std::string(),
+                                        base::Milliseconds(0),
+                                        blink::kNavigationIdDefaultValue,
                                         CreateLargestContentfulPaintTiming());
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
@@ -222,13 +223,12 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   observer.ExpectPageLoadTiming(timing);
   // Expect a soft navigation metrics being sent because of soft navigation
   // detection.
-  soft_navigation_metrics->count = 1;
-
+  // TODO(crbug.com/426595418): Rework these tests to verify the
+  // navigationId values.
+  soft_navigation_metrics->count = 111111;
   soft_navigation_metrics->start_time =
       base::TimeDelta() + base::Milliseconds(221.1);
-
-  soft_navigation_metrics->navigation_id =
-      "94befe01-5108-43f2-9ec9-936dd0f36e02";
+  soft_navigation_metrics->navigation_id = 42;
 
   observer.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
 

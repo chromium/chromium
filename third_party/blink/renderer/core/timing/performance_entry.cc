@@ -31,53 +31,49 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 #include "base/atomic_sequence_num.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
 namespace {
 static base::AtomicSequenceNumber index_seq;
-}
+}  // namespace
 
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
                                    double finish_time,
                                    DOMWindow* source,
+                                   uint32_t navigation_id,
                                    bool is_triggered_by_soft_navigation)
-    : duration_(finish_time - start_time),
-      name_(name),
-      start_time_(start_time),
-      index_(index_seq.GetNext()),
-      navigation_id_(DynamicTo<LocalDOMWindow>(source)
-                         ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
-                         : g_empty_string),
-      source_(source),
-      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {}
+    : PerformanceEntry(finish_time - start_time,
+                       name,
+                       start_time,
+                       source,
+                       navigation_id,
+                       is_triggered_by_soft_navigation) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
                                    double start_time,
                                    DOMWindow* source,
+                                   uint32_t navigation_id,
                                    bool is_triggered_by_soft_navigation)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
       index_(index_seq.GetNext()),
-      navigation_id_(DynamicTo<LocalDOMWindow>(source)
-                         ? DynamicTo<LocalDOMWindow>(source)->GetNavigationId()
-                         : g_empty_string),
       source_(source),
-      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {
-  DCHECK_GE(duration_, 0.0);
-}
+      navigation_id_(navigation_id),
+      is_triggered_by_soft_navigation_(is_triggered_by_soft_navigation) {}
 
 PerformanceEntry::~PerformanceEntry() = default;
 
@@ -89,7 +85,7 @@ DOMHighResTimeStamp PerformanceEntry::duration() const {
   return duration_;
 }
 
-String PerformanceEntry::navigationId() const {
+uint32_t PerformanceEntry::navigationId() const {
   return navigation_id_;
 }
 
@@ -157,19 +153,6 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   return kInvalid;
 }
 
-// static
-String PerformanceEntry::GetNavigationId(ScriptState* script_state) {
-  const auto* local_dom_window = LocalDOMWindow::From(script_state);
-  // The local_dom_window could be null in some browser tests and unit tests.
-  // An empty string is returned in such cases. In case this method is called
-  // within a worker, the navigation id in this case would also be an empty
-  // string.
-  if (!local_dom_window)
-    return g_empty_string;
-
-  return local_dom_window->GetNavigationId();
-}
-
 DOMHighResTimeStamp PerformanceEntry::paintTime() const {
   CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
   return paint_timing_info_ ? paint_timing_info_->paint_time : 0;
@@ -198,7 +181,7 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("duration", duration());
   if (RuntimeEnabledFeatures::NavigationIdEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.AddString("navigationId", navigationId());
+    builder.AddNumber("navigationId", navigationId());
   }
 
   if (paint_timing_info_ && RuntimeEnabledFeatures::PaintTimingMixinEnabled()) {

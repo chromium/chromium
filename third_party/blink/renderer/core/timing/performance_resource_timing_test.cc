@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -38,7 +39,13 @@ class PerformanceResourceTimingTest : public testing::Test {
                                       connection_info);
   }
 
-  void Initialize(ScriptState* script_state) { script_state_ = script_state; }
+  void Initialize(ScriptState* script_state) {
+    script_state_ = script_state;
+    auto* window = LocalDOMWindow::From(script_state_);
+    ASSERT_TRUE(window);
+    performance_ = DOMWindowPerformance::performance(*window);
+    ASSERT_TRUE(performance_);
+  }
 
   ScriptState* GetScriptState() { return script_state_; }
 
@@ -52,11 +59,13 @@ class PerformanceResourceTimingTest : public testing::Test {
         dummy_page_holder->GetDocument()
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
-        dummy_page_holder->GetDocument().GetExecutionContext());
+        dummy_page_holder->GetDocument().GetExecutionContext(),
+        performance_->NavigationId());
   }
 
   test::TaskEnvironment task_environment_;
   Persistent<ScriptState> script_state_;
+  Persistent<WindowPerformance> performance_;
 };
 
 TEST_F(PerformanceResourceTimingTest,

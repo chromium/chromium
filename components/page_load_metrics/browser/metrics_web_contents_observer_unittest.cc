@@ -131,7 +131,8 @@ class MetricsWebContentsObserverTest
         mojom::InputTimingPtr(std::in_place), std::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            std::string(), mojom::LargestContentfulPaintTiming::New()));
+            blink::kNavigationIdDefaultValue,
+            mojom::LargestContentfulPaintTiming::New()));
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -159,7 +160,8 @@ class MetricsWebContentsObserverTest
         mojom::InputTimingPtr(std::in_place), std::nullopt,
         mojom::SoftNavigationMetrics::New(
             blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-            std::string(), mojom::LargestContentfulPaintTiming::New()));
+            blink::kNavigationIdDefaultValue,
+            mojom::LargestContentfulPaintTiming::New()));
   }
 
   void SimulateCustomUserTimingUpdate(

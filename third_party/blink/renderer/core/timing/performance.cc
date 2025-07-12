@@ -632,7 +632,7 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
   ExecutionContext* context = GetExecutionContext();
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
       std::move(info), initiator_type, time_origin_,
-      cross_origin_isolated_capability_, context);
+      cross_origin_isolated_capability_, context, NavigationId());
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -802,7 +802,7 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
       static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
                        dom_high_res_start_time),
       name, container_type, container_src, container_id, container_name,
-      DynamicTo<LocalDOMWindow>(execution_context));
+      DynamicTo<LocalDOMWindow>(execution_context), NavigationId());
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     InsertEntryIntoSortedBuffer(longtask_buffer_, *entry, kRecordSwaps);
   } else {
@@ -825,7 +825,7 @@ void Performance::AddBackForwardCacheRestoration(
       MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(pageshow_start_time),
       MonotonicTimeToDOMHighResTimeStamp(pageshow_end_time),
-      DynamicTo<LocalDOMWindow>(GetExecutionContext()));
+      DynamicTo<LocalDOMWindow>(GetExecutionContext()), NavigationId());
   if (back_forward_cache_restoration_buffer_.size() <
       back_forward_cache_restoration_buffer_size_limit_) {
     InsertEntryIntoSortedBuffer(back_forward_cache_restoration_buffer_, *entry,
@@ -1139,7 +1139,7 @@ PerformanceMeasure* Performance::MeasureWithDetail(
     ExceptionState& exception_state) {
   PerformanceMeasure* performance_measure = GetUserTiming().Measure(
       script_state, measure_name, start, duration, end, detail, exception_state,
-      LocalDOMWindow::From(script_state));
+      LocalDOMWindow::From(script_state), NavigationId());
   if (performance_measure)
     NotifyObserversOfEntry(*performance_measure);
   return performance_measure;
@@ -1302,8 +1302,8 @@ bool Performance::CanExposeNode(Node* node) {
 void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  const DOMPaintTimingInfo& paint_timing_info) {
   PerformancePaintTiming* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, paint_timing_info,
-      DynamicTo<LocalDOMWindow>(GetExecutionContext()));
+      type, paint_timing_info, DynamicTo<LocalDOMWindow>(GetExecutionContext()),
+      NavigationId());
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
 

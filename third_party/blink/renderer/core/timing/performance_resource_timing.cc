@@ -71,7 +71,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& initiator_type,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    ExecutionContext* context)
+    ExecutionContext* context,
+    uint32_t navigation_id)
     : PerformanceEntry(
           info->name.IsNull() ? g_empty_atom : AtomicString(info->name),
           Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -84,7 +85,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
               info->response_end,
               info->allow_negative_values,
               cross_origin_isolated_capability),
-          DynamicTo<LocalDOMWindow>(context)),
+          DynamicTo<LocalDOMWindow>(context),
+          navigation_id),
       initiator_type_(initiator_type.empty() || initiator_type.IsNull()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),

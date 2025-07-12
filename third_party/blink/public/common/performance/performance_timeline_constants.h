@@ -10,11 +10,16 @@ namespace blink {
 
 inline constexpr uint32_t kSoftNavigationCountDefaultValue = 0;
 
+// The default value (0) indicates the absence of a navigation id.
+// It's used for initialization and for cases when there's no navigation id
+// e.g. in service workers. See also navigation_id_generator.h.
+inline constexpr uint32_t kNavigationIdDefaultValue = 0;
+
 struct SoftNavigationMetrics {
   uint32_t count = kSoftNavigationCountDefaultValue;
   base::TimeDelta start_time;
   base::TimeDelta first_contentful_paint;
-  std::string navigation_id;
+  uint32_t navigation_id = kNavigationIdDefaultValue;
 };
 }  // namespace blink
 
