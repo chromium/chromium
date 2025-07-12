@@ -206,6 +206,11 @@ class BookmarkBridge : public ProfileObserver,
                          jlong id,
                          jint type);
 
+  void GetBookmarksForFolder(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_folder_id_obj,
+      const base::android::JavaParamRef<jobject>& j_result_obj);
+
   jboolean IsFolderVisible(JNIEnv* env,
                            jlong id,
                            jint type);

@@ -204,8 +204,6 @@ found in the LICENSE file.
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
     <dimen name="bookmark_widget_min_height">48dp</dimen>
-    <dimen name="bookmark_widget_section_header_min_height">32dp</dimen>
-    <dimen name="bookmark_widget_section_header_padding_start">20dp</dimen>
 
     <!-- Bookmark bar -->
     <dimen name="bookmark_bar_button_padding_horizontal">8dp</dimen>

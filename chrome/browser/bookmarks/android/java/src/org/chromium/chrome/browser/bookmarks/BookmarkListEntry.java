@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.content.res.Resources;
-
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -65,32 +63,15 @@ public final class BookmarkListEntry {
     private final @Nullable SectionHeaderData mSectionHeaderData;
     private final @Nullable PowerBookmarkMeta mPowerBookmarkMeta;
 
-    /** Returns the view type used in the bookmark list UI. */
-    @ViewType
-    public int getViewType() {
-        return mViewType;
-    }
-
-    /**
-     * Returns the view type used in the bookmark list UI. Can be null for non bookmark view types.
-     */
-    public @Nullable BookmarkItem getBookmarkItem() {
-        return mBookmarkItem;
-    }
-
-    /**
-     * Returns title for this BookmarkListEntry. Works for both bookmarks and section headers.
-     *
-     * @param resources The resources object to get the string.
-     * @return The title for the given entry.
-     */
-    public @Nullable String getTitle(Resources resources) {
-        if (mBookmarkItem != null) {
-            return mBookmarkItem.getTitle();
-        } else if (mSectionHeaderData != null) {
-            return resources.getString(mSectionHeaderData.titleRes);
-        }
-        return null;
+    private BookmarkListEntry(
+            int viewType,
+            @Nullable BookmarkItem bookmarkItem,
+            @Nullable SectionHeaderData sectionHeaderData,
+            @Nullable PowerBookmarkMeta meta) {
+        mViewType = viewType;
+        mBookmarkItem = bookmarkItem;
+        mSectionHeaderData = sectionHeaderData;
+        mPowerBookmarkMeta = meta;
     }
 
     /**
@@ -149,6 +130,19 @@ public final class BookmarkListEntry {
                 ViewType.SECTION_HEADER, null, sectionHeaderData, /* meta= */ null);
     }
 
+    /** Returns the view type used in the bookmark list UI. */
+    @ViewType
+    int getViewType() {
+        return mViewType;
+    }
+
+    /**
+     * Returns the view type used in the bookmark list UI. Can be null for non bookmark view types.
+     */
+    @Nullable BookmarkItem getBookmarkItem() {
+        return mBookmarkItem;
+    }
+
     /**
      * @return The {@link SectionHeaderData}. Could be null if this entry is not a section header.
      */
@@ -159,16 +153,5 @@ public final class BookmarkListEntry {
     /** Returns the PowerBookmarkMeta for this list entry. */
     @Nullable PowerBookmarkMeta getPowerBookmarkMeta() {
         return mPowerBookmarkMeta;
-    }
-
-    private BookmarkListEntry(
-            int viewType,
-            @Nullable BookmarkItem bookmarkItem,
-            @Nullable SectionHeaderData sectionHeaderData,
-            @Nullable PowerBookmarkMeta meta) {
-        mViewType = viewType;
-        mBookmarkItem = bookmarkItem;
-        mSectionHeaderData = sectionHeaderData;
-        mPowerBookmarkMeta = meta;
     }
 }
