@@ -1,7 +1,10 @@
 #include "extensions/browser/api/read_server_uds/ml_server_uds.h"
 
-#include "base/logging.h"
+#include <string>
+
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -10,18 +13,19 @@
 
 namespace extensions {
 
-MLServerUDS::MLServerUDS(const std::string& socket_path)
-    : socket_path_(socket_path), weak_ptr_factory_(this) {}
+MLServerUDS::MLServerUDS(const std::string& socket_path,
+                         const std::string& label)
+    : socket_path_(socket_path), label_(label), weak_ptr_factory_(this) {}
 
 MLServerUDS::~MLServerUDS() {
   LOG(INFO) << "MLServerUDS destroyed";
   DCHECK(!socket_) << "Socket must be cleared before destruction!";
 }
 
-void MLServerUDS::Send(const std::string& payload,
+void MLServerUDS::Send(const std::string& message,
                        base::OnceCallback<void(std::string)> success_cb,
                        base::OnceCallback<void(std::string)> error_cb) {
-  payload_ = payload;
+  payload_ = MLServerUDS::CreateJSONStringPayload(label_, "SEND", message);
   success_callback_ = std::move(success_cb);
   error_callback_ = std::move(error_cb);
 
@@ -40,12 +44,11 @@ void MLServerUDS::Clear() {
   if (socket_) {
     auto temp_socket = std::move(socket_);
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::unique_ptr<net::UnixDomainClientSocket> s) {
-              // Socket safely destroyed on IO thread
-            },
-            std::move(temp_socket)));
+        FROM_HERE, base::BindOnce(
+                       [](std::unique_ptr<net::UnixDomainClientSocket> s) {
+                         // Socket safely destroyed on IO thread
+                       },
+                       std::move(temp_socket)));
   }
 
   success_callback_.Reset();
@@ -118,8 +121,7 @@ void MLServerUDS::OnConnected(int result) {
   } else {
     LOG(ERROR) << "Write failed: " << write_result;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback_), "Write failed"));
+        FROM_HERE, base::BindOnce(std::move(error_callback_), "Write failed"));
   }
 }
 
@@ -127,8 +129,7 @@ void MLServerUDS::OnDataWritten(int result) {
   if (result <= 0) {
     LOG(ERROR) << "Write error: " << result;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback_), "Write failed"));
+        FROM_HERE, base::BindOnce(std::move(error_callback_), "Write failed"));
     return;
   }
 
@@ -143,8 +144,7 @@ void MLServerUDS::OnDataWritten(int result) {
   if (read_result != net::ERR_IO_PENDING && read_result <= 0) {
     LOG(ERROR) << "Read error: " << read_result;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback_), "Read failed"));
+        FROM_HERE, base::BindOnce(std::move(error_callback_), "Read failed"));
   } else {
     LOG(INFO) << "Read started";
   }
@@ -154,8 +154,7 @@ void MLServerUDS::OnDataRead(int result) {
   if (result <= 0) {
     LOG(ERROR) << "Read failed: " << result;
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(error_callback_), "Read failed"));
+        FROM_HERE, base::BindOnce(std::move(error_callback_), "Read failed"));
     return;
   }
 
@@ -163,7 +162,20 @@ void MLServerUDS::OnDataRead(int result) {
   LOG(INFO) << "Received: " << response;
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(success_callback_), std::move(response)));
+      FROM_HERE,
+      base::BindOnce(std::move(success_callback_), std::move(response)));
 }
 
+std::string MLServerUDS::CreateJSONStringPayload(const std::string& label,
+                                                 const std::string& method,
+                                                 const std::string& message) {
+  base::Value::Dict dict;
+  dict.Set("label", label);
+  dict.Set("method", method);
+  dict.Set("payload", message);
+
+  std::string json_str;
+  base::JSONWriter::Write(dict, &json_str);
+  return json_str;
+}
 }  // namespace extensions

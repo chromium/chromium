@@ -2,6 +2,7 @@
 #define EXTENSIONS_BROWSER_API_READ_SERVER_UDS_ML_SERVER_UDS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -13,10 +14,18 @@ namespace extensions {
 
 class MLServerUDS {
  public:
-  explicit MLServerUDS(const std::string& socket_path);
+  MLServerUDS(const std::string& socket_path, const std::string& label);
   ~MLServerUDS();
 
   void Send(const std::string& payload,
+            base::OnceCallback<void(std::string)> success_cb,
+            base::OnceCallback<void(std::string)> error_cb);
+
+  void Get(const std::string& payload,
+           base::OnceCallback<void(std::string)> success_cb,
+           base::OnceCallback<void(std::string)> error_cb);
+
+  void Post(const std::string& payload,
             base::OnceCallback<void(std::string)> success_cb,
             base::OnceCallback<void(std::string)> error_cb);
 
@@ -28,9 +37,14 @@ class MLServerUDS {
   void OnConnected(int result);
   void OnDataWritten(int result);
   void OnDataRead(int result);
+  std::string CreateJSONStringPayload(const std::string& label,
+                                      const std::string& method,
+                                      const std::string& payload);
 
   std::string socket_path_;
   std::string payload_;
+  std::string label_;
+  std::string model_name_;
   std::unique_ptr<net::UnixDomainClientSocket> socket_;
   scoped_refptr<net::IOBufferWithSize> read_buffer_;
 

@@ -3,6 +3,11 @@ import socket
 import os
 import json
 
+FUNCTION_LABELS = {
+    "LABEL_READ_DATA": "LABEL_READ_DATA",
+    "LABEL_SEND_DATA": "LABEL_SEND_DATA"
+}
+
 SOCKET_PATH = "/sockets/echo_socket"
 
 # Remove existing socket if present

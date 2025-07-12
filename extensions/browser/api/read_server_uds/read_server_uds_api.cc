@@ -37,6 +37,10 @@ namespace extensions {
 
 constexpr char kMLServerUDSPath[] = "/tmp/shared-sockets/echo_socket";
 
+// ALL lable for ML server function handler
+constexpr char kReadServerUdsReadDataFunctionLable[] = "LABLE_READ_DATA";
+constexpr char kReadServerUdsSendDataFunctionLable[] = "LABLE_SEND_DATA";
+
 // -------------------------
 // Read Server Read Data UDS
 // -------------------------
@@ -52,7 +56,7 @@ ReadServerUdsReadDataFunction::~ReadServerUdsReadDataFunction() {
 ExtensionFunction::ResponseAction ReadServerUdsReadDataFunction::Run() {
   AddRef();  // async
 
-  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath);
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath, kReadServerUdsReadDataFunctionLable);
 
   std::string payload = "GET /data\n";
 
@@ -119,7 +123,7 @@ ExtensionFunction::ResponseAction ReadServerUdsSendDataFunction::Run() {
 
   AddRef();  // async
 
-  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath);
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath, kReadServerUdsSendDataFunctionLable);
 
   ml_server->Send(payload,
                   base::BindOnce(&ReadServerUdsSendDataFunction::OnSuccess,
