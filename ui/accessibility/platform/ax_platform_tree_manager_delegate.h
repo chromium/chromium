@@ -87,15 +87,26 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Returns a handle to the platform specific widget containing the current
   // accessibility tree. Example: the HWND of the widget containing the
   // currently displayed web contents on Windows.
+  //
+  // TODO(crbug.com/431097635): This only appears to be implemented on Windows,
+  // but there are callers on macOS and Linux that appear to indirectly rely on
+  // this. Either clean up the dead code on other platforms, or implement this
+  // method in subclasses.
   virtual gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() = 0;
 
   // Returns a pointer to the platform specific accessibility object containing
   // the current accessibility tree. Example: a pointer to a Cocoa object
   // conforming to the `NSAccessibility` protocol on macOS.
+  // TODO(accessibility): Rename to AccessibilityGetRootNativeAccessible to
+  // clarify we're returning the native root of the current accessibility tree.
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() = 0;
 
   // Same as above but for the current window, e.g. the currently focused
   // `NSWindow` object on macOS.
+  //
+  // TODO(accessibility): Rename to AccessibilityGetWindowNativeAccessible to
+  // clarify we're returning the accessible object for the native window of the
+  // current accessibility tree.
   virtual gfx::NativeViewAccessible
   AccessibilityGetNativeViewAccessibleForWindow() = 0;
 

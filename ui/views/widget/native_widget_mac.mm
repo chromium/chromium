@@ -238,6 +238,16 @@ bool NativeWidgetMac::ExecuteCommand(
   return false;
 }
 
+gfx::NativeViewAccessible NativeWidgetMac::GetNativeViewAccessibleForNSView()
+    const {
+  return ns_window_host_->GetNativeViewAccessibleForNSView();
+}
+
+gfx::NativeViewAccessible NativeWidgetMac::GetNativeViewAccessibleForNSWindow()
+    const {
+  return ns_window_host_->GetNativeViewAccessibleForNSWindow();
+}
+
 void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
   ownership_ = params.ownership;
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {

@@ -294,4 +294,45 @@ TEST_F(WidgetAXManagerTest, AccessibilityGetViewBounds_ReturnsWidgetBounds) {
   EXPECT_EQ(manager()->AccessibilityGetViewBounds(), test_bounds);
 }
 
+TEST_F(WidgetAXManagerTest, AccessibilityGetAcceleratedWidget) {
+  gfx::AcceleratedWidget aw = manager()->AccessibilityGetAcceleratedWidget();
+#if BUILDFLAG(IS_WIN)
+  // On Windows we should get a real HWND.
+  EXPECT_NE(aw, gfx::kNullAcceleratedWidget);
+#else
+  // Everywhere else it always returns the null widget.
+  EXPECT_EQ(aw, gfx::kNullAcceleratedWidget);
+#endif
+}
+
+TEST_F(WidgetAXManagerTest, AccessibilityGetNativeViewAccessible) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS we get the NSView’s accessibility object.
+  auto view_acc = manager()->AccessibilityGetNativeViewAccessible();
+  EXPECT_NE(view_acc, gfx::NativeViewAccessible());
+#elif BUILDFLAG(IS_WIN)
+  // On Windows we should get a real IAccessible*.
+  auto win_acc = manager()->AccessibilityGetNativeViewAccessible();
+  EXPECT_NE(win_acc, nullptr);
+#else
+  // On other platforms it always falls back to empty.
+  EXPECT_EQ(manager()->AccessibilityGetNativeViewAccessible(),
+            gfx::NativeViewAccessible());
+#endif
+}
+
+// AccessibilityGetNativeViewAccessibleForWindow
+
+TEST_F(WidgetAXManagerTest, AccessibilityGetNativeViewAccessibleForWindow) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS we get the NSWindow’s accessibility object.
+  auto win_acc = manager()->AccessibilityGetNativeViewAccessibleForWindow();
+  EXPECT_NE(win_acc, gfx::NativeViewAccessible());
+#else
+  // On other platforms it always returns empty.
+  EXPECT_EQ(manager()->AccessibilityGetNativeViewAccessibleForWindow(),
+            gfx::NativeViewAccessible());
+#endif
+}
+
 }  // namespace views::test

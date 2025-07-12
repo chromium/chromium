@@ -4,11 +4,23 @@
 
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <oleacc.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 #include "ui/views/accessibility/view_accessibility.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/views/win/hwnd_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/widget/native_widget_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace views {
 
@@ -111,19 +123,66 @@ void WidgetAXManager::UnrecoverableAccessibilityError() {
 }
 
 gfx::AcceleratedWidget WidgetAXManager::AccessibilityGetAcceleratedWidget() {
-  // TODO(accessibility): Implement.
+  // This method is only used on Windows, where we need the HWND to fire events.
+#if BUILDFLAG(IS_WIN)
+  if (!widget_) {
+    return gfx::kNullAcceleratedWidget;
+  }
+  return HWNDForView(widget_->GetRootView());
+#else
   return gfx::kNullAcceleratedWidget;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 gfx::NativeViewAccessible
 WidgetAXManager::AccessibilityGetNativeViewAccessible() {
-  // TODO(accessibility): Implement.
+  if (!widget_) {
+    return gfx::NativeViewAccessible();
+  }
+#if BUILDFLAG(IS_MAC)
+  // On macOS, the chromium accessibility tree is attached to an NSView. We must
+  // return the NativeViewAccessible for the NSView to connect our internal tree
+  // to the native one.
+  if (auto* native_widget =
+          static_cast<NativeWidgetMac*>(widget_->native_widget())) {
+    return native_widget->GetNativeViewAccessibleForNSView();
+  }
+#elif BUILDFLAG(IS_WIN)
+  // On Windows, we get the IAccessible for the HWND of the widget through an
+  // OS API call.
+  // TODO(accessibility): Consider caching the IAccessible object.
+  HWND hwnd = HWNDForView(widget_->GetRootView());
+  if (!hwnd) {
+    return nullptr;
+  }
+
+  IAccessible* parent;
+  if (SUCCEEDED(
+          ::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW, IID_IAccessible,
+                                       reinterpret_cast<void**>(&parent)))) {
+    return parent;
+  }
+#endif
   return gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible
 WidgetAXManager::AccessibilityGetNativeViewAccessibleForWindow() {
-  // TODO(accessibility): Implement.
+  if (!widget_) {
+    return gfx::NativeViewAccessible();
+  }
+#if BUILDFLAG(IS_MAC)
+  // On macOS, the chromium accessibility tree is attached to an NSView itself
+  // connected to an NSWindow. We must return the NativeViewAccessible for the
+  // NSWindow to connect our internal tree to the native one.
+  //
+  // This function is only called on macOS to retrieve the NSWindow associated
+  // with the node in the tree. No need to implement on other platforms for now.
+  if (auto* native_widget =
+          static_cast<NativeWidgetMac*>(widget_->native_widget())) {
+    return native_widget->GetNativeViewAccessibleForNSWindow();
+  }
+#endif  // BUILDFLAG(IS_MAC)
   return gfx::NativeViewAccessible();
 }
 
