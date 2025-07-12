@@ -150,6 +150,8 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kOffsetDistance:
       case CSSPropertyID::kOutlineOffset:
       case CSSPropertyID::kOutlineWidth:
+      case CSSPropertyID::kColumnRuleOutset:
+      case CSSPropertyID::kRowRuleOutset:
       case CSSPropertyID::kPaddingBottom:
       case CSSPropertyID::kPaddingLeft:
       case CSSPropertyID::kPaddingRight:
