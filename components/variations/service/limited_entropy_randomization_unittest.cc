@@ -11,8 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/version_info/version_info.h"
-#include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
@@ -26,29 +24,27 @@ namespace {
 
 constexpr int kTestLayerId = 101;
 constexpr int kTestLayerMemberId = 201;
+constexpr char kTestClientId[] = "test_client_id";
 
 // Hard code the enum bucket values, and use these in tests so that any
-// renumbering can be detected.
+// re-numbering can be detected.
 // LimitedEntropySeedRejectionReason::kHighEntropyUsage
 constexpr int kHighEntropyUsageBucket = 0;
 // LimitedEntropySeedRejectionReason::kMoreThenOneLimitedLayer
 constexpr int kMoreThenOneLimitedLayerBucket = 1;
-// LimitedEntropySeedRejectionReason::kLayerHasInvalidSlotBounds
-constexpr int kLayerHasInvalidSlotBoundsBucket = 2;
-// LimitedEntropySeedRejectionReason::kLayerDoesNotContainSlots
-constexpr int kLayerDoesNotContainSlotsBucket = 3;
-// LimitedEntropySeedRejectionReason::kInvalidId
-constexpr int kInvalidLayerIdBucket = 4;
-// LimitedEntropySeedRejectionReason::kDuplicatedLayerId
-constexpr int kDuplicatedLayerIdBucket = 5;
-// LimitedEntropySeedRejectionReason::kInvalidLayerReference
-constexpr int kInvalidLayerReferenceBucket = 6;
-// LimitedEntropySeedRejectionReason::kDanglingLayerReference
-constexpr int kDanglingLayerReferenceBucket = 7;
-// LimitedEntropySeedRejectionReason::kDanglingLayerMemberReference
-constexpr int kDanglingLayerMemberReferenceBucket = 8;
-// LimitedEntropySeedRejectionReason::kEmptyLayerReference
-constexpr int kEmptyLayerReferenceBucket = 9;
+// LimitedEntropySeedRejectionReason::kLimitedLayerHasInvalidSlotBounds
+constexpr int kLimitedLayerHasInvalidSlotBoundsBucket = 2;
+// LimitedEntropySeedRejectionReason::kLimitedLayerDoesNotContainSlots
+constexpr int kLimitedLayerDoesNotContainSlotsBucket = 3;
+// InvalidLayerReason::kNoSlots
+constexpr int kNoSlotsBucket = 1;
+// InvalidLayerReason::kInvalidSlotBounds
+constexpr int kInvalidSlotBoundsBucket = 5;
+
+// The following value ensures slot 0 is selected  (among 100 slots) when the
+// limited entropy provider is used.
+constexpr char kTestLimitedEntropyRandomizationSource[] =
+    "limited_entropy_randomization_source_964";
 
 Study::Experiment CreateExperiment(int weight) {
   Study::Experiment experiment;
@@ -95,13 +91,6 @@ Study CreateTestStudy(const std::vector<Study::Experiment>& experiments) {
         base::StrCat({"test_experiment_", base::NumberToString(i)}));
     Study_Experiment* experiment_to_add = study.add_experiment();
     experiment_to_add->MergeFrom(copied_experiments[i]);
-  }
-
-  // Add all platforms to the study filter.
-  auto* platforms = study.mutable_filter()->mutable_platform();
-  for (int p = static_cast<int>(Study_Platform_Platform_MIN);
-       p <= static_cast<int>(Study_Platform_Platform_MAX); ++p) {
-    platforms->Add(static_cast<Study_Platform>(p));
   }
 
   return study;
@@ -169,55 +158,52 @@ VariationsSeed CreateTestSeed(const std::vector<Layer>& layers,
 class LimitedEntropyRandomizationTest : public ::testing::Test {
  public:
   LimitedEntropyRandomizationTest()
-      : client_state_(
-            /*is_enterprise_function=*/base::BindOnce([] { return false; }),
-            /*google_groups_function=*/base::BindOnce(
-                [] { return base::flat_set<uint64_t>(); })) {
-    client_state_.platform = ClientFilterableState::GetCurrentPlatform();
-    client_state_.channel = Study::STABLE;
-    client_state_.version = version_info::GetVersion();
+      : entropy_providers_(
+            kTestClientId,
+            // Using 100 as the test LES value (as opposed to the production
+            // value of 8000) since this test suite is for using the limited
+            // entropy randomization source.
+            {0, 100},
+            kTestLimitedEntropyRandomizationSource) {
   }
 
  protected:
   base::HistogramTester histogram_tester_;
-  ClientFilterableState client_state_;
+  const EntropyProviders entropy_providers_;
 };
 
 TEST_F(LimitedEntropyRandomizationTest,
-       ValidConfiguration_WithValidEntropyUse) {
-  std::vector<Layer> test_layers;
-  for (int i = 1; i <= 4; ++i) {
-    test_layers.push_back(CreateLayer(
-        /*layer_id=*/i, /*num_slots=*/100,
-        /*entropy_mode=*/Layer::LIMITED,
-        /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
-  }
-  auto test_seed = CreateTestSeed(
-      test_layers,
-      {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                       CreateLayerMemberReference(2, {kTestLayerMemberId})),
-       CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                       CreateLayerMemberReference(2, {kTestLayerMemberId}))});
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
-  histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
-}
-
-TEST_F(LimitedEntropyRandomizationTest,
-       ValidConfiguration_NoLimitedLayerReferences) {
-  // Creates a layer with DEFAULT entropy mode. It would have taken 1 bit of
-  // entropy if it is using LIMITED entropy mode.
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::DEFAULT,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
+       TestIsEnoughEntropyAvailable_NotEnoughEntropy) {
+  auto test_layer =
+      CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
+                  {CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
   auto test_seed = CreateTestSeed(
       {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                                      CreateLayerMemberReference(
-                                         kTestLayerId, {kTestLayerMemberId}))});
-  // Seed should not be rejected since it's not using LIMITED entropy mode.
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
+                                         kTestLayerId, {kTestLayerMemberId})),
+                     CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy())});
 
-  histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
+  VariationsLayers layers(test_seed, entropy_providers_);
+  // Entropy limit is 2 and entropy used is 3 (1 bit from the layer member and 2
+  // bits from the studies assigned).
+  EXPECT_FALSE(IsEnoughLimitedEntropyAvailableForTesting(layers, test_seed, 2));
+}
+
+TEST_F(LimitedEntropyRandomizationTest,
+       TestIsEnoughEntropyAvailable_EntropyAvailable) {
+  auto test_layer =
+      CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
+                  {CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
+  auto test_seed = CreateTestSeed(
+      {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
+                                     CreateLayerMemberReference(
+                                         kTestLayerId, {kTestLayerMemberId})),
+                     CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy())});
+
+  VariationsLayers layers(test_seed, entropy_providers_);
+  // Entropy limit is 3 and entropy used is 3 (1 bit from the layer member and 2
+  // bits from the studies assigned).
+  EXPECT_TRUE(IsEnoughLimitedEntropyAvailableForTesting(layers, test_seed, 3));
 }
 
 TEST_F(LimitedEntropyRandomizationTest, SeedRejection_EntropyOveruse) {
@@ -231,128 +217,18 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_EntropyOveruse) {
       {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                                      CreateLayerMemberReference(
                                          kTestLayerId, {kTestLayerMemberId}))});
+  VariationsLayers layers(test_seed, entropy_providers_);
+
   // The total entropy used should be 3 bits which is over the limit.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kHighEntropyUsageBucket, 1);
+  EXPECT_TRUE(SeedHasMisconfiguredEntropy(layers, test_seed));
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.LimitedEntropy.SeedRejectionReason", kHighEntropyUsageBucket,
+      1);
 }
 
-TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidLayerId) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.
-  auto test_layer = CreateLayer(
-      /*layer_id=*/0,  // Zero is not a valid layer id.
-      /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      /*layers=*/{test_layer},
-      /*studies=*/{});
-  // Rejected because of invalid layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kInvalidLayerIdBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest, SeedRejection_DuplicatedLayerId) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      {test_layer, test_layer},  // Add same layer twice to test duplicated id.
-      {CreateTestStudy(
-          CreateExperimentsWithTwoBitsOfEntropy(),
-          CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}))});
-  // Rejected because of duplicated layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kDuplicatedLayerIdBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidLayerReference) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      {test_layer},
-      {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                       CreateLayerMemberReference(0,  // Invalid layer id.
-                                                  {kTestLayerMemberId}))});
-  // Rejected because of duplicated layer id.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kInvalidLayerReferenceBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest, SeedRejection_EmptyLayerReference) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                                     CreateLayerMemberReference(
-                                         kTestLayerId,
-                                         /*layer_member_ids=*/{}))});  // Empty.
-  // Rejected because of empty layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kEmptyLayerReferenceBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest, SeedRejection_DanglingLayerReference) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.f
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      {test_layer},
-      {CreateTestStudy(
-          CreateExperimentsWithTwoBitsOfEntropy(),
-          CreateLayerMemberReference(
-              kTestLayerId + 1,  // Layer id + 1 is not defined above.
-              {kTestLayerMemberId}))});
-  // Rejected because of dangling layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kDanglingLayerReferenceBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest,
-       SeedRejection_DanglingLayerMemberReference) {
-  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
-  // the layer member.f
-  auto test_layer = CreateLayer(
-      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
-      /*entropy_mode=*/Layer::LIMITED,
-      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
-  auto test_seed = CreateTestSeed(
-      {test_layer},
-      {CreateTestStudy(
-          CreateExperimentsWithTwoBitsOfEntropy(),
-          CreateLayerMemberReference(
-              kTestLayerId, {kTestLayerMemberId +
-                             1}))});  // Layer member id + 1 is not defined.
-  // Rejected because of dangling layer member reference.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kDanglingLayerMemberReferenceBucket, 1);
-}
-
-TEST_F(LimitedEntropyRandomizationTest,
-       SeedRejection_MultipleActiveReferencedLimitedLayer) {
+TEST_F(LimitedEntropyRandomizationTest, SeedRejection_MultipleLimitedLayer) {
   std::vector<Layer> test_layers;
-  for (int i = 1; i <= 4; ++i) {
+  for (int i = 0; i < 4; ++i) {
     test_layers.push_back(CreateLayer(
         /*layer_id=*/i, /*num_slots=*/100,
         /*entropy_mode=*/Layer::LIMITED,
@@ -361,52 +237,13 @@ TEST_F(LimitedEntropyRandomizationTest,
   auto test_seed = CreateTestSeed(
       test_layers,
       {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                       CreateLayerMemberReference(2, {kTestLayerMemberId})),
-       CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                       CreateLayerMemberReference(3, {kTestLayerMemberId}))});
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kMoreThenOneLimitedLayerBucket, 1);
-}
+                       CreateLayerMemberReference(0, {kTestLayerMemberId}))});
+  VariationsLayers layers(test_seed, entropy_providers_);
 
-TEST_F(LimitedEntropyRandomizationTest,
-       SeedRejection_MultipleDisjointReferencedLimitedLayer) {
-  std::vector<Layer> test_layers;
-  for (int i = 1; i <= 4; ++i) {
-    test_layers.push_back(CreateLayer(
-        /*layer_id=*/i, /*num_slots=*/100,
-        /*entropy_mode=*/Layer::LIMITED,
-        /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})}));
-  }
-  // Find the current version value used by this binary, and increment its
-  // last component. This way we can have study1 end at the current version,
-  // and study2 start one incremented version later. That way, the studies have
-  // disjoint client populations.
-  //
-  // Example versions:
-  //
-  // * The client is running version 140.0.1111.0
-  // * study1 has max_version 140.0.1111.3
-  // * study2 has min_version 140.0.1111.4
-  auto study1_max_version = client_state_.version;
-  auto version_components = client_state_.version.components();
-  ASSERT_FALSE(version_components.empty());
-  version_components.back() += 1;
-  auto study2_min_version = base::Version(version_components);
-  auto study1 =
-      CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                      CreateLayerMemberReference(2,  // Not the same as study2.
-                                                 {kTestLayerMemberId}));
-  study1.mutable_filter()->set_max_version(study1_max_version.GetString());
-  auto study2 =
-      CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                      CreateLayerMemberReference(3,  // Not the same as study1.
-                                                 {kTestLayerMemberId}));
-  study2.mutable_filter()->set_min_version(study2_min_version.GetString());
-
-  auto test_seed = CreateTestSeed(test_layers, {study1, study2});
-  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
-  histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
+  EXPECT_TRUE(SeedHasMisconfiguredEntropy(layers, test_seed));
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.LimitedEntropy.SeedRejectionReason",
+      kMoreThenOneLimitedLayerBucket, kMoreThenOneLimitedLayerBucket);
 }
 
 TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidSlotBounds) {
@@ -415,14 +252,23 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_InvalidSlotBounds) {
       CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
                   {CreateLayerMember(kTestLayerMemberId, {{0, 49}, {25, 49}})});
   auto test_seed = CreateTestSeed(
-      {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
-                                     CreateLayerMemberReference(
-                                         kTestLayerId, {kTestLayerMemberId}))});
-  // Seed should be rejected since the actively referenced LIMITED layer is
-  // invalid.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kLayerHasInvalidSlotBoundsBucket, 1);
+      {test_layer},
+      {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
+                       CreateLayerMemberReference(0, {kTestLayerMemberId}))});
+  VariationsLayers layers(test_seed, entropy_providers_);
+
+  // Seed should not be rejected since the LIMITED layer is invalid and no
+  // constrained studies will be assigned.
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(layers, test_seed));
+
+  // There should only be one metric emission on the layer being invalid.
+  // `kLimitedLayerHasInvalidSlotBounds` should only be emitted when the layer
+  // is deemed valid, but still has invalid slot bounds.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.LimitedEntropy.SeedRejectionReason",
+      kLimitedLayerHasInvalidSlotBoundsBucket, 0);
+  histogram_tester_.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                       kInvalidSlotBoundsBucket, 1);
 }
 
 TEST_F(LimitedEntropyRandomizationTest, SeedRejection_NoSlots) {
@@ -430,13 +276,46 @@ TEST_F(LimitedEntropyRandomizationTest, SeedRejection_NoSlots) {
   auto test_layer = CreateLayer(kTestLayerId, /*num_slots=*/0, Layer::LIMITED,
                                 {CreateLayerMember(kTestLayerMemberId, {})});
   auto test_seed = CreateTestSeed(
+      {test_layer},
+      {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
+                       CreateLayerMemberReference(0, {kTestLayerMemberId}))});
+  VariationsLayers layers(test_seed, entropy_providers_);
+
+  // Similar to SeedRejection_InvalidSlotBounds, the seed should not be rejected
+  // since the LIMITED layer is invalid and no constrained studies will be
+  // assigned.
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(layers, test_seed));
+
+  // Similar to SeedRejection_InvalidSlotBounds, there should only be one
+  // metric emission on the layer having so slots.
+  // `kLimitedLayerDoesNotContainSlots` should only be emitted when the
+  // layer is deemed valid, but still has no slot.
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.LimitedEntropy.SeedRejectionReason",
+      kLimitedLayerDoesNotContainSlotsBucket, 0);
+  histogram_tester_.ExpectUniqueSample("Variations.InvalidLayerReason",
+                                       kNoSlotsBucket, 1);
+}
+
+TEST_F(LimitedEntropyRandomizationTest, DoNotRejectTheSeed_NonLimitedLayer) {
+  // Creates a layer with DEFAULT entropy mode. It would have taken 1 bit of
+  // entropy if it is using LIMITED entropy mode.
+  auto test_layer = CreateLayer(
+      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::DEFAULT,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
+  auto test_seed = CreateTestSeed(
       {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                                      CreateLayerMemberReference(
                                          kTestLayerId, {kTestLayerMemberId}))});
-  // Seed should be rejected since the LIMITED layer is invalid.
-  EXPECT_TRUE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
-  histogram_tester_.ExpectUniqueSample(kSeedRejectionReasonHistogram,
-                                       kLayerDoesNotContainSlotsBucket, 1);
+  VariationsLayers layers(test_seed, entropy_providers_);
+
+  // Seed should not be rejected since it's not using LIMITED entropy mode.
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(layers, test_seed));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.LimitedEntropy.SeedRejectionReason", kHighEntropyUsageBucket,
+      0);
 }
 
 }  // namespace variations
