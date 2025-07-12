@@ -399,7 +399,14 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.$.deleteBrowsingDataDialog
         .querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox[no-set-pref]')
-        .forEach(checkbox => checkbox.sendPrefChange());
+        .forEach(
+            checkbox =>
+                // Manually update the checkboxes' pref value. This is a
+                // temporary fix as the `SettingsCheckbox.sendPrefChange` does
+                // not update prefs when they are passed dynamically.
+                // TODO(crbug.com/431174247): Figure out why
+                // `SettingsCheckbox.sendPrefChange` is not working.
+            this.setPrefValue(checkbox.pref!.key, checkbox.checked));
     this.$.timePicker.sendPrefChange();
 
     const {showHistoryNotice} =
