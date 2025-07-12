@@ -140,7 +140,6 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
       const;
 
   void RemoveBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,
-                                   size_t old_index,
                                    const bookmarks::BookmarkNode* node);
 
   void AddBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,

@@ -417,7 +417,7 @@ void PermanentFolderOrderingTracker::BookmarkNodeMoved(
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
-  RemoveBookmarkNodeIfTracked(old_parent, old_index,
+  RemoveBookmarkNodeIfTracked(old_parent,
                               new_parent->children()[new_index].get());
   AddBookmarkNodeIfTracked(new_parent, new_index);
   CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
@@ -437,7 +437,7 @@ void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  RemoveBookmarkNodeIfTracked(parent, old_index, node);
+  RemoveBookmarkNodeIfTracked(parent, node);
   CHECK_EQ(GetExpectedOrderingSize(), ordering_.size());
 }
 
@@ -570,7 +570,6 @@ PermanentFolderOrderingTracker::GetDefaultOrderIfTracked() const {
 
 void PermanentFolderOrderingTracker::RemoveBookmarkNodeIfTracked(
     const bookmarks::BookmarkNode* parent,
-    size_t old_index,
     const bookmarks::BookmarkNode* node) {
   if (IsTrackedPermanentNode(node)) {
     // Account node removed.
