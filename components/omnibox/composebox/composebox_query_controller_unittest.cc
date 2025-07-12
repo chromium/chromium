@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
@@ -40,6 +41,8 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
+constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVariationsHeaderKey[] = "X-Client-Data";
 constexpr char kTestUser[] = "test_user@gmail.com";
@@ -50,6 +53,8 @@ constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
 inline constexpr char kRequestIdParameterKey[] = "vsrid";
 inline constexpr char kVisualInputTypeParameterKey[] = "vit";
+base::Time kTestQueryStartTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(1000);
 
 class ComposeboxQueryControllerTest
     : public testing::Test,
@@ -565,7 +570,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
 
   // Act: Generate the destination URL for the query. The destination URL can
   // only be created after the cluster info is received.
-  GURL aim_url = controller().CreateAimUrl("test");
+  GURL aim_url = controller().CreateAimUrl("test", kTestQueryStartTime);
 
   // Assert: Validate the state change.
   EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
@@ -584,6 +589,17 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   std::string gsession_id_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
                                          &gsession_id_value));
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string pqsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+      &pqsubts_value));
+  EXPECT_EQ(pqsubts_value, "1000");
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
@@ -604,7 +620,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
 
   // Act: Create the destination URL for the query. The destination URL can
   // only be created after the cluster info is received.
-  GURL aim_url = controller().CreateAimUrl("hello");
+  GURL aim_url = controller().CreateAimUrl("hello", kTestQueryStartTime);
 
   // Assert: Validate the state change.
   EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
@@ -626,4 +642,15 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
                                          &gsession_id_value));
   EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string pqsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+      &pqsubts_value));
+  EXPECT_EQ(pqsubts_value, "1000");
 }

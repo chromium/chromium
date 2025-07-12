@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
+#include "base/time/time.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "components/search/ntp_composebox_fieldtrial.h"
 #include "content/public/browser/page_navigator.h"
@@ -32,10 +33,13 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     bool ctrl_key,
                                     bool meta_key,
                                     bool shift_key) {
+  // This is the time that the user clicked the submit button, and should not
+  // go any lower in this method.
+  base::Time query_start_time = base::Time::Now();
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  OpenUrl(query_controller_->CreateAimUrl(query_text), disposition);
+  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time), disposition);
 }
 
 void ComposeboxHandler::OpenUrl(GURL url,
