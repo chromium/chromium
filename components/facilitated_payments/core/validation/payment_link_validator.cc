@@ -53,6 +53,7 @@ PaymentLinkValidator::Scheme PaymentLinkValidator::GetScheme(
   return Scheme::kInvalid;
 }
 
+// static
 GURL PaymentLinkValidator::SanitizeForPaymentAppRetrieval(
     const GURL& payment_link_url) {
   GURL::Replacements replacements;

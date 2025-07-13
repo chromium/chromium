@@ -97,8 +97,7 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   std::unique_ptr<FacilitatedPaymentsAppInfoList> supported_apps;
   if (CanTriggerAppPaymentFlow(page_url)) {
     supported_apps = client_->GetDeviceDelegate()->GetSupportedPaymentApps(
-        PaymentLinkValidator().SanitizeForPaymentAppRetrieval(
-            payment_link_url));
+        PaymentLinkValidator::SanitizeForPaymentAppRetrieval(payment_link_url));
   }
 
   if (!base::FeatureList::IsEnabled(
