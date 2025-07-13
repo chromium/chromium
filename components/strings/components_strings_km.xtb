@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">លោហៈ (រលោង)</translation>
 <translation id="1070901266639972381">យប់</translation>
 <translation id="1073690811593784042">កញ្ចក់ (មានពណ៌)</translation>
+<translation id="1074287282535157335">បង់ប្រាក់​ចំនួន 4 ដង ឬប្រចាំខែ (អាស្រ័យលើ​សិទ្ធិទទួលបាន)</translation>
 <translation id="1074497978438210769">គ្មានសុវត្ថិភាពទេ</translation>
 <translation id="1074779248866616641">លទ្ធផល</translation>
 <translation id="1075364221219156102">ប្រើ​កូដសម្ងាត់</translation>
@@ -659,6 +660,7 @@
 <translation id="2102134110707549001">ណែនាំ​ពាក្យសម្ងាត់​ខ្លាំង…</translation>
 <translation id="2102495993840063010">កម្មវិធី Android</translation>
 <translation id="2102519472192754194">កម្មវិធីរុករកតាមអ៊ីនធឺណិត</translation>
+<translation id="2103210856015238101">កាតសមាជិក​ដែលអាចប្រើ​សម្រាប់​បំពេញ​នៅពេលចុច ត្រូវបាន​បើក​ពេញអេក្រង់។</translation>
 <translation id="2105838220373099643">ហ្គេម​ដើរ​តួ</translation>
 <translation id="2107021941795971877">ជំនួយក្នុង​ការបោះពុម្ព</translation>
 <translation id="2108755909498034140">ចាប់ផ្តើុមកុំព្យូទ័ររបស់អ្នកឡើងវិញ</translation>
@@ -1300,6 +1302,7 @@
 <translation id="3187472288455401631">ការវាស់ស្ទង់ការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="3190736958609431397">ឈប់តាមដាន</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាអចិន្ត្រៃយ៍</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> នៅលើ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">អាចសួរដើម្បីដឹងថា នៅពេលណាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
 <translation id="3201482403106004262">មានបញ្ហា​បានកើតឡើង​ពាក់ព័ន្ធនឹង​ការស្ទង់មតិ។</translation>
@@ -1776,6 +1779,7 @@
 <translation id="3963721102035795474">របៀបកម្មវិធីអាន</translation>
 <translation id="3965672182149944205">រក្សាទុក​អាសយដ្ឋាន​ទេ?</translation>
 <translation id="3966044442021752214">សុវត្ថិភាពផលិតផល</translation>
+<translation id="396761677631735618">កាតសមាជិក​ដែលអាចប្រើ​សម្រាប់​បំពេញ​នៅពេលចុច ត្រូវបាន​បើក​ពាក់កណ្ដាល​អេក្រង់។</translation>
 <translation id="3969869202926863008">សិទ្ធិចូលប្រើ​បណ្ដាញ​មូលដ្ឋាន</translation>
 <translation id="3970239200223030389">កាល​បរិច្ឆេទ​ចេញ</translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
@@ -1896,6 +1900,7 @@
 <translation id="4165986682804962316">ការកំណត់គេហទំព័រ</translation>
 <translation id="4169189393773057143">គ្រប់គ្រង​កាតសមាជិក ឬ​បិទ​ការណែនាំ​ទាំងនេះ​នៅក្នុង Google Wallet</translation>
 <translation id="4169535189173047238">កុំ​អនុញ្ញាត</translation>
+<translation id="4170851022123611628">បញ្ជី​កាតសមាជិក​ត្រូវបាន​បិទ។</translation>
 <translation id="4171400957073367226">ហេត្ថលេខាផ្ទៀងផ្ទាត់មិនល្អ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">សោ និង​ជាង​សោ</translation>
@@ -2100,6 +2105,7 @@
 <translation id="449126573531210296">អ៊ីនគ្រីប​ពាក្យសម្ងាត់​ដែលបាន​ធ្វើសមកាលកម្ម​ជាមួយគណនី Google របស់អ្នក</translation>
 <translation id="4493480324863638523">URL គ្មានសុពលភាព។ ត្រូវតែជា URL ដែលមានគម្រោងស្តង់ដារ ឧ. http://example.com ឬ https://example.com ។</translation>
 <translation id="4494323206460475851">អ្នក​អាច​មើល​ឃើញប្រធានបទ​នៃការផ្សាយពាណិជ្ជកម្ម​នៅ​ក្នុងការ​កំណត់ និង​ទប់ស្កាត់​ប្រធានបទ​ដែល​អ្នក​មិន​ចង់​ឱ្យ​ចែករំលែក​ជា​មួយ​គេហទំព័រ។ Chrome ក៏លុប​ប្រធានបទ​នៃការផ្សាយពាណិជ្ជកម្ម​ដែល​​ចាស់​ជាង 4 សប្ដាហ៍ដោយ​ស្វ័យប្រវត្តិ​ផងដែរ។</translation>
+<translation id="4497010149473852018">កាតសមាជិក​ដែលអាចប្រើ​សម្រាប់​បំពេញ​នៅពេលចុច។ បាន​លាក់​ក្ដារចុច។</translation>
 <translation id="4500587658229086076">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> នាក់</translation>
 <translation id="450602096898954067">អ្នកត្រួត​ពិនិត្យ​ដែលបាន​ទទួល​ការបណ្ដុះ​បណ្ដាល​អាចមើលឃើញ​ទិន្នន័យ ដើម្បី​កែលម្អ​មុខងារនេះ</translation>
