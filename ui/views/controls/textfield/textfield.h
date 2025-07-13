@@ -492,11 +492,9 @@ class VIEWS_EXPORT Textfield : public View,
       const std::vector<ui::GrammarFragment>& fragments) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(

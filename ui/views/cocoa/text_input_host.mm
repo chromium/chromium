@@ -4,8 +4,11 @@
 
 #include "ui/views/cocoa/text_input_host.h"
 
+#include <optional>
+
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -199,7 +202,11 @@ void TextInputHost::SetTextInputClient(
 // TextInputHost, remote_cocoa::mojom::TextInputHost:
 
 bool TextInputHost::HasClient(bool* out_has_client) {
-  *out_has_client = text_input_client_ != nullptr;
+  // If a cocoa menu is active and it is not triggered from the focused
+  // views::View (hence "unrelated"), disable text input. This prevents macOS
+  // from adding "Services" to the menu.
+  *out_has_client =
+      text_input_client_ != nullptr && !HasActiveUnrelatedCocoaMenu();
   return true;
 }
 
@@ -212,12 +219,19 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
     return true;
   }
 
-  // If a menu is active, and -[NSView interpretKeyEvents:] asks for the
+  // If a views menu is active, and -[NSView interpretKeyEvents:] asks for the
   // input context, return nil. This ensures the action message is sent to
   // the view, rather than any NSTextInputClient a subview has installed.
   bool has_menu_controller = false;
   host_impl_->GetHasMenuController(&has_menu_controller);
   if (has_menu_controller) {
+    return true;
+  }
+
+  // If a cocoa menu is active but it is not triggered from the focused
+  // views::View (hence "unrelated"), disable text input. This prevents macOS
+  // from adding "AutoFill" to the menu.
+  if (HasActiveUnrelatedCocoaMenu()) {
     return true;
   }
 
@@ -450,6 +464,29 @@ void TextInputHost::IsTextEditCommandEnabled(
   bool enable;
   IsTextEditCommandEnabled(command, &enable);
   std::move(callback).Run(enable);
+}
+
+bool TextInputHost::HasActiveUnrelatedCocoaMenu() {
+  // As a heuristic, this code checks if the menu anchor location is
+  // inside of the current input control (i.e. the focused views::View).
+  std::optional<gfx::Point> cocoa_menu_anchor_location =
+      ui::GetActiveCocoaMenuAnchorLocation();
+
+  if (!cocoa_menu_anchor_location.has_value()) {
+    return false;
+  }
+
+  std::optional<gfx::Rect> control_bounds;
+  std::optional<gfx::Rect> selection_bounds;
+  text_input_client_->GetActiveTextInputControlLayoutBounds(&control_bounds,
+                                                            &selection_bounds);
+  if (!control_bounds.has_value()) {
+    return false;
+  }
+
+  // If the menu anchor is outside of the input control, this menu
+  // is unrelated to the currently focused views::View.
+  return !control_bounds->Contains(*cocoa_menu_anchor_location);
 }
 
 }  // namespace views

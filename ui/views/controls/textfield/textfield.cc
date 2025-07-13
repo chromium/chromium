@@ -2115,7 +2115,6 @@ bool Textfield::AddGrammarFragments(
 
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void Textfield::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {
@@ -2123,7 +2122,6 @@ void Textfield::GetActiveTextInputControlLayoutBounds(
   ConvertRectToScreen(this, &origin);
   *control_bounds = origin;
 }
-#endif
 
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/41452689): Implement this method once TSF supports

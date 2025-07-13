@@ -228,11 +228,9 @@ void PrefixSelector::SetActiveCompositionForAccessibility(
     bool is_composition_committed) {}
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void PrefixSelector::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
-#endif
 
 void PrefixSelector::OnTextInput(const std::u16string& text) {
   // Small hack to filter out 'tab' and 'enter' input, as the expectation is

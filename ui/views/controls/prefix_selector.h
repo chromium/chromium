@@ -103,11 +103,9 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   bool SetAutocorrectRange(const gfx::Range& range) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(

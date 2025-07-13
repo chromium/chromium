@@ -14,6 +14,14 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+namespace {
+
+// The anchor location of the active menu in screen coordinates.
+// This is null when there is no menu.
+std::optional<gfx::Point> g_active_menu_location;
+
+}  // namespace
+
 namespace ui {
 
 NSEvent* EventForPositioningContextMenu(const gfx::Point& anchor,
@@ -54,6 +62,10 @@ void ShowContextMenu(NSMenu* menu,
                      NSView* view,
                      bool allow_nested_tasks,
                      ElementContext context) {
+  CHECK(event);
+  g_active_menu_location = gfx::ScreenPointFromNSPoint(
+      [event.window convertPointToScreen:event.locationInWindow]);
+
   // Make sure events can be pumped while the menu is up.
   std::optional<
       base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop>
@@ -100,9 +112,14 @@ void ShowContextMenu(NSMenu* menu,
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
         dispatch_get_main_queue(), ^{
+          g_active_menu_location.reset();
           ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
         });
   }
+}
+
+std::optional<gfx::Point> GetActiveCocoaMenuAnchorLocation() {
+  return g_active_menu_location;
 }
 
 }  // namespace ui

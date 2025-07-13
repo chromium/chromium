@@ -82,6 +82,13 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
       ui::TextEditCommand command,
       IsTextEditCommandEnabledCallback callback) override;
 
+  // Returns true when there is an active "unrelated" cocoa menu.
+  // "Unrelated" means that the menu is not triggered from the focused
+  // views::View. The input client needs be disabled in this case to prevent
+  // macOS from adding unrelated menu entries (notably, "AutoFill" and
+  // "Services").
+  bool HasActiveUnrelatedCocoaMenu();
+
   // Weak. If non-null the TextInputClient of the currently focused views::View
   // in the hierarchy rooted at the root view of |host_impl_|. Owned by the
   // focused views::View.

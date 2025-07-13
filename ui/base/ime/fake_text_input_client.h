@@ -117,10 +117,10 @@ class FakeTextInputClient : public TextInputClient {
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   ui::TextInputClient::EditingContext GetTextEditingContext() override;
 #endif
 #if BUILDFLAG(IS_WIN)

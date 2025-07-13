@@ -255,11 +255,11 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 ui::TextInputClient::EditingContext
 FakeTextInputClient::GetTextEditingContext() {
   return EditingContext{.page_url = url_};

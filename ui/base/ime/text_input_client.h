@@ -384,17 +384,13 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   virtual bool SupportsAlwaysConfirmComposition();
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Returns false if either the focused editable element or the EditContext
   // bounds is not available, else it returns true with the control and
   // selection bounds for the EditContext or control bounds of the active
-  // editable element. This is used to report the layout bounds of the text
-  // input control to TSF on Windows and to the Virtual Keyboard extension on
-  // ChromeOS.
+  // editable element.
   virtual void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) = 0;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   // Notifies accessibility about active composition. This API is currently
