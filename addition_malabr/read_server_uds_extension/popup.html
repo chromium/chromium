@@ -1,30 +1,62 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>UDS Tool</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
+
 <body>
 
   <div class="container">
-    <h1>UDS Tool</h1>
-
+    <h1>MALABR</h1>
+    <!-- Read from UDS -->
     <div class="card fade-in">
       <h2>Read from UDS</h2>
       <button id="readDataBtn" class="gradient-btn">Read Data</button>
       <p id="showReadDataResponse" class="response"></p>
     </div>
 
-    <div class="card fade-in">
-      <h2>Send to UDS</h2>
-      <label for="sendDataIpt">Message</label>
-      <input type="text" id="sendDataIpt" placeholder="Enter text..." />
-      <p id="sendDataError" class="response error"></p>
-      <button id="sendDataBtn" class="gradient-btn">Send Data</button>
-      <p id="showsendDataResponse" class="response"></p>
-    </div>
-  </div>
 
+    <!-- Send to UDS -->
+    <div>
+      <div class="card fade-in">
+        <h2>Send to UDS</h2>
+        <label for="sendDataIpt">Message</label>
+        <input type="text" id="sendDataIpt" placeholder="Enter text..." value="uppercase me" />
+        <p id="sendDataError" class="response error"></p>
+        <button id="sendDataBtn" class="gradient-btn">Send Data</button>
+        <p id="showsendDataResponse" class="response"></p>
+      </div>
+    </div>
+
+    <!-- load bert model -->
+    <div>
+      <div class="card fade-in">
+        <h2>Load Bert Model</h2>
+        <button id="loadBertBtn" class="gradient-btn">Load Bert</button>
+        <p id="showLoadBertResponse" class="response"></p>
+      </div>
+    </div>
+
+    <!-- single infer bert model -->
+    <div>
+      <div class="card fade-in">
+        <h2>Single Inference Bert</h2>
+        <label for="bertQuestionInput">Question</label>
+        <input id="bertQuestionInput" type="text" placeholder="Enter your question..." value="when was iit kgp founded ?">
+
+        <label for="bertContextInput">Context</label>
+        <input id="bertContextInput" type="text" placeholder="Enter the context/passage..." value="The Indian Institute of Technology Kharagpur (IIT Kharagpur or IIT-KGP) is a public institute of technology, research university, and autonomous institute established by the Government of India in Kharagpur, West Bengal. Founded in 1951, the institute is the first of the IITs to be established and is recognised as an Institute of National Importance. In 2019 it was awarded the status of Institute of Eminence by the Government of India.[3] IIT Kharagpur is ranked among the most prestigious academic institutions in India.">
+
+        <p id="bertInputError" class="response error"></p>
+        <button id="singleBertInferBtn" class="gradient-btn">Infer Bert</button>
+        <p id="singleBertInferResponse" class="response"></p>
+      </div>
+    </div>
+
+  </div>
   <script src="popup.js"></script>
 </body>
+
 </html>

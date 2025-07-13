@@ -15,6 +15,7 @@
   --color-success: #7ddac9;
   --color-error: #ef9a9a;
   --color-heading: #b4a4ff;
+  --color-loading: #7d9edf;
 
   --shadow-card: 0 0 4px rgba(138, 124, 207, 0.05);
   --shadow-button: 0 2px 8px rgba(168, 154, 255, 0.2);
@@ -122,6 +123,10 @@ input[type="text"]:focus {
 
 .response.error {
   color: var(--color-error);
+}
+
+.response.loading {
+  color: var(--color-loading);
 }
 
 .fade-in {

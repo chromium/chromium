@@ -38,8 +38,12 @@ namespace extensions {
 constexpr char kMLServerUDSPath[] = "/tmp/shared-sockets/echo_socket";
 
 // ALL lable for ML server function handler
-constexpr char kReadServerUdsReadDataFunctionLable[] = "LABLE_READ_DATA";
-constexpr char kReadServerUdsSendDataFunctionLable[] = "LABLE_SEND_DATA";
+constexpr char kReadServerUdsReadDataFunctionLable[] = "LABEL_READ_DATA";
+constexpr char kReadServerUdsSendDataFunctionLable[] = "LABEL_SEND_DATA";
+constexpr char kReadServerUdsLoadModelBERTFunctionLable[] =
+    "LABEL_LOAD_MODEL_BERT";
+constexpr char kReadServerUdsInferSingleBERTFunctionLable[] =
+    "LABEL_INFER_MODEL_BERT";
 
 // -------------------------
 // Read Server Read Data UDS
@@ -56,7 +60,8 @@ ReadServerUdsReadDataFunction::~ReadServerUdsReadDataFunction() {
 ExtensionFunction::ResponseAction ReadServerUdsReadDataFunction::Run() {
   AddRef();  // async
 
-  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath, kReadServerUdsReadDataFunctionLable);
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(
+      kMLServerUDSPath, kReadServerUdsReadDataFunctionLable);
 
   std::string payload = "GET /data\n";
 
@@ -67,7 +72,7 @@ ExtensionFunction::ResponseAction ReadServerUdsReadDataFunction::Run() {
                                  weak_ptr_factory_.GetWeakPtr()));
 
   // Important: hold the instance if needed
-  ml_server_ = std::move(ml_server); 
+  ml_server_ = std::move(ml_server);
 
   return RespondLater();
 }
@@ -123,7 +128,8 @@ ExtensionFunction::ResponseAction ReadServerUdsSendDataFunction::Run() {
 
   AddRef();  // async
 
-  auto ml_server = std::make_unique<extensions::MLServerUDS>(kMLServerUDSPath, kReadServerUdsSendDataFunctionLable);
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(
+      kMLServerUDSPath, kReadServerUdsSendDataFunctionLable);
 
   ml_server->Send(payload,
                   base::BindOnce(&ReadServerUdsSendDataFunction::OnSuccess,
@@ -475,46 +481,44 @@ ReadServerUdsLoadModelBERTFunction::~ReadServerUdsLoadModelBERTFunction() {
 
 ExtensionFunction::ResponseAction ReadServerUdsLoadModelBERTFunction::Run() {
   LOG(INFO) << "ReadServerUdsLoadModelBERTFunction::Run() called";
-  AddRef();
+  AddRef();  // async
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL("http://localhost:5000/load_model_bert");
-  resource_request->method = "POST";
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(
+      kMLServerUDSPath, kReadServerUdsLoadModelBERTFunctionLable);
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("load_model_bert", R"(
-        semantics {
-          sender: "Read Server API"
-          description: "Loads the MobileBERT model on the local server."
-          trigger: "User action in the extension."
-          data: "No user data is sent."
-          destination: LOCAL
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This request cannot be disabled by settings."
-        }
-      )");
+  std::string payload = "init the bert model\n";
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation);
-  content::StoragePartition* storage_partition =
-      browser_context()->GetDefaultStoragePartition();
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce(&ReadServerUdsLoadModelBERTFunction::OnResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ml_server->Send(payload,
+                  base::BindOnce(&ReadServerUdsLoadModelBERTFunction::OnSuccess,
+                                 weak_ptr_factory_.GetWeakPtr()),
+                  base::BindOnce(&ReadServerUdsLoadModelBERTFunction::OnError,
+                                 weak_ptr_factory_.GetWeakPtr()));
+
+  // Important: hold the instance if needed
+  ml_server_ = std::move(ml_server);
+
   return RespondLater();
 }
 
-void ReadServerUdsLoadModelBERTFunction::OnResponse(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
-    Respond(Error("Failed to load MobileBERT model on server."));
-  } else {
-    Respond(WithArguments(*response_body));
-  }
+void ReadServerUdsLoadModelBERTFunction::OnSuccess(std::string result) {
+  Respond(WithArguments(base::Value(result)));
   Release();
+}
+
+void ReadServerUdsLoadModelBERTFunction::OnError(std::string error_msg) {
+  Respond(Error(error_msg));
+  Release();
+}
+
+void ReadServerUdsLoadModelBERTFunction::OnResponded() {
+  LOG(INFO) << "ReadServerUdsLoadModelBERTFunction::OnResponded() Cleaning up";
+
+  if (ml_server_) {
+    ml_server_->Clear();  // First clean up state
+    ml_server_.reset();   // Then destroy safely
+  }
+
+  // Other cleanup if needed
 }
 
 // -------------------------
@@ -532,68 +536,58 @@ ReadServerUdsInferSingleBERTFunction::~ReadServerUdsInferSingleBERTFunction() {
 ExtensionFunction::ResponseAction ReadServerUdsInferSingleBERTFunction::Run() {
   LOG(INFO) << "ReadServerUdsInferSingleBERTFunction::Run() called";
 
-  // Validate that we have at least one argument.
-  EXTENSION_FUNCTION_VALIDATE(args().size() > 0);
+  AddRef();  // async
 
+  // Validate the presence of arguments
+  EXTENSION_FUNCTION_VALIDATE(has_args());
+
+  // Validate that arguments exist and the first argument is a string
   // The IDL defines the parameter as a DOMString, so extract it as a string.
-  const std::string& json_input = args()[0].GetString();
+  const base::Value::List& args_list = args();
+  EXTENSION_FUNCTION_VALIDATE(args_list.size() > 0);
+  const base::Value& arg = args_list[0];
+  EXTENSION_FUNCTION_VALIDATE(arg.is_string());
 
-  // Optional: Parse the JSON string to verify it represents a dictionary.
-  auto maybe_value = base::JSONReader::Read(json_input);
-  if (!maybe_value.has_value() || !maybe_value->is_dict()) {
-    return RespondNow(
-        Error("Input must be a JSON string representing an object with "
-              "'question' and 'context'."));
-  }
+  std::string payload = arg.GetString();
 
-  // We assume the input JSON is already in the format the server expects:
-  // { "question": "…", "context": "…" }
-  // So we simply forward it.
-  std::string json_data = json_input;
+  LOG(INFO) << "Payload " << payload;
 
-  AddRef();
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL("http://localhost:5000/infer_single_bert");
-  resource_request->method = "POST";
-  resource_request->headers.SetHeader("Content-Type", "application/json");
+  auto ml_server = std::make_unique<extensions::MLServerUDS>(
+      kMLServerUDSPath, kReadServerUdsInferSingleBERTFunctionLable);
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("infer_single_bert", R"(
-        semantics {
-          sender: "Read Server API"
-          description: "Requests single-sample inference from MobileBERT."
-          trigger: "User action in the extension."
-          data: "A JSON object with 'question' and 'context'."
-          destination: LOCAL
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This request cannot be disabled by settings."
-        }
-  )");
+  ml_server->Send(
+      payload,
+      base::BindOnce(&ReadServerUdsInferSingleBERTFunction::OnSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ReadServerUdsInferSingleBERTFunction::OnError,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation);
-  url_loader_->AttachStringForUpload(json_data, "application/json");
-
-  content::StoragePartition* storage_partition =
-      browser_context()->GetDefaultStoragePartition();
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce(&ReadServerUdsInferSingleBERTFunction::OnResponse,
-                     base::Unretained(this)));
+  // Important: hold the instance if needed
+  ml_server_ = std::move(ml_server);
 
   return RespondLater();
 }
 
-void ReadServerUdsInferSingleBERTFunction::OnResponse(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
-    Respond(Error("Single inference request failed."));
-  } else {
-    Respond(WithArguments(*response_body));
-  }
+void ReadServerUdsInferSingleBERTFunction::OnSuccess(std::string result) {
+  Respond(WithArguments(base::Value(result)));
   Release();
+}
+
+void ReadServerUdsInferSingleBERTFunction::OnError(std::string error_msg) {
+  Respond(Error(error_msg));
+  Release();
+}
+
+void ReadServerUdsInferSingleBERTFunction::OnResponded() {
+  LOG(INFO)
+      << "ReadServerUdsInferSingleBERTFunction::OnResponded() Cleaning up";
+
+  if (ml_server_) {
+    ml_server_->Clear();  // First clean up state
+    ml_server_.reset();   // Then destroy safely
+  }
+
+  // Other cleanup if needed
 }
 
 // -------------------------

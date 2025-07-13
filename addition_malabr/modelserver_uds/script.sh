@@ -1,9 +1,11 @@
 #!/bin/bash
+podman stop unix-server
+
 mkdir -p /tmp/shared-sockets  # Shared socket location
 
 # build
 
-# podman build -t unix-socket-server .
+podman build -t unix-socket-server .
 
 # --rm
 # Remove the container automatically after it stops.
@@ -18,4 +20,6 @@ podman run --rm -d \
   --name unix-server \
   -v "/tmp/shared-sockets:/sockets:Z" \
   unix-socket-server
+
+podman logs -f unix-server
 
