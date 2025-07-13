@@ -19,5 +19,46 @@
       <li role="menuitem">Save</span>
       <li role="menuitem">Quit</span>
     </ul>
+    <div role="menu" aria-label="Non-menu container">
+      <div role="button">Action 1</div>
+      <div role="button">Action 2</div>
+      <div>Regular text</div>
+    </div>
+    <div role="menu" aria-label="Menu with grouped items">
+      <div role="group" aria-label="File operations">
+        <div role="menuitem">New File</div>
+        <div role="menuitemcheckbox" aria-checked="false">Auto Save</div>
+        <div role="menuitemradio" aria-checked="true" name="format">Text Format</div>
+      </div>
+      <div role="group" aria-label="Edit operations">
+        <div role="menuitem">Cut</div>
+        <div role="menuitem">Copy</div>
+        <div role="menuitem">Paste</div>
+      </div>
+    </div>
+    <div role="menu" aria-label="Menu with non-menuitem group">
+      <div role="group" aria-label="Toolbar actions">
+        <div role="button">Bold</div>
+        <div role="button">Italic</div>
+        <div role="link">Help</div>
+      </div>
+      <div role="separator"></div>
+      <div>Plain text</div>
+    </div>
+    <div role="menu" aria-label="Mixed content menu">
+      <div role="menuitem">Direct menu item</div>
+      <div role="group" aria-label="Grouped items">
+        <div role="menuitem">Grouped menu item</div>
+        <div role="button">Non-menu button</div>
+      </div>
+      <div role="separator"></div>
+    </div>
+    <div role="menu" aria-label="Group with non-menuitems">
+      <div role="group" aria-label="Control group">
+        <div role="checkbox">Option 1</div>
+        <div role="radiobutton">Choice A</div>
+        <div role="textbox">Input field</div>
+      </div>
+    </div>
   </body>
 </html>

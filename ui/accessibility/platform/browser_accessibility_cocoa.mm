@@ -1227,6 +1227,12 @@ bool ui::IsNSRange(id value) {
     // children. For now, only do this for web content, and not UI, where
     // there are not interesting descendants of list box options.
     cocoa_role = NSAccessibilityMenuItemRole;
+  } else if (role == ax::mojom::Role::kMenu && ![self hasMenuItemDescendant]) {
+    // A menu without menu item descendants should be exposed as a group rather
+    // than a menu to avoid confusing assistive technologies. This ensures
+    // VoiceControl can properly display number labels when the container
+    // doesn't actually contain menu items.
+    cocoa_role = NSAccessibilityGroupRole;
   } else {
     cocoa_role = [AXPlatformNodeCocoa nativeRoleFromAXRole:role];
   }
@@ -1235,6 +1241,50 @@ bool ui::IsNSRange(id value) {
                "role=", base::SysNSStringToUTF8(cocoa_role));
   DCHECK(cocoa_role != NSAccessibilityUnknownRole);
   return cocoa_role;
+}
+
+// internal, matches WebKit's implementation of
+// updateRoleAfterChildrenCreation(see
+// https://github.com/WebKit/WebKit/blob/main/Source/WebCore/accessibility/AccessibilityRenderObject.cpp#L2655).
+- (BOOL)hasMenuItemDescendant {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  // Check direct children for menu items.
+  for (id child in [self accessibilityChildren]) {
+    if (![child isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+      continue;
+    }
+
+    BrowserAccessibilityCocoa* childCocoa = (BrowserAccessibilityCocoa*)child;
+    ax::mojom::Role childRole = [childCocoa internalRole];
+    // Check if child is a menu item.
+    if (ui::IsMenuItem(childRole)) {
+      return YES;
+    }
+
+    // Per the ARIA spec, groups with menuitem children are allowed as
+    // children of menus. https://w3c.github.io/aria/#menu.
+    if (childRole != ax::mojom::Role::kGroup) {
+      continue;
+    }
+
+    // Check grandchildren in groups for menu items.
+    for (id grandchild in [childCocoa accessibilityChildren]) {
+      if (![grandchild isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+        continue;
+      }
+
+      BrowserAccessibilityCocoa* grandchildCocoa =
+          (BrowserAccessibilityCocoa*)grandchild;
+      if (ui::IsMenuItem([grandchildCocoa internalRole])) {
+        return YES;
+      }
+    }
+  }
+
+  return NO;
 }
 
 // LINT.IfChange(accessibilityRowHeaderUIElements)
