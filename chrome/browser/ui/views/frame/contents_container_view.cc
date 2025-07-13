@@ -74,6 +74,7 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // split.
   if (!is_in_split) {
     SetBorder(nullptr);
+    contents_view_->holder()->SetCornerRadii(gfx::RoundedCornersF{0});
     contents_view_->SetBackgroundRadii(gfx::RoundedCornersF{0});
     contents_scrim_view_->SetRoundedCorners(gfx::RoundedCornersF{0});
     mini_toolbar_->SetVisible(false);
@@ -94,6 +95,7 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
       gfx::Insets(kSplitViewContentPadding)));
 
   if (contents_view_->GetBackgroundRadii() != kContentCornerRadius) {
+    contents_view_->holder()->SetCornerRadii(kContentCornerRadius);
     contents_view_->SetBackgroundRadii(kContentCornerRadius);
   }
   if (contents_scrim_view_->layer()->rounded_corner_radii() !=
@@ -147,10 +149,11 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
 
+  // The scrim view should cover the entire contents bounds.
   CHECK(contents_scrim_view_);
   layouts.child_layouts.emplace_back(contents_scrim_view_.get(),
                                      contents_scrim_view_->GetVisible(),
-                                     contents_rect);
+                                     contents_bounds);
 
   // The scrim view should cover the entire contents bounds.
   if (inactive_split_scrim_view_) {
