@@ -74,6 +74,7 @@ constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
 constexpr base::cstring_view kOpTypeGatherND = "GatherND";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
+constexpr base::cstring_view kOpTypeHardSigmoid = "HardSigmoid";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeMatMul = "MatMul";
@@ -87,6 +88,7 @@ constexpr base::cstring_view kOpTypeScatterND = "ScatterND";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSlice = "Slice";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
+constexpr base::cstring_view kOpTypeSoftplus = "Softplus";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
 constexpr base::cstring_view kOpTypeSplit = "Split";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
@@ -115,8 +117,8 @@ constexpr std::string_view kInserted = "Inserted";
 constexpr std::string_view kToEmulate = "ToEmulate";
 constexpr std::string_view kUnderscore = "_";
 
-std::string GetOperandName(std::string_view label, OperandId id) {
-  return base::JoinString({label, base::NumberToString(id.value())},
+std::string GetOperandName(std::string_view name, OperandId id) {
+  return base::JoinString({name, base::NumberToString(id.value())},
                           kUnderscore);
 }
 
@@ -1171,6 +1173,27 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   model_editor_.AddNode(kOpTypeGemm, node_name, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddHardSigmoidOperation(
+    const mojom::HardSigmoid& hard_sigmoid) {
+  const std::string node_name = GenerateNodeName(hard_sigmoid.label);
+  const std::string input = GetOperandNameById(hard_sigmoid.input_operand_id);
+  const std::string output = GetOperandNameById(hard_sigmoid.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.hard_sigmoid_input.Supports(
+      GetOperand(hard_sigmoid.input_operand_id).descriptor));
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAlpha = "alpha";
+  constexpr base::cstring_view kAttrBeta = "beta";
+  std::array<ScopedOrtOpAttr, 2> attributes = {
+      model_editor_.CreateAttribute(kAttrAlpha, hard_sigmoid.alpha),
+      model_editor_.CreateAttribute(kAttrBeta, hard_sigmoid.beta)};
+  model_editor_.AddNode(kOpTypeHardSigmoid, node_name, inputs, outputs,
+                        attributes);
+}
+
 void GraphBuilderOrt::AddLeakyReluOperation(
     const mojom::LeakyRelu& leaky_relu) {
   const std::string node_name = GenerateNodeName(leaky_relu.label);
@@ -1888,6 +1911,10 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kHardSigmoid: {
+        AddHardSigmoidOperation(*operation->get_hard_sigmoid());
+        break;
+      }
       case mojom::Operation::Tag::kHardSwish: {
         CHECK(data_type_limits.hard_swish_input.Supports(
             GetOperand(operation->get_hard_swish()->input_operand_id)
@@ -1963,6 +1990,13 @@ GraphBuilderOrt::BuildModel() {
         AddSoftmaxOperation(*operation->get_softmax());
         break;
       }
+      case mojom::Operation::Tag::kSoftplus: {
+        CHECK(data_type_limits.softplus_input.Supports(
+            GetOperand(operation->get_softplus()->input_operand_id)
+                .descriptor));
+        AddUnaryOperation(*operation->get_softplus(), kOpTypeSoftplus);
+        break;
+      }
       case mojom::Operation::Tag::kSoftsign: {
         CHECK(data_type_limits.softsign_input.Supports(
             GetOperand(operation->get_softsign()->input_operand_id)
@@ -1997,13 +2031,11 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kInstanceNormalization:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kTriangular:
         NOTREACHED() << "[WebNN] Unsupported operation.";
     }

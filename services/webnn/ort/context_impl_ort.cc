@@ -162,7 +162,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gru_bias=*/{},
        /*gru_cell_input=*/{},
        /*gru_cell_bias=*/{},
-       /*hard_sigmoid_input=*/{},
+       /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*instance_normalization_input=*/{},
        /*instance_normalization_scale=*/{},
@@ -226,7 +226,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*slice_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*softplus_input=*/{},
+       /*softplus_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*split_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},

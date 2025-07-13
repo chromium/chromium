@@ -191,6 +191,7 @@ class GraphBuilderOrt {
   void AddExpandOperation(const mojom::Expand& expand);
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
+  void AddHardSigmoidOperation(const mojom::HardSigmoid& hard_sigmoid);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddLinearOperation(const mojom::Linear& linear);
   void AddMatMulOperation(const mojom::Matmul& matmul);
