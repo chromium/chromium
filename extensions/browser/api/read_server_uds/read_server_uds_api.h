@@ -1,16 +1,12 @@
 #ifndef EXTENSIONS_BROWSER_API_READ_SERVER_UDS_API_H_
 #define EXTENSIONS_BROWSER_API_READ_SERVER_UDS_API_H_
+#include "extensions/browser/api/read_server_uds/ml_server_uds.h"
 
 #include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "extensions/browser/api/read_server_uds/ml_server_uds.h"
 #include "extensions/browser/extension_function.h"
-#include "net/base/io_buffer.h"
-#include "net/socket/unix_domain_client_socket_posix.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace extensions {
 
@@ -57,70 +53,6 @@ class ReadServerUdsSendDataFunction : public ExtensionFunction {
   base::WeakPtrFactory<ReadServerUdsSendDataFunction> weak_ptr_factory_{this};
 };
 
-class ReadServerUdsUploadTrainingDataFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("readServerUds.uploadTrainingData",
-                             READSERVERUDS_UPLOADTRAININGDATA)
-
-  ReadServerUdsUploadTrainingDataFunction();
-
- protected:
-  ~ReadServerUdsUploadTrainingDataFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  // Methods
-  void GenerateSyntheticData();
-  void StartUploadingData();
-  void UploadNextChunk();
-  void OnChunkUploaded(std::unique_ptr<std::string> response_body);
-  void RespondWithError(const std::string& error_message);
-  void RespondWithSuccess();
-
-  // Member variables
-  std::string training_data_;
-  size_t chunk_size_;
-  size_t offset_;
-
-  // Declare url_loader_
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-};
-
-class ReadServerUdsTrainModelFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("readServerUds.trainModel",
-                             READSERVERUDS_TRAINMODEL)
-
-  ReadServerUdsTrainModelFunction();
-
- protected:
-  ~ReadServerUdsTrainModelFunction() override;
-
- private:
-  ResponseAction Run() override;
-  void OnTrainModelResponse(std::unique_ptr<std::string> response_body);
-
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-};
-
-class ReadServerUdsInferenceFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("readServerUds.inference", READSERVERUDS_INFERENCE)
-
-  ReadServerUdsInferenceFunction();
-
- protected:
-  ~ReadServerUdsInferenceFunction() override;
-
- private:
-  ResponseAction Run() override;
-  void OnInferenceResponse(std::unique_ptr<std::string> response_body);
-
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-};
-
 // New API for loading MobileBERT model.
 class ReadServerUdsLoadModelBERTFunction : public ExtensionFunction {
  public:
@@ -164,22 +96,6 @@ class ReadServerUdsInferSingleBERTFunction : public ExtensionFunction {
 
   std::unique_ptr<extensions::MLServerUDS> ml_server_;
   base::WeakPtrFactory<ReadServerUdsInferSingleBERTFunction> weak_ptr_factory_{this};
-};
-
-// New API for batch inference.
-class ReadServerUdsInferBatchBERTFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("readServerUds.inferBatchBERT",
-                             READSERVERUDS_INFER_BATCH_BERT)
-  ReadServerUdsInferBatchBERTFunction();
-
- protected:
-  ~ReadServerUdsInferBatchBERTFunction() override;
-
- private:
-  ResponseAction Run() override;
-  void OnResponse(std::unique_ptr<std::string> response_body);
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
 };
 
 }  // namespace extensions

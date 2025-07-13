@@ -2,11 +2,8 @@
 #define EXTENSIONS_BROWSER_API_READ_SERVER_UDS_ML_SERVER_UDS_H_
 
 #include <string>
-#include <string_view>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
 
