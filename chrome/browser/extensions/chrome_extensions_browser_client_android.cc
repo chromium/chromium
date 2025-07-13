@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/user_script_listener.h"

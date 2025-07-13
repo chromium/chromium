@@ -1695,8 +1695,7 @@ source_set("chrome_extensions_browser_client") {
   ]
 
   if (enable_desktop_android_extensions) {
-    sources +=
-        [ "desktop_android/desktop_android_extensions_browser_client.cc" ]
+    sources += [ "chrome_extensions_browser_client_android.cc" ]
 
     deps += [
       "//chrome/browser:browser_process",
