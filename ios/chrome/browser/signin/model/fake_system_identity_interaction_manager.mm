@@ -219,26 +219,27 @@ BOOL gUsingUnknownCapabilities;
     }
   }
 
+  __weak FakeSystemIdentityInteractionManager* weakSelf = self;
   [_authActivityViewController.presentingViewController
       dismissViewControllerAnimated:animated
-                         completion:nil];
-  [self runCompletionCallbackWithError:error identity:identity];
-}
-
-- (void)runCompletionCallbackWithError:(NSError*)error
-                              identity:(id<SystemIdentity>)identity {
-  _authActivityViewController = nil;
+                         completion:^{
+                           [weakSelf onActivityViewDismissed];
+                         }];
   if (_signinCompletion) {
     SigninCompletionBlock signinCompletion = nil;
     std::swap(_signinCompletion, signinCompletion);
     signinCompletion(identity, error);
   }
-  _isActivityViewPresented = NO;
 }
 
 - (void)onActivityViewPresented {
   DCHECK(!_isActivityViewPresented);
   _isActivityViewPresented = YES;
+}
+
+- (void)onActivityViewDismissed {
+  _authActivityViewController = nil;
+  _isActivityViewPresented = NO;
 }
 
 @end
