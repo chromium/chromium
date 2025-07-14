@@ -28,17 +28,21 @@ const CGFloat kStackViewMargins = 16;
 // The padding surrounding the menu's content.
 const CGFloat kMenuSidePadding = 16;
 const CGFloat kMenuTopPadding = 8;
-const CGFloat kMenuBottomPadding = 16;
-const CGFloat kMenuBottomPaddingWithoutReaderMode = 32;
+const CGFloat kMenuBottomPadding = 54;
 
 // The height of the menu's buttons.
-const CGFloat kButtonHeight = 60;
+const CGFloat kLargeButtonHeight = 60;
+const CGFloat kSmallButtonHeight = 64;
 
 // The point size of the icons for the small buttons.
 const CGFloat kSmallButtonIconSize = 18;
+const CGFloat kSmallButtonImagePadding = 2;
 
 // The padding of the small buttons.
 const CGFloat kSmallButtonPadding = 8;
+
+// The margins between the small buttons.
+const CGFloat kSpaceBetweenSmallButtons = 16;
 
 // The opacity of the small buttons.
 const CGFloat kSmallButtonOpacity = 0.95;
@@ -64,7 +68,11 @@ const CGFloat kLargeButtonImagePadding = 8;
 @end
 
 @implementation PageActionMenuViewController {
-  UIStackView* _mainStackView;
+  // Stack view containing the entire UI for the presented sheet.
+  UIStackView* _wrapperStackView;
+
+  // Stack view containing the menu's main content.
+  UIStackView* _contentStackView;
 }
 
 - (instancetype)initWithReaderModeActive:(BOOL)readerModeActive {
@@ -89,47 +97,60 @@ const CGFloat kLargeButtonImagePadding = 8;
   [self.view addSubview:blurEffectView];
   AddSameConstraints(blurEffectView, self.view);
 
-  // Configure main content stack view.
-  _mainStackView = [[UIStackView alloc] init];
-  _mainStackView.axis = UILayoutConstraintAxisVertical;
-  _mainStackView.distribution = UIStackViewDistributionEqualCentering;
-  _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_mainStackView];
+  _wrapperStackView = [[UIStackView alloc] init];
+  _wrapperStackView.axis = UILayoutConstraintAxisVertical;
+  _wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_wrapperStackView];
 
   UIView* menuHeader = [self createMenuHeader];
-  [_mainStackView addArrangedSubview:menuHeader];
+  [_wrapperStackView addArrangedSubview:menuHeader];
+
+  _contentStackView = [[UIStackView alloc] init];
+  _contentStackView.axis = UILayoutConstraintAxisVertical;
+  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_wrapperStackView addArrangedSubview:_contentStackView];
 
   // Horizontal stack view for the 2 side-by-side buttons.
   UIStackView* buttonsStackView = [self createSmallButtonsStackView];
-  [_mainStackView addArrangedSubview:buttonsStackView];
-  [_mainStackView setCustomSpacing:kStackViewMargins
-                         afterView:buttonsStackView];
+  [_contentStackView addArrangedSubview:buttonsStackView];
+  [_contentStackView setCustomSpacing:kStackViewMargins
+                            afterView:buttonsStackView];
 
   // If Reader Mode is enabled, we use a 3-button UI. Otherwise, we just show
   // the `buttonsStackView`.
   if (IsReaderModeAvailable()) {
     // Adds the large Gemini entry point button.
     UIButton* BWGButton = [self createBWGButton];
-    [_mainStackView addArrangedSubview:BWGButton];
+    [_contentStackView addArrangedSubview:BWGButton];
 
     [NSLayoutConstraint activateConstraints:@[
       [BWGButton.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kButtonHeight],
+          constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
     ]];
   }
 
-  // Activates constraints for the menu.
-  AddSameConstraintsWithInsets(
-      _mainStackView, self.view.safeAreaLayoutGuide,
-      NSDirectionalEdgeInsetsMake(kMenuTopPadding, kMenuSidePadding,
-                                  IsReaderModeAvailable()
-                                      ? kMenuBottomPadding
-                                      : kMenuBottomPaddingWithoutReaderMode,
-                                  kMenuSidePadding));
   [NSLayoutConstraint activateConstraints:@[
+    // Anchors the menu to the sheet.
+    [_wrapperStackView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:kMenuTopPadding],
+    [_wrapperStackView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+    [_wrapperStackView.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+
+    // Sets side padding to the content.
+    [_contentStackView.leadingAnchor
+        constraintEqualToAnchor:_wrapperStackView.leadingAnchor
+                       constant:kMenuSidePadding],
+    [_contentStackView.trailingAnchor
+        constraintEqualToAnchor:_wrapperStackView.trailingAnchor
+                       constant:-kMenuSidePadding],
+
+    // Anchors the height of menu elements.
     [menuHeader.heightAnchor constraintEqualToConstant:kMenuHeaderHeight],
     [buttonsStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kButtonHeight],
+        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
 
   // Configure presentation sheet.
@@ -163,12 +184,12 @@ const CGFloat kLargeButtonImagePadding = 8;
 
 // The total height of the presented menu.
 - (CGFloat)preferredMenuHeight {
-  return
-      [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height +
-      kMenuTopPadding +
-      (IsReaderModeAvailable() ? kMenuBottomPadding
-                               : kMenuBottomPaddingWithoutReaderMode);
+  CGFloat bottomPaddingAboveSafeArea =
+      kMenuBottomPadding - self.view.safeAreaInsets.bottom;
+  return [_wrapperStackView
+             systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+             .height +
+         kMenuTopPadding + bottomPaddingAboveSafeArea;
 }
 
 // Dismisses the page action menu.
@@ -221,7 +242,7 @@ const CGFloat kLargeButtonImagePadding = 8;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.distribution = UIStackViewDistributionFillEqually;
   stackView.alignment = UIStackViewAlignmentFill;
-  stackView.spacing = kStackViewMargins;
+  stackView.spacing = kSpaceBetweenSmallButtons;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Create the small buttons and add them to the stack view.
@@ -329,6 +350,7 @@ const CGFloat kLargeButtonImagePadding = 8;
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfiguration.image = image;
   buttonConfiguration.imagePlacement = NSDirectionalRectEdgeTop;
+  buttonConfiguration.imagePadding = kSmallButtonImagePadding;
   buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlue600Color];
   buttonConfiguration.background = backgroundConfig;
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
