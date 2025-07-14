@@ -178,6 +178,7 @@ TEST_F(HanKerningTest, ResetFeatures) {
   EXPECT_EQ(features.size(), 1u);
   const String text(u"国）（国");
   {
+    FontFeatureRangesSaver features_saver(&features);
     HanKerning han_kerning(text, 0, text.length(), *noto_cjk_data,
                            noto_cjk->GetFontDescription(),
                            HanKerning::Options(), &features);

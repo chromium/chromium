@@ -1039,10 +1039,11 @@ void HarfBuzzShaper::ShapeSegment(
         CanvasRotationForRun(adjusted_font->PlatformData().Orientation(),
                              segment.render_orientation, font_description);
 
+    FontFeatureRanges& font_features = range_data->font_features;
     CapsFeatureSettingsScopedOverlay caps_overlay(
-        &range_data->font_features,
-        caps_support.FontFeatureToUse(small_caps_behavior));
+        &font_features, caps_support.FontFeatureToUse(small_caps_behavior));
     hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
+    FontFeatureRangesSaver font_features_saver(&font_features);
     HanKerning han_kerning(
         text_, shape_start, shape_end, *adjusted_font, font_description,
         {.is_horizontal = HB_DIRECTION_IS_HORIZONTAL(direction),
@@ -1052,7 +1053,7 @@ void HarfBuzzShaper::ShapeSegment(
                         range_data->start == shape_start,
          .apply_end = range_data->options.han_kerning_end &&
                       range_data->end == shape_end},
-        &range_data->font_features);
+        &font_features);
 
     if (!ShapeRange(range_data->buffer.Get(), range_data->font_features,
                     adjusted_font, current_font_data_for_range_set->Ranges(),

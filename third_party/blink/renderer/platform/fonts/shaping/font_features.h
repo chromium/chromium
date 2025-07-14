@@ -70,6 +70,43 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 //
 using FontFeatureRanges = Vector<FontFeatureRange, 6>;
 
+//
+// Saves `FontFeatureRanges` and restores it in the destructor.
+//
+// It works only for additions.
+//
+class PLATFORM_EXPORT FontFeatureRangesSaver {
+  STACK_ALLOCATED();
+
+ public:
+  explicit FontFeatureRangesSaver(FontFeatureRanges* features)
+      : features_(features), num_features_before_(features->size()) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    saved_features_.AppendVector(*features);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+  }
+
+  ~FontFeatureRangesSaver() {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    CheckIsAdditionsOnly();
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+    if (features_->size() > num_features_before_) {
+      features_->Shrink(num_features_before_);
+    }
+  }
+
+ private:
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void CheckIsAdditionsOnly() const;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
+  FontFeatureRanges* features_;
+  wtf_size_t num_features_before_;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  FontFeatureRanges saved_features_;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_FONT_FEATURES_H_

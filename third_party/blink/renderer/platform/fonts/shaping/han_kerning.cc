@@ -131,18 +131,6 @@ HanKerning::CharType CharTypeFromBounds(
 
 }  // namespace
 
-void HanKerning::ResetFeatures() {
-  DCHECK(features_);
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  for (wtf_size_t i = num_features_before_; i < features_->size(); ++i) {
-    const FontFeatureRange& feature = (*features_)[i];
-    DCHECK((feature.tag == FontFeatureTag{'h', 'a', 'l', 't'} ||
-            feature.tag == FontFeatureTag{'v', 'h', 'a', 'l'}));
-  }
-#endif
-  features_->Shrink(num_features_before_);
-}
-
 // Compute the character class.
 // See Text Spacing Character Classes:
 // https://drafts.csswg.org/css-text-4/#text-spacing-classes
@@ -201,7 +189,6 @@ void HanKerning::Compute(const String& text,
                          const FontDescription& font_description,
                          Options options,
                          FontFeatureRanges* features) {
-  DCHECK(!features_);
   DCHECK_GT(end, start);
   if (!MayApply(StringView(text, start, end - start))) {
     return;
@@ -289,8 +276,6 @@ void HanKerning::Compute(const String& text,
   DCHECK(std::is_sorted(indices.begin(), indices.end(), std::less_equal<>()));
   const hb_tag_t tag = options.is_horizontal ? HB_TAG('h', 'a', 'l', 't')
                                              : HB_TAG('v', 'h', 'a', 'l');
-  features_ = features;
-  num_features_before_ = features->size();
   features->reserve(features->size() + indices.size());
   for (const wtf_size_t i : indices) {
     features->push_back(FontFeatureRange{{tag, 1}, i, i + 1});

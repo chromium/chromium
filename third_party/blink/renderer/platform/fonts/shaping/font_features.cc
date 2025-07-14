@@ -259,4 +259,14 @@ template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
     const FontDescription&,
     FontFeatureRanges&);
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+void FontFeatureRangesSaver::CheckIsAdditionsOnly() const {
+  DCHECK_GE(features_->size(), num_features_before_);
+  const wtf_size_t size = std::min(features_->size(), num_features_before_);
+  for (wtf_size_t i = 0; i < size; ++i) {
+    DCHECK_EQ((*features_)[i], saved_features_[i]);
+  }
+}
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
 }  // namespace blink

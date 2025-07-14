@@ -58,16 +58,12 @@ class PLATFORM_EXPORT HanKerning {
              const SimpleFontData& font_data,
              const FontDescription& font_description,
              Options options,
-             FontFeatureRanges* features) {
+             FontFeatureRanges* features,
+             std::optional<FontFeatureRangesSaver>* saver = nullptr) {
     if (text.Is8Bit()) {
       return;
     }
     Compute(text, start, end, font_data, font_description, options, features);
-  }
-  ~HanKerning() {
-    if (features_) [[unlikely]] {
-      ResetFeatures();
-    }
   }
 
   const Vector<unsigned, 32>& UnsafeToBreakBefore() const {
@@ -123,10 +119,6 @@ class PLATFORM_EXPORT HanKerning {
                Options options,
                FontFeatureRanges* features);
 
-  void ResetFeatures();
-
-  FontFeatureRanges* features_ = nullptr;
-  wtf_size_t num_features_before_;
   Vector<unsigned, 32> unsafe_to_break_before_;
 };
 
