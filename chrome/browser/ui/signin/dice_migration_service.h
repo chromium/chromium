@@ -12,6 +12,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget_observer.h"
 
+class Browser;
 class Profile;
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -48,6 +49,8 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
+  // The browser instance that was used to show the dialog.
+  base::WeakPtr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_MIGRATION_SERVICE_H_

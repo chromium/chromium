@@ -54,6 +54,7 @@ found in the LICENSE file.
   </summary>
   <token key="ToastName">
     <variant name="AddedToReadingList" summary="add to reading list"/>
+    <variant name="DiceUserMigrated" summary="dice user migrated"/>
     <variant name="ImageCopied" summary="image copied"/>
     <variant name="LensOverlay" summary="lens overlay"/>
     <variant name="LinkCopied" summary="link copied"/>

@@ -9,6 +9,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -79,9 +82,9 @@ void SetBannerImage(ui::DialogModel::Builder& builder,
                              avatar_image, kAvatarPosition, kAvatarSize));
 }
 
-void MigrateUser(Profile* profile) {
+bool MaybeMigrateUser(Profile* profile) {
   if (!IsUserEligibleForDiceMigration(profile)) {
-    return;
+    return false;
   }
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
@@ -91,6 +94,16 @@ void MigrateUser(Profile* profile) {
   // pref change.
   prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
                     true);
+  return true;
+}
+
+void MaybeShowToast(Browser* browser) {
+  ToastController* const toast_controller =
+      browser->browser_window_features()->toast_controller();
+  if (!toast_controller) {
+    return;
+  }
+  toast_controller->MaybeShowToast(ToastParams(ToastId::kDiceUserMigrated));
 }
 
 }  // namespace
@@ -157,6 +170,7 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
       builder.Build(), avatar_button, views::BubbleBorder::TOP_RIGHT);
   dialog_widget_ = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   dialog_widget_observation_.Observe(dialog_widget_);
+  browser_ = browser->AsWeakPtr();
   dialog_widget_->Show();
 
   // TODO(crbug.com/399838468): Close the dialog when the avatar pill is
@@ -183,11 +197,14 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
     case views::Widget::ClosedReason::kCancelButtonClicked:
       NOTREACHED();
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      MigrateUser(profile_);
+      if (MaybeMigrateUser(profile_) && browser_) {
+        MaybeShowToast(browser_.get());
+      }
       break;
     case views::Widget::ClosedReason::kUnspecified:
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
       break;
   }
+  browser_.reset();
 }

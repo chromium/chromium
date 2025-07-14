@@ -6,9 +6,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -144,6 +147,63 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   EnsurePresent(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {
+  RunTestSequence(TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the "Got it" button.
+                  PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForShow(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                       ToastActionButton) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(
+      TriggerDialog(),
+
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+      // Press the "Got it" button.
+      PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+      WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+      WaitForShow(toasts::ToastView::kToastViewId),
+
+      // Pressing the toast action button should open the settings
+      // page.
+      InstrumentTab(kActiveTab),
+      PressButton(toasts::ToastView::kToastActionButton),
+      WaitForWebContentsNavigation(
+          kActiveTab, chrome::GetSettingsUrl(chrome::kSyncSetupSubPage)),
+
+      WaitForHide(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                       ToastCloseButton) {
+  RunTestSequence(TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the "Got it" button.
+                  PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  PressButton(toasts::ToastView::kToastCloseButton),
+
+                  WaitForHide(toasts::ToastView::kToastViewId));
 }
 
 }  // namespace

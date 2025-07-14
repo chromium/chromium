@@ -7,6 +7,7 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
@@ -39,6 +40,12 @@ class DiceMigrationServicePixelBrowserTest
     return DiceMigrationServiceFactory::GetForProfile(GetProfile());
   }
 
+  auto TriggerDialog() {
+    return Do([&]() {
+      GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kOfferMigrationToDiceUsers};
@@ -46,10 +53,7 @@ class DiceMigrationServicePixelBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
   RunTestSequence(
-      // Trigger the dialog.
-      Do([this]() {
-        GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-      }),
+      TriggerDialog(),
 
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
@@ -74,10 +78,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
       kAccountImageUrl, kAccountImage);
 
   RunTestSequence(
-      // Trigger the dialog.
-      Do([this]() {
-        GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-      }),
+      TriggerDialog(),
 
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
@@ -90,6 +91,28 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
           DiceMigrationService::kAcceptButtonElementId,
           /*screenshot_name=*/"dice_migration_dialog_with_account_image",
           /*baseline_cl=*/kScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
+  RunTestSequence(TriggerDialog(),
+
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshots not supported in all testing environments."),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the "Got it" button.
+                  PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  // Grab a screenshot of the toast that pops up.
+                  Screenshot(toasts::ToastView::kToastViewId,
+                             /*screenshot_name=*/"dice_migration_toast",
+                             /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
 }  // namespace
