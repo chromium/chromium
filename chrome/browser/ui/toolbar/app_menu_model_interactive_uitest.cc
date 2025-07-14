@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -232,6 +234,14 @@ class AppMenuModelExtensionsInteractiveTest
   }
 
   void SetUpOnMainThread() override {
+    if (GetParam() != ExtensionsTestMode::kDoNotCollapse) {
+      // Enable promotions.
+      promotions_enabled_value_to_restore_opt_ =
+          g_browser_process->local_state()->GetBoolean(
+              prefs::kPromotionsEnabled);
+      g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                                   true);
+    }
     if (GetParam() == ExtensionsTestMode::kCollapseWithExtensions) {
       // Create and load a dummy extension.
       constexpr char kExtensionManifest[] = R"(
@@ -257,9 +267,21 @@ class AppMenuModelExtensionsInteractiveTest
     AppMenuModelInteractiveTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    InteractiveBrowserTest::TearDownOnMainThread();
+    if (promotions_enabled_value_to_restore_opt_.has_value()) {
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kPromotionsEnabled,
+          promotions_enabled_value_to_restore_opt_.value());
+    }
+  }
+
  protected:
   base::HistogramTester histograms_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::optional<bool> promotions_enabled_value_to_restore_opt_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
