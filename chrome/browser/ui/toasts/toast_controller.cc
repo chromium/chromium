@@ -145,6 +145,10 @@ void ToastController::OnWidgetActivationChanged(views::Widget* widget,
 #endif
 
 void ToastController::OnWidgetDestroyed(views::Widget* widget) {
+  // Inform subscribers that Widget was destroyed. Pass in toast_id_ before it
+  // is set to null.
+  on_widget_destroyed_callbacks_.Notify(currently_showing_toast_id_.value());
+
   currently_showing_toast_id_ = std::nullopt;
   toast_view_ = nullptr;
   toast_widget_ = nullptr;
@@ -165,6 +169,11 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
     ShowToast(std::move(next_toast_params_.value()));
     next_toast_params_ = std::nullopt;
   }
+}
+
+base::CallbackListSubscription ToastController::RegisterOnWidgetDestroyed(
+    WidgetDestroyedCallback callback) {
+  return on_widget_destroyed_callbacks_.Add(std::move(callback));
 }
 
 void ToastController::PrimaryPageChanged(content::Page& page) {
