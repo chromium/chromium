@@ -81,6 +81,10 @@ _IGNORE_WARNINGS = (
     # This class is used by androidx.test.uiautomator.GestureController but is
     # for optional XrExtensions usage.
     r'Missing class com.android.extensions.xr.*Xr.*',
+    # Likely caused by version skew with internal code. We don't use it though,
+    # so safe to ignore. b/431248021
+    r'.*AndroidComposeUiTestEnvironment.*',
+    r'.*ComposeUiTest.*',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
