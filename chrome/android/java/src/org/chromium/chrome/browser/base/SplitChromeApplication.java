@@ -23,6 +23,7 @@ import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPoints;
 
 /**
  * Application class for Chrome that knows how to deal with isolated splits. This class will perform
@@ -42,8 +43,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
             "org.chromium.chrome.browser.ChromeTabbedActivity$Preload";
 
     @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
-    private static @IdentifierNameString String sGoogle3PreloadName =
-            "org.chromium.chrome.modules.google3.Google3ModuleEntryImpl";
+    private static @IdentifierNameString String sOnDemandPreloadName =
+            "org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPointsImpl";
 
     private static final Object sSplitLock = new Object();
     private static final ArraySet<String> sCachedSplits = new ArraySet<>();
@@ -89,8 +90,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
         if (split.equals(CHROME_SPLIT_NAME)) {
             return sChromePreloadName;
         }
-        if (split.equals("google3")) {
-            return sGoogle3PreloadName;
+        if (split.equals(OnDemandModuleEntryPoints.SPLIT_NAME)) {
+            return sOnDemandPreloadName;
         }
         return null;
     }

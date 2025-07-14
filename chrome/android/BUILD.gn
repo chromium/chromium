@@ -78,13 +78,6 @@ if (android_64bit_target_cpu) {
 
 if (_is_default_toolchain) {
   template("chrome_public_bundle") {
-    _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
-    if (_is_monochrome) {
-      _module_descs = monochrome_module_descs
-    } else {
-      _module_descs = chrome_module_descs
-    }
-
     _base_module_target_name = "${invoker.target_name}__base_bundle_module"
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
       forward_variables_from(invoker,
@@ -103,7 +96,7 @@ if (_is_default_toolchain) {
       add_view_trace_events = true
 
       srcjar_deps = []
-      foreach(_module_desc, _module_descs) {
+      foreach(_module_desc, chrome_module_descs) {
         if (defined(_module_desc.jni_registration)) {
           srcjar_deps += [ _module_desc.jni_registration ]
         }
@@ -133,7 +126,7 @@ if (_is_default_toolchain) {
                              ])
       base_module_target = ":$_base_module_target_name"
       manifest_package = chrome_public_manifest_package
-      module_descs = _module_descs
+      module_descs = chrome_module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
       add_view_trace_events = true
 
@@ -2151,6 +2144,7 @@ if (_is_default_toolchain) {
       # TODO(crbug.com/40148088): Consider moving these to the chrome module to
       # reduce base dex size.
       "$google_play_services_package:google_play_services_cast_framework_java",
+      "//chrome/android/modules/on_demand:provider_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/payments/content/android:service_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -3484,7 +3478,7 @@ template("libmonochrome_tmpl") {
     }
 
     is_monochrome = true
-    module_descs = monochrome_module_descs
+    module_descs = chrome_module_descs
 
     forward_variables_from(invoker, "*", [ "deps" ])
   }
