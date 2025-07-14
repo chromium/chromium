@@ -33,7 +33,9 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
   // (//components/search/OWNERS).
 
   registry.AddPromo(NtpPromoSpecification(
-      kNtpSignInPromoId, NtpPromoContent("", IDS_NTP_SIGN_IN_PROMO, 0),
+      kNtpSignInPromoId,
+      NtpPromoContent("chrome-filled", IDS_NTP_SIGN_IN_PROMO,
+                      IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
       base::BindRepeating([](Profile* profile) {
         return NtpPromoSpecification::Eligibility::kEligible;
       }),
