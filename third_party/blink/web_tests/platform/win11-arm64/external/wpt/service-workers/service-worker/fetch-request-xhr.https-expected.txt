@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] event.request has the expected headers for same-origin GET.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin GET. lengths differ, expected array ["accept"] length 1, got […, "rtt", "sec-ch-device-memory", "sec-ch-dpr", "sec-ch-prefers-color-scheme", "sec-ch-prefers-reduced-motion", "sec-ch-prefers-reduced-transparency", "sec-ch-ua", "sec-ch-ua-arch", "sec-ch-ua-bitness", "sec-ch-ua-full-version", "sec-ch-ua-full-version-list", "sec-ch-ua-mobile", "sec-ch-ua-model", "sec-ch-ua-platform", "sec-ch-ua-platform-version", "sec-ch-ua-wow64", "sec-ch-viewport-height", "sec-ch-viewport-width", "user-agent", "viewport-width"] length 25"
+[FAIL] event.request has the expected headers for same-origin POST.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got […, "rtt", "sec-ch-device-memory", "sec-ch-dpr", "sec-ch-prefers-color-scheme", "sec-ch-prefers-reduced-motion", "sec-ch-prefers-reduced-transparency", "sec-ch-ua", "sec-ch-ua-arch", "sec-ch-ua-bitness", "sec-ch-ua-full-version", "sec-ch-ua-full-version-list", "sec-ch-ua-mobile", "sec-ch-ua-model", "sec-ch-ua-platform", "sec-ch-ua-platform-version", "sec-ch-ua-wow64", "sec-ch-viewport-height", "sec-ch-viewport-width", "user-agent", "viewport-width"] length 26"
+[FAIL] event.request has the expected headers for cross-origin GET.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin GET. lengths differ, expected array ["accept"] length 1, got ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 5"
+[FAIL] event.request has the expected headers for cross-origin POST.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got ["accept", "content-type", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 6"
+Harness: the test ran to completion.
+
