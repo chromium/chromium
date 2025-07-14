@@ -809,7 +809,10 @@ class MockAutofillClient : public TestAutofillClient {
     ON_CALL(*client->GetPaymentsAutofillClient()->GetIbanManager(),
             OnGetSingleFieldSuggestions)
         .WillByDefault(Return(true));
-    ON_CALL(*client->GetAutocompleteHistoryManager(),
+    MockAutocompleteHistoryManager* autocomplete_history_manager =
+    static_cast<MockAutocompleteHistoryManager*>(
+        client->GetAutocompleteHistoryManager());
+    ON_CALL(*autocomplete_history_manager,
             OnGetSingleFieldSuggestions)
         .WillByDefault([](const FormFieldData field,
                           const AutofillClient& client,

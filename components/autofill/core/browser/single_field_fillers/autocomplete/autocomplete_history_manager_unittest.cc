@@ -64,6 +64,12 @@ class MockSuggestionsReturnedCallback
   std::list<OnSuggestionsReturnedCallback> callbacks_;
 };
 
+class MockAutofillClient : public TestAutofillClient {
+ public:
+  MOCK_METHOD(AutocompleteHistoryManager*, GetAutocompleteHistoryManager, (),
+              (override));
+};
+
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
@@ -85,6 +91,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
+    ON_CALL(autofill_client_, GetAutocompleteHistoryManager())
+        .WillByDefault(Return(autocomplete_manager_.get()));
     test_field_ =
         CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
                             FormControlType::kInputText);
@@ -132,7 +140,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillClient autofill_client_;
+  MockAutofillClient autofill_client_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;

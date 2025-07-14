@@ -2522,7 +2522,10 @@ TEST_F(AutofillExternalDelegateTest,
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(), dummy_autocomplete_string,
           SuggestionType::kAutocompleteEntry, std::optional<FieldType>()));
-  EXPECT_CALL(*client().GetAutocompleteHistoryManager(),
+  MockAutocompleteHistoryManager* autocomplete_history_manager =
+  static_cast<MockAutocompleteHistoryManager*>(
+      client().GetAutocompleteHistoryManager());
+  EXPECT_CALL(*autocomplete_history_manager,
               OnSingleFieldSuggestionSelected(suggestion));
 
   external_delegate().DidAcceptSuggestion(

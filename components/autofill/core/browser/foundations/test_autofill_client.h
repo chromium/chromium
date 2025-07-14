@@ -183,7 +183,7 @@ class TestAutofillClientTemplate : public T {
     return *single_field_fill_router_;
   }
 
-  MockAutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
+  AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
   }
 
