@@ -76,12 +76,6 @@ TEST_F(SqlBackendImplTest, GetStats) {
   EXPECT_THAT(stats, ElementsAre(Pair("Cache type", "SQL Cache")));
 }
 
-TEST_F(SqlBackendImplTest, OnExternalCacheHit) {
-  auto backend = CreateBackendAndInit();
-  // Should not crash.
-  backend->OnExternalCacheHit("test_key");
-}
-
 // Tests a race condition where an entry is doomed via `SqlEntryImpl::Doom()`
 // while an iterator is in the process of opening it. The iterator should still
 // successfully open the entry, but the entry should be marked as doomed. This
@@ -636,6 +630,45 @@ TEST_F(SqlBackendImplTest, OpenEntryRacesWithIteratorAndWriteData) {
       kHeadData.size());
   EXPECT_EQ(buffer->span().first(kHeadData.size()),
             base::as_byte_span(kHeadData));
+  entry->Close();
+}
+
+// Tests that OnExternalCacheHit correctly updates the last_used time, even when
+// an OpenEntry operation is in-flight.
+TEST_F(SqlBackendImplTest, OnExternalCacheHitRacesWithOpen) {
+  auto backend = CreateBackendAndInit();
+
+  // 1. Create an entry and close it.
+  const std::string kKey = "my-key";
+  TestEntryResultCompletionCallback create_cb;
+  disk_cache::EntryResult create_result = create_cb.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, create_cb.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* created_entry = create_result.ReleaseEntry();
+  base::Time create_time = created_entry->GetLastUsed();
+  created_entry->Close();
+
+  // 2. Advance time.
+  task_environment_.AdvanceClock(base::Minutes(1));
+
+  // 3. Start opening the entry. This is an async operation.
+  base::test::TestFuture<EntryResult> open_future;
+  ASSERT_EQ(backend->OpenEntry(kKey, net::HIGHEST, open_future.GetCallback())
+                .net_error(),
+            net::ERR_IO_PENDING);
+
+  // 4. Call OnExternalCacheHit.
+  base::Time hit_time = base::Time::Now();
+  EXPECT_NE(create_time, hit_time);
+  backend->OnExternalCacheHit(kKey);
+
+  // 5. Wait for OpenEntry to complete.
+  EntryResult open_result = open_future.Take();
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  auto* entry = open_result.ReleaseEntry();
+
+  // 6. The entry's last_used time should be the time of the external hit.
+  EXPECT_EQ(entry->GetLastUsed(), hit_time);
   entry->Close();
 }
 

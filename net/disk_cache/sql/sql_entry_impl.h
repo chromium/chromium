@@ -91,12 +91,12 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   bool doomed() const { return doomed_; }
 
+  // Updates the `last_used_` timestamp to the current time.
+  void UpdateLastUsed();
+
  private:
   friend class base::RefCounted<SqlEntryImpl>;
   ~SqlEntryImpl() override;
-
-  // Updates the `last_used_` timestamp to the current time.
-  void UpdateLastUsed();
 
   // Internal implementation for writing data to stream 1. This is called by
   // both `WriteData` and `WriteSparseData`. It forwards the write operation to

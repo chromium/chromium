@@ -595,8 +595,28 @@ void SqlBackendImpl::GetStats(base::StringPairs* stats) {
 }
 
 void SqlBackendImpl::OnExternalCacheHit(const std::string& key) {
-  // TODO(crbug.com/422065015): Implement this method.
-  NOTIMPLEMENTED();
+  const CacheEntryKey entry_key(key);
+  if (auto it = active_entries_.find(entry_key); it != active_entries_.end()) {
+    it->second->UpdateLastUsed();
+    return;
+  }
+  const base::Time now = base::Time::Now();
+  in_flight_entry_modifications_[entry_key].emplace_back(
+      base::UnguessableToken(), now);
+  exclusive_operation_coordinator_.PostOrRunNormalOperation(
+      entry_key,
+      base::BindOnce(&SqlBackendImpl::HandleOnExternalCacheHitOperation,
+                     weak_factory_.GetWeakPtr(), entry_key, now));
+}
+
+void SqlBackendImpl::HandleOnExternalCacheHitOperation(
+    const CacheEntryKey& key,
+    base::Time now,
+    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
+  store_->UpdateEntryLastUsed(
+      key, now,
+      WrapErrorCallbackToPopInFlightEntryModification(key, base::DoNothing())
+          .Then(DoNothingWithBoundHandle(std::move(handle))));
 }
 
 void SqlBackendImpl::OnOptionalEntryOperationFinished(
@@ -829,7 +849,8 @@ void SqlBackendImpl::ApplyInFlightEntryModifications(
     return;
   }
   for (const auto& modification : it->second) {
-    if (modification.token == entry_info.token) {
+    if (modification.token.is_empty() ||
+        modification.token == entry_info.token) {
       if (modification.last_used.has_value()) {
         entry_info.last_used = *modification.last_used;
       }

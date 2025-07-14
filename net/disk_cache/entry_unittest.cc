@@ -3793,6 +3793,126 @@ TEST_F(DiskCacheEntryTest, SimpleCacheEvictOldEntries) {
   EvictOldEntries();
 }
 
+// Tests that OnExternalCacheHit correctly updates an entry's last-used time,
+// preventing it from being evicted.
+TEST_P(DiskCacheGenericEntryTest, OnExternalCacheHit) {
+  const int kMaxSize = 2 * 1024 * 1024;
+  const int kWriteSize = kMaxSize / 10;
+  const int kNumExtraEntries = 12;
+  SetMaxSize(kMaxSize);
+  InitCache();
+
+  auto buffer = CacheTestCreateAndFillBuffer(kWriteSize, false);
+
+  disk_cache::Entry* entry;
+
+  // Create two initial entries. `key1` will be repeatedly "hit" to keep it
+  // fresh, while `key2` will be allowed to become old.
+  std::string key1("the first key");
+  ASSERT_THAT(CreateEntry(key1, &entry), IsOk());
+  EXPECT_EQ(kWriteSize,
+            WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
+  entry->Close();
+  AddDelay();
+
+  std::string key2("the second key");
+  ASSERT_THAT(CreateEntry(key2, &entry), IsOk());
+  EXPECT_EQ(kWriteSize,
+            WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
+  entry->Close();
+  AddDelay();
+
+  // Create a series of new entries to fill up the cache and trigger eviction.
+  // Before each new entry, call OnExternalCacheHit for `key1` to update its
+  // last-used time.
+  std::string key3("the key prefix");
+  for (int i = 0; i < kNumExtraEntries; i++) {
+    cache_->OnExternalCacheHit(key1);
+    AddDelay();
+    ASSERT_THAT(CreateEntry(key3 + base::NumberToString(i), &entry), IsOk());
+    ScopedEntryPtr entry_closer(entry);
+    EXPECT_EQ(kWriteSize,
+              WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
+  }
+
+  // `key1` should still be in the cache because it was repeatedly "hit".
+  ASSERT_EQ(net::OK, OpenEntry(key1, &entry))
+      << "Should not have evicted the first entry";
+  entry->Close();
+
+  // `key2` should have been evicted because it became the least recently used.
+  ASSERT_NE(net::OK, OpenEntry(key2, &entry))
+      << "Should have evicted the second entry";
+
+  // The most recently created entry should also still be in the cache.
+  ASSERT_EQ(
+      net::OK,
+      OpenEntry(key3 + base::NumberToString(kNumExtraEntries - 1), &entry))
+      << "Should not have evicted the most recent entry";
+  entry->Close();
+}
+
+// Tests that OnExternalCacheHit works correctly for an entry that is currently
+// active (i.e., has an open handle).
+TEST_P(DiskCacheGenericEntryTest, OnExternalCacheHitActiveEntry) {
+  const int kMaxSize = 2 * 1024 * 1024;
+  const int kWriteSize = kMaxSize / 10;
+  const int kNumExtraEntries = 12;
+  SetMaxSize(kMaxSize);
+  InitCache();
+
+  auto buffer = CacheTestCreateAndFillBuffer(kWriteSize, false);
+
+  disk_cache::Entry* first_entry;
+
+  // Create an entry for `key1` and keep it open.
+  std::string key1("the first key");
+  ASSERT_THAT(CreateEntry(key1, &first_entry), IsOk());
+  EXPECT_EQ(kWriteSize,
+            WriteData(first_entry, 1, 0, buffer.get(), kWriteSize, false));
+  AddDelay();
+
+  // Create a second entry and close it.
+  disk_cache::Entry* entry;
+  std::string key2("the second key");
+  ASSERT_THAT(CreateEntry(key2, &entry), IsOk());
+  EXPECT_EQ(kWriteSize,
+            WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
+  entry->Close();
+  AddDelay();
+
+  // Create new entries to trigger eviction. Before each creation, "hit" the
+  // active entry for `key1`.
+  std::string key3("the key prefix");
+  for (int i = 0; i < kNumExtraEntries; i++) {
+    cache_->OnExternalCacheHit(key1);
+    AddDelay();
+    ASSERT_THAT(CreateEntry(key3 + base::NumberToString(i), &entry), IsOk());
+    ScopedEntryPtr entry_closer(entry);
+    EXPECT_EQ(kWriteSize,
+              WriteData(entry, 1, 0, buffer.get(), kWriteSize, false));
+  }
+
+  // Close the active entry for `key1`.
+  first_entry->Close();
+
+  // `key1` should still be present because it was repeatedly "hit".
+  ASSERT_EQ(net::OK, OpenEntry(key1, &entry))
+      << "Should not have evicted the first entry";
+  entry->Close();
+
+  // `key2` should have been evicted.
+  ASSERT_NE(net::OK, OpenEntry(key2, &entry))
+      << "Should have evicted the second entry";
+
+  // The most recent entry should also be present.
+  ASSERT_EQ(
+      net::OK,
+      OpenEntry(key3 + base::NumberToString(kNumExtraEntries - 1), &entry))
+      << "Should not have evicted the most recent entry";
+  entry->Close();
+}
+
 // Tests that if a read and a following in-flight truncate are both in progress
 // simultaniously that they both can occur successfully. See
 // http://crbug.com/239223

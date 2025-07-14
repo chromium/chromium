@@ -323,6 +323,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void HandleTriggerEvictionOperation(
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
+  // Handles the backend logic for `OnExternalCacheHit()`. This method is
+  // scheduled as a normal operation via the `ExclusiveOperationCoordinator`.
+  void HandleOnExternalCacheHitOperation(
+      const CacheEntryKey& key,
+      base::Time now,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
   // Applies in-flight modifications to an entry's info.
   void ApplyInFlightEntryModifications(
       const CacheEntryKey& key,
