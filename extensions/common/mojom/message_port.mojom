@@ -99,8 +99,17 @@ interface MessagePort {
 
 // The browser interface to a message port.
 interface MessagePortHost {
-  // Indicate the port should be closed.
-  ClosePort(bool close_channel);
+  // Closes the messaging port from the renderer to the browser. `close_channel`
+  // indicates that there will be no more responders so the browser should close
+  // the channel.
+  // `error_message`, if present, is if the port was closed due to an error in
+  // the message listener for this port. It's the error message provided by the
+  // message listener explicitly or it's a static generic error message if an
+  // error message couldn't be found, but an error was thrown. The error message
+  // is ultimately passed along to the message opener in a different javascript
+  // context, and possibly in another renderer via the browser. It is so that
+  // the opener can react to the error (for retries, debugging, etc.)
+  ClosePort(bool close_channel, string? error_message);
   // Send a message to an extension process.
   PostMessage(Message message);
   // Send a message to tell the browser that one of the listeners for a message

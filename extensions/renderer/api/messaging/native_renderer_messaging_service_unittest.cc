@@ -393,7 +393,10 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectFromJS) {
   v8::Local<v8::Value> args[] = {port_object};
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   RunFunctionOnGlobal(post_message, context, std::size(args), args);
   run_loop.Run();
@@ -478,7 +481,10 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
   run_loop = std::make_unique<base::RunLoop>();
   // Respond to the message. The response callback should be triggered, and the
   // port should be closed.
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
@@ -540,7 +546,10 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
   run_loop = std::make_unique<base::RunLoop>();
   // Respond to the message. The response callback should be triggered, and the
   // port should be closed.
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
@@ -625,7 +634,10 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   EXPECT_CALL(mock_message_port_host,
               PostMessage(Message(R"({"data":"hi"})",
                                   mojom::SerializationFormat::kJson, false)));
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,

@@ -167,12 +167,18 @@ class NativeRendererMessagingService::MessagePortScope
   virtual content::RenderFrame* GetRestrictToRenderFrame() { return nullptr; }
 
   void CloseMessagePort(const PortId& port_id, bool close_channel) {
+    CloseMessagePort(port_id, close_channel, /*error_message=*/std::nullopt);
+  }
+
+  void CloseMessagePort(const PortId& port_id,
+                        bool close_channel,
+                        const std::optional<std::string>& error_message) {
     // BFCache can disconnect the mojo pipe but leave the GinPort thinking
     // it is open.
     if (!HasPort(port_id)) {
       return;
     }
-    GetMessagePortHost(port_id)->ClosePort(close_channel);
+    GetMessagePortHost(port_id)->ClosePort(close_channel, error_message);
     message_port_hosts_.erase(port_id);
   }
 
@@ -809,8 +815,17 @@ void NativeRendererMessagingService::CloseMessagePort(
     ScriptContext* script_context,
     const PortId& port_id,
     bool close_channel) {
+  CloseMessagePort(script_context, port_id, close_channel,
+                   /*error_message=*/std::nullopt);
+}
+
+void NativeRendererMessagingService::CloseMessagePort(
+    ScriptContext* script_context,
+    const PortId& port_id,
+    bool close_channel,
+    const std::optional<std::string>& error_message) {
   auto* scope = GetMessagePortScope(script_context->GetRenderFrame());
-  scope->CloseMessagePort(port_id, close_channel);
+  scope->CloseMessagePort(port_id, close_channel, error_message);
 }
 
 NativeRendererMessagingService::MessagePortScope*

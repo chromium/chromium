@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/messaging/message_port.h"
 
+#include <optional>
+
 #include "extensions/common/api/messaging/port_context.h"
 
 namespace extensions {
@@ -50,13 +52,15 @@ void MessagePort::DecrementLazyKeepaliveCount(Activity::Type activity_type) {}
 
 void MessagePort::NotifyResponsePending() {}
 
-void MessagePort::ClosePort(bool close_channel) {
+void MessagePort::ClosePort(bool close_channel,
+                            const std::optional<std::string>& error_message) {
   if (!weak_channel_delegate_) {
     return;
   }
   auto& context = receivers_.current_context();
+  std::string error = error_message.value_or(std::string());
   weak_channel_delegate_->ClosePort(port_id_, context.first, context.second,
-                                    close_channel);
+                                    close_channel, error);
 }
 
 void MessagePort::PostMessage(Message message) {

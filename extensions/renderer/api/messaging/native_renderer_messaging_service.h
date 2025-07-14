@@ -159,9 +159,20 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
           message_port_host_receiver);
 
+  // Closes the message port with the given `port_id` in the given
+  // `script_context`. If `close_channel` is true, the entire communication
+  // channel is torn down, which also disconnects the port on the other side.
   void CloseMessagePort(ScriptContext* script_context,
                         const PortId& port_id,
                         bool close_channel);
+
+  // Same as above, but it allows passing an error message that will be provided
+  // to the message port opener.
+  void CloseMessagePort(ScriptContext* script_context,
+                        const PortId& port_id,
+                        bool close_channel,
+                        const std::optional<std::string>& error_message);
+
   // Returns the associated MessagePortHost. This method asserts that it
   // exists.
   mojom::MessagePortHost* GetMessagePortHost(ScriptContext* script_context,

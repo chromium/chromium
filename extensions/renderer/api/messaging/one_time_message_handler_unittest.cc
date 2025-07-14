@@ -127,7 +127,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
         mock_message_port_host.BindReceiver(std::move(port_host));
       });
   EXPECT_CALL(mock_message_port_host, PostMessage(message));
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   mojo::PendingAssociatedRemote<mojom::MessagePort> message_port;
@@ -214,7 +217,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
 
   run_loop = std::make_unique<base::RunLoop>();
   // Deliver the reply; the message port should close.
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   const Message reply("\"Hi\"", mojom::SerializationFormat::kJson, false);
   message_handler()->DeliverMessage(script_context(), reply, port_id);
@@ -288,7 +294,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
 
   base::RunLoop run_loop;
   // Deliver the reply; the message port should close.
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   const Message reply("\"Hi\"", mojom::SerializationFormat::kJson, false);
   message_handler()->DeliverMessage(script_context(), reply, port_id);
@@ -496,7 +505,10 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverAndReply) {
   EXPECT_CALL(mock_message_port_host,
               PostMessage(Message(R"({"data":"hey"})",
                                   mojom::SerializationFormat::kJson, false)));
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   run_loop.Run();
@@ -555,7 +567,10 @@ TEST_F(OneTimeMessageHandlerTest, TryReplyingMultipleTimes) {
   EXPECT_CALL(
       mock_message_port_host,
       PostMessage(Message("\"hi\"", mojom::SerializationFormat::kJson, false)));
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   RunFunction(reply.As<v8::Function>(), context, std::size(args), args);
   run_loop.Run();
@@ -631,7 +646,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInListener) {
       });
   EXPECT_CALL(listener_mock_message_port_host,
               PostMessage(listener_sent_message));
-  EXPECT_CALL(original_mock_message_port_host, ClosePort(false))
+  EXPECT_CALL(original_mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/false,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   const Message message("\"Hi\"", mojom::SerializationFormat::kJson, false);
@@ -718,7 +736,10 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   EXPECT_CALL(mock_message_port_host1,
               PostMessage(Message("\"bar\"", mojom::SerializationFormat::kJson,
                                   false)));
-  EXPECT_CALL(mock_message_port_host, ClosePort(true))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/true,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   const Message reply("\"reply\"", mojom::SerializationFormat::kJson, false);
   message_handler()->DeliverMessage(script_context(), reply, original_port_id);
@@ -728,7 +749,8 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host1);
 }
 
-TEST_F(OneTimeMessageHandlerTest, ResponseCallbackGarbageCollected) {
+TEST_F(OneTimeMessageHandlerTest,
+       SendResponseAndPromiseRejectCallbacksGarbageCollected) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -763,15 +785,22 @@ TEST_F(OneTimeMessageHandlerTest, ResponseCallbackGarbageCollected) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_message_port_host, ResponsePending());
-  EXPECT_CALL(mock_message_port_host, ClosePort(false))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/false,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
+  // One callback is for the response function, the second is for the promise
+  // reject function.
   EXPECT_EQ(
-      1, message_handler()->GetPendingCallbackCountForTest(script_context()));
+      2, message_handler()->GetPendingCallbackCountForTest(script_context()));
 
-  // The listener didn't retain the reply callback, so it should be garbage
-  // collected and the related pending callback should have been cleared.
+  // The listener didn't retain the reply callback and the listener didn't
+  // return a promise that could reject, so the JS callbacks should be garbage
+  // collected and the related pending callbacks for them should have been
+  // cleared as well so we don't leak them after the port closes.
   RunGarbageCollection();
   run_loop.Run();
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
@@ -827,7 +856,10 @@ TEST_F(OneTimeMessageHandlerTest, ChannelClosedIfTrueNotReturned) {
   // Dispatch the message. Since none of these listeners return `true`, the port
   // should close.
   const Message message("\"Hi\"", mojom::SerializationFormat::kJson, false);
-  EXPECT_CALL(mock_message_port_host, ClosePort(false))
+  EXPECT_CALL(mock_message_port_host,
+              ClosePort(
+                  /*close_channel=*/false,
+                  /*error_message=*/testing::Eq(std::nullopt)))
       .WillOnce(base::test::RunClosure(run_loop->QuitClosure()));
   message_handler()->DeliverMessage(script_context(), message, port_id);
   run_loop->Run();

@@ -640,8 +640,8 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 // from listeners that reject too.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnResolvesBehavior) {
-  ASSERT_TRUE(LoadExtension(
-      shared_test_data_dir().AppendASCII("messaging/on_message_promise")));
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/on_message_promise_resolve")));
 
   // Open example.com where content script is injected and runtime.sendMessage()
   // is called.
@@ -658,6 +658,25 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
+                       OnMessagePromiseReturnRejectsBehavior) {
+  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
+      "messaging/on_message_promise_reject")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script sender gets response with the expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender to receive response from "
+        "background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+}
 using PolyfillSupportMessagingApiTest = MessagingApiTest;
 
 // Tests that runtime.sendMessage() promise version behavior matches the

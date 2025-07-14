@@ -19,7 +19,7 @@ async function OnMessageListenerCallsSendResponseAsyncAfterPromise(
   return 'outer promise return';
 }
 
-function onMessageListener(message, sender, sendResponse) {
+function onMessageListener(message, unusedSender, sendResponse) {
   switch (message) {
     case 'return promise resolve value string':
       return new Promise((resolve) => {
@@ -34,8 +34,7 @@ function onMessageListener(message, sender, sendResponse) {
         resolve(new Error('promise resolve error object message'));
       });
     case 'return promise as an async function':
-      return onMessageListenerReturnsPromiseAsAsyncFunction(
-          message, sender, sendResponse);
+      return onMessageListenerReturnsPromiseAsAsyncFunction();
     case 'call sendResponse asynchronously after returned promise resolves':
       return OnMessageListenerCallsSendResponseAsyncAfterPromise(sendResponse);
     case 'return promise after synchronous sendResponse() is called':
