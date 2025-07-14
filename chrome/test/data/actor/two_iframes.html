@@ -10,6 +10,7 @@
         height: 50vh;
         top: 0;
         left: 0;
+        border: 0;
       }
       #topframe {
         z-index: 5;
@@ -21,6 +22,21 @@
       }
     </style>
   </head>
-  <iframe id="topframe" src="https://foo.com/page_with_clickable_element.html?1"></iframe>
-  <iframe id="bottomframe" src="https://foo.com/page_with_clickable_element.html?2"></iframe>
+  <iframe id="topframe"></iframe>
+  <iframe id="bottomframe"></iframe>
+  <script>
+    const topframe = document.getElementById('topframe');
+    const bottomframe = document.getElementById('bottomframe');
+
+    let topframeLoaded = false;
+    let bottomframeLoaded = false;
+
+    topframe.addEventListener('load', () => {
+        topframeLoaded = true;
+    });
+
+    bottomframe.addEventListener('load', () => {
+        bottomframeLoaded = true;
+    });
+  </script>
 </html>

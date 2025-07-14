@@ -354,6 +354,9 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
               mojo_base::ProtoWrapper& serialized_apc =
                   *result->get_tab_context()
                        ->annotated_page_data->annotated_page_content;
+              // Also update the cached apc in ExecutionEngine.
+              GetActorTask()->GetExecutionEngine()->DidObserveContext(
+                  serialized_apc);
               annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
                   serialized_apc.As<AnnotatedPageContent>().value());
               run_loop.Quit();
@@ -396,6 +399,14 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
                                                         /*is_docked=*/false);
         })));
+  }
+
+  auto NavigateFrame(ui::ElementIdentifier webcontents_id,
+                     const std::string_view frame,
+                     const GURL& url) {
+    return ExecuteJs(webcontents_id,
+                     base::StrCat({"()=>{document.getElementById('", frame,
+                                   "').src='", url.spec(), "';}"}));
   }
 
  private:
@@ -462,15 +473,22 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        ToctouCheckFailWhenCrossOriginTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
-      embedded_test_server()->GetURL("/actor/two_cross_origin_iframes.html");
+      embedded_test_server()->GetURL("/actor/two_iframes.html");
+  const GURL cross_origin_iframe_url = embedded_test_server()->GetURL(
+      "foo.com", "/actor/page_with_clickable_element.html");
   BrowserAction navigate = actor::MakeNavigate(task_url.spec());
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
+      ExecuteJs(kNewActorTabId,
+                "()=>{topframeLoaded = false; bottomframeLoaded = false;}"),
+      NavigateFrame(kNewActorTabId, "topframe", cross_origin_iframe_url),
+      NavigateFrame(kNewActorTabId, "bottomframe", cross_origin_iframe_url),
+      WaitForJsResult(kNewActorTabId,
+                      "()=>{return topframeLoaded && bottomframeLoaded;}"),
       GetPageContextFromFocusedTab(),
-      CheckExecutionEngineHasAnnotatedPageContentCache(),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
       ExecuteJs(kNewActorTabId,
                 "()=>{document.getElementById('topframe').remove();}"),
       ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions(),
@@ -481,15 +499,23 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        ToctouCheckFailWhenSameSiteTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
-      embedded_test_server()->GetURL("/actor/two_same_site_iframes.html");
+      embedded_test_server()->GetURL("/actor/two_iframes.html");
+  const GURL samesite_iframe_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
   BrowserAction navigate = actor::MakeNavigate(task_url.spec());
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
+      ExecuteJs(kNewActorTabId,
+                "()=>{topframeLoaded = false; bottomframeLoaded = false;}"),
+      NavigateFrame(kNewActorTabId, "topframe", samesite_iframe_url),
+      NavigateFrame(kNewActorTabId, "bottomframe", samesite_iframe_url),
+      WaitForJsResult(kNewActorTabId,
+                      "()=>{return topframeLoaded && bottomframeLoaded;}"),
       GetPageContextFromFocusedTab(),
-      CheckExecutionEngineHasAnnotatedPageContentCache(),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
       ExecuteJs(kNewActorTabId,
                 "()=>{document.getElementById('topframe').remove();}"),
       ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions(),
