@@ -20,22 +20,32 @@ class PDFiumEngine;
 // selections, highlights, and carets.
 class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
  protected:
+  // Compares the visible page contents in the plugin with the expected PNG.
+  // The plugin size of `engine` must have a non-empty intersect with the page
+  // contents rect of page `page_index`, i.e. the page must be visible,
+  // otherwise the test will fail.
   void DrawSelectionAndCompare(PDFiumEngine& engine,
                                int page_index,
                                std::string_view expected_png_filename);
 
+  // Same as `DrawSelectionAndCompare()`, but has different expected PNGs for
+  // specific platforms.
   void DrawSelectionAndCompareWithPlatformExpectations(
       PDFiumEngine& engine,
       int page_index,
       std::string_view expected_png_filename);
 
+  // Same as `DrawSelectionAndCompare()`, but for text highlights.
   void DrawHighlightsAndCompare(PDFiumEngine& engine,
                                 int page_index,
                                 std::string_view expected_png_filename);
 
   // Draws the caret, but also attempts to draw the selection, even though they
-  // are mutually exclusive. This allows tests to verify that only the caret is
-  // visible.
+  // are mutually exclusive. Then compares the visible page contents in the
+  // plugin with the expected PNG. This allows tests to verify that only the
+  // caret is visible. The plugin size of `engine` must have a non-empty
+  // intersect with the page contents rect of page `page_index`, i.e. the page
+  // must be visible, otherwise the test will fail.
   void DrawCaretAndCompareWithPlatformExpectations(
       PDFiumEngine& engine,
       int page_index,

@@ -80,24 +80,25 @@ void PDFiumDrawSelectionTestBase::DrawAndCompareImpl(
     std::string_view expected_png_filename,
     bool use_platform_suffix,
     bool draw_caret) {
-  // Since the GetPageContentsRect() return value may have a non-zero origin,
-  // create a rect based solely on its size to draw the selections relative to
-  // the origin of the contents rect.
-  const auto rect = gfx::Rect(engine.GetPageContentsRect(page_index).size());
-  ASSERT_TRUE(!rect.IsEmpty());
+  const gfx::Size plugin_size = engine.plugin_size();
 
-  SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(rect.size())));
-  SkCanvas canvas(bitmap);
+  gfx::Rect visible_page_rect = engine.GetPageContentsRect(page_index);
+  visible_page_rect.Intersect(gfx::Rect(plugin_size));
+  ASSERT_FALSE(visible_page_rect.IsEmpty());
+
+  SkBitmap plugin_bitmap;
+  plugin_bitmap.allocPixels(
+      SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(plugin_size)));
+  SkCanvas canvas(plugin_bitmap);
   canvas.clear(SK_ColorWHITE);
 
-  const size_t progressive_index = engine.StartPaint(page_index, rect);
+  const size_t progressive_index =
+      engine.StartPaint(page_index, visible_page_rect);
   CHECK_EQ(0u, progressive_index);
   if (draw_caret) {
-    engine.DrawCaret(progressive_index, bitmap);
+    engine.DrawCaret(progressive_index, plugin_bitmap);
   }
-  engine.DrawSelections(progressive_index, bitmap);
+  engine.DrawSelections(progressive_index, plugin_bitmap);
   // Effectively the same as how PDFiumEngine::FinishPaint() cleans up
   // `progressive_paints_`.
   engine.progressive_paints_.clear();
@@ -105,7 +106,10 @@ void PDFiumDrawSelectionTestBase::DrawAndCompareImpl(
   base::FilePath expectation_path = GetReferenceFilePath(
       sub_directory, expected_png_filename, use_platform_suffix);
 
-  EXPECT_TRUE(MatchesPngFile(bitmap.asImage().get(), expectation_path));
+  SkBitmap page_bitmap;
+  plugin_bitmap.extractSubset(&page_bitmap,
+                              gfx::RectToSkIRect(visible_page_rect));
+  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expectation_path));
 }
 
 }  // namespace chrome_pdf

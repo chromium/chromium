@@ -2849,7 +2849,7 @@ class PDFiumEngineHighlightTextFragmentTest
         InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
     // Update the plugin size so that all the text is visible by
     // `HighlightChangeInvalidator`.
-    engine->PluginSizeUpdated({816, 1056});
+    engine->PluginSizeUpdated({821, 1059});
     return engine;
   }
 };
