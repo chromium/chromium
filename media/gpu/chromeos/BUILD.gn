@@ -271,6 +271,10 @@ source_set("unit_tests") {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("perf_test_utils") {
@@ -286,6 +290,10 @@ source_set("perf_test_utils") {
     "perf_test_util.cc",
     "perf_test_util.h",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("image_processor_test") {
@@ -317,6 +325,10 @@ test("image_processor_test") {
   if (enable_vulkan) {
     deps += [ "//gpu/command_buffer/service:gles2" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (use_v4l2_codec) {

@@ -129,6 +129,10 @@ source_set("v4l2") {
       "//media/gpu:video_frame_mapper_common",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # The v4l2 status functionality is in its own source set so that it can be
@@ -204,6 +208,10 @@ executable("v4l2_stateless_decoder") {
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("v4l2_unittest") {
@@ -219,6 +227,10 @@ test("v4l2_unittest") {
     "//testing/gtest",
     "//ui/gfx/linux:gbm",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (current_cpu == "arm" || current_cpu == "arm64") {

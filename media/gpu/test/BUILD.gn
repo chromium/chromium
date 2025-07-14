@@ -42,6 +42,10 @@ if (enable_av1_decoder &&
     if (use_v4l2_codec) {
       deps += [ "//media/gpu/v4l2" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   test("video_decode_accelerator_perf_tests") {
@@ -60,6 +64,10 @@ if (enable_av1_decoder &&
     if (use_v4l2_codec || use_vaapi) {
       deps += [ "//sandbox/linux:sandbox_services" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   test("video_encode_accelerator_tests") {
@@ -132,6 +140,10 @@ source_set("helpers") {
     "//third_party/libyuv",
   ]
   public_deps = [ "//testing/gtest" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("frame_validator") {
@@ -148,6 +160,10 @@ source_set("frame_validator") {
     "//media/gpu",
     "//testing/gmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("frame_file_writer") {
