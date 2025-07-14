@@ -2849,7 +2849,6 @@ crbug.com/431031177 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/can
 crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-get-different-service-after-reconnection-with-uuid.https.window.html [ Pass Timeout ]
 crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
-crbug.com/431034517 external/wpt/css/css-anchor-position/anchor-center-overflow-001.html [ Failure ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
 crbug.com/431030816 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-rtl.html [ Failure ]
 crbug.com/431030816 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vlr.html [ Failure ]

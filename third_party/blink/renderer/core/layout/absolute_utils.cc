@@ -326,6 +326,7 @@ void ComputeInsets(const LayoutUnit available_size,
                    LayoutUnit* inset_start_out,
                    LayoutUnit* inset_end_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
+  const LayoutUnit margin_box_size = margin_start + size + margin_end;
 
   LayoutUnit imcb_start = original_imcb_start;
   LayoutUnit imcb_end = original_imcb_end;
@@ -348,7 +349,7 @@ void ComputeInsets(const LayoutUnit available_size,
   // "justify-self: safe start", clamp the free-space to zero and bias towards
   // the safe edge (may be end if RTL for example).
   LayoutUnit free_space =
-      available_size - imcb_start - imcb_end - margin_start - size - margin_end;
+      available_size - imcb_start - imcb_end - margin_box_size;
   InsetBias bias = imcb_inset_bias;
   bool apply_safe_bias = safe_inset_bias && free_space < LayoutUnit();
   if (apply_safe_bias) {
@@ -369,18 +370,28 @@ void ComputeInsets(const LayoutUnit available_size,
   // containing-block. It will prioritize the edge specified by
   // `default_inset_bias`.
   if (default_inset_bias && !apply_safe_bias) {
+    // If the margin-box fits within the IMCB, use that for the default
+    // alignment overflow - otherwise use the union of the IMCB, and the
+    // original containing-block.
+    const bool use_imcb = margin_box_size <= available_size -
+                                                 original_imcb_start -
+                                                 original_imcb_end;
+
     // If the insets shifted the IMCB outside the containing-block, we consider
     // that to be the safe edge.
     auto adjust_start = [&]() {
       const LayoutUnit safe_start =
-          std::min(original_imcb_start, -container_start);
+          use_imcb ? original_imcb_start
+                   : std::min(original_imcb_start, -container_start);
       if (imcb_start < safe_start) {
         imcb_end += (imcb_start - safe_start);
         imcb_start = safe_start;
       }
     };
     auto adjust_end = [&]() {
-      const LayoutUnit safe_end = std::min(original_imcb_end, -container_end);
+      const LayoutUnit safe_end =
+          use_imcb ? original_imcb_end
+                   : std::min(original_imcb_end, -container_end);
       if (imcb_end < safe_end) {
         imcb_start += (imcb_end - safe_end);
         imcb_end = safe_end;
