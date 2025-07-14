@@ -31,8 +31,7 @@ class CORE_EXPORT TextAutoSpace {
     virtual void DidApply(base::span<const OffsetWithSpacing>) = 0;
   };
 
-  explicit TextAutoSpace(const ComputedStyle& block_style,
-                         const InlineItemsData& data);
+  explicit TextAutoSpace(const InlineItemsData& data);
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
   // calling `Apply()`.
@@ -58,15 +57,18 @@ class CORE_EXPORT TextAutoSpace {
   Callback* callback_for_testing_ = nullptr;
 };
 
-inline TextAutoSpace::TextAutoSpace(const ComputedStyle& block_style,
-                                    const InlineItemsData& data) {
+inline TextAutoSpace::TextAutoSpace(const InlineItemsData& data) {
   if (!RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled()) {
     return;
   }
 
   if (data.text_content.Is8Bit() ||
-      // Skip checking the styles of `InlineItem`s for the performance.
-      block_style.TextAutospace() == ETextAutospace::kNoAutospace ||
+      std::ranges::none_of(data.items,
+                           [](const auto& item) {
+                             return item->Type() == InlineItem::kText &&
+                                    item->Style()->TextAutospace() !=
+                                        ETextAutospace::kNoAutospace;
+                           }) ||
       data.text_content.IsAllSpecialCharacters<[](UChar ch) {
         return !Character::MayNeedEastAsianSpacing(ch);
       }>()) {
