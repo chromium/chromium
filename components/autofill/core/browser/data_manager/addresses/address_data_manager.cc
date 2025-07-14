@@ -807,9 +807,9 @@ void AddressDataManager::RemoveProfileImpl(const std::string& guid,
     return;
   }
 
-  // Find the profile to remove.
-  // TODO(crbug.com/40258814): This shouldn't be necessary. Providing a `guid`
-  // to the `AutofillProfileChange()` should suffice for removals.
+  // Find the profile to remove. Even for removals the profile is a necessary
+  // part of the AutofillProfileChange, so downstream code an distinguish by
+  // RecordType.
   const AutofillProfile* profile =
       ProfileChangesAreOngoing(guid)
           ? &ongoing_profile_changes_[guid].back().first.data_model()
