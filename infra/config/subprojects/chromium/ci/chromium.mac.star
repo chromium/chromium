@@ -368,8 +368,6 @@ ci.thin_tester(
             "chromium_mac_rel_isolated_scripts",
         ],
         mixins = [
-            # Only run selected test suites on CQ. https://crbug.com/1234525.
-            "ci_only",
             "mac_12_arm64",
         ],
         per_test_modifications = {
