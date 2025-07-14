@@ -28,6 +28,7 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
               (const media::VideoFrame& src_frame,
                media::VideoFrame& dest_frame));
 
+  MOCK_METHOD(void, RequestRasterContextProvider, ());
   MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
               GetRasterContextProvider,
               ());
