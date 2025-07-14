@@ -18,6 +18,13 @@ BASE_FEATURE(kIgnoreDiscardAttemptMarker,
              "IgnoreDiscardAttemptMarker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not intended for launch.
+// This feature can be used during testing to ensure realistic priority
+// ordering of tabs even when devtools is connected.
+BASE_FEATURE(kAllowDevtoolsConnectedDiscard,
+             "AllowDevtoolsConnectedDiscard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // NodeAttachedData used to indicate that there's already been an attempt to
 // discard a PageNode.
 class DiscardAttemptMarker
@@ -303,7 +310,8 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
     // Don't discard pages with devtools attached, because when it's restored
     // the devtools window won't come back. The user may be monitoring the page
     // in the background with devtools.
-    if (live_state_data->IsDevToolsOpen()) {
+    if (live_state_data->IsDevToolsOpen() &&
+        !base::FeatureList::IsEnabled(kAllowDevtoolsConnectedDiscard)) {
       add_reason_and_update_result(CannotDiscardReason::kDevToolsOpen,
                                    CanDiscardResult::kProtected);
     }
