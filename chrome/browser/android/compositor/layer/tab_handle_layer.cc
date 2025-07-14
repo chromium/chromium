@@ -55,7 +55,8 @@ void TabHandleLayer::SetProperties(
     ui::NinePatchResource* keyboard_focus_ring_drawable,
     int keyboard_focus_ring_offset,
     int stroke_width,
-    float folio_foot_length) {
+    float folio_foot_length,
+    float width_to_hide_tab_title) {
   if (foreground != foreground_ || opacity != opacity_) {
     foreground_ = foreground;
     opacity_ = opacity;
@@ -189,9 +190,12 @@ void TabHandleLayer::SetProperties(
     // 8dp top padding for folio.
     title_y = std::min(content_offset_y, title_y_offset_mid);
 
+    // Hide tab title text when it reached threshold.
+    title_layer->SetShouldHideTitleText(width <= width_to_hide_tab_title);
+
     int title_x = is_rtl ? padding_left + close_width : padding_left;
-    title_layer->setBounds(
-        gfx::Size(width - padding_right - padding_left - close_width, height));
+    int title_width = width - padding_left - padding_right - close_width;
+    title_layer->setBounds(gfx::Size(title_width, height));
     title_layer->layer()->SetPosition(gfx::PointF(title_x, title_y));
     if (is_loading) {
       title_layer->SetIsLoading(true);

@@ -154,6 +154,7 @@ class TabStripSceneLayer : public SceneLayer {
                         jfloat top_margin,
                         jfloat close_button_padding,
                         jfloat close_button_alpha,
+                        jfloat width_to_hide_tab_title,
                         jboolean is_start_divider_visible,
                         jboolean is_end_divider_visible,
                         jboolean is_loading,

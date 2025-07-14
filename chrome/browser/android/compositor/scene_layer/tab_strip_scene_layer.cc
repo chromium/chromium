@@ -466,6 +466,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     jfloat top_margin,
     jfloat close_button_padding,
     jfloat close_button_alpha,
+    jfloat width_to_hide_tab_title,
     jboolean is_start_divider_visible,
     jboolean is_end_divider_visible,
     jboolean is_loading,
@@ -521,7 +522,7 @@ void TabStripSceneLayer::PutStripTabLayer(
       is_start_divider_visible, is_end_divider_visible, is_loading,
       spinner_rotation, opacity, is_keyboard_focused,
       keyboard_focus_ring_drawable, keyboard_focus_ring_offset, stroke_width,
-      folio_foot_length);
+      folio_foot_length, width_to_hide_tab_title);
 }
 
 void TabStripSceneLayer::PutGroupIndicatorLayer(

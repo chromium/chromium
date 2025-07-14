@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
@@ -40,7 +41,7 @@ public class StripLayoutUtils {
     // closeButtonEndPadding(10) + tabContainerEndPadding(16) + groupTitleStartMargin(13)
     //         - overlap(28-16) =
     public static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
-    static final float MIN_TAB_WIDTH_DP = 108.f;
+    public static final float MIN_TAB_WIDTH_DP = shouldApplyMoreDensity() ? 76.f : 108.f;
     public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     public static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
@@ -419,5 +420,10 @@ public class StripLayoutUtils {
     public static boolean skipTabEdgePositionCalculation(StripLayoutTab tab) {
         return (tab.isDying() && !ChromeFeatureList.sTabletTabStripAnimation.isEnabled())
                 || tab.isDraggedOffStrip();
+    }
+
+    public static boolean shouldApplyMoreDensity() {
+        return ChromeFeatureList.sTabStripDensityChangeAndroid.isEnabled()
+                && DeviceInfo.isDesktop();
     }
 }

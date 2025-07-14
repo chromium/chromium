@@ -78,6 +78,10 @@ void DecorationTitle::setOpacity(float opacity) {
   layer_fade_->SetOpacity(opacity);
 }
 
+void DecorationTitle::SetShouldHideTitleText(bool should_hide_title_text) {
+  should_hide_title_text_ = should_hide_title_text;
+}
+
 void DecorationTitle::setBounds(const gfx::Size& bounds) {
   setBounds(bounds, 0);
 }
@@ -90,6 +94,12 @@ void DecorationTitle::setBounds(const gfx::Size& bounds, int start_space) {
     return;
   }
   layer_->SetHideLayerAndSubtree(false);
+
+  if (should_hide_title_text_) {
+    layer_opaque_->SetIsDrawable(false);
+    layer_fade_->SetIsDrawable(false);
+    return;
+  }
 
   // Current implementation assumes there is always enough space
   // to draw favicon and title fade.

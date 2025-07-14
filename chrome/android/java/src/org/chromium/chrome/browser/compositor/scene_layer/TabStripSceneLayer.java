@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -238,6 +239,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripTabs,
             int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
+        final float widthToHideTabTitle =
+                StripLayoutUtils.shouldApplyMoreDensity() ? StripLayoutUtils.MIN_TAB_WIDTH_DP : 0.f;
 
         // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
@@ -284,6 +287,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getTopMargin() * mDpToPx,
                             st.getCloseButtonPadding() * mDpToPx,
                             st.getCloseButton().getOpacity(),
+                            widthToHideTabTitle * mDpToPx,
                             st.isStartDividerVisible(),
                             st.isEndDividerVisible(),
                             st.isLoading(),
@@ -458,6 +462,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float topMargin,
                 float closeButtonPadding,
                 float closeButtonAlpha,
+                float widthToHideTabTitle,
                 boolean isStartDividerVisible,
                 boolean isEndDividerVisible,
                 boolean isLoading,

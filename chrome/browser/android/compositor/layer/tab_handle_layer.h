@@ -62,7 +62,8 @@ class TabHandleLayer : public Layer {
                      ui::NinePatchResource* keyboard_focus_ring_drawable,
                      int keyboard_focus_ring_offset,
                      int stroke_width,
-                     float folio_foot_length);
+                     float folio_foot_length,
+                     float width_to_hide_tab_title);
   bool foreground();
   scoped_refptr<cc::slim::Layer> layer() override;
 

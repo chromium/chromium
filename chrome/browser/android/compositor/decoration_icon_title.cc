@@ -97,6 +97,10 @@ void DecorationIconTitle::setOpacity(float opacity) {
   layer_icon_->SetOpacity(opacity);
 }
 
+void DecorationIconTitle::SetShouldHideTitleText(bool should_hide_title_text) {
+  DecorationTitle::SetShouldHideTitleText(should_hide_title_text);
+}
+
 void DecorationIconTitle::setBounds(const gfx::Size& bounds) {
   // Place icon.
   int icon_space = icon_size_.width() + icon_start_padding_ + icon_end_padding_;

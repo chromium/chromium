@@ -39,6 +39,7 @@ class DecorationIconTitle : public DecorationTitle {
               bool is_rtl);
   void SetIconResourceId(int icon_resource_id);
   void SetUIResourceIds() override;
+  void SetShouldHideTitleText(bool should_hide_title_text);
   void setBounds(const gfx::Size& bounds) override;
   void setOpacity(float opacity) override;
   const gfx::Size& size() { return size_; }
