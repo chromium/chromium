@@ -1995,6 +1995,10 @@ BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoReferrerForPreloadFromSubresource,
+             "NoReferrerForPreloadFromSubresource",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2858,10 +2862,6 @@ BASE_FEATURE(kWorkerThreadSequentialShutdown,
 // WorkerThread termination respects the current thread termination request.
 BASE_FEATURE(kWorkerThreadRespectTermRequest,
              "WorkerThreadRespectTermRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNoReferrerForPreloadFromSubresource,
-             "NoReferrerForPreloadFromSubresource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When adding new features or constants for features, please keep the features
