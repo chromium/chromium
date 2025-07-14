@@ -216,8 +216,6 @@ class ManualHangWatcher : public HangWatcher {
 
 class HangWatcherTest : public testing::Test {
  protected:
-  base::test::ScopedFeatureList feature_list_{base::kEnableHangWatcher};
-
   // Used exclusively for MOCK_TIME. No tasks will be run on the environment.
   // Single threaded to avoid ThreadPool WorkerThreads registering.
   test::SingleThreadTaskEnvironment task_environment_{
@@ -231,25 +229,26 @@ INSTANTIATE_TEST_SUITE_P(AllEnabledProcessTypes,
                                 HangWatcher::ProcessType::kRendererProcess,
                                 HangWatcher::ProcessType::kUtilityProcess));
 TEST_P(HangWatcherEnabledTest, HangWatcherEnabled) {
-  ScopedFeatureList feature_list(base::kEnableHangWatcher);
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(GetParam());
   EXPECT_TRUE(hang_watcher.IsEnabled());
 }
 
 TEST(HangWatcherGpuEnabledTest, HangWatcherDisabledOnGpuProcessByDefault) {
-  ScopedFeatureList feature_list_(base::kEnableHangWatcher);
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   EXPECT_FALSE(hang_watcher.IsEnabled());
 }
 
 TEST(HangWatcherGpuEnabledTest, HangWatcherEnabledOnGpuProcessViaFeature) {
-  ScopedFeatureList feature_list_(base::kEnableHangWatcher);
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   EXPECT_TRUE(hang_watcher.IsEnabled());
 }
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -270,6 +269,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 }
 
 TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -295,6 +295,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 // TODO(crbug.com/385732561): Test is flaky.
 TEST_F(HangWatcherTest,
        DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -329,6 +330,7 @@ TEST_F(HangWatcherTest,
 
 TEST_F(HangWatcherTest,
        NewSeparateWatchHangsInScopeAfterInvalidationDetectsHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -357,6 +359,7 @@ TEST_F(HangWatcherTest,
 // Test that invalidating expectations from inner WatchHangsInScope will also
 // prevent hang detection in outer scopes.
 TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -384,6 +387,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
 }
 
 TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
@@ -414,6 +418,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
 }
 
 TEST_F(HangWatcherTest, NestedScopes) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Create a state object for the test thread since this test is single
@@ -458,6 +463,7 @@ TEST_F(HangWatcherTest, NestedScopes) {
 // Checks that histograms are recorded on the right threads for the browser
 // process.
 TEST_F(HangWatcherTest, HistogramsLoggedOnBrowserProcessHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   base::HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -577,6 +583,7 @@ TEST_P(HangWatcherAnyCriticalThreadTests, AnyCriticalThreadHung) {
 // Checks that only a single Any/AnyCritical histogram is recorded even if
 // multiple threads hang.
 TEST_F(HangWatcherTest, AnyRecordedOnlyOnceEvenIfMultipleThreadsHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
   base::HistogramTester histogram_tester;
 
@@ -597,6 +604,7 @@ TEST_F(HangWatcherTest, AnyRecordedOnlyOnceEvenIfMultipleThreadsHang) {
 
 // Checks that histograms with `false` buckets are recorded if there's no hang.
 TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   base::HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -623,6 +631,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
 
 // Histograms should be recorded on each monitoring.
 TEST_F(HangWatcherTest, HistogramsLoggedOnEachHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   base::HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -657,6 +666,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnEachHang) {
 
 // Checks that the browser process emits Shutdown histograms on shutdown.
 TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   base::HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -811,6 +821,7 @@ TEST_P(HangWatcherLogLevelTest, CrashLogLevels) {
 
 // Test that hangs get recorded for the browser process.
 TEST_F(HangWatcherTest, Hang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
@@ -856,6 +867,7 @@ TEST_F(HangWatcherTest, GpuProcessHangReportingCanBeEnabled) {
 }
 
 TEST_F(HangWatcherTest, HangAlreadyRecorded) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
@@ -873,6 +885,7 @@ TEST_F(HangWatcherTest, HangAlreadyRecorded) {
 }
 
 TEST_F(HangWatcherTest, NoHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
