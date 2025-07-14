@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/feature_list.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -26,6 +28,13 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
+
+using ::actor::ActorKeyedService;
+using ::actor::ActorTask;
+using ::actor::BuildToolRequest;
+using ::actor::BuildToolRequestResult;
+using ::actor::TaskId;
+using ::actor::ToolRequest;
 
 namespace {
 
@@ -125,6 +134,44 @@ void GlicActorController::Act(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
+  // TODO(crbug.com/431239173): It's not clear what should happen if the current
+  // task has no observed tabs in its set yet, and the incoming actions will not
+  // add one (e.g. first action in a new task is Wait). This workaround
+  // preserves existing behavior, we'll use the currently focused tab. Long term
+  // the API should have support to deal with this case (Should we return an
+  // empty observation? Should we return an error?).
+  auto* actor_service = actor::ActorKeyedService::Get(profile_);
+  actor::ActorTask* task =
+      action.has_task_id()
+          ? actor_service->GetTask(actor::TaskId(action.task_id()))
+          : nullptr;
+  if (task && task->GetTabs().empty()) {
+    actor::BuildToolRequestResult result =
+        actor::BuildToolRequest(action, /*deprecated_fallback_tab=*/nullptr);
+    if (result.has_value()) {
+      bool will_observe_tab = std::ranges::any_of(
+          result.value(), [](const std::unique_ptr<ToolRequest>& request) {
+            return request->AddsTabToObservationSet();
+          });
+
+      if (!will_observe_tab) {
+        actor_service->GetJournal().Log(
+            /*url=*/GURL(), task->id(), "[Warning] No observable tab",
+            "Action will end without an observable tab, adding active tab.");
+
+        // Get the most recently active browser for this profile.
+        Browser* browser = chrome::FindTabbedBrowser(
+            profile_, /*match_original_profiles=*/false);
+        // If no browser exists create one.
+        if (!browser) {
+          browser = Browser::Create(
+              Browser::CreateParams(profile_, /*user_gesture=*/false));
+        }
+        task->AddToTabSet(browser->GetActiveTabInterface()->GetHandle());
+      }
+    }
+  }
+
   // A task is in the process of being started. This means Act() was called
   // twice in a row without waiting for the first one to finish.
   if (starting_task_) {
@@ -273,9 +320,16 @@ void GlicActorController::OnActionFinished(
       actor::ActorKeyedService::Get(profile_)->GetTask(task_id);
   CHECK(task);
 
-  tabs::TabInterface* tab = task->GetTabForObservation();
   actor::AggregatedJournal& journal =
       actor::ActorKeyedService::Get(profile_)->GetJournal();
+  if (task->GetTabs().size() != 1) {
+    journal.Log(GURL::EmptyGURL(), task_id,
+                "[Warning] Unexpected number of tabs",
+                absl::StrFormat("Expect 1 observable tab but have [%d]",
+                                task->GetTabs().size()));
+  }
+
+  tabs::TabInterface* tab = task->GetTabForObservation();
 
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.

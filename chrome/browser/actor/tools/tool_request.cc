@@ -28,6 +28,10 @@ bool ToolRequest::IsTabScoped() const {
   return GetTabHandle() != tabs::TabHandle::Null();
 }
 
+bool ToolRequest::AddsTabToObservationSet() const {
+  return IsTabScoped();
+}
+
 GURL ToolRequest::GetURLForJournal() const {
   return GURL::EmptyGURL();
 }

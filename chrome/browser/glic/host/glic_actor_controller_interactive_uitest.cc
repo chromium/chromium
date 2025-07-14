@@ -149,6 +149,18 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
             "ExecuteAction"));
   }
 
+  auto CreateTask() {
+    return Steps(InAnyContext(WithElement(
+        kGlicContentsElementId, [this](ui::TrackedElement* el) mutable {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          const int result =
+              content::EvalJs(glic_contents, "client.browser.createTask()")
+                  .ExtractInt();
+          task_id_ = actor::TaskId(result);
+        })));
+  }
+
   // Overload of the above method that allows passing a BrowserAction directly,
   // if one can be constructed ahead of time i.e. does not depend on an
   // observation.
@@ -793,6 +805,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StartTaskWithDevtoolsOpen) {
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   OpenDevToolsWindow(kGlicContentsElementId),
                   StartActorTaskInNewTab(task_url, kNewActorTabId));
+}
+
+// Test that nothing breaks if the first action isn't tab scoped.
+// crbug.com/431239173.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, FirstActionIsntTabScoped) {
+  // Wait is an example of an action that isn't tab scoped.
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(), CreateTask(),
+      ExecuteAction(actor::MakeWait(), AnnotationsOnlyContextOptions()));
 }
 
 class GlicActorControllerWithActorDisabledUiTest

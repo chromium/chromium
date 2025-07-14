@@ -20,6 +20,10 @@ CreateTabToolRequest::CreateTabToolRequest(int32_t window_id,
 
 CreateTabToolRequest::~CreateTabToolRequest() = default;
 
+bool CreateTabToolRequest::AddsTabToObservationSet() const {
+  return true;
+}
+
 ToolRequest::CreateToolResult CreateTabToolRequest::CreateTool(
     TaskId task_id,
     AggregatedJournal& journal) const {

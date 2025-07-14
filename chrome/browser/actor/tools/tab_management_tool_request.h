@@ -19,6 +19,8 @@ class CreateTabToolRequest : public ToolRequest {
   CreateTabToolRequest(int32_t window_id, WindowOpenDisposition disposition);
   ~CreateTabToolRequest() override;
 
+  bool AddsTabToObservationSet() const override;
+
   CreateToolResult CreateTool(TaskId task_id,
                               AggregatedJournal& journal) const override;
 
