@@ -210,6 +210,8 @@ blink_core_sources("animation") {
     "interpolable_filter.h",
     "interpolable_font_palette.cc",
     "interpolable_font_palette.h",
+    "interpolable_gap_data_repeater.cc",
+    "interpolable_gap_data_repeater.h",
     "interpolable_grid_length.cc",
     "interpolable_grid_length.h",
     "interpolable_grid_track_list.cc",

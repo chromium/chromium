@@ -13,6 +13,12 @@
 
 namespace blink {
 
+// This class handles interpolation for column-rule-width and row-rule-width.
+// Internally, these are represented as `GapDataList<int>` which are basically
+// a list of lengths, or a list of repeaters of lengths, or both. As such,
+// for interpolation purposes, we deal with this by interpolating an
+// InterpolableList which contains InterpolableLength or
+// InterpolableGapDataRepeater objects.
 class CORE_EXPORT CSSGapLengthListInterpolationType
     : public CSSInterpolationType {
  public:
@@ -38,9 +44,8 @@ class CORE_EXPORT CSSGapLengthListInterpolationType
       const NonInterpolableValue* non_interpolable_value,
       StyleResolverState& state) const final;
 
-  static void GetList(const CSSProperty& property,
-                      const ComputedStyle& style,
-                      Vector<int>& result);
+  static GapDataList<int> GetList(const CSSProperty& property,
+                                  const ComputedStyle& style);
 
   void GetInitialLengthList(const CSSProperty& property,
                             const ComputedStyle& style,

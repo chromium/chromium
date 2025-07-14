@@ -54,6 +54,12 @@ class CORE_EXPORT InterpolableValue
   virtual bool IsGridTrackSize() const { return false; }
   virtual bool IsFontPalette() const { return false; }
   virtual bool IsDynamicRangeLimit() const { return false; }
+  virtual bool IsGapLengthRepeater() const { return false; }
+  virtual bool IsGapColorRepeater() const { return false; }
+
+  bool IsGapDataRepeater() const {
+    return IsGapLengthRepeater() || IsGapColorRepeater();
+  }
 
   // TODO(alancutter): Remove Equals().
   virtual bool Equals(const InterpolableValue&) const = 0;

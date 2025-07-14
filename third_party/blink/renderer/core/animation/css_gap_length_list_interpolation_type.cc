@@ -5,28 +5,92 @@
 #include "third_party/blink/renderer/core/animation/css_gap_length_list_interpolation_type.h"
 
 #include "third_party/blink/renderer/core/animation/css_length_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_gap_data_repeater.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/length_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 
 namespace blink {
 
+namespace {
+
+InterpolationValue GetInterpolationValueFromGapData(
+    const GapData<int>& data,
+    const CSSProperty& property,
+    float zoom,
+    const CSSValue* value = nullptr) {
+  if (data.IsRepeaterData()) {
+    return InterpolationValue(InterpolableGapLengthRepeater::Create(
+        data.GetValueRepeater(), property, zoom));
+  }
+
+  if (value) {
+    if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+      // For the case where the value is "thin", "medium", or "thick".
+      double pixels;
+      if (LengthPropertyFunctions::GetPixelsForKeyword(
+              property, identifier_value->GetValueID(), pixels)) {
+        return InterpolationValue(InterpolableLength::CreatePixels(pixels));
+      }
+
+      return InterpolationValue(nullptr);
+    }
+    return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(*value));
+  }
+  return InterpolationValue(InterpolableLength::MaybeConvertLength(
+      Length(data.GetValue(), Length::Type::kFixed), property, zoom,
+      /*interpolate_size=*/std::nullopt));
+}
+
+bool IsCompatible(const InterpolableValue& a, const InterpolableValue& b) {
+  if (a.IsGapLengthRepeater() != b.IsGapLengthRepeater()) {
+    return false;
+  }
+  if (!a.IsGapLengthRepeater()) {
+    return true;  // lengths are compatible.
+  }
+  return To<InterpolableGapLengthRepeater>(a).IsCompatibleWith(
+      To<InterpolableGapLengthRepeater>(b));
+}
+
+}  // namespace
+
+class UnderlyingGapDataListChecker final
+    : public CSSInterpolationType::CSSConversionChecker {
+ public:
+  explicit UnderlyingGapDataListChecker(const InterpolationValue& underlying)
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
+  ~UnderlyingGapDataListChecker() final = default;
+
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
+
+ private:
+  bool IsValid(const StyleResolverState&,
+               const InterpolationValue& underlying) const final {
+    return To<InterpolableList>(*underlying_->underlying().interpolable_value)
+        .Equals(To<InterpolableList>(*underlying.interpolable_value));
+  }
+
+  const Member<const InterpolationValueGCed> underlying_;
+};
+
 InterpolationValue
 CSSGapLengthListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  auto list = GetProperty(style);
-  const auto& values = list.GetGapDataList();
+  GapDataList<int> list = GetProperty(style);
+  const GapDataList<int>::GapDataVector& values = list.GetGapDataList();
+
   return ListInterpolationFunctions::CreateList(
       values.size(), [this, &values, &style](wtf_size_t i) {
-        if (values[i].IsRepeaterData()) {
-          return InterpolationValue(nullptr);
-        }
-        return InterpolationValue(InterpolableLength::MaybeConvertLength(
-            Length(values[i].GetValue(), Length::Type::kFixed), CssProperty(),
-            style.EffectiveZoom(), std::nullopt));
+        return GetInterpolationValueFromGapData(values[i], CssProperty(),
+                                                style.EffectiveZoom());
       });
 }
 
@@ -37,12 +101,18 @@ void CSSGapLengthListInterpolationType::Composite(
     double interpolation_fraction) const {
   ListInterpolationFunctions::Composite(
       owner, underlying_fraction, this, value,
-      ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
+      ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       ListInterpolationFunctions::InterpolableValuesKnownCompatible,
       ListInterpolationFunctions::VerifyNoNonInterpolableValues,
-      [](UnderlyingValue& underlying_value, double fraction,
-         const InterpolableValue& interpolable_value,
-         const NonInterpolableValue*) {
+      [this, &owner, &value](UnderlyingValue& underlying_value, double fraction,
+                             const InterpolableValue& interpolable_value,
+                             const NonInterpolableValue*) {
+        if (!IsCompatible(underlying_value.MutableInterpolableValue(),
+                          interpolable_value)) {
+          owner.Set(this, value);
+          return;
+        }
+
         underlying_value.MutableInterpolableValue().ScaleAndAdd(
             fraction, interpolable_value);
       });
@@ -58,47 +128,48 @@ void CSSGapLengthListInterpolationType::ApplyStandardPropertyValue(
   const auto& non_interpolable_list =
       To<NonInterpolableList>(*non_interpolable_value);
   DCHECK_EQ(non_interpolable_list.length(), length);
-  Vector<Length> result(length);
+  GapDataList<int> result(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    result[i] =
+    if (auto* repeater = DynamicTo<InterpolableGapLengthRepeater>(
+            interpolable_list.Get(i))) {
+      result.AddGapData(repeater->CreateGapData(
+          state.CssToLengthConversionData(),
+          LengthListPropertyFunctions::GetValueRange(CssProperty())));
+      continue;
+    }
+
+    result.AddGapData(
         To<InterpolableLength>(*interpolable_list.Get(i))
             .CreateLength(
                 state.CssToLengthConversionData(),
-                LengthListPropertyFunctions::GetValueRange(CssProperty()));
+                LengthListPropertyFunctions::GetValueRange(CssProperty())));
   }
-  if (property_id_ == CSSPropertyID::kColumnRuleWidth) {
-    state.StyleBuilder().SetColumnRuleWidth(GapDataList<int>(result));
+
+  if (CssProperty().PropertyID() == CSSPropertyID::kColumnRuleWidth) {
+    state.StyleBuilder().SetColumnRuleWidth(result);
   } else {
     CHECK_EQ(property_id_, CSSPropertyID::kRowRuleWidth);
-    state.StyleBuilder().SetRowRuleWidth(GapDataList<int>(result));
+    state.StyleBuilder().SetRowRuleWidth(result);
   }
 }
 
-void CSSGapLengthListInterpolationType::GetList(const CSSProperty& property,
-                                                const ComputedStyle& style,
-                                                Vector<int>& result) {
-  auto gap_list = property.PropertyID() == CSSPropertyID::kColumnRuleWidth
-                      ? style.ColumnRuleWidth()
-                      : style.RowRuleWidth();
-  for (const auto& gap_data : gap_list.GetGapDataList()) {
-    result.push_back(gap_data.GetValue());
-  }
+GapDataList<int> CSSGapLengthListInterpolationType::GetList(
+    const CSSProperty& property,
+    const ComputedStyle& style) {
+  CHECK(property.PropertyID() == CSSPropertyID::kColumnRuleWidth ||
+        property.PropertyID() == CSSPropertyID::kRowRuleWidth);
+  return property.PropertyID() == CSSPropertyID::kColumnRuleWidth
+             ? style.ColumnRuleWidth()
+             : style.RowRuleWidth();
 }
 
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  wtf_size_t underlying_length =
-      UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      MakeGarbageCollected<UnderlyingLengthChecker>(underlying_length));
-  if (underlying_length == 0) {
-    return nullptr;
-  }
-  return ListInterpolationFunctions::CreateList(
-      underlying_length, [](wtf_size_t) {
-        return InterpolationValue(InterpolableLength::CreateNeutral());
-      });
+      MakeGarbageCollected<UnderlyingGapDataListChecker>(underlying));
+  return InterpolationValue(underlying.interpolable_value->CloneAndZero(),
+                            underlying.non_interpolable_value);
 }
 
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInitial(
@@ -120,40 +191,49 @@ class InheritedGapLengthListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedGapLengthListChecker(const CSSProperty& property,
-                                const Vector<int>& inherited_list)
+                                const GapDataList<int>& inherited_list)
       : property_(property), inherited_list_(inherited_list) {}
   ~InheritedGapLengthListChecker() final = default;
+
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_list_);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    Vector<int> inherited_list;
-    CSSGapLengthListInterpolationType::GetList(property_, *state.ParentStyle(),
-                                               inherited_list);
+    GapDataList<int> inherited_list =
+        CSSGapLengthListInterpolationType::GetList(property_,
+                                                   *state.ParentStyle());
     return inherited_list_ == inherited_list;
   }
 
   const CSSProperty& property_;
-  Vector<int> inherited_list_;
+  GapDataList<int> inherited_list_;
 };
 
 InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInherit(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  Vector<int> inherited_list;
-  GetList(CssProperty(), *state.ParentStyle(), inherited_list);
+  GapDataList<int> inherited_list =
+      GetList(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedGapLengthListChecker>(CssProperty(),
                                                           inherited_list));
-  if (inherited_list.empty()) {
+
+  const GapDataList<int>::GapDataVector& inherited_gap_data_vector =
+      inherited_list.GetGapDataList();
+
+  if (inherited_gap_data_vector.empty()) {
     return nullptr;
   }
+
   return ListInterpolationFunctions::CreateList(
-      inherited_list.size(), [this, &inherited_list](wtf_size_t index) {
-        return InterpolationValue(InterpolableLength::MaybeConvertLength(
-            Length(inherited_list[index], Length::Type::kFixed), CssProperty(),
-            /*zoom=*/1,
-            /*interpolate_size=*/std::nullopt));
+      inherited_gap_data_vector.size(),
+      [this, &inherited_gap_data_vector](wtf_size_t index) {
+        return GetInterpolationValueFromGapData(
+            inherited_gap_data_vector[index], CssProperty(), /*zoom=*/1);
       });
 }
 
@@ -166,29 +246,39 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertValue(
   }
 
   const auto& list = To<CSSValueList>(value);
+
+  GapDataList<int> gap_data_list =
+      StyleBuilderConverter::ConvertGapDecorationWidthDataList(
+          const_cast<StyleResolverState&>(state), value);
+  const GapDataList<int>::GapDataVector& gap_data_vector =
+      gap_data_list.GetGapDataList();
   return ListInterpolationFunctions::CreateList(
-      list.length(), [this, &list](wtf_size_t index) {
-        if (auto* id = DynamicTo<CSSIdentifierValue>(list.Item(index))) {
-          double pixels;
-          if (LengthPropertyFunctions::GetPixelsForKeyword(
-                  CssProperty(), id->GetValueID(), pixels)) {
-            return InterpolationValue(InterpolableLength::CreatePixels(pixels));
-          }
-          return InterpolationValue(nullptr);
-        }
-        return InterpolationValue(
-            InterpolableLength::MaybeConvertCSSValue(list.Item(index)));
+      gap_data_vector.size(),
+      [this, &list, &gap_data_vector](wtf_size_t index) {
+        return GetInterpolationValueFromGapData(gap_data_vector[index],
+                                                CssProperty(), /*zoom=*/1,
+                                                &list.Item(index));
       });
 }
 
 PairwiseInterpolationValue CSSGapLengthListInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  // TODO(crbug.com/357648037): Once repeaters are supported, adjust logic
   return ListInterpolationFunctions::MaybeMergeSingles(
       std::move(start), std::move(end),
-      ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
+      ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
       [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
+        if (!IsCompatible(*start_item.interpolable_value,
+                          *end_item.interpolable_value)) {
+          return PairwiseInterpolationValue(nullptr);
+        }
+
+        if (start_item.interpolable_value->IsGapDataRepeater()) {
+          return PairwiseInterpolationValue(
+              std::move(start_item.interpolable_value),
+              std::move(end_item.interpolable_value));
+        }
+
         return InterpolableLength::MaybeMergeSingles(
             std::move(start_item.interpolable_value),
             std::move(end_item.interpolable_value));

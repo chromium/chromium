@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/style/gap_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -50,6 +51,40 @@ class CORE_EXPORT GapDataList {
     for (const auto& length : lengths) {
       gap_data_list_.emplace_back(GapData<int>(length.Pixels()));
     }
+  }
+
+  explicit GapDataList(wtf_size_t size) { gap_data_list_.reserve(size); }
+
+  void AddGapData(const GapData<T>& gap_data) {
+    gap_data_list_.push_back(gap_data);
+  }
+
+  void AddGapData(const Length& length) {
+    gap_data_list_.emplace_back(GapData<int>(length.Pixels()));
+  }
+
+  // TODO(javiercon): Specialize this for StyleColor, EBorderStyle, and int.
+  WTF::String ToString() const {
+    WTF::String result;
+    for (const auto& gap_data : gap_data_list_) {
+      if (gap_data.IsRepeaterData()) {
+        result = result + "Repeater: ";
+        result =
+            result +
+            WTF::String::Number(gap_data.GetValueRepeater()->RepeatCount()) +
+            ", ";
+        for (const auto& value :
+             gap_data.GetValueRepeater()->RepeatedValues()) {
+          result = result + WTF::String::Number(value);
+          result = result + " ";
+        }
+      } else {
+        result = result + "Value: ";
+        result = result + WTF::String::Number(gap_data.GetValue());
+      }
+      result = result + "; ";
+    }
+    return result;
   }
 
   void Trace(Visitor* visitor) const {
