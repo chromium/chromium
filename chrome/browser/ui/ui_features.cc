@@ -161,7 +161,7 @@ BASE_FEATURE(kSideBySideLinkMenuNewBadge,
 
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics,
              "TabDuplicateMetrics",
