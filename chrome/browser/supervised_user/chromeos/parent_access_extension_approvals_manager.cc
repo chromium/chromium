@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/chromeos/chromeos_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "components/supervised_user/core/common/features.h"

@@ -37,8 +37,6 @@ static_library("crosapi") {
     "keystore_service_factory_ash.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
-    "parent_access_ash.cc",
-    "parent_access_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
     "vpn_service_ash.cc",
@@ -129,7 +127,6 @@ static_library("crosapi") {
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/views/select_file_dialog_extension",
-    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/app_service",
@@ -251,7 +248,6 @@ static_library("crosapi") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui/ash/parent_access",
     "//media/gpu:buildflags",
     "//printing",
     "//ui/base/mojom:ui_base_types",
@@ -327,7 +323,6 @@ source_set("unit_tests") {
     "document_scan_ash_unittest.cc",
     "keystore_service_ash_unittest.cc",
     "local_printer_ash_unittest.cc",
-    "parent_access_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
   ]
 
@@ -356,8 +351,6 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/webui/ash/parent_access",
-    "//chrome/browser/ui/webui/ash/parent_access:test_support",
     "//chrome/common/printing",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",

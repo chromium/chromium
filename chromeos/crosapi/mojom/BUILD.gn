@@ -30,7 +30,6 @@ mojom("mojom") {
     "network_change.mojom",
     "networking_private.mojom",
     "nullable_primitives.mojom",
-    "parent_access.mojom",
     "policy_service.mojom",
     "print_preview_cros.mojom",
     "probe_service.mojom",

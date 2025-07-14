@@ -32,7 +32,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {

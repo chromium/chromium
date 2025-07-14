@@ -48,7 +48,6 @@ class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
 class KeystoreServiceAsh;
 class LocalPrinterAsh;
-class ParentAccessAsh;
 class VpnServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
@@ -105,8 +104,6 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindNetworkChange(
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
-  void BindParentAccess(
-      mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
@@ -150,8 +147,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
-  ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
-
   ash::printing::PrintPreviewWebcontentsAdapterAsh*
   print_preview_webcontents_adapter_ash() {
     return print_preview_webcontents_adapter_ash_.get();
@@ -177,7 +172,6 @@ class CrosapiAsh : public mojom::Crosapi {
       file_system_provider_service_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
-  std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;

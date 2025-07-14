@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
@@ -95,7 +94,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<FileSystemProviderServiceAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
-      parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -216,11 +214,6 @@ void CrosapiAsh::BindMediaSessionController(
 void CrosapiAsh::BindNetworkChange(
     mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::BindParentAccess(
-    mojo::PendingReceiver<mojom::ParentAccess> receiver) {
-  parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindReceiver(
