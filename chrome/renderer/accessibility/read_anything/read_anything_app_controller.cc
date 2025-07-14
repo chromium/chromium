@@ -482,7 +482,7 @@ void ReadAnythingAppController::OnNodeDataChanged(
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
-  if (model_.display_node_ids().contains(node_id)) {
+  if (model_.GetCurrentlyVisibleNodes()->contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
     if (IsReadAloudEnabled() && !read_aloud_model_.speech_playing()) {
       ExecuteJavaScript("chrome.readingMode.onNodeWillBeDeleted(" +
@@ -802,7 +802,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // an empty display node list. If that happens and there are content nodes,
     // we should recompute the display nodes again.
     bool should_recompute_display_nodes =
-        !model_.content_node_ids().empty() && model_.display_node_ids().empty();
+        !model_.content_node_ids().empty() &&
+        model_.GetCurrentlyVisibleNodes()->empty();
     VLOG(1) << "In OnAXTreeDistilled content node size: "
             << model_.content_node_ids().size()
             << " and display node size: " << model_.display_node_ids().size()
@@ -2088,8 +2089,8 @@ void ReadAnythingAppController::OnScrolledToBottom() {
   if (IsGoogleDocs()) {
     // Scroll to the last display node shown on the Reading Mode side panel
     // TODO (b/356935604): Investigate optimal scroll position
-    page_handler_->ScrollToTargetNode(model_.active_tree_id(),
-                                      *model_.display_node_ids().rbegin());
+    page_handler_->ScrollToTargetNode(
+        model_.active_tree_id(), *model_.GetCurrentlyVisibleNodes()->rbegin());
   }
 }
 
