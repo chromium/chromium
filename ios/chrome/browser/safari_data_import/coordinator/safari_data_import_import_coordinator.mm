@@ -62,6 +62,8 @@
 - (void)didTapPrimaryActionButton {
   switch (_containerViewController.importStage) {
     case SafariDataImportStage::kNotStarted:
+      [_containerViewController
+          transitionToImportStage:SafariDataImportStage::kFileLoading];
       [self showFilePicker];
       break;
     case SafariDataImportStage::kFileLoading:

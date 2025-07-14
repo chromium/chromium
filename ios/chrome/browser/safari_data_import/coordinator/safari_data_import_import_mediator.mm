@@ -20,11 +20,12 @@
     return;
   }
   _fileStartedToLoad = YES;
-  id<SafariDataImportImportStageConsumer> importStageConsumer =
-      self.importStageConsumer;
-  [importStageConsumer
-      transitionToImportStage:SafariDataImportStage::kFileLoading];
   /// TODO(crbug.com/420703283): Import the file.
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
+  [self.importStageConsumer
+      transitionToImportStage:SafariDataImportStage::kNotStarted];
 }
 
 @end
