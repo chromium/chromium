@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_footer/footer_context_menu.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,6 +14,12 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FooterContextMenu,
                                       kHideFooterIdForTesting);
+
+namespace new_tab_footer {
+void RecordContextMenuClick(FooterContextMenuItem item) {
+  base::UmaHistogramEnumeration("NewTabPage.Footer.ContextMenuClicked", item);
+}
+}  // namespace new_tab_footer
 
 FooterContextMenu::FooterContextMenu(Profile* profile)
     : ui::SimpleMenuModel(this), profile_(profile) {
@@ -34,7 +41,8 @@ FooterContextMenu::~FooterContextMenu() = default;
 void FooterContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case COMMAND_CLOSE_FOOTER: {
-      // TODO(crbug.com/420953182): Log when pressed.
+      new_tab_footer::RecordContextMenuClick(
+          new_tab_footer::FooterContextMenuItem::kHideFooter);
       profile_->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, false);
       break;
     }

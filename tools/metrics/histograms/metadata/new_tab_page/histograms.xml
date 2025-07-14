@@ -542,6 +542,14 @@ chromium-metrics-reviews@google.com.
   <summary>Logged when the Footer was clicked.</summary>
 </histogram>
 
+<histogram name="NewTabPage.Footer.ContextMenuClicked"
+    enum="FooterContextMenuItem" expires_after="2025-11-23">
+  <owner>temao@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>Logged when item in footer's context menu is clicked.</summary>
+</histogram>
+
 <histogram name="NewTabPage.Footer.CustomizeChromeOpened"
     enum="FooterCustomizeChromeEntryPoint" expires_after="2025-11-23">
   <owner>temao@chromium.org</owner>

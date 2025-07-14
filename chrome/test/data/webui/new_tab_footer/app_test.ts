@@ -311,6 +311,9 @@ suite('NewTabFooterAppTest', () => {
       container.dispatchEvent(new MouseEvent('contextmenu'));
 
       await handler.whenCalled('showContextMenu');
+      assertEquals(
+          1,
+          metrics.count('NewTabPage.Footer.Click', FooterElement.CONTEXT_MENU));
     });
   });
 });

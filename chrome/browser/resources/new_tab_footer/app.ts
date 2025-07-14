@@ -47,7 +47,10 @@ export enum FooterElement {
   OTHER = 0,
   CUSTOMIZE_BUTTON = 1,
   EXTENSION_NAME = 2,
-  MAX_VALUE = EXTENSION_NAME,
+  MANAGEMENT_NOTICE = 3,
+  BACKGROUND_ATTRIBUTION = 4,
+  CONTEXT_MENU = 5,
+  MAX_VALUE = CONTEXT_MENU,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -156,6 +159,7 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   protected onContextMenu_(e: MouseEvent) {
     this.handler_.showContextMenu({x: e.clientX, y: e.clientY});
+    recordClick(FooterElement.CONTEXT_MENU);
   }
 
   protected onExtensionNameClick_(e: Event) {

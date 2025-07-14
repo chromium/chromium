@@ -52,6 +52,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The native page is frozen"/>
 </enum>
 
+<enum name="FooterContextMenuItem">
+  <int value="0" label="Hide footer clicked."/>
+</enum>
+
 <enum name="FooterCustomizeChromeEntryPoint">
   <int value="0" label="Customize Chrome button clicked."/>
   <int value="1" label="NTP URL has customize chrome parameters."/>
@@ -59,9 +63,12 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="FooterElement">
-  <int value="0" label="Other Element"/>
-  <int value="1" label="Customize Chrome Button"/>
-  <int value="2" label="Extension name"/>
+  <int value="0" label="Other Element clicked"/>
+  <int value="1" label="Customize Chrome Button clicked"/>
+  <int value="2" label="Extension name clicked"/>
+  <int value="3" label="Management notice clicked"/>
+  <int value="4" label="Background name clicked"/>
+  <int value="5" label="Context menu opened"/>
 </enum>
 
 <enum name="ItemSuggestRequestResult">
