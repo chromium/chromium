@@ -196,8 +196,16 @@ void WidgetAXManager::AccessibilityHitTest(
 }
 
 gfx::NativeWindow WidgetAXManager::GetTopLevelNativeWindow() {
-  // TODO(accessibility): Implement.
-  return gfx::NativeWindow();
+  if (!widget_) {
+    return gfx::NativeWindow();
+  }
+
+  auto* top = widget_->GetTopLevelWidget();
+  if (!top) {
+    return gfx::NativeWindow();
+  }
+
+  return top->GetNativeWindow();
 }
 
 bool WidgetAXManager::CanFireAccessibilityEvents() const {

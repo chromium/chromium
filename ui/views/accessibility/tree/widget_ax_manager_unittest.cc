@@ -335,4 +335,23 @@ TEST_F(WidgetAXManagerTest, AccessibilityGetNativeViewAccessibleForWindow) {
 #endif
 }
 
+TEST_F(WidgetAXManagerTest, GetTopLevelNativeWindow) {
+  // Null widget should return nullptr.
+  WidgetAXManager null_manager(nullptr);
+  EXPECT_EQ(null_manager.GetTopLevelNativeWindow(), gfx::NativeWindow());
+
+  // Top-level widget should return its native window.
+  gfx::NativeWindow top_native = widget()->GetNativeWindow();
+  EXPECT_EQ(manager()->GetTopLevelNativeWindow(), top_native);
+
+  // Child widget should still return the top-level native window.
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* child_mgr = child_widget->ax_manager();
+  EXPECT_EQ(child_mgr->GetTopLevelNativeWindow(), top_native);
+
+  child_widget->CloseNow();
+}
+
 }  // namespace views::test
