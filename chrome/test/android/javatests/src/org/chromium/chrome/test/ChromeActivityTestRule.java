@@ -6,6 +6,8 @@ package org.chromium.chrome.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -18,9 +20,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.mockito.Mockito;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
@@ -31,6 +35,7 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -46,6 +51,7 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -71,6 +77,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivityTestRule<T> {
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
+    private static final String TAG = "TestRule";
 
     private final EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
@@ -88,6 +95,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     protected void before() throws Throwable {
         super.before();
 
+        disableOfflineIndicator();
+        disableIph();
+    }
+
+    private void disableOfflineIndicator() {
         // Tests are run on bots that are offline by default. This might cause
         // offline UI to show and cause flakiness or failures in tests. Using this
         // switch will prevent that.
@@ -95,6 +107,27 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         // indicator for specific tests.
         CommandLine.getInstance()
                 .appendSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR);
+    }
+
+    private void disableIph() {
+        // Disable IPH to prevent it from interfering with the tests.
+        Log.w(
+                TAG,
+                "A mock Tracker is set in ChromeActivityTestRule. This will"
+                        + " prevent any IPH from showing. See crbug.com/342240475.");
+        Tracker tracker = Mockito.mock(Tracker.class);
+        when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
+        TrackerFactory.setTrackerForTests(tracker);
+    }
+
+    /**
+     * Enables default behavior of IPH again for one test case.
+     *
+     * <p>Tests can also use {@code TrackerFactory.setTrackerForTests(mMockTracker)} to have more
+     * predictable IPH behavior.
+     */
+    public void reenableIph() {
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Override

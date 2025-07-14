@@ -216,4 +216,9 @@ class BaseCtaTransitTestRule {
     public InfoBarContainer getInfoBarContainer() {
         return mActivityTestRule.getInfoBarContainer();
     }
+
+    /** Enables IPH again for one test case. */
+    public void reenableIph() {
+        mActivityTestRule.reenableIph();
+    }
 }

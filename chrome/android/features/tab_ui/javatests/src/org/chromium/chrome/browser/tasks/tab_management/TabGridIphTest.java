@@ -107,6 +107,7 @@ public class TabGridIphTest {
 
     @Before
     public void setUp() {
+        mActivityTestRule.reenableIph();
         IphMessageService.setSkipIphInTestsForTesting(false);
         mPage = mActivityTestRule.startOnBlankPage();
         TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
