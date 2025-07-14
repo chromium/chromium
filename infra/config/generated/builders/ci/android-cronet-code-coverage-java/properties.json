@@ -84,5 +84,11 @@
     ]
   },
   "builder_group": "chromium.coverage",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "cronet"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "cronet"
+  ]
 }
