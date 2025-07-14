@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -67,8 +68,8 @@ struct FieldTemplate {
   FieldType heuristic_type = UNKNOWN_TYPE;
 };
 
-std::pair<FormData, std::string> CreateFormAndServerClassification(
-    std::vector<FieldTemplate> fields) {
+std::pair<std::unique_ptr<FormStructure>, std::string>
+CreateFormAndServerClassification(std::vector<FieldTemplate> fields) {
   FormData form;
   form.set_url(GURL("http://foo.com"));
   form.set_main_frame_origin(url::Origin::Create(form.url()));
@@ -80,10 +81,6 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     FormFieldData field;
     field.set_label(base::UTF8ToUTF16(field_template.label));
     field.set_name(base::UTF8ToUTF16(field_template.name));
-    if (!field_template.section.empty()) {
-      field.set_section(Section::FromAutocomplete(
-          {.section = std::string(field_template.section)}));
-    }
     field.set_value(base::UTF8ToUTF16(field_template.value));
     field.set_placeholder(base::UTF8ToUTF16(field_template.placeholder));
     field.set_form_control_type(field_template.form_control_type);
@@ -113,16 +110,26 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   }
   std::string response_string = SerializeAndEncode(response);
 
-  return std::make_pair(form, response_string);
+  auto form_structure = std::make_unique<FormStructure>(form);
+  for (auto [field, field_template] :
+       base::zip(form_structure->fields(), fields)) {
+    if (!field_template.section.empty()) {
+      field->set_section(Section::FromAutocomplete(
+          {.section = std::string(field_template.section)}));
+    }
+  }
+
+  return std::make_pair(std::move(form_structure), response_string);
 }
 
 std::unique_ptr<FormStructure> BuildFormStructure(
     const std::vector<FieldTemplate>& fields,
     bool run_heuristics) {
-  FormData form;
+  std::unique_ptr<FormStructure> form_structure;
   std::string response_string;
-  std::tie(form, response_string) = CreateFormAndServerClassification(fields);
-  auto form_structure = std::make_unique<FormStructure>(form);
+  std::tie(form_structure, response_string) =
+      CreateFormAndServerClassification(fields);
+
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
     form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);

@@ -172,10 +172,6 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
     std::move(callback).Run(s);
   }
 
-  void PassSection(const Section& s, PassSectionCallback callback) override {
-    std::move(callback).Run(s);
-  }
-
   void PassFormDataPredictions(
       const FormDataPredictions& s,
       PassFormDataPredictionsCallback callback) override {
@@ -286,58 +282,6 @@ void ExpectPasswordSuggestionRequest(const PasswordSuggestionRequest& expected,
   std::move(closure).Run();
 }
 
-// Test all Section::SectionPrefix states.
-class AutofillTypeTraitsTestImplSectionTest
-    : public AutofillTypeTraitsTestImpl,
-      public testing::WithParamInterface<Section> {
- public:
-  const Section& section() const { return GetParam(); }
-};
-
-TEST_P(AutofillTypeTraitsTestImplSectionTest, PassSection) {
-  base::RunLoop loop;
-  mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
-  remote->PassSection(
-      section(),
-      base::BindOnce(
-          [](const Section& a, base::OnceClosure closure, const Section& b) {
-            EXPECT_EQ(a, b);
-            std::move(closure).Run();
-          },
-          section(), loop.QuitClosure()));
-  loop.Run();
-}
-
-std::vector<Section> SectionTestCases() {
-  std::vector<Section> test_cases;
-  Section s;
-  // Default.
-  test_cases.push_back(s);
-
-  // Autocomplete.
-  s = Section::FromAutocomplete(
-      {.section = "autocomplete_section", .mode = HtmlFieldMode::kBilling});
-  test_cases.push_back(s);
-
-  // FieldIdentifier.
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  FormFieldData field;
-  field.set_name(u"from_field_name");
-  // Randomizing the LocalFrameToken requires an AutofillTestEnvironment, which
-  // doesn't exist yet because SectionTestCases() is called by
-  // INSTANTIATE_TEST_SUITE_P().
-  field.set_host_frame(test::MakeLocalFrameToken(test::RandomizeFrame(false)));
-  field.set_renderer_id(FieldRendererId(123));
-  s = Section::FromFieldIdentifier(field, frame_token_ids);
-  test_cases.push_back(s);
-
-  return test_cases;
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillTypeTraitsTestImplSectionTest,
-                         testing::ValuesIn(SectionTestCases()));
-
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   FormFieldData input = test::CreateTestSelectField(
       "TestLabel", "TestName", "TestValue", kOptions, kOptions);
@@ -370,9 +314,6 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.set_properties_mask(FieldPropertiesFlags::kHadFocus);
   input.set_user_input(u"TestTypedValue");
   input.set_bounds(gfx::RectF(1, 2, 10, 100));
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  input.set_section(Section::FromAutocomplete(
-      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping}));
 
   EXPECT_FALSE(input.host_frame().is_empty());
   base::RunLoop loop;

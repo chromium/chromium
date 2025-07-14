@@ -502,7 +502,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   // Since Undo only affects fields that were already filled, and only sets
-  // values to fields to something that already existed in it prior to the
+  // values of fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
   // `TrustAllOrigins()`.
   internal::FormForest::RendererForms renderer_forms =

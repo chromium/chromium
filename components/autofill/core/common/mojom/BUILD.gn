@@ -19,10 +19,6 @@ mojom("mojo_types") {
     {
       types = [
         {
-          mojom = "autofill.mojom.Section"
-          cpp = "::autofill::Section"
-        },
-        {
           mojom = "autofill.mojom.FormData"
           cpp = "::autofill::FormData"
         },

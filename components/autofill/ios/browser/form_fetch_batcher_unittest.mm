@@ -41,6 +41,10 @@ autofill::FormData MakeTestFormData(const std::u16string& name) {
 
 }  // namespace
 
+namespace autofill {
+class Section;
+}
+
 // AutofillDriverIosBridge used for testing. Provides a simple implementation of
 // the methods that are used during testing, e.g. call the completion block upon
 // calling -fetchFormsFiltered.
@@ -67,7 +71,8 @@ autofill::FormData MakeTestFormData(const std::u16string& name) {
   return self;
 }
 
-- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
+         section:(const autofill::Section&)section
          inFrame:(web::WebFrame*)frame {
 }
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field

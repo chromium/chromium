@@ -41,7 +41,8 @@ class MockAutofillDriver : public TestAutofillDriver {
                mojom::ActionPersistence action_persistence,
                base::span<const FormFieldData> data,
                const url::Origin& triggered_origin,
-               (const base::flat_map<FieldGlobalId, FieldType>&)),
+               (const base::flat_map<FieldGlobalId, FieldType>&),
+               (const Section&)),
               (override));
 };
 
@@ -217,7 +218,8 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
                     mojom::ActionPersistence action_persistence,
                     base::span<const FormFieldData> data,
                     const url::Origin& triggered_origin,
-                    const base::flat_map<FieldGlobalId, FieldType>&) {
+                    const base::flat_map<FieldGlobalId, FieldType>&,
+                    const Section&) {
         return base::ToVector(data, &FormFieldData::global_id);
       });
 

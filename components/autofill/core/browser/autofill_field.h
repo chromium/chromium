@@ -46,6 +46,81 @@ enum class AutofillPredictionSource {
 std::string_view AutofillPredictionSourceToStringView(
     AutofillPredictionSource source);
 
+// Stores information about the section of the field.
+class Section {
+ public:
+  struct Autocomplete {
+    friend auto operator<=>(const Autocomplete& lhs,
+                            const Autocomplete& rhs) = default;
+    friend bool operator==(const Autocomplete& lhs,
+                           const Autocomplete& rhs) = default;
+
+    std::string section;
+    HtmlFieldMode mode = HtmlFieldMode::kNone;
+  };
+
+  using Default = std::monostate;
+
+  struct FieldIdentifier {
+    FieldIdentifier() = default;
+    FieldIdentifier(std::string field_name,
+                    size_t local_frame_id,
+                    FieldRendererId field_renderer_id)
+        : field_name(std::move(field_name)),
+          local_frame_id(local_frame_id),
+          field_renderer_id(field_renderer_id) {}
+
+    friend auto operator<=>(const FieldIdentifier& lhs,
+                            const FieldIdentifier& rhs) = default;
+    friend bool operator==(const FieldIdentifier& lhs,
+                           const FieldIdentifier& rhs) = default;
+
+    std::string field_name;
+    size_t local_frame_id;
+    FieldRendererId field_renderer_id;
+  };
+
+  static Section FromAutocomplete(Autocomplete autocomplete);
+  static Section FromFieldIdentifier(
+      const FormFieldData& field,
+      base::flat_map<LocalFrameToken, size_t>& frame_token_ids);
+
+  Section();
+  Section(const Section& section);
+  Section& operator=(const Section& section);
+  Section(Section&& section);
+  Section& operator=(Section&& section);
+  ~Section();
+
+  friend auto operator<=>(const Section& lhs, const Section& rhs) = default;
+  friend bool operator==(const Section& lhs, const Section& rhs) = default;
+  explicit operator bool() const;
+
+  bool is_from_autocomplete() const;
+  bool is_from_fieldidentifier() const;
+  bool is_default() const;
+
+  // Reconstructs `this` to a string. The string representation of the section
+  // is used in the renderer.
+  // TODO(crbug.com/40200532): Remove when fixed.
+  std::string ToString() const;
+
+ private:
+  // Represents the section's origin:
+  //  - `Default` is the empty, initial value before running any sectioning
+  //     algorithm,
+  //  - `Autocomplete` represents a section derived from the autocomplete
+  //     attribute,
+  //  - `FieldIdentifier` represents a section generated based on the first
+  //     field in the section.
+  using SectionValue = std::variant<Default, Autocomplete, FieldIdentifier>;
+
+  SectionValue value_;
+};
+
+LogBuffer& operator<<(LogBuffer& buffer, const Section& section);
+std::ostream& operator<<(std::ostream& os, const Section& section);
+
 class AutofillField : public FormFieldData {
  public:
   using FieldLogEventType = std::variant<std::monostate,
@@ -74,6 +149,11 @@ class AutofillField : public FormFieldData {
   // since it is likely missing some fields.
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
+
+  // The unique identifier of the section (e.g. billing vs. shipping address)
+  // of this field.
+  const Section& section() const { return section_; }
+  void set_section(Section section) { section_ = std::move(section); }
 
   FieldType heuristic_type() const;
   FieldType heuristic_type(HeuristicSource s) const;
@@ -386,6 +466,8 @@ class AutofillField : public FormFieldData {
   // Returns the GetComputedPredictionResult(), unless there is a server
   // overwrite or the result was overwritten using `SetTypeTo()`.
   PredictionResult GetOverallPredictionResult() const;
+
+  Section section_;
 
   std::optional<FieldSignature> field_signature_;
 

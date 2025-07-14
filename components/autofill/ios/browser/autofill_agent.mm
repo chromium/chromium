@@ -104,6 +104,7 @@ using autofill::FormFieldData;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
+using autofill::Section;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
@@ -466,12 +467,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 #pragma mark - AutofillDriverIOSBridge
 
-- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)data
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
+         section:(const Section&)section
          inFrame:(web::WebFrame*)frame {
   base::Value::Dict fieldsData;
   FieldToFormLookupMap fieldToFormLookupMap;
 
-  for (const auto& field : data) {
+  for (const auto& field : fields) {
     // Skip empty fields and those that are not autofilled.
     if (field.value.empty() || !field.is_autofilled) {
       continue;
@@ -479,7 +481,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
     base::Value::Dict fieldData;
     fieldData.Set("value", field.value);
-    fieldData.Set("section", field.section.ToString());
+    fieldData.Set("section", section.ToString());
     fieldData.Set("hostFormId", static_cast<int>(*field.host_form_id));
     fieldsData.Set(NumberToString(*field.renderer_id), std::move(fieldData));
 

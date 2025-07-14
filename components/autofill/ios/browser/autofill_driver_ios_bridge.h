@@ -16,6 +16,7 @@
 
 namespace autofill {
 class FormStructure;
+class Section;
 }
 
 namespace web {
@@ -29,7 +30,15 @@ using FormFetchCompletion =
 // Interface used to pipe form data from AutofillDriverIOS to the embedder.
 @protocol AutofillDriverIOSBridge
 
-- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
+// All `fields` must come from `section` (i.e., `AutofillField::section() ==
+// section`).
+// The implementor may store the section to later on identify fields that were
+// filled together. That is used to implement "Clear Form".
+//
+// TODO(crbug.com/338201947): Remove `section` when iOS replaces "Clear Form"
+// with "Undo Autofill".
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
+         section:(const autofill::Section&)section
          inFrame:(web::WebFrame*)frame;
 
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field

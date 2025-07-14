@@ -647,7 +647,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         GetDriverForFrame(trigger_frame)
             ->ApplyFormAction(mojom::FormActionType::kFill,
                               mojom::ActionPersistence::kFill, fields,
-                              trigger_origin, field_type_map);
+                              trigger_origin, field_type_map, Section());
 
     // Verify that filled fields correspond to the expected ones by comparing
     // their global ids.
@@ -1024,7 +1024,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MainFrameForm) {
 
   main_frame_driver()->ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      form.fields(), form.main_frame_origin(), field_type_map);
+      form.fields(), form.main_frame_origin(), field_type_map, Section());
 
   ASSERT_TRUE(main_frame_manager().WaitForFormsFilled(1));
   ASSERT_EQ(main_frame_manager().filled_forms().size(), 1u);
@@ -1089,7 +1089,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MultiFrameForm) {
   base::flat_set<FieldGlobalId> filled_field_ids =
       main_frame_driver()->ApplyFormAction(
           mojom::FormActionType::kFill, mojom::ActionPersistence::kFill, fields,
-          form.main_frame_origin(), field_type_map);
+          form.main_frame_origin(), field_type_map, Section());
 
   EXPECT_THAT(filled_field_ids, UnorderedElementsAre(name_field->global_id(),
                                                      phone_field->global_id()));
@@ -1512,7 +1512,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFrameDeletion) {
   // only one.
   ASSERT_THAT(main_frame_driver()->ApplyFormAction(
                   mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-                  fields, form.main_frame_origin(), field_type_map),
+                  fields, form.main_frame_origin(), field_type_map, Section()),
               SizeIs(1));
 
   // Wait on the fill to be done.
@@ -1812,11 +1812,11 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
 
   // Verify that the only the phone field will be filled, where the name field
   // in the unregistered frame shouldn't be filled.
-  EXPECT_THAT(
-      main_frame_driver()->ApplyFormAction(
-          mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-          fields_to_fill, browser_form.main_frame_origin(), field_type_map),
-      UnorderedElementsAre(phone_field->global_id()));
+  EXPECT_THAT(main_frame_driver()->ApplyFormAction(
+                  mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+                  fields_to_fill, browser_form.main_frame_origin(),
+                  field_type_map, Section()),
+              UnorderedElementsAre(phone_field->global_id()));
 
   main_frame_manager().ResetTestState();
 }

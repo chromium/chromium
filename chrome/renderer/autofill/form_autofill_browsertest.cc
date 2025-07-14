@@ -343,7 +343,6 @@ FormData FindForm(const blink::WebFormControlElement& element) {
     EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
     EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
     EXPECT_EQ(expected.is_user_edited(), actual.is_user_edited());           \
-    EXPECT_EQ(expected.section(), actual.section());                         \
     EXPECT_EQ(expected.check_status(), actual.check_status());               \
     EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \

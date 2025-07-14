@@ -644,10 +644,10 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
   // dummy values for `triggered_origin` and `field_type_map`.
-  manager_->driver().ApplyFormAction(mojom::FormActionType::kUndo,
-                                     action_persistence, form.fields(),
-                                     url::Origin(),
-                                     /*field_type_map=*/{});
+  manager_->driver().ApplyFormAction(
+      mojom::FormActionType::kUndo, action_persistence, form.fields(),
+      url::Origin(),
+      /*field_type_map=*/{}, /*section_for_clear_form_on_ios=*/Section());
 }
 
 void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
@@ -742,12 +742,6 @@ void FormFiller::FillOrPreviewForm(
 
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
-  // TODO(crbug.com/40266549): Remove when Undo launches on iOS.
-  for (auto [result_field, field] :
-       base::zip(result_fields, form_structure.fields())) {
-    // On the renderer, the section is used regardless of the autofill status.
-    result_field.set_section(field->section());
-  }
 
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
@@ -849,10 +843,12 @@ void FormFiller::FillOrPreviewForm(
           mojom::FormActionType::kFill, action_persistence, result_fields,
           autofill_trigger_field.origin(),
           base::MakeFlatMap<FieldGlobalId, FieldType>(
-              form_structure, {}, [](const auto& field) {
+              form_structure, {},
+              [](const auto& field) {
                 return std::make_pair(field->global_id(),
                                       field->Type().GetStorableType());
-              }));
+              }),
+          /*section_for_clear_form_on_ios=*/autofill_trigger_field.section());
 
   // This will hold the subset of fields of `result_fields` whose ids are in
   // `safe_filled_field_ids`

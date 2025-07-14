@@ -118,7 +118,8 @@ class TestAutofillDriverTemplate : public T {
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> fields,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const Section& section_for_clear_form_on_ios) override {
     if (action_type == mojom::FormActionType::kUndo) {
       return {};
     }

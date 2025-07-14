@@ -23,10 +23,11 @@
 
 namespace autofill {
 
-class FormStructure;
 class AutofillClient;
 class AutofillDriverFactory;
 class AutofillManager;
+class FormStructure;
+class Section;
 
 namespace internal {
 class FormForest;
@@ -266,6 +267,11 @@ class AutofillDriver {
   // `triggered_origin` is the origin of the field that triggered the filling
   // operation currently being filled or undone.
   //
+  // `section_for_clear_form_on_ios` is a hack for iOS, where "Clear Form"
+  // resets the values of fields in a certain section.
+  // TODO(crbug.com/338201947): Remove `section_for_clear_form_on_ios` when iOS
+  // has "Undo Autofill" instead of "Clear Form".
+  //
   // Returns the FieldGlobalIds that were safe to modify according to Autofill's
   // security policy. This is a subset of the FieldGlobalIds of `form.fields`.
   //
@@ -275,7 +281,8 @@ class AutofillDriver {
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) = 0;
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const Section& section_for_clear_form_on_ios) = 0;
 
   // Tells the renderer to perform actions on the node text.
   // If the `action_type` is kSelectAll, then `value` needs to be empty.
@@ -286,7 +293,8 @@ class AutofillDriver {
 
   // Sends the field type predictions of `form` to the renderer.
   virtual void SendTypePredictionsToRenderer(const FormStructure& forms) = 0;
-  // Calls the agent and exposes DOM Node IDS as part of devtools protocol.
+
+  // Exposes DOM Node IDs in an attribute "dom-node-id".
   virtual void ExposeDomNodeIDs() = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.

@@ -19,6 +19,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -64,6 +65,7 @@ using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FillingProduct;
 using autofill::FormRendererId;
+using autofill::Section;
 using autofill::SuggestionType;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -236,6 +238,7 @@ TEST_F(AutofillAgentTests,
   fill_data.push_back(autofill::FormFieldData::FillData(field));
 
   [autofill_agent_ fillData:fill_data
+                    section:Section()
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
 
@@ -938,7 +941,7 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillData:fields inFrame:fake_main_frame_];
+  [autofill_agent_ fillData:fields section:Section() inFrame:fake_main_frame_];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();
@@ -979,7 +982,7 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
   fake_web_state_.WasShown();
 
   // Fill form data.
-  [autofill_agent_ fillData:fields inFrame:fake_main_frame_];
+  [autofill_agent_ fillData:fields section:Section() inFrame:fake_main_frame_];
 
   // Run queues to yield the filling results.
   web::test::WaitForBackgroundTasks();

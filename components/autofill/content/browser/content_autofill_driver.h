@@ -213,7 +213,8 @@ class ContentAutofillDriver : public AutofillDriver,
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override;
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+      const Section& section_for_clear_form_on_ios) override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,

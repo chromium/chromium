@@ -278,34 +278,6 @@ struct SelectOption {
   mojo_base.mojom.String16 text;
 };
 
-// autofill::Section::Autocomplete
-// (components/autofill/core/common/form_field_data.h)
-struct SectionAutocomplete {
-  string section;
-  HtmlFieldMode html_field_mode;
-};
-
-// autofill::Section::FieldIdentifier
-// (components/autofill/core/common/form_field_data.h)
-struct SectionFieldIdentifier {
-  string field_name;
-  uint64 local_frame_id;
-  FieldRendererId field_renderer_id;
-};
-
-// autofill::Section::SectionValue
-// (components/autofill/core/common/form_field_data.h)
-union SectionValue {
-  bool default_section;
-  SectionAutocomplete autocomplete;
-  SectionFieldIdentifier field_identifier;
-};
-
-// autofill::Section (components/autofill/core/common/form_field_data.h)
-struct Section {
-  SectionValue value;
-};
-
 // autofill::AutocompleteParsingResult
 // (components/autofill/core/common/autocomplete_parsing_util.h)
 struct AutocompleteParsingResult {
@@ -378,7 +350,6 @@ struct FormFieldData {
   uint64 max_length;
   bool is_user_edited;
   bool is_autofilled;
-  Section section;
   CheckStatus check_status;
   bool is_focusable;
   bool is_visible;
