@@ -98,7 +98,8 @@ class MockVideoEncoderDelegateFactory
   }
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
-      ID3D12VideoDevice3* video_device) override {
+      ID3D12VideoDevice3* video_device,
+      const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) override {
     EXPECT_TRUE(video_device);
     VideoEncodeAccelerator::SupportedProfile profile(kSupportedProfile,
                                                      kSupportedSize, 30, 1);
@@ -127,7 +128,7 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
         .WillByDefault(SetComPointeeAndReturnOk<2>(mock_resource_.Get()));
 
     video_encode_accelerator_.reset(
-        new D3D12VideoEncodeAccelerator(mock_device_));
+        new D3D12VideoEncodeAccelerator(mock_device_, {}));
     client_ = std::make_unique<NiceMock<MockVideoEncodeAcceleratorClient>>();
     static_cast<D3D12VideoEncodeAccelerator*>(video_encode_accelerator_.get())
         ->SetEncoderFactoryForTesting(

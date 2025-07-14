@@ -120,6 +120,7 @@ Microsoft::WRL::ComPtr<IDXGIAdapter> GetDxgiAdapterByLuid(CHROME_LUID luid) {
 }
 
 std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device) {
   // TODO(crbug.com/40275246): Consider use secondary adapter in case the
   // default one does not support the desired codec but others do.
@@ -130,7 +131,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
     return nullptr;
   }
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new D3D12VideoEncodeAccelerator(CreateD3D12Device(adapter.Get())));
+      new D3D12VideoEncodeAccelerator(CreateD3D12Device(adapter.Get()),
+                                      gpu_workarounds));
 }
 #endif
 
@@ -186,7 +188,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator)) {
     vea_factory_functions->push_back(
-        base::BindRepeating(&CreateD3D12VEA, gpu_device));
+        base::BindRepeating(&CreateD3D12VEA, gpu_workarounds, gpu_device));
   } else {
     vea_factory_functions->push_back(
         base::BindRepeating(&CreateMediaFoundationVEA, gpu_preferences,

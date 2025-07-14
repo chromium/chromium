@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
@@ -36,11 +37,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
         ID3D12VideoDevice3* video_device,
         VideoCodecProfile profile) = 0;
     virtual SupportedProfiles GetSupportedProfiles(
-        ID3D12VideoDevice3* video_device) = 0;
+        ID3D12VideoDevice3* video_device,
+        const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) = 0;
   };
 
   explicit D3D12VideoEncodeAccelerator(
-      Microsoft::WRL::ComPtr<ID3D12Device> device);
+      Microsoft::WRL::ComPtr<ID3D12Device> device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~D3D12VideoEncodeAccelerator() override;
 
   void SetEncoderFactoryForTesting(
@@ -90,6 +93,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void DestroyTask();
 
   void NotifyError(EncoderStatus status);
+
+  std::vector<D3D12_VIDEO_ENCODER_CODEC> codecs_;
 
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;

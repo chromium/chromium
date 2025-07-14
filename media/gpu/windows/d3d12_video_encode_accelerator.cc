@@ -54,8 +54,9 @@ class VideoEncodeDelegateFactory
   }
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
-      ID3D12VideoDevice3* video_device) override {
-    return D3D12VideoEncodeDelegate::GetSupportedProfiles(video_device);
+      ID3D12VideoDevice3* video_device,
+      const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) override {
+    return D3D12VideoEncodeDelegate::GetSupportedProfiles(video_device, codecs);
   }
 };
 }  // namespace
@@ -69,7 +70,8 @@ struct D3D12VideoEncodeAccelerator::InputFrameRef {
 };
 
 D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
-    Microsoft::WRL::ComPtr<ID3D12Device> device)
+    Microsoft::WRL::ComPtr<ID3D12Device> device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
     : device_(std::move(device)),
       child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -84,6 +86,14 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
   CHECK(device_);
   // We will check and log error later in the Initialize().
   device_.As(&video_device_);
+
+  codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_H264);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (!gpu_workarounds.disable_d3d12_hevc_encoding) {
+    codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_HEVC);
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_AV1);
 
   child_weak_this_ = child_weak_this_factory_.GetWeakPtr();
   encoder_weak_this_ = encoder_weak_this_factory_.GetWeakPtr();
@@ -108,7 +118,8 @@ D3D12VideoEncodeAccelerator::GetSupportedProfiles() {
         if (!video_device_) {
           return {};
         }
-        return encoder_factory_->GetSupportedProfiles(video_device_.Get());
+        return encoder_factory_->GetSupportedProfiles(video_device_.Get(),
+                                                      codecs_);
       }());
   return *supported_profiles.get();
 }

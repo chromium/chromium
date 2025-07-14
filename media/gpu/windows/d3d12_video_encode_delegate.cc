@@ -37,16 +37,11 @@ namespace media {
 // static
 VideoEncodeAccelerator::SupportedProfiles
 D3D12VideoEncodeDelegate::GetSupportedProfiles(
-    ID3D12VideoDevice3* video_device) {
+    ID3D12VideoDevice3* video_device,
+    const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) {
   CHECK(video_device);
   VideoEncodeAccelerator::SupportedProfiles supported_profiles;
-  for (D3D12_VIDEO_ENCODER_CODEC codec : {
-           D3D12_VIDEO_ENCODER_CODEC_H264,
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-           D3D12_VIDEO_ENCODER_CODEC_HEVC,
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-           D3D12_VIDEO_ENCODER_CODEC_AV1,
-       }) {
+  for (D3D12_VIDEO_ENCODER_CODEC codec : codecs) {
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec_support{.Codec = codec};
     CHECK_FEATURE_SUPPORT(CODEC, codec_support);
     if (!codec_support.IsSupported) {

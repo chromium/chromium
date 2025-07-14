@@ -3633,6 +3633,23 @@
       "features": [
         "disable_nv12_upload"
       ]
+    },
+    {
+      "id": 455,
+      "cr_bugs": [431004512],
+      "description": "D3D12 HEVC hardware encoding produces bad images on Intel GPUs when long term reference is used",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.6913"
+      },
+      "features": [
+        "disable_d3d12_hevc_encoding"
+      ]
     }
   ]
 }
