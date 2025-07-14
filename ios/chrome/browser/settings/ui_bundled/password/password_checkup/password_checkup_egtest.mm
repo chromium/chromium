@@ -415,9 +415,8 @@ NSString* LeakedPasswordDescription() {
   VerifyCompromisedPasswordIssuesPageIsVisible(/*issue_count=*/1);
 }
 
-// TODO(crbug.com/427936710): This test is failing.
 // Tests the loading state of the Password Checkup Homepage.
-- (void)DISABLED_testPasswordCheckupHomepageLoadingState {
+- (void)testPasswordCheckupHomepageLoadingState {
   SaveCompromisedPasswordFormToProfileStore();
 
   NSInteger numberOfAffiliatedGroups = 1;
@@ -453,7 +452,7 @@ NSString* LeakedPasswordDescription() {
 
   // Artificially reset the loading state to idle.
   [PasswordSettingsAppInterface
-      setFakeBulkLeakCheckBufferedState:
+      setFakeBulkLeakCheckBufferedStateAndNotifyObservers:
           password_manager::BulkLeakCheckServiceInterface::State::kIdle];
 
   // Wait for Password Checkup to finish loading.

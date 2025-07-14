@@ -435,6 +435,16 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   fakeBulkLeakCheckService->SetBufferedState(state);
 }
 
++ (void)setFakeBulkLeakCheckBufferedStateAndNotifyObservers:
+    (password_manager::BulkLeakCheckServiceInterface::State)state {
+  FakeBulkLeakCheckService* fakeBulkLeakCheckService =
+      static_cast<FakeBulkLeakCheckService*>(
+          IOSChromeBulkLeakCheckServiceFactory::GetForProfile(
+              chrome_test_util::GetOriginalProfile()));
+  fakeBulkLeakCheckService->SetBufferedState(state);
+  fakeBulkLeakCheckService->SetStateToBufferedState();
+}
+
 + (BOOL)isPasscodeSettingsAvailable {
   return ios::provider::SupportsPasscodeSettings();
 }

@@ -106,6 +106,11 @@
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;
 
+// Sets the FakeBulkLeakCheck's buffered state and makes the
+// FakeBulkLeakCheckService propagate it to its observers.
++ (void)setFakeBulkLeakCheckBufferedStateAndNotifyObservers:
+    (password_manager::BulkLeakCheckServiceInterface::State)state;
+
 // Returns YES if the Passcode Settings page can be opened from the app.
 + (BOOL)isPasscodeSettingsAvailable;
 

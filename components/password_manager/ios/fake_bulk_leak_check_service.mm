@@ -50,6 +50,11 @@ void FakeBulkLeakCheckService::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
+void FakeBulkLeakCheckService::SetStateToBufferedState() {
+  state_ = buffered_state_;
+  NotifyStateChanged();
+}
+
 #pragma mark - Setters
 
 void FakeBulkLeakCheckService::SetBufferedState(
@@ -63,11 +68,6 @@ void FakeBulkLeakCheckService::NotifyStateChanged() {
   for (Observer& obs : observers_) {
     obs.OnStateChanged(state_);
   }
-}
-
-void FakeBulkLeakCheckService::SetStateToBufferedState() {
-  state_ = buffered_state_;
-  NotifyStateChanged();
 }
 
 }  // namespace password_manager
