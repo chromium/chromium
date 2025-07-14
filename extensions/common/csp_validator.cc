@@ -79,6 +79,8 @@ const char* const kHashSourcePrefixes[] = {
 // https://infra.spec.whatwg.org/#ascii-whitespace.
 const char kWhitespaceDelimiters[] = " \t\r\n";
 
+constexpr char kChromeResourcesUrl[] = "chrome://resources";
+
 using Directive = CSPParser::Directive;
 
 // TODO(karandeepb): Rename this to DirectiveSet (as used in spec, see
@@ -637,7 +639,9 @@ bool ContentSecurityPolicyIsSandboxed(
   return seen_sandbox;
 }
 
-bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
+bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
+                               mojom::ManifestLocation location,
+                               const std::string& content_security_policy,
                                std::string_view manifest_key,
                                std::u16string* error) {
   DCHECK(error);
@@ -703,8 +707,9 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   // specify a default-src with a remote target without needing to separately
   // specify an object-src.
 
-  auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
-                                            std::u16string* error) {
+  auto is_secure_directive = [extension_id, location, manifest_key](
+                                 const DirectiveMapping& mapping,
+                                 std::u16string* error) {
     if (!mapping.directive) {
       if (mapping.required) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -718,9 +723,18 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     }
 
     auto directive_values = mapping.directive->directive_values;
-    auto it =
-        std::ranges::find_if_not(directive_values, [](std::string_view source) {
+    auto it = std::ranges::find_if_not(
+        directive_values, [extension_id, location](std::string_view source) {
           std::string source_lower = base::ToLowerASCII(source);
+
+          if (source_lower == kChromeResourcesUrl &&
+              extension_id == extension_misc::kChromeVoxExtensionId &&
+              location == mojom::ManifestLocation::kComponent) {
+            // We explicitly allow ChromeVox to include scripts from
+            // chrome://resources. ChromeVox is built into the browser as a
+            // component extension, and chrome://resources aren't remote.
+            return true;
+          }
 
           return source_lower == kSelfSource || source_lower == kNoneSource ||
                  IsLocalHostSource(source_lower) ||

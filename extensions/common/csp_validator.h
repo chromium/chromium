@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
@@ -133,7 +134,9 @@ bool ContentSecurityPolicyIsSandboxed(
 
 // Returns whether the given `content_security_policy` prevents remote scripts.
 // If not, populates `error`.
-bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
+bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
+                               mojom::ManifestLocation location,
+                               const std::string& content_security_policy,
                                std::string_view manifest_key,
                                std::u16string* error);
 
