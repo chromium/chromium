@@ -27,6 +27,8 @@
 
 namespace tabs {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogViewId);
+
 class TabDialogManagerDesktopWidgetUiTest : public InteractiveBrowserTest {
  public:
   TabDialogManagerDesktopWidgetUiTest() {
@@ -52,6 +54,25 @@ class TabDialogManagerDesktopWidgetUiTest : public InteractiveBrowserTest {
   }
 
  protected:
+  std::unique_ptr<views::Widget> CreateAndShowTestDialog() {
+    ui::DialogModel::Builder dialog_builder;
+    dialog_builder.SetInternalName("TestDialog");
+    dialog_builder.AddParagraph(ui::DialogModelLabel(u"Test"), u"",
+                                kDialogViewId);
+
+    TabDialogManager* manager = GetTabDialogManager();
+    CHECK(manager);
+
+    auto model_host = views::BubbleDialogModelHost::CreateModal(
+        dialog_builder.Build(), ui::mojom::ModalType::kChild);
+    model_host->SetOwnershipOfNewWidget(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+    return manager->CreateAndShowDialog(
+        model_host.release(),
+        std::make_unique<tabs::TabDialogManager::Params>());
+  }
+
   TabDialogManager* GetTabDialogManager() {
     TabInterface* tab_interface = browser()->GetActiveTabInterface();
     CHECK(tab_interface);
@@ -66,18 +87,7 @@ class TabDialogManagerDesktopWidgetUiTest : public InteractiveBrowserTest {
 // is a desktop widget.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
                        CreatesDesktopWidget) {
-  TabDialogManager* manager = GetTabDialogManager();
-  ASSERT_TRUE(manager);
-
-  ui::DialogModel::Builder dialog_builder;
-  auto model_host = views::BubbleDialogModelHost::CreateModal(
-      dialog_builder.Build(), ui::mojom::ModalType::kChild);
-  model_host->SetOwnershipOfNewWidget(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-
-  auto widget = manager->CreateAndShowDialog(
-      model_host.release(), std::make_unique<tabs::TabDialogManager::Params>());
-
+  auto widget = CreateAndShowTestDialog();
   EXPECT_TRUE(widget->GetIsDesktopWidget());
 }
 
@@ -89,7 +99,6 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
 // is focused.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
                        FocusWebViewWhenModalIsShowing) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogViewId);
   std::unique_ptr<views::Widget> widget;
 
   RunTestSequence(
@@ -103,24 +112,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
       MoveMouseTo(kOmniboxElementId), ClickMouse(),
       WaitForState(views::test::kCurrentFocusedViewId, kOmniboxElementId),
       // Show a dialog.
-      Do([&]() {
-        TabDialogManager* manager = GetTabDialogManager();
-        ASSERT_TRUE(manager);
-
-        ui::DialogModel::Builder dialog_builder;
-        dialog_builder.SetInternalName("TestDialog");
-        dialog_builder.AddParagraph(ui::DialogModelLabel(u"Test"), u"",
-                                    kDialogViewId);
-        auto* model_host =
-            views::BubbleDialogModelHost::CreateModal(
-                dialog_builder.Build(), ui::mojom::ModalType::kChild)
-                .release();
-        model_host->SetOwnershipOfNewWidget(
-            views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-
-        widget = manager->CreateAndShowDialog(
-            model_host, std::make_unique<tabs::TabDialogManager::Params>());
-      }),
+      Do([&]() { widget = CreateAndShowTestDialog(); }),
       // Wait for the dialog to be visible and focused.
       WaitForShow(kDialogViewId),
       WaitForState(views::test::kCurrentWidgetFocus,
@@ -147,5 +139,63 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
                    [&]() { return widget.get(); }));
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+// Tests that the browser window can be activated when a modal dialog is active.
+// Note that because the WebView forwards the focus to the dialog, the browser
+// window risks not being activated in the following scenario:
+// 1. The WebView in the browser window is focused.
+// 2. A modal dialog is shown.
+// 3. The browser window is activated, e.g. by clicking on the omnibox.
+// 4. The WebView is focused due to the focus restoration.
+// 5. The focus is forwarded to the dialog.
+// The end result is that the browser window fails to be activated when the
+// omnibox is clicked after step 3. This test ensures that this does not happen.
+// Implementation-wise, this is achieved by not forwarding the focus to the
+// dialog during the focus restoration.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
+                       ActivateBrowserWindowWhenModalIsActive) {
+  std::unique_ptr<views::Widget> widget;
+  views::Widget* browser_widget = nullptr;
+
+  RunTestSequence(
+      Do([&]() {
+        browser_widget =
+            BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+      }),
+      ObserveState(views::test::kCurrentWidgetFocus),
+      ObserveState(
+          views::test::kCurrentFocusedViewId,
+          BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
+      // Click on the tab container and check that it has focus.
+      MoveMouseTo(ContentsWebView::kContentsWebViewElementId), ClickMouse(),
+      WaitForState(views::test::kCurrentFocusedViewId,
+                   ContentsWebView::kContentsWebViewElementId),
+      // Show a dialog.
+      Do([&]() { widget = CreateAndShowTestDialog(); }),
+      // Wait for the dialog to be visible and focused.
+      WaitForShow(kDialogViewId),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   [&]() { return widget.get(); }),
+      Check([&]() { return widget->IsActive(); }, "Verify dialog is active"),
+      WithView(ContentsWebView::kContentsWebViewElementId,
+               [&](views::View* contents_web_view) {
+                 EXPECT_EQ(
+                     browser_widget->GetFocusManager()->GetStoredFocusView(),
+                     contents_web_view);
+               }),
+
+      // Activate the browser window.
+      Do([&]() { browser()->window()->Activate(); }),
+
+      // Check that the browser window is active and the dialog is not.
+      WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget)));
+
+  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_FALSE(widget->IsActive());
+  // Ensures that the tab modal is not asynchronously activated.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_FALSE(widget->IsActive());
+}
 
 }  // namespace tabs

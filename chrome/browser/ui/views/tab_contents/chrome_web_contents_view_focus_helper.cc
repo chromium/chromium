@@ -32,6 +32,15 @@ bool ChromeWebContentsViewFocusHelper::Focus() {
     }
   }
 
+  // Don't forward the focus to the modal dialog during the focus restoration.
+  // Otherwise, the browser window could fail to activate. See
+  // TabDialogManagerDesktopWidgetUiTest.ActivateBrowserWindowWhenModalIsActive.
+  if (GetFocusManager() && GetFocusManager()->IsSettingFocusedView() &&
+      GetFocusManager()->focus_change_reason() ==
+          views::FocusManager::FocusChangeReason::kFocusRestore) {
+    return false;
+  }
+
   const web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(
           &GetWebContents());
