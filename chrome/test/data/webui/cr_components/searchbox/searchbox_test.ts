@@ -395,7 +395,14 @@ suite('NewTabPageRealboxTest', () => {
     glowAnimationWrapper.dispatchEvent(new MouseEvent('mouseenter'));
     await waitAfterNextRender(glowAnimationWrapper);
 
-    assertTrue(glowAnimationWrapper.classList.contains('play'));
+    const gradient = glowAnimationWrapper.querySelector('.gradient');
+    const mask = glowAnimationWrapper.querySelector('.mask');
+
+    const gradientBeforeStyle = getComputedStyle(gradient!, '::before');
+    const maskBeforeStyle = getComputedStyle(mask!, '::before');
+
+    assertEquals('running', gradientBeforeStyle.animationPlayState);
+    assertEquals('running', maskBeforeStyle.animationPlayState);
   });
 
   test('animation plays on page load.', async () => {
