@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -105,12 +106,22 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
     Navigate(&params);
 
     // Close the |notification_id| as the user has explicitly acknowledged it.
-    PlatformNotificationServiceFactory::GetForProfile(profile)
-        ->CloseNotification(notification_id);
+    // Close it asynchronously to prevent use-after-free errors, since the
+    // notification itself is actively used by our callers, and it owns the
+    // memory of |origin| and |notification_id|.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](Profile* profile, const std::string& notification_id) {
+              PlatformNotificationServiceFactory::GetForProfile(profile)
+                  ->CloseNotification(notification_id);
+            },
+            profile, notification_id)
+            .Then(std::move(completed_closure)));
+  } else {
+    std::move(completed_closure).Run();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  std::move(completed_closure).Run();
 }
 
 void NonPersistentNotificationHandler::DisableNotifications(
