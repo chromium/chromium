@@ -26,6 +26,7 @@ enum WrappablePointerTag : uint16_t {
   kDomAutomationController,            // content::DomAutomationController
   kGamepadControllerBindings,          // content::GameControllerBindings
   kGpuBenchmarking,                    // content::GpuBenchmarking
+  kJsBinding,                          // js_injection::JsBinding
   kMojo,                               // ax::Mojo
   kMojoHandle,                         // ax::MojoHandle
   kNetErrorPageController,             // NetErrorPageController

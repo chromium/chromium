@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8.h"
 
 namespace js_injection {
@@ -48,7 +49,7 @@ class JsCommunication::JsObjectInfo
     js_binding_->Bind(std::move(browser_to_js_messaging));
   }
 
-  void SetBinding(base::WeakPtr<JsBinding> js_binding) {
+  void SetBinding(cppgc::WeakPersistent<JsBinding> js_binding) {
     js_binding_ = std::move(js_binding);
   }
 
@@ -65,7 +66,7 @@ class JsCommunication::JsObjectInfo
   mojo::AssociatedRemote<mojom::JsToBrowserMessaging> js_to_java_messaging_;
   mojo::AssociatedReceiver<mojom::BrowserToJsMessagingFactory>
       factory_receiver_;
-  base::WeakPtr<JsBinding> js_binding_;
+  cppgc::WeakPersistent<JsBinding> js_binding_;
 };
 
 struct JsCommunication::DocumentStartJavaScript {
@@ -146,7 +147,7 @@ void JsCommunication::DidClearWindowObject() {
 
   url::Origin frame_origin =
       url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin());
-  std::vector<base::WeakPtr<JsBinding>> js_bindings;
+  std::vector<cppgc::WeakPersistent<JsBinding>> js_bindings;
   js_bindings.reserve(js_objects_.size());
 
   for (const auto& js_object : js_objects_) {
@@ -154,7 +155,7 @@ void JsCommunication::DidClearWindowObject() {
       js_object.second->SetBinding(nullptr);
       continue;
     }
-    base::WeakPtr<JsBinding> js_binding = JsBinding::Install(
+    cppgc::WeakPersistent<JsBinding> js_binding = JsBinding::Install(
         render_frame(), js_object.first,
         weak_ptr_factory_for_bindings_.GetWeakPtr(), isolate, context);
     if (js_binding) {

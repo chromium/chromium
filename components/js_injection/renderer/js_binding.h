@@ -14,10 +14,12 @@
 #include "base/memory/weak_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "gin/arguments.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "v8/include/v8.h"
+#include "v8/include/cppgc/persistent.h"
 
 namespace v8 {
 template <typename T>
@@ -35,15 +37,22 @@ class JsCommunication;
 // A gin::DeprecatedWrappable class used for providing JavaScript API.
 // JsCommunication creates an instance of JsBinding for each unique name exposed
 // to the page. JsBinding is owned by v8.
-class JsBinding final : public gin::DeprecatedWrappable<JsBinding>,
+class JsBinding final : public gin::Wrappable<JsBinding>,
                         public mojom::BrowserToJsMessaging {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kJsBinding};
 
   JsBinding(const JsBinding&) = delete;
   JsBinding& operator=(const JsBinding&) = delete;
 
-  static base::WeakPtr<JsBinding> Install(
+  // Make public for cppgc::MakeGarbageCollected.
+  JsBinding(content::RenderFrame* render_frame,
+                     const std::u16string& js_object_name,
+                     base::WeakPtr<JsCommunication> js_communication);
+  ~JsBinding() override;
+
+  static cppgc::WeakPersistent<JsBinding> Install(
       content::RenderFrame* render_frame,
       const std::u16string& js_object_name,
       base::WeakPtr<JsCommunication> js_communication,
@@ -58,17 +67,11 @@ class JsBinding final : public gin::DeprecatedWrappable<JsBinding>,
   void Bind(
       mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessaging> receiver);
 
- protected:
-  ~JsBinding() override;
-
  private:
-  explicit JsBinding(content::RenderFrame* render_frame,
-                     const std::u16string& js_object_name,
-                     base::WeakPtr<JsCommunication> js_java_configurator);
-
-  // gin::DeprecatedWrappable implementation
+  // gin::WrappableBase implementation.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+  const gin::WrapperInfo* wrapper_info() const override;
 
   auto find_listener(v8::Local<v8::Function> listener) {
     // Can't just use `find(listeners_, listener)` because `v8::Global<T>` and
@@ -100,8 +103,6 @@ class JsBinding final : public gin::DeprecatedWrappable<JsBinding>,
   base::WeakPtr<JsCommunication> js_communication_;
 
   mojo::AssociatedReceiver<mojom::BrowserToJsMessaging> receiver_{this};
-
-  base::WeakPtrFactory<JsBinding> weak_ptr_factory_{this};
 };
 
 }  // namespace js_injection
