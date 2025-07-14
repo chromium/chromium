@@ -1,0 +1,102 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/page_info/android/connection_security_controller_android.h"
+
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "components/page_info/page_info_ui.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "page_info_client.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType()
+#include "components/page_info/android/jni_headers/PageInfoConnectionSecurityController_jni.h"
+
+using base::android::ConvertUTF16ToJavaString;
+using base::android::JavaParamRef;
+using net::x509_util::CryptoBufferAsStringPiece;
+
+// static
+static jlong JNI_PageInfoConnectionSecurityController_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& java_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(java_web_contents);
+  return reinterpret_cast<intptr_t>(
+      new ConnectionSecurityControllerAndroid(env, obj, web_contents));
+}
+
+ConnectionSecurityControllerAndroid::ConnectionSecurityControllerAndroid(
+    JNIEnv* env,
+    jobject java_controller_obj,
+    content::WebContents* web_contents) {
+  page_info_client_ = page_info::GetPageInfoClient();
+  DCHECK(page_info_client_);
+
+  content::NavigationEntry* nav_entry =
+      web_contents->GetController().GetVisibleEntry();
+  if (nav_entry->IsInitialEntry()) {
+    return;
+  }
+
+  controller_jobject_.Reset(env, java_controller_obj);
+
+  presenter_ = std::make_unique<PageInfo>(
+      page_info_client_->CreatePageInfoDelegate(web_contents), web_contents,
+      nav_entry->GetURL());
+}
+
+ConnectionSecurityControllerAndroid::~ConnectionSecurityControllerAndroid() =
+    default;
+
+void ConnectionSecurityControllerAndroid::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+void ConnectionSecurityControllerAndroid::LoadIdentityInfo(JNIEnv* env) {
+  // InitializeUiState will call PageInfoUI::SetIdentityInfo, which is
+  // implemented below to call setSecurityDescription on the Java controller
+  // with the relevant identity info.
+  presenter_->InitializeUiState(this, base::DoNothing());
+}
+
+void ConnectionSecurityControllerAndroid::SetIdentityInfo(
+    const IdentityInfo& identity_info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
+      GetSecurityDescription(identity_info);
+
+  int icon_id = page_info_client_->GetJavaResourceId(
+      PageInfoUI::GetIdentityIconID(identity_info.identity_status));
+  int icon_color_id = page_info_client_->GetJavaResourceId(
+      PageInfoUI::GetIdentityIconColorID(identity_info.identity_status));
+
+  scoped_refptr<net::X509Certificate> cert = identity_info.certificate;
+  std::vector<std::string> cert_chain;
+  if (cert) {
+    cert_chain.reserve(1 + cert->intermediate_buffers().size());
+    cert_chain.emplace_back(
+        net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
+    for (const auto& intermediate : cert->intermediate_buffers()) {
+      cert_chain.emplace_back(CryptoBufferAsStringPiece(intermediate.get()));
+    }
+  }
+
+  Java_PageInfoConnectionSecurityController_setSecurityDescription(
+      env, controller_jobject_, icon_id, icon_color_id,
+      ConvertUTF16ToJavaString(env, security_description->summary),
+      ConvertUTF16ToJavaString(env, security_description->details),
+      identity_info.show_ssl_decision_revoke_button,
+      base::android::ToJavaArrayOfByteArray(env, cert_chain));
+}
+
+void ConnectionSecurityControllerAndroid::ResetCertDecisions(JNIEnv* env) {
+  presenter_->OnRevokeSSLErrorBypassButtonPressed();
+}

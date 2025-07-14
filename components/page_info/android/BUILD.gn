@@ -11,6 +11,8 @@ static_library("android") {
     "certificate_viewer_android.cc",
     "connection_info_view_android.cc",
     "connection_info_view_android.h",
+    "connection_security_controller_android.cc",
+    "connection_security_controller_android.h",
     "page_info_client.cc",
     "page_info_client.h",
     "page_info_controller_android.cc",
@@ -36,8 +38,12 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/lock.xml",
+    "java/res/drawable/open_in_new.xml",
+    "java/res/drawable/sticky_note_2.xml",
     "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
+    "java/res/layout/connection_security.xml",
     "java/res/layout/page_info.xml",
     "java/res/layout/page_info_container.xml",
     "java/res/layout/page_info_row.xml",
@@ -63,9 +69,11 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
+    "java/src/org/chromium/components/page_info/ConnectionSecurityView.java",
     "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationController.java",
     "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
+    "java/src/org/chromium/components/page_info/PageInfoConnectionSecurityController.java",
     "java/src/org/chromium/components/page_info/PageInfoContainer.java",
     "java/src/org/chromium/components/page_info/PageInfoController.java",
     "java/src/org/chromium/components/page_info/PageInfoControllerDelegate.java",
@@ -133,6 +141,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
+    "java/src/org/chromium/components/page_info/PageInfoConnectionSecurityController.java",
     "java/src/org/chromium/components/page_info/PageInfoController.java",
     "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
   ]

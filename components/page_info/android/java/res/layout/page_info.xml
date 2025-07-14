@@ -21,6 +21,11 @@
         android:showDividers="middle"
         android:divider="?android:listDivider"
         android:dividerPadding="2dp" >
+        <org.chromium.components.page_info.ConnectionSecurityView
+            android:id="@+id/page_info_connection_security"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"/>
         <org.chromium.components.page_info.PageInfoRowView
             android:id="@+id/page_info_connection_row"
             android:visibility="gone"

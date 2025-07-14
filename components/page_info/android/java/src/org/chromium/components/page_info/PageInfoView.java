@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 public class PageInfoView extends FrameLayout implements OnClickListener {
     private final LinearLayout mRowWrapper;
     private final PageInfoRowView mConnectionRow;
+    private final ConnectionSecurityView mConnectionSecurityView;
     private final PageInfoRowView mPermissionsRow;
     private final PageInfoRowView mCookiesRow;
     private final Button mForgetSiteButton;
@@ -45,6 +46,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         mCookiesRow = findViewById(R.id.page_info_cookies_row);
         initializePageInfoViewChild(rowWrapper, true, null);
         mConnectionRow = findViewById(R.id.page_info_connection_row);
+        mConnectionSecurityView = findViewById(R.id.page_info_connection_security);
         mPermissionsRow = findViewById(R.id.page_info_permissions_row);
         mForgetSiteButton = findViewById(R.id.page_info_forget_site_button);
         initializePageInfoViewChild(mForgetSiteButton, false, null);
@@ -62,6 +64,10 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     public PageInfoRowView getConnectionRowView() {
         return mConnectionRow;
+    }
+
+    public ConnectionSecurityView getConnectionSecurityView() {
+        return mConnectionSecurityView;
     }
 
     public PageInfoRowView getPermissionsRowView() {

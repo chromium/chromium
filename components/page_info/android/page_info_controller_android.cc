@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/android/ui_android_features.h"
 #include "url/origin.h"
@@ -102,6 +103,22 @@ void PageInfoControllerAndroid::SetIdentityInfo(
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
+
+  if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+    if (security_description->summary_style == SecuritySummaryColor::GREEN) {
+      // Have the controller set up the button that will show the connection
+      // security subpage.
+      Java_PageInfoController_showOpenSecurityPageButton(
+          env, controller_jobject_,
+          ConvertUTF16ToJavaString(env, security_description->summary));
+    } else {
+      // Have the controller add the connection security UI directly to the page
+      // info UI.
+      Java_PageInfoController_showConnectionSecurityInfo(env,
+                                                         controller_jobject_);
+    }
+    return;
+  }
 
   Java_PageInfoController_setSecurityDescription(
       env, controller_jobject_,

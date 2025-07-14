@@ -33,6 +33,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
+#include "net/base/features.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -566,9 +567,15 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
               SecurityDescriptionType::CONNECTION);
         default:
           // Do not show details for secure connections.
-          return CreateSecurityDescription(SecuritySummaryColor::GREEN,
-                                           IDS_PAGE_INFO_SECURE_SUMMARY, 0,
-                                           SecurityDescriptionType::CONNECTION);
+          int details = 0;
+          if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+            // When the QWAC feature is enabled, a UI that more closely matches
+            // desktop is used.
+            details = IDS_PAGE_INFO_SECURE_DETAILS;
+          }
+          return CreateSecurityDescription(
+              SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
+              details, SecurityDescriptionType::CONNECTION);
       }
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:

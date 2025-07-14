@@ -133,6 +133,7 @@ public class PageInfoController
 
     // The controller for the connection section of the page info.
     private final PageInfoConnectionController mConnectionController;
+    private final PageInfoConnectionSecurityController mConnectionSecurityController;
 
     // The controller for the permissions section of the page info.
     private final PageInfoPermissionsController mPermissionsController;
@@ -271,6 +272,13 @@ public class PageInfoController
                         publisher,
                         mIsInternalPage);
         mSubpageControllers.add(mConnectionController);
+        mConnectionSecurityController =
+                new PageInfoConnectionSecurityController(
+                        this,
+                        mView.getConnectionSecurityView(),
+                        mView.getConnectionRowView(),
+                        mWebContents);
+        mSubpageControllers.add(mConnectionSecurityController);
         mPermissionsController =
                 new PageInfoPermissionsController(
                         this,
@@ -352,6 +360,9 @@ public class PageInfoController
         if (mCookiesController != null) {
             mCookiesController.destroy();
         }
+        if (mConnectionSecurityController != null) {
+            mConnectionSecurityController.destroy();
+        }
     }
 
     /**
@@ -389,6 +400,22 @@ public class PageInfoController
     @CalledByNative
     private void setSecurityDescription(String summary, String details) {
         mConnectionController.setSecurityDescription(summary, details);
+    }
+
+    /**
+     * Creates a button in the PageInfo UI that displays only a summary line about connection
+     * security; when tapped the button opens a subpage that displays the full connection security
+     * info.
+     */
+    @CalledByNative
+    private void showOpenSecurityPageButton(String summary) {
+        mConnectionSecurityController.showSecurityPageButton(summary);
+    }
+
+    /** Displays the full connection security info in the PageInfo UI. */
+    @CalledByNative
+    private void showConnectionSecurityInfo() {
+        mConnectionSecurityController.showSecurityInfo();
     }
 
     /** Updates the Topic view if present. */
