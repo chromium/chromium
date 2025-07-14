@@ -368,20 +368,17 @@ class JournalHandler {
   void Start(uint64_t max_bytes, bool capture_screenshots) {
     journal_serializer_ =
         std::make_unique<actor::AggregatedJournalInMemorySerializer>(
-            actor_keyed_service_->GetJournal());
+            actor_keyed_service_->GetJournal(), max_bytes);
     journal_serializer_->Init();
   }
 
   void Stop() { journal_serializer_.reset(); }
 
  private:
-  inline static constexpr size_t kMaxJournalBytes = 64 * 1024 * 1024;
-
   std::vector<uint8_t> GetSnapshotInternal(bool clear_journal) {
     std::vector<uint8_t> result_buffer;
     if (journal_serializer_) {
-      result_buffer =
-          journal_serializer_->Snapshot(/*max_bytes=*/kMaxJournalBytes);
+      result_buffer = journal_serializer_->Snapshot();
       if (clear_journal) {
         journal_serializer_->Clear();
       }

@@ -69,7 +69,8 @@ TEST_F(AggregatedJournalTest, AddObserver) {
 
 TEST_F(AggregatedJournalTest, SerializerInMemory) {
   AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
-  AggregatedJournalInMemorySerializer serializer(journal);
+  AggregatedJournalInMemorySerializer serializer(journal,
+                                                 /*max_bytes=*/1024 * 1024);
   serializer.Init();
   auto begin_entry = journal.CreatePendingAsyncEntry(
       GURL("http://example.com"), TaskId(), "Begin", "Entry");
@@ -79,12 +80,37 @@ TEST_F(AggregatedJournalTest, SerializerInMemory) {
   journal.Log(GURL(), TaskId(0), "Test4", "Nothing");
   begin_entry.reset();
 
-  std::vector<uint8_t> result = serializer.Snapshot(1024 * 1024);
+  std::vector<uint8_t> result = serializer.Snapshot();
   std::vector<char> char_buffer(result.begin(), result.end());
   ASSERT_GT(result.size(), 0u);
   base::test::TestTraceProcessorImpl ttp;
   absl::Status status = ttp.ParseTrace(char_buffer);
   ASSERT_TRUE(status.ok()) << status.message();
+}
+
+TEST_F(AggregatedJournalTest, SerializerInMemoryTooSmallBuffer) {
+  AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
+  AggregatedJournalInMemorySerializer serializer(journal, /*max_bytes=*/8);
+  serializer.Init();
+  journal.Log(GURL(), TaskId(0), "Test", "Nothing");
+
+  // Nothing will get logged because of the small buffer.
+  std::vector<uint8_t> result = serializer.Snapshot();
+  ASSERT_EQ(result.size(), 0u);
+}
+
+TEST_F(AggregatedJournalTest, SerializerInMemorySmallBuffer) {
+  AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
+  AggregatedJournalInMemorySerializer serializer(journal, /*max_bytes=*/100);
+  serializer.Init();
+  for (size_t i = 0; i < 10; ++i) {
+    journal.Log(GURL(), TaskId(0), "Test", "Nothing");
+  }
+
+  // We should something but at most 100 bytes.
+  std::vector<uint8_t> result = serializer.Snapshot();
+  ASSERT_LT(result.size(), 100u);
+  ASSERT_GT(result.size(), 0u);
 }
 
 TEST_F(AggregatedJournalTest, SerializerInFile) {

@@ -14,8 +14,9 @@
 namespace actor {
 
 AggregatedJournalInMemorySerializer::AggregatedJournalInMemorySerializer(
-    AggregatedJournal& journal)
-    : AggregatedJournalSerializer(journal) {}
+    AggregatedJournal& journal,
+    size_t max_bytes)
+    : AggregatedJournalSerializer(journal), max_bytes_(max_bytes) {}
 
 AggregatedJournalInMemorySerializer::~AggregatedJournalInMemorySerializer() =
     default;
@@ -26,31 +27,32 @@ void AggregatedJournalInMemorySerializer::Init() {
 
 void AggregatedJournalInMemorySerializer::Clear() {
   buffer_list_.clear();
+  total_size_ = 0;
   WriteTracePreamble();
 }
 
 void AggregatedJournalInMemorySerializer::WriteTracePacket(
     std::vector<uint8_t> message) {
+  total_size_ += message.size();
   buffer_list_.push_back(std::move(message));
+  while (total_size_ > max_bytes_) {
+    total_size_ -= buffer_list_.begin()->size();
+    buffer_list_.erase(buffer_list_.begin());
+  }
 }
 
 size_t AggregatedJournalInMemorySerializer::ApproximateSnapshotSize() {
-  size_t total_size = 0;
-  for (const auto& buffer : buffer_list_) {
-    total_size += buffer.size();
-    total_size += perfetto::TracePacket::kMaxPreambleBytes;
-  }
-  return total_size;
+  return total_size_ +
+         (perfetto::TracePacket::kMaxPreambleBytes * buffer_list_.size());
 }
 
-std::vector<uint8_t> AggregatedJournalInMemorySerializer::Snapshot(
-    size_t max_bytes) {
+std::vector<uint8_t> AggregatedJournalInMemorySerializer::Snapshot() {
   size_t total_size = 0;
   std::vector<uint8_t> result_buffer;
-  result_buffer.reserve(std::min(ApproximateSnapshotSize(), max_bytes));
+  result_buffer.reserve(std::min(ApproximateSnapshotSize(), max_bytes_));
   for (const auto& buffer : buffer_list_) {
     if (total_size + buffer.size() + perfetto::TracePacket::kMaxPreambleBytes >
-        max_bytes) {
+        max_bytes_) {
       break;
     }
     perfetto::TracePacket packet;
