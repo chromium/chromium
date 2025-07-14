@@ -47,4 +47,12 @@ extern const char kServerIDDictKey[];
 // interaction.
 extern const char kURLOnLastInteractionDictKey[];
 
+// Links for attributed links.
+extern const char kFirstFootnoteLinkURL[];
+extern const char kSecondFootnoteLinkURL[];
+extern const char kFootnoteLinkURLManagedAccount[];
+extern const char kSecondBoxLinkURLManagedAccount[];
+extern const char kSecondBoxLink1URLNonManagedAccount[];
+extern const char kSecondBoxLink2URLNonManagedAccount[];
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_BWG_CONSTANTS_H_
