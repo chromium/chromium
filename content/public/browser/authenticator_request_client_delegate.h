@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/common/credential_manager_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -25,7 +26,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace device {

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BACK_FORWARD_CACHE_LOADER_HELPER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BACK_FORWARD_CACHE_LOADER_HELPER_IMPL_H_
 
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"

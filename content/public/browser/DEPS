@@ -43,6 +43,7 @@ specific_include_rules = {
   ],
 
   "authenticator_request_client_delegate\.*": [
+    "+components/password_manager/core/common/credential_manager_types.h",
     "+device/fido",
   ],
   "digital_credentials_cross_device\.h": [

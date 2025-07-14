@@ -17,11 +17,11 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
 
 namespace blink {

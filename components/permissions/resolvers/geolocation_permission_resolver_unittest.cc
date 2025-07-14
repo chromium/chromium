@@ -14,6 +14,7 @@
 #include "components/permissions/resolvers/permission_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace permissions {
 

@@ -33,6 +33,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/test/trust_token_request_handler.h"
 #include "services/network/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
