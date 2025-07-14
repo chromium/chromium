@@ -35,6 +35,11 @@ std::optional<FilePath> GetInMemoryContentDocumentUriFromCacheDirFilePath(
 std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
     const FilePath& directory);
 
+// Returns a virtual document path for the specified directory which must be
+// under the cache dir, else returns std::nullopt.
+std::optional<FilePath> GetVirtualDocumentPathFromCacheDirDirectory(
+    const FilePath& path);
+
 }  // namespace test::android
 }  // namespace base
 

@@ -1804,6 +1804,35 @@ TEST_F(FileUtilTest, DeleteDeep) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(FileUtilTest, ContentUriPathExists) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+  FilePath no_such_file = dir.Append("no-such-file.txt");
+
+  FilePath content_uri_document_dir =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
+  FilePath content_uri_document_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_no_such_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(
+          no_such_file);
+
+  FilePath virtual_path_dir =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath virtual_path_file = virtual_path_dir.Append("file.txt");
+  FilePath virtual_path_no_such_file =
+      virtual_path_dir.Append("no-such-file.txt");
+
+  EXPECT_TRUE(PathExists(content_uri_document_dir));
+  EXPECT_TRUE(PathExists(content_uri_document_file));
+  EXPECT_FALSE(PathExists(content_uri_document_no_such_file));
+  EXPECT_TRUE(PathExists(virtual_path_dir));
+  EXPECT_TRUE(PathExists(virtual_path_file));
+  EXPECT_FALSE(PathExists(virtual_path_no_such_file));
+}
+
 TEST_F(FileUtilTest, ContentUriGetInfo) {
   FilePath file = temp_dir_.GetPath().Append("file.txt");
   FilePath dir = temp_dir_.GetPath().Append("dir");
@@ -1875,6 +1904,40 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
   EXPECT_FALSE(GetPosixFilePermissions(content_uri_dir, &mode));
 }
 
+TEST_F(FileUtilTest, OpenFileContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "abc");
+  FilePath no_such_file = dir.Append("no-such-file.txt");
+
+  FilePath content_uri_document_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_no_such_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(
+          no_such_file);
+
+  FilePath virtual_path_dir =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath virtual_path_file = virtual_path_dir.Append("file.txt");
+  FilePath virtual_path_no_such_file =
+      virtual_path_dir.Append("no-such-file.txt");
+
+  ScopedFILE cu_f(OpenFile(content_uri_document_file, "r"));
+  std::string cu_s;
+  EXPECT_TRUE(ReadStreamToStringWithMaxSize(cu_f.get(), 4, &cu_s));
+  EXPECT_EQ(cu_s, "abc");
+
+  EXPECT_FALSE(OpenFile(content_uri_document_no_such_file, "r"));
+
+  ScopedFILE vp_f(OpenFile(virtual_path_file, "r"));
+  std::string vp_s;
+  EXPECT_TRUE(ReadStreamToStringWithMaxSize(vp_f.get(), 4, &vp_s));
+  EXPECT_EQ(vp_s, "abc");
+
+  EXPECT_FALSE(OpenFile(virtual_path_no_such_file, "r"));
+}
+
 TEST_F(FileUtilTest, DeleteContentUri) {
   // Get the path to the test file.
   FilePath data_dir;
@@ -1899,6 +1962,42 @@ TEST_F(FileUtilTest, DeleteContentUri) {
   EXPECT_FALSE(PathExists(image_copy));
   EXPECT_FALSE(PathExists(uri_path));
 }
+
+TEST_F(FileUtilTest, ResolveToContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+
+  FilePath dir_vp =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath file_vp = dir_vp.Append("file.txt");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  FilePath file_content_uri = *ResolveToContentUri(file_vp);
+  ASSERT_TRUE(file_content_uri.IsContentUri());
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_content_uri, &info));
+  ASSERT_EQ(info.size, 12u);
+}
+
+TEST_F(FileUtilTest, ResolveToVirtualDocumentPath) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+
+  FilePath dir_content_uri =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
+  FilePath dir_vp = *ResolveToVirtualDocumentPath(dir_content_uri);
+  ASSERT_TRUE(dir_vp.IsVirtualDocumentPath());
+
+  FilePath file_vp = dir_vp.Append("file.txt");
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_vp, &info));
+  ASSERT_TRUE(!info.is_directory);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

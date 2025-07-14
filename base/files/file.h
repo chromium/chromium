@@ -6,6 +6,7 @@
 #define BASE_FILES_FILE_H_
 
 #include <stdint.h>
+#include <sys/types.h>
 
 #include <optional>
 #include <string>
@@ -417,6 +418,8 @@ class BASE_EXPORT File {
   static int Fstat(int fd, stat_wrapper_t* sb);
   // Wrapper for lstat().
   static int Lstat(const FilePath& path, stat_wrapper_t* sb);
+  // Wrapper for mkdir().
+  static int Mkdir(const FilePath& path, mode_t mode);
 #endif
 
   // This function can be used to augment `flags` with the correct flags
@@ -454,6 +457,9 @@ class BASE_EXPORT File {
   // Platform path to `file_`. Set if `this` wraps a file from an Android
   // content provider (i.e. a content URI) or if tracing is enabled in
   // `Initialize()`.
+  // On Android it could be a content URI, but never a virtual document path.
+  // path_ will be empty if content URI cannot be opened making the file
+  // invalid.
   FilePath path_;
 
   // Object tied to the lifetime of |this| that enables/disables tracing.

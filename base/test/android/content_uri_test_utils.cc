@@ -4,9 +4,12 @@
 
 #include "base/test/android/content_uri_test_utils.h"
 
+#include <optional>
+
 #include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 
@@ -69,6 +72,16 @@ std::optional<FilePath> GetInMemoryContentDocumentUriFromCacheDirFilePath(
 std::optional<FilePath> GetInMemoryContentTreeUriFromCacheDirDirectory(
     const FilePath& path) {
   return GetInMemoryContentDocumentUriFromCacheDirPath(path, /*is_tree=*/true);
+}
+
+std::optional<FilePath> GetVirtualDocumentPathFromCacheDirDirectory(
+    const FilePath& path) {
+  std::optional<FilePath> content_url =
+      GetInMemoryContentTreeUriFromCacheDirDirectory(path);
+  if (!content_url) {
+    return std::nullopt;
+  }
+  return base::ResolveToVirtualDocumentPath(*content_url);
 }
 
 }  // namespace base::test::android

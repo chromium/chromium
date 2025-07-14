@@ -732,6 +732,19 @@ BASE_EXPORT int GetMaximumPathComponentLength(const base::FilePath& path);
 BASE_EXPORT bool GetShmemTempDir(bool executable, FilePath* path);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Resolves this FilePath to a content URI if it represents a virtual
+// document path or is already a content URI. Returns std::nullopt otherwise.
+BASE_EXPORT std::optional<FilePath> ResolveToContentUri(const FilePath& path);
+
+// Resolves this FilePath to a virtual document path if it's a content URI
+// representing a document tree or is already a virtual document path. Returns
+// std::nullopt otherwise.
+BASE_EXPORT std::optional<FilePath> ResolveToVirtualDocumentPath(
+    const FilePath& path);
+
+#endif
+
 // Internal --------------------------------------------------------------------
 
 namespace internal {

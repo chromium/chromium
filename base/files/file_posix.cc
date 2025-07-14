@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 
+#include "base/files/file_util.h"
 #include "base/notimplemented.h"
 
 // The only 32-bit platform that uses this file is Android. On Android APIs
@@ -41,6 +42,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -635,8 +637,15 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    java_parcel_file_descriptor_ = internal::OpenContentUri(path, flags);
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
+    if (!content_uri) {
+      error_details_ = FILE_ERROR_FAILED;
+      return;
+    }
+    java_parcel_file_descriptor_ =
+        internal::OpenContentUri(*content_uri, flags);
+
     int fd = internal::ContentUriGetFd(java_parcel_file_descriptor_);
     if (fd < 0) {
       error_details_ = FILE_ERROR_FAILED;
@@ -644,7 +653,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     }
 
     // Save path for any call to GetInfo().
-    path_ = path;
+    path_ = *std::move(content_uri);
     created_ = (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE));
     async_ = (flags & FLAG_ASYNC);
     error_details_ = FILE_OK;
@@ -749,10 +758,15 @@ File::Error File::GetLastFileError() {
 int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    std::optional<FilePath> p = base::ResolveToContentUri(path);
+    if (!p) {
+      errno = ENOENT;
+      return -1;
+    }
     // Attempt to open the file and call GetInfo(), otherwise call Java code
     // with the path which is required for dirs.
-    File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    File file(*p, base::File::FLAG_OPEN | base::File::FLAG_READ);
     Info info;
     if ((file.IsValid() && file.GetInfo(&info)) ||
         GetContentUriInfo(path, &info)) {
@@ -783,6 +797,21 @@ int File::Fstat(int fd, stat_wrapper_t* sb) {
 int File::Lstat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return lstat(path.value().c_str(), sb);
+}
+
+int File::Mkdir(const FilePath& path, mode_t mode) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsVirtualDocumentPath()) {
+    std::optional<android::VirtualDocumentPath> vp =
+        android::VirtualDocumentPath::Parse(path.value());
+    if (!vp) {
+      errno = ENOENT;
+      return -1;
+    }
+    return vp->Mkdir(mode) ? 0 : -1;
+  }
+#endif
+  return mkdir(path.value().c_str(), mode);
 }
 
 }  // namespace base

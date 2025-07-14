@@ -73,6 +73,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -467,6 +468,11 @@ bool IsVisibleToUser(const FilePath& path) {
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
+#if BUILDFLAG(IS_ANDROID)
+  if (input.IsContentUri() || input.IsVirtualDocumentPath()) {
+    return input;
+  }
+#endif
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   char full_path[PATH_MAX];
   if (realpath(input.value().c_str(), full_path) == nullptr) {
@@ -632,8 +638,12 @@ bool RemoveCloseOnExec(int fd) {
 bool PathExists(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    return internal::ContentUriExists(path);
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
+    if (!content_uri) {
+      return false;
+    }
+    return internal::ContentUriExists(*content_uri);
   }
 #endif
   return access(path.value().c_str(), F_OK) == 0;
@@ -962,7 +972,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    if (mkdir(subpath.value().c_str(), mode) == 0) {
+    if (File::Mkdir(subpath, mode) == 0) {
       continue;
     }
     // Mkdir failed, but it might have failed with EEXIST, or some other error
@@ -1053,6 +1063,21 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
       (strchr(mode, ',') != nullptr && strchr(mode, 'e') > strchr(mode, ',')));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   FILE* result = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  if (filename.IsContentUri() || filename.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(filename);
+    if (!content_uri) {
+      return nullptr;
+    }
+    // TODO(crbug.com/428129200): use mode.
+    int fd = internal::ContentUriGetFd(internal::OpenContentUri(
+        *content_uri, File::FLAG_OPEN | File::FLAG_READ));
+    if (fd < 0) {
+      return nullptr;
+    }
+    return fdopen(fd, mode);
+  }
+#endif
 #if BUILDFLAG(IS_APPLE)
   // macOS does not provide a mode character to set O_CLOEXEC; see
   // https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man3/fopen.3.html.
@@ -1122,6 +1147,17 @@ std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
 
 bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+#if BUILDFLAG(IS_ANDROID)
+  if (filename.IsVirtualDocumentPath()) {
+    std::optional<android::VirtualDocumentPath> vp =
+        android::VirtualDocumentPath::Parse(filename.value());
+    if (!vp) {
+      return false;
+    }
+    return vp->WriteFile(data);
+  }
+#endif
+
   int fd = HANDLE_EINTR(creat(filename.value().c_str(), 0666));
   if (fd < 0) {
     return false;

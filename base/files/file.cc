@@ -95,11 +95,7 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
     error_details_ = FILE_ERROR_ACCESS_DENIED;
     return;
   }
-  if (FileTracing::IsCategoryEnabled()
-#if BUILDFLAG(IS_ANDROID)
-      || path.IsContentUri()
-#endif
-  ) {
+  if (FileTracing::IsCategoryEnabled()) {
     path_ = path;
   }
   SCOPED_FILE_TRACE("Initialize");

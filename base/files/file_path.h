@@ -104,6 +104,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -518,6 +519,14 @@ class BASE_EXPORT FilePath {
   // to access it.
   // Returns true if the path is a content uri, or false otherwise.
   bool IsContentUri() const;
+
+  // Checks whether this path looks like a virtual document path. It is a quick
+  // check by a string matching, meaning that returning true does not guarantee
+  // that resolving it to a content URI will succeed. A virtual document path is
+  // a //base abstraction to transparently represent files and directories
+  // managed by Android's Storage Access Framework (SAF). See
+  // //base/android/virtual_document_path.h for details.
+  bool IsVirtualDocumentPath() const;
 #endif
 
   // NOTE: When adding a new public method, consider adding it to
