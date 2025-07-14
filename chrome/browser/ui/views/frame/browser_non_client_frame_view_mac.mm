@@ -47,10 +47,6 @@
 
 namespace {
 
-// Empirical measurements of the traffic lights.
-constexpr int kCaptionButtonsWidth = 52;
-constexpr int kCaptionButtonsLeadingPadding = 20;
-
 FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
   // In Kiosk mode, we don't show top Chrome UI.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
@@ -395,13 +391,19 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
 }
 
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
-  const int kCaptionButtonInset = kCaptionButtonsWidth +
-                                  (kCaptionButtonsLeadingPadding * 2) -
-                                  TabStyle::Get()->GetBottomCornerRadius();
-  if (CaptionButtonsOnLeadingEdge()) {
-    return gfx::Insets::TLBR(0, kCaptionButtonInset, 0, 0);
+  int button_total_width;
+  if (@available(macOS 26, *)) {
+    button_total_width = 86;
   } else {
-    return gfx::Insets::TLBR(0, 0, 0, kCaptionButtonInset);
+    button_total_width = 92;
+  }
+  int caption_button_inset =
+      button_total_width - TabStyle::Get()->GetBottomCornerRadius();
+
+  if (CaptionButtonsOnLeadingEdge()) {
+    return gfx::Insets::TLBR(0, caption_button_inset, 0, 0);
+  } else {
+    return gfx::Insets::TLBR(0, 0, 0, caption_button_inset);
   }
 }
 
