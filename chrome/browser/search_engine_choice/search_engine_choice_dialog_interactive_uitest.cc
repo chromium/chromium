@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -114,8 +115,14 @@ class SearchEngineChoiceDialogInteractiveUiTest
   base::UserActionTester user_action_tester_;
 };
 
+// TODO(crbug.com/431780231): Flaky on mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChooseSearchEngine DISABLED_ChooseSearchEngine
+#else
+#define MAYBE_ChooseSearchEngine ChooseSearchEngine
+#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
-                       ChooseSearchEngine) {
+                       MAYBE_ChooseSearchEngine) {
   SearchEngineChoiceDialogService* search_engine_choice_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile());
