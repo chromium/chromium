@@ -326,6 +326,10 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Virtual Card Enrollment Bottom Sheet related classes are below:
