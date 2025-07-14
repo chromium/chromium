@@ -432,7 +432,7 @@ enum WebDXFeature {
   kWasmMutableGlobals = 370,
   kWasmNonTrappingFloatToInt = 371,
   kWasmSignExtensionOperators = 372,
-  kIncomingCallNotifications = 373,
+  kDRAFT_IncomingCallNotifications = 373,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
