@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "content/browser/service_host/utility_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
@@ -48,10 +49,21 @@ void ServiceProcessTracker::NotifyTerminated(ServiceProcessId id) {
   processes_.erase(iter);
 }
 
-void ServiceProcessTracker::NotifyCrashed(ServiceProcessId id) {
+void ServiceProcessTracker::NotifyCrashed(
+    ServiceProcessId id,
+    UtilityProcessHost::Client::CrashType crash_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter = processes_.find(id);
   CHECK(iter != processes_.end());
+
+  switch (crash_type) {
+    case UtilityProcessHost::Client::CrashType::kPreIpcInitialization:
+      iter->second.set_crashed_pre_ipc(true);
+      break;
+    case UtilityProcessHost::Client::CrashType::kPostIpcInitialization:
+      iter->second.set_crashed_pre_ipc(false);
+      break;
+  }
   for (auto& observer : observers_) {
     observer.OnServiceProcessCrashed(iter->second.Duplicate());
   }

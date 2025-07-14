@@ -11,6 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "content/browser/service_host/utility_process_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "url/gurl.h"
@@ -34,7 +35,8 @@ class ServiceProcessTracker {
 
   void NotifyTerminated(ServiceProcessId id);
 
-  void NotifyCrashed(ServiceProcessId id);
+  void NotifyCrashed(ServiceProcessId id,
+                     UtilityProcessHost::Client::CrashType type);
 
   void AddObserver(ServiceProcessHost::Observer* observer);
 

@@ -24,8 +24,12 @@ ServiceProcessInfo& ServiceProcessInfo::operator=(ServiceProcessInfo&&) =
 ServiceProcessInfo::~ServiceProcessInfo() = default;
 
 ServiceProcessInfo ServiceProcessInfo::Duplicate() const {
-  return ServiceProcessInfo(service_interface_name_, site_, service_process_id_,
-                            process_.Duplicate());
+  ServiceProcessInfo info(service_interface_name_, site_, service_process_id_,
+                          process_.Duplicate());
+  if (crashed_pre_ipc_) {
+    info.set_crashed_pre_ipc(crashed_pre_ipc_.value());
+  }
+  return info;
 }
 
 }  // namespace content

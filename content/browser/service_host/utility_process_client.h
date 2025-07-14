@@ -36,7 +36,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
   void OnProcessTerminatedNormally() override;
 
-  void OnProcessCrashed() override;
+  void OnProcessCrashed(CrashType type) override;
 
  private:
   const std::string service_interface_name_;

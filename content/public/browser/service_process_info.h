@@ -63,6 +63,10 @@ class CONTENT_EXPORT ServiceProcessInfo {
   }
   const std::optional<GURL>& site() const { return site_; }
   const base::Process& GetProcess() const { return process_; }
+  std::optional<bool> crashed_pre_ipc() const { return crashed_pre_ipc_; }
+  void set_crashed_pre_ipc(bool crashed_pre_ipc) {
+    crashed_pre_ipc_ = crashed_pre_ipc;
+  }
 
  private:
   // The name of the service interface for which the process was launched.
@@ -77,6 +81,11 @@ class CONTENT_EXPORT ServiceProcessInfo {
 
   // The service process.
   base::Process process_;
+
+  // If a value is present then the process has crashed. This bool indicates
+  // whether or not the crash happened before UtilityMain e.g. a crash very
+  // early in startup before IPC has initialized.
+  std::optional<bool> crashed_pre_ipc_;
 };
 
 }  // namespace content
