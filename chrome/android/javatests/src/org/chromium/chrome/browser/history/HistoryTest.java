@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -47,6 +48,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -155,8 +158,12 @@ public class HistoryTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
+    @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     // Tests that the history sync opt-in promo when there's no history record, to verify
     // interactions with the history page empty state.
+    //
+    // Flaky on tablets in landscape and consistently failing on auto in landscape.
+    // See crbug.com/431136352.
     public void testHistorySyncPromoHeader_noHistoryRecord() throws Exception {
         // Sign-in with an account and opt-out history sync.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
