@@ -10,10 +10,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
+
+namespace syncer {
+class SyncService;
+}
 
 namespace autofill {
 
@@ -46,15 +52,14 @@ class AutofillProfile;
 //   updated.
 // - When profiles are updated remotely, profiles are reloaded from the database
 //   to apply any metadata changes.
-//
-// TODO(crbug.com/354706653): Ensure prefs are cleared on sign-out, after sync
-// has shutdown, to prevent leaking them into different profiles.
-class HomeAndWorkMetadataStore {
+class HomeAndWorkMetadataStore : public syncer::SyncServiceObserver {
  public:
   // `on_change` is called whenever the result of `ApplyMetadata()` changes,
   // for example because pref updates through sync were received.
   HomeAndWorkMetadataStore(PrefService* pref_service,
+                           syncer::SyncService* sync_service,
                            base::RepeatingClosure on_change);
+  ~HomeAndWorkMetadataStore() override;
 
   // Applies any metadata stored to all Home and Work profiles in `profiles`.
   // If the address was removed from Chrome, it is dropped.
@@ -75,8 +80,13 @@ class HomeAndWorkMetadataStore {
   std::optional<AutofillProfile> ApplyMetadata(AutofillProfile profiles,
                                                int max_use_count);
 
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar change_registrar_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observer_{this};
 };
 
 }  // namespace autofill

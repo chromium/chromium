@@ -127,9 +127,10 @@ AddressDataManager::~AddressDataManager() {
 }
 
 void AddressDataManager::Shutdown() {
-  // These classes' sync observers needs to be unregistered.
+  // These classes' sync observers need to be unregistered.
   contact_info_precondition_checker_.reset();
   address_data_cleaner_.reset();
+  home_and_work_metadata_.reset();
 }
 
 void AddressDataManager::AddObserver(AddressDataManager::Observer* obs) {
@@ -486,8 +487,9 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForHomeAndWork)) {
       home_and_work_metadata_ = std::make_unique<HomeAndWorkMetadataStore>(
-          pref_service_, base::BindRepeating(&AddressDataManager::LoadProfiles,
-                                             base::Unretained(this)));
+          pref_service_, sync_service_,
+          base::BindRepeating(&AddressDataManager::LoadProfiles,
+                              base::Unretained(this)));
     }
   }
 }

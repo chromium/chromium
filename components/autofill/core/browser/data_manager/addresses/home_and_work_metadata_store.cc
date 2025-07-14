@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace autofill {
 
@@ -46,12 +47,18 @@ std::string_view GetPrefName(AutofillProfile::RecordType record_type) {
 
 HomeAndWorkMetadataStore::HomeAndWorkMetadataStore(
     PrefService* pref_service,
+    syncer::SyncService* sync_service,
     base::RepeatingClosure on_change)
     : pref_service_(pref_service) {
   change_registrar_.Init(pref_service_);
   change_registrar_.Add(prefs::kAutofillHomeMetadata, on_change);
   change_registrar_.Add(prefs::kAutofillWorkMetadata, on_change);
+  if (sync_service) {
+    sync_observer_.Observe(sync_service);
+  }
 }
+
+HomeAndWorkMetadataStore::~HomeAndWorkMetadataStore() = default;
 
 std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
     std::vector<AutofillProfile> profiles) {
@@ -129,6 +136,20 @@ void HomeAndWorkMetadataStore::ApplyChange(
   }
   pref_service_->SetDict(GetPrefName(profile.record_type()),
                          std::move(metadata));
+}
+
+void HomeAndWorkMetadataStore::OnStateChanged(
+    syncer::SyncService* sync_service) {
+  if (sync_service->GetTransportState() !=
+      syncer::SyncService::TransportState::DISABLED) {
+    return;
+  }
+  // Sync got disabled and prefs are no longer synced. Clear their local state
+  // to prevent them from leaking into a different account. It is important that
+  // this happens after PRIORITY_PREFERENCES stopped syncing, because the
+  // metadata should be redownloaded during the next sign-in.
+  pref_service_->ClearPref(prefs::kAutofillHomeMetadata);
+  pref_service_->ClearPref(prefs::kAutofillWorkMetadata);
 }
 
 }  // namespace autofill

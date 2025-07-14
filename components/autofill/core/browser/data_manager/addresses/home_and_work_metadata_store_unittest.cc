@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +32,8 @@ class HomeAndWorkMetadataStoreTest : public testing::Test {
 
   PrefService* pref_service() { return prefs_.get(); }
 
+  syncer::TestSyncService* sync_service() { return &sync_service_; }
+
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
@@ -39,13 +42,15 @@ class HomeAndWorkMetadataStoreTest : public testing::Test {
   base::test::ScopedFeatureList feature_{
       features::kAutofillEnableSupportForHomeAndWork};
   std::unique_ptr<PrefService> prefs_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Tests that any Home and Work metadata persisted with an update
 // `ApplyChange()` is restored by `ApplyMetadata()`.
 TEST_F(HomeAndWorkMetadataStoreTest, Update_HomeAndWork) {
   base::MockRepeatingClosure on_change;
-  HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          on_change.Get());
 
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
@@ -69,7 +74,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Update_HomeAndWork) {
 // `ApplyChange()` and `ApplyMetadata()`.
 TEST_F(HomeAndWorkMetadataStoreTest, Update_NonHomeAndWork) {
   base::MockRepeatingClosure on_change;
-  HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          on_change.Get());
 
   AutofillProfile profile = test::GetFullProfile();
   profile.usage_history().set_use_count(5);
@@ -92,7 +98,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Update_NonHomeAndWork) {
 // and Work profiles.
 TEST_F(HomeAndWorkMetadataStoreTest, Remove_HomeAndWork) {
   base::MockRepeatingClosure on_change;
-  HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          on_change.Get());
 
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
@@ -116,7 +123,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Remove_HomeAndWork) {
 // `ApplyChange()` and `ApplyMetadata()`.
 TEST_F(HomeAndWorkMetadataStoreTest, Remove_NonHomeAndWork) {
   base::MockRepeatingClosure on_change;
-  HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          on_change.Get());
 
   AutofillProfile profile = test::GetFullProfile();
   EXPECT_CALL(on_change, Run()).Times(0);
@@ -132,7 +140,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Remove_NonHomeAndWork) {
 // class, e.g. through sync.
 TEST_F(HomeAndWorkMetadataStoreTest, MetadataChangeThroughSync) {
   base::MockRepeatingClosure on_change;
-  HomeAndWorkMetadataStore metadata_store(pref_service(), on_change.Get());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          on_change.Get());
   EXPECT_CALL(on_change, Run());
   pref_service()->SetDict(prefs::kAutofillHomeMetadata, base::DictValue());
 }
@@ -140,7 +149,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, MetadataChangeThroughSync) {
 // Tests that for H/W addresses, metadata is default initialized to boost it
 // above other addresses in terms of frecency.
 TEST_F(HomeAndWorkMetadataStoreTest, DefaultValues) {
-  HomeAndWorkMetadataStore metadata_store(pref_service(), base::DoNothing());
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
   AutofillProfile home = test::GetFullProfile();
   test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
   AutofillProfile work = test::GetFullProfile();
@@ -164,6 +174,24 @@ TEST_F(HomeAndWorkMetadataStoreTest, DefaultValues) {
   ASSERT_THAT(profiles, testing::ElementsAre(home, work, other));
   EXPECT_TRUE(profiles[0].HasGreaterRankingThan(&profiles[1], comparison_time));
   EXPECT_TRUE(profiles[2].HasGreaterRankingThan(&profiles[0], comparison_time));
+}
+
+// Tests that prefs are cleared when sync is disabled, so their values don't
+// leak into other accounts.
+TEST_F(HomeAndWorkMetadataStoreTest, ClearPrefs) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
+  // Store some metadata.
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  metadata_store.ApplyChange(AutofillProfileChange(
+      AutofillProfileChange::UPDATE, profile.guid(), profile));
+  ASSERT_FALSE(pref_service()->GetDict(prefs::kAutofillHomeMetadata).empty());
+
+  // Disable sync and expect that the metadata is cleared.
+  sync_service()->SetSignedOut();
+  sync_service()->FireStateChanged();
+  EXPECT_TRUE(pref_service()->GetDict(prefs::kAutofillHomeMetadata).empty());
 }
 
 }  // namespace
