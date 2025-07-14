@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/i18n/icu_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
@@ -27,15 +28,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(serialized_storage_key);
     if (maybe_storage_key) {
-      assert(maybe_storage_key->Serialize() == serialized_storage_key);
+      CHECK_EQ(maybe_storage_key->Serialize(), serialized_storage_key);
     }
 
     // LocalStorage deserialization test.
     maybe_storage_key =
         blink::StorageKey::DeserializeForLocalStorage(serialized_storage_key);
     if (maybe_storage_key) {
-      assert(maybe_storage_key->SerializeForLocalStorage() ==
-             serialized_storage_key);
+      CHECK_EQ(maybe_storage_key->SerializeForLocalStorage(),
+               serialized_storage_key);
     }
   }
   return 0;
