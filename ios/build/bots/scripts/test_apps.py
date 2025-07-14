@@ -474,7 +474,7 @@ class EgtestsApp(GTestsApp):
       # Module data specific to EG2 tests
       module_data['IsUITestBundle'] = True
       module_data['IsXCTRunnerHostedTestBundle'] = True
-      module_data['SystemAttachmentLifetime'] = 'keepAlways'
+      module_data['SystemAttachmentLifetime'] = 'deleteOnSuccess'
       if self.record_video_option is not None:
         # Currently the enum only supports recording on failed tests,
         # but can be extended to support more cases if needed,
