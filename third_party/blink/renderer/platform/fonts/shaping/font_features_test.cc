@@ -16,11 +16,12 @@ namespace {
 
 //
 // Tests that need `RenderingTest` such as `IsInitial()` are in
-// `InlineNodeTest.FontFeatures*'.
+// `InlineNodeTest.FontFeature*'.
 //
 class FontFeaturesTest : public testing::Test {};
 
-std::optional<uint32_t> FindValue(uint32_t tag, const FontFeatures& features) {
+std::optional<uint32_t> FindValue(uint32_t tag,
+                                  const FontFeatureRanges& features) {
   for (const FontFeatureRange& feature : features) {
     if (feature.tag == tag) {
       return feature.value;
@@ -54,7 +55,7 @@ TEST_P(FontFeaturesByOrientationTest, EastAsianContextualSpacingOnByDefault) {
   constexpr hb_tag_t vchw = HB_TAG('v', 'c', 'h', 'w');
   FontDescription font_description;
   font_description.SetOrientation(GetOrientation());
-  FontFeatures features;
+  FontFeatureRanges features;
   FontFeatureRange::FromFontDescription(font_description, features);
   if (IsHorizontal()) {
     EXPECT_EQ(FindValue(chws, features), 1u);
@@ -76,7 +77,7 @@ TEST_P(FontFeaturesByOrientationTest,
     FontDescription font_description;
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
-    FontFeatures features;
+    FontFeatureRanges features;
     FontFeatureRange::FromFontDescription(font_description, features);
     if (IsHorizontal()) {
       EXPECT_EQ(FindValue(chws, features), value);
@@ -103,7 +104,7 @@ TEST_P(FontFeaturesByOrientationTest,
     FontDescription font_description;
     font_description.SetOrientation(GetOrientation());
     font_description.SetFeatureSettings(settings);
-    FontFeatures features;
+    FontFeatureRanges features;
     FontFeatureRange::FromFontDescription(font_description, features);
     EXPECT_EQ(FindValue(chws, features), std::nullopt);
     EXPECT_EQ(FindValue(vchw, features), std::nullopt);
@@ -111,8 +112,8 @@ TEST_P(FontFeaturesByOrientationTest,
 }
 
 // Test the current behavior when multiple glyph-width GPOS features are set via
-// `FontFeatureSettings`. Current |FontFeatures| does not resolve conflicts,
-// just pass them all as specified to HarfBuzz.
+// `FontFeatureSettings`. Current |FontFeatureRanges| does not resolve
+// conflicts, just pass them all as specified to HarfBuzz.
 TEST_P(FontFeaturesByOrientationTest, MultipleGlyphWidthGPOS) {
   const hb_tag_t tags[] = {
       HB_TAG('c', 'h', 'w', 's'), HB_TAG('v', 'c', 'h', 'w'),
@@ -125,7 +126,7 @@ TEST_P(FontFeaturesByOrientationTest, MultipleGlyphWidthGPOS) {
   FontDescription font_description;
   font_description.SetOrientation(GetOrientation());
   font_description.SetFeatureSettings(settings);
-  FontFeatures features;
+  FontFeatureRanges features;
   FontFeatureRange::FromFontDescription(font_description, features);
   // Check all features are enabled.
   for (const hb_tag_t tag : tags)

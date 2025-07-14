@@ -257,6 +257,6 @@ template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
     Vector<FontFeatureRange, FontFeatureRange::kInitialSize>&);
 template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
     const FontDescription&,
-    FontFeatures&);
+    FontFeatureRanges&);
 
 }  // namespace blink

@@ -68,7 +68,7 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 //
 // Represents a list of `FontFeatureRange`.
 //
-using FontFeatures = Vector<FontFeatureRange, 6>;
+using FontFeatureRanges = Vector<FontFeatureRange, 6>;
 
 }  // namespace blink
 

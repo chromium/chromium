@@ -172,7 +172,7 @@ TEST_F(HanKerningTest, ResetFeatures) {
   Font* noto_cjk = CreateNotoCjk();
   const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
-  FontFeatures features;
+  FontFeatureRanges features;
   features.push_back(FontFeatureRange{
       {{'T', 'E', 'S', 'T'}, 1}, 0, static_cast<unsigned>(-1)});
   EXPECT_EQ(features.size(), 1u);

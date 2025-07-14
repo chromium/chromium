@@ -200,7 +200,7 @@ void HanKerning::Compute(const String& text,
                          const SimpleFontData& font,
                          const FontDescription& font_description,
                          Options options,
-                         FontFeatures* features) {
+                         FontFeatureRanges* features) {
   DCHECK(!features_);
   DCHECK_GT(end, start);
   if (!MayApply(StringView(text, start, end - start))) {

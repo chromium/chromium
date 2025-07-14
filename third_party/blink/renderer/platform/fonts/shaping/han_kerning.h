@@ -58,7 +58,7 @@ class PLATFORM_EXPORT HanKerning {
              const SimpleFontData& font_data,
              const FontDescription& font_description,
              Options options,
-             FontFeatures* features) {
+             FontFeatureRanges* features) {
     if (text.Is8Bit()) {
       return;
     }
@@ -121,11 +121,11 @@ class PLATFORM_EXPORT HanKerning {
                const SimpleFontData& font_data,
                const FontDescription& font_description,
                Options options,
-               FontFeatures* features);
+               FontFeatureRanges* features);
 
   void ResetFeatures();
 
-  FontFeatures* features_ = nullptr;
+  FontFeatureRanges* features_ = nullptr;
   wtf_size_t num_features_before_;
   Vector<unsigned, 32> unsafe_to_break_before_;
 };
