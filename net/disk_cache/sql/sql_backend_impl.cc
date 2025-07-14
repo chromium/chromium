@@ -508,7 +508,7 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
   for (auto& it : active_entries_) {
     excluded_keys_vec.push_back(it.first);
     // Check if the active entry falls within the specified time range.
-    const base::Time last_used_time = it.second->LastUsedTime();
+    const base::Time last_used_time = it.second->GetLastUsed();
     if (last_used_time >= initial_time && last_used_time < end_time) {
       active_entries_to_be_doomed.push_back(&it.second.get());
     }

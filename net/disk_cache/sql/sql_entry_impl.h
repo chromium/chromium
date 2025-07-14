@@ -76,9 +76,6 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
-  // Returns the last time the entry was used.
-  base::Time LastUsedTime() const { return last_used_; }
-
   // Returns the cache key of the entry.
   const CacheEntryKey& cache_key() const { return key_; }
 
