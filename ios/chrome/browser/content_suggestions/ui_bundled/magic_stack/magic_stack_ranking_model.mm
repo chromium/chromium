@@ -523,6 +523,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // one to show.
 - (void)didReceiveEphemeralCardSegmentationResult:
     (const segmentation_platform::ClassificationResult&)result {
+  // If an ephemeral card has already been selected for this ranking cycle,
+  // do not process another result. This prevents duplicate insertions if the
+  // segmentation callback fires multiple times (race condition).
+  if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid) {
+    return;
+  }
+
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
     return;
   }
