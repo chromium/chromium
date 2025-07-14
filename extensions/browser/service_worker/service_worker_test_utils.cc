@@ -346,8 +346,8 @@ void TestServiceWorkerTaskQueueObserver::DidStartWorkerFail(
   }
 }
 
-void TestServiceWorkerTaskQueueObserver::DidInitializeServiceWorkerContext(
-    const ExtensionId& extension_id) {
+void TestServiceWorkerTaskQueueObserver::
+    RendererDidInitializeServiceWorkerContext(const ExtensionId& extension_id) {
   inited_set_.insert(extension_id);
   if (quit_closure_) {
     std::move(quit_closure_).Run();
@@ -377,7 +377,7 @@ void TestServiceWorkerTaskQueueObserver::RequestedWorkerStart(
   ++requested_worker_started_map_[extension_id];
 }
 
-void TestServiceWorkerTaskQueueObserver::DidStopServiceWorkerContext(
+void TestServiceWorkerTaskQueueObserver::RendererDidStopServiceWorkerContext(
     const ExtensionId& extension_id) {
   stopped_set_.insert(extension_id);
   if (quit_closure_) {

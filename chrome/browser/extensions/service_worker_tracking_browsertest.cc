@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(
   // precisely. As-is these tests actually stop the render which destroys
   // `ServiceWorkerHost`.
   // "Send" the render stop notification second
-  task_queue->DidStopServiceWorkerContext(
+  task_queue->RendererDidStopServiceWorkerContext(
       previous_service_worker_id->render_process_id,
       previous_service_worker_id->extension_id, activation_token.value(),
       /*service_worker_scope=*/extension()->url(),
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(workers_for_extension.size(), 0ul);
 
   // Simulate the render stop notification arriving afterwards.
-  task_queue->DidStopServiceWorkerContext(
+  task_queue->RendererDidStopServiceWorkerContext(
       stopped_service_worker_id->render_process_id,
       stopped_service_worker_id->extension_id, activation_token.value(),
       /*service_worker_scope=*/extension()->url(),

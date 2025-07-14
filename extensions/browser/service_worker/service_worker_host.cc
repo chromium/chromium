@@ -183,7 +183,7 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
   worker_id_.thread_id = worker_thread_id;
 
   ServiceWorkerTaskQueue::Get(browser_context)
-      ->DidInitializeServiceWorkerContext(
+      ->RendererDidInitializeServiceWorkerContext(
           render_process_id, extension_id, service_worker_version_id,
           worker_thread_id, service_worker_token);
   EventRouter::Get(browser_context)
@@ -214,7 +214,7 @@ void ServiceWorkerHost::DidStartServiceWorkerContext(
         extension_id == service_worker_scope.host_piece());
 
   ServiceWorkerTaskQueue::Get(browser_context)
-      ->DidStartServiceWorkerContext(
+      ->RendererDidStartServiceWorkerContext(
           render_process_id, extension_id, activation_token,
           service_worker_scope, service_worker_version_id, worker_thread_id);
 }
@@ -243,7 +243,7 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
   CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
            service_worker_version_id);
   ServiceWorkerTaskQueue::Get(browser_context)
-      ->DidStopServiceWorkerContext(
+      ->RendererDidStopServiceWorkerContext(
           render_process_id, extension_id, activation_token,
           service_worker_scope, service_worker_version_id, worker_thread_id);
 }

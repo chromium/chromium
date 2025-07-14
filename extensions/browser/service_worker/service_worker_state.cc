@@ -146,7 +146,7 @@ void ServiceWorkerState::DidStartWorkerFail(
   }
 }
 
-void ServiceWorkerState::DidStartServiceWorkerContext(
+void ServiceWorkerState::RendererDidStartServiceWorkerContext(
     const SequencedContextId& context_id,
     const WorkerId& worker_id) {
   DCHECK_NE(RendererState::kActive, renderer_state())
@@ -173,17 +173,19 @@ void ServiceWorkerState::NotifyObserversIfReady(
   }
 }
 
-void ServiceWorkerState::DidStopServiceWorkerContext(const WorkerId& worker_id,
-                                                     const GURL& scope) {
+void ServiceWorkerState::RendererDidStopServiceWorkerContext(
+    const WorkerId& worker_id,
+    const GURL& scope) {
   if (worker_id_ != worker_id) {
-    // We can see `DidStopServiceWorkerContext` right after
-    // `DidInitializeServiceWorkerContext` and without
-    // `DidStartServiceWorkerContext`.
+    // We can see `RendererDidStopServiceWorkerContext` right after
+    // `RendererDidInitializeServiceWorkerContext` and without
+    // `RendererDidStartServiceWorkerContext`.
     return;
   }
 
   if (renderer_state() != RendererState::kActive) {
-    // We can see `DidStopServiceWorkerContext` before or after `OnStopping`.
+    // We can see `RendererDidStopServiceWorkerContext` before or after
+    // `OnStopping`.
     return;
   }
 

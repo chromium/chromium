@@ -96,7 +96,7 @@ bool ServiceWorkerTaskQueue::IsStartWorkerFailureUnexpected(
   return browser_context_shutting_down_;
 }
 
-void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
+void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
@@ -120,8 +120,8 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
   util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
                                                browser_context_);
   // TODO(jlulejian): Do we need to start tracking this in initialization or
-  // could we start in `DidStartServiceWorkerContext()` instead since this is
-  // for a running (started) worker?
+  // could we start in `RendererDidStartServiceWorkerContext()` instead since
+  // this is for a running (started) worker?
   ProcessManager::Get(browser_context_)
       ->StartTrackingServiceWorkerRunningInstance(
           {extension_id, render_process_id, service_worker_version_id,
@@ -130,11 +130,11 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
       ->ActivateExtensionInProcess(*extension, process_host);
 
   if (g_test_observer) {
-    g_test_observer->DidInitializeServiceWorkerContext(extension_id);
+    g_test_observer->RendererDidInitializeServiceWorkerContext(extension_id);
   }
 }
 
-void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
+void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
@@ -147,7 +147,7 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   if (worker_state) {
     const WorkerId worker_id = {extension_id, render_process_id,
                                 service_worker_version_id, thread_id};
-    worker_state->DidStartServiceWorkerContext(context_id, worker_id);
+    worker_state->RendererDidStartServiceWorkerContext(context_id, worker_id);
   }
 }
 
@@ -163,7 +163,7 @@ void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
   }
 }
 
-void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
+void ServiceWorkerTaskQueue::RendererDidStopServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
@@ -176,9 +176,11 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
   auto [worker_state, context_id] =
       GetWorkerStateForActivation(extension_id, activation_token);
   if (worker_state) {
-    worker_state->DidStopServiceWorkerContext(worker_id, service_worker_scope);
+    worker_state->RendererDidStopServiceWorkerContext(worker_id,
+                                                      service_worker_scope);
     if (g_test_observer) {
-      g_test_observer->DidStopServiceWorkerContext(context_id.extension_id);
+      g_test_observer->RendererDidStopServiceWorkerContext(
+          context_id.extension_id);
     }
   }
 }
@@ -232,7 +234,8 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
     return false;
   }
   // We must check both states since the worker could begin stopping and call
-  // DidStopServiceWorkerContext after ServiceWorkerState::BrowserState::kReady.
+  // `RendererDidStopServiceWorkerContext` after
+  // `ServiceWorkerState::BrowserState::kReady`.
   return (worker_state->browser_state() ==
           ServiceWorkerState::BrowserState::kReady) &&
          (worker_state->renderer_state() ==

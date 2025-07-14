@@ -71,18 +71,19 @@ class Extension;
 // is difficult to know if a worker is currently running and ready to process
 // tasks.
 //
-// `DidStartServiceWorkerContext()` is called asynchronously from the extension
-// renderer process (potentially before or after `DidStartWorkerForScope()`) and
-// it records that the worker has started in the renderer (process).
+// `RendererDidStartServiceWorkerContext()` is called asynchronously from the
+// extension renderer process (potentially before or after
+// `DidStartWorkerForScope()`) and it records that the worker has started in the
+// renderer (process).
 //
 // Stopping:
 //
 // TODO(crbug.com/40936639): update the below once `OnStopped()` is called to
 // track browser starting.
 //
-// `DidStopServiceWorkerContext()` is called when the worker is stopped to track
-// renderer stopping. `DidStopServiceWorkerContext()` is not always guaranteed
-// to be called.
+// `RendererDidStopServiceWorkerContext()` is called when the worker is stopped
+// to track renderer stopping. `RendererDidStopServiceWorkerContext()` is not
+// always guaranteed to be called.
 //
 // Task Processing Readiness:
 //
@@ -98,9 +99,9 @@ class Extension;
 //     ready. This signal means that the worker was *requested* to start and it
 //     verified that a worker registration exists at the //content layer. It is
 //     considered the “browser-side” signal that the worker is ready.
-//   * `RendererState`: `DidStartServiceWorkerContext()` signal sets the value
-//     to ready. This is start requests are sent to the worker. This signal
-//     means:
+//   * `RendererState`: `RendererDidStartServiceWorkerContext()` signal sets the
+//     value to ready. This is start requests are sent to the worker. This
+//     signal means:
 //       * that there is a worker renderer process thread running the service
 //         worker code
 //       * the worker has done one pass and executed it’s entire JS global scope
@@ -123,8 +124,8 @@ class Extension;
 // how the signals for their completion will be received.
 //
 //  For example `DidRegisterServiceWorker()`, `DidStartWorkerForScope()` and
-//  `DidStartServiceWorkerContext()` signals are not guaranteed to finish in any
-//  order.
+//  `RendererDidStartServiceWorkerContext()` signals are not guaranteed to
+//  finish in any order.
 //
 // Activation Token:
 //
@@ -171,7 +172,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   // Called once an extension Service Worker context was initialized but not
   // necessarily started executing its JavaScript.
-  void DidInitializeServiceWorkerContext(
+  void RendererDidInitializeServiceWorkerContext(
       int render_process_id,
       const ExtensionId& extension_id,
       int64_t service_worker_version_id,
@@ -180,7 +181,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Called once an extension Service Worker started running.
   // This can be thought as "loadstop", i.e. the global JS script of the worker
   // has completed executing.
-  void DidStartServiceWorkerContext(
+  void RendererDidStartServiceWorkerContext(
       int render_process_id,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
@@ -188,7 +189,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
       int64_t service_worker_version_id,
       int thread_id);
   // Called once an extension Service Worker was destroyed.
-  void DidStopServiceWorkerContext(
+  void RendererDidStopServiceWorkerContext(
       int render_process_id,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
@@ -284,18 +285,20 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
     // Called when a service worker is registered for the extension with the
     // associated `extension_id`.
-    virtual void DidInitializeServiceWorkerContext(
+    virtual void RendererDidInitializeServiceWorkerContext(
         const ExtensionId& extension_id) {}
 
-    // Called when a service worker is fully started (DidStartWorkerForScope()
-    // and DidStartServiceWorkerContext() were called) for the extension with
-    // the associated `extension_id`.
+    // Called when a service worker is fully started
+    // (`RendererDidStartWorkerForScope()` and
+    // `RendererDidStartServiceWorkerContext()` were called) for the extension
+    // with the associated `extension_id`.
     virtual void DidStartWorker(const ExtensionId& extension_id) {}
 
     // Called when a service worker registered for the extension with the
     // `extension_id` has notified the task queue that the render worker thread
     // is preparing to terminate.
-    virtual void DidStopServiceWorkerContext(const ExtensionId& extension_id) {}
+    virtual void RendererDidStopServiceWorkerContext(
+        const ExtensionId& extension_id) {}
 
     // Called when UntrackServiceWorkerState() is invoked for a worker
     // associated with `scope` (because it's stopping or has stopped).

@@ -188,7 +188,7 @@ class TestServiceWorkerTaskQueueObserver
 
   // ServiceWorkerTaskQueue::TestObserver
   void DidStartWorker(const ExtensionId& extension_id) override;
-  void DidInitializeServiceWorkerContext(
+  void RendererDidInitializeServiceWorkerContext(
       const ExtensionId& extension_id) override;
   void DidStartWorkerFail(const ExtensionId& extension_id,
                           size_t num_pending_tasks,
@@ -198,7 +198,8 @@ class TestServiceWorkerTaskQueueObserver
   void RegistrationMismatchMitigated(const ExtensionId& extension_id,
                                      bool success) override;
   void RequestedWorkerStart(const ExtensionId& extension_id) override;
-  void DidStopServiceWorkerContext(const ExtensionId& extension_id) override;
+  void RendererDidStopServiceWorkerContext(
+      const ExtensionId& extension_id) override;
   void UntrackServiceWorkerState(const GURL& scope) override;
 
  private:
