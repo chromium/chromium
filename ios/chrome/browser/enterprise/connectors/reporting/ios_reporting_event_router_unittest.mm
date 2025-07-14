@@ -385,11 +385,6 @@ TEST_P(IOSReportingEventRouterTest,
 
 // Test that the url filtering reporting events are blocked as expected.
 TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
-  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
-  // event in proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -400,6 +395,9 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_BLOCKED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_BLOCKED_SEEN);
   expected_event.set_profile_user_name(profile_->GetProfileName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
@@ -409,7 +407,12 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -431,11 +434,6 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 
 // Test that the url filtering reporting events are warned as expected.
 TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
-  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
-  // event in proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -446,6 +444,9 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_WARNED_SEEN);
   expected_event.set_profile_user_name(profile_->GetProfileName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
@@ -455,7 +456,12 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -477,11 +483,6 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 
 // Test that the url filtering reporting events are bypassed as expected.
 TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
-  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
-  // event in proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
@@ -492,6 +493,10 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_BYPASSED);
+  expected_event.set_clicked_through(true);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_WARNED_BYPASS);
   expected_event.set_profile_user_name(profile_->GetProfileName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
@@ -501,7 +506,12 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -549,7 +559,12 @@ TEST_P(IOSReportingEventRouterTest,
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
