@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
-#include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_message_support_export.h"
 
 namespace mojo {
@@ -32,7 +31,6 @@ class ChannelReader;
 
 //------------------------------------------------------------------------------
 
-struct LogData;
 class MessageAttachmentSet;
 
 class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
@@ -206,26 +204,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   // Returns true if there are any attachment in this message.
   bool HasAttachments() const override;
 
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  // Adds the outgoing time from Time::Now() at the end of the message and sets
-  // a bit to indicate that it's been added.
-  void set_sent_time(int64_t time);
-  int64_t sent_time() const;
-
-  void set_received_time(int64_t time) const;
-  int64_t received_time() const { return received_time_; }
-  void set_output_params(const std::string& op) const { output_params_ = op; }
-  const std::string& output_params() const { return output_params_; }
-  // The following four functions are needed so we can log sync messages with
-  // delayed replies.  We stick the log data from the sent message into the
-  // reply message, so that when it's sent and we have the output parameters
-  // we can log it.  As such, we set a flag on the sent message to not log it.
-  void set_sync_log_data(LogData* data) const { log_data_ = data; }
-  LogData* sync_log_data() const { return log_data_; }
-  void set_dont_log() const { dont_log_ = true; }
-  bool dont_log() const { return dont_log_; }
-#endif
-
  protected:
   friend class Channel;
   friend class ChannelMojo;
@@ -275,13 +253,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
     return attachment_set_.get();
   }
 
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  // Used for logging.
-  mutable int64_t received_time_;
-  mutable std::string output_params_;
-  mutable raw_ptr<LogData> log_data_;
-  mutable bool dont_log_;
-#endif
 
   FRIEND_TEST_ALL_PREFIXES(IPCMessageTest, FindNext);
   FRIEND_TEST_ALL_PREFIXES(IPCMessageTest, FindNextOverflow);

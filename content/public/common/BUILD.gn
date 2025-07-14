@@ -182,7 +182,6 @@ source_set("common_sources") {
     "content_descriptors.h",
     "content_features.cc",
     "content_features.h",
-    "content_ipc_logging.h",
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",

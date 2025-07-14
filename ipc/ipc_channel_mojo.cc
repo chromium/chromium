@@ -20,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_logging.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_mojo_bootstrap.h"
@@ -256,9 +255,6 @@ void ChannelMojo::OnAssociatedInterfaceRequest(
 bool ChannelMojo::Send(Message* message) {
   DVLOG(2) << "sending message @" << message << " on channel @" << this
            << " with type " << message->type();
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  Logging::GetInstance()->OnSendMessage(message);
-#endif
 
   std::unique_ptr<Message> scoped_message = base::WrapUnique(message);
   if (!message_reader_)

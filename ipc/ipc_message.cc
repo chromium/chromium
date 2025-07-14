@@ -91,11 +91,6 @@ Message::Message(const Message& other) : base::Pickle(other) {
 
 void Message::Init() {
   dispatch_error_ = false;
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  received_time_ = 0;
-  dont_log_ = false;
-  log_data_ = nullptr;
-#endif
 }
 
 Message& Message::operator=(const Message& other) {
@@ -117,27 +112,6 @@ void Message::EnsureMessageAttachmentSet() {
   if (!attachment_set_.get())
     attachment_set_ = new MessageAttachmentSet;
 }
-
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-void Message::set_sent_time(int64_t time) {
-  DCHECK((header()->flags & HAS_SENT_TIME_BIT) == 0);
-  header()->flags |= HAS_SENT_TIME_BIT;
-  WriteInt64(time);
-}
-
-int64_t Message::sent_time() const {
-  if ((header()->flags & HAS_SENT_TIME_BIT) == 0)
-    return 0;
-
-  const char* data = end_of_payload();
-  data -= sizeof(int64_t);
-  return *(reinterpret_cast<const int64_t*>(data));
-}
-
-void Message::set_received_time(int64_t time) const {
-  received_time_ = time;
-}
-#endif  // BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 
 Message::NextMessageInfo::NextMessageInfo()
     : message_size(0), message_found(false), pickle_end(nullptr),

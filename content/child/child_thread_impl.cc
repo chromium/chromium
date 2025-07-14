@@ -57,7 +57,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel_mojo.h"
-#include "ipc/ipc_logging.h"
 #include "ipc/ipc_platform_file.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -353,20 +352,6 @@ class ChildThreadImpl::IOThreadState
   }
 #endif
 
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  void SetIPCLoggingEnabled(bool enable) override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](bool enable) {
-                         if (enable)
-                           IPC::Logging::GetInstance()->Enable();
-                         else
-                           IPC::Logging::GetInstance()->Disable();
-                       },
-                       enable));
-  }
-#endif
-
   void GetBackgroundTracingAgentProvider(
       mojo::PendingReceiver<tracing::mojom::BackgroundTracingAgentProvider>
           receiver) override {
@@ -622,12 +607,6 @@ void ChildThreadImpl::Init(const Options& options) {
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
   on_channel_error_called_ = false;
   main_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  // We must make sure to instantiate the IPC Logger *before* we create the
-  // channel, otherwise we can get a callback on the IO thread which creates
-  // the logger, and the logger does not like being created on the IO thread.
-  IPC::Logging::GetInstance();
-#endif
 
   if (options.with_legacy_ipc_channel) {
     channel_ = IPC::SyncChannel::Create(

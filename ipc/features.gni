@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # Enabling enable_ipc_logging is no longer possible as it will be
-  # removed shortly.
+  # Controls nothing. Will be removed shortly.
   enable_ipc_logging = false
 }

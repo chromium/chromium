@@ -34,7 +34,6 @@
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_mojo.h"
-#include "ipc/ipc_logging.h"
 #include "ipc/message_filter.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -214,13 +213,6 @@ bool ChildProcessHostImpl::InitChannel() {
   }
 
   delegate_->OnChannelInitialized(channel_.get());
-
-  // Make sure these messages get sent first.
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-  bool enabled = IPC::Logging::GetInstance()->Enabled();
-  child_process_->SetIPCLoggingEnabled(enabled);
-#endif
-
   opening_channel_ = true;
 
   return true;

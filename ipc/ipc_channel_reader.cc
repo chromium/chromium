@@ -15,7 +15,6 @@
 
 #include "base/logging.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_logging.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_message_macros.h"
@@ -23,29 +22,11 @@
 namespace IPC {
 namespace internal {
 
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-
-namespace {
-std::string GetMessageText(const Message& message) {
-  std::string name;
-  Logging::GetInstance()->GetMessageText(
-      message.type(), &name, &message, nullptr);
-  return name;
-}
-}  // namespace
-
-#define EMIT_TRACE_EVENT(message)                                       \
-  TRACE_EVENT_WITH_FLOW1(                                               \
-      "ipc,toplevel", "ChannelReader::DispatchInputData",               \
-      (message).flags(), TRACE_EVENT_FLAG_FLOW_IN, "name",              \
-      GetMessageText(message));
-#else
 #define EMIT_TRACE_EVENT(message)                                              \
   TRACE_EVENT_WITH_FLOW2("ipc,toplevel", "ChannelReader::DispatchInputData",   \
                          (message).flags(), TRACE_EVENT_FLAG_FLOW_IN, "class", \
                          IPC_MESSAGE_ID_CLASS((message).type()), "line",       \
                          IPC_MESSAGE_ID_LINE((message).type()));
-#endif  // BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 
 ChannelReader::ChannelReader(Listener* listener)
   : listener_(listener),

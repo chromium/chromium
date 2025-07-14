@@ -471,9 +471,6 @@ mojom("mojo_bindings") {
   }
 
   enabled_features = []
-  if (enable_ipc_logging) {
-    enabled_features += [ "ipc_logging" ]
-  }
   if (use_clang_profiling_inside_sandbox) {
     enabled_features += [ "clang_profiling_inside_sandbox" ]
   }

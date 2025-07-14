@@ -34,7 +34,6 @@
 #include "base/types/id_type.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -49,10 +48,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
-#endif
-
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-#include "ipc/ipc_message.h"
 #endif
 
 namespace base {
@@ -1136,41 +1131,6 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<MSG> {
 //-----------------------------------------------------------------------------
 // Generic message subclasses
 
-// defined in ipc_logging.cc
-COMPONENT_EXPORT(IPC)
-void GenerateLogData(const Message& message, LogData* data, bool get_params);
-
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-inline void AddOutputParamsToLog(const Message* msg, std::string* l) {
-  const std::string& output_params = msg->output_params();
-  if (!l->empty() && !output_params.empty())
-    l->append(", ");
-
-  l->append(output_params);
-}
-
-template <class ReplyParamType>
-inline void LogReplyParamsToMessage(const ReplyParamType& reply_params,
-                                    const Message* msg) {
-  if (msg->received_time() != 0) {
-    std::string output_params;
-    LogParam(reply_params, &output_params);
-    msg->set_output_params(output_params);
-  }
-}
-
-inline void ConnectMessageAndReply(const Message* msg, Message* reply) {
-  if (msg->sent_time()) {
-    // Don't log the sync message after dispatch, as we don't have the
-    // output parameters at that point.  Instead, save its data and log it
-    // with the outgoing reply message when it's sent.
-    LogData* data = new LogData;
-    GenerateLogData(*msg, data, true);
-    msg->set_dont_log();
-    reply->set_sync_log_data(data);
-  }
-}
-#else
 inline void AddOutputParamsToLog(const Message* msg, std::string* l) {}
 
 template <class ReplyParamType>
@@ -1178,7 +1138,6 @@ inline void LogReplyParamsToMessage(const ReplyParamType& reply_params,
                                     const Message* msg) {}
 
 inline void ConnectMessageAndReply(const Message* msg, Message* reply) {}
-#endif
 
 }  // namespace IPC
 
