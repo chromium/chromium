@@ -598,13 +598,18 @@ using segmentation_platform::TipIdentifier;
       dismissViewControllerAnimated:NO
                          completion:nil];
   NSArray<SetUpListItemViewData*>* items = [self.setUpListMediator allItems];
+
   _setUpListShowMoreViewController =
       [[SetUpListShowMoreViewController alloc] initWithItems:items
                                                  tapDelegate:self];
-  _setUpListShowMoreViewController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
+
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:_setUpListShowMoreViewController];
+  navController.modalPresentationStyle = UIModalPresentationPageSheet;
+
   UISheetPresentationController* presentationController =
-      _setUpListShowMoreViewController.sheetPresentationController;
+      navController.sheetPresentationController;
+
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.detents = @[
@@ -616,10 +621,10 @@ using segmentation_platform::TipIdentifier;
         UISheetPresentationControllerDetentIdentifierLarge;
   }
   presentationController.preferredCornerRadius = 16;
-  [_magicStackCollectionView
-      presentViewController:_setUpListShowMoreViewController
-                   animated:YES
-                 completion:nil];
+
+  [_magicStackCollectionView presentViewController:navController
+                                          animated:YES
+                                        completion:nil];
 }
 
 #pragma mark - ContentSuggestionsViewControllerAudience

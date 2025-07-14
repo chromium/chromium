@@ -65,22 +65,18 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
   [self.view addSubview:backgroundView];
   AddSameConstraints(backgroundView, self.view);
 
-  UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
-  navigationBar.translucent = NO;
-  [navigationBar setShadowImage:[[UIImage alloc] init]];
-  [navigationBar setBarTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:_tapDelegate
                            action:@selector(dismissSeeMoreViewController)];
-  navigationItem.rightBarButtonItem = dismissButton;
-  navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
-  [navigationBar setItems:@[ navigationItem ]];
-  [self.view addSubview:navigationBar];
-  AddSameConstraintsToSides(
-      navigationBar, self.view.safeAreaLayoutGuide,
-      LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
+  self.navigationItem.rightBarButtonItem = dismissButton;
+
+  UINavigationBarAppearance* appearance =
+      [[UINavigationBarAppearance alloc] init];
+  [appearance configureWithTransparentBackground];
+
+  self.navigationItem.standardAppearance = appearance;
+  self.navigationItem.scrollEdgeAppearance = appearance;
 
   UILabel* title = [[UILabel alloc] init];
   title.translatesAutoresizingMaskIntoConstraints = NO;
@@ -115,7 +111,8 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
     [title.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor
                        constant:-kTitleDescriptionHorizontalInsets],
-    [title.topAnchor constraintEqualToAnchor:navigationBar.bottomAnchor],
+    [title.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [subtitle.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kTitleDescriptionHorizontalInsets],
