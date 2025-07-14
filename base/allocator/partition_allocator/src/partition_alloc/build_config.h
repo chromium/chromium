@@ -176,7 +176,7 @@
 #define PA_ARCH_CPU_ARM64
 #define PA_ARCH_CPU_64_BITS
 #define PA_ARCH_CPU_LITTLE_ENDIAN
-#elif defined(__pnacl__) || defined(__asmjs__) || defined(__wasm__)
+#elif defined(__asmjs__) || defined(__wasm__)
 #define PA_ARCH_CPU_32_BITS
 #define PA_ARCH_CPU_LITTLE_ENDIAN
 #elif defined(__MIPSEL__)
