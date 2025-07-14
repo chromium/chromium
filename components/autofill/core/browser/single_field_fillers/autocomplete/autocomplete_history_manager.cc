@@ -44,13 +44,14 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
   CancelPendingQuery();
 }
 
-bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
+void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     const FormFieldData& field,
     const AutofillClient& client,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
   if (!field.should_autocomplete()) {
-    return false;
+    std::move(on_suggestions_returned).Run(field.global_id(), {});
+    return;
   }
 
   CancelPendingQuery();
@@ -62,10 +63,10 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(field.global_id(), field.value(),
                                      std::move(on_suggestions_returned)));
-    return true;
+    return;
   }
 
-  return GetFormValuesForElementName(field, on_suggestions_returned);
+  GetFormValuesForElementName(field, std::move(on_suggestions_returned));
 }
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
@@ -154,8 +155,8 @@ void AutocompleteHistoryManager::Init(
     if (version_info::GetMajorVersionNumberAsInt() > last_cleaned_version) {
       // Trigger the cleanup.
       profile_database_->RemoveExpiredAutocompleteEntries(base::BindOnce(
-          &AutocompleteHistoryManager::OnAutofillCleanupReturned,
-          weak_ptr_factory_.GetWeakPtr()));
+        &AutocompleteHistoryManager::OnAutofillCleanupReturned,
+        weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }
@@ -168,20 +169,21 @@ bool AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
   return !MatchesRegex<kRegex>(name);
 }
 
-bool AutocompleteHistoryManager::GetFormValuesForElementName(
+void AutocompleteHistoryManager::GetFormValuesForElementName(
     const FormFieldData& field,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
-  if (profile_database_) {
-    pending_query_ = profile_database_->GetFormValuesForElementName(
-        field.name(), field.value(), kMaxAutocompleteMenuItems,
-        base::BindOnce(&AutocompleteHistoryManager::OnAutofillValuesReturned,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       QueryHandler(field.global_id(), field.value(),
-                                    std::move(on_suggestions_returned))));
-    return true;
+  if (!profile_database_) {
+    std::move(on_suggestions_returned).Run(field.global_id(), {});
+    return;
   }
-  return false;
+
+  pending_query_ = profile_database_->GetFormValuesForElementName(
+      field.name(), field.value(), kMaxAutocompleteMenuItems,
+      base::BindOnce(&AutocompleteHistoryManager::OnAutofillValuesReturned,
+                      weak_ptr_factory_.GetWeakPtr(),
+                      QueryHandler(field.global_id(), field.value(),
+                                  std::move(on_suggestions_returned))));
 }
 
 AutocompleteHistoryManager::QueryHandler::QueryHandler(

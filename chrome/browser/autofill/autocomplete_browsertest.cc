@@ -197,12 +197,10 @@ class AutocompleteTest : public InProcessBrowserTest {
         mock_callback;
     std::vector<Suggestion> suggestions;
     EXPECT_CALL(mock_callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback callback =
-        mock_callback.Get();
-    EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
+    autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        autofill_manager()->client(), callback));
+        autofill_manager()->client(), mock_callback.Get());
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());

@@ -61,17 +61,16 @@ class AutocompleteHistoryManager : public KeyedService {
         on_suggestions_returned;
   };
 
-  // May generate autocomplete suggestions for the given `field`. This is
-  // achieved through an async DB query. `client` checks if the requirements for
-  // generating autocomplete suggestions are met (e.g. autocomplete is enabled).
-  // If `OnGetSingleFieldSuggestions` decides to claim the opportunity to fill
-  // `field`, it returns true and calls `on_suggestions_returned`. Claiming the
-  // opportunity is not a promise that suggestions will be available. The
-  // callback may be called with no suggestions.
-  [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
+  // Generates autocomplete suggestions for the given `field`. This is achieved
+  // through an async DB query. `client` checks if the requirements for
+  // generating autocomplete suggestions  are met (e.g. autocomplete is
+  // enabled). Since autocomplete suggestions are always generated last, the
+  // `on_suggestions_returned` callback may be called with the suggestions for
+  // `field` or with an empty vector if no suggestions are available.
+  virtual void OnGetSingleFieldSuggestions(
       const FormFieldData& field,
       const AutofillClient& client,
-      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback
           on_suggestions_returned);
 
   // Saves the `fields` that are eligible to be saved as new or updated
@@ -110,10 +109,9 @@ class AutocompleteHistoryManager : public KeyedService {
   // and which have a prefix `field.value()`. The comparison of the prefix is
   // case insensitive.
   // `on_suggestions_returned` is called with the retrieved values.
-  // Returns true if the query was started successfully.
-  bool GetFormValuesForElementName(
+  void GetFormValuesForElementName(
       const FormFieldData& field,
-      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback
           on_suggestions_returned);
 
   // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
@@ -154,9 +152,10 @@ class AutocompleteHistoryManager : public KeyedService {
 
   // The handle of the current pending query to the WebDataService.
   // Since requests are asynchronous, this is used to identify the query when
-  // its results are returned, preventing race conditions with old, stale queries.
-  // It is also used to cancel a pending query if a new one is initiated or if
-  // this manager is destroyed. It is `std::nullopt` if no query is in flight.
+  // its results are returned, preventing race conditions with old, stale
+  // queries. It is also used to cancel a pending query if a new one is
+  // initiated or if this manager is destroyed. It is `std::nullopt` if no query
+  // is in flight.
   std::optional<WebDataServiceBase::Handle> pending_query_;
 
   // Cached results of the last batch of autocomplete suggestions.

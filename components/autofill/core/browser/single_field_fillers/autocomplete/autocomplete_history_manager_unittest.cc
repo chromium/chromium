@@ -434,15 +434,16 @@ TEST_F(AutocompleteHistoryManagerTest,
   test_field_.set_should_autocomplete(false);
 
   // Setting up mock to verify that call to the handler's OnSuggestionsReturned
-  // is not triggered.
+  // is triggered with no suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
+                                 testing::Truly(IsEmptySuggestionVector)));
 
   EXPECT_CALL(*web_data_service_, GetFormValuesForElementName).Times(0);
 
   // Simulate request for suggestions.
-  EXPECT_FALSE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 }
 
 // Make sure our handler is called at the right time.
@@ -462,8 +463,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
@@ -492,8 +493,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -515,8 +516,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -544,8 +545,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _));
@@ -576,8 +577,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(), _));
@@ -606,8 +607,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback,
@@ -643,8 +644,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback, Run(test_field_.global_id(),
@@ -676,8 +677,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(mock_callback,
@@ -728,8 +729,8 @@ TEST_F(AutocompleteHistoryManagerTest,
   EXPECT_CALL(mock_callback, Run);
 
   // Simulate request for suggestions.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Simulate response from DB.
   autocomplete_manager_->OnAutofillValuesReturned(
@@ -779,15 +780,15 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Simulate request for the first suggestions.
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Simulate request for the second suggestions (this will cancel the first
   // one).
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))
       .Times(1);
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Setting up mock to verify that we can get the second response first.
   EXPECT_CALL(mock_callback,
@@ -828,8 +829,8 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
       .WillOnce(Return(mocked_db_query_id));
 
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, mock_callback.Get());
 
   // Simulate cancelling the request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id));
@@ -857,8 +858,8 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   EXPECT_CALL(mock_callback,
               Run(field.global_id(), testing::Truly(IsEmptySuggestionVector)));
 
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      field, autofill_client_, mock_callback.GetNewRef()));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      field, autofill_client_, mock_callback.Get());
 }
 
 TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
@@ -870,9 +871,8 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  OnSuggestionsReturnedCallback do_nothing = base::DoNothing();
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      test_field_, autofill_client_, do_nothing));
+  autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_field_, autofill_client_, base::DoNothing());
 
   // Expect a cancel call.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id));

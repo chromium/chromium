@@ -1538,13 +1538,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                                           on_suggestions_returned)) {
       return;
     }
-    if (client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
-            field, client(), on_suggestions_returned)) {
-      return;
-    }
-
-    client().GetAutocompleteHistoryManager()->CancelPendingQuery();
-    std::move(on_suggestions_returned).Run(field.global_id(), {});
+    // Autocomplete suggestions have to be generated last since they have to
+    // take the ownership of `on_suggestions_returned`.
+    // Even if no autocomplete suggestions are generated,
+    // `on_suggestions_returned` is still called with an empty list of
+    // suggestions.
+    client().GetAutocompleteHistoryManager()->OnGetSingleFieldSuggestions(
+            field, client(), std::move(on_suggestions_returned));
   } else {
     std::move(on_single_field_suggestions_callback)
         .Run(/*single_field_suggestions=*/{});
