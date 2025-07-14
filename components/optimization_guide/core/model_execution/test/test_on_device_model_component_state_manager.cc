@@ -9,59 +9,61 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 
 namespace optimization_guide {
 
-struct TestOnDeviceModelComponentStateManager::State
-    : public base::RefCounted<TestOnDeviceModelComponentStateManager::State> {
-  int64_t free_disk_space_ = 100 * 1024ll * 1024 * 1024;
-  bool installer_registered_ = false;
-  bool uninstall_called_ = false;
-
- private:
-  friend class base::RefCounted<State>;
-  ~State() = default;
-};
-
-class FakeOnDeviceModelComponentStateManagerDelegate
+class TestComponentState::DelegateImpl
     : public OnDeviceModelComponentStateManager::Delegate {
  public:
-  explicit FakeOnDeviceModelComponentStateManagerDelegate(
-      scoped_refptr<TestOnDeviceModelComponentStateManager::State> state)
+  explicit DelegateImpl(base::WeakPtr<TestComponentState> state)
       : state_(state) {}
-  ~FakeOnDeviceModelComponentStateManagerDelegate() override = default;
+  ~DelegateImpl() override = default;
 
   // OnDeviceModelComponentStateManager::Delegate.
   void RegisterInstaller(
       scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
       bool is_already_installing) override {
-    state_->installer_registered_ = true;
+    if (state_) {
+      state_->installer_registered_ = true;
+    }
   }
   void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
                      state_manager) override {
-    state_->uninstall_called_ = true;
+    if (state_) {
+      state_->uninstall_called_ = true;
+    }
   }
   base::FilePath GetInstallDirectory() override {
     return base::FilePath(FILE_PATH_LITERAL("/tmp/model_install_dir"));
   }
   void GetFreeDiskSpace(const base::FilePath& path,
                         base::OnceCallback<void(int64_t)> callback) override {
+    int64_t space = state_ ? state_->free_disk_space_ : 0;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), state_->free_disk_space_));
+        FROM_HERE, base::BindOnce(std::move(callback), space));
   }
 
  private:
   friend class TestOnDeviceModelComponentStateManager;
-  scoped_refptr<TestOnDeviceModelComponentStateManager::State> state_;
+  base::WeakPtr<TestComponentState> state_;
 };
+
+TestComponentState::TestComponentState() = default;
+TestComponentState::~TestComponentState() = default;
+
+std::unique_ptr<OnDeviceModelComponentStateManager::Delegate>
+TestComponentState::CreateDelegate() {
+  return std::make_unique<DelegateImpl>(weak_ptr_factory_.GetWeakPtr());
+}
 
 TestOnDeviceModelComponentStateManager::TestOnDeviceModelComponentStateManager(
     PrefService* local_state)
-    : local_state_(local_state), state_(base::MakeRefCounted<State>()) {}
+    : local_state_(local_state),
+      state_(std::make_unique<TestComponentState>()) {}
 
 TestOnDeviceModelComponentStateManager::
     ~TestOnDeviceModelComponentStateManager() {
@@ -75,36 +77,29 @@ TestOnDeviceModelComponentStateManager::get() {
   if (!manager_) {
     CHECK(!OnDeviceModelComponentStateManager::GetInstanceForTesting())
         << "Instance already exists";
-    auto delegate =
-        std::make_unique<FakeOnDeviceModelComponentStateManagerDelegate>(
-            state_);
-    delegate_ = delegate.get();
     manager_ = OnDeviceModelComponentStateManager::CreateOrGet(
-        local_state_, std::move(delegate));
+        local_state_, state_->CreateDelegate());
     CHECK(manager_);
   }
   return manager_;
 }
 
 void TestOnDeviceModelComponentStateManager::Reset() {
-  if (manager_) {
-    delegate_ = nullptr;
-    manager_ = nullptr;
-    state_ = base::MakeRefCounted<State>();
-  }
+  manager_ = nullptr;
+  state_ = std::make_unique<TestComponentState>();
 }
 
 bool TestOnDeviceModelComponentStateManager::IsInstallerRegistered() const {
-  return state_->installer_registered_;
+  return state_->installer_registered();
 }
 
 bool TestOnDeviceModelComponentStateManager::WasComponentUninstalled() const {
-  return state_->uninstall_called_;
+  return state_->uninstall_called();
 }
 
 void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
     int64_t free_space_bytes) {
-  state_->free_disk_space_ = free_space_bytes;
+  state_->SetFreeDiskSpace(free_space_bytes);
 }
 
 void TestOnDeviceModelComponentStateManager::SetReady(
