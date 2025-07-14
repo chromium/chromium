@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
-namespace WTF {
+namespace blink {
 
 // ConstructTraits is used to construct elements in WTF collections.
 // All in-place constructions that may assign Oilpan objects must be
@@ -49,6 +49,11 @@ class ConstructTraits {
   }
 };
 
+}  // namespace blink
+
+// TODO(crbug.com/422768753): Remove this `using` directive.
+namespace WTF {
+using blink::ConstructTraits;
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_

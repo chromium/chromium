@@ -106,9 +106,6 @@ struct VectorTraits<VectorBackedLinkedListNode<ValueType, Allocator>>
       VectorTraits<ValueType>::kCanTraceConcurrently;
 };
 
-}  // namespace blink
-namespace WTF {
-
 template <typename ValueType, typename Traits, typename Allocator>
 class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
                       Traits,
@@ -157,7 +154,7 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
       static_assert(VectorTraits<Node>::kCanMoveWithMemcpy,
                     "Garbage collected types used in VectorBackedLinkedList "
                     "should be movable with memcpy");
-      AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
+      WTF::AtomicWriteMemcpy<sizeof(Node), alignof(Node)>(location, &element);
       return reinterpret_cast<Node*>(location);
     }
   };
@@ -167,9 +164,6 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
       ConstructAndNotifyElementImplGarbageCollected,
       ConstructAndNotifyElementImplNotGarbageCollected>::type;
 };
-
-}  // namespace WTF
-namespace blink {
 
 // VectorBackedLinkedList maintains a linked list through its contents such that
 // iterating it yields values in the order in which they were inserted.

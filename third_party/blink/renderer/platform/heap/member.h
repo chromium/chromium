@@ -211,10 +211,6 @@ struct UntracedMemberHashTraits
 template <typename T>
 struct HashTraits<blink::UntracedMember<T>> : UntracedMemberHashTraits<T> {};
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
 class MemberConstructTraits {
   STATIC_ONLY(MemberConstructTraits);
@@ -240,30 +236,30 @@ class MemberConstructTraits {
   }
 
   static void NotifyNewElement(T* element) {
-    blink::WriteBarrier::DispatchForObject(element);
+    WriteBarrier::DispatchForObject(element);
   }
 
   static void NotifyNewElements(base::span<T> members) {
     // Checking the first element is sufficient for determining whether a
     // marking or generational barrier is required.
     if (members.empty() ||
-               !blink::WriteBarrier::IsWriteBarrierNeeded(&members.front())) [[likely]] {
+        !WriteBarrier::IsWriteBarrierNeeded(&members.front())) [[likely]] {
       return;
     }
     for (auto& member : members) {
-      blink::WriteBarrier::DispatchForObject(&member);
+      WriteBarrier::DispatchForObject(&member);
     }
   }
 };
 
 template <typename T, typename Traits, typename Allocator>
-class ConstructTraits<blink::Member<T>, Traits, Allocator> final
-    : public MemberConstructTraits<blink::Member<T>> {};
+class ConstructTraits<Member<T>, Traits, Allocator> final
+    : public MemberConstructTraits<Member<T>> {};
 
 template <typename T, typename Traits, typename Allocator>
-class ConstructTraits<blink::WeakMember<T>, Traits, Allocator> final
-    : public MemberConstructTraits<blink::WeakMember<T>> {};
+class ConstructTraits<WeakMember<T>, Traits, Allocator> final
+    : public MemberConstructTraits<WeakMember<T>> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
