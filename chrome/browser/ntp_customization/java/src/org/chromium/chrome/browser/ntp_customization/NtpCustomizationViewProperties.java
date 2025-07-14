@@ -58,10 +58,18 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<OnCheckedChangeListener>
             MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
+    /** The resource ID of the content description for the switch within the MVT bottom sheet. */
+    public static final PropertyModel.WritableObjectPropertyKey<Integer>
+            SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID =
+                    new PropertyModel.WritableObjectPropertyKey<>();
+
     /** The keys to bind a NTP customization bottom sheet with a back button inside. */
     public static final PropertyKey[] BOTTOM_SHEET_KEYS =
             new PropertyKey[] {
-                BACK_PRESS_HANDLER, IS_MVT_SWITCH_CHECKED, MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER
+                BACK_PRESS_HANDLER,
+                IS_MVT_SWITCH_CHECKED,
+                MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER,
+                SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID
             };
 
     // Properties specifically for the feed settings bottom sheet:
