@@ -1954,21 +1954,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
-        pattern='BrowserUserData',
-        explanation=
-        ('Do not use BrowserUserData to store state on a Browser instance. '
-         'Instead use BrowserWindowFeatures. BrowserWindowFeatures is '
-         'functionally identical but has two benefits: it does not force a '
-         'dependency onto class Browser, and lifetime semantics are explicit '
-         'rather than implicit. See BrowserUserData header file for more '
-         'details.', ),
-        treat_as_error=False,
-        excluded_paths=(
-            # Exclude iOS as the iOS implementation of BrowserUserData is separate
-            # and still in use.
-            '^ios/', ),
-    ),
-    BanRule(
         pattern=r'subspan(0u,',
         explanation=(
             'Prefer first(n) over subspan(0u, n) as it is shorter, and the '
