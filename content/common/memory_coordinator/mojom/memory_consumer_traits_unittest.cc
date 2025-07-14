@@ -85,7 +85,7 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::MemoryConsumerTraits out;
+    base::MemoryConsumerTraits out = {};
     ASSERT_TRUE(remote()->EchoMemoryConsumerTraits(test_case, &out));
     EXPECT_EQ(test_case, out);
   }
@@ -96,7 +96,7 @@ TEST_F(MemoryConsumerTraitsTest, OutOfRange) {
       .supports_memory_limit = static_cast<SupportsMemoryLimit>(22),
   };
 
-  base::MemoryConsumerTraits out;
+  base::MemoryConsumerTraits out = {};
   EXPECT_FALSE(remote()->EchoMemoryConsumerTraits(kTestCase, &out));
   EXPECT_NE(kTestCase, out);
 }
