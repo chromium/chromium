@@ -534,6 +534,14 @@ void PictureInPictureWindowManager::UpdateCachedBounds(
                                                   most_recent_bounds);
 }
 
+void PictureInPictureWindowManager::ClearCachedBounds() {
+  if (!pip_window_controller_) {
+    return;
+  }
+  auto* const web_contents = pip_window_controller_->GetWebContents();
+  PictureInPictureBoundsCache::ClearCachedBounds(web_contents);
+}
+
 // static
 gfx::Size PictureInPictureWindowManager::GetMinimumInnerWindowSize() {
   return kMinWindowSize;
