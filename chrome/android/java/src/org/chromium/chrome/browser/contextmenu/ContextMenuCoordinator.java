@@ -530,6 +530,45 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         return dialog;
     }
 
+    /** Returns whether {@param item} has a click listener. */
+    private boolean hasClickListener(ListItem item) {
+        return item.model.containsKey(CLICK_LISTENER) && item.model.get(CLICK_LISTENER) != null;
+    }
+
+    /**
+     * Adds menu dismiss at the end of the callback of {@param item}.
+     *
+     * @param item The item whose callback will dismiss the menu.
+     */
+    private void addDismissToCallback(ListItem item) {
+        if (hasClickListener(item)) {
+            View.OnClickListener oldListener = item.model.get(CLICK_LISTENER);
+            item.model.set(
+                    CLICK_LISTENER,
+                    (view) -> {
+                        oldListener.onClick(view);
+                        dismiss();
+                    });
+        }
+    }
+
+    /**
+     * Adds menu dismiss at the end of each callback, recursively (through submenu items).
+     *
+     * @param item The item to start with.
+     */
+    private void addDismissToCallbacksRecursively(ListItem item) {
+        if (item.model.containsKey(SUBMENU_ITEMS)) {
+            for (ListItem submenuItem :
+                    PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {
+                addDismissToCallbacksRecursively(submenuItem);
+            }
+        }
+        // Note: CONTEXT_MENU_SUBMENU_HEADER items should be (and are correctly) excluded by this.
+        // This is because CONTEXT_MENU_SUBMENU_HEADER items are not in the model's SUBMENU_ITEMS.
+        addDismissToCallback(item);
+    }
+
     @VisibleForTesting
     ModelList getItemList(
             Activity activity,
@@ -557,14 +596,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
         for (ListItem item : itemList) {
             // Special case handling (for items whose callbacks don't use clickItem method)
-            if (item.model.containsKey(CLICK_LISTENER) && item.model.get(CLICK_LISTENER) != null) {
-                View.OnClickListener oldListener = item.model.get(CLICK_LISTENER);
-                item.model.set(
-                        CLICK_LISTENER,
-                        (view) -> {
-                            oldListener.onClick(view);
-                            dismiss();
-                        });
+            if (hasClickListener(item)) {
+                addDismissToCallback(item);
                 continue;
             }
             if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU) {
@@ -588,6 +621,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                             modelList.add(
                                     new ListItem(ListItemType.CONTEXT_MENU_SUBMENU_HEADER, model));
 
+                            addDismissToCallbacksRecursively(item);
                             for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
                                 modelList.add(listItem);
                             }

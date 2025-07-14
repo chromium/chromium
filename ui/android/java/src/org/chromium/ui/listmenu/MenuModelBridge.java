@@ -128,6 +128,20 @@ public class MenuModelBridge {
                         ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON, modelBuilder.build()));
     }
 
+    /** Adds a context menu item that is a submenu parent. */
+    @CalledByNative
+    private void addSubmenu(
+            @JniType("std::u16string") final String label,
+            final boolean isEnabled,
+            MenuModelBridge submenuItems) {
+        PropertyModel.Builder modelBuilder =
+                new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(ContextMenuSubmenuItemProperties.TITLE, label)
+                        .with(ListMenuItemProperties.ENABLED, isEnabled)
+                        .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
+        mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
+    }
+
     /** Adds a divider to the context menu. */
     @CalledByNative
     private void addDivider() {
