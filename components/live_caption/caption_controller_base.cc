@@ -182,7 +182,7 @@ void CaptionControllerBase::RemoveListener(Listener* listener) {
 }
 
 bool CaptionControllerBase::DispatchTranscription(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
   bool success = false;
@@ -190,29 +190,27 @@ bool CaptionControllerBase::DispatchTranscription(
   // Consider deleting the listener if it returns false.  It's unclear if
   // `caption_bubble_controller_` would allow this, but maybe.
   for (auto& listener : listeners_) {
-    success |=
-        listener->OnTranscription(web_contents, caption_bubble_context, result);
+    success |= listener->OnTranscription(rfh, caption_bubble_context, result);
   }
 
   return success;
 }
 
 void CaptionControllerBase::OnAudioStreamEnd(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context) {
   for (auto& listener : listeners_) {
-    listener->OnAudioStreamEnd(web_contents, caption_bubble_context);
+    listener->OnAudioStreamEnd(rfh, caption_bubble_context);
   }
 }
 
 void CaptionControllerBase::OnLanguageIdentificationEvent(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::mojom::LanguageIdentificationEventPtr& event) {
   // TODO(crbug.com/40167928): Implement the UI for language identification.
   for (auto& listener : listeners_) {
-    listener->OnLanguageIdentificationEvent(web_contents,
-                                            caption_bubble_context, event);
+    listener->OnLanguageIdentificationEvent(rfh, caption_bubble_context, event);
   }
 }
 

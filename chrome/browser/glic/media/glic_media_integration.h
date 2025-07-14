@@ -17,6 +17,7 @@ class ContentNode;
 }  // namespace optimization_guide
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -33,13 +34,20 @@ class GlicMediaIntegration {
   static GlicMediaIntegration* GetFor(content::WebContents*);
 
   // Use `context_root` to store our context information.  `context_root` will
-  // be overwritten.
+  // be overwritten.  This selects a frame that has a transcript, if any.
+  //
+  // This is deprecated in favor of the RFH variant below.
   virtual void AppendContext(
       content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) = 0;
 
+  // Per-frame version of `AppendContext`.
+  virtual void AppendContextForFrame(
+      content::RenderFrameHost* rfh,
+      optimization_guide::proto::ContentNode* context_root) = 0;
+
   // Pretend that a peer connection has been added.
-  virtual void OnPeerConnectionAddedForTesting(content::WebContents*) = 0;
+  virtual void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) = 0;
 };
 
 }  // namespace glic

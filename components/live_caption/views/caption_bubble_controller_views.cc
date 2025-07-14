@@ -79,7 +79,7 @@ void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
 }
 
 bool CaptionBubbleControllerViews::OnTranscription(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
   if (!caption_bubble_)
@@ -110,7 +110,7 @@ void CaptionBubbleControllerViews::OnError(
 }
 
 void CaptionBubbleControllerViews::OnAudioStreamEnd(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context) {
   if (!caption_bubble_)
     return;
@@ -231,7 +231,7 @@ CaptionBubble* CaptionBubbleControllerViews::GetCaptionBubbleForTesting() {
 }
 
 void CaptionBubbleControllerViews::OnLanguageIdentificationEvent(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::mojom::LanguageIdentificationEventPtr& event) {
   if (!caption_bubble_) {

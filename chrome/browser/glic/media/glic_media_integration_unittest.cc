@@ -92,6 +92,10 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
         /*delegate=*/nullptr);
   }
 
+  content::RenderFrameHost* rfh() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
  private:
   TestingPrefServiceSimple pref_service_;
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -123,30 +127,43 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsTranscript) {
   const std::string test_cap_3("XYZ");  // Should be ignored in all cases.
   const std::string test_cap_4("GHIJ");
   live_caption_controller()->DispatchTranscription(
-      web_contents(), nullptr,
+      rfh(), nullptr,
       media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
   live_caption_controller()->DispatchTranscription(
-      web_contents(), nullptr,
+      rfh(), nullptr,
       media::SpeechRecognitionResult(test_cap_2, /*is_final=*/true));
   // Non-final captions should be ignored.
   live_caption_controller()->DispatchTranscription(
-      web_contents(), nullptr,
+      rfh(), nullptr,
       media::SpeechRecognitionResult(test_cap_3, /*is_final=*/false));
-  // nullptr `web_contents` should be ignored.
+  // nullptr `rfh` should be ignored.
   live_caption_controller()->DispatchTranscription(
-      /*web_contents=*/nullptr, nullptr,
+      /*rfh=*/nullptr, nullptr,
       media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true));
   live_caption_controller()->DispatchTranscription(
-      web_contents(), nullptr,
+      rfh(), nullptr,
       media::SpeechRecognitionResult(test_cap_4, /*is_final=*/true));
 
-  // Expect a leaf node with the entire context.
-  optimization_guide::proto::ContentNode root_node;
-  integration->AppendContext(web_contents(), &root_node);
-  EXPECT_EQ(root_node.children_nodes_size(), 0);
-  EXPECT_TRUE(root_node.has_content_attributes());
-  EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
-            "ABCDEFGHIJ");
+  {
+    // Expect a leaf node with the entire context.
+    optimization_guide::proto::ContentNode root_node;
+    integration->AppendContextForFrame(rfh(), &root_node);
+    EXPECT_EQ(root_node.children_nodes_size(), 0);
+    EXPECT_TRUE(root_node.has_content_attributes());
+    EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
+              "ABCDEFGHIJ");
+  }
+
+  {
+    // Expect a leaf node with the entire context when we query with the
+    // WebContents instead.
+    optimization_guide::proto::ContentNode root_node;
+    integration->AppendContext(web_contents(), &root_node);
+    EXPECT_EQ(root_node.children_nodes_size(), 0);
+    EXPECT_TRUE(root_node.has_content_attributes());
+    EXPECT_EQ(root_node.content_attributes().text_data().text_content(),
+              "ABCDEFGHIJ");
+  }
 }
 
 TEST_F(GlicMediaIntegrationTest, ContextContainsNoTranscript) {
@@ -156,7 +173,7 @@ TEST_F(GlicMediaIntegrationTest, ContextContainsNoTranscript) {
 
   // Expect a leaf node with any text.
   optimization_guide::proto::ContentNode root_node;
-  integration->AppendContext(web_contents(), &root_node);
+  integration->AppendContextForFrame(rfh(), &root_node);
   EXPECT_EQ(root_node.children_nodes_size(), 0);
   EXPECT_TRUE(root_node.has_content_attributes());
   EXPECT_GT(root_node.content_attributes().text_data().text_content().length(),
@@ -181,11 +198,19 @@ TEST_F(GlicMediaIntegrationTest, NullWebContentsIsOkay) {
   // As long as nothing bad happens, it's good.
 }
 
+TEST_F(GlicMediaIntegrationTest, NullRenderFrameHostIsOkay) {
+  // Make sure that cases where no RFH is provided don't crash.  This
+  // includes cases where there is no media context for the given contents.
+  optimization_guide::proto::ContentNode root_node;
+  GetIntegration()->AppendContextForFrame(/*rfh=*/nullptr, &root_node);
+  // As long as nothing bad happens, it's good.
+}
+
 TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
   auto* integration = GetIntegration();
 
   // This should prevent the transcription from being recorded.
-  integration->OnPeerConnectionAddedForTesting(web_contents());
+  integration->OnPeerConnectionAddedForTesting(rfh());
 
   auto* context = GetContext();
   EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());

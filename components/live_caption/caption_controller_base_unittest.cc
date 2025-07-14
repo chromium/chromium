@@ -48,17 +48,17 @@ class MockListener : public CaptionControllerBase::Listener {
 
   MOCK_METHOD(bool,
               OnTranscription,
-              (content::WebContents*,
+              (content::RenderFrameHost*,
                CaptionBubbleContext*,
                const media::SpeechRecognitionResult&),
               (override));
   MOCK_METHOD(void,
               OnAudioStreamEnd,
-              (content::WebContents*, CaptionBubbleContext*),
+              (content::RenderFrameHost*, CaptionBubbleContext*),
               (override));
   MOCK_METHOD(void,
               OnLanguageIdentificationEvent,
-              (content::WebContents*,
+              (content::RenderFrameHost*,
                CaptionBubbleContext*,
                const media::mojom::LanguageIdentificationEventPtr&),
               (override));
@@ -95,17 +95,17 @@ class MockCaptionBubbleController : public CaptionBubbleController {
   // CaptionControllerBase::Listener
   MOCK_METHOD(bool,
               OnTranscription,
-              (content::WebContents*,
+              (content::RenderFrameHost*,
                CaptionBubbleContext*,
                const media::SpeechRecognitionResult&),
               (override));
   MOCK_METHOD(void,
               OnAudioStreamEnd,
-              (content::WebContents*, CaptionBubbleContext*),
+              (content::RenderFrameHost*, CaptionBubbleContext*),
               (override));
   MOCK_METHOD(void,
               OnLanguageIdentificationEvent,
-              (content::WebContents*,
+              (content::RenderFrameHost*,
                CaptionBubbleContext*,
                const media::mojom::LanguageIdentificationEventPtr&),
               (override));
@@ -238,13 +238,13 @@ TEST_F(CaptionControllerBaseTest, ListenersReceiveTranscription) {
   MockCaptionBubbleContext context;
 
   auto listener = std::make_unique<MockListener>();
-  content::WebContents* web_contents =
-      reinterpret_cast<content::WebContents*>(listener.get());
-  EXPECT_CALL(*listener, OnAudioStreamEnd(web_contents, &context));
+  content::RenderFrameHost* rfh =
+      reinterpret_cast<content::RenderFrameHost*>(listener.get());
+  EXPECT_CALL(*listener, OnAudioStreamEnd(rfh, &context));
 
   auto controller_under_test = CreateController();
   controller_under_test->AddListener(std::move(listener));
-  controller_under_test->OnAudioStreamEnd(web_contents, &context);
+  controller_under_test->OnAudioStreamEnd(rfh, &context);
 }
 
 TEST_F(CaptionControllerBaseTest, TranscriptionStopsIfNoListeners) {
@@ -253,7 +253,7 @@ TEST_F(CaptionControllerBaseTest, TranscriptionStopsIfNoListeners) {
 
   auto controller_under_test = CreateController();
   EXPECT_FALSE(controller_under_test->DispatchTranscription(
-      /*web_contents=*/nullptr, &context, result));
+      /*rfh=*/nullptr, &context, result));
 }
 
 TEST_F(CaptionControllerBaseTest, ListenersReceiveAudioEnd) {
@@ -261,13 +261,13 @@ TEST_F(CaptionControllerBaseTest, ListenersReceiveAudioEnd) {
   media::SpeechRecognitionResult result;
 
   auto listener = std::make_unique<MockListener>();
-  content::WebContents* web_contents =
-      reinterpret_cast<content::WebContents*>(listener.get());
-  EXPECT_CALL(*listener, OnTranscription(web_contents, &context, result));
+  content::RenderFrameHost* rfh =
+      reinterpret_cast<content::RenderFrameHost*>(listener.get());
+  EXPECT_CALL(*listener, OnTranscription(rfh, &context, result));
 
   auto controller_under_test = CreateController();
   controller_under_test->AddListener(std::move(listener));
-  controller_under_test->DispatchTranscription(web_contents, &context, result);
+  controller_under_test->DispatchTranscription(rfh, &context, result);
 }
 
 }  // namespace

@@ -321,8 +321,8 @@ class CaptionBubbleControllerViewsTest
   bool OnPartialTranscription(std::string text,
                               CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        caption_bubble_context, media::SpeechRecognitionResult(text, false));
+        GetPrimaryMainFrame(), caption_bubble_context,
+        media::SpeechRecognitionResult(text, false));
   }
 
   bool OnFinalTranscription(std::string text) {
@@ -339,8 +339,8 @@ class CaptionBubbleControllerViewsTest
   bool OnFinalTranscription(std::string text,
                             CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        caption_bubble_context, media::SpeechRecognitionResult(text, true));
+        GetPrimaryMainFrame(), caption_bubble_context,
+        media::SpeechRecognitionResult(text, true));
   }
 
   void OnLanguageIdentificationEvent(std::string language) {
@@ -349,8 +349,7 @@ class CaptionBubbleControllerViewsTest
     event->language = language;
     event->asr_switch_result = media::mojom::AsrSwitchResult::kSwitchSucceeded;
     GetController()->OnLanguageIdentificationEvent(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        GetCaptionBubbleContext(), event);
+        GetPrimaryMainFrame(), GetCaptionBubbleContext(), event);
   }
 
   void OnError() { OnError(GetCaptionBubbleContext()); }
@@ -377,9 +376,8 @@ class CaptionBubbleControllerViewsTest
   }
 
   void OnAudioStreamEnd() {
-    GetController()->OnAudioStreamEnd(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        GetCaptionBubbleContext());
+    GetController()->OnAudioStreamEnd(GetPrimaryMainFrame(),
+                                      GetCaptionBubbleContext());
   }
 
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {
@@ -424,6 +422,13 @@ class CaptionBubbleControllerViewsTest
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::LanguageCode::kFrFr);
+  }
+
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
  private:
