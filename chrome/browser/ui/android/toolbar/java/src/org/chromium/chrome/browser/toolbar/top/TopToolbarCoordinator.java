@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -313,11 +314,15 @@ public class TopToolbarCoordinator implements Toolbar {
 
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.
-        // TOOD: Without the overlay, the toolbar will somehow have a 1 pixel transparent border
+        // TODO: Without the overlay, the toolbar will somehow have a 1 pixel transparent border
         // which will become a visible artifact when the web contents background has a big
         // difference with the toolbar background color defined by system color theme. So we still
         // enable the overlay on XR devices. See https://crbug.com/377982076.
         if (DeviceClassManager.enableFullscreen() || XrUtils.isXrDevice()) {
+            int layoutsToShowOn = LayoutType.BROWSING | LayoutType.TAB_SWITCHER;
+            if (!NewTabAnimationUtils.isNewTabAnimationEnabled()) {
+                layoutsToShowOn |= LayoutType.SIMPLE_ANIMATION;
+            }
             mOverlayCoordinator =
                     new TopToolbarOverlayCoordinator(
                             mToolbarLayout.getContext(),
@@ -329,9 +334,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             topUiThemeColorProvider,
                             bottomToolbarControlsOffsetSupplier,
                             suppressToolbarSceneLayerSupplier,
-                            LayoutType.BROWSING
-                                    | LayoutType.SIMPLE_ANIMATION
-                                    | LayoutType.TAB_SWITCHER,
+                            layoutsToShowOn,
                             /* isVisibilityManuallyControlled= */ false,
                             captureResourceIdSupplier);
             layoutManager.addSceneOverlay(mOverlayCoordinator);

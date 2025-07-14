@@ -51,4 +51,13 @@ public class ChromeSemanticColorUtils {
                 SemanticColorUtils.getDefaultControlColorActive(context),
                 ResourcesCompat.getFloat(context.getResources(), R.dimen.iph_highlight_alpha));
     }
+
+    /**
+     * Returns the semantic color value that corresponds to home_surface_background_color.
+     *
+     * <p>For light mode is colorSurfaceContainerHigh and for dark mode is colorSurface.
+     */
+    public static @ColorInt int getHomeSurfaceBackgroundColor(Context context) {
+        return context.getColor(R.color.home_surface_background_color);
+    }
 }

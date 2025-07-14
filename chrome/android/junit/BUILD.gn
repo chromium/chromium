@@ -773,7 +773,6 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayoutUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/hub/HubProviderUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/hub/HubTabSwitcherMetricsRecorderUnitTest.java",
-      "//chrome/android/java/src/org/chromium/chrome/browser/hub/NewTabAnimationUtilsUnitTest.java",
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]

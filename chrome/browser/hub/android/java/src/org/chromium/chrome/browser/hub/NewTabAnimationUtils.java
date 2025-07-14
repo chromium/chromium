@@ -9,12 +9,11 @@ import android.graphics.Rect;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 import java.lang.annotation.ElementType;
@@ -59,10 +58,10 @@ public class NewTabAnimationUtils {
      * @return The {@link ColorInt} for the new tab animation background.
      */
     public static @ColorInt int getBackgroundColor(Context context, boolean isIncognito) {
-        // See crbug.com/1507124 for Surface Background Color.
+        // See crbug.com/1507124 for Home Surface Background Color.
         return isIncognito
                 ? ChromeColors.getPrimaryBackgroundColor(context, isIncognito)
-                : ContextCompat.getColor(context, R.color.home_surface_background_color);
+                : ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(context);
     }
 
     /**
