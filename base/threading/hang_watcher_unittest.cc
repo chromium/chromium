@@ -4,7 +4,6 @@
 
 #include "base/threading/hang_watcher.h"
 
-#include <atomic>
 #include <memory>
 #include <optional>
 
@@ -21,6 +20,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/manual_hang_watcher.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +39,7 @@
 namespace base {
 namespace {
 
+using ::base::test::ManualHangWatcher;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 using ::base::test::TaskEnvironment;
@@ -144,74 +145,6 @@ class BlockedThreadsForAllTypes {
   BlockedThread compositor_;
   BlockedThread io_;
   BlockedThread pool_;
-};
-
-// A hang watcher that only does monitoring when requested via
-// `TriggerSynchronousMonitoring` instead of periodically via a timer.
-class ManualHangWatcher : public HangWatcher {
- public:
-  explicit ManualHangWatcher(ProcessType process_type,
-                             bool emit_crashes = true) {
-    HangWatcher::InitializeOnMainThread(process_type, emit_crashes);
-
-    SetAfterMonitorClosureForTesting(base::BindRepeating(
-        &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
-
-    SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
-      hang_count_.fetch_add(1, std::memory_order_relaxed);
-      if (on_hang_closure_) {
-        on_hang_closure_.Run();
-      }
-    }));
-
-    // Disable periodic monitoring by setting a very very long monitoring
-    // period. Monitoring will be started manually by calling
-    // `TriggerSynchronousMonitoring()`.
-    SetMonitoringPeriodForTesting(base::Days(365));
-
-    // Start the monitoring loop.
-    Start();
-  }
-
-  ~ManualHangWatcher() override {
-    UninitializeOnMainThreadForTesting();
-
-    // Stop now instead of in `~HangWatcher()` to avoid a data race between
-    // the destructor and virtual calls. If we destroy `HangWatcher` right after
-    // it's created, `HangWatcher::Run()` might get called concurrently with
-    // `~HangWatcher`. The vtable pointer is changed when calling into a parent
-    // class destructor. Virtual calls might resolve differently before or after
-    // the vtable is changed. See here for details:
-    // https://github.com/google/sanitizers/wiki/ThreadSanitizerPopularDataRaces#data-race-on-vptr
-    Stop();
-  }
-
-  void SetOnHangClosure(base::RepeatingClosure closure) {
-    on_hang_closure_ = std::move(closure);
-  }
-
-  // Signal the `HangWatcher` to start a monitoring and wait for that monitoring
-  // to be done.
-  void TriggerSynchronousMonitoring() {
-    monitor_event_.Reset();
-    SignalMonitorEventForTesting();
-    monitor_event_.Wait();
-  }
-
-  int GetHangCount() const {
-    return hang_count_.load(std::memory_order_relaxed);
-  }
-
- private:
-  // Used to wait for monitoring. Will be signaled by the HangWatcher thread and
-  // so needs to outlive it.
-  WaitableEvent monitor_event_;
-
-  // Count the number of time the HangWatcher thread detected a hang.
-  std::atomic<int> hang_count_ = 0;
-
-  // If specified by a test, this closure is invoked when a hang is detected.
-  RepeatingClosure on_hang_closure_;
 };
 
 class HangWatcherTest : public testing::Test {
