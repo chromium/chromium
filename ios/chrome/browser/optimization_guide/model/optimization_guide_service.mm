@@ -163,12 +163,8 @@ OptimizationGuideService::OptimizationGuideService(
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
             optimization_guide::IOSChromePredictionModelStore::GetInstance(),
-            url_loader_factory, pref_service, off_the_record_,
-            application_locale, optimization_guide_logger_.get(),
-            base::BindRepeating([]() {
-              return GetApplicationContext()->GetLocalState()->GetBoolean(
-                  ::prefs::kComponentUpdatesEnabled);
-            }),
+            url_loader_factory, pref_service, application_locale,
+            optimization_guide_logger_.get(),
             base::BindRepeating(&unzip::LaunchInProcessUnzipper));
   }
 
@@ -233,20 +229,22 @@ OptimizationGuideService::~OptimizationGuideService() {
 
 void OptimizationGuideService::DoFinalInit(
     download::BackgroundDownloadService* background_download_service) {
-  if (!off_the_record_) {
-    bool optimization_guide_fetching_enabled =
-        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-            off_the_record_, pref_service_);
-    base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
-                              optimization_guide_fetching_enabled);
-    IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "SyntheticOptimizationGuideRemoteFetching",
-        optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    if (background_download_service) {
-      prediction_manager_->MaybeInitializeModelDownloads(
-          background_download_service);
-    }
+  if (off_the_record_) {
+    return;
+  }
+  bool optimization_guide_fetching_enabled =
+      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          off_the_record_, pref_service_);
+  base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
+                            optimization_guide_fetching_enabled);
+  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "SyntheticOptimizationGuideRemoteFetching",
+      optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  if (optimization_guide::features::IsModelDownloadingEnabled() &&
+      background_download_service) {
+    prediction_manager_->MaybeInitializeModelDownloads(
+        GetApplicationContext()->GetLocalState(), background_download_service);
   }
 }
 

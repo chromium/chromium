@@ -19,11 +19,12 @@ include_rules = [
   "+third_party/zlib/google",
   "+ui/accessibility",
   "+ui/base/l10n",
-]
+];
 
 specific_include_rules = {
-  ".*_unittest\.cc": [
+  ".*_unittest.cc": [
     "+third_party/zlib/google/zip.h",
+    "+components/component_updater/component_updater_service.h",
     "+ui/base",
-  ]
-}
+  ],
+};

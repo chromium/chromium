@@ -63,17 +63,12 @@ class ModelInfo;
 // for an OptimizationTarget.
 class PredictionManager : public PredictionModelDownloadObserver {
  public:
-  // Callback to whether component updates are enabled for the browser.
-  using ComponentUpdatesEnabledProvider = base::RepeatingCallback<bool(void)>;
-
   PredictionManager(
       PredictionModelStore* prediction_model_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      bool off_the_record,
       const std::string& application_locale,
       OptimizationGuideLogger* optimization_guide_logger,
-      ComponentUpdatesEnabledProvider component_updates_enabled_provider,
       unzip::UnzipperFactory unzipper_factory);
 
   PredictionManager(const PredictionManager&) = delete;
@@ -143,6 +138,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Initialize the model metadata fetching and downloads.
   void MaybeInitializeModelDownloads(
+      PrefService* local_state,
       download::BackgroundDownloadService* background_download_service);
 
   PredictionModelFetchTimer* GetPredictionModelFetchTimerForTesting() {
@@ -333,10 +329,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // and |this| are owned by the optimization guide keyed service.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  // The repeating callback that will be used to determine if component updates
-  // are enabled.
-  ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
-
   // Callback to build Unzipper remotes.
   unzip::UnzipperFactory unzipper_factory_;
 
@@ -348,9 +340,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   PredictionModelFetchTimer prediction_model_fetch_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Whether the profile for this PredictionManager is off the record.
-  bool off_the_record_ = false;
-
   // The locale of the application.
   std::string application_locale_;
 
@@ -359,9 +348,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // The path to the directory containing the models.
   base::FilePath models_dir_path_;
-
-  // Whether to check for Google API key configuration.
-  bool should_check_google_api_key_configuration_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -68,6 +68,7 @@ class PredictionModelDownloadManager {
   };
 
   PredictionModelDownloadManager(
+      PrefService* local_state,
       download::BackgroundDownloadService* download_service,
       GetBaseModelDirForDownloadCallback
           get_base_model_dir_for_download_callback,
@@ -97,6 +98,10 @@ class PredictionModelDownloadManager {
 
   // Returns whether the downloader can download models.
   virtual bool IsAvailableForDownloads() const;
+
+  // Returns whether models should be fetched from the remote Optimization Guide
+  // Service.
+  bool ShouldFetchModels() const;
 
   // Adds and removes observers.
   //
@@ -200,6 +205,8 @@ class PredictionModelDownloadManager {
 
   // How to get an unzipper remote.
   unzip::UnzipperFactory unzipper_factory_;
+
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Background thread where download file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

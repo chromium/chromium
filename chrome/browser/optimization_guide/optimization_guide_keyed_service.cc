@@ -268,11 +268,6 @@ OptimizationGuideKeyedService::BackgroundDownloadServiceProvider() {
   return BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
 }
 
-bool OptimizationGuideKeyedService::ComponentUpdatesEnabledProvider() const {
-  return g_browser_process->local_state()->GetBoolean(
-      ::prefs::kComponentUpdatesEnabled);
-}
-
 void OptimizationGuideKeyedService::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -346,13 +341,8 @@ void OptimizationGuideKeyedService::Initialize() {
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       optimization_guide::ChromePredictionModelStore::GetInstance(),
       g_browser_process->shared_url_loader_factory(), profile->GetPrefs(),
-      profile->IsOffTheRecord(), g_browser_process->GetApplicationLocale(),
+      g_browser_process->GetApplicationLocale(),
       optimization_guide_logger_.get(),
-      base::BindRepeating(
-          &OptimizationGuideKeyedService::ComponentUpdatesEnabledProvider,
-          // It's safe to use |base::Unretained(this)| here because
-          // |this| owns |prediction_manager_|.
-          base::Unretained(this)),
       base::BindRepeating(&unzip::LaunchUnzipper));
 
   InitializeModelExecution(profile);
@@ -639,12 +629,16 @@ void OptimizationGuideKeyedService::OnProfileInitializationComplete(
   DCHECK(profile_observation_.IsObservingSource(profile));
   profile_observation_.Reset();
 
+  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
+    return;
+  }
+
   if (profile->IsOffTheRecord()) {
     return;
   }
 
   GetPredictionManager()->MaybeInitializeModelDownloads(
-      BackgroundDownloadServiceProvider());
+      g_browser_process->local_state(), BackgroundDownloadServiceProvider());
 }
 
 void OptimizationGuideKeyedService::AddHintForTesting(

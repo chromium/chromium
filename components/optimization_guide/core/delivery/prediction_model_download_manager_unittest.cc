@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
@@ -78,10 +79,11 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_download_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
+    local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
     mock_download_service_ =
         std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
-        mock_download_service_.get(),
+        local_state_prefs_.get(), mock_download_service_.get(),
         base::BindRepeating(
             [](const base::FilePath& models_dir_path,
                proto::OptimizationTarget optimization_target) {
@@ -268,6 +270,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   base::ScopedTempDir temp_models_dir_;
   std::unique_ptr<download::test::MockDownloadService> mock_download_service_;
   std::unique_ptr<PredictionModelDownloadManager> download_manager_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
 };
 
 TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
