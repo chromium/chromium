@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.os.Handler;
+import android.widget.HorizontalScrollView;
+
+import androidx.annotation.Px;
+
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -15,49 +21,58 @@ import java.util.List;
 /**
  * Helper for {@link TileDragDelegateImpl} to manage session states and interface with {@link
  * TileMovement}. W.r.t. {@link TileDragDelegateImpl.DragPhase}, the class is used in {PREPARE,
- * START, DOMINATE}.
+ * START, DOMINATE}. During a drag session, 3 key (nested) Views are:
+ *
+ * <ul>
+ *   <li>Outer: Immobile container where everything happens, can get and set scroll value.
+ *   <li>Inner: Large content that's partially visible, and needs scrolling to be viewed.
+ *   <li>Tile: Fixed-width View being repositioned via active drag UI.
+ * </ul>
  */
 @NullMarked
-class TileDragSession {
+class TileDragSession implements TileDragAutoScroll.Delegate {
 
     // Delegate to retrieve data from {@link TileDragDelegateImpl}.
     interface Delegate {
-        /**
-         * @return Width of a Most Visit Tile, in PX.
-         */
-        float getTileWidthPx();
+        /** Returns whether scroll should take place when a tile is dragged to edge of Outer. */
+        boolean isAutoScrollEnabled();
 
-        /**
-         * @return The current list of {@link TileView} instances in the MVT container.
-         */
+        /** Returns the width of a Most Visit Tile, in PX. */
+        @Px
+        float getTileWidth();
+
+        /** Returns the current list of {@link TileView} instances in Outer. */
         List<TileView> getDraggableTileViews();
 
-        /**
-         * @return The {@link SiteSuggestion} corresponding to a {@link TileView}.
-         */
+        /** Returns the {@link SiteSuggestion} corresponding to a {@link TileView}. */
         SiteSuggestion getTileViewData(TileView view);
+
+        /** Returns the Outer View. */
+        HorizontalScrollView getOuterView();
     }
 
     // Scaling factor to shrink the "from" tile in {START, DOMINATE}.
     private static final float DRAG_ACTIVE_SCALE = 0.8f;
 
-    // Relative X-margin: Multiplied by tile width to get the X-margin.
+    // Relative X-margin: Multiply by tile width to get the X-margin.
     private static final float DRAG_X_MARGIN_RATIO = 0.2f;
 
     private final Delegate mDelegate;
     private final TileGroup.TileDragHandlerDelegate mDragResultDelegate;
     private final TileView mFromView;
-    private final float mStartX;
-    private final float mStartY;
+    private final float mSavedFromZ;
+    private final @Px float mTileWidth;
+    private final @Px float mStartX;
+    private final @Px float mStartY;
+    private final @Px float mAnchorX;
 
     // Variables unneeded during PREPARE are initialized in start().
     private @Nullable TileMovement mTileMovement;
-    private float mSavedSrcX;
-    private float mSavedSrcZ;
+    private @Nullable TileDragAutoScroll mAutoScroll;
     private int mFromIndex;
     private int mToIndex;
-    private float mDxLo;
-    private float mDxHi;
+    private float mXLo;
+    private float mXHi;
 
     /**
      * @param delegate Data provider.
@@ -75,28 +90,64 @@ class TileDragSession {
         mDelegate = delegate;
         mDragResultDelegate = dragHandlerDelegate;
         mFromView = fromView;
+        mSavedFromZ = mFromView.getZ();
+        mTileWidth = mDelegate.getTileWidth();
         mStartX = fixEventX(eventX);
         mStartY = eventY;
+        mAnchorX = mStartX - mFromView.getX();
     }
 
     @Initializer
     public void start() {
         mTileMovement = new TileMovement(mDelegate.getDraggableTileViews());
-        mSavedSrcX = mFromView.getX();
-        mSavedSrcZ = mFromView.getZ();
         mFromIndex = mTileMovement.getIndexOfView(mFromView);
         mToIndex = mFromIndex;
 
         // X-margin: A dragged tile is constrained to stay in the box containing all draggable
         // tiles. To soften the constraint, the X-margin specifies extra room for the dragged tile
         // to travel horizontally beyond the box.
-        float dragXMarginPx = DRAG_X_MARGIN_RATIO * mDelegate.getTileWidthPx();
-        mDxLo = mTileMovement.getXLo() - mSavedSrcX - dragXMarginPx;
-        mDxHi = mTileMovement.getXHi() - mSavedSrcX + dragXMarginPx;
+        float dragXMarginPx = DRAG_X_MARGIN_RATIO * mTileWidth;
+        mXLo = mTileMovement.getXLo() - dragXMarginPx;
+        mXHi = mTileMovement.getXHi() + dragXMarginPx;
+
+        if (mDelegate.isAutoScrollEnabled()) {
+            mAutoScroll =
+                    new TileDragAutoScroll(
+                            this,
+                            new Handler(),
+                            mDelegate.getOuterView().getWidth(),
+                            mTileWidth,
+                            mTileMovement.getXLo(),
+                            mTileMovement.getXHi());
+        }
 
         mFromView.animate().scaleX(DRAG_ACTIVE_SCALE).scaleY(DRAG_ACTIVE_SCALE).start();
         // Temporarily increment Z so the "from" tile is drawn on top of other tiles.
-        mFromView.setZ(mSavedSrcZ + 1.0f);
+        mFromView.setZ(mSavedFromZ + 1.0f);
+    }
+
+    // TileDragAutoScroll.Delegate implementation.
+    @Override
+    public @Px int getScrollInnerX() {
+        return mDelegate.getOuterView().getScrollX();
+    }
+
+    @Override
+    public @Px float getActiveTileX() {
+        return mFromView.getX();
+    }
+
+    @Override
+    public void scrollInnerXBy(@Px int dx) {
+        mDelegate.getOuterView().smoothScrollBy(dx, 0);
+    }
+
+    @Override
+    public void onAutoScroll(@Px int dx) {
+        // Counter-shift "from" tile against scrolling so it appears stationary.
+        mFromView.setX(MathUtils.clamp(mFromView.getX() + dx, mXLo, mXHi));
+
+        updateToIndexAndAnimate();
     }
 
     public TileGroup.TileDragHandlerDelegate getTileDragHandlerDelegate() {
@@ -109,9 +160,15 @@ class TileDragSession {
      * @param eventX The X coordinate of the The ACTION_MOVE event on the "from" tile.
      */
     public void updateFromView(float eventX) {
-        // {@param eventX} is relative to translation X, so we need to add it back to compensate.
-        float rawDx = fixEventX(eventX) - mStartX;
-        mFromView.setTranslationX(Math.max(mDxLo, Math.min(rawDx, mDxHi)));
+        mFromView.setX(MathUtils.clamp(fixEventX(eventX) - mAnchorX, mXLo, mXHi));
+        updateToIndexAndAnimate();
+
+        if (mAutoScroll != null) {
+            // Terminate any residual auto-scroll loop, then potentially start new one, so that
+            // scrolling would in step with pointer action.
+            mAutoScroll.stop();
+            mAutoScroll.run();
+        }
     }
 
     /**
@@ -152,8 +209,11 @@ class TileDragSession {
      *     action while it's in -flight. Once complete then the calling would have no effect.
      */
     public @Nullable Runnable finish(boolean accept) {
-        mFromView.setZ(mSavedSrcZ);
+        mFromView.setZ(mSavedFromZ);
         mFromView.animate().scaleX(1.0f).scaleY(1.0f).start();
+        if (mAutoScroll != null) {
+            mAutoScroll.stop();
+        }
 
         // Handle the case where function is called before start() is called.
         if (mTileMovement == null) {
@@ -192,11 +252,10 @@ class TileDragSession {
     }
 
     /**
-     * Performs correction to {@param eventX} from a fresh {@plink MotionEvent} for {@link
-     * #mFromView}. This is needed because the X value read is relative to
-     * `mFromView.getTranslationX()`, but we'd like the X relative to the container.
+     * Converts {@param eventX} from a fresh {@plink MotionEvent} from being relative to {@link
+     * #mFromView} to relative to Inner.
      */
     private float fixEventX(float eventX) {
-        return eventX + mFromView.getTranslationX();
+        return eventX + mFromView.getX();
     }
 }

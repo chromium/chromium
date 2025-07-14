@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -66,7 +68,7 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     // Parent container for dragged tiles.
     private final MostVisitedTilesLayout mMvTilesLayout;
 
-    private final float mTileWidthPx;
+    private final @Px float mTileWidthPx;
 
     // Squared "dominate threshold": During drag, if the ACTION_MOVE position's (Euclidean) distance
     // to the ACTION_DOWN distance exceeds "dominate threshold" then START -> DOMINATE change
@@ -142,7 +144,6 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
             }
             if (mPhase == DragPhase.DOMINATE) {
                 mTileDragSession.updateFromView(event.getX());
-                mTileDragSession.updateToIndexAndAnimate();
             }
 
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -168,7 +169,14 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
 
     // TileDragSession.Delegate implementation.
     @Override
-    public float getTileWidthPx() {
+    public boolean isAutoScrollEnabled() {
+        // TODO(b/431765443): Return !DeviceInfo.isDesktop() if auto-scroll should be disabled on
+        // desktop Android browsers.
+        return true;
+    }
+
+    @Override
+    public @Px float getTileWidth() {
         return mTileWidthPx;
     }
 
@@ -188,6 +196,11 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     @Override
     public SiteSuggestion getTileViewData(TileView view) {
         return mMvTilesLayout.getTileViewData(view);
+    }
+
+    @Override
+    public HorizontalScrollView getOuterView() {
+        return mMvTilesLayout.getScrollView();
     }
 
     private void cancelPendingChange() {

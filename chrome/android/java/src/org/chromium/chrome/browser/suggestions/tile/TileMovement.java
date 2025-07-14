@@ -206,7 +206,7 @@ public class TileMovement {
                 oldAnimator.cancel();
                 mAnimators.set(i, null);
             }
-            mTileViews.get(i).setTranslationX(0f);
+            mTileViews.get(i).setX(mOriginalX.get(i));
         }
     }
 }

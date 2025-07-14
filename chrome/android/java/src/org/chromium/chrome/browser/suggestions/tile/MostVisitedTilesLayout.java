@@ -163,13 +163,17 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         }
     }
 
+    public HorizontalScrollView getScrollView() {
+        return (HorizontalScrollView) getParent();
+    }
+
     private @Nullable Integer getScrollXToMakeTileVisible(int tileIdx) {
         if (tileIdx >= getTileCount()) {
             return null;
         }
-        HorizontalScrollView parent = (HorizontalScrollView) getParent();
+        HorizontalScrollView scrollView = getScrollView();
         @Px float tileXPx = getTileAt(tileIdx).getX();
-        @Px int scrollXPx = parent.getScrollX();
+        @Px int scrollXPx = scrollView.getScrollX();
         // If scroll position is too high so that the tile is out-of-view / truncated, scroll left
         // so that the tile appears on the left edge (RTL doesn't matter).
         @Px int scrollXHiPx = (int) tileXPx;
@@ -178,7 +182,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         }
         // If scroll position is too low so that the tile is out-of-view / truncated, scroll right
         // so that the tile appears on the right edge (RTL doesn't matter).
-        @Px int scrollXLoPx = (int) (tileXPx + mTileViewWidthPx - parent.getWidth());
+        @Px int scrollXLoPx = (int) (tileXPx + mTileViewWidthPx - scrollView.getWidth());
         if (scrollXPx < scrollXLoPx) {
             return scrollXLoPx;
         }
