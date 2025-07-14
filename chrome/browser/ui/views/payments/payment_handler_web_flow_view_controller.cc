@@ -89,6 +89,27 @@ class PaymentHandlerProgressBar : public views::ProgressBar {
   PaymentHandlerProgressBar() { SetPreferredHeight(2); }
   ~PaymentHandlerProgressBar() override = default;
 
+  // Set the progress bar colors based on the header background color. The
+  // progress bar's background color serves as a separator between the header
+  // and content.
+  void SetColorBasedOnBackground(SkColor background_color) {
+    // Get the closest progress bar color to kColorProgressBar, with a minimum
+    // contrast ratio used for glyphs.
+    const SkColor progress_bar_color = GetContrastingGoogleColor(
+        gfx::kGoogleBlue600, gfx::kGoogleBlue300, background_color,
+        color_utils::kMinimumVisibleContrastRatio);
+
+    // Get the closest separator color to kColorSeparator, with a minimum
+    // contrast ratio of the default light separator contrast on white, which is
+    // less than color_utils::kMinimumVisibleContrastRatio.
+    const SkColor separator_color = GetContrastingGoogleColor(
+        gfx::kGoogleGrey300, gfx::kGoogleGrey800, background_color,
+        color_utils::GetContrastRatio(gfx::kGoogleGrey300, SK_ColorWHITE));
+
+    SetForegroundColor(progress_bar_color);
+    SetBackgroundColor(separator_color);
+  }
+
   base::WeakPtr<PaymentHandlerProgressBar> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -402,25 +423,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   origin_label_->SetColorBasedOnBackground(background_color);
 
   if (progress_bar_) {
-    // Set the progress bar colors based on the header background color. The
-    // progress bar's background color serves as a separator between the header
-    // and content.
-
-    // Get the closest progress bar color to kColorProgressBar, with a minimum
-    // contrast ratio used for glyphs.
-    const SkColor progress_bar_color = GetContrastingGoogleColor(
-        gfx::kGoogleBlue600, gfx::kGoogleBlue300, background_color,
-        color_utils::kMinimumVisibleContrastRatio);
-
-    // Get the closest separator color to kColorSeparator, with a minimum
-    // contrast ratio of the default light separator contrast on white, which is
-    // less than color_utils::kMinimumVisibleContrastRatio.
-    const SkColor separator_color = GetContrastingGoogleColor(
-        gfx::kGoogleGrey300, gfx::kGoogleGrey800, background_color,
-        color_utils::GetContrastRatio(gfx::kGoogleGrey300, SK_ColorWHITE));
-
-    progress_bar_->SetForegroundColor(progress_bar_color);
-    progress_bar_->SetBackgroundColor(separator_color);
+    progress_bar_->SetColorBasedOnBackground(background_color);
   }
 
   // Finally, add the close button.
