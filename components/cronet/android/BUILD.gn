@@ -1189,31 +1189,18 @@ shared_library("cronet_tests") {
   configs += [ "//build/config/android:hide_all_but_jni" ]
 }
 
-copy("copy_quicroot") {
-  testonly = true
-  sources = [ "../../../net/data/ssl/certificates/cronet-quic-root.pem" ]
-  outputs = [ "$target_gen_dir/res/raw/quicroot.pem" ]
-}
-
-copy("copy_root_ca_cert") {
-  testonly = true
-  sources = [ "../../../net/data/ssl/certificates/root_ca_cert.pem" ]
-  outputs = [ "$target_gen_dir/res/raw/root_ca_cert.pem" ]
-}
-
 android_resources("cronet_test_apk_resources") {
   testonly = true
   sources = [
-    # build/android/gyp/prepare_resources.py expects a particular directory
-    # structure, so use copies of the files.
-    "$target_gen_dir/res/raw/quicroot.pem",
-    "$target_gen_dir/res/raw/root_ca_cert.pem",
+    # TODO(crbug.com/40283951): Modify quicroot.pem to become a build time copy of
+    # net/data/ssl/certificates/cronet-quic-chain.pem.
+    "test/res/raw/quicroot.pem",
+
+    # TODO(crbug.com/40283951): Modify root_ca_cert.pem to become a build time copy of
+    # net/data/ssl/certificates/root_ca_cert.pem.
+    "test/res/raw/root_ca_cert.pem",
     "test/res/values/strings.xml",
     "test/res/xml/network_security_config.xml",
-  ]
-  deps = [
-    ":copy_quicroot",
-    ":copy_root_ca_cert",
   ]
 }
 
