@@ -145,7 +145,11 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, fontref);
   LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(fontref);
-  if (scale != 1.0f && !styleref.LineHeight().IsFixed()) {
+  if (scale != 1.0f) {
+    // When the line-height is fixed,
+    //  - Should we apply the maximum scaling factor in the line?
+    //  - When the text shrinks, this behavior is questionable.  Non-text
+    //    items may overflow.
     line_height *= scale;
   }
   FontHeight leading_space = CalculateLeadingSpace(line_height, text_metrics);
