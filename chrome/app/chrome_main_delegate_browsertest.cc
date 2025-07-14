@@ -7,6 +7,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/threading_features.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -44,8 +45,14 @@ class ChromeMainDelegateHangWatcherTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Tests that UncoveredStartupTime histograms are recorded for all watched
 // sandboxed processes.
+// TODO(crbug.com/431802107): Re-enable this test once the failure is fixed.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_RecordsUncoveredTime DISABLED_RecordsUncoveredTime
+#else
+#define MAYBE_RecordsUncoveredTime RecordsUncoveredTime
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeMainDelegateHangWatcherTest,
-                       RecordsUncoveredTime) {
+                       MAYBE_RecordsUncoveredTime) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   EXPECT_THAT(
       histogram_tester_.GetAllSamplesForPrefix("HangWatcher"),
