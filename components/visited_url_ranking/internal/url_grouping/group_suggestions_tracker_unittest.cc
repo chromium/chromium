@@ -533,4 +533,52 @@ TEST_F(GroupSuggestionsTrackerTest, InvalidateCache) {
   EXPECT_FALSE(cached_data.has_value());
 }
 
+TEST_F(GroupSuggestionsTrackerTest, AddShownSuggestion_UpdatesCache) {
+  GroupSuggestions suggestions_to_cache;
+  UrlGroupingSuggestionId::Generator id_generator;
+  suggestions_to_cache.suggestions.emplace_back();
+  suggestions_to_cache.suggestions.back().tab_ids = {1, 2};
+  suggestions_to_cache.suggestions.back().suggestion_id =
+      id_generator.GenerateNextId();
+  suggestions_to_cache.suggestions.emplace_back();
+  suggestions_to_cache.suggestions.back().tab_ids = {3, 4};
+  suggestions_to_cache.suggestions.back().suggestion_id =
+      id_generator.GenerateNextId();
+  suggestions_to_cache.suggestions.emplace_back();
+  suggestions_to_cache.suggestions.back().tab_ids = {5, 6};
+  suggestions_to_cache.suggestions.back().suggestion_id =
+      id_generator.GenerateNextId();
+
+  auto inputs = CreateTestInputs(
+      {{1, "https://hosta.com/p1"}, {2, "https://hostb.com/p2"}});
+  tracker_->CacheSuggestions(suggestions_to_cache.DeepCopy(), inputs);
+
+  std::optional<CachedSuggestionsAndInputs> cached_data =
+      tracker_->GetCachedSuggestions();
+  ASSERT_TRUE(cached_data.has_value());
+  ASSERT_EQ(cached_data->first.suggestions.size(), 3u);
+
+  GroupSuggestion shown_suggestion =
+      suggestions_to_cache.suggestions[0].DeepCopy();
+  AddShownSuggestion(shown_suggestion, inputs, UserResponse::kAccepted);
+
+  cached_data = tracker_->GetCachedSuggestions();
+  ASSERT_TRUE(cached_data.has_value());
+  ASSERT_EQ(cached_data->first.suggestions.size(), 2u);
+  for (const auto& s : cached_data->first.suggestions) {
+    EXPECT_NE(s.suggestion_id, shown_suggestion.suggestion_id);
+  }
+
+  shown_suggestion = suggestions_to_cache.suggestions[1].DeepCopy();
+  AddShownSuggestion(shown_suggestion, inputs, UserResponse::kAccepted);
+  cached_data = tracker_->GetCachedSuggestions();
+  ASSERT_TRUE(cached_data.has_value());
+  ASSERT_EQ(cached_data->first.suggestions.size(), 1u);
+
+  shown_suggestion = suggestions_to_cache.suggestions[2].DeepCopy();
+  AddShownSuggestion(shown_suggestion, inputs, UserResponse::kAccepted);
+  cached_data = tracker_->GetCachedSuggestions();
+  EXPECT_FALSE(cached_data.has_value());
+}
+
 }  // namespace visited_url_ranking
