@@ -33,17 +33,25 @@ using ui::UiEventDispatcher;
 class ActorUiStateManagerFake : public ActorUiStateManager {
  public:
   explicit ActorUiStateManagerFake(ActorKeyedService& actor_service)
-      : ActorUiStateManager(actor_service) {}
-
-  void NotifyUiTabController(tabs::TabInterface& tab,
-                             const UiTabState& ui_tab_state) override {
-    ui_tab_state_ = ui_tab_state;
+      : ActorUiStateManager(actor_service) {
+    mock_tab_controller_ = std::make_unique<MockActorUiTabController>();
+    ON_CALL(*mock_tab_controller_, OnUiTabStateChange(_))
+        .WillByDefault(
+            Invoke([this](UiTabState state) { this->SetUiTabState(state); }));
   }
+
+  void RunOnUiTabController(tabs::TabInterface* tab,
+                            ActorUiTabControllerCallback callback) override {
+    std::move(callback).Run(*mock_tab_controller_);
+  }
+
+  void SetUiTabState(UiTabState ui_tab_state) { ui_tab_state_ = ui_tab_state; }
 
   UiTabState GetUiTabState() { return ui_tab_state_; }
 
  private:
   UiTabState ui_tab_state_;
+  std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
 };
 
 class ActorKeyedServiceFake : public ActorKeyedService {

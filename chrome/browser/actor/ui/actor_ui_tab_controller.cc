@@ -19,4 +19,13 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state) {
   }
 }
 
+void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
+  CHECK(!active_task_id_);
+  active_task_id_ = task_id;
+}
+
+void ActorUiTabController::ClearActiveTaskId() {
+  active_task_id_ = TaskId(0);
+}
+
 }  // namespace actor::ui

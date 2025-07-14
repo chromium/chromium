@@ -36,8 +36,8 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (override));
   MOCK_METHOD(void, OnUiEvent, (SyncUiEvent event), (override));
   MOCK_METHOD(void,
-              NotifyUiTabController,
-              (tabs::TabInterface & tab, const UiTabState& ui_tab_state),
+              RunOnUiTabController,
+              (tabs::TabInterface * tab, ActorUiTabControllerCallback callback),
               (override));
 
 #if BUILDFLAG(ENABLE_GLIC)

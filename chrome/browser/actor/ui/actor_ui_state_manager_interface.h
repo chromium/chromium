@@ -7,7 +7,7 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/buildflags.h"
@@ -17,6 +17,8 @@
 
 namespace actor::ui {
 using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+using ActorUiTabControllerCallback =
+    base::OnceCallback<void(ActorUiTabControllerInterface&)>;
 
 // ExpiryPeriod from when the user completes a task and when it should no longer
 // show on the ui
@@ -48,10 +50,10 @@ class ActorUiStateManagerInterface {
   virtual void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) = 0;
   virtual void OnUiEvent(SyncUiEvent event) = 0;
 
-  // Notifies the ActorUiTabController of a new `ui_tab_state`.
-  // Can be stubbed out to do nothing in tests.
-  virtual void NotifyUiTabController(tabs::TabInterface& tab,
-                                     const UiTabState& ui_tab_state) = 0;
+  // Runs the specified function on the ActorUiTabController if the `tab`
+  // exists. Can be stubbed out to do nothing in tests.
+  virtual void RunOnUiTabController(tabs::TabInterface* tab,
+                                    ActorUiTabControllerCallback callback) = 0;
 
 #if BUILDFLAG(ENABLE_GLIC)
   // Called on glic window (floaty) state change.

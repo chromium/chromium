@@ -4,9 +4,11 @@
 
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/actor/action_result.h"
@@ -53,30 +55,45 @@ struct TabUiUpdate {
 struct ProfileUiUpdate {};
 using UiUpdate = std::variant<TabUiUpdate, ProfileUiUpdate>;
 
-constexpr Visitor GetNewUiStateFn{
-    [](const StartTask& e) -> UiUpdate { return ProfileUiUpdate{}; },
-    [](const StartingToActOnTab& e) -> UiUpdate {
-      return TabUiUpdate{e.tab_handle.Get(), GetAgentControlledUiTabState()};
-    },
-    [](const StoppedActingOnTab& e) -> UiUpdate {
-      return TabUiUpdate{e.tab_handle.Get(), GetCompletedUiTabState()};
-    },
-    [](const TaskStateChanged& e) -> UiUpdate {
-      // TODO(crbug.com/424495020): Move this out of this block, implementation
-      // is incorrect atm.
-      return ProfileUiUpdate{};
-    },
-    [](const MouseClick& e) -> UiUpdate {
-      UiTabState ui_tab_state = GetAgentControlledUiTabState();
-      ui_tab_state.agent_overlay.mouse_down = true;
-      return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-    },
-    [](const MouseMove& e) -> UiUpdate {
-      UiTabState ui_tab_state = GetAgentControlledUiTabState();
-      ui_tab_state.agent_overlay.mouse_target = e.target;
-      return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-    },
-};
+auto GetNewUiStateFn(ActorUiStateManager& manager) {
+  return Visitor{
+      [](const StartTask& e) -> UiUpdate { return ProfileUiUpdate{}; },
+      [&manager](const StartingToActOnTab& e) -> UiUpdate {
+        auto* tab = e.tab_handle.Get();
+        manager.RunOnUiTabController(
+            tab, base::BindOnce(
+                     [](TaskId task_id,
+                        ActorUiTabControllerInterface& tab_controller) {
+                       tab_controller.SetActiveTaskId(task_id);
+                     },
+                     e.task_id));
+        return TabUiUpdate{tab, GetAgentControlledUiTabState()};
+      },
+      [&manager](const StoppedActingOnTab& e) -> UiUpdate {
+        auto* tab = e.tab_handle.Get();
+        manager.RunOnUiTabController(
+            tab,
+            base::BindOnce([](ActorUiTabControllerInterface& tab_controller) {
+              tab_controller.ClearActiveTaskId();
+            }));
+        return TabUiUpdate{tab, GetCompletedUiTabState()};
+      },
+      [](const TaskStateChanged& e) -> UiUpdate {
+        // TODO(crbug.com/424495020): Move this out of this block,
+        // implementation is incorrect atm.
+        return ProfileUiUpdate{};
+      },
+      [](const MouseClick& e) -> UiUpdate {
+        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        ui_tab_state.agent_overlay.mouse_down = true;
+        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+      },
+      [](const MouseMove& e) -> UiUpdate {
+        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        ui_tab_state.agent_overlay.mouse_target = e.target;
+        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+      }};
+}
 
 }  // namespace
 
@@ -108,7 +125,13 @@ void ActorUiStateManager::OnActorTaskStateChange(TaskId task_id,
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
-    NotifyUiTabController(*tab, ui_tab_state);
+    RunOnUiTabController(tab,
+                         base::BindOnce(
+                             [](const UiTabState& state,
+                                ActorUiTabControllerInterface& tab_controller) {
+                               tab_controller.OnUiTabStateChange(state);
+                             },
+                             ui_tab_state));
   }
 
   // Update profile scoped state change.
@@ -118,12 +141,19 @@ void ActorUiStateManager::OnActorTaskStateChange(TaskId task_id,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ActorUiStateManager::NotifyUiTabController(
-    TabInterface& tab,
-    const UiTabState& ui_tab_state) {
-  CHECK(tab.GetTabFeatures()->actor_ui_tab_controller());
-  tab.GetTabFeatures()->actor_ui_tab_controller()->OnUiTabStateChange(
-      ui_tab_state);
+// TODO(crbug.com/424495020): If the tab doesn't exist we will silently
+// fail/not send a callback in the interim until these tasks are able to
+// accept a callback.
+void ActorUiStateManager::RunOnUiTabController(
+    tabs::TabInterface* tab,
+    ActorUiTabControllerCallback callback) {
+  if (tab) {
+    auto* tab_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
+    CHECK(tab_controller);
+    std::move(callback).Run(*tab_controller);
+  } else {
+    LOG(ERROR) << "Tab does not exist.";
+  }
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -141,19 +171,24 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
-  const UiUpdate new_ui_state = std::visit(GetNewUiStateFn, event);
+  const UiUpdate new_ui_state = std::visit(GetNewUiStateFn(*this), event);
   // TODO(crbug.com/424495020): Return a callback from the Ui state once
   // successful.
-  std::visit(Visitor{[this](const TabUiUpdate& ret) {
-                       if (ret.tab) {
-                         this->NotifyUiTabController(*ret.tab,
-                                                     ret.ui_tab_state);
-                       }
-                     },
-                     [this](const ProfileUiUpdate& ret) {
-                       this->MaybeUpdateProfileScopedUiState();
-                     }},
-             new_ui_state);
+  std::visit(
+      Visitor{[this](const TabUiUpdate& ret) {
+                RunOnUiTabController(
+                    ret.tab,
+                    base::BindOnce(
+                        [](const UiTabState& ui_tab_state,
+                           ActorUiTabControllerInterface& tab_controller) {
+                          tab_controller.OnUiTabStateChange(ui_tab_state);
+                        },
+                        ret.ui_tab_state));
+              },
+              [this](const ProfileUiUpdate& ret) {
+                this->MaybeUpdateProfileScopedUiState();
+              }},
+      new_ui_state);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));

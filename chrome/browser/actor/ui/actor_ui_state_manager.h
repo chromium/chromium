@@ -35,14 +35,14 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Handles a UiEvent that must be processed synchronously.
   void OnUiEvent(SyncUiEvent event) override;
 
-  void NotifyUiTabController(tabs::TabInterface& tab,
-                             const UiTabState& ui_tab_state) override;
 #if BUILDFLAG(ENABLE_GLIC)
   void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state) override;
 #endif
+  void RunOnUiTabController(tabs::TabInterface* tab,
+                            ActorUiTabControllerCallback callback) override;
 
-  // Returns the tabs associated with a given task id if it exists.
+  // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
   // Returns the current profile scoped ui state.
