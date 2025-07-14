@@ -9475,3 +9475,9 @@ crbug.com/431033198 [ Win ] external/wpt/css/css-conditional/container-queries/f
 crbug.com/431033198 [ Linux ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure ]
 crbug.com/431170125 [ Win11-arm64 ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
 crbug.com/431170125 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
+
+# Gardener 2025-07-14
+crbug.com/431553197 [ Mac12-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
+crbug.com/431553197 [ Mac13-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
+crbug.com/431553197 [ Mac14-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
+crbug.com/431553197 [ Mac15-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
