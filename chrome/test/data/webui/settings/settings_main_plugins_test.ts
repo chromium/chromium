@@ -53,7 +53,6 @@ suite('SettingsMain', function() {
     // "plugin".
     const nonMigratedRoutes = [
       routes.BASIC,
-      routes.AUTOFILL,
       routes.PRIVACY,
     ];
 
@@ -67,6 +66,7 @@ suite('SettingsMain', function() {
       // TODO(crbug.com/424223101): Update this list as more routes are
       // migrated.
 
+      {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
       {route: routes.SEARCH, pluginTag: 'settings-search-page-index'},

@@ -241,15 +241,20 @@ function createRoutes(): SettingsRoutes {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection(
         '/autofill', 'autofill', loadTimeData.getString('autofillPageTitle'));
+    r.AUTOFILL.hasMigratedToPlugin = true;
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
+    r.PAYMENTS.hasMigratedToPlugin = true;
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
+    r.ADDRESSES.hasMigratedToPlugin = true;
 
     if (loadTimeData.getBoolean('showAutofillAiControl')) {
       r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
+      r.AUTOFILL_AI.hasMigratedToPlugin = true;
     }
 
     // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');
+    r.PASSKEYS.hasMigratedToPlugin = true;
     // </if>
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -10,6 +11,8 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createIbanEntry} from './autofill_fake_data.js';
 import {createPaymentsSection, getPaymentMethodEntry, PaymentMethod, deletePaymentMethod} from './payments_section_utils.js';
+
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('PaymentSectionFocusTests', function() {
@@ -29,6 +32,18 @@ suite('PaymentSectionFocusTests', function() {
           createIbanEntry('FI1410093000123458', 'NickName'),
         ],
         /*payOverTimeIssuers=*/[], {credit_card_enabled: {value: true}});
+
+    // Ensure the subpage's back button is focused before continuing further.
+    await waitAfterNextRender(section);
+    const subpageElement =
+        section.shadowRoot!.querySelector('settings-subpage');
+    assertTrue(!!subpageElement);
+    // Note: Using assertTrue instead of assertEquals on purpose, because Mocha
+    // in case of failure tries to serialize the arguments, which in turn throws
+    // 'TypeError: Converting circular structure to JSON' instead of surfacing
+    // the assertion error.
+    assertTrue(subpageElement.$.closeButton === getDeepActiveElement());
+
     const manager = (PaymentsManagerImpl.getInstance() as TestPaymentsManager);
 
     const addButton = section.shadowRoot!.querySelector('#addPaymentMethods');

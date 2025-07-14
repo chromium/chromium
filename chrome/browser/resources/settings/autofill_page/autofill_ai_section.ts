@@ -18,6 +18,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
@@ -33,6 +34,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
@@ -52,7 +55,7 @@ export interface SettingsAutofillAiSectionElement {
 }
 
 const SettingsAutofillAiSectionElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsAutofillAiSectionElement extends
     SettingsAutofillAiSectionElementBase {
@@ -76,8 +79,9 @@ export class SettingsAutofillAiSectionElement extends
        */
       ineligibleUser: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        value() {
+          return !loadTimeData.getBoolean('userEligibleForAutofillAi');
+        },
       },
 
       /**
@@ -323,6 +327,11 @@ export class SettingsAutofillAiSectionElement extends
     }
     this.showRemoveEntityInstanceDialog_ = false;
     this.activeEntityInstance_ = null;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

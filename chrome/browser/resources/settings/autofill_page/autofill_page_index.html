@@ -1,0 +1,32 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-autofill-page slot="view" id="parent" prefs="{{prefs}}">
+  </settings-autofill-page>
+
+  <settings-payments-section slot="view" id="payments" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-payments-section>
+
+  <settings-autofill-section slot="view" id="addresses" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-autofill-section>
+
+  <template is="dom-if" if="[[autofillAiAvailable_]]">
+    <settings-autofill-ai-section slot="view" id="autofillAi" prefs="{{prefs}}"
+        data-parent-view-id="parent">
+    </settings-autofill-ai-section>
+  </template>
+
+<if expr="is_win or is_macosx">
+  <settings-passkeys-subpage slot="view" id="passkeys"
+      data-parent-view-id="parent">
+  </settings-passkeys-subpage>
+</if>
+</cr-view-manager>

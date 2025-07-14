@@ -59,6 +59,17 @@
     </template>
   </div>
 
+  <template is="dom-if" if="[[showPage_(pageVisibility_.autofill)]]">
+    <div slot="view" id="autofill">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.AUTOFILL, lastRoute_, inSearchMode_)]]">
+        <settings-autofill-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-autofill-page-index>
+      </template>
+    </div>
+  </template>
+
   <template is="dom-if" if="[[showPage_(pageVisibility_.performance)]]">
     <div slot="view" id="performance">
       <template is="dom-if" if="[[renderPlugin_(

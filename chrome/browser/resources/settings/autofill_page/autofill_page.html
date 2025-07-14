@@ -7,8 +7,7 @@
         border-top: var(--cr-separator-line);
       }
     </style>
-    <settings-animated-pages id="pages" section="autofill"
-        focus-config="[[focusConfig_]]">
+    <settings-section page-title="$i18n{autofillPageTitle}">
       <div route-path="default">
         <cr-link-row id="passwordManagerButton"
             label="$i18n{localPasswordManager}" on-click="onPasswordsClick_"
@@ -32,45 +31,4 @@
               on-click="onAutofillAiClick_"></cr-link-row>
         </template>
       </div>
-      <if expr="is_win or is_macosx">
-        <template is="dom-if" route-path="/passkeys">
-          <settings-subpage
-              associated-control="[[$$('#passwordManagerButton')]]"
-              page-title="$i18n{managePasskeysTitle}"
-              search-label="$i18n{managePasskeysSearch}"
-              search-term="{{passkeyFilter_}}">
-            <settings-passkeys-subpage filter="[[passkeyFilter_]]">
-            </settings-passkeys-subpage>
-          </settings-subpage>
-        </template>
-      </if>
-      <template is="dom-if" route-path="/payments">
-        <settings-subpage
-            associated-control="[[$$('#paymentManagerButton')]]"
-            page-title="$i18n{creditCards}"
-            learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
-          <settings-payments-section id="paymentsSection" prefs="{{prefs}}">
-          </settings-payments-section>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/addresses">
-        <settings-subpage
-            associated-control="[[$$('#addressesManagerButton')]]"
-            page-title="$i18n{addressesTitle}"
-            learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
-          <settings-autofill-section id="autofillSection" prefs="{{prefs}}">
-          </settings-autofill-section>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/autofillAi"
-          no-search="[[!autofillAiAvailable_]]">
-        <settings-subpage
-            associated-control="[[$$('#autofillAiManagerButton')]]"
-            page-title="$i18n{autofillAiPageTitle}">
-          <settings-autofill-ai-section
-              id="autofillAiSection" prefs="{{prefs}}"
-              ineligible-user="[[!userEligibleForAutofillAi_]]">
-          </settings-autofill-ai-section>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+    </settings-section>

@@ -234,6 +234,7 @@ suite('AutofillAiSectionUiTest', function() {
   });
 
   async function createPage() {
+    loadTimeData.overrideValues({userEligibleForAutofillAi: true});
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = settingsPrefs.prefs;
     document.body.appendChild(section);

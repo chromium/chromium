@@ -1,42 +1,44 @@
-    <style include="cr-shared-style settings-shared passwords-shared">
-      #autofillSyncToggleWrapper {
-        align-items: center;
-        cursor: pointer;
-        display: flex;
-        min-height: var(--cr-section-two-line-min-height);
-        padding: 0 var(--cr-section-padding);
-      }
+  <style include="cr-shared-style settings-shared passwords-shared">
+    #autofillSyncToggleWrapper {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      min-height: var(--cr-section-two-line-min-height);
+      padding: 0 var(--cr-section-padding);
+    }
 
-      #autofillSyncToggleWrapper:hover {
-        background-color: var(--cr-hover-background-color);
-      }
+    #autofillSyncToggleWrapper:hover {
+      background-color: var(--cr-hover-background-color);
+    }
 
+    #address-row-icon {
+      --iron-icon-fill-color: var(--google-grey-700);
+      padding-inline-end: var(--cr-icon-button-margin-start);
+    }
+
+    @media (prefers-color-scheme: dark) {
       #address-row-icon {
-        --iron-icon-fill-color: var(--google-grey-700);
-        padding-inline-end: var(--cr-icon-button-margin-start);
+        --iron-icon-fill-color: var(--google-grey-500);
       }
+    }
 
-      @media (prefers-color-scheme: dark) {
-        #address-row-icon {
-          --iron-icon-fill-color: var(--google-grey-500);
-        }
-      }
+    #addressList .start {
+      display: flex;
+      overflow: hidden;
+    }
 
-      #addressList .start {
-        display: flex;
-        overflow: hidden;
-      }
+    #addressSummary {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
 
-      #addressSummary {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-      }
-
-      #plusAddressSettingsButton {
-        margin-top: 16px;
-      }
-    </style>
+    #plusAddressSettingsButton {
+      margin-top: 16px;
+    }
+  </style>
+  <settings-subpage page-title="$i18n{addressesTitle}"
+      learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
     <settings-toggle-button id="autofillProfileToggle"
         no-extension-indicator label="$i18n{enableProfilesLabel}"
         sub-label="$i18n{enableProfilesSublabel}"
@@ -136,3 +138,4 @@
           external>
       </cr-link-row>
     </template>
+  </settings-subpage>

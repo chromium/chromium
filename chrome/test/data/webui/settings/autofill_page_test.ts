@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://settings/settings.js';
+import 'chrome://settings/lazy_load.js';
+
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
@@ -32,12 +34,21 @@ suite('PasswordsAndForms', function() {
     element.prefs = prefsElement.prefs;
     document.body.appendChild(element);
     flush();
+    return element;
+  }
 
-    // Force-render all subppages.
-    element.shadowRoot!.querySelector<DomIf>(
-                           'dom-if[route-path="/payments"]')!.if = true;
-    element.shadowRoot!.querySelector<DomIf>(
-                           'dom-if[route-path="/addresses"]')!.if = true;
+  function createPaymentSectionElement(prefsElement: SettingsPrefsElement) {
+    const element = document.createElement('settings-payments-section');
+    element.prefs = prefsElement.prefs!;
+    document.body.appendChild(element);
+    flush();
+    return element;
+  }
+
+  function createAutofillSectionElement(prefsElement: SettingsPrefsElement) {
+    const element = document.createElement('settings-autofill-section');
+    element.prefs = prefsElement.prefs!;
+    document.body.appendChild(element);
     flush();
     return element;
   }
@@ -89,6 +100,7 @@ suite('PasswordsAndForms', function() {
 
         },
       ]));
+      document.body.appendChild(prefs);
 
       CrSettingsPrefs.initialized.then(function() {
         resolve(prefs);
@@ -133,7 +145,10 @@ suite('PasswordsAndForms', function() {
   let autofillManager: TestAutofillManager;
   let paymentsManager: TestPaymentsManager;
   let prefs: SettingsPrefsElement;
+
   let element: SettingsAutofillPageElement;
+  let paymentsSection: SettingsPaymentsSectionElement;
+  let autofillSection: SettingsAutofillSectionElement;
 
   setup(async function() {
     loadTimeData.overrideValues({
@@ -152,6 +167,8 @@ suite('PasswordsAndForms', function() {
 
     prefs = await createPrefs(true, true);
     element = createAutofillElement(prefs);
+    paymentsSection = createPaymentSectionElement(prefs);
+    autofillSection = createAutofillSectionElement(prefs);
   });
 
   teardown(function() {
@@ -166,6 +183,8 @@ suite('PasswordsAndForms', function() {
     paymentsManager.assertExpectations(paymentsExpectations);
 
     element.remove();
+    paymentsSection.remove();
+    autofillSection.remove();
     flush();
 
     autofillExpectations.listeningAddresses = 0;
@@ -219,11 +238,7 @@ suite('PasswordsAndForms', function() {
         (addressList, cardList, ibanList, payOverTimeIssuerList, accountInfo);
     flush();
 
-    assertDeepEquals(
-        addressList,
-        element.shadowRoot!
-            .querySelector<SettingsAutofillSectionElement>(
-                '#autofillSection')!.addresses);
+    assertDeepEquals(addressList, autofillSection.addresses);
 
     // The callback is coming from the manager, so the element shouldn't
     // have additional calls to the manager after the base expectations.
@@ -245,9 +260,6 @@ suite('PasswordsAndForms', function() {
         (addressList, cardList, ibanList, issuerList, accountInfo);
     flush();
 
-    const paymentsSection =
-        element.shadowRoot!.querySelector<SettingsPaymentsSectionElement>(
-            '#paymentsSection');
     assertTrue(!!paymentsSection);
     assertEquals(
         cardList, paymentsSection.creditCards,

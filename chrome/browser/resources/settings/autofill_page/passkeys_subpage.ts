@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '../settings_page/settings_subpage.js';
 import '../site_favicon.js';
 import '../simple_confirmation_dialog.js';
 // <if expr="is_macosx">
@@ -26,6 +27,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="is_macosx">
 import type {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
@@ -45,7 +47,10 @@ export interface SettingsPasskeysSubpageElement {
   };
 }
 
-export class SettingsPasskeysSubpageElement extends PolymerElement {
+const SettingsPasskeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+
+export class SettingsPasskeysSubpageElement extends
+    SettingsPasskeysSubpageElementBase {
   static get is() {
     return 'settings-passkeys-subpage';
   }
@@ -57,7 +62,7 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   static get properties() {
     return {
       /** Substring to filter the passkeys by. */
-      filter: {
+      filter_: {
         type: String,
         value: '',
       },
@@ -79,7 +84,7 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   declare private relyingPartyId_: string;
   // </if>
 
-  declare private filter: string;
+  declare private filter_: string;
   declare private passkeys_: Passkey[];
   declare private showDeleteConfirmationDialog_: boolean;
   // Set if the current platform doesn't support passkey management.
@@ -103,7 +108,7 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
   private filterFunction_(): ((passkey: Passkey) => boolean) {
     return passkey => [passkey.relyingPartyId, passkey.userName].some(
                str => str.toLowerCase().includes(
-                   this.filter.trim().toLowerCase()));
+                   this.filter_.trim().toLowerCase()));
   }
 
   /**
@@ -237,7 +242,13 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
         .then(this.onEditComplete_.bind(this));
   }
   // </if>
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
+
 declare global {
   interface HTMLElementTagNameMap {
     'settings-passkeys-subpage': SettingsPasskeysSubpageElement;

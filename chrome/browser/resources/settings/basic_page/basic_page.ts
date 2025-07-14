@@ -18,7 +18,6 @@ import '../glic_page/glic_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
-import '../autofill_page/autofill_page.js';
 import '../people_page/people_page.js';
 import '../reset_page/reset_profile_banner.js';
 import '../settings_page/settings_section.js';
