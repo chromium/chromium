@@ -12,8 +12,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/renderer/mock_renderer_agent.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -27,6 +29,8 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace fingerprinting_protection_filter {
+
+using ::testing::IsEmpty;
 
 class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
@@ -64,8 +68,18 @@ class MockRendererURLLoaderThrottle : public RendererURLLoaderThrottle {
 
  protected:
   // Simplify URL list matching.
-  bool ShouldAllowRequest(subresource_filter::LoadPolicy load_policy) override {
-    return GetCurrentURL() != GURL("https://blocked.com/");
+  bool ShouldAllowRequest() override {
+    bool url_blocked = GetCurrentURL() == GURL("https://blocked.com/");
+    if (url_blocked) {
+      if (GetCurrentActivation() ==
+          subresource_filter::mojom::ActivationLevel::kEnabled) {
+        load_policy_ = subresource_filter::LoadPolicy::DISALLOW;
+      } else if (GetCurrentActivation() ==
+                 subresource_filter::mojom::ActivationLevel::kDryRun) {
+        load_policy_ = subresource_filter::LoadPolicy::WOULD_DISALLOW;
+      }
+    }
+    return !url_blocked;
   }
 };
 
@@ -111,6 +125,7 @@ class RendererURLLoaderThrottleTest : public ::testing::Test {
 };
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -121,9 +136,14 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferChromeUrl) {
+  base::HistogramTester histogram_tester;
   GURL url("chrome://settings/");
   bool defer = false;
   network::ResourceRequest request =
@@ -134,9 +154,14 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferChromeUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferIframeUrl) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -147,20 +172,32 @@ TEST_F(RendererURLLoaderThrottleTest, DoesNotDeferIframeUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        DefersHttpsScriptUrlWhenWaitingForActivation) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   EXPECT_TRUE(defer);
+
+  // The defer time histogram should not be emitted because we haven't gotten to
+  // resuming the resource load yet.
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        DoesNotDeferHttpsScriptUrlWhenActivationComputed) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -172,9 +209,14 @@ TEST_F(RendererURLLoaderThrottleTest,
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
+  base::HistogramTester histogram_tester;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -196,6 +238,9 @@ TEST_F(RendererURLLoaderThrottleTest, ResumesSafeUrlLoad) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Allowed", 1);
 }
 
 MATCHER_P(GURLWith,
@@ -206,6 +251,7 @@ MATCHER_P(GURLWith,
 }
 
 TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
+  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/");
   EXPECT_CALL(renderer_agent_, OnSubresourceDisallowed());
 
@@ -222,10 +268,14 @@ TEST_F(RendererURLLoaderThrottleTest, BlocksMatchingUrlLoad) {
   EXPECT_TRUE(base::test::RunUntil([throttle_delegate_ptr]() {
     return throttle_delegate_ptr->WasCancelCalled();
   }));
+
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed", 1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        ResumesMatchingUrlLoadWithDisabledActivation) {
+  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -247,10 +297,16 @@ TEST_F(RendererURLLoaderThrottleTest,
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.SubresourceLoad.TotalDeferTime."
+      "ActivationDisabled",
+      1);
 }
 
 TEST_F(RendererURLLoaderThrottleTest,
        ResumesMatchingUrlLoadWithDryRunActivation) {
+  base::HistogramTester histogram_tester;
   GURL url("https://blocked.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -272,12 +328,17 @@ TEST_F(RendererURLLoaderThrottleTest,
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+
+  histogram_tester.ExpectTotalCount(
+      "FingerprintingProtection.SubresourceLoad.TotalDeferTime.WouldDisallow",
+      1);
 }
 
 // There should be no activation on localhosts, except for when
 // --enable-benchmarking switch is active.
 TEST_F(RendererURLLoaderThrottleTest,
        Localhost_HttpsScriptUrl_DefersOnlyWhenBenchmarking) {
+  base::HistogramTester histogram_tester;
   GURL url("https://localhost:1010.example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -290,6 +351,12 @@ TEST_F(RendererURLLoaderThrottleTest,
   defer = true;
   throttle_->WillStartRequest(&request, &defer);
   EXPECT_TRUE(defer);
+
+  // The defer time histogram should not be emitted because we haven't gotten to
+  // resuming the resource load yet.
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "FingerprintingProtection.SubresourceLoad.TotalDeferTime"),
+              IsEmpty());
 }
 
 }  // namespace fingerprinting_protection_filter

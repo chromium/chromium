@@ -16,11 +16,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 #include "components/subresource_filter/content/shared/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "components/variations/variations_switches.h"
@@ -41,8 +43,33 @@
 namespace fingerprinting_protection_filter {
 namespace {
 
+using ::subresource_filter::LoadPolicy;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
+
+void RecordDeferTimeHistogram(ActivationLevel activation_level,
+                              LoadPolicy load_policy,
+                              base::TimeTicks defer_time) {
+  auto total_defer_time = base::TimeTicks::Now() - defer_time;
+  if (activation_level == ActivationLevel::kDisabled) {
+    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+        "FingerprintingProtection.SubresourceLoad.TotalDeferTime."
+        "ActivationDisabled",
+        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
+  } else if (load_policy == LoadPolicy::ALLOW) {
+    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Allowed",
+        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
+  } else if (load_policy == LoadPolicy::WOULD_DISALLOW) {
+    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.WouldDisallow",
+        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
+        "FingerprintingProtection.SubresourceLoad.TotalDeferTime.Disallowed",
+        total_defer_time, base::Microseconds(1), base::Seconds(10), 50);
+  }
+}
 
 }  // namespace
 
@@ -73,7 +100,6 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
       if (renderer_agent) {
         agent_weakptr = renderer_agent->GetWeakPtr();
       }
-
       return agent_weakptr;
     };
     main_thread_task_runner_->PostTask(
@@ -105,16 +131,19 @@ bool RendererURLLoaderThrottle::WillIgnoreRequest(
           request_destination != network::mojom::RequestDestination::kScript);
 }
 
-bool RendererURLLoaderThrottle::ShouldAllowRequest(
-    subresource_filter::LoadPolicy load_policy) {
-  return load_policy == subresource_filter::LoadPolicy::ALLOW ||
-         load_policy == subresource_filter::LoadPolicy::WOULD_DISALLOW;
+bool RendererURLLoaderThrottle::ShouldAllowRequest() {
+  if (!load_policy_.has_value()) {
+    return true;
+  }
+  LoadPolicy load_policy = load_policy_.value();
+  return load_policy == LoadPolicy::EXPLICITLY_ALLOW ||
+         load_policy == LoadPolicy::ALLOW ||
+         load_policy == LoadPolicy::WOULD_DISALLOW;
 }
 
 void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
   // This function should only be called after activation is computed.
   CHECK(activation_state_.has_value());
-
   // Resume immediately if activation is disabled or if we cannot check the
   // filtering ruleset via the agent.
   if ((activation_state_.value().activation_level ==
@@ -124,9 +153,10 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
     // Do nothing and resume any deferred requests if activation is disabled.
     deferred_ = false;
     delegate_->Resume();
+    RecordDeferTimeHistogram(ActivationLevel::kDisabled, LoadPolicy::ALLOW,
+                             defer_timestamp_);
     return;
   }
-
   auto check_url_task = [](base::WeakPtr<RendererAgent> agent, GURL url,
                            std::optional<std::string> devtools_request_id,
                            url_pattern_index::proto::ElementType element_type,
@@ -135,7 +165,7 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
       agent->CheckURL(url, devtools_request_id, element_type,
                       std::move(filter_callback));
     } else {
-      std::move(filter_callback).Run(subresource_filter::LoadPolicy::ALLOW);
+      std::move(filter_callback).Run(LoadPolicy::ALLOW);
     }
   };
   main_thread_task_runner_->PostTask(
@@ -152,14 +182,16 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
 void RendererURLLoaderThrottle::ProcessRequestStep(const GURL& latest_url,
                                                    bool* defer) {
   current_url_ = latest_url;
-
   if (WillIgnoreRequest(current_url_, request_destination_)) {
     // Short-circuit on URLs we do not want to filter.
     return;
   }
-
-  // Defer unless we decide it's not needed after checking the request.
-  deferred_ = true;
+  // Defer unless activation is disabled or we decide it's not needed after
+  // checking the request.
+  deferred_ = activation_state_.has_value()
+                  ? (activation_state_.value().activation_level !=
+                     ActivationLevel::kDisabled)
+                  : true;
   if (activation_state_.has_value()) {
     // If we know the activation decision, check whether to block the URL.
     CheckCurrentResourceRequest();
@@ -170,6 +202,7 @@ void RendererURLLoaderThrottle::ProcessRequestStep(const GURL& latest_url,
     OnActivationComputed(activation_state);
   }
   if (deferred_) {
+    defer_timestamp_ = base::TimeTicks::Now();
     *defer = true;
   }
 }
@@ -199,7 +232,6 @@ const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 void RendererURLLoaderThrottle::OnRendererAgentLocated(
     base::WeakPtr<RendererAgent> renderer_agent) {
   renderer_agent_ = renderer_agent;
-
   auto get_activation_task =
       [](base::WeakPtr<RendererAgent> agent,
          RendererAgent::ActivationCallback activation_callback) {
@@ -229,9 +261,9 @@ void RendererURLLoaderThrottle::OnActivationComputed(
   waiting_for_agent_ = false;
 }
 
-void RendererURLLoaderThrottle::OnLoadPolicyCalculated(
-    subresource_filter::LoadPolicy load_policy) {
-  if (ShouldAllowRequest(load_policy) ||
+void RendererURLLoaderThrottle::OnLoadPolicyCalculated(LoadPolicy load_policy) {
+  load_policy_ = load_policy;
+  if (ShouldAllowRequest() ||
       activation_state_.value().activation_level == ActivationLevel::kDryRun) {
     if (deferred_) {
       // Resume if allowed or we are in dry run mode.
@@ -249,6 +281,10 @@ void RendererURLLoaderThrottle::OnLoadPolicyCalculated(
     // Cancel if the resource load should be blocked.
     delegate_->CancelWithError(net::ERR_BLOCKED_BY_FINGERPRINTING_PROTECTION,
                                "FingerprintingProtection");
+  }
+  if (deferred_) {
+    RecordDeferTimeHistogram(activation_state_.value().activation_level,
+                             load_policy_.value(), defer_timestamp_);
   }
   deferred_ = false;
 }
