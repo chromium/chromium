@@ -179,8 +179,11 @@ export class PolicyRowElement extends CustomElement {
       const conflictsNotice = this.hasConflicts_ && !this.isMergedValue_ ?
           loadTimeData.getString('conflict') :
           '';
-      const ignoredNotice =
-          this.policy.ignored ? loadTimeData.getString('ignored') : '';
+      const ignoredNotice = this.policy.ignored ?
+          (this.policy.isExtension ?
+               loadTimeData.getString('ignoredByExtension') :
+               loadTimeData.getString('ignored')) :
+          '';
       let notice =
           [
             errorsNotice,

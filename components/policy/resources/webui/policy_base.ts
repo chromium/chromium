@@ -201,6 +201,7 @@ export class Page {
                         `https://chromeenterprise.google/policies/?policy=${
                             name}` :
                         undefined,
+                    isExtension: value.isExtension || false,
                   },
                   value?.policies[name]));
 

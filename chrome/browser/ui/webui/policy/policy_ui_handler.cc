@@ -161,6 +161,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"future", IDS_POLICY_LABEL_FUTURE},
       {"info", IDS_POLICY_LABEL_INFO},
       {"ignored", IDS_POLICY_LABEL_IGNORED},
+      {"ignoredByExtension", IDS_POLICY_IGNORED_EXTENSION},
       {"notSpecified", IDS_POLICY_NOT_SPECIFIED},
       {"ok", IDS_POLICY_OK},
       {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},

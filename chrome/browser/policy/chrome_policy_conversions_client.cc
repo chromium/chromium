@@ -169,6 +169,7 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
     extension_policies_data.Set(policy::kNameKey, extension->name());
     extension_policies_data.Set(policy::kIdKey, extension->id());
     extension_policies_data.Set("forSigninScreen", for_signin_screen);
+    extension_policies_data.Set("isExtension", true);
     extension_policies_data.Set(policy::kPoliciesKey,
                                 std::move(extension_policies));
     policies.Append(std::move(extension_policies_data));

@@ -131,4 +131,25 @@ TEST_F(PolicyConversionsClientTest, HideMachineValues) {
       policies.FindByDottedPath(base::StrCat({kPolicyName2, ".error"})));
 }
 
+// Test policy ignored status handling.
+TEST_F(PolicyConversionsClientTest, PolicyIgnoredStatus) {
+  PolicyMap policy_map;
+  base::Value policy_value("policy_value");
+  PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                         POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                         std::make_optional(policy_value.Clone()), nullptr);
+  entry.SetIgnored();
+  policy_map.Set(kPolicyName1, std::move(entry));
+
+  StubPolicyConversionsClient client;
+
+  base::Value::Dict policies =
+      GetPolicyValues(client, policy_map, std::nullopt);
+
+  // Ignored policies should show "ignored" flag.
+  const base::Value::Dict* policy_dict = policies.FindDict(kPolicyName1);
+  ASSERT_NE(nullptr, policy_dict);
+  EXPECT_TRUE(policy_dict->FindBool("ignored").value_or(false));
+}
+
 }  // namespace policy
