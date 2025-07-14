@@ -59,13 +59,18 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
     return false;
   }
 
+  // TODO(akhna): ideally, Landlock would be applied in a single-threaded
+  // environment. However, the variety of threads created by the Android
+  // Runtime make this non-trivial. We should eventually find a way to mitigate
+  // this, or apply Landlock TSYNC when it becomes available.
   if (!sandbox::ThreadHelpers::IsSingleThreaded()) {
-    LOG(ERROR) << "Not single threaded, skipping Landlock";
+    VLOG(1) << "Not single threaded for Landlock";
+    // Log registered threads: Android Runtime (ART) threads may not show up
+    // here, as they are not explicitly registered with ThreadIdNameManager.
     for (const auto& id : base::ThreadIdNameManager::GetInstance()->GetIds()) {
-      LOG(ERROR) << "ThreadId=" << id << " name:"
+      VLOG(1) << "ThreadId=" << id << " name:"
                  << base::ThreadIdNameManager::GetInstance()->GetName(id);
     }
-    return false;
   }
 
   struct landlock_ruleset_attr ruleset_attr = {
