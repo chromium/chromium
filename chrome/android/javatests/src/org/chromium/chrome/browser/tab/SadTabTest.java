@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertFalse;
+
 import android.widget.Button;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -67,6 +70,14 @@ public class SadTabTest {
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
                 });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SadTab"})
+    public void testNoRendererCrashOnBlankPage() throws InterruptedException {
+        Thread.sleep(3000);
+        assertFalse(isShowingSadTab(mInitialPage.getTab()));
     }
 
     /** Verify that the sad tab is shown when the renderer crashes. */
