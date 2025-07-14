@@ -162,10 +162,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
 
   // All methods should return the same error.
   for (const std::string& attribute : kAttributeNames) {
-    content::EvalJsResult result =
-        CallDeviceAttributesApi(web_contents, attribute);
-    EXPECT_EQ(result.error, kNotAllowedOriginExpectedError);
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_EQ(CallDeviceAttributesApi(web_contents, attribute).error,
+              kNotAllowedOriginExpectedError);
   }
 }
 
@@ -178,10 +176,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskDeviceAttributesTest,
 
   // All methods should return null and no error.
   for (const std::string& attribute : kAttributeNames) {
-    content::EvalJsResult result =
-        CallDeviceAttributesApi(web_contents, attribute);
-    EXPECT_TRUE(result.error.empty());
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_EQ(CallDeviceAttributesApi(web_contents, attribute), base::Value());
   }
 }
 
@@ -242,7 +237,6 @@ IN_PROC_BROWSER_TEST_F(
     content::EvalJsResult result =
         CallDeviceAttributesApi(web_contents, attribute);
     EXPECT_EQ(result.error, kNotTrustedOriginExpectedError);
-    EXPECT_TRUE(result.value.is_none());
   }
 }
 

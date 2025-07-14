@@ -1633,6 +1633,15 @@ base::Value::List EvalJsResult::ExtractList() const {
   return value.GetList().Clone();
 }
 
+base::Value::Dict EvalJsResult::ExtractDict() const {
+  CHECK(error.empty())
+      << "Can't ExtractDict() because the script encountered a problem: "
+      << error;
+  CHECK(value.is_dict()) << "Can't ExtractDict() because script result: "
+                         << value << "is not a dictionary.";
+  return value.GetDict().Clone();
+}
+
 std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar) {
   if (!bar.error.empty()) {
     os << bar.error;

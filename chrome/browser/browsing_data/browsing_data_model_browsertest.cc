@@ -467,7 +467,7 @@ void EnsurePageAccessedStorage(content::WebContents* web_contents) {
         EXPECT_TRUE(
             content::EvalJs(frame,
                             "(async () => { return await accessStorage();})()")
-                .value.GetBool());
+                .ExtractBool());
       });
 }
 }  // namespace

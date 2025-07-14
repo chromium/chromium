@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, DISABLED_GetScreensBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreenDetails' in self"));
   auto result = EvalJs(shell(), content::test::kGetScreenDetailsScript);
-  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result);
 }
 
 // Test that screen.isExtended matches the availability of multiple displays.
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
 
   EvalJsResult result =
       EvalJs(test_shell(), content::test::kGetScreenDetailsScript);
-  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result);
 }
 
 // TODO(crbug.com/40115071): Windows crashes static casting to ScreenWin.

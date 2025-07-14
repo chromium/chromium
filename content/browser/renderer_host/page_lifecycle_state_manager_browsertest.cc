@@ -132,11 +132,9 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
 
   MatchEventList(rfh, ListValueOf("document.visibilitychange"));
 
-  EXPECT_TRUE(
-      EvalJs(
-          rfh,
-          "(async () => { return await window.performanceObserverPromise;})()")
-          .value.GetBool());
+  EXPECT_EQ(true, EvalJs(rfh,
+                         "(async () => { return await "
+                         "window.performanceObserverPromise;})()"));
   EXPECT_EQ(ListValueOf("visible", "hidden"),
             EvalJs(rfh, "window.performanceObserverEntries"));
 }

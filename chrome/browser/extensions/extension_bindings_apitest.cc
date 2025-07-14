@@ -5,6 +5,7 @@
 // Contains holistic tests of the bindings infrastructure
 
 #include "base/run_loop.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -617,7 +618,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
     content::EvalJsResult result =
         content::EvalJs(tab, "document.getElementById('go-button').click()",
                         content::EXECUTE_SCRIPT_NO_USER_GESTURE);
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_THAT(result, testing::AnyOf(content::EvalJsResult::IsError(),
+                                       content::EvalJsResult::IsOkAndHolds(
+                                           base::test::IsJson(base::Value()))));
 
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("Clicked: false", listener.message());
@@ -629,7 +632,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
     ExtensionTestMessageListener listener;
     content::EvalJsResult result =
         content::EvalJs(tab, "document.getElementById('go-button').click()");
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_THAT(result, testing::AnyOf(content::EvalJsResult::IsError(),
+                                       content::EvalJsResult::IsOkAndHolds(
+                                           base::test::IsJson(base::Value()))));
 
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("Clicked: true", listener.message());

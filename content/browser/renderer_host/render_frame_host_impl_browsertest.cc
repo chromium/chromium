@@ -5993,8 +5993,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   std::string kScript = "Object.keys(testObject).join(' ');";
   auto result = EvalJs(web_contents(), kScript);
-  EXPECT_EQ(base::JoinString(kMainObject.methods, " "),
-            result.value.GetString());
+  EXPECT_EQ(base::JoinString(kMainObject.methods, " "), result);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

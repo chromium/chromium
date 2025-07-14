@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
   // not influence it.
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1095,8 +1095,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       main_rfh->GetBrowserContext()->GetPermissionController(),
       run_loop.QuitClosure());
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
-                  .value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kAddNotificationsEventListener));
 
   // `kAddNotificationsEventListener` execution is async. To informing that an
   // event listener has been added for a permission we should wait otherwise
@@ -1132,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
 
   IsPermissionStatusSubscribed =
@@ -1167,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
   // not influence it.
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1183,8 +1182,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       main_rfh->GetBrowserContext()->GetPermissionController(),
       run_loop.QuitClosure());
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
-                  .value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kAddNotificationsEventListener));
 
   // `kAddNotificationsEventListener` execution is async. To informing that an
   // event listener has been added for a permission we should wait otherwise
@@ -1209,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
 
   IsPermissionStatusSubscribed =
@@ -1269,14 +1267,13 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
                     .error);
 
   // Initialize global JS variable `PermissionStatus`.
-  EXPECT_TRUE(content::EvalJs(main_rfh, R"(
+  EXPECT_EQ(true, content::EvalJs(main_rfh, R"(
     new Promise(async resolve => {
       PermissionStatus =
         await navigator.permissions.query({name: 'notifications'});
       resolve(true);
     })
-    )")
-                  .value.GetBool());
+    )"));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1469,7 +1466,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   content::RenderFrameHost* subframe = CreateIframe(main_rfh, embedded_url);
   ASSERT_TRUE(subframe);
 
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1533,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,

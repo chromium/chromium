@@ -1506,7 +1506,7 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   } else {
     base::Value::Dict expected_output;
     expected_output.Set(sub_url, "success");
-    EXPECT_EQ(expected_output, add_result.value);
+    EXPECT_EQ(expected_output, add_result);
   }
 
   AfterStateChangeAction();
@@ -1522,11 +1522,9 @@ void WebAppIntegrationTestDriver::RemoveSubApp(Site parent_app, Site sub_app) {
       << "No open tab or window for the parent app was found.";
   std::string sub_url = GetRelativeSubAppPath(sub_app);
 
-  const base::Value& remove_result =
-      content::EvalJs(
-          web_contents,
-          content::JsReplace("navigator.subApps.remove([$1])", sub_url))
-          .value;
+  const content::EvalJsResult remove_result = content::EvalJs(
+      web_contents,
+      content::JsReplace("navigator.subApps.remove([$1])", sub_url));
 
   base::Value::Dict expected_output;
   expected_output.Set(sub_url, "success");
@@ -3790,10 +3788,10 @@ void WebAppIntegrationTestDriver::CheckHasSubApp(Site parent_app,
 
   std::string sub_app_url = GetRelativeSubAppPath(sub_app);
 
-  const base::Value& list_result =
-      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+  const content::EvalJsResult list_result =
+      content::EvalJs(web_contents, "navigator.subApps.list()");
 
-  const base::Value::Dict& list_result_dict = list_result.GetDict();
+  const base::Value::Dict list_result_dict = list_result.ExtractDict();
 
   // Check that list() contained the sub_app_url key.
   EXPECT_NE(nullptr, list_result_dict.FindDict(sub_app_url));
@@ -3814,10 +3812,10 @@ void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site parent_app,
 
   std::string sub_app_url = GetRelativeSubAppPath(sub_app);
 
-  const base::Value& list_result =
-      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+  const content::EvalJsResult list_result =
+      content::EvalJs(web_contents, "navigator.subApps.list()");
 
-  const base::Value::Dict& list_result_dict = list_result.GetDict();
+  const base::Value::Dict& list_result_dict = list_result.ExtractDict();
 
   // Check that list() did not contain the sub_app_url key.
   EXPECT_EQ(nullptr, list_result_dict.FindDict(sub_app_url));
@@ -3835,8 +3833,8 @@ void WebAppIntegrationTestDriver::CheckNoSubApps(Site parent_app) {
   ASSERT_TRUE(web_contents)
       << "No open tab or window for the parent app was found.";
 
-  const base::Value& result =
-      content::EvalJs(web_contents, "navigator.subApps.list()").value;
+  const content::EvalJsResult result =
+      content::EvalJs(web_contents, "navigator.subApps.list()");
 
   // Check that list() returned an empty dictionary.
   EXPECT_EQ(base::Value(base::Value::Type::DICT), result);

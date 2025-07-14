@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
     EXPECT_EQ("", result.error);
 
-    const auto& list = result.value.GetList();
+    const auto list = result.ExtractList();
     EXPECT_EQ(1u, list.size());
     ASSERT_TRUE(list[0].is_dict());
 
@@ -243,13 +243,13 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-  EXPECT_EQ(EvalJs(sub, "test_step_1()").value.GetString(), "lcp-16x16.png");
+  EXPECT_EQ(EvalJs(sub, "test_step_1()"), "lcp-16x16.png");
 
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(100, 100));
 
-  EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "lcp-16x16.png");
+  EXPECT_EQ(EvalJs(sub, "test_step_2()"), "lcp-16x16.png");
 }
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
@@ -297,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   // new LCP candidate in that case, we always add a medium text in
   // `trigger_repaint_and_block_for_next_lcp`. So use a soft comparison here
   // that would permit the medium text, but not the long text.
-  EXPECT_LT(lcp_after_paint_preview.value.GetDouble(),
-            2 * lcp_before_paint_preview.value.GetDouble());
+  EXPECT_LT(lcp_after_paint_preview.ExtractDouble(),
+            2 * lcp_before_paint_preview.ExtractDouble());
 }
 #endif
 

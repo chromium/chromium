@@ -4,7 +4,7 @@
 
 #include <optional>
 
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/profiles/profile.h"
@@ -118,8 +118,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
       content::JsReplace("navigator.managed.getManagedConfiguration($1)",
                          base::Value::List().Append(kKey1).Append(kKey2)));
 
-  EXPECT_EQ(result.value.GetDict(),
-            *base::JSONReader::Read(kConfigurationData));
+  EXPECT_EQ(result, base::test::ParseJson(kConfigurationData));
 }
 
 }  // namespace web_app

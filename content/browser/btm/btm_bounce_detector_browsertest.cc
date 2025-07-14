@@ -3342,7 +3342,7 @@ class LocalStorage : public SiteStorage {
     if (!result.error.empty()) {
       return base::unexpected(result.error);
     }
-    if (result.value.is_none()) {
+    if (result == base::Value()) {
       return base::ok("");
     }
     return base::ok(result.ExtractString());

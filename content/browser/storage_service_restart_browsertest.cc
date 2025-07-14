@@ -135,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest, LocalStorageRecovery) {
   EvalJsResult result =
       EvalJs(shell()->web_contents(), R"(getLocalStorageValue("foo"))");
   ASSERT_THAT(result, content::EvalJsResult::IsOk());
-  EXPECT_TRUE(result.value.GetString().empty() ||
-              result.value.GetString() == "42");
+  EXPECT_THAT(result, testing::AnyOf(testing::Eq(""), testing::Eq("42")));
 
   // Local Storage should resume working as expected after the service is
   // restarted.

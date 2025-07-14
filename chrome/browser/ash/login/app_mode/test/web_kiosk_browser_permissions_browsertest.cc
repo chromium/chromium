@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskGeolocationBrowserPermissionTest,
   WaitForPermissionDefined(web_contents);
 
   content::EvalJsResult result = CallPermission(web_contents);
-  EXPECT_EQ(result.value.GetString(), GetParam().result_message);
+  EXPECT_EQ(result, GetParam().result_message);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -69,8 +70,10 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         )",
         kLocalhostAddress, port);
 
-    ASSERT_TRUE(
-        EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
+    ASSERT_THAT(
+        EvalJs(shell(), content::test::WrapAsync(open_socket)),
+        AnyOf(EvalJsResult::IsError(),
+              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::Value()))));
   }
 
  protected:

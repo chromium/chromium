@@ -234,7 +234,7 @@ class WebUIManagedInterfaceBrowserTest : public ContentBrowserTest {
                content::ISOLATED_WORLD_ID_GLOBAL);
 
     EXPECT_TRUE(result.error.empty());
-    return result.value.GetString();
+    return result.ExtractString();
   }
 
   void Reload(RenderFrameHost* frame = nullptr) {

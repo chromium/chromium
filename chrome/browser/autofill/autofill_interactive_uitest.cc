@@ -216,10 +216,9 @@ std::vector<FieldValue> GetFieldValues(
         )",
       control_elements->c_str());
   content::EvalJsResult r = content::EvalJs(execution_target, script);
-  DCHECK(r.value.is_list()) << r.error;
   std::vector<FieldValue> fields;
 
-  for (const base::Value& field : r.value.GetList()) {
+  for (const base::Value& field : r.ExtractList()) {
     const auto& field_dict = field.GetDict();
     fields.push_back({.id = *field_dict.FindString("id"),
                       .value = *field_dict.FindString("value")});
@@ -381,7 +380,7 @@ class ValueWaiter {
                                           waiterId_, timeout.InMilliseconds());
     content::EvalJsResult r =
         content::EvalJs(execution_target_, kFunction + call);
-    return !r.value.is_none() ? std::make_optional(r.ExtractString())
+    return r != base::Value() ? std::make_optional(r.ExtractString())
                               : std::nullopt;
   }
 

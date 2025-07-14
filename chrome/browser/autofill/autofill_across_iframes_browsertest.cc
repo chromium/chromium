@@ -153,8 +153,9 @@ std::map<LocalFrameToken, std::vector<std::string>> AllFieldValues(
         content::EvalJsResult r = content::EvalJs(rfh, kExtractValue);
         if (r.error.empty()) {
           LocalFrameToken frame(rfh->GetFrameToken().value());
-          for (const base::Value& value : r.value.GetList())
+          for (const base::Value& value : r.ExtractList()) {
             values[frame].push_back(value.GetString());
+          }
         }
       });
   return values;

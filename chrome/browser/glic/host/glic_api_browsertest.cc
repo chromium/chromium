@@ -306,14 +306,15 @@ class GlicApiTest : public NonInteractiveGlicTest {
 
     ASSERT_THAT(result, content::EvalJsResult::IsOk());
     if (result.value.is_dict()) {
-      auto* id = result.value.GetDict().Find("id");
+      base::Value::Dict dict = result.ExtractDict();
+      auto* id = dict.Find("id");
       if (id && id->is_string() && id->GetString() == "next-step") {
-        step_data_ = result.value.GetDict().Find("payload")->Clone();
+        step_data_ = dict.Find("payload")->Clone();
       }
       next_step_required_ = true;
       return;
     }
-    ASSERT_THAT(result.ExtractString(), testing::Eq("pass"));
+    ASSERT_EQ(result, "pass");
   }
 
   // Records all requests to the embedded test server.

@@ -160,9 +160,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
     })
     )";
 
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
-                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
-                   .value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckMicrophone,
+                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 
   LocationBarView* location_bar =
       BrowserView::GetBrowserViewForBrowser(browser())
@@ -193,9 +192,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   EXPECT_TRUE(observer.is_view_recreate_failed());
   EXPECT_FALSE(manager->GetCurrentPrompt());
 
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
-                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
-                   .value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckMicrophone,
+                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount(

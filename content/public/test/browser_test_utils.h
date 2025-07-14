@@ -741,6 +741,12 @@ struct JsLiteralHelper {
   }
 
   static base::Value Convert(const base::Value& value) { return value.Clone(); }
+  static base::Value Convert(const base::Value::List& value) {
+    return base::Value(value.Clone());
+  }
+  static base::Value Convert(const base::Value::Dict& value) {
+    return base::Value(value.Clone());
+  }
 };
 
 // Specialization allowing GURL to be passed to StringifyJsLiteral.
@@ -852,6 +858,10 @@ struct EvalJsResult {
   static auto IsOk() {
     return testing::Field(&EvalJsResult::error, testing::Eq(""));
   }
+  template <typename M>
+  static auto IsOkAndHolds(M m) {
+    return testing::AllOf(IsOk(), testing::Field(&EvalJsResult::value, m));
+  }
   static auto IsError() { return testing::Not(IsOk()); }
 
   // Extract a result value of the requested type, or die trying.
@@ -865,6 +875,7 @@ struct EvalJsResult {
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
   [[nodiscard]] base::Value::List ExtractList() const;
+  [[nodiscard]] base::Value::Dict ExtractDict() const;
 
   // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
   //

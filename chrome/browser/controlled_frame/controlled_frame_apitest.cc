@@ -503,8 +503,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ElementHasExpectedProperties) {
     [...new Set(methods).values()].sort()
   )");
 
-  ASSERT_THAT(result, content::EvalJsResult::IsOk());
-  EXPECT_EQ(result.value, expected_properties.value());
+  EXPECT_EQ(result, expected_properties.value());
 }
 
 // This and related tests are based on a WebView test at:

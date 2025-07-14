@@ -177,12 +177,8 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, Run) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id(), test_params);
   ScopedTestDriverProxy scoped_test_driver_proxy(app_frame);
 
-  content::EvalJsResult results = content::EvalJs(app_frame, "window.results");
-  if (!results.value.is_none()) {
-    CHECK(results.value.is_string());
-    LOG(INFO) << "Results:\n" << results.value.GetString();
-  }
-  ASSERT_THAT(results, content::EvalJsResult::IsOk());
+  LOG(INFO) << "Results:\n"
+            << content::EvalJs(app_frame, "window.results").ExtractString();
 }
 
 INSTANTIATE_TEST_SUITE_P(

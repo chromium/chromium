@@ -2114,8 +2114,11 @@ try {
                        TestTimeouts::action_max_timeout().InMilliseconds())
                        .c_str()));
 
-    ASSERT_TRUE(eval_result.value.is_none())
-        << "Expected string, but got " << eval_result.value;
+    ASSERT_THAT(
+        eval_result,
+        AnyOf(EvalJsResult::IsError(),
+              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::Value()))))
+        << "Expected string, but got " << eval_result;
     WaitForFencedFrameNavigation(expected_ad_url, *execution_target, observer);
   }
 
@@ -2278,7 +2281,7 @@ try {
     }
 
     std::vector<GURL> out;
-    for (const auto& value : result.value.GetList()) {
+    for (const auto& value : result.ExtractList()) {
       if (!value.is_string()) {
         ADD_FAILURE() << "Expected string: " << value;
         return std::vector<GURL>();
@@ -13092,8 +13095,6 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                             embedded_https_test_server().GetURL(
                                 "a.test", "/interest_group/decision_logic.js")),
                         shell());
-  ASSERT_TRUE(urn_url_string.value.is_string())
-      << "Expected string, but got " << urn_url_string.value;
 
   GURL urn_url(urn_url_string.ExtractString());
   ASSERT_TRUE(urn_url.is_valid())
@@ -15147,8 +15148,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
       url::Origin::Create(test_url),
       embedded_https_test_server().GetURL(
           "a.test", "/interest_group/decision_logic.js")));
-  ASSERT_TRUE(urn_url_string.value.is_string())
-      << "Expected string, but got " << urn_url_string.value;
 
   GURL urn_url(urn_url_string.ExtractString());
   ASSERT_TRUE(urn_url.is_valid())
@@ -25726,8 +25725,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(kDefaultMaxGroupLifetimeMs,
             EvalJs(shell(), kQueryMaxGroupLifetimeMs));
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
-                                    R"({
+  EXPECT_THAT(all_result,
+              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::StringPrintf(
+                  R"({
    "adComponentsLimit": 40,
    "deprecatedRenderURLReplacements": true,
    "permitCrossOriginTrustedSignals": true,
@@ -25738,7 +25738,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
    "trustedSignalsKVv2": true,
    "maxGroupLifetimeMs": %f
 })",
-                                    kDefaultMaxGroupLifetimeMs)))
+                  kDefaultMaxGroupLifetimeMs))))
       << all_result.error;
 }
 
@@ -26807,8 +26807,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
 
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
-                                    R"({
+  EXPECT_THAT(all_result,
+              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::StringPrintf(
+                  R"({
    "adComponentsLimit": 40,
    "deprecatedRenderURLReplacements": true,
    "permitCrossOriginTrustedSignals": true,
@@ -26819,7 +26820,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
    "trustedSignalsKVv2": true,
    "maxGroupLifetimeMs": %f
 })",
-                                    kDefaultMaxGroupLifetimeMs)))
+                  kDefaultMaxGroupLifetimeMs))))
       << all_result.error;
 }
 
@@ -28236,8 +28237,9 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryRealTimeReporting));
 
   auto all_result = EvalJs(shell(), kQueryAll);
-  EXPECT_THAT(all_result.value, base::test::IsJson(base::StringPrintf(
-                                    R"({
+  EXPECT_THAT(all_result,
+              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::StringPrintf(
+                  R"({
    "adComponentsLimit": 40,
    "deprecatedRenderURLReplacements": true,
    "permitCrossOriginTrustedSignals": true,
@@ -28248,7 +28250,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
    "trustedSignalsKVv2": true,
    "maxGroupLifetimeMs": %f
 })",
-                                    kDefaultMaxGroupLifetimeMs)))
+                  kDefaultMaxGroupLifetimeMs))))
       << all_result.error;
 }
 

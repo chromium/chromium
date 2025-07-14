@@ -41,10 +41,10 @@ class TerminalPrivateBrowserTest
   void ExpectJsResult(const std::string& script, const std::string& expected) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    content::EvalJsResult eval_result =
+    EXPECT_EQ(
         EvalJs(web_contents, script, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-               /*world_id=*/1);
-    EXPECT_EQ(eval_result.value.GetString(), expected);
+               /*world_id=*/1),
+        expected);
   }
 
   ash::DeviceStateMixin device_state_{
