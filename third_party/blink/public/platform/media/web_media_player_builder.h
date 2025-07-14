@@ -64,7 +64,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
 
   WebMediaPlayerBuilder(
       WebLocalFrame& frame,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
   WebMediaPlayerBuilder(const WebMediaPlayerBuilder&) = delete;
   WebMediaPlayerBuilder& operator=(const WebMediaPlayerBuilder&) = delete;
   ~WebMediaPlayerBuilder();

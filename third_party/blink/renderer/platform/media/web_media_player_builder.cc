@@ -60,10 +60,10 @@ class FrameFetchContext : public ResourceFetchContext {
 
 WebMediaPlayerBuilder::WebMediaPlayerBuilder(
     WebLocalFrame& frame,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
     : fetch_context_(std::make_unique<FrameFetchContext>(frame)),
       url_index_(std::make_unique<UrlIndex>(fetch_context_.get(),
-                                            std::move(task_runner))) {}
+                                            std::move(network_task_runner))) {}
 
 WebMediaPlayerBuilder::~WebMediaPlayerBuilder() = default;
 

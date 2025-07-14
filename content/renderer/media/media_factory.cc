@@ -487,7 +487,8 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
   if (!media_player_builder_) {
     media_player_builder_ = std::make_unique<blink::WebMediaPlayerBuilder>(
         *web_frame,
-        render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia));
+        /*network_task_runner=*/render_frame_->GetTaskRunner(
+            blink::TaskType::kNetworkingUnfreezable));
   }
 
   return media_player_builder_->Build(
