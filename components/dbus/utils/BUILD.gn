@@ -9,6 +9,7 @@ source_set("utils") {
     "check_for_service_and_start.h",
     "name_has_owner.cc",
     "name_has_owner.h",
+    "signature.h",
     "types.h",
   ]
   defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
@@ -23,6 +24,7 @@ source_set("unit_tests") {
   visibility = [ "//components/dbus:unit_tests" ]
   sources = [
     "check_for_service_and_start_unittest.cc",
+    "signature_unittest.cc",
     "types_unittest.cc",
   ]
   deps = [
