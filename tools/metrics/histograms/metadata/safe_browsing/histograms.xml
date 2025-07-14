@@ -3402,7 +3402,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.CacheHit.Result"
-    enum="SafeBrowsingV4FullHashCacheResult" expires_after="2025-07-27">
+    enum="SafeBrowsingV4FullHashCacheResult" expires_after="2026-07-27">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Track cache hits for V4 full hashes.</summary>
