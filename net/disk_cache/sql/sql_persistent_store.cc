@@ -26,6 +26,7 @@
 #include "net/base/tracing.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_persistent_store_queries.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -58,6 +59,9 @@ struct BufferWithStart {
   scoped_refptr<net::IOBuffer> buffer;
   int64_t start;
 };
+
+using disk_cache_sql_queries::GetQuery;
+using disk_cache_sql_queries::Query;
 
 using EntryInfo = SqlPersistentStore::EntryInfo;
 using Error = SqlPersistentStore::Error;
@@ -206,57 +210,17 @@ void RecordTimeAndErrorResultHistogram(std::string_view method_name,
       base::StrCat({kHistogramPrefix, method_name, ".Result"}), error);
 }
 
-// Sets up the database schema.
+// Sets up the database schema and indexes.
 [[nodiscard]] bool InitSchema(sql::Database& db) {
-  // The `resources` table stores the main metadata for each cache entry.
-  static constexpr char kSqlCreateTableResources[] =
-      // clang-format off
-      "CREATE TABLE IF NOT EXISTS resources("
-          // Unique ID for the resource
-          "res_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-          // High part of an unguessable token
-          "token_high INTEGER NOT NULL,"
-          // Low part of an unguessable token
-          "token_low INTEGER NOT NULL,"
-          // Timestamp for LRU
-          "last_used INTEGER NOT NULL,"
-          // End offset of the body
-          "body_end INTEGER NOT NULL,"
-          // Total bytes consumed by the entry
-          "bytes_usage INTEGER NOT NULL,"
-          // Flag for entries pending deletion
-          "doomed INTEGER NOT NULL,"
-          // The cache key created by HttpCache::GenerateCacheKeyForRequest()
-          "cache_key TEXT NOT NULL,"
-          // Serialized response headers
-          "head BLOB)";
-  // clang-format on
-
-  // The `blobs` table stores the data chunks of the cached body.
-  static constexpr char kSqlCreateTableBlobs[] =
-      // clang-format off
-      "CREATE TABLE IF NOT EXISTS blobs("
-        // Unique ID for the blob
-        "blob_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-        // Foreign key to resources.token_high
-        "token_high INTEGER NOT NULL,"
-        // Foreign key to resources.token_low
-        "token_low INTEGER NOT NULL,"
-        // Start offset of this blob chunk
-        "start INTEGER NOT NULL,"
-        // End offset of this blob chunk
-        "end INTEGER NOT NULL,"
-        // The actual data chunk
-        "blob BLOB NOT NULL)";
-  // clang-format on
-
-  if (!db.Execute(kSqlCreateTableResources) ||
-      !db.Execute(kSqlCreateTableBlobs)) {
+  if (!db.Execute(GetQuery(Query::kInitSchema_CreateTableResources)) ||
+      !db.Execute(GetQuery(Query::kInitSchema_CreateTableBlobs)) ||
+      !db.Execute(GetQuery(Query::kIndex_ResourcesToken)) ||
+      !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyDoomed)) ||
+      !db.Execute(GetQuery(Query::kIndex_ResourcesDoomedLastUsed)) ||
+      !db.Execute(GetQuery(Query::kIndex_ResourcesDoomedResId)) ||
+      !db.Execute(GetQuery(Query::kIndex_BlobsTokenStart))) {
     return false;
   }
-  // TODO(crbug.com/422065015): Create indexes for performance-critical columns.
-  // TODO(crbug.com/422065015): Re-evaluate kSqlBackendStaticResourceSize after
-  // adding indexes, as they increase storage overhead.
   return true;
 }
 
@@ -657,25 +621,9 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
 
 OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
   CheckDatabaseInitStatus();
-  constexpr char kSqlSelectResources[] =
-      // clang-format off
-      "SELECT "
-          "token_high,"  // 0
-          "token_low,"   // 1
-          "last_used,"   // 2
-          "body_end,"    // 3
-          "head "        // 4
-      "FROM resources "
-      "WHERE "
-          "cache_key=? AND "  // 0
-          "doomed=? "         // 1
-      "ORDER BY res_id DESC";
-  // clang-format on
 
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlSelectResources));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResources));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectResources)));
   statement.BindString(0, key.string());
   statement.BindBool(1, false);
   if (!statement.Step()) {
@@ -760,23 +708,10 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
   // `GetSizeOfAllEntries()`.
   const int64_t bytes_usage = key.string().size();
   {
-    constexpr char kSqlInsertIntoResources[] =
-        // clang-format off
-        "INSERT INTO resources("
-            "token_high,"   // 0
-            "token_low,"    // 1
-            "last_used,"    // 2
-            "body_end,"     // 3
-            "bytes_usage,"  // 4
-            "doomed,"       // 5
-            "cache_key) "   // 6
-        "VALUES(?,?,?,?,?,?,?)";
-    // clang-format on
-
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlInsertIntoResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertIntoResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(
+            disk_cache_sql_queries::Query::kCreateEntry_InsertIntoResources)));
     statement.BindInt64(0, TokenHigh(entry_info.token));
     statement.BindInt64(1, TokenLow(entry_info.token));
     statement.BindTime(2, entry_info.last_used);
@@ -841,24 +776,8 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   // detect potential metadata corruption from overflows.
   base::CheckedNumeric<int64_t> total_size_delta = 0;
   {
-    constexpr char kSqlMarkDoomedResources[] =
-        // clang-format off
-        "UPDATE resources "
-        "SET "
-          "doomed=? "          // 0
-        "WHERE "
-          "cache_key=? AND "   // 1
-          "token_high=? AND "  // 2
-          "token_low=? AND "   // 3
-          "doomed=? "          // 4
-        "RETURNING "
-          "bytes_usage";       // 0
-    // clang-format on
-
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlMarkDoomedResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlMarkDoomedResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kDoomEntry_MarkDoomedResources)));
     // Set the new value: doomed = true.
     statement.BindBool(0, true);
     statement.BindString(1, key.string());
@@ -941,20 +860,9 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
 
   int64_t deleted_count = 0;
   {
-    constexpr char kSqlDeleteFromResources[] =
-        // clang-format off
-        "DELETE FROM resources "
-        "WHERE "
-          "cache_key=? AND "   // 0
-          "token_high=? AND "  // 1
-          "token_low=? AND "   // 2
-          "doomed=?";          // 3
-    // clang-format on
-
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kDeleteDoomedEntry_DeleteFromResources)));
     statement.BindString(0, key.string());
     statement.BindInt64(1, TokenHigh(token));
     statement.BindInt64(2, TokenLow(token));
@@ -1023,21 +931,8 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   base::CheckedNumeric<int64_t> total_size_delta = 0;
   int64_t deleted_count = 0;
   {
-    constexpr char kSqlDeleteFromResources[] =
-        // clang-format off
-        "DELETE FROM resources "
-        "WHERE "
-          "cache_key=? AND "  // 0
-          "doomed=? "         // 1
-        "RETURNING "
-          "token_high,"       // 0
-          "token_low,"        // 1
-          "bytes_usage";      // 2
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
     statement.BindString(0, key.string());
     // Target rows where doomed = false.
     statement.BindBool(1, false);
@@ -1118,11 +1013,8 @@ Error Backend::DeleteAllEntriesInternal() {
 
   // Clear the main resources table.
   {
-    constexpr char kSqlDeleteFromResources[] = "DELETE FROM resources";
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kDeleteAllEntries_DeleteFromResources)));
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -1130,11 +1022,8 @@ Error Backend::DeleteAllEntriesInternal() {
 
   // Also clear the blobs table.
   {
-    constexpr char kSqlDeleteFromBlobs[] = "DELETE FROM blobs";
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromBlobs));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromBlobs));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kDeleteAllEntries_DeleteFromBlobs)));
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -1197,24 +1086,9 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
   int64_t entry_count_delta = 0;
   base::CheckedNumeric<int64_t> total_size_delta = 0;
   {
-    constexpr char kSqlSelectResourcesForEviction[] =
-        // clang-format off
-        "SELECT "
-          "res_id,"       // 0
-          "token_high,"   // 1
-          "token_low,"    // 2
-          "bytes_usage,"  // 3
-          "cache_key "    // 4
-        "FROM resources "
-        "WHERE "
-          "last_used>=? AND "  // 0
-          "last_used<? AND "   // 1
-          "doomed=?";          // 2
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlSelectResourcesForEviction));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResourcesForEviction));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kDeleteLiveEntriesBetween_SelectResourcesForEviction)));
     statement.BindTime(0, initial_time);
     statement.BindTime(1, end_time);
     statement.BindBool(2, false);
@@ -1245,12 +1119,9 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
 
   // Delete the selected entries from the `resources` table.
   for (const auto& res_id : res_ids_to_be_deleted) {
-    constexpr char kSqlDeleteFromResources[] =
-        "DELETE FROM resources WHERE res_id=?";
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kDeleteLiveEntriesBetween_DeleteFromResources)));
     statement.BindInt64(0, res_id);
     if (!statement.Run()) {
       return Error::kFailedToExecute;
@@ -1306,19 +1177,9 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
   }
   int64_t change_count = 0;
   {
-    constexpr char kSqlUpdateResourceLastUsed[] =
-        // clang-format off
-        "UPDATE resources "
-        "SET "
-          "last_used=? "      // 0
-        "WHERE "
-          "cache_key=? AND "  // 1
-          "doomed=?";         // 2
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlUpdateResourceLastUsed));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateResourceLastUsed));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kUpdateEntryLastUsed_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
     statement.BindString(1, key.string());
     statement.BindBool(2, false);  // doomed
@@ -1375,25 +1236,9 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     return Error::kFailedToStartTransaction;
   }
   {
-    constexpr char kSqlUpdateResourceBodySize[] =
-        // clang-format off
-        "UPDATE resources "
-        "SET "
-          "last_used=?, "                // 0
-          "bytes_usage=bytes_usage+?, "  // 1
-          "head=? "                      // 2
-        "WHERE "
-          "cache_key=? AND "             // 3
-          "token_high=? AND "            // 4
-          "token_low=? AND "             // 5
-          "doomed=? "                    // 6
-        "RETURNING "
-          "bytes_usage";                 // 0
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlUpdateResourceBodySize));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateResourceBodySize));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kUpdateEntryHeaderAndLastUsed_UpdateResource)));
     statement.BindTime(0, last_used);
     statement.BindInt64(1, header_size_delta);
     statement.BindBlob(2, buffer->span());
@@ -1523,24 +1368,8 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
   // Update the entry's metadata in the `resources` table if the body size
   // changed or if the total size of blobs changed.
   if (body_end_delta || total_size_delta) {
-    constexpr char kSqlUpdateResourceBodySize[] =
-        // clang-format off
-        "UPDATE resources "
-        "SET "
-            "body_end=body_end+?, "       // 0
-            "bytes_usage=bytes_usage+? "  // 1
-        "WHERE "
-            "cache_key=? AND "            // 2
-            "token_high=? AND "           // 3
-            "token_low=? "                // 4
-        "RETURNING "
-            "body_end,"                   // 0
-            "doomed";                     // 1
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlUpdateResourceBodySize));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlUpdateResourceBodySize));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kWriteEntryData_UpdateResource)));
     statement.BindInt64(0, body_end_delta);
     statement.BindInt64(1, total_size_delta);
     statement.BindString(2, key.string());
@@ -1602,22 +1431,8 @@ Error Backend::TrimOverlappingBlobs(
   // If the write has zero length, no blobs can be fully contained within it, so
   // this can be skipped.
   if (offset != end) {
-    constexpr char kSqlDeleteContained[] =
-        // clang-format off
-        "DELETE FROM blobs "
-        "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=? AND "   // 1
-          "start>=? AND "      // 2
-          "end<=? "            // 3
-        "RETURNING "
-          "start,"             // 0
-          "end";               // 1
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteContained));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteContained));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kTrimOverlappingBlobs_DeleteContained)));
     statement.BindInt64(0, TokenHigh(token));
     statement.BindInt64(1, TokenLow(token));
     statement.BindInt64(2, offset);
@@ -1642,24 +1457,9 @@ Error Backend::TrimOverlappingBlobs(
   // A zero-length, non-truncating write is a no-op. For all other writes, we
   // must handle partially overlapping blobs.
   if (!(offset == end && !truncate)) {
-    constexpr char kSqlSelectOverlapping[] =
-        // clang-format off
-      "SELECT "
-          "blob_id,"           // 0
-          "start,"             // 1
-          "end,"               // 2
-          "blob "              // 3
-      "FROM blobs "
-      "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=? AND "   // 1
-          "start<? AND "       // 2
-          "end>?";             // 3
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlSelectOverlapping));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverlapping));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kTrimOverlappingBlobs_SelectOverlapping)));
     statement.BindInt64(0, TokenHigh(token));
     statement.BindInt64(1, TokenLow(token));
     statement.BindInt64(2, end);
@@ -1724,21 +1524,8 @@ Error Backend::TruncateBlobsAfter(
                });
   // Delete all blobs that start at or after the truncation offset.
   {
-    constexpr char kSqlDeleteAfter[] =
-        // clang-format off
-        "DELETE FROM blobs "
-        "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=? AND "   // 1
-          "start>=? "          // 2
-        "RETURNING "
-          "start,"             // 0
-          "end";               // 1
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteAfter));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteAfter));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kTruncateBlobsAfter_DeleteAfter)));
     statement.BindInt64(0, TokenHigh(token));
     statement.BindInt64(1, TokenLow(token));
     statement.BindInt64(2, truncate_offset);
@@ -1787,20 +1574,8 @@ Error Backend::InsertNewBlob(
                });
   const int64_t end =
       (base::CheckedNumeric<int64_t>(start) + buf_len).ValueOrDie();
-  constexpr char kSqlInsertIntoBlobs[] =
-      // clang-format off
-      "INSERT INTO blobs("
-          "token_high,"  // 0
-          "token_low,"   // 1
-          "start,"       // 2
-          "end,"         // 3
-          "blob) "       // 4
-      "VALUES(?,?,?,?,?)";
-  // clang-format on
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlInsertIntoBlobs));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertIntoBlobs));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kInsertNewBlob_InsertIntoBlobs)));
   statement.BindInt64(0, TokenHigh(token));
   statement.BindInt64(1, TokenLow(token));
   statement.BindInt64(2, start);
@@ -1838,19 +1613,8 @@ Error Backend::DeleteBlobById(
                  auto dict = std::move(trace_context).WriteDictionary();
                  dict.Add("blob_id", blob_id);
                });
-  constexpr char kSqlDeleteFromBlobs[] =
-      // clang-format off
-      "DELETE FROM blobs "
-      "WHERE "
-          "blob_id=? "  // 0
-      "RETURNING "
-          "start,"      // 0
-          "end";        // 1
-  // clang-format on
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlDeleteFromBlobs));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromBlobs));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kDeleteBlobById_DeleteFromBlobs)));
   statement.BindInt64(0, blob_id);
   if (!statement.Step()) {
     // `Step()` returned false, which means either the query completed with no
@@ -1878,17 +1642,8 @@ Error Backend::DeleteBlobsByToken(const base::UnguessableToken& token) {
                  auto dict = std::move(trace_context).WriteDictionary();
                  dict.Add("token", token.ToString());
                });
-  constexpr char kSqlDeleteFromBlobs[] =
-      // clang-format off
-      "DELETE FROM blobs "
-      "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=?";       // 1
-  // clang-format on
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlDeleteFromBlobs));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromBlobs));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kDeleteBlobsByToken_DeleteFromBlobs)));
   statement.BindInt64(0, TokenHigh(token));
   statement.BindInt64(1, TokenLow(token));
   if (!statement.Run()) {
@@ -1946,24 +1701,8 @@ IntOrError Backend::ReadEntryDataInternal(const base::UnguessableToken& token,
       (base::CheckedNumeric<int64_t>(offset) + buffer_len).ValueOrDie();
   // Select all blobs that overlap with the read range [offset, read_end),
   // ordered by their start offset.
-  constexpr char kSqlSelectOverrapping[] =
-      // clang-format off
-      "SELECT "
-          "start,"             // 0
-          "end,"               // 1
-          "blob "              // 2
-      "FROM blobs "
-      "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=? AND "   // 1
-          "start<? AND "       // 2
-          "end>? "             // 3
-      "ORDER BY start";
-  // clang-format on
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlSelectOverrapping));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverrapping));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kReadEntryData_SelectOverlapping)));
   statement.BindInt64(0, TokenHigh(token));
   statement.BindInt64(1, TokenLow(token));
   statement.BindInt64(2, read_end);
@@ -2060,23 +1799,9 @@ RangeResult Backend::GetEntryAvailableRangeInternal(
   // the `blobs` table for data chunks that overlap with the requested range
   // [offset, end).
   {
-    constexpr char kSqlSelectOverrapping[] =
-        // clang-format off
-        "SELECT "
-            "start,"  // 0
-            "end "    // 1
-        "FROM blobs "
-        "WHERE "
-          "token_high=? AND "  // 0
-          "token_low=? AND "   // 1
-          "start<? AND "     // 2
-          "end>? "           // 3
-        "ORDER BY start";
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlSelectOverrapping));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectOverrapping));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kGetEntryAvailableRange_SelectOverlapping)));
     statement.BindInt64(0, TokenHigh(token));
     statement.BindInt64(1, TokenLow(token));
     statement.BindInt64(2, end);
@@ -2136,20 +1861,9 @@ int64_t Backend::CalculateSizeOfEntriesBetweenInternal(base::Time initial_time,
   // To calculate the total size of all entries whose `last_used` time falls
   // within the range [`initial_time`, `end_time`), sums up the `bytes_usage`
   // from the `resources` table and adds a static overhead for each entry.
-  constexpr char kSqlSelectFromResources[] =
-      // clang-format off
-      "SELECT "
-          "bytes_usage "  // 0
-      "FROM resources "
-      "WHERE "
-          "last_used>=? AND "  // 0
-          "last_used<? AND "   // 1
-          "doomed=?";          // 2
-  // clang-format on
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlSelectFromResources));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectFromResources));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kCalculateSizeOfEntriesBetween_SelectFromResources)));
   statement.BindTime(0, initial_time);
   statement.BindTime(1, end_time);
   statement.BindBool(2, false);
@@ -2189,26 +1903,9 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
     Error& error_out) {
   CheckDatabaseInitStatus();
 
-  constexpr char kSqlSelectResources[] =
-      // clang-format off
-      "SELECT "
-        "res_id,"      // 0
-        "token_high,"  // 1
-        "token_low,"   // 2
-        "last_used,"   // 3
-        "body_end,"    // 4
-        "cache_key,"   // 5
-        "head "        // 6
-      "FROM resources "
-      "WHERE "
-        "res_id<? AND "  // 0
-        "doomed=? "      // 1
-      "ORDER BY res_id DESC";
-  // clang-format on
-  // Intentionally DCHECK() for performance.
-  DCHECK(db_.IsSQLValid(kSqlSelectResources));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResources));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kOpenLatestEntryBeforeResId_SelectResources)));
   statement.BindInt64(0, res_id_cursor);
   statement.BindBool(1, false);
   while (statement.Step()) {
@@ -2267,22 +1964,9 @@ Error Backend::RunEvictionInternal(
   base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
   base::CheckedNumeric<int64_t> checked_removed_total_size = 0;
   {
-    constexpr char kSqlSelectResourcesForEviction[] =
-        // clang-format off
-        "SELECT "
-            "token_high,"   // 0
-            "token_low,"    // 1
-            "cache_key,"    // 2
-            "bytes_usage "  // 3
-        "FROM resources "
-        "WHERE "
-            "doomed=? "     // 0
-        "ORDER BY last_used";
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlSelectResourcesForEviction));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectResourcesForEviction));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kRunEviction_SelectResourcesForEviction)));
     statement.BindBool(0, false);
     while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
            statement.Step()) {
@@ -2312,17 +1996,8 @@ Error Backend::RunEvictionInternal(
         delete_result != Error::kOk) {
       return delete_result;
     }
-    constexpr char kSqlDeleteFromResources[] =
-        // clang-format off
-        "DELETE FROM resources "
-        "WHERE "
-            "token_high=? AND "  // 0
-            "token_low=?";       // 1
-    // clang-format on
-    // Intentionally DCHECK() for performance
-    DCHECK(db_.IsSQLValid(kSqlDeleteFromResources));
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kSqlDeleteFromResources));
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kRunEviction_DeleteFromResources)));
     statement.BindInt64(0, TokenHigh(token_to_be_deleted));
     statement.BindInt64(1, TokenLow(token_to_be_deleted));
     if (!statement.Run()) {
@@ -2398,12 +2073,9 @@ bool Backend::RecalculateStoreStatusAndCommitTransaction(
 
 // Recalculates the number of non-doomed entries in the `resources` table.
 int64_t Backend::CalculateResourceEntryCount() {
-  constexpr char kSqlSelectCountFromResources[] =
-      "SELECT COUNT(*) FROM resources WHERE doomed=?";
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlSelectCountFromResources));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectCountFromResources));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kCalculateResourceEntryCount_SelectCountFromResources)));
   statement.BindBool(0, false);
   int64_t result = 0;
   if (statement.Step()) {
@@ -2414,12 +2086,9 @@ int64_t Backend::CalculateResourceEntryCount() {
 
 // Recalculates the total size of all non-doomed entries.
 int64_t Backend::CalculateTotalSize() {
-  constexpr char kSqlSelectTotalSizeFromResources[] =
-      "SELECT SUM(bytes_usage) FROM resources WHERE doomed=?";
-  // Intentionally DCHECK() for performance
-  DCHECK(db_.IsSQLValid(kSqlSelectTotalSizeFromResources));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlSelectTotalSizeFromResources));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kCalculateTotalSize_SelectTotalSizeFromResources)));
   statement.BindBool(0, false);
   int64_t result = 0;
   if (statement.Step()) {

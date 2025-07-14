@@ -52,10 +52,7 @@ inline constexpr int kSqlBackendCompatibleDatabaseVersion = 1;
 // miscellaneous metadata. The
 // `SqlPersistentStoreTest.StaticResourceSizeEstimation` test provides a basic
 // validation of this constant against the actual file size.
-// TODO(crbug.com/422065015): Re-evaluate this constant when head and body
-// writing is implemented and new indexes are added, as the storage pattern may
-// affect overhead.
-inline constexpr int kSqlBackendStaticResourceSize = 100;
+inline constexpr int kSqlBackendStaticResourceSize = 300;
 
 // Defines the number of streams supported by the SQL backend.
 // The SQL backend only supports stream 0 and stream 1.
