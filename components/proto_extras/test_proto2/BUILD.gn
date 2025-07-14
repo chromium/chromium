@@ -15,3 +15,9 @@ proto_extras("test_proto2_extras") {
 
   deps = [ ":test_proto2" ]
 }
+
+proto_test_extras("test_proto2_test_extras") {
+  sources = [ "test_proto2.proto" ]
+  deps = [ ":test_proto2" ]
+  extras_deps = [ ":test_proto2_extras" ]
+}
