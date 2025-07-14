@@ -2628,6 +2628,10 @@
       status: "experimental",
     },
     {
+      name: "IncludeTransformsForLayerXandLayerY",
+      status: "stable",
+    },
+    {
       name: "IncomingCallNotifications",
       origin_trial_feature_name: "IncomingCallNotifications",
       origin_trial_os: [ "win" ],

@@ -115,4 +115,27 @@ TEST_F(MouseEventTest, LayerXY) {
   EXPECT_EQ(mouse_event->layerY(), 0);
 }
 
+TEST_F(MouseEventTest, LayerXYWithTransform) {
+  SetBodyInnerHTML(R"HTML(
+        <style>
+          div { width: 100px; height: 100px; transform-origin: 0 0; }
+        </style>
+        <div id="target" style="transform: scale(2);padding: 10px">
+          <div id="target" style="transform: scale(2);" >
+            <div id="inner" style="background: lightblue"></div>
+          </div>
+        </div>
+        )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Node* target = GetDocument().getElementById(AtomicString("inner"));
+
+  MouseEventInit& mouse_event_init = *MouseEventInit::Create();
+  MouseEvent* mouse_event = MakeGarbageCollected<MouseEvent>(
+      event_type_names::kMousedown, &mouse_event_init);
+  mouse_event->SetTarget(target);
+  EXPECT_EQ(mouse_event->layerX(), -28);
+  EXPECT_EQ(mouse_event->layerY(), -28);
+}
+
 }  // namespace blink
