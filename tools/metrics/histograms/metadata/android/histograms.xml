@@ -3144,7 +3144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking.{Action}" enum="MessageIdentifier"
-    expires_after="2025-07-13">
+    expires_after="2025-10-13">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
