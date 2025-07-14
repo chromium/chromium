@@ -32,10 +32,10 @@ class IOSPortTest(port_testcase.PortTestCase):
     def test_get_platform_tags(self):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
-                         {'ios', 'ios18-simulator', 'x86', 'release'})
+                         {'ios', 'ios26-simulator', 'x86', 'release'})
 
     def test_versions(self):
-        self.assert_name('ios', 'ios18', 'ios-ios18-simulator')
+        self.assert_name('ios', 'ios18', 'ios-ios26-simulator')
 
     def test_driver_name_option(self):
         self.assertTrue(
