@@ -1651,7 +1651,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             var buttonVariant = buttonData.getButtonSpec().getButtonVariant();
             if (showOptionalButton) {
                 RecordHistogram.recordEnumeratedHistogram(
-                        "CustomTab.AdaptiveToolbarButton.Shown",
+                        "CustomTabs.AdaptiveToolbarButton.Shown",
                         buttonVariant,
                         AdaptiveToolbarButtonVariant.MAX_VALUE);
             } else {
