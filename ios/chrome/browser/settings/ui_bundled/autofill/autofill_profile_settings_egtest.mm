@@ -224,12 +224,14 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 // Returns the delete button on the deletion confirmation action sheet.
 - (id<GREYMatcher>)confirmButtonForNumberOfAddressesBeingDeleted:
     (int)numberOfAddresses {
-  return grey_allOf(
+  id<GREYMatcher> baseMatcher = grey_allOf(
       grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
           IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
           numberOfAddresses)),
       grey_accessibilityTrait(UIAccessibilityTraitButton),
       grey_userInteractionEnabled(), nil);
+
+  return grey_allOf(baseMatcher, grey_not(grey_descendant(baseMatcher)), nil);
 }
 
 // Returns the footer based on the count of errors due to the empty required
