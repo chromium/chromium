@@ -756,6 +756,10 @@ void ExtensionRegistrar::BlockAllExtensions() {
 // All locked extensions should revert to being either enabled or disabled
 // as appropriate.
 void ExtensionRegistrar::UnblockAllExtensions() {
+  if (!block_extensions_) {
+    return;
+  }
+
   block_extensions_ = false;
 
   const ExtensionSet to_unblock =

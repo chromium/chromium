@@ -363,6 +363,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
   // Simple accessors.
   bool extensions_enabled() const { return extensions_enabled_; }
+  bool block_extensions() const { return block_extensions_; }
   const base::FilePath& install_directory() const { return install_directory_; }
   const base::FilePath& unpacked_install_directory() const {
     return unpacked_install_directory_;
