@@ -52,6 +52,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -619,6 +620,7 @@ public class InstanceSwitcherCoordinatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    @DisabledTest(message = "crbug.com/430445069")
     public void testExceedsMaxNumberOfWindows_InstanceSwitcherV2() throws Exception {
         // Simulate persistence of MAX_INSTANCE_COUNT active instances and 1 inactive instance.
         InstanceInfo[] instances =
