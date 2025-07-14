@@ -132,6 +132,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
@@ -3214,6 +3215,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveImageInPostPage) {
   EXPECT_TRUE(content::ExecJs(web_contents, "document.forms[0].submit()"));
   navigation_observer.Wait();
   EXPECT_EQ(form_url, web_contents->GetURL());
+
+  // Wait until the frame is ready to accept input events.
+  content::RenderFrameHost* render_frame_host =
+      web_contents->GetPrimaryMainFrame();
+  content::WaitForHitTestData(render_frame_host);
 
   // Try to download the image via a context menu.
   // The context menu is actually opened to check that it computes the right
