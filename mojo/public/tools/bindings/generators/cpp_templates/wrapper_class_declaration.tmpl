@@ -75,7 +75,7 @@ class {{export_attribute}} {{struct.name}} {
   size_t Hash(size_t seed) const;
 {%- endif %}
 
-{%- set serialization_result_type = "WTF::Vector<uint8_t>"
+{%- set serialization_result_type = "::blink::Vector<uint8_t>"
         if for_blink else "std::vector<uint8_t>" %}
 
 {%- if not struct|contains_handles_or_interfaces %}

@@ -63,45 +63,48 @@ class WTFTypesTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-WTF::Vector<WTF::String> ConstructStringArray() {
-  WTF::Vector<WTF::String> strs(4);
+::blink::Vector<::blink::String> ConstructStringArray() {
+  ::blink::Vector<::blink::String> strs(4);
   // strs[0] is null.
   // strs[1] is empty.
   strs[1] = "";
   strs[2] = kHelloWorld;
-  strs[3] = WTF::String::FromUTF8(kUTF8HelloWorld);
+  strs[3] = ::blink::String::FromUTF8(kUTF8HelloWorld);
 
   return strs;
 }
 
-WTF::HashMap<WTF::String, WTF::String> ConstructStringMap() {
-  WTF::HashMap<WTF::String, WTF::String> str_map;
+::blink::HashMap<::blink::String, ::blink::String> ConstructStringMap() {
+  ::blink::HashMap<::blink::String, ::blink::String> str_map;
   // A null string as value.
-  str_map.insert("0", WTF::String());
+  str_map.insert("0", ::blink::String());
   str_map.insert("1", kHelloWorld);
-  str_map.insert("2", WTF::String::FromUTF8(kUTF8HelloWorld));
+  str_map.insert("2", ::blink::String::FromUTF8(kUTF8HelloWorld));
 
   return str_map;
 }
 
-void ExpectString(const WTF::String& expected_string,
+void ExpectString(const ::blink::String& expected_string,
                   base::OnceClosure closure,
-                  const WTF::String& string) {
+                  const ::blink::String& string) {
   EXPECT_EQ(expected_string, string);
   std::move(closure).Run();
 }
 
-void ExpectStringArray(std::optional<WTF::Vector<WTF::String>>* expected_arr,
-                       base::OnceClosure closure,
-                       const std::optional<WTF::Vector<WTF::String>>& arr) {
+void ExpectStringArray(
+    std::optional<::blink::Vector<::blink::String>>* expected_arr,
+    base::OnceClosure closure,
+    const std::optional<::blink::Vector<::blink::String>>& arr) {
   EXPECT_EQ(*expected_arr, arr);
   std::move(closure).Run();
 }
 
 void ExpectStringMap(
-    std::optional<WTF::HashMap<WTF::String, WTF::String>>* expected_map,
+    std::optional<::blink::HashMap<::blink::String, ::blink::String>>*
+        expected_map,
     base::OnceClosure closure,
-    const std::optional<WTF::HashMap<WTF::String, WTF::String>>& map) {
+    const std::optional<::blink::HashMap<::blink::String, ::blink::String>>&
+        map) {
   EXPECT_EQ(*expected_map, map);
   std::move(closure).Run();
 }
@@ -111,7 +114,7 @@ void ExpectStringMap(
 TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
   using MojomType = ArrayDataView<StringDataView>;
 
-  WTF::Vector<WTF::String> strs = ConstructStringArray();
+  ::blink::Vector<::blink::String> strs = ConstructStringArray();
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
@@ -123,7 +126,7 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
           0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
   mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
-  WTF::Vector<WTF::String> strs2;
+  ::blink::Vector<::blink::String> strs2;
   mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   EXPECT_EQ(strs, strs2);
@@ -132,12 +135,12 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
 TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
   using MojomType = ArrayDataView<StringDataView>;
 
-  WTF::Vector<WTF::String, 1> strs(4);
+  ::blink::Vector<::blink::String, 1> strs(4);
   // strs[0] is null.
   // strs[1] is empty.
   strs[1] = "";
   strs[2] = kHelloWorld;
-  strs[3] = WTF::String::FromUTF8(kUTF8HelloWorld);
+  strs[3] = ::blink::String::FromUTF8(kUTF8HelloWorld);
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
@@ -149,7 +152,7 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
           0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
   mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
-  WTF::Vector<WTF::String, 1> strs2;
+  ::blink::Vector<::blink::String, 1> strs2;
   mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   EXPECT_EQ(strs, strs2);
@@ -158,7 +161,7 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
 TEST_F(WTFTypesTest, Serialization_WTFVectorToStlVector) {
   using MojomType = ArrayDataView<StringDataView>;
 
-  WTF::Vector<WTF::String> strs = ConstructStringArray();
+  ::blink::Vector<::blink::String> strs = ConstructStringArray();
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
@@ -197,15 +200,15 @@ TEST_F(WTFTypesTest, SendString) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  WTF::Vector<WTF::String> strs = ConstructStringArray();
+  ::blink::Vector<::blink::String> strs = ConstructStringArray();
 
   for (size_t i = 0; i < strs.size(); ++i) {
     base::RunLoop loop;
-    // Test that a WTF::String is unchanged after the following conversion:
+    // Test that a blink::String is unchanged after the following conversion:
     //   - serialized;
     //   - deserialized as std::optional<std::string>;
     //   - serialized;
-    //   - deserialized as WTF::String.
+    //   - deserialized as blink::String.
     remote->EchoString(
         strs[i], base::BindOnce(&ExpectString, strs[i], loop.QuitClosure()));
     loop.Run();
@@ -217,7 +220,7 @@ TEST_F(WTFTypesTest, SendStringArray) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  std::array<std::optional<WTF::Vector<WTF::String>>, 3> arrs;
+  std::array<std::optional<::blink::Vector<::blink::String>>, 3> arrs;
   // arrs[0] is empty.
   arrs[0].emplace();
   // arrs[1] is null.
@@ -225,13 +228,13 @@ TEST_F(WTFTypesTest, SendStringArray) {
 
   for (size_t i = 0; i < std::size(arrs); ++i) {
     base::RunLoop loop;
-    // Test that a std::optional<WTF::Vector<WTF::String>> is unchanged after
-    // the following conversion:
+    // Test that a std::optional<blink::Vector<blink::String>> is unchanged
+    // after the following conversion:
     //   - serialized;
     //   - deserialized as
     //     std::optional<std::vector<std::optional<std::string>>>;
     //   - serialized;
-    //   - deserialized as std::optional<WTF::Vector<WTF::String>>.
+    //   - deserialized as std::optional<blink::Vector<blink::String>>.
     remote->EchoStringArray(
         arrs[i], base::BindOnce(&ExpectStringArray, base::Unretained(&arrs[i]),
                                 loop.QuitClosure()));
@@ -244,7 +247,9 @@ TEST_F(WTFTypesTest, SendStringMap) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  std::array<std::optional<WTF::HashMap<WTF::String, WTF::String>>, 3> maps;
+  std::array<std::optional<::blink::HashMap<::blink::String, ::blink::String>>,
+             3>
+      maps;
   // maps[0] is empty.
   maps[0].emplace();
   // maps[1] is null.
@@ -252,14 +257,14 @@ TEST_F(WTFTypesTest, SendStringMap) {
 
   for (size_t i = 0; i < std::size(maps); ++i) {
     base::RunLoop loop;
-    // Test that a std::optional<WTF::HashMap<WTF::String, WTF::String>> is
-    // unchanged after the following conversion:
+    // Test that a std::optional<blink::HashMap<blink::String, blink::String>>
+    // is unchanged after the following conversion:
     //   - serialized;
     //   - deserialized as std::optional<
     //         base::flat_map<std::string, std::optional<std::string>>>;
     //   - serialized;
-    //   - deserialized as std::optional<WTF::HashMap<WTF::String,
-    //     WTF::String>>.
+    //   - deserialized as std::optional<blink::HashMap<blink::String,
+    //     blink::String>>.
     remote->EchoStringMap(
         maps[i], base::BindOnce(&ExpectStringMap, base::Unretained(&maps[i]),
                                 loop.QuitClosure()));

@@ -1708,10 +1708,10 @@ to valid getter return types:
 | `pending_receiver<Foo>`      | `mojo::PendingReceiver<Foo>`
 | `pending_associated_remote<Foo>`    | `mojo::PendingAssociatedRemote<Foo>`
 | `pending_associated_receiver<Foo>`    | `mojo::PendingAssociatedReceiver<Foo>`
-| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `std::string_view`, and `WTF::String` (Blink).
-| `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::array<T, N>`, `std::vector<T>`, `WTF::Vector<T>` (Blink), etc.
+| `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `std::string_view`, and `blink::String` (Blink).
+| `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::array<T, N>`, `std::vector<T>`, `blink::Vector<T>` (Blink), etc.
 | `array<T, N>`                | Similar to the above, but the length of the data must be always the same as `N`.
-| `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, `WTF::HashMap<T>` (Blink), etc.
+| `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, `blink::HashMap<T>` (Blink), etc.
 | `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this includes only the generated `FooEnum` type.
 | `FooStruct`                  | Value or reference to any type that has an appropriate `StructTraits` specialization defined. By default this includes only the generated `FooStructPtr` type.
 | `FooUnion`                   | Value of reference to any type that has an appropriate `UnionTraits` specialization defined. By default this includes only the generated `FooUnionPtr` type.
@@ -1827,7 +1827,7 @@ out/gen/sample/db.mojom-blink.h
 
 These files mirror the definitions in the default variant but with different
 C++ types in place of certain builtin field and parameter types. For example,
-Mojom strings are represented by `WTF::String` instead of `std::string`. To
+Mojom strings are represented by `blink::String` instead of `std::string`. To
 avoid symbol collisions, the variant's symbols are nested in an extra inner
 namespace, so Blink consumer of the interface might write something like:
 
@@ -1836,7 +1836,7 @@ namespace, so Blink consumer of the interface might write something like:
 
 class TableImpl : public db::mojom::blink::Table {
  public:
-  void AddRow(int32_t key, const WTF::String& data) override {
+  void AddRow(int32_t key, const blink::String& data) override {
     // ...
   }
 };
@@ -1886,13 +1886,13 @@ example above.
 For converting between Blink and non-Blink variants, please see
 `//third_party/blink/public/platform/cross_variant_mojo_util.h`.
 
-Blink strings deserve a special mention, since `WTF::String` can store either
+Blink strings deserve a special mention, since `blink::String` can store either
 Latin-1 or UTF-16, and converts to UTF-8 as needed. Since Mojo strings are
-supposed to be UTF-8, converting a `WTF::String` to a mojo string will convert
-it to UTF-8. When converting a Mojo string back to a WTF::String, the string is
-re-encoded from UTF-8 back into UTF-16. Invalid UTF-16 is tolerated throughout
-and converted to invalid UTF-8, so if your WTF::String may contain invalid
-UTF-16, don't represent it on the wire with a mojo string - use a mojo
+supposed to be UTF-8, converting a `blink::String` to a mojo string will convert
+it to UTF-8. When converting a Mojo string back to a blink::String, the string
+is re-encoded from UTF-8 back into UTF-16. Invalid UTF-16 is tolerated
+throughout and converted to invalid UTF-8, so if your blink::String may contain
+invalid UTF-16, don't represent it on the wire with a mojo string - use a mojo
 ByteString instead.
 
 ## Versioning Considerations

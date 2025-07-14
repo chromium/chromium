@@ -126,7 +126,7 @@ class TranslateTest(unittest.TestCase):
 
   def testEnumWithReservedValues(self):
     """Verifies that assigning reserved values to enumerators fails."""
-    # -128 is reserved for the empty representation in WTF::HashTraits.
+    # -128 is reserved for the empty representation in blink::HashTraits.
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Enum(
             ast.Name("MyEnum"), None,
@@ -137,9 +137,9 @@ class TranslateTest(unittest.TestCase):
     ])
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
-    self.assertIn("reserved for WTF::HashTrait", str(context.exception))
+    self.assertIn("reserved for blink::HashTrait", str(context.exception))
 
-    # -127 is reserved for the deleted representation in WTF::HashTraits.
+    # -127 is reserved for the deleted representation in blink::HashTraits.
     tree = ast.Mojom(None, ast.ImportList(), [
         ast.Enum(
             ast.Name("MyEnum"), None,
@@ -150,7 +150,7 @@ class TranslateTest(unittest.TestCase):
     ])
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
-    self.assertIn("reserved for WTF::HashTrait", str(context.exception))
+    self.assertIn("reserved for blink::HashTrait", str(context.exception))
 
     # Implicitly assigning a reserved value should also fail.
     tree = ast.Mojom(None, ast.ImportList(), [
@@ -164,4 +164,4 @@ class TranslateTest(unittest.TestCase):
     ])
     with self.assertRaises(Exception) as context:
       translate.OrderedModule(tree, "mojom_tree", [])
-    self.assertIn("reserved for WTF::HashTrait", str(context.exception))
+    self.assertIn("reserved for blink::HashTrait", str(context.exception))

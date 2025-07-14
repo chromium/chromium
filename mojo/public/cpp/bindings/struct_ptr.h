@@ -251,7 +251,7 @@ class InlinedStructPtr {
   enum State {
     NIL,
     VALID,
-    // For use in WTF::HashMap only. There is only one way to construct an
+    // For use in blink::HashMap only. There is only one way to construct an
     // `InlinedStructPtr` with this state, and it will never be deleted or
     // destroyed in this state.
     DELETED,

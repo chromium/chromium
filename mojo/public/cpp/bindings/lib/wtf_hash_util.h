@@ -21,7 +21,7 @@ size_t WTFHashCombine(size_t seed, const T& value) {
   // Based on proposal in:
   // http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2005/n1756.pdf
   //
-  // TODO(tibell): We'd like to use WTF::DefaultHash instead of std::hash, but
+  // TODO(tibell): We'd like to use blink::DefaultHash instead of std::hash, but
   //     there is no general template specialization of DefaultHash for enums
   //     and there can't be an instance for bool.
   return seed ^ (std::hash<T>()(value) + (seed << 6) + (seed >> 2));

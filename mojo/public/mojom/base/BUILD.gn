@@ -609,7 +609,7 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.BigString"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
         },
       ]
@@ -623,13 +623,13 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.BigString16"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
           force_serialize = true
         },
         {
           mojom = "mojo_base.mojom.String16"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
           nullable_is_same_type = true
           force_serialize = true
         },

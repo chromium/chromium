@@ -31,16 +31,16 @@ namespace mojo {
 //        - string:
 //          Value or reference of any type that has a StringTraits defined.
 //          Supported by default: std::string_view, std::string,
-//          WTF::String (in blink).
+//          blink::String (in blink).
 //
 //        - array:
 //          Value or reference of any type that has an ArrayTraits defined.
-//          Supported by default: std::vector, CArray, WTF::Vector (in blink)
+//          Supported by default: std::vector, CArray, blink::Vector (in blink)
 //
 //        - map:
 //          Value or reference of any type that has a MapTraits defined.
 //          Supported by default: std::map, std::unordered_map, base::flat_map,
-//          WTF::HashMap (in blink).
+//          blink::HashMap (in blink).
 //
 //        - struct:
 //          Value or reference of any type that has a StructTraits defined.

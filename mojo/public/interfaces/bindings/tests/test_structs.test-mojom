@@ -115,7 +115,7 @@ struct ScopedConstants {
 // decoded successfully.
 
 struct MapKeyTypes {
-  // TODO(yzshen): WTF::HashMap doesn't support bool as key.
+  // TODO(yzshen): blink::HashMap doesn't support bool as key.
   // map<bool, bool> f0;
   map<int8, int8> f1;
   map<uint8, uint8> f2;

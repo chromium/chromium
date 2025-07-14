@@ -12,24 +12,24 @@
 namespace mojo {
 
 // static
-void StringTraits<WTF::String>::SetToNull(WTF::String* output) {
+void StringTraits<blink::String>::SetToNull(blink::String* output) {
   if (output->IsNull())
     return;
 
-  WTF::String result;
+  blink::String result;
   output->swap(result);
 }
 
 // static
-WTF::StringUTF8Adaptor StringTraits<WTF::String>::GetUTF8(
-    const WTF::String& input) {
-  return WTF::StringUTF8Adaptor(input);
+blink::StringUtf8Adaptor StringTraits<blink::String>::GetUTF8(
+    const blink::String& input) {
+  return blink::StringUtf8Adaptor(input);
 }
 
 // static
-bool StringTraits<WTF::String>::Read(StringDataView input,
-                                     WTF::String* output) {
-  WTF::String result = WTF::String::FromUTF8(input.value());
+bool StringTraits<blink::String>::Read(StringDataView input,
+                                       blink::String* output) {
+  blink::String result = blink::String::FromUTF8(input.value());
   output->swap(result);
   return true;
 }

@@ -26,22 +26,22 @@ TEST_F(WTFHashTest, NestedStruct) {
 
 TEST_F(WTFHashTest, Enum) {
   // Just check that this template instantiation compiles.
+  using ::blink::HashTraits;
 
   // Top-level.
-  ASSERT_EQ(
-      WTF::HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0),
-      WTF::HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0));
+  ASSERT_EQ(HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0),
+            HashTraits<blink::TopLevelEnum>::GetHash(blink::TopLevelEnum::E0));
 
   // Nested in struct.
-  ASSERT_EQ(WTF::HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
+  ASSERT_EQ(HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
                 blink::TestWTFStruct::NestedEnum::E0),
-            WTF::HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
+            HashTraits<blink::TestWTFStruct::NestedEnum>::GetHash(
                 blink::TestWTFStruct::NestedEnum::E0));
 
   // Nested in interface.
-  ASSERT_EQ(WTF::HashTraits<blink::TestWTF::NestedEnum>::GetHash(
+  ASSERT_EQ(HashTraits<blink::TestWTF::NestedEnum>::GetHash(
                 blink::TestWTF::NestedEnum::E0),
-            WTF::HashTraits<blink::TestWTF::NestedEnum>::GetHash(
+            HashTraits<blink::TestWTF::NestedEnum>::GetHash(
                 blink::TestWTF::NestedEnum::E0));
 }
 

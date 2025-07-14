@@ -135,13 +135,13 @@ class BlinkPicklePasserImpl : public blink::PicklePasser {
     std::move(callback).Run(std::move(container));
   }
 
-  void PassPickles(WTF::Vector<PickledStructBlink> pickles,
+  void PassPickles(::blink::Vector<PickledStructBlink> pickles,
                    PassPicklesCallback callback) override {
     std::move(callback).Run(std::move(pickles));
   }
 
   void PassPickleArrays(
-      WTF::Vector<WTF::Vector<PickledStructBlink>> pickle_arrays,
+      ::blink::Vector<::blink::Vector<PickledStructBlink>> pickle_arrays,
       PassPickleArraysCallback callback) override {
     std::move(callback).Run(std::move(pickle_arrays));
   }

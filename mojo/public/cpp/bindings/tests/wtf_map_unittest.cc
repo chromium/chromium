@@ -12,7 +12,7 @@ namespace test {
 namespace {
 
 TEST(WTFMapTest, StructKey) {
-  WTF::HashMap<blink::RectPtr, int32_t> map;
+  ::blink::HashMap<blink::RectPtr, int32_t> map;
   map.insert(blink::Rect::New(1, 2, 3, 4), 123);
 
   blink::RectPtr key = blink::Rect::New(1, 2, 3, 4);
@@ -24,7 +24,7 @@ TEST(WTFMapTest, StructKey) {
 }
 
 TEST(WTFMapTest, TypemappedStructKey) {
-  WTF::HashMap<blink::ContainsHashablePtr, int32_t> map;
+  ::blink::HashMap<blink::ContainsHashablePtr, int32_t> map;
   map.insert(blink::ContainsHashable::New(RectBlink(1, 2, 3, 4)), 123);
 
   blink::ContainsHashablePtr key =
