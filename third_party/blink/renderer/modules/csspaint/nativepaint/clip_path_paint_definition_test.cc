@@ -147,6 +147,34 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     }
   }
 
+  int ExpectNoFallbackForAnimatedElement(Element* element, int init_time_ms) {
+    UpdateAndAdvanceTimeTo(init_time_ms);
+
+    EnsureCCClipPathInvariantsHoldStyleAndLayout(
+        /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+
+    Animation* animation = GetFirstAnimation(element);
+
+    GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                                 base::Milliseconds(0));
+    animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+    EnsureCCClipPathInvariantsHoldThroughoutPainting(
+        /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
+        animation);
+
+    // Tick the animation in order to ensure that the animation has an
+    // opportunity to create a style change.
+    UpdateAndAdvanceTimeTo(init_time_ms + 1000);
+
+    // Run lifecycle once more to ensure invariants hold post initial paint.
+    EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+        /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
+        animation);
+
+    return init_time_ms + 1000;
+  }
+
   void EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       bool needs_repaint,
       CompositedPaintStatus status,
@@ -226,24 +254,134 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  // Init clock
-  UpdateAndAdvanceTimeTo(0);
+  ExpectNoFallbackForAnimatedElement(element, 0);
+}
 
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
+// Test the case where there is a clip-path animation with two shape()
+// keyframes that will not fall back to main.
+TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: shape(from 10px 10px, vline by 20px, hline by 20px);
+            }
+            100% {
+                clip-path: shape(from 10px 10px, vline by 30px, hline by 30px);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
 
-  Animation* animation = GetFirstAnimation(element);
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+  ExpectNoFallbackForAnimatedElement(element, 0);
+}
 
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
-      animation);
+TEST_F(ClipPathPaintDefinitionTest, ClipPathNoneNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: none;
+            }
+            100% {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
 
-  // Run lifecycle once more to ensure invariants hold post initial paint.
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
-      animation);
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  ExpectNoFallbackForAnimatedElement(element, 0);
+}
+
+TEST_F(ClipPathPaintDefinitionTest, ClipCalcNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(calc(2em + 2%) at 50% 50%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  ExpectNoFallbackForAnimatedElement(element, 0);
+}
+
+TEST_F(ClipPathPaintDefinitionTest, ClipNoneNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: none;
+            }
+            100% {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+        .animation {
+            animation: clippath 30s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  ExpectNoFallbackForAnimatedElement(element, 0);
+}
+
+TEST_F(ClipPathPaintDefinitionTest, ClipDelayNotFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: none;
+            }
+            100% {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+        .animation {
+            animation: clippath 30s 0.5s;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  ExpectNoFallbackForAnimatedElement(element, 0);
 }
 
 // Test the case where there is a clip-path animation with two simple
@@ -552,50 +690,6 @@ TEST_F(ClipPathPaintDefinitionTest,
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       /* needs_repaint= */ false, CompositedPaintStatus::kComposited,
       element_pseudo, animation, /* override_scheduled_animation= */ true);
-}
-
-// Test the case where there is a clip-path animation with two shape()
-// keyframes that will not fall back to main.
-TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-        @keyframes clippath {
-            0% {
-                clip-path: shape(from 10px 10px, vline by 20px, hline by 20px);
-            }
-            100% {
-                clip-path: shape(from 10px 10px, vline by 30px, hline by 30px);
-            }
-        }
-        .animation {
-            animation: clippath 30s;
-        }
-    </style>
-    <div id ="target" style="width: 100px; height: 100px">
-    </div>
-  )HTML");
-
-  Element* element = GetElementById("target");
-  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
-
-  // Init clock
-  UpdateAndAdvanceTimeTo(0);
-
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element);
-
-  Animation* animation = GetFirstAnimation(element);
-
-  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
-
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      /* needs_repaint= */ true, CompositedPaintStatus::kComposited, element,
-      animation);
-
-  // Run lifecycle once more to ensure invariants hold post initial paint.
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      /* needs_repaint= */ false, CompositedPaintStatus::kComposited, element,
-      animation);
 }
 
 // Test the case where there is a clip-path animation with two simple
