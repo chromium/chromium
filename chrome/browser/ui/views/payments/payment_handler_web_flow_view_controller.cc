@@ -162,9 +162,7 @@ class PaymentHandlerCloseButton : public views::ImageButton {
 
  public:
   explicit PaymentHandlerCloseButton(
-      views::Button::PressedCallback pressed_callback,
-      const SkColor enabled_color,
-      const SkColor disabled_color)
+      views::Button::PressedCallback pressed_callback)
       : views::ImageButton(std::move(pressed_callback)) {
     ConfigureVectorImageButton(this);
     views::InstallCircleHighlightPathGenerator(this);
@@ -174,6 +172,18 @@ class PaymentHandlerCloseButton : public views::ImageButton {
     SetID(static_cast<int>(DialogViewID::CANCEL_BUTTON));
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_PAYMENTS_CLOSE));
+  }
+  ~PaymentHandlerCloseButton() override = default;
+
+  // Set the colors based on the header's background color.
+  void SetColorBasedOnBackground(SkColor background_color) {
+    // Get the closest icon color to kColorIcon, with a minimum contrast ratio
+    // used for glyphs.
+    const SkColor enabled_color = GetContrastingGoogleColor(
+        gfx::kGoogleGrey500, gfx::kGoogleGrey700, background_color,
+        color_utils::kMinimumVisibleContrastRatio);
+    const SkColor disabled_color = color_utils::AlphaBlend(
+        enabled_color, background_color, gfx::kDisabledControlAlpha);
 
     // This view does not set its color using the browser theme color, as this
     // may differ from the header color, which is based on the web view theme.
@@ -427,19 +437,15 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   }
 
   // Finally, add the close button.
-  // Get the closest icon color to kColorIcon, with a minimum contrast ratio
-  // used for glyphs.
-  const SkColor close_icon_color = GetContrastingGoogleColor(
-      gfx::kGoogleGrey500, gfx::kGoogleGrey700, background_color,
-      color_utils::kMinimumVisibleContrastRatio);
-  const SkColor close_icon_disabled_color = color_utils::AlphaBlend(
-      close_icon_color, background_color, gfx::kDisabledControlAlpha);
-  auto close_button = std::make_unique<PaymentHandlerCloseButton>(
-      base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
-                          GetWeakPtr()),
-      close_icon_color, close_icon_disabled_color);
-  close_button_ = close_button->GetWeakPtr();
-  container->AddChildView(std::move(close_button));
+  close_button_ =
+      container
+          ->AddChildView(
+              std::make_unique<PaymentHandlerCloseButton>(base::BindRepeating(
+                  &PaymentRequestSheetController::CloseButtonPressed,
+                  GetWeakPtr())))
+          ->GetWeakPtr();
+
+  close_button_->SetColorBasedOnBackground(background_color);
 }
 
 views::View* PaymentHandlerWebFlowViewController::GetFirstFocusedView() {
