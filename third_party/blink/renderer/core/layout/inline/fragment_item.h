@@ -44,13 +44,15 @@ enum class TextScaleType : uint8_t { kLengthAdjust, kFitText, kFitTextInline };
 // TODO(crbug.com/417306102): We should rename it.
 struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
  public:
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(scaled_font); }
   bool IsSvg() const { return scale_type == TextScaleType::kLengthAdjust; }
 
   gfx::RectF rect;
   float length_adjust_scale;
   float angle;
   float baseline_shift;
+  // `scaled_font` is not used for SVG text.
+  Member<Font> scaled_font;
   bool in_text_path;
   TextScaleType scale_type;
 };

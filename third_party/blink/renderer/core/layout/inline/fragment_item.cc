@@ -768,7 +768,13 @@ const Font& FragmentItem::ScaledFont() const {
   if (const auto* svg_inline_text =
           DynamicTo<LayoutSVGInlineText>(GetLayoutObject()))
     return svg_inline_text->ScaledFont();
-  return *Style().GetFont();
+  const SvgFragmentData* data = nullptr;
+  if (Type() == kText) {
+    data = text_.svg_data.Get();
+  } else if (Type() == kGeneratedText) {
+    data = generated_text_.extra_data.Get();
+  }
+  return data && data->scaled_font ? *data->scaled_font : *Style().GetFont();
 }
 
 void FragmentItem::SetFitTextScale(const FitTextScale* scale) {
@@ -780,6 +786,7 @@ void FragmentItem::SetFitTextScale(const FitTextScale* scale) {
                          ? TextScaleType::kFitTextInline
                          : TextScaleType::kFitText;
   data->length_adjust_scale = scale->scale;
+  data->scaled_font = scale->font;
   if (Type() == kText) {
     text_.svg_data = data;
   } else if (Type() == kGeneratedText) {
