@@ -27,6 +27,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Manual;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -170,6 +171,8 @@ public class OmniboxTest {
      * this test. With instant off, it was almost identical. Marking the test disabled so it is not
      * picked up by our test runner, as it is supposed to be run manually.
      */
+    @Test
+    @Manual
     public void manualTestTypingPerformance() throws InterruptedException {
         final String text = "searching for pizza";
         // Type 10 times something on the omnibox and get the average time with and without instant.
