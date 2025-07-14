@@ -76,7 +76,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "crypto/sha2.h"
+#include "crypto/evp.h"
+#include "crypto/hash.h"
+#include "crypto/hmac.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/attested_credential_data.h"
@@ -126,11 +128,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -583,17 +583,6 @@ device::AttestationConveyancePreference ConvertAttestationConveyancePreference(
       return ::device::AttestationConveyancePreference::
           kEnterpriseIfRPListedOnAuthenticator;
   }
-}
-
-std::array<uint8_t, crypto::kSHA256Length> EvaluateHMAC(
-    base::span<const uint8_t> key,
-    base::span<const uint8_t> salt) {
-  std::array<uint8_t, crypto::kSHA256Length> ret;
-  unsigned hmac_out_length;
-  HMAC(EVP_sha256(), key.data(), key.size(), salt.data(), salt.size(),
-       ret.data(), &hmac_out_length);
-  CHECK_EQ(hmac_out_length, ret.size());
-  return ret;
 }
 
 }  // namespace
@@ -4862,13 +4851,8 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
       continue;
     }
 
-    const std::vector<uint8_t>& public_key_der =
-        response->public_key_der.value();
-
-    CBS cbs;
-    CBS_init(&cbs, public_key_der.data(), public_key_der.size());
-    bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
-    EXPECT_EQ(0u, CBS_len(&cbs));
+    bssl::UniquePtr<EVP_PKEY> pkey =
+        crypto::evp::PublicKeyFromBytes(response->public_key_der.value());
     ASSERT_TRUE(pkey.get());
 
     EXPECT_EQ(test.evp_id.value(), EVP_PKEY_id(pkey.get()));
@@ -4965,12 +4949,8 @@ TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
     EXPECT_EQ(create_result.response->public_key_algo,
               static_cast<int32_t>(test.algo));
 
-    const std::vector<uint8_t>& public_key_der =
-        create_result.response->public_key_der.value();
-    CBS cbs;
-    CBS_init(&cbs, public_key_der.data(), public_key_der.size());
-    bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
-    EXPECT_EQ(0u, CBS_len(&cbs));
+    bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(
+        create_result.response->public_key_der.value());
     ASSERT_TRUE(pkey.get());
 
     PublicKeyCredentialRequestOptionsPtr get_options =
@@ -4986,8 +4966,8 @@ TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
     base::span<const uint8_t> signature(get_result.response->signature);
     std::vector<uint8_t> signed_data(
         get_result.response->info->authenticator_data);
-    const std::array<uint8_t, crypto::kSHA256Length> client_data_json_hash(
-        crypto::SHA256Hash(get_result.response->info->client_data_json));
+    std::array<uint8_t, crypto::hash::kSha256Size> client_data_json_hash =
+        crypto::hash::Sha256(get_result.response->info->client_data_json);
     signed_data.insert(signed_data.end(), client_data_json_hash.begin(),
                        client_data_json_hash.end());
 
@@ -10663,11 +10643,19 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, PRFMakeCredential) {
 }
 
 static std::vector<uint8_t> HashPRFInput(base::span<const uint8_t> input) {
-  std::vector<uint8_t> hash_input;
-  constexpr char kPrefix[] = "WebAuthn PRF";
-  hash_input.insert(hash_input.end(), std::begin(kPrefix), std::end(kPrefix));
-  hash_input.insert(hash_input.end(), std::begin(input), std::end(input));
-  return base::ToVector(crypto::SHA256Hash(hash_input));
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  // clang-format off
+  constexpr auto kPrefix = std::to_array<uint8_t>({
+      'W', 'e', 'b', 'A', 'u', 't', 'h', 'n',
+      ' ', 'P', 'R', 'F',
+      0x00,
+  });
+  // clang-format on
+  hasher.Update(kPrefix);
+  hasher.Update(input);
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hasher.Finish(result);
+  return base::ToVector(result);
 }
 
 static std::tuple<PublicKeyCredentialRequestOptionsPtr,
@@ -10681,8 +10669,8 @@ BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
   const std::vector<uint8_t> salt2 = HashPRFInput(input2);
   const std::array<uint8_t, 32> key1 = {1};
   const std::array<uint8_t, 32> key2 = {2};
-  const std::array<uint8_t, 32> output1 = EvaluateHMAC(key2, salt1);
-  const std::array<uint8_t, 32> output2 = EvaluateHMAC(key2, salt2);
+  const std::array<uint8_t, 32> output1 = crypto::hmac::SignSha256(key2, salt1);
+  const std::array<uint8_t, 32> output2 = crypto::hmac::SignSha256(key2, salt2);
   auto options = GetTestPublicKeyCredentialRequestOptions();
 
   CHECK(virtual_device.mutable_state()->InjectRegistration(
