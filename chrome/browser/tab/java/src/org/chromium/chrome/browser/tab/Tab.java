@@ -63,8 +63,18 @@ public interface Tab extends TabLifecycle {
         }
     }
 
+    @FunctionalInterface
+    public interface SelectionStateSupplier {
+        /**
+         * @param tabId The ID of the tab to check.
+         * @return True if the tab is selected.
+         */
+        boolean isTabMultiSelected(int tabId);
+    }
+
     /**
      * Adds a {@link TabObserver} to be notified on {@link Tab} changes.
+     *
      * @param observer The {@link TabObserver} to add.
      */
     void addObserver(TabObserver observer);
@@ -485,8 +495,12 @@ public interface Tab extends TabLifecycle {
     void onTabRestoredFromArchivedTabModel();
 
     /** Called when the tab is added to a tab model. */
-    void onAddedToTabModel(ObservableSupplier<@Nullable Tab> currentTabSupplier);
+    void onAddedToTabModel(
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            SelectionStateSupplier selectionStateSupplier);
 
     /** Called when the tab is removed from a tab model. */
     void onRemovedFromTabModel(ObservableSupplier<@Nullable Tab> currentTabSupplier);
+
+    boolean isMultiSelected();
 }

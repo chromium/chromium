@@ -5834,10 +5834,10 @@ public class StripLayoutHelperTest {
         // Assert
         assertTrue(
                 "Clicked tab should be in the multi-select set.",
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().contains(tabs[2].getTabId()));
+                mModel.isTabMultiSelected(tabs[2].getTabId()));
         assertTrue(
                 "Previously selected tab should also be in the multi-select set",
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().contains(tabs[0].getTabId()));
+                mModel.isTabMultiSelected(tabs[0].getTabId()));
     }
 
     @Test
@@ -5853,7 +5853,7 @@ public class StripLayoutHelperTest {
         int clickedTabId = tabs[2].getTabId();
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
 
-        // Act: First click to select.
+        // Act: First click to select a different tab.
         mStripLayoutHelper.click(
                 TIMESTAMP,
                 getClickCoordinateForTabAtIndex(stripViews, 2),
@@ -5862,12 +5862,12 @@ public class StripLayoutHelperTest {
                 KeyEvent.META_CTRL_ON);
         assertTrue(
                 "Tab should be selected after first Ctrl+Click.",
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().contains(clickedTabId));
+                mModel.isTabMultiSelected(clickedTabId));
 
-        // Act: Second click to deselect.
+        // Act: Second click to deselect the other tab.
         mStripLayoutHelper.click(
                 TIMESTAMP,
-                getClickCoordinateForTabAtIndex(stripViews, 2),
+                getClickCoordinateForTabAtIndex(stripViews, 0),
                 0,
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_CTRL_ON);
@@ -5875,7 +5875,7 @@ public class StripLayoutHelperTest {
         // Assert
         assertFalse(
                 "Tab should be deselected after second Ctrl+Click.",
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().contains(clickedTabId));
+                mModel.isTabMultiSelected(tabs[0].getTabId()));
     }
 
     @Test
@@ -5899,11 +5899,11 @@ public class StripLayoutHelperTest {
                 KeyEvent.META_SHIFT_ON);
 
         // Assert: Tabs 1, 2, and 3 should be selected.
-        Set<Integer> selectedTabs = mStripLayoutHelper.getMultiSelectedTabsForTesting();
-        assertEquals("Should be 3 tabs selected in the range.", 3, selectedTabs.size());
-        assertTrue("Tab 1 should be selected.", selectedTabs.contains(tabs[1].getTabId()));
-        assertTrue("Tab 2 should be selected.", selectedTabs.contains(tabs[2].getTabId()));
-        assertTrue("Tab 3 should be selected.", selectedTabs.contains(tabs[3].getTabId()));
+        assertEquals(
+                "Should be 3 tabs selected in the range.", 3, mModel.getMultiSelectedTabsCount());
+        assertTrue("Tab 1 should be selected.", mModel.isTabMultiSelected(tabs[1].getTabId()));
+        assertTrue("Tab 2 should be selected.", mModel.isTabMultiSelected(tabs[2].getTabId()));
+        assertTrue("Tab 3 should be selected.", mModel.isTabMultiSelected(tabs[3].getTabId()));
 
         // Verify the clicked tab becomes the active tab.
         verify(mModel).setIndex(eq(3), anyInt());
@@ -5933,10 +5933,7 @@ public class StripLayoutHelperTest {
                 0,
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_SHIFT_ON);
-        assertEquals(
-                "Initial selection should have 2 tab.",
-                2,
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().size());
+        assertEquals("Initial selection should have 2 tab.", 2, mModel.getMultiSelectedTabsCount());
         assertEquals(
                 "Anchor should be tab 2.",
                 tabs[2].getTabId(),
@@ -5953,12 +5950,14 @@ public class StripLayoutHelperTest {
                 KeyEvent.META_SHIFT_ON);
 
         // Assert: The old selection {3} is gone, and the new range {0, 1, 2} is selected.
-        Set<Integer> selectedTabs = mStripLayoutHelper.getMultiSelectedTabsForTesting();
-        assertEquals("Should be 3 tabs selected in the new range.", 3, selectedTabs.size());
-        assertFalse("Tab 3 should not be selected.", selectedTabs.contains(tabs[3].getTabId()));
-        assertTrue("Tab 0 should be selected.", selectedTabs.contains(tabs[0].getTabId()));
-        assertTrue("Tab 1 should be selected.", selectedTabs.contains(tabs[1].getTabId()));
-        assertTrue("Tab 2 should be selected.", selectedTabs.contains(tabs[2].getTabId()));
+        assertEquals(
+                "Should be 3 tabs selected in the new range.",
+                3,
+                mModel.getMultiSelectedTabsCount());
+        assertFalse("Tab 3 should not be selected.", mModel.isTabMultiSelected(tabs[3].getTabId()));
+        assertTrue("Tab 0 should be selected.", mModel.isTabMultiSelected(tabs[0].getTabId()));
+        assertTrue("Tab 1 should be selected.", mModel.isTabMultiSelected(tabs[1].getTabId()));
+        assertTrue("Tab 2 should be selected.", mModel.isTabMultiSelected(tabs[2].getTabId()));
         // Verify the clicked tab becomes the active tab.
         verify(mModel).setIndex(eq(0), anyInt());
     }
@@ -5982,10 +5981,8 @@ public class StripLayoutHelperTest {
                 0,
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_CTRL_ON);
-        assertEquals(
-                "Selection should be {0, 4}.",
-                Set.of(tabs[0].getTabId(), tabs[4].getTabId()),
-                mStripLayoutHelper.getMultiSelectedTabsForTesting());
+        assertTrue("Tab 0 should be selected.", mModel.isTabMultiSelected(tabs[0].getTabId()));
+        assertTrue("Tab 4 should be selected.", mModel.isTabMultiSelected(tabs[4].getTabId()));
 
         // Act: Now, Shift+Ctrl+Click tab 2.
         // This should add the range {2, 3, 4} to the selection {0, 4}.
@@ -5997,13 +5994,14 @@ public class StripLayoutHelperTest {
                 KeyEvent.META_SHIFT_ON | KeyEvent.META_CTRL_ON);
 
         // Assert: The final selection should be {0, 2, 3, 4}.
-        Set<Integer> selectedTabs = mStripLayoutHelper.getMultiSelectedTabsForTesting();
-        assertEquals("Should be 4 tabs in the final selection.", 4, selectedTabs.size());
-        assertTrue("Tab 0 should still be selected.", selectedTabs.contains(tabs[0].getTabId()));
-        assertFalse("Tab 1 should not be selected.", selectedTabs.contains(tabs[1].getTabId()));
-        assertTrue("Tab 2 should be selected.", selectedTabs.contains(tabs[2].getTabId()));
-        assertTrue("Tab 3 should be selected.", selectedTabs.contains(tabs[3].getTabId()));
-        assertTrue("Tab 4 should be selected.", selectedTabs.contains(tabs[4].getTabId()));
+        assertEquals(
+                "Should be 4 tabs in the final selection.", 4, mModel.getMultiSelectedTabsCount());
+        assertTrue(
+                "Tab 0 should still be selected.", mModel.isTabMultiSelected(tabs[0].getTabId()));
+        assertFalse("Tab 1 should not be selected.", mModel.isTabMultiSelected(tabs[1].getTabId()));
+        assertTrue("Tab 2 should be selected.", mModel.isTabMultiSelected(tabs[2].getTabId()));
+        assertTrue("Tab 3 should be selected.", mModel.isTabMultiSelected(tabs[3].getTabId()));
+        assertTrue("Tab 4 should be selected.", mModel.isTabMultiSelected(tabs[4].getTabId()));
     }
 
     @Test
@@ -6031,9 +6029,7 @@ public class StripLayoutHelperTest {
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_CTRL_ON);
         assertEquals(
-                "Initial selection should have 3 tabs.",
-                3,
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().size());
+                "Initial selection should have 3 tabs.", 3, mModel.getMultiSelectedTabsCount());
 
         // Act: Now, perform a standard click on another tab.
         mStripLayoutHelper.click(
@@ -6044,9 +6040,10 @@ public class StripLayoutHelperTest {
                 0);
 
         // Assert
-        assertTrue(
+        assertEquals(
                 "Selection should be empty after a standard click.",
-                mStripLayoutHelper.getMultiSelectedTabsForTesting().isEmpty());
+                0,
+                mModel.getMultiSelectedTabsCount());
         // Verify the clicked tab becomes the active tab.
         verify(mModel, times(3)).setIndex(anyInt(), anyInt()); // 2 for Ctrl, 1 for standard click
     }

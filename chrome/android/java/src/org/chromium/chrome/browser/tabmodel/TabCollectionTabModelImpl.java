@@ -36,6 +36,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(0);
+
+    private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
     // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
@@ -299,6 +302,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (newSelectedTab != null) {
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.didSelectTab(newSelectedTab, type, lastId);
+                // Required, otherwise the previously active tab will have MULTISELECTED as its
+                // VisualState.
+                obs.onTabSelectionChanged();
             }
 
             boolean wasAlreadySelected =
@@ -408,7 +414,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             mCurrentTabSupplier.set(tab);
         }
 
-        tab.onAddedToTabModel(mCurrentTabSupplier);
+        tab.onAddedToTabModel(mCurrentTabSupplier, this::isTabMultiSelected);
         mTabIdToTabs.put(tab.getId(), tab);
         mTabCountSupplier.set(getCount());
 
@@ -915,6 +921,23 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 tab.freeze();
             }
         }
+    }
+
+    @Override
+    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
+        TabModelImplUtil.setTabsMultiSelected(
+                tabIds, isSelected, mMultiSelectedTabs, mTabModelObservers);
+    }
+
+    @Override
+    public void clearMultiSelection(boolean notifyObservers) {
+        TabModelImplUtil.clearMultiSelection(
+                notifyObservers, mMultiSelectedTabs, mTabModelObservers);
+    }
+
+    @Override
+    public boolean isTabMultiSelected(int tabId) {
+        return TabModelImplUtil.isTabMultiSelected(tabId, mMultiSelectedTabs, this);
     }
 
     @NativeMethods

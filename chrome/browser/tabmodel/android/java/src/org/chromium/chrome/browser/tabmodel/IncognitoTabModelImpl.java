@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * A TabModel implementation that handles off the record tabs.
@@ -380,4 +381,19 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
 
     @Override
     public void broadcastSessionRestoreComplete() {}
+
+    @Override
+    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
+        mDelegateModel.setTabsMultiSelected(tabIds, isSelected);
+    }
+
+    @Override
+    public void clearMultiSelection(boolean notifyObservers) {
+        mDelegateModel.clearMultiSelection(notifyObservers);
+    }
+
+    @Override
+    public boolean isTabMultiSelected(int tabId) {
+        return mDelegateModel.isTabMultiSelected(tabId);
+    }
 }

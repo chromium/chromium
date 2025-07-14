@@ -150,6 +150,9 @@ class TabImpl implements Tab {
     /** The tab model this tab is currently attached to. */
     private @Nullable ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
 
+    /** Whether or not this tab is a part of multi selection. */
+    private @Nullable SelectionStateSupplier mSelectionStateSupplier;
+
     /**
      * An Application {@link Context}. Unlike {@link #mActivity}, this is the only one that is
      * publicly exposed to help prevent leaking the {@link Activity}.
@@ -2685,11 +2688,14 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public void onAddedToTabModel(ObservableSupplier<@Nullable Tab> currentTabSupplier) {
+    public void onAddedToTabModel(
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            SelectionStateSupplier selectionStateSupplier) {
         // Tabs should not be attached to multiple tab models.
         assert mCurrentTabSupplier == null;
 
         mCurrentTabSupplier = currentTabSupplier;
+        mSelectionStateSupplier = selectionStateSupplier;
     }
 
     @Override
@@ -2699,8 +2705,14 @@ class TabImpl implements Tab {
         // not removed from the original TabModel before being added to the new TabModel. In these
         // cases, mCurrentTabSupplier will be null as a result of the logic in updateAttachment().
         assert mCurrentTabSupplier == null || mCurrentTabSupplier == currentTabSupplier;
-
         mCurrentTabSupplier = null;
+        mSelectionStateSupplier = null;
+    }
+
+    @Override
+    public boolean isMultiSelected() {
+        if (mSelectionStateSupplier == null) return false;
+        return mSelectionStateSupplier.isTabMultiSelected(mId);
     }
 
     @CalledByNative
