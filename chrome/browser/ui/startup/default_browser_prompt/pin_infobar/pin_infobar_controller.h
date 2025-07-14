@@ -50,9 +50,10 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
                                 bool should_offer_to_pin);
 
  private:
-  // Asynchronously checks the following in sequence:
+  // Checks the following in order:
   // * that Chrome is the default browser
   // * that Chrome can be pinned to the taskbar
+  // * that the infobar wasn't shown recently or the max number of times
   // If the above are true, the infobar is shown. Passes `done_callback` a
   // boolean indicating whether the infobar was shown.
   void MaybeShowInfoBar(base::OnceCallback<void(bool)> done_callback);

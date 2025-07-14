@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/win/taskbar_manager.h"
@@ -114,9 +115,8 @@ void PinInfoBarController::OnShouldOfferToPinResult(
     return;
   }
 
-  // Don't show the infobar if it's already showing.
-  // TODO(crbug.com/420960161): don't show the infobar if it was recently shown.
-  if (infobar_) {
+  // Don't show the infobar if it's already showing or was recently shown.
+  if (infobar_ || InfoBarShownRecentlyOrMaxTimes()) {
     std::move(done_callback).Run(false);
     return;
   }
@@ -128,6 +128,7 @@ void PinInfoBarController::OnShouldOfferToPinResult(
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager_->AddObserver(this);
   infobar_ = PinInfoBarDelegate::Create(infobar_manager_);
+  SetInfoBarShownRecently();
   std::move(done_callback).Run(true);
 }
 

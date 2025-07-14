@@ -11,11 +11,13 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_prefs.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -100,6 +102,9 @@ class PinInfoBarControllerTest : public testing::Test {
         .WillByDefault(::testing::Return(type));
   }
 
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
   TestingProfile* profile() { return profile_.get(); }
   TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
   MockBrowserWindowInterface* browser_window_interface() {
@@ -108,12 +113,16 @@ class PinInfoBarControllerTest : public testing::Test {
 
  private:
   // Must be the first member.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::test::ScopedFeatureList feature_list_;
 
   // `ChromeLayoutProvider::Get()` is called when an infobar is created.
   ChromeLayoutProvider layout_provider_;
+
+  // Must be before `profile_`.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   const std::unique_ptr<TestingProfile> profile_;
@@ -162,6 +171,42 @@ TEST_F(PinInfoBarControllerTest, DontShowIfCantPin) {
   PinInfoBarController controller(browser_window_interface());
   EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
                                                /*should_offer_to_pin=*/false));
+}
+
+// Don't show the infobar if it was shown recently.
+TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
+  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+      tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(infobar_manager);
+  ASSERT_TRUE(infobar_manager->infobars().empty());
+  SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
+
+  SetInfoBarShownRecently();
+
+  PinInfoBarController controller{browser_window_interface()};
+  EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
+                                               /*should_offer_to_pin=*/true));
+  EXPECT_TRUE(infobar_manager->infobars().empty());
+}
+
+// Don't show the infobar if it was shown the maximum number of times.
+TEST_F(PinInfoBarControllerTest, DontShowIfShownMaxTimes) {
+  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+      tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(infobar_manager);
+  ASSERT_TRUE(infobar_manager->infobars().empty());
+  SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
+
+  for (int i = 0; i < kPinInfoBarMaxPromptCount; i++) {
+    SetInfoBarShownRecently();
+  }
+
+  task_environment().FastForwardBy(base::Days(60));
+
+  PinInfoBarController controller{browser_window_interface()};
+  EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
+                                               /*should_offer_to_pin=*/true));
+  EXPECT_TRUE(infobar_manager->infobars().empty());
 }
 
 // Show the infobar if the browser type is normal.

@@ -8,6 +8,7 @@ source_set("pin_infobar") {
   sources = [
     "pin_infobar_controller.h",
     "pin_infobar_delegate.h",
+    "pin_infobar_prefs.h",
   ]
   public_deps = [
     "//base",
@@ -25,6 +26,7 @@ source_set("impl") {
   sources = [
     "pin_infobar_controller.cc",
     "pin_infobar_delegate.cc",
+    "pin_infobar_prefs.cc",
   ]
   deps = [
     ":pin_infobar",
@@ -40,6 +42,7 @@ source_set("impl") {
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:with_no_strings",
     "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
     "//components/tabs:public",
     "//ui/base",
   ]
@@ -50,6 +53,7 @@ source_set("unit_tests") {
   sources = [
     "pin_infobar_controller_unittest.cc",
     "pin_infobar_delegate_unittest.cc",
+    "pin_infobar_prefs_unittest.cc",
   ]
   deps = [
     ":pin_infobar",
@@ -63,6 +67,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/infobars/content",
+    "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
