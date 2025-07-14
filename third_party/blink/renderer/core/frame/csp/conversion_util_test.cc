@@ -7,6 +7,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
+#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"
 
@@ -131,25 +132,25 @@ TEST(ContentSecurityPolicyConversionUtilTest,
       },
       [](CSPSourceList& source_list) {
         source_list.hashes.emplace_back(
-            network::mojom::blink::CSPHashSource::New(
+            network::mojom::blink::IntegrityMetadata::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha256,
                 Vector<uint8_t>({'a', 'd'})));
         source_list.hashes.emplace_back(
-            network::mojom::blink::CSPHashSource::New(
+            network::mojom::blink::IntegrityMetadata::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'c', 'd', 'e'})));
       },
       [](CSPSourceList& source_list) {
         source_list.hashes.emplace_back(
-            network::mojom::blink::CSPHashSource::New(
+            network::mojom::blink::IntegrityMetadata::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha256,
                 Vector<uint8_t>({'a', 'd'})));
         source_list.url_hashes.emplace_back(
-            network::mojom::blink::CSPHashSource::New(
+            network::mojom::blink::IntegrityMetadata::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'c', 'd', 'e'})));
         source_list.eval_hashes.emplace_back(
-            network::mojom::blink::CSPHashSource::New(
+            network::mojom::blink::IntegrityMetadata::New(
                 network::mojom::blink::IntegrityAlgorithm::kSha384,
                 Vector<uint8_t>({'f', 'g', 'h'})));
       },

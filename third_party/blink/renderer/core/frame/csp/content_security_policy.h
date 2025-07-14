@@ -494,7 +494,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // checks a vector of csp hashes against policy, probably a good idea
   // to use in tandem with FillInCSPHashValues.
   static bool CheckHashAgainstPolicy(
-      Vector<network::mojom::blink::CSPHashSourcePtr>&,
+      Vector<network::mojom::blink::IntegrityMetadataPtr>&,
       const network::mojom::blink::ContentSecurityPolicy&,
       InlineType);
 

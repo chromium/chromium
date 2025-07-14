@@ -7,6 +7,7 @@ module network.mojom;
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/integrity_algorithm.mojom";
+import "services/network/public/mojom/integrity_metadata.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 
@@ -60,22 +61,17 @@ struct CSPSource {
   bool is_port_wildcard = false;
 };
 
-struct CSPHashSource {
-  IntegrityAlgorithm algorithm;
-  array<uint8> value;
-};
-
 struct CSPSourceList {
   array<CSPSource> sources;
   array<string> nonces;
-  array<CSPHashSource> hashes;
+  array<IntegrityMetadata> hashes;
   // Hashes of URLs allowed. Only valid for script-src-v2 directive.
   // TODO(crbug.com/414459670): Split this struct into per-directive structs.
   // Not all directives support all of the sources in this struct.
-  array<CSPHashSource> url_hashes;
+  array<IntegrityMetadata> url_hashes;
   // Hashes of scripts allowed to be loaded via eval. Only valid for
   // script-src-v2 directive, or if ScriptSrcHashesV1 is enabled.
-  array<CSPHashSource> eval_hashes;
+  array<IntegrityMetadata> eval_hashes;
 
   // Wildcard hosts and 'self' aren't stored in |sources|, but as attributes
   // on the source list itself.

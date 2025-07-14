@@ -91,7 +91,8 @@ bool CSPDirectiveListAllowEval(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values);
+    const Vector<network::mojom::blink::IntegrityMetadataPtr>&
+        script_hash_values);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowWasmCodeGeneration(
@@ -129,12 +130,13 @@ bool CSPDirectiveListAllowDynamicUrl(
 CORE_EXPORT
 bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
-    const network::mojom::blink::CSPHashSource& hash_value,
+    const network::mojom::blink::IntegrityMetadata& hash_value,
     const ContentSecurityPolicy::InlineType inline_type);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowEvalHash(
-    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values,
+    const Vector<network::mojom::blink::IntegrityMetadataPtr>&
+        script_hash_values,
     CSPOperativeDirective directive);
 
 // We consider `object-src` restrictions to be reasonable iff they're
@@ -176,7 +178,7 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
 void FillInCSPHashValues(
     const String& source,
     const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
-    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values);
+    Vector<network::mojom::blink::IntegrityMetadataPtr>& csp_hash_values);
 
 }  // namespace blink
 

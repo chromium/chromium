@@ -49,7 +49,7 @@ struct WebCSPSource {
   bool is_port_wildcard;
 };
 
-struct WebCSPHashSource {
+struct WebIntegrityMetadata {
   network::mojom::IntegrityAlgorithm algorithm;
   std::vector<uint8_t> value;
 };
@@ -57,9 +57,9 @@ struct WebCSPHashSource {
 struct WebCSPSourceList {
   std::vector<WebCSPSource> sources;
   std::vector<WebString> nonces;
-  std::vector<WebCSPHashSource> hashes;
-  std::vector<WebCSPHashSource> url_hashes;
-  std::vector<WebCSPHashSource> eval_hashes;
+  std::vector<WebIntegrityMetadata> hashes;
+  std::vector<WebIntegrityMetadata> url_hashes;
+  std::vector<WebIntegrityMetadata> eval_hashes;
   bool allow_self;
   bool allow_star;
   bool allow_inline;

@@ -177,11 +177,11 @@ blink::IntegrityPolicy::Source ConvertToBlink(
   return blink::IntegrityPolicy::Source(in);
 }
 
-blink::CSPHashSourcePtr ConvertToBlink(const CSPHashSourcePtr& in) {
+blink::IntegrityMetadataPtr ConvertToBlink(const IntegrityMetadataPtr& in) {
   CHECK(in);
   ::blink::Vector<uint8_t> hash_value = ConvertToBlink(in->value);
 
-  return blink::CSPHashSource::New(in->algorithm, std::move(hash_value));
+  return blink::IntegrityMetadata::New(in->algorithm, std::move(hash_value));
 }
 
 blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
@@ -190,10 +190,11 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
   using ::blink::Vector;
   Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
   Vector<::blink::String> nonces = ConvertToBlink(source_list->nonces);
-  Vector<blink::CSPHashSourcePtr> hashes = ConvertToBlink(source_list->hashes);
-  Vector<blink::CSPHashSourcePtr> url_hashes =
+  Vector<blink::IntegrityMetadataPtr> hashes =
+      ConvertToBlink(source_list->hashes);
+  Vector<blink::IntegrityMetadataPtr> url_hashes =
       ConvertToBlink(source_list->url_hashes);
-  Vector<blink::CSPHashSourcePtr> eval_hashes =
+  Vector<blink::IntegrityMetadataPtr> eval_hashes =
       ConvertToBlink(source_list->eval_hashes);
 
   return blink::CSPSourceList::New(

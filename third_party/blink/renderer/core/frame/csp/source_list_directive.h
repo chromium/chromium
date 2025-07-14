@@ -31,17 +31,17 @@ bool CSPSourceListAllowNonce(
 CORE_EXPORT
 bool CSPSourceListAllowHash(
     const network::mojom::blink::CSPSourceList& source_list,
-    const network::mojom::blink::CSPHashSource& hash);
+    const network::mojom::blink::IntegrityMetadata& hash);
 
 CORE_EXPORT
 bool CSPSourceListAllowEvalHash(
     const network::mojom::blink::CSPSourceList& source_list,
-    const network::mojom::blink::CSPHashSource& hash);
+    const network::mojom::blink::IntegrityMetadata& hash);
 
 CORE_EXPORT
 bool CSPSourceListAllowUrlHash(
     const network::mojom::blink::CSPSourceList& source_list,
-    const network::mojom::blink::CSPHashSource& url_hash);
+    const network::mojom::blink::IntegrityMetadata& url_hash);
 
 CORE_EXPORT
 bool CSPSourceListIsNone(

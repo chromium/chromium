@@ -7,6 +7,7 @@
 #include "base/containers/to_vector.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_metadata.mojom.h"
 
 namespace content {
 
@@ -24,10 +25,10 @@ network::mojom::CSPSourcePtr BuildCSPSource(const blink::WebCSPSource& source) {
       source.is_host_wildcard, source.is_port_wildcard);
 }
 
-network::mojom::CSPHashSourcePtr BuildCSPHashSource(
-    const blink::WebCSPHashSource& hash_source) {
-  return network::mojom::CSPHashSource::New(hash_source.algorithm,
-                                            hash_source.value);
+network::mojom::IntegrityMetadataPtr BuildIntegrityMetadata(
+    const blink::WebIntegrityMetadata& integrity_metadata) {
+  return network::mojom::IntegrityMetadata::New(integrity_metadata.algorithm,
+                                                integrity_metadata.value);
 }
 
 network::mojom::CSPSourceListPtr BuildCSPSourceList(
@@ -35,9 +36,9 @@ network::mojom::CSPSourceListPtr BuildCSPSourceList(
   return network::mojom::CSPSourceList::New(
       base::ToVector(source_list.sources, BuildCSPSource),
       BuildVectorOfStrings(source_list.nonces),
-      base::ToVector(source_list.hashes, BuildCSPHashSource),
-      base::ToVector(source_list.url_hashes, BuildCSPHashSource),
-      base::ToVector(source_list.eval_hashes, BuildCSPHashSource),
+      base::ToVector(source_list.hashes, BuildIntegrityMetadata),
+      base::ToVector(source_list.url_hashes, BuildIntegrityMetadata),
+      base::ToVector(source_list.eval_hashes, BuildIntegrityMetadata),
       source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,
@@ -62,9 +63,9 @@ blink::WebCSPSource ToWebCSPSource(const network::mojom::CSPSourcePtr& source) {
           source->is_port_wildcard};
 }
 
-blink::WebCSPHashSource ToWebCSPHashSource(
-    const network::mojom::CSPHashSourcePtr& hash_source) {
-  return {hash_source->algorithm, std::move(hash_source->value)};
+blink::WebIntegrityMetadata ToWebIntegrityMetadata(
+    const network::mojom::IntegrityMetadataPtr& integrity_metadata) {
+  return {integrity_metadata->algorithm, std::move(integrity_metadata->value)};
 }
 
 blink::WebCSPSourceList ToWebCSPSourceList(
@@ -72,9 +73,11 @@ blink::WebCSPSourceList ToWebCSPSourceList(
   return {
       base::ToVector(std::move(source_list->sources), ToWebCSPSource),
       ToVectorOfWebStrings(std::move(source_list->nonces)),
-      base::ToVector(std::move(source_list->hashes), ToWebCSPHashSource),
-      base::ToVector(std::move(source_list->url_hashes), ToWebCSPHashSource),
-      base::ToVector(std::move(source_list->eval_hashes), ToWebCSPHashSource),
+      base::ToVector(std::move(source_list->hashes), ToWebIntegrityMetadata),
+      base::ToVector(std::move(source_list->url_hashes),
+                     ToWebIntegrityMetadata),
+      base::ToVector(std::move(source_list->eval_hashes),
+                     ToWebIntegrityMetadata),
       source_list->allow_self,
       source_list->allow_star,
       source_list->allow_inline,

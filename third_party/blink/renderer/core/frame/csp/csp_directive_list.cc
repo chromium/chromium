@@ -282,12 +282,12 @@ bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
 }
 
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
-               const network::mojom::blink::CSPHashSource& hash_value) {
+               const network::mojom::blink::IntegrityMetadata& hash_value) {
   return !directive || CSPSourceListAllowHash(*directive, hash_value);
 }
 
 bool CheckEvalHash(const network::mojom::blink::CSPSourceList* directive,
-                   const network::mojom::blink::CSPHashSource& hash_value) {
+                   const network::mojom::blink::IntegrityMetadata& hash_value) {
   return !directive || CSPSourceListAllowEvalHash(*directive, hash_value);
 }
 
@@ -356,8 +356,8 @@ bool AreAllMatchingIntegrityChecksPresent(
   // by the relevant policy:
   for (const IntegrityMetadata& hash : integrity_metadata.hashes) {
     // Convert the hash from integrity metadata format to CSP format.
-    network::mojom::blink::CSPHashSourcePtr csp_hash =
-        network::mojom::blink::CSPHashSource::New();
+    network::mojom::blink::IntegrityMetadataPtr csp_hash =
+        network::mojom::blink::IntegrityMetadata::New();
     csp_hash->algorithm = hash.algorithm;
     if (!ParseBase64Digest(hash.digest, csp_hash->value)) {
       return false;
@@ -371,8 +371,8 @@ bool AreAllMatchingIntegrityChecksPresent(
   // allowed by the relevant policy:
   for (const IntegrityMetadata& key : integrity_metadata.public_keys) {
     // Convert the hash from integrity metadata format to CSP format.
-    network::mojom::blink::CSPHashSourcePtr csp_hash =
-        network::mojom::blink::CSPHashSource::New();
+    network::mojom::blink::IntegrityMetadataPtr csp_hash =
+        network::mojom::blink::IntegrityMetadata::New();
     csp_hash->algorithm = key.algorithm;
     if (!ParseBase64Digest(key.digest, csp_hash->value)) {
       return false;
@@ -392,7 +392,8 @@ bool CheckEvalAndReportViolation(
     const String& console_message,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values) {
+    const Vector<network::mojom::blink::IntegrityMetadataPtr>&
+        script_hash_values) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (CheckAllowEval(directive.source_list)) {
@@ -807,7 +808,8 @@ bool CSPDirectiveListAllowEval(
     ReportingDisposition reporting_disposition,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values) {
+    const Vector<network::mojom::blink::IntegrityMetadataPtr>&
+        script_hash_values) {
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (reporting_disposition == ReportingDisposition::kReport) {
@@ -957,11 +959,11 @@ bool CheckURLHash(const KURL& url,
     return false;
   }
   WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used;
-  for (const network::mojom::blink::CSPHashSourcePtr& hash :
+  for (const network::mojom::blink::IntegrityMetadataPtr& hash :
        source_list->url_hashes) {
     hash_algorithms_used.insert(hash->algorithm);
   }
-  Vector<network::mojom::blink::CSPHashSourcePtr> url_hashes;
+  Vector<network::mojom::blink::IntegrityMetadataPtr> url_hashes;
   // TODO(crbug.com/414459670): Support relative URLs.
   FillInCSPHashValues(url.GetString(), hash_algorithms_used, url_hashes);
 
@@ -1105,7 +1107,7 @@ std::optional<HashAlgorithm> CSPDirectiveListHashToReport(
 
 bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
-    const network::mojom::blink::CSPHashSource& hash_value,
+    const network::mojom::blink::IntegrityMetadata& hash_value,
     const ContentSecurityPolicy::InlineType inline_type) {
   CSPDirectiveName directive_type =
       EffectiveDirectiveForInlineCheck(inline_type);
@@ -1120,7 +1122,8 @@ bool CSPDirectiveListAllowHash(
 }
 
 bool CSPDirectiveListAllowEvalHash(
-    const Vector<network::mojom::blink::CSPHashSourcePtr>& script_hash_values,
+    const Vector<network::mojom::blink::IntegrityMetadataPtr>&
+        script_hash_values,
     CSPOperativeDirective directive) {
   for (const auto& csp_hash_value : script_hash_values) {
     if (CheckEvalHash(directive.source_list, *csp_hash_value)) {
@@ -1198,7 +1201,7 @@ CSPOperativeDirective CSPDirectiveListOperativeDirective(
 void FillInCSPHashValues(
     const String& source,
     const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
-    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values) {
+    Vector<network::mojom::blink::IntegrityMetadataPtr>& csp_hash_values) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kSupportedPrefixes array in
   // SourceListDirective::parseHash().
@@ -1224,7 +1227,7 @@ void FillInCSPHashValues(
       bool digest_success = ComputeDigest(
           algorithm_map.algorithm, base::as_byte_span(utf8_source), digest);
       if (digest_success) {
-        csp_hash_values.push_back(network::mojom::blink::CSPHashSource::New(
+        csp_hash_values.push_back(network::mojom::blink::IntegrityMetadata::New(
             algorithm_map.csp_hash_algorithm, Vector<uint8_t>(digest)));
       }
     }

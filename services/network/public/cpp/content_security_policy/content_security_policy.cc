@@ -557,7 +557,7 @@ struct SupportedPrefixesStruct {
 
 // Parse a hash-source without quotes around it. Return false on error.
 bool ParseUnquotedHash(std::string_view expression,
-                       mojom::CSPHashSource* hash) {
+                       mojom::IntegrityMetadata* hash) {
   static const SupportedPrefixesStruct SupportedPrefixes[] = {
       {"sha256-", 7, mojom::IntegrityAlgorithm::kSha256},
       {"sha384-", 7, mojom::IntegrityAlgorithm::kSha384},
@@ -595,7 +595,7 @@ bool ParseUnquotedHash(std::string_view expression,
   return false;
 }
 
-bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
+bool ParseHash(std::string_view expression, mojom::IntegrityMetadata* hash) {
   if (expression.size() < 2) {
     return false;
   }
@@ -616,7 +616,7 @@ mojom::IntegrityAlgorithm StrongestHashAlgorithm(
 
 bool ParsePrefixedHash(std::string_view prefix,
                        std::string_view expression,
-                       mojom::CSPHashSource* hash) {
+                       mojom::IntegrityMetadata* hash) {
   if (!base::StartsWith(expression, prefix,
                         base::CompareCase::INSENSITIVE_ASCII) ||
       expression[expression.length() - 1] != '\'') {
@@ -628,11 +628,12 @@ bool ParsePrefixedHash(std::string_view prefix,
       hash);
 }
 
-bool ParseURLHash(std::string_view expression, mojom::CSPHashSource* hash) {
+bool ParseURLHash(std::string_view expression, mojom::IntegrityMetadata* hash) {
   return ParsePrefixedHash("'url-", expression, hash);
 }
 
-bool ParseEvalHash(std::string_view expression, mojom::CSPHashSource* hash) {
+bool ParseEvalHash(std::string_view expression,
+                   mojom::IntegrityMetadata* hash) {
   return ParsePrefixedHash("'eval-", expression, hash);
 }
 
@@ -780,13 +781,13 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
-    auto hash = mojom::CSPHashSource::New();
+    auto hash = mojom::IntegrityMetadata::New();
     if (ParseHash(expression, hash.get())) {
       directive->hashes.push_back(std::move(hash));
       continue;
     }
 
-    auto url_hash = mojom::CSPHashSource::New();
+    auto url_hash = mojom::IntegrityMetadata::New();
     if (ParseURLHash(expression, url_hash.get())) {
       if (base::FeatureList::IsEnabled(
               network::features::kCSPScriptSrcHashesInV1) ||
@@ -810,7 +811,7 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
-    auto eval_hash = mojom::CSPHashSource::New();
+    auto eval_hash = mojom::IntegrityMetadata::New();
     if (ParseEvalHash(expression, eval_hash.get())) {
       if (base::FeatureList::IsEnabled(
               network::features::kCSPScriptSrcHashesInV1) ||
