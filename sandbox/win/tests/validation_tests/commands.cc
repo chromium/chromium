@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include "sandbox/win/src/sandbox_factory.h"
+#include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 
 namespace {
@@ -293,5 +295,15 @@ SBOX_TESTS_COMMAND int AllocateCmd(int argc, wchar_t **argv) {
       SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
 }
 
+SBOX_TESTS_COMMAND int InitCompleted(int, wchar_t**) {
+  auto* target_services = sandbox::SandboxFactory::GetTargetServices();
+  if (!target_services) {
+    return SBOX_TEST_FAILED;
+  }
+  if (!target_services->GetState()->InitCompleted()) {
+    return SBOX_TEST_FIRST_ERROR;
+  }
+  return SBOX_TEST_SUCCEEDED;
+}
 
 }  // namespace sandbox
