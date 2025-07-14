@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -16,7 +17,10 @@ export interface SearchboxComposeButtonElement {
   };
 }
 
-export class SearchboxComposeButtonElement extends CrLitElement {
+const SearchboxComposeButtonElementBase = I18nMixinLit(CrLitElement);
+
+export class SearchboxComposeButtonElement extends
+    SearchboxComposeButtonElementBase {
   static get is() {
     return 'cr-searchbox-compose-button';
   }
