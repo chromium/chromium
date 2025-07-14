@@ -8,6 +8,7 @@
 	<array>
 		<string>${CHROMIUM_TEAM_ID}.com.google.common.folsom</string>
 		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.devicetrust</string>
+		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.secure-payment-confirmation</string>
 		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.unexportable-keys</string>
 		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.webauthn</string>
 		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.webauthn-uvk</string>
