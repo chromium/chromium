@@ -156,9 +156,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Layout the contents border, which indicates the tab is being captured.
   void LayoutContentBorder();
 
-  // Returns the y coordinate of the client area.
-  int GetClientAreaTop();
-
   // Returns the minimum acceptable width for the browser web contents.
   int GetMinWebContentsWidth() const;
 

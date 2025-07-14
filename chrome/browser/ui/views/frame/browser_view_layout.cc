@@ -916,14 +916,6 @@ void BrowserViewLayout::LayoutContentBorder() {
   contents_border_widget_->SetBounds(rect);
 }
 
-int BrowserViewLayout::GetClientAreaTop() {
-  // If webui_tab_strip is displayed, the client area starts at its top,
-  // otherwise at the top of the toolbar.
-  return webui_tab_strip_ && webui_tab_strip_->GetVisible()
-             ? webui_tab_strip_->y()
-             : toolbar_->y();
-}
-
 int BrowserViewLayout::GetMinWebContentsWidth() const {
   int min_width =
       kMainBrowserContentsMinimumWidth -
