@@ -178,8 +178,10 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
     const ComputedStyle* style =
         GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
-    is_caret_color_auto = style->IsCaretColorAuto();
-    caret_shape = GetCaretShapeFromComputedStyle(*style);
+    if (style) {
+      is_caret_color_auto = style->IsCaretColorAuto();
+      caret_shape = GetCaretShapeFromComputedStyle(*style);
+    }
   }
 
   CaretRectAndPainterBlock rect_and_block =
