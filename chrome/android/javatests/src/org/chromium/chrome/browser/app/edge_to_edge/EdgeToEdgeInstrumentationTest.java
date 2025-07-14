@@ -363,6 +363,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Very flaky. See crbug.com/426102039")
     public void testNavigationBarColor() {
         optOutOfToEdge();
 
