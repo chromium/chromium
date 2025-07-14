@@ -23,7 +23,13 @@ class ReadingListLocal;
 // the current instance of the app.
 // |ADDED_VIA_EXTENSION| is when the entry was added via the share extension.
 // |ADDED_VIA_SYNC| is when the entry was added with sync.
-enum EntrySource { ADDED_VIA_CURRENT_APP, ADDED_VIA_EXTENSION, ADDED_VIA_SYNC };
+// |ADDED_VIA_IMPORT| is when the entry was created via a data import.
+enum EntrySource {
+  ADDED_VIA_CURRENT_APP,
+  ADDED_VIA_EXTENSION,
+  ADDED_VIA_SYNC,
+  ADDED_VIA_IMPORT,
+};
 
 }  // namespace reading_list
 
