@@ -73,6 +73,7 @@
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
+#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_identity_service_factory.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -417,7 +418,6 @@
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
-#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #endif
@@ -903,7 +903,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_signals::SignalsAggregatorFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   enterprise_signals::UserPermissionServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

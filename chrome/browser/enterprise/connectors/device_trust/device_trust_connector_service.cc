@@ -42,7 +42,7 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
 DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
 
 bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  return !GetEnabledInlinePolicyLevels().empty();
+  return !GetSignalsPolicyScope().empty();
 }
 
 const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
@@ -71,7 +71,7 @@ void DeviceTrustConnectorService::AddObserver(
 }
 
 const std::set<DTCPolicyLevel>
-DeviceTrustConnectorService::GetEnabledInlinePolicyLevels() const {
+DeviceTrustConnectorService::GetSignalsPolicyScope() const {
   std::set<DTCPolicyLevel> levels;
   for (auto const& policy_details : policy_details_map_) {
     if (policy_details.second.enabled) {

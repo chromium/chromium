@@ -287,7 +287,7 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
       DeviceTrustConnectorServiceFactory::GetForProfile(profile_);
   if (device_trust_connector_service) {
     for (const auto& level :
-         device_trust_connector_service->GetEnabledInlinePolicyLevels()) {
+         device_trust_connector_service->GetSignalsPolicyScope()) {
       policy_enabled_levels.push_back(ConvertPolicyLevelToString(level));
     }
   }

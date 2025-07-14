@@ -9,8 +9,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -25,6 +23,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/device_signals/core/browser/ash/user_permission_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_signals {
 
@@ -52,8 +55,10 @@ UserPermissionServiceFactory::UserPermissionServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(
       enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 UserPermissionServiceFactory::~UserPermissionServiceFactory() = default;
@@ -63,15 +68,19 @@ UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
-  auto* device_trust_connector_service =
+  device_signals::UserDelegate::SignalsDependencyDelegate*
+      signals_dependency_delegate = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  signals_dependency_delegate =
       enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
           profile);
 
-  if (!device_trust_connector_service) {
+  if (!signals_dependency_delegate) {
     // Unsupported configuration (e.g. CrOS login Profile supported, but not
     // incognito).
     return nullptr;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
@@ -79,7 +88,7 @@ UserPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   auto user_delegate = std::make_unique<UserDelegateImpl>(
-      profile, identity_manager, device_trust_connector_service);
+      profile, identity_manager, signals_dependency_delegate);
 
 #if BUILDFLAG(IS_CHROMEOS)
   auto user_permission_service =

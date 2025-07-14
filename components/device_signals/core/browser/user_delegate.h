@@ -12,6 +12,9 @@
 #include "components/policy/core/common/policy_types.h"
 
 class GaiaId;
+namespace enterprise_connectors {
+enum class DTCPolicyLevel;
+}
 
 namespace device_signals {
 
@@ -19,6 +22,20 @@ namespace device_signals {
 // itself.
 class UserDelegate {
  public:
+  class SignalsDependencyDelegate {
+   public:
+    SignalsDependencyDelegate() = default;
+    SignalsDependencyDelegate(const SignalsDependencyDelegate&) = delete;
+    SignalsDependencyDelegate& operator=(const SignalsDependencyDelegate&) =
+        delete;
+
+    virtual ~SignalsDependencyDelegate() = default;
+
+    // Returns the policy levels the service is enabled for.
+    virtual const std::set<enterprise_connectors::DTCPolicyLevel>
+    GetSignalsPolicyScope() const = 0;
+  };
+
   virtual ~UserDelegate() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)

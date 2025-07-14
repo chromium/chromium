@@ -6752,6 +6752,15 @@ static_library("browser") {
     ]
   }
 
+  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
+    sources += [
+      "enterprise/signals/user_delegate_impl.cc",
+      "enterprise/signals/user_delegate_impl.h",
+      "enterprise/signals/user_permission_service_factory.cc",
+      "enterprise/signals/user_permission_service_factory.h",
+    ]
+  }
+
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
       "enterprise/connectors/device_trust/device_trust_connector_service.cc",
@@ -6772,10 +6781,6 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/signals_service_factory.h",
       "enterprise/connectors/device_trust/signals/signals_service_impl.cc",
       "enterprise/connectors/device_trust/signals/signals_service_impl.h",
-      "enterprise/signals/user_delegate_impl.cc",
-      "enterprise/signals/user_delegate_impl.h",
-      "enterprise/signals/user_permission_service_factory.cc",
-      "enterprise/signals/user_permission_service_factory.h",
 
       # These policies are only supported on desktop
       "performance_manager/user_tuning/memory_saver_policy_handler.cc",

@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,11 +39,10 @@ policy::PolicyScope ToPolicyScope(DTCPolicyLevel policy_level) {
 UserDelegateImpl::UserDelegateImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
-    enterprise_connectors::DeviceTrustConnectorService*
-        device_trust_connector_service)
+    SignalsDependencyDelegate* signals_dependency_delegate)
     : profile_(profile),
       identity_manager_(identity_manager),
-      device_trust_connector_service_(device_trust_connector_service) {
+      signals_dependency_delegate_(signals_dependency_delegate) {
   CHECK(profile_);
 }
 
@@ -81,9 +79,9 @@ bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
     const {
   std::set<policy::PolicyScope> policy_scopes;
-  if (device_trust_connector_service_) {
+  if (signals_dependency_delegate_) {
     for (const auto policy_level :
-         device_trust_connector_service_->GetEnabledInlinePolicyLevels()) {
+         signals_dependency_delegate_->GetSignalsPolicyScope()) {
       policy_scopes.insert(ToPolicyScope(policy_level));
     }
   }

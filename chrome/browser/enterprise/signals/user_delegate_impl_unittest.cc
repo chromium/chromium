@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -26,9 +25,15 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_signals {
 
 using DTCPolicyLevel = enterprise_connectors::DTCPolicyLevel;
+using SignalsDependencyDelegate =
+    device_signals::UserDelegate::SignalsDependencyDelegate;
 
 namespace {
 
@@ -36,12 +41,14 @@ constexpr char kUserEmail[] = "someEmail@example.com";
 constexpr char kOtherUserEmail[] = "someOtherUser@example.com";
 constexpr GaiaId::Literal kOtherUserGaiaId("some-other-user-gaia");
 
+#if !BUILDFLAG(IS_ANDROID)
 base::Value::List GetUrls() {
   base::Value::List trusted_urls;
   trusted_urls.Append("https://www.example.com");
   trusted_urls.Append("example2.example.com");
   return trusted_urls;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -58,21 +65,28 @@ class UserDelegateImplTest : public testing::Test {
     }
 
     testing_profile_ = builder.Build();
-
-    fake_dt_connector_service_ = std::make_unique<
+#if !BUILDFLAG(IS_ANDROID)
+    signals_dependency_delegate_ = std::make_unique<
         enterprise_connectors::FakeDeviceTrustConnectorService>(
         testing_profile_->GetTestingPrefService());
-
+#endif  // !BUILDFLAG(IS_ANDROID)
     user_delegate_ = std::make_unique<UserDelegateImpl>(
         testing_profile_.get(), identity_test_env_.identity_manager(),
-        fake_dt_connector_service_.get());
+        signals_dependency_delegate_.get());
   }
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<enterprise_connectors::FakeDeviceTrustConnectorService>
+  get_fake_dt_connector_service() {
+    return static_cast<enterprise_connectors::FakeDeviceTrustConnectorService*>(
+        signals_dependency_delegate_.get());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   content::BrowserTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  std::unique_ptr<enterprise_connectors::FakeDeviceTrustConnectorService>
-      fake_dt_connector_service_;
+  std::unique_ptr<SignalsDependencyDelegate> signals_dependency_delegate_ =
+      nullptr;
 
   std::unique_ptr<UserDelegateImpl> user_delegate_;
 };
@@ -110,7 +124,7 @@ TEST_F(UserDelegateImplTest, IsSameUser_NullManager) {
   // Instantiate all of the dependencies and reset the delegate.
   CreateDelegate();
   user_delegate_ = std::make_unique<UserDelegateImpl>(
-      testing_profile_.get(), nullptr, fake_dt_connector_service_.get());
+      testing_profile_.get(), nullptr, signals_dependency_delegate_.get());
 
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
@@ -165,12 +179,13 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
             std::set<policy::PolicyScope>());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests what GetPolicyScopesNeedingSignals returns when the policy is enabled
 // at the user level.
 TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_User) {
   CreateDelegate();
-  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
-                                                 DTCPolicyLevel::kUser);
+  get_fake_dt_connector_service()->UpdateInlinePolicy(GetUrls(),
+                                                      DTCPolicyLevel::kUser);
 
   EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>({policy::POLICY_SCOPE_USER}));
@@ -180,8 +195,8 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_User) {
 // at the browser level.
 TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Browser) {
   CreateDelegate();
-  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
-                                                 DTCPolicyLevel::kBrowser);
+  get_fake_dt_connector_service()->UpdateInlinePolicy(GetUrls(),
+                                                      DTCPolicyLevel::kBrowser);
   EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>({policy::POLICY_SCOPE_MACHINE}));
 }
@@ -190,14 +205,15 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Browser) {
 // at the both the user and browser levels.
 TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_UserAndBrowser) {
   CreateDelegate();
-  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
-                                                 DTCPolicyLevel::kBrowser);
-  fake_dt_connector_service_->UpdateInlinePolicy(GetUrls(),
-                                                 DTCPolicyLevel::kUser);
+  get_fake_dt_connector_service()->UpdateInlinePolicy(GetUrls(),
+                                                      DTCPolicyLevel::kBrowser);
+  get_fake_dt_connector_service()->UpdateInlinePolicy(GetUrls(),
+                                                      DTCPolicyLevel::kUser);
 
   EXPECT_EQ(user_delegate_->GetPolicyScopesNeedingSignals(),
             std::set<policy::PolicyScope>(
                 {policy::POLICY_SCOPE_MACHINE, policy::POLICY_SCOPE_USER}));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_signals
