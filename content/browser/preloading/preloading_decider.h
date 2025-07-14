@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOADING_DECIDER_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_DECIDER_H_
 
+#include "base/gtest_prod_util.h"
 #include "content/browser/preloading/preconnector.h"
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading_confidence.h"
@@ -99,9 +100,8 @@ class CONTENT_EXPORT PreloadingDecider
                            PreloadingConfidence confidence,
                            bool fallback_to_preconnect);
 
-  // TODO(crbug.com/381687257): 1. Inline the logic in
-  // `GetMatchedPreloadingCandidate` to reduce redundant code. 2. Support NVS
-  // matching logic.
+  // Merges the tags of all suitable candidates that match the given
+  // `lookup_key`.
   // Returns a vector of std::optional<string> of candidates which will be
   // enacted by the given parameter. This function is used for non-immediate
   // candidates only.
@@ -166,6 +166,33 @@ class CONTENT_EXPORT PreloadingDecider
   GetMatchedPreloadingCandidate(const SpeculationCandidateKey& lookup_key,
                                 const PreloadingPredictor& enacting_predictor,
                                 PreloadingConfidence confidence) const;
+
+ private:
+  // Grant the test suite access to private members.
+  FRIEND_TEST_ALL_PREFIXES(PreloadingDeciderTest,
+                           SpeculationRulesTagsMergingForNVSMatch);
+  FRIEND_TEST_ALL_PREFIXES(PreloadingDeciderTest,
+                           SpeculationRulesTagsMergingForNVSMatchWithNullTags);
+
+  // This helper function encapsulates the shared logic for finding all
+  // suitable candidates matching a lookup key, including No-Vary-Search logic.
+  std::vector<
+      std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
+  FindSuitableCandidates(const SpeculationCandidateKey& lookup_key,
+                         const PreloadingPredictor& enacting_predictor,
+                         PreloadingConfidence confidence) const;
+
+  // Enumerates all candidates that match the given `lookup_key` based on
+  // No-Vary-Search hint and invokes the visitor for each match.
+  // If the visitor returns true, enumeration stops early; if false,
+  // continues enumerating all matches.
+  template <typename Visitor>
+  void EnumerateNoVarySearchMatchedCandidates(
+      const SpeculationCandidateKey& lookup_key,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence,
+      Visitor&& visitor) const;
+
   std::optional<
       std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
   GetMatchedPreloadingCandidateByNoVarySearchHint(

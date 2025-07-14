@@ -1324,4 +1324,101 @@ TEST_F(PreloadingDeciderMLModelActiveTest, ModelSupersedesHoverHeuristic) {
 }
 
 }  // namespace
+
+TEST_F(PreloadingDeciderTest, SpeculationRulesTagsMergingForNVSMatch) {
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  const GURL kPreloadingUrl1("https://example.com/page.html?id=1");
+  const GURL kPreloadingUrl2("https://example.com/page.html?id=2");
+  const GURL kActivationUrl("https://example.com/page.html?id=3");
+
+  auto make_nvs_candidate = [&](const GURL& url, const std::string& tag) {
+    auto candidate =
+        MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                      blink::mojom::SpeculationEagerness::kConservative);
+    candidate->no_vary_search_hint = network::mojom::NoVarySearch::New(
+        network::mojom::SearchParamsVariance::NewNoVaryParams({"id"}),
+        /*vary_on_key_order=*/true);
+    candidate->tags = {tag};
+    return candidate;
+  };
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(make_nvs_candidate(kPreloadingUrl1, "tag1"));
+  candidates.push_back(make_nvs_candidate(kPreloadingUrl2, "tag2"));
+
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  // Both candidates should be on standby.
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      kPreloadingUrl1, blink::mojom::SpeculationAction::kPrefetch));
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      kPreloadingUrl2, blink::mojom::SpeculationAction::kPrefetch));
+
+  // Now, check if tags are merged correctly for a matching URL.
+  const PreloadingDecider::SpeculationCandidateKey lookup_key{
+      kActivationUrl, blink::mojom::SpeculationAction::kPrefetch};
+  const PreloadingPredictor predictor =
+      preloading_predictor::kUrlPointerDownOnAnchor;
+
+  auto merged_tags =
+      preloading_decider->GetMergedSpeculationTagsFromSuitableCandidates(
+          lookup_key, predictor, PreloadingConfidence{100});
+
+  // The merged tags should contain tags from both NVS-matched candidates.
+  EXPECT_EQ(merged_tags.size(), 2u);
+  EXPECT_TRUE(base::Contains(merged_tags, "tag1"));
+  EXPECT_TRUE(base::Contains(merged_tags, "tag2"));
+}
+
+TEST_F(PreloadingDeciderTest,
+       SpeculationRulesTagsMergingForNVSMatchWithNullTags) {
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  const GURL kPreloadingUrl1("https://example.com/page.html?id=1");
+  const GURL kPreloadingUrl2("https://example.com/page.html?id=2");
+  const GURL kActivationUrl("https://example.com/page.html?id=3");
+
+  auto make_nvs_candidate_no_tags = [&](const GURL& url) {
+    auto candidate =
+        MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                      blink::mojom::SpeculationEagerness::kConservative);
+    candidate->no_vary_search_hint = network::mojom::NoVarySearch::New(
+        network::mojom::SearchParamsVariance::NewNoVaryParams({"id"}),
+        /*vary_on_key_order=*/true);
+    // No tags specified - candidates->tags remains default ({std::nullopt})
+    return candidate;
+  };
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(make_nvs_candidate_no_tags(kPreloadingUrl1));
+  candidates.push_back(make_nvs_candidate_no_tags(kPreloadingUrl2));
+
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  // Both candidates should be on standby.
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      kPreloadingUrl1, blink::mojom::SpeculationAction::kPrefetch));
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      kPreloadingUrl2, blink::mojom::SpeculationAction::kPrefetch));
+
+  // Check if tags are merged correctly for a matching URL when no tags exist.
+  const PreloadingDecider::SpeculationCandidateKey lookup_key{
+      kActivationUrl, blink::mojom::SpeculationAction::kPrefetch};
+  const PreloadingPredictor predictor =
+      preloading_predictor::kUrlPointerDownOnAnchor;
+
+  auto merged_tags =
+      preloading_decider->GetMergedSpeculationTagsFromSuitableCandidates(
+          lookup_key, predictor, PreloadingConfidence{100});
+
+  // The merged tags should contain a single std::nullopt since no candidates
+  // have tags.
+  EXPECT_EQ(merged_tags.size(), 1u);
+  EXPECT_TRUE(base::Contains(merged_tags, std::optional<std::string>{}));
+}
 }  // namespace content
