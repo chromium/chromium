@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/video_surface_texture_image_backing.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"

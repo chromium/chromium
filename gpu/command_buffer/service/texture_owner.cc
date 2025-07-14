@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
-#include "gpu/command_buffer/service/surface_texture_gl_owner.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"

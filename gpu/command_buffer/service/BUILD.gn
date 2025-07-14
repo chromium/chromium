@@ -568,11 +568,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/skia_vk_android_image_representation.h",
       "shared_image/video_image_reader_image_backing.cc",
       "shared_image/video_image_reader_image_backing.h",
-      "shared_image/video_surface_texture_image_backing.cc",
-      "shared_image/video_surface_texture_image_backing.h",
       "stream_texture_shared_image_interface.h",
-      "surface_texture_gl_owner.cc",
-      "surface_texture_gl_owner.h",
       "texture_owner.cc",
       "texture_owner.h",
     ]
@@ -663,11 +659,7 @@ if (is_android) {
 if (is_android) {
   source_set("android_texture_owner_unittests") {
     testonly = true
-    sources = [
-      "image_reader_gl_owner_unittest.cc",
-      "surface_texture_gl_owner_unittest.cc",
-      "surface_texture_transform_unittest.cc",
-    ]
+    sources = [ "image_reader_gl_owner_unittest.cc" ]
 
     # For AImageReader_getFormat()
     libs = [ "mediandk" ]
