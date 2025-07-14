@@ -16,7 +16,6 @@ namespace messages {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kMessagesAccessibilityEventInvestigations,
     &kMessagesForAndroidFullyVisibleCallback, &kMessagesAndroidExtraHistograms,
     &kMessagesCloseButton};
 
@@ -28,10 +27,6 @@ base::android::FeatureMap* GetFeatureMap() {
 }
 
 }  // namespace
-
-BASE_FEATURE(kMessagesAccessibilityEventInvestigations,
-             "MessagesAccessibilityEventInvestigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",

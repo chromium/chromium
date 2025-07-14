@@ -14974,66 +14974,6 @@
             ]
         }
     ],
-    "MessagesAccessibilityEventInvestigations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledBaseline",
-                    "params": {
-                        "messages_accessibility_events_investigations_param": "1"
-                    },
-                    "enable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                },
-                {
-                    "name": "EnabledWithAccessibilityState",
-                    "params": {
-                        "messages_accessibility_events_investigations_param": "2"
-                    },
-                    "enable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                },
-                {
-                    "name": "EnabledWithRestrictiveServiceCheck",
-                    "params": {
-                        "messages_accessibility_events_investigations_param": "3"
-                    },
-                    "enable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                },
-                {
-                    "name": "EnabledWithMaskCheck",
-                    "params": {
-                        "messages_accessibility_events_investigations_param": "4"
-                    },
-                    "enable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                },
-                {
-                    "name": "EnabledWithDirectQuery",
-                    "params": {
-                        "messages_accessibility_events_investigations_param": "5"
-                    },
-                    "enable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "MessagesAccessibilityEventInvestigations"
-                    ]
-                }
-            ]
-        }
-    ],
     "MessagesPreinstall": [
         {
             "platforms": [

@@ -5,11 +5,9 @@
 package org.chromium.components.messages;
 
 import android.animation.Animator;
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
@@ -18,7 +16,6 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.messages.MessageFeatureMap.AccessibilityEventInvestigationGroup;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
@@ -239,13 +236,6 @@ class MessageBannerCoordinator {
      */
     @SuppressWarnings("WrongConstant")
     private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
-        // We will only send an AccessibilityEvent when running the
-        // MessagesAccessibilityEventInvestigations experiment since this is known to crash in some
-        // cases. The experiment will provide more hints to crash root cause and possible solutions.
-        if (!MessageFeatureList.isMessagesAccessibilityEventInvestigationsEnabled()) {
-            return;
-        }
-
         AccessibilityEvent event =
                 AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         if (isShowing) {
@@ -254,54 +244,7 @@ class MessageBannerCoordinator {
             event.setContentChangeTypes(
                     AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
         }
-
-        // The MessagesAccessibilityEventInvestigations has various arms to try potential solutions.
-        int approach = MessageFeatureList.getMessagesAccessibilityEventInvestigationsParam();
-        switch (approach) {
-            case AccessibilityEventInvestigationGroup.ENABLED_BASELINE:
-                // Case 1 = "EnabledBaseline" group. This is our baseline group, which acts similar
-                // to a control group for the experiment. This is the ideal implementation that we
-                // would expect not to crash, and we want to compare the other implementations
-                // against this one.
-                if (AccessibilityState.isAnyAccessibilityServiceEnabled()) {
-                    mView.requestSendAccessibilityEvent(mView, event);
-                }
-                break;
-            case AccessibilityEventInvestigationGroup.ENABLED_WITH_ACCESSIBILITY_STATE:
-                // Case 2 = "EnabledWithAccessibilityState" group. For this group, we will send the
-                // event through the AccessibilityState instead.
-                AccessibilityState.sendAccessibilityEvent(event);
-                break;
-            case AccessibilityEventInvestigationGroup.ENABLED_WITH_RESTRICTIVE_SERVICE_CHECK:
-                // Case 3 = "EnabledWithRestrictiveServiceCheck" group. For this group, we will send
-                // the event as we normally would, but for a more restrictive group of services.
-                if (AccessibilityState.isComplexUserInteractionServiceEnabled()) {
-                    mView.requestSendAccessibilityEvent(mView, event);
-                }
-                break;
-            case AccessibilityEventInvestigationGroup.ENABLED_WITH_MASK_CHECK:
-                // Case 4 = "EnabledWithMaskCheck" group. For this group, we will not check the
-                // enabled services, but instead look at the requested event types, and only send
-                // the event if some service has requested its type.
-                if (AccessibilityState.relevantEventTypesForCurrentServices()
-                        .contains(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)) {
-                    mView.requestSendAccessibilityEvent(mView, event);
-                }
-                break;
-            case AccessibilityEventInvestigationGroup.ENABLED_WITH_DIRECT_QUERY:
-                // Case 5 = "EnabledWithDirectQuery" group. For this group, we will directly check
-                // the current accessibility state against the framework before sending the event.
-                AccessibilityManager manager =
-                        (AccessibilityManager)
-                                mView.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-                if (manager.isEnabled()) {
-                    mView.requestSendAccessibilityEvent(mView, event);
-                }
-                break;
-            default:
-                // For any other value (default or bad param), we do not want to send any event.
-                break;
-        }
+        AccessibilityState.sendAccessibilityEvent(event);
     }
 
     private void setOnTitleChanged(@Nullable Runnable runnable) {

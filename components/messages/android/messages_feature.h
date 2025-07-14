@@ -10,16 +10,6 @@
 
 namespace messages {
 
-// Feature that allows for AccessibilityEvents to be sent in Java-side impl to
-// test possible crash solutions.
-BASE_DECLARE_FEATURE(kMessagesAccessibilityEventInvestigations);
-
-// A feature param of type int that corresponds to the possible approaches for
-// fixing the crash.
-const base::FeatureParam<int> kMessagesAccessibilityEventInvestigationsParam{
-    &kMessagesAccessibilityEventInvestigations,
-    "messages_accessibility_events_investigations_param", 0};
-
 // Feature that exposes a listener to notify whether the current message
 // is fully visible.
 BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
