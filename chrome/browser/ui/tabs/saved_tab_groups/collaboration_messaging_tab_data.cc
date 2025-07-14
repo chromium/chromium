@@ -27,6 +27,18 @@
 using collaboration::messaging::PersistentMessage;
 
 namespace tab_groups {
+namespace {
+
+// Get the scale factor for the widget.
+float GetScale(const views::Widget* widget) {
+  float scale_factor = 1.0f;
+  if (widget->GetCompositor()) {
+    scale_factor = widget->GetCompositor()->device_scale_factor();
+  }
+  return scale_factor;
+}
+
+}  // namespace
 
 CollaborationMessagingTabData::CollaborationMessagingTabData(Profile* profile)
     : profile_(profile) {}
@@ -149,11 +161,15 @@ void CollaborationMessagingTabData::CommitMessage(
 
 ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
     const views::Widget* widget) const {
+  CHECK(widget);
+
   if (!HasMessage()) {
     return ui::ImageModel();
   }
 
-  const int icon_width = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  const float scale_factor = GetScale(widget);
+  const int icon_width =
+      GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE) * scale_factor;
   if (!avatar_.IsEmpty()) {
     return ui::ImageModel::FromImage(
         gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
@@ -164,11 +180,15 @@ ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
 
 ui::ImageModel CollaborationMessagingTabData::GetHoverCardImage(
     const views::Widget* widget) const {
+  CHECK(widget);
+
   if (!HasMessage()) {
     return ui::ImageModel();
   }
 
-  const int icon_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
+  const float scale_factor = GetScale(widget);
+  const int icon_width =
+      GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH) * scale_factor;
   if (!avatar_.IsEmpty()) {
     return ui::ImageModel::FromImage(
         gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
@@ -181,13 +201,8 @@ ui::ImageModel CollaborationMessagingTabData::CreateSizedFallback(
     const views::Widget* widget,
     int icon_width,
     bool add_border) const {
-  CHECK(widget);
-
   // Get devices scale factor for scaling the bitmaps.
-  float scale_factor = 1.0f;
-  if (widget->GetCompositor()) {
-    scale_factor = widget->GetCompositor()->device_scale_factor();
-  }
+  float scale_factor = GetScale(widget);
 
   const ui::ColorProvider* color_provider = widget->GetColorProvider();
   const int icon_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
