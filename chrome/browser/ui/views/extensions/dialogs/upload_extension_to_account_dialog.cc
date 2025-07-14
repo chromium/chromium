@@ -33,8 +33,7 @@ void ShowUploadExtensionToAccountDialog(Browser* browser,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback) {
-  CHECK(base::FeatureList::IsEnabled(
-      switches::kEnableExtensionsExplicitBrowserSignin));
+  CHECK(switches::IsExtensionsExplicitBrowserSigninEnabled());
   CHECK(AccountExtensionTracker::Get(browser->profile())
             ->CanUploadAsAccountExtension(extension));
 

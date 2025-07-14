@@ -163,8 +163,7 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
 
   if (signin::ShouldShowExtensionSignInPromo(*browser->profile(), *extension) ||
       (signin::ShouldShowExtensionSyncPromo(*browser->profile(), *extension) &&
-       !base::FeatureList::IsEnabled(
-           switches::kEnableExtensionsExplicitBrowserSignin))) {
+       !switches::IsExtensionsExplicitBrowserSigninEnabled())) {
     SetFootnoteView(CreateSigninPromoView(
         browser->tab_strip_model()->GetActiveWebContents(),
         model_->extension_id()));

@@ -253,8 +253,7 @@ bool ShouldShowExtensionSyncPromo(Profile& profile,
 bool ShouldShowExtensionSignInPromo(Profile& profile,
                                     const extensions::Extension& extension) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableExtensionsExplicitBrowserSignin)) {
+  if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
     return false;
   }
 
@@ -346,8 +345,7 @@ bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
   }
 
   if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
-    return base::FeatureList::IsEnabled(
-        switches::kEnableExtensionsExplicitBrowserSignin);
+    return switches::IsExtensionsExplicitBrowserSigninEnabled();
   }
 
   if (access_point == signin_metrics::AccessPoint::kBookmarkBubble) {
