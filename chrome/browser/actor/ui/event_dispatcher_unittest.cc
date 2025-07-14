@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/mock_actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -166,17 +167,32 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
 }
 
-TEST_F(EventDispatcherTest, OneSyncUiEvents) {
+TEST_F(EventDispatcherTest, SyncActorTaskChange_OneEvent) {
   EXPECT_CALL(
       *mock_state_manager_,
       OnUiEvent(VariantWith<TaskStateChanged>(AllOf(
           Field(&TaskStateChanged::task_id, TaskId(999)),
           Field(&TaskStateChanged::state, ActorTask::State::kPausedByClient)))))
       .Times(1);
-  dispatcher_->OnActorTaskChange(UiEventDispatcher::ChangeTaskState{
+  dispatcher_->OnActorTaskSyncChange(UiEventDispatcher::ChangeTaskState{
       .task_id = TaskId(999),
       .old_state = ActorTask::State::kActing,
       .new_state = ActorTask::State::kPausedByClient});
+}
+
+TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
+  EXPECT_CALL(*mock_state_manager_,
+              OnUiEvent(VariantWith<StartingToActOnTab>(_), _))
+      .Times(1)
+      .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
+        std::move(callback).Run(MakeOkResult());
+      }));
+  TestFuture<mojom::ActionResultPtr> result;
+  dispatcher_->OnActorTaskAsyncChange(
+      UiEventDispatcher::AddTab{.task_id = TaskId(992),
+                                .handle = tabs::TabHandle(998)},
+      result.GetCallback());
+  EXPECT_TRUE(IsOk(*result.Get()));
 }
 
 // TODO(crbug.com/425784083): improve unit testing

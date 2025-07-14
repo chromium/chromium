@@ -82,8 +82,13 @@ constexpr Visitor FirstActEventsFn{
     },
 };
 
-constexpr Visitor ActorTaskChangeFn{
-    // TODO(crbug.com/425784083): Add tab changes from ActorTask.
+constexpr Visitor ActorTaskAsyncChangeFn{
+    [](const UiEventDispatcher::AddTab& c) {
+      return std::deque<AsyncUiEvent>{StartingToActOnTab(c.handle, c.task_id)};
+    },
+};
+
+constexpr Visitor ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::ChangeTaskState& c) {
       // TODO(crbug.com/425784083): Dispatch StartTask if state transition is
       // Created -> Acting.
@@ -110,8 +115,13 @@ struct VisitorTraits<FirstActEventsFn> {
 };
 
 template <>
-struct VisitorTraits<ActorTaskChangeFn> {
-  static constexpr const char* phase_name = "ActorTaskChange";
+struct VisitorTraits<ActorTaskAsyncChangeFn> {
+  static constexpr const char* phase_name = "ActorTaskAsyncChange";
+};
+
+template <>
+struct VisitorTraits<ActorTaskSyncChangeFn> {
+  static constexpr const char* phase_name = "ActorTaskSyncChange";
 };
 
 template <typename T>
@@ -144,11 +154,26 @@ struct InputTraits<UiEventDispatcher::FirstActInfo> {
 };
 
 template <>
-struct InputTraits<UiEventDispatcher::ActorTaskChange> {
+struct InputTraits<UiEventDispatcher::ActorTaskAsyncChange> {
+  static constexpr const char* name = "ActorTaskToolChange";
+  static constexpr auto convert_fn = std::identity();
+  static constexpr auto debug_info =
+      [](const UiEventDispatcher::ActorTaskAsyncChange& change) {
+        constexpr Visitor DebugFn{[](const UiEventDispatcher::AddTab& c) {
+          return absl::StrFormat("AddTab task_id=%d tab=%d",
+                                 c.task_id.GetUnsafeValue(),
+                                 c.handle.raw_value());
+        }};
+        return std::visit(DebugFn, change);
+      };
+};
+
+template <>
+struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
   static constexpr const char* name = "ActorTaskChange";
   static constexpr auto convert_fn = std::identity();
   static constexpr auto debug_info =
-      [](const UiEventDispatcher::ActorTaskChange& change) {
+      [](const UiEventDispatcher::ActorTaskSyncChange& change) {
         constexpr Visitor DebugFn{
             [](const UiEventDispatcher::ChangeTaskState& c) {
               return absl::StrFormat(
@@ -197,8 +222,13 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     On<FirstActEventsFn>(first_act_info, std::move(callback));
   }
 
-  void OnActorTaskChange(const ActorTaskChange& change) override {
-    On<ActorTaskChangeFn>(change);
+  void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
+                              UiCompleteCallback callback) override {
+    On<ActorTaskAsyncChangeFn>(change, std::move(callback));
+  }
+
+  void OnActorTaskSyncChange(const ActorTaskSyncChange& change) override {
+    On<ActorTaskSyncChangeFn>(change);
   }
 
  private:

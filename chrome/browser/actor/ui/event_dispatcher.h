@@ -25,14 +25,19 @@ class UiEventDispatcher {
     TaskId task_id;
     std::optional<tabs::TabInterface::Handle> tab_handle;
   };
+  struct AddTab {
+    TaskId task_id;
+    tabs::TabInterface::Handle handle;
+  };
+  using ActorTaskAsyncChange = std::variant<AddTab>;
+
   struct ChangeTaskState {
     TaskId task_id;
     ActorTask::State old_state;
     ActorTask::State new_state;
   };
-
   // TODO(crbug.com/425784083): Add tab changes from ActorTask.
-  using ActorTaskChange = std::variant<ChangeTaskState>;
+  using ActorTaskSyncChange = std::variant<ChangeTaskState>;
 
   virtual ~UiEventDispatcher() = default;
 
@@ -48,11 +53,17 @@ class UiEventDispatcher {
 
   // Should be called before the first ToolRequest is processed.  Callback will
   // be made once the UI has initialized.
+  // TODO(crbug.com/425784083): remove this in favor of
+  // AddTab/OnActorTaskSyncChange
   virtual void OnPreFirstAct(const FirstActInfo& first_act_info,
                              UiCompleteCallback callback) = 0;
 
+  // Should be called when a Tool changes the ActorTask.
+  virtual void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
+                                      UiCompleteCallback callback) = 0;
+
   // Should be called when properties of an ActorTask change.
-  virtual void OnActorTaskChange(const ActorTaskChange& change) = 0;
+  virtual void OnActorTaskSyncChange(const ActorTaskSyncChange& change) = 0;
 };
 
 std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(Profile* profile);
