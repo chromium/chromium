@@ -490,10 +490,10 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
       <style>
           @keyframes clippath {
               0% {
-                  clip-path: initial;
+                  clip-path: circle(30% at 30% 30%);
               }
               100% {
-                  clip-path: circle(30% at 30% 30%);
+                  clip-path: circle(50% at 50% 50%);
               }
           }
           .animation br {
