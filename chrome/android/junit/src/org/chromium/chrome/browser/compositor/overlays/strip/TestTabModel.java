@@ -137,7 +137,11 @@ public class TestTabModel extends EmptyTabModel {
         return mMultiSelectedTabs.contains(tabId) || tabId == TabModelUtils.getCurrentTabId(this);
     }
 
+    @Override
     public int getMultiSelectedTabsCount() {
-        return mMultiSelectedTabs.size();
+        if (mMockTabs.isEmpty()) return 0;
+        // If no other tabs are in multi-selection, this returns 1, as the active tab is always
+        // considered selected.
+        return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
     }
 }

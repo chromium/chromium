@@ -241,4 +241,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public boolean isTabMultiSelected(int tabId) {
         return false;
     }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        return 0;
+    }
 }

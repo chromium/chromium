@@ -179,4 +179,13 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @return true if the tab is selected, false otherwise.
      */
     boolean isTabMultiSelected(int tabId);
+
+    /**
+     * Gets the total number of selected tabs. This includes the currently active tab plus any other
+     * tabs explicitly added to the multi-selection group. If no tabs are multi-selected, this will
+     * return 1 (for the active tab). If there are no tabs in the model, this will return 0.
+     *
+     * @return The total count of selected tabs.
+     */
+    int getMultiSelectedTabsCount();
 }

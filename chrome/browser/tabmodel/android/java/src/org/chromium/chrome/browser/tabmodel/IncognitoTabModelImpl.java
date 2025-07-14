@@ -396,4 +396,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public boolean isTabMultiSelected(int tabId) {
         return mDelegateModel.isTabMultiSelected(tabId);
     }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        return mDelegateModel.getMultiSelectedTabsCount();
+    }
 }

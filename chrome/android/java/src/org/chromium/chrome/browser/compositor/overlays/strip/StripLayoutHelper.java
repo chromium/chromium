@@ -2994,8 +2994,7 @@ public class StripLayoutHelper
         // If the tab is already multi-selected, ctrl click should unselect it.
         if (mModel.isTabMultiSelected(tabId)) {
             if (tabId == getSelectedTabId()) {
-                // TODO(crbug.com/404074503): Ctrl clicking on the selected tab should select the
-                // next closest multi-selected tab.
+                handleSelectedTabCtrlClicked(tabId);
                 return;
             }
             mModel.setTabsMultiSelected(Collections.singleton(tabId), false);
@@ -3032,9 +3031,22 @@ public class StripLayoutHelper
         int endIndex = Math.max(anchorIndex, clickedIndex);
 
         Set<Integer> selectedTabIds = new HashSet<>();
+        Set<Token> tabGroupIds = new HashSet<>();
         if (startIndex != -1 && endIndex != -1) {
             for (int i = startIndex; i <= endIndex; i++) {
-                selectedTabIds.add(mStripTabs[i].getTabId());
+                int tabId = mStripTabs[i].getTabId();
+                selectedTabIds.add(tabId);
+                Tab tab = mModel.getTabById(tabId);
+                // If part of a tab group, expand the tab group.
+                if (tab == null) return;
+                Token tabGroupId = tab.getTabGroupId();
+                if (tabGroupId != null
+                        && !tabGroupIds.contains(tabGroupId)
+                        && mTabGroupModelFilter != null) {
+                    mTabGroupModelFilter.setTabGroupCollapsed(
+                            tabGroupId, false, /* animate= */ true);
+                    tabGroupIds.add(tabGroupId);
+                }
             }
         }
         mModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
@@ -3070,6 +3082,33 @@ public class StripLayoutHelper
         }
         if (mModel == null) return;
         mModel.clearMultiSelection(notifyObservers);
+    }
+
+    /**
+     * Handles the specific user action of Ctrl+clicking the currently active tab. This action
+     * deselects the active tab and transfers the active status to another tab within the existing
+     * multi-selection. The new active tab will be the leftmost tab in the current selection. if the
+     * clicked tab is the only one selected, this method does nothing to prevent a state with no
+     * active tab.
+     *
+     * @param tabId The ID of the currently active tab that was clicked.
+     */
+    private void handleSelectedTabCtrlClicked(int tabId) {
+        if (mModel == null || mModel.getMultiSelectedTabsCount() <= 1 || mStripTabs.length <= 1) {
+            // Can't deselect the only tab.
+            return;
+        }
+
+        // Find and select the new active tab, which will be the leftmost tab
+        // in the selection that isn't the one being deselected.
+        for (StripLayoutTab stripTab : mStripTabs) {
+            int id = stripTab.getTabId();
+            if (id != tabId && mModel.isTabMultiSelected(id)) {
+                selectTab(stripTab);
+                mModel.setTabsMultiSelected(Collections.singleton(tabId), false);
+                break;
+            }
+        }
     }
 
     public int getAnchorTabIdForTesting() {

@@ -426,6 +426,35 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (selectTab) setIndex(finalIndex, TabSelectionType.FROM_NEW);
     }
 
+    @Override
+    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
+        assertOnUiThread();
+        TabModelImplUtil.setTabsMultiSelected(
+                tabIds, isSelected, mMultiSelectedTabs, mTabModelObservers);
+    }
+
+    @Override
+    public void clearMultiSelection(boolean notifyObservers) {
+        assertOnUiThread();
+        TabModelImplUtil.clearMultiSelection(
+                notifyObservers, mMultiSelectedTabs, mTabModelObservers);
+    }
+
+    @Override
+    public boolean isTabMultiSelected(int tabId) {
+        assertOnUiThread();
+        return TabModelImplUtil.isTabMultiSelected(tabId, mMultiSelectedTabs, this);
+    }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        assertOnUiThread();
+        if (!mCurrentTabSupplier.hasValue()) return 0;
+        // If no other tabs are in multi-selection, this returns 1, as the active tab is always
+        // considered selected.
+        return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
+    }
+
     // TabCloser overrides.
 
     @Override
@@ -921,23 +950,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 tab.freeze();
             }
         }
-    }
-
-    @Override
-    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
-        TabModelImplUtil.setTabsMultiSelected(
-                tabIds, isSelected, mMultiSelectedTabs, mTabModelObservers);
-    }
-
-    @Override
-    public void clearMultiSelection(boolean notifyObservers) {
-        TabModelImplUtil.clearMultiSelection(
-                notifyObservers, mMultiSelectedTabs, mTabModelObservers);
-    }
-
-    @Override
-    public boolean isTabMultiSelected(int tabId) {
-        return TabModelImplUtil.isTabMultiSelected(tabId, mMultiSelectedTabs, this);
     }
 
     @NativeMethods

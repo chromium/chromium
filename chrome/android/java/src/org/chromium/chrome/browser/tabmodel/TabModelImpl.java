@@ -1091,4 +1091,12 @@ public class TabModelImpl extends TabModelJniBridge {
     public boolean isTabMultiSelected(int tabId) {
         return TabModelImplUtil.isTabMultiSelected(tabId, mMultiSelectedTabs, this);
     }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        if (mTabs.isEmpty()) return 0;
+        // If no other tabs are in multi-selection, this returns 1, as the active tab is always
+        // considered selected.
+        return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
+    }
 }
