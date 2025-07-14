@@ -335,7 +335,12 @@ constexpr const char* kThreadName = "HangWatcher";
 // hangs but present unacceptable overhead. NOTE: If this period is ever changed
 // then all metrics that depend on it like
 // HangWatcher.IsThreadHung need to be updated.
-constexpr auto kMonitoringPeriod = base::Seconds(10);
+const char kHangWatcherMonitoringPeriodParam[] =
+    "hang_watcher_monitoring_period";
+constexpr base::FeatureParam<base::TimeDelta> kHangWatcherMonitoringPeriod(
+    &kEnableHangWatcher,
+    kHangWatcherMonitoringPeriodParam,
+    base::Seconds(10));
 
 WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   internal::HangWatchState* current_hang_watch_state =
@@ -594,7 +599,7 @@ void HangWatcher::SetShuttingDown() {
 }
 
 HangWatcher::HangWatcher()
-    : monitoring_period_(kMonitoringPeriod),
+    : monitoring_period_(kHangWatcherMonitoringPeriod.Get()),
       should_monitor_(WaitableEvent::ResetPolicy::AUTOMATIC),
       thread_(this, kThreadName),
       tick_clock_(base::DefaultTickClock::GetInstance()),
