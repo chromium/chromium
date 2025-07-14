@@ -639,6 +639,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
                        InvokeUi_AboutThisSite) {
+  set_baseline("6730899");
   ShowAndVerifyUi();
 }
 
@@ -1197,13 +1198,13 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustMainPageWithoutSummary) {
-  set_baseline("6304742");
+  set_baseline("6730899");
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustMainPage) {
-  set_baseline("6070208");
+  set_baseline("6730899");
   ShowAndVerifyUi();
 }
 

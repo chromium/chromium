@@ -88,11 +88,13 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
                                       kMerchantTrustElementId);
 
-PageInfoMainView::ContainerView::ContainerView() {
+PageInfoMainView::ContainerView::ContainerView(bool set_extra_right_margin) {
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
-  box_layout->set_inside_border_insets(
-      gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+  if (set_extra_right_margin) {
+    box_layout->set_inside_border_insets(
+        gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+  }
   SetLayoutManager(std::move(box_layout));
 }
 
@@ -169,7 +171,10 @@ PageInfoMainView::PageInfoMainView(
     history_controller->InitRow(AddChildView(CreateContainerView()));
   }
 
-  extended_site_info_section_ = AddChildView(CreateContainerView());
+  // No extra right margins since the children are also containers and will have
+  // the extra margin set.
+  extended_site_info_section_ =
+      AddChildView(CreateContainerView(/*set_extra_right_margin=*/false));
   extended_site_info_section_->AddChildView(
       PageInfoViewFactory::CreateSeparator(GetSeparatorPadding()));
   extended_site_info_section_->SetID(
@@ -558,8 +563,9 @@ void PageInfoMainView::OnChosenObjectDeleted(
   PreferredSizeChanged();
 }
 
-std::unique_ptr<views::View> PageInfoMainView::CreateContainerView() {
-  return std::make_unique<ContainerView>();
+std::unique_ptr<views::View> PageInfoMainView::CreateContainerView(
+    bool set_extra_right_margin) {
+  return std::make_unique<ContainerView>(set_extra_right_margin);
 }
 
 void PageInfoMainView::HandleMoreInfoRequest(views::View* source) {
