@@ -20,17 +20,14 @@ StatusData::StatusData(const StatusData& copy) {
 
 StatusData::StatusData(StatusGroupType group,
                        StatusCodeType code,
-                       std::string message,
-                       UKMPackedType root_cause)
+                       std::string message)
     : group(group),
       code(code),
       message(std::move(message)),
-      data(base::Value(base::Value::Type::DICT)),
-      packed_root_cause(root_cause) {}
+      data(base::Value(base::Value::Type::DICT)) {}
 
 std::unique_ptr<StatusData> StatusData::copy() const {
-  auto result =
-      std::make_unique<StatusData>(group, code, message, packed_root_cause);
+  auto result = std::make_unique<StatusData>(group, code, message);
   result->frames = frames.Clone();
   if (cause)
     result->cause = cause->copy();
@@ -44,7 +41,6 @@ StatusData& StatusData::operator=(const StatusData& copy) {
   group = copy.group;
   code = copy.code;
   message = copy.message;
-  packed_root_cause = copy.packed_root_cause;
   frames = copy.frames.Clone();
   if (copy.cause)
     cause = copy.cause->copy();

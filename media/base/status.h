@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/values.h"
-#include "media/base/crc_16.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
 
@@ -46,9 +45,6 @@ using StatusCodeType = uint16_t;
 // This is the type that TypedStatusTraits::Group should be.
 using StatusGroupType = std::string_view;
 
-// This is the type that a status will get serialized into for UKM purposes.
-using UKMPackedType = uint64_t;
-
 namespace internal {
 
 template <typename T>
@@ -59,24 +55,10 @@ struct SecondArgType<R(A1, A2)> {
   using Type = A2;
 };
 
-union UKMPackHelper {
-  struct bits {
-    uint16_t group;
-    StatusCodeType code;
-    uint32_t extra_data;
-  } __attribute__((packed)) bits;
-  UKMPackedType packed;
-
-  static_assert(sizeof(bits) == sizeof(packed));
-};
-
 struct MEDIA_EXPORT StatusData {
   StatusData();
   StatusData(const StatusData&);
-  StatusData(StatusGroupType group,
-             StatusCodeType code,
-             std::string message,
-             UKMPackedType root_cause);
+  StatusData(StatusGroupType group, StatusCodeType code, std::string message);
   ~StatusData();
   StatusData& operator=(const StatusData&);
 
@@ -102,9 +84,6 @@ struct MEDIA_EXPORT StatusData {
 
   // Data attached to the error
   base::Value data;
-
-  // The root-cause status, as packed for UKM.
-  UKMPackedType packed_root_cause = 0;
 };
 
 #define NAME_DETECTOR(detector_name, field)                         \
@@ -133,7 +112,6 @@ struct MEDIA_EXPORT StatusData {
   }
 
 NAME_DETECTOR(HasOkCode, kOk);
-NAME_DETECTOR(HasPackExtraData, PackExtraData);
 NAME_DETECTOR(HasSetDefaultOk, OkEnumValue);
 NAME_DETECTOR(HasEnumValueSerializer, ReadableCodeName);
 
@@ -144,7 +122,6 @@ template <typename T>
 struct StatusTraitsHelper {
   static constexpr bool has_ok = HasOkCode<typename T::Codes>::as_enum_value;
   static constexpr bool has_default = HasSetDefaultOk<T>::as_method;
-  static constexpr bool has_pack = HasPackExtraData<T>::as_method;
   static constexpr bool has_code_repr = HasEnumValueSerializer<T>::as_method;
 
   // If T defines OkEnumValue(), then return it. Otherwise, return an
@@ -156,17 +133,6 @@ struct StatusTraitsHelper {
       return T::Codes::kOk;
     } else {
       return std::nullopt;
-    }
-  }
-
-  // If T defined PackExtraData(), then evaluate it. Otherwise, return a default
-  // value. |PackExtraData| is an optional method that can operate on the
-  // internal status data in order to pack it into a 32-bit entry for UKM.
-  static constexpr uint32_t PackExtraData(const StatusData& info) {
-    if constexpr (has_pack) {
-      return T::PackExtraData(info);
-    } else {
-      return 0;
     }
   }
 
@@ -330,7 +296,7 @@ class MEDIA_EXPORT TypedStatus {
     }
     data_ = std::make_unique<internal::StatusData>(
         Traits::Group(), static_cast<StatusCodeType>(code),
-        internal::StatusTraitsHelper<Traits>::GetMessage(message, code), 0);
+        internal::StatusTraitsHelper<Traits>::GetMessage(message, code));
     data_->AddLocation(location);
   }
 
@@ -403,29 +369,7 @@ class MEDIA_EXPORT TypedStatus {
   template <typename AnyTraitsType>
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
-    // The |cause| status is about to lose it's type forever. If it has no
-    // causes, it might be sourced as the "root cause" status when sending to
-    // UKM later, so it must be pre-emptively packed.
-    if (!cause.data_->cause) {
-      // If |cause| has no cause, then it shouldn't have |packed_root_cause|
-      // either.
-      DCHECK_EQ(cause.data_->packed_root_cause, 0lu);
-      data_->packed_root_cause = cause.PackForUkm();
-    } else {
-      // If |cause| has a cause, it should have taken that causes's root-cause
-      // when it was added as a cause. Since we're adding |cause| as our cause
-      // now, we should steal |cause|'s root cause to be out root cause.
-      DCHECK_NE(cause.data_->packed_root_cause, 0lu);
-      data_->packed_root_cause = cause.data_->packed_root_cause;
-    }
     data_->cause = std::move(cause.data_);
-  }
-
-  template <typename UKMBuilder>
-  void ToUKM(UKMBuilder& builder) const {
-    builder.SetStatus(PackForUkm());
-    if (data_)
-      builder.SetRootCause(data_->packed_root_cause);
   }
 
   inline bool operator==(Codes code) const { return code == this->code(); }
@@ -625,18 +569,6 @@ class MEDIA_EXPORT TypedStatus {
   // Allow AddCause.
   template <typename StatusEnum>
   friend class TypedStatus;
-
-  UKMPackedType PackForUkm() const {
-    internal::UKMPackHelper result;
-    // the group field is a crc16 hash of the constant name of the status,
-    // and is not controlled by the user or browser session in any way. These
-    // strings will always be something like "DecoderStatus" or "PipelineStatus"
-    // and represent the name of the enum that we record in the |group| field.
-    result.bits.group = crc16(Traits::Group().data());
-    result.bits.code = static_cast<StatusCodeType>(code());
-    result.bits.extra_data = 0;
-    return result.packed;
-  }
 };
 
 template <typename T>
