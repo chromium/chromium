@@ -947,12 +947,12 @@
     {
         "name": "espresso-core",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-beta01"
+        "version": "3.7.0-rc01"
     },
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-beta01"
+        "version": "3.7.0-rc01"
     },
     {
         "name": "espresso-intents",
@@ -967,12 +967,12 @@
     {
         "name": "junit",
         "group": "androidx.test.ext",
-        "version": "1.3.0-beta01"
+        "version": "1.3.0-rc01"
     },
     {
         "name": "storage",
         "group": "androidx.test.services",
-        "version": "1.6.0-beta01"
+        "version": "1.6.0-rc01"
     },
     {
         "name": "uiautomator",
@@ -987,22 +987,22 @@
     {
         "name": "core",
         "group": "androidx.test",
-        "version": "1.7.0-beta01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "monitor",
         "group": "androidx.test",
-        "version": "1.8.0-beta01"
+        "version": "1.8.0-rc01"
     },
     {
         "name": "rules",
         "group": "androidx.test",
-        "version": "1.7.0-beta01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "runner",
         "group": "androidx.test",
-        "version": "1.7.0-beta01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "tracing",
@@ -1157,17 +1157,17 @@
     {
         "name": "transport-api",
         "group": "com.google.android.datatransport",
-        "version": "4.0.0"
+        "version": "3.1.0"
     },
     {
         "name": "transport-backend-cct",
         "group": "com.google.android.datatransport",
-        "version": "4.0.0"
+        "version": "3.1.9"
     },
     {
         "name": "transport-runtime",
         "group": "com.google.android.datatransport",
-        "version": "4.0.0"
+        "version": "3.1.9"
     },
     {
         "name": "play-services-auth",
@@ -1262,7 +1262,7 @@
     {
         "name": "play-services-stats",
         "group": "com.google.android.gms",
-        "version": "17.1.0"
+        "version": "17.0.2"
     },
     {
         "name": "play-services-tasks",
@@ -1362,7 +1362,7 @@
     {
         "name": "firebase-datatransport",
         "group": "com.google.firebase",
-        "version": "19.0.0"
+        "version": "18.2.0"
     },
     {
         "name": "firebase-encoders",
@@ -1378,11 +1378,6 @@
         "name": "firebase-encoders-proto",
         "group": "com.google.firebase",
         "version": "16.0.0"
-    },
-    {
-        "name": "firebase-iid",
-        "group": "com.google.firebase",
-        "version": "21.1.0"
     },
     {
         "name": "firebase-iid-interop",
@@ -1402,7 +1397,7 @@
     {
         "name": "firebase-measurement-connector",
         "group": "com.google.firebase",
-        "version": "20.0.1"
+        "version": "19.0.0"
     },
     {
         "name": "firebase-messaging",
@@ -1462,12 +1457,7 @@
     {
         "name": "moshi",
         "group": "com.squareup.moshi",
-        "version": "1.15.0"
-    },
-    {
-        "name": "moshi-adapters",
-        "group": "com.squareup.moshi",
-        "version": "1.15.0"
+        "version": "1.13.0"
     },
     {
         "name": "okio",
@@ -1702,7 +1692,7 @@
     {
         "name": "kotlinx-coroutines-play-services",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.10.1"
+        "version": "1.6.4"
     },
     {
         "name": "kotlinx-coroutines-reactive",

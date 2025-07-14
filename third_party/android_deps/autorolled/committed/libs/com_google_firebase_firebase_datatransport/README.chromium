@@ -1,7 +1,7 @@
 Name: firebase-datatransport
 Short Name: firebase-datatransport
 URL: https://firebase.google.com
-Version: 19.0.0
+Version: 18.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

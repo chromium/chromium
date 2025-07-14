@@ -1,7 +1,7 @@
 Name: transport-api
 Short Name: transport-api
 URL: https://developers.google.com/android/guides/setup
-Version: 4.0.0
+Version: 3.1.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE
