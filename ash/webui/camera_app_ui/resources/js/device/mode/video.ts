@@ -59,6 +59,7 @@ const encoderPreference = new Map([
   ['corsola', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['dedede', {profile: h264.Profile.HIGH, multiplier: 8}],
   ['geralt', {profile: h264.Profile.HIGH, multiplier: 8}],
+  ['nissa', {profile: h264.Profile.HIGH, multiplier: 8}],
   ['strongbad', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['trogdor', {profile: h264.Profile.HIGH, multiplier: 6}],
   ['volteer', {profile: h264.Profile.HIGH, multiplier: 8}],
