@@ -54,6 +54,10 @@ class PasswordChangeHats : public password_manager::PasswordStoreConsumer {
   // Whether there is any generated password saved.
   bool adopted_generated_passwords_ = false;
 
+  // Counters tracking whether data was fetched from all user's stores.
+  int fetch_initiated_count_ = 0;
+  int fetch_successful_count_ = 0;
+
   base::WeakPtrFactory<PasswordChangeHats> weak_ptr_factory_{this};
 };
 

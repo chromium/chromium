@@ -34,9 +34,11 @@ PasswordChangeHats::PasswordChangeHats(Profile* profile)
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   if (profile_store) {
+    fetch_initiated_count_++;
     profile_store->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
   }
   if (account_store) {
+    fetch_initiated_count_++;
     account_store->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
   }
 }
@@ -51,18 +53,20 @@ void PasswordChangeHats::MaybeLaunchSurvey(
     return;
   }
 
-  // TODO(crbug.com/429595214): Although not likely, the data might not be
-  // fetched from password store yet. There's no point to add some waiting logic
-  // as then survey might be launched when the user is doing something unrelated
-  // to password change. Figure out with the UXR whether e.g. "-1" should be
-  // passed in that case instead, so the data is not analysed as empty password
-  // store.
+  // Product-specific data should use bucketing.
   int64_t bucketed_passwords_count =
       ukm::GetExponentialBucketMinForCounts1000(passwords_count_);
   int64_t bucketed_leaked_passwords_count =
       ukm::GetExponentialBucketMinForCounts1000(leaked_passwords_count_);
   int64_t bucketed_runtime = ukm::GetSemanticBucketMinForDurationTiming(
       password_change_duration.InMilliseconds());
+
+  // Hats service requires defined product-specific data to be non-empty.
+  // Pass -1 if the data is not fetched yet, so it can be filtered out.
+  if (fetch_initiated_count_ != fetch_successful_count_) {
+    bucketed_passwords_count = -1;
+    bucketed_leaked_passwords_count = -1;
+  }
 
   hats_service_->LaunchDelayedSurveyForWebContents(
       trigger, web_contents,
@@ -87,6 +91,7 @@ void PasswordChangeHats::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
 
+  fetch_successful_count_++;
   std::vector<password_manager::PasswordForm> forms =
       std::get<password_manager::LoginsResult>(results_or_error);
   passwords_count_ += static_cast<int64_t>(forms.size());

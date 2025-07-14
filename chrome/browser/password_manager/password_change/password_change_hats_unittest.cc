@@ -12,6 +12,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -143,6 +145,30 @@ TEST_F(PasswordChangeHatsTest, ReportsPasswordChangeRuntime) {
           /*product_specific_string_data=*/
           ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "0"),
                       Pair(kPasswordChangeSavedPasswordsCount, "0"),
+                      Pair(kPasswordChangeRuntime, "50")),
+          _, _, _, _, _))
+      .Times(1);
+
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(profile());
+  RunUntilIdle();
+  password_change_hats->MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeError,
+                                          base::Milliseconds(50),
+                                          web_contents());
+}
+
+TEST_F(PasswordChangeHatsTest, ReportsMinusOneForCountsWithoutFetchedData) {
+  profile_store().ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendErrorType::kUncategorized);
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPasswordChangeError, web_contents(),
+          /*timeout_ms=*/0, /*product_specific_bits_data=*/
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false)),
+          /*product_specific_string_data=*/
+          ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "-1"),
+                      Pair(kPasswordChangeSavedPasswordsCount, "-1"),
                       Pair(kPasswordChangeRuntime, "50")),
           _, _, _, _, _))
       .Times(1);
