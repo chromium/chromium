@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
@@ -33,6 +32,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "crypto/hash.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/url_util.h"
 #include "net/filter/filter_source_stream_test_util.h"
@@ -538,12 +538,16 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
   return http_response;
 }
 
+std::string Sha256String(std::string_view input) {
+  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(input)));
+}
+
 // /auth-digest
 // Performs "Digest" HTTP authentication.
 std::unique_ptr<HttpResponse> HandleAuthDigest(const HttpRequest& request) {
-  std::string nonce = base::MD5String(
+  std::string nonce = Sha256String(
       base::StringPrintf("privatekey%s", request.relative_url.c_str()));
-  std::string opaque = base::MD5String("opaque");
+  std::string opaque = Sha256String("opaque");
   std::string password = kDefaultPassword;
   std::string realm = kDefaultRealm;
 
@@ -582,22 +586,22 @@ std::unique_ptr<HttpResponse> HandleAuthDigest(const HttpRequest& request) {
     } else {
       username = auth_pairs["username"];
 
-      std::string hash1 = base::MD5String(
+      std::string hash1 = Sha256String(
           base::StringPrintf("%s:%s:%s", auth_pairs["username"].c_str(),
                              realm.c_str(), password.c_str()));
-      std::string hash2 = base::MD5String(base::StringPrintf(
+      std::string hash2 = Sha256String(base::StringPrintf(
           "%s:%s", request.method_string.c_str(), auth_pairs["uri"].c_str()));
 
       std::string response;
       if (auth_pairs.find("qop") != auth_pairs.end() &&
           auth_pairs.find("nc") != auth_pairs.end() &&
           auth_pairs.find("cnonce") != auth_pairs.end()) {
-        response = base::MD5String(base::StringPrintf(
+        response = Sha256String(base::StringPrintf(
             "%s:%s:%s:%s:%s:%s", hash1.c_str(), nonce.c_str(),
             auth_pairs["nc"].c_str(), auth_pairs["cnonce"].c_str(),
             auth_pairs["qop"].c_str(), hash2.c_str()));
       } else {
-        response = base::MD5String(base::StringPrintf(
+        response = Sha256String(base::StringPrintf(
             "%s:%s:%s", hash1.c_str(), nonce.c_str(), hash2.c_str()));
       }
 
@@ -614,7 +618,7 @@ std::unique_ptr<HttpResponse> HandleAuthDigest(const HttpRequest& request) {
     http_response->set_content_type("text/html");
     std::string auth_header = base::StringPrintf(
         "Digest realm=\"%s\", "
-        "domain=\"/\", qop=\"auth\", algorithm=MD5, nonce=\"%s\", "
+        "domain=\"/\", qop=\"auth\", algorithm=SHA-256, nonce=\"%s\", "
         "opaque=\"%s\"",
         realm.c_str(), nonce.c_str(), opaque.c_str());
     http_response->AddCustomHeader("WWW-Authenticate", auth_header);
