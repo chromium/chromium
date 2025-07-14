@@ -1158,8 +1158,16 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
 }
 
 // Regression test for https://crbug.com/1216406.
+// TODO(crbug.com/413259587): Re-enable this test once the flakiness is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BrowserContextDestructionVsCookieRemoval \
+  DISABLED_BrowserContextDestructionVsCookieRemoval
+#else
+#define MAYBE_BrowserContextDestructionVsCookieRemoval \
+  BrowserContextDestructionVsCookieRemoval
+#endif
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
-                       BrowserContextDestructionVsCookieRemoval) {
+                       MAYBE_BrowserContextDestructionVsCookieRemoval) {
   // Open an incognito browser.
   UseIncognitoBrowser();
 
