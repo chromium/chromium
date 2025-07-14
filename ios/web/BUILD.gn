@@ -241,6 +241,10 @@ source_set("ios_web_general_unittests") {
     "web_client_unittest.mm",
     "web_thread_unittest.cc",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("ios_web_navigation_unittests") {
@@ -340,6 +344,10 @@ source_set("ios_web_net_unittests") {
     "net/cookies/wk_cookie_util_unittest.mm",
     "net/cookies/wk_http_system_cookie_store_unittest.mm",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
