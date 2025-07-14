@@ -1646,7 +1646,9 @@ void MoveTabsToReadLater(Browser* browser,
         feature_engagement::kIPHReadingListDiscoveryFeature);
     base::UmaHistogramEnumeration(
         "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
-        browser->bookmark_bar_state());
+        browser->browser_window_features()
+            ->bookmark_bar_controller()
+            ->bookmark_bar_state());
     added_to_read_later += 1;
   }
 

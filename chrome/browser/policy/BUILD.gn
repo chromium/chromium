@@ -316,6 +316,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
       "//components/bookmarks/common",

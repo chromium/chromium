@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -104,7 +105,10 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   BookmarkBrowsertest& operator=(const BookmarkBrowsertest&) = delete;
 
   bool IsVisible() {
-    return browser()->bookmark_bar_state() == BookmarkBar::SHOW;
+    return browser()
+               ->browser_window_features()
+               ->bookmark_bar_controller()
+               ->bookmark_bar_state() == BookmarkBar::SHOW;
   }
 
   static void CheckAnimation(Browser* browser, base::RunLoop* loop) {

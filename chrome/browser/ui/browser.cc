@@ -1106,19 +1106,6 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
   return GetStatusBubbles();
 }
 
-// TODO(crbug.com/418896419): Consider moving bookmark bar flag operations
-// directly to BrowserView to eliminate these delegation methods, since
-// both SetForceShowBookmarkBarFlag() and ClearForceShowBookmarkBarFlag()
-// are only called from BrowserView.
-void Browser::SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
-  features_->bookmark_bar_controller()->SetForceShowBookmarkBarFlag(
-      static_cast<BookmarkBarController::ForceShowFlag>(flag));
-}
-
-void Browser::ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
-  features_->bookmark_bar_controller()->ClearForceShowBookmarkBarFlag(
-      static_cast<BookmarkBarController::ForceShowFlag>(flag));
-}
 
 views::WebView* Browser::GetWebView() {
   return window_->GetContentsWebView();
@@ -1128,9 +1115,6 @@ Profile* Browser::GetProfile() {
   return profile();
 }
 
-BookmarkBar::State Browser::bookmark_bar_state() const {
-  return features_->bookmark_bar_controller()->bookmark_bar_state();
-}
 
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,

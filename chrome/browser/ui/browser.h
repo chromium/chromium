@@ -192,9 +192,6 @@ class Browser : public TabStripModelObserver,
     kDeskTemplate,
   };
 
-  // Represents the reasons for force showing bookmark bar.
-  // TODO(crbug.com/418896419): Remove this.
-  using ForceShowBookmarkBarFlag = BookmarkBarController::ForceShowFlag;
 
   // Represents whether a value was known to be explicitly specified.
   enum class ValueSpecified { kUnknown, kSpecified, kUnspecified };
@@ -490,9 +487,6 @@ class Browser : public TabStripModelObserver,
 
   base::WeakPtr<Browser> AsWeakPtr();
   base::WeakPtr<const Browser> AsWeakPtr() const;
-
-  // Returns the state of the bookmark bar.
-  BookmarkBar::State bookmark_bar_state() const;
 
   // State Storage and Retrieval for UI ///////////////////////////////////////
 
@@ -796,9 +790,6 @@ class Browser : public TabStripModelObserver,
     return &unload_controller_;
   }
 
-  // Sets or clears the flags to force showing bookmark bar.
-  void SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag);
-  void ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag);
 
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;

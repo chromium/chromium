@@ -1682,7 +1682,7 @@ void BrowserView::UpdateTitleBar() {
 void BrowserView::BookmarkBarStateChanged(
     BookmarkBar::AnimateChangeType change_type) {
   if (bookmark_bar_view_.get()) {
-    BookmarkBar::State new_state = browser_->bookmark_bar_state();
+    BookmarkBar::State new_state = bookmark_bar_state();
     bookmark_bar_view_->SetBookmarkBarState(new_state, change_type);
   }
 
@@ -1696,13 +1696,13 @@ void BrowserView::BookmarkBarStateChanged(
 }
 
 void BrowserView::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
-  browser_->SetForceShowBookmarkBarFlag(
-      Browser::ForceShowBookmarkBarFlag::kTabGroupSaved);
+  SetForceShowBookmarkBarFlag(
+      BookmarkBarController::ForceShowFlag::kTabGroupSaved);
   temporary_bookmark_bar_timer_.Start(
       FROM_HERE, duration,
-      base::BindOnce(&Browser::ClearForceShowBookmarkBarFlag,
-                     browser_->AsWeakPtr(),
-                     Browser::ForceShowBookmarkBarFlag::kTabGroupSaved));
+      base::BindOnce(&BrowserView::ClearForceShowBookmarkBarFlag,
+                     GetAsWeakPtr(),
+                     BookmarkBarController::ForceShowFlag::kTabGroupSaved));
 }
 
 void BrowserView::UpdateDevTools() {
@@ -1895,7 +1895,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // callback to us and trigger layout.
   if (bookmark_bar_view_.get()) {
     bookmark_bar_view_->SetBookmarkBarState(
-        browser_->bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
+        bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
   }
 
   infobar_container_->ChangeInfoBarManager(
@@ -4624,6 +4624,26 @@ void BrowserView::CloseTabSearchBubble() {
   }
 }
 
+void BrowserView::SetForceShowBookmarkBarFlag(
+    BookmarkBarController::ForceShowFlag flag) {
+  browser_->browser_window_features()
+      ->bookmark_bar_controller()
+      ->SetForceShowBookmarkBarFlag(flag);
+}
+
+void BrowserView::ClearForceShowBookmarkBarFlag(
+    BookmarkBarController::ForceShowFlag flag) {
+  browser_->browser_window_features()
+      ->bookmark_bar_controller()
+      ->ClearForceShowBookmarkBarFlag(flag);
+}
+
+BookmarkBar::State BrowserView::bookmark_bar_state() const {
+  return browser_->browser_window_features()
+      ->bookmark_bar_controller()
+      ->bookmark_bar_state();
+}
+
 void BrowserView::ShowSplitView(bool focus_active_view) {
   CHECK(multi_contents_view_);
   const int active_index = browser_->tab_strip_model()->active_index();
@@ -5465,7 +5485,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
         std::make_unique<BookmarkBarView>(browser_.get(), this);
     bookmark_bar_view_->set_owned_by_client(OwnedByClientPassKey());
     bookmark_bar_view_->SetBookmarkBarState(
-        browser_->bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
+        bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
     GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_.get());
   }
   // Don't change the visibility of the BookmarkBarView. BrowserViewLayout
