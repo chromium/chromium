@@ -143,6 +143,7 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/infobars",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/web_applications",
       "//components/prefs",
       "//components/security_state/content",

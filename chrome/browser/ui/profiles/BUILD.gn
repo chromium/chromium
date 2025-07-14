@@ -1,0 +1,59 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+source_set("profiles") {
+  sources = [ "profile_error_dialog.h" ]
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "profile_colors_util.h",
+      "profile_view_utils.h",
+    ]
+
+    public_deps += [
+      "//base",
+      "//chrome/browser/profiles:profile_util",
+      "//skia",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "profile_customization_bubble_sync_controller.h",
+      "profile_customization_synced_theme_waiter.h",
+      "profile_customization_util.h",
+      "profile_picker.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/themes",
+      "//components/signin/public/identity_manager",
+      "//components/sync/service",
+      "//url",
+    ]
+
+    if (enable_dice_support) {
+      sources += [
+        "batch_upload_ui_delegate.h",
+        # TODO(crbug.com/430804948): signin_intercept_first_run_experience_dialog.h
+        # isn't listed here at the moment, and added to "impl" target instead, because it
+        # causes the following circular dependency:
+        # ERROR Dependency cycle:
+        #  //chrome/browser/extensions:extensions ->
+        #  //chrome/browser/ui/views/side_panel:side_panel ->
+        #  //chrome/browser/ui/views/toolbar:toolbar ->
+        #  //chrome/browser/ui/profiles:profiles ->
+        #  //chrome/browser/ui/signin:signin ->
+        #  //chrome/browser/ui/webui/signin:signin ->
+        #  //chrome/browser/ui/webui:webui ->
+        #  //chrome/browser/extensions:extensions
+      ]
+
+      public_deps += [ "//chrome/browser/profiles/batch_upload" ]
+    }
+  }
+}

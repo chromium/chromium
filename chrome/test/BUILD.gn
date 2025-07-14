@@ -3915,6 +3915,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
@@ -6879,6 +6880,7 @@ test("unit_tests") {
     "//chrome/browser/ui/login:unit_tests",
     "//chrome/browser/ui/page_info:unit_tests",
     "//chrome/browser/ui/plus_addresses:unit_tests",
+    "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
@@ -10932,6 +10934,7 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_test_base.cc",
         "../browser/ui/views/profiles/profile_picker_test_base.h",
       ]
+      public_deps += [ "//chrome/browser/ui/profiles" ]
     }
 
     if (is_win || is_mac || is_linux) {
@@ -11219,6 +11222,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/plus_addresses:interactive_ui_tests",
       "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search:interactive_ui_tests",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/tab_contents",

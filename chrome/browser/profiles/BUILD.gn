@@ -167,6 +167,7 @@ source_set("profile_util_impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/profiles",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/account_id",

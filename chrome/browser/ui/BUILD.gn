@@ -79,7 +79,6 @@ static_library("ui") {
     "passwords/well_known_change_password_navigation_throttle.cc",
     "passwords/well_known_change_password_navigation_throttle.h",
     "profiles/profile_error_dialog.cc",
-    "profiles/profile_error_dialog.h",
     "recently_audible_helper.cc",
     "recently_audible_helper.h",
     "screen_capture_notification_ui.h",
@@ -374,6 +373,7 @@ static_library("ui") {
     "//chrome/browser/ui/page_info:impl",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
+    "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/serial",
@@ -1067,9 +1067,7 @@ static_library("ui") {
       "passwords/passwords_model_delegate.cc",
       "passwords/passwords_model_delegate.h",
       "profiles/profile_colors_util.cc",
-      "profiles/profile_colors_util.h",
       "profiles/profile_view_utils.cc",
-      "profiles/profile_view_utils.h",
       "sad_tab.cc",
       "sad_tab.h",
       "sad_tab_helper.cc",
@@ -2934,13 +2932,9 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "profiles/profile_customization_bubble_sync_controller.h",
       "profiles/profile_customization_synced_theme_waiter.cc",
-      "profiles/profile_customization_synced_theme_waiter.h",
       "profiles/profile_customization_util.cc",
-      "profiles/profile_customization_util.h",
       "profiles/profile_picker.cc",
-      "profiles/profile_picker.h",
       "startup/default_browser_prompt/default_browser_prompt.cc",
       "startup/default_browser_prompt/default_browser_prompt.h",
       "startup/first_run_service.cc",
@@ -3082,7 +3076,6 @@ static_library("ui") {
     if (enable_dice_support) {
       sources += [
         "profiles/batch_upload_ui_delegate.cc",
-        "profiles/batch_upload_ui_delegate.h",
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
         "views/profiles/batch_upload_dialog_view.cc",

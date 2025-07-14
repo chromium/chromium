@@ -140,6 +140,7 @@ source_set("impl") {
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",

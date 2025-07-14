@@ -62,6 +62,7 @@ source_set("impl") {
       "//build:branding_buildflags",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search_engine_choice",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/web_applications",
