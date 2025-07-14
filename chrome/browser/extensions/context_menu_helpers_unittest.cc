@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/common/url_pattern.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "url/gurl.h"

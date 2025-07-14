@@ -46,6 +46,7 @@
 #include "components/webapps/isolated_web_apps/update_channel.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace web_app {
 

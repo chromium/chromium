@@ -48,6 +48,7 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace {

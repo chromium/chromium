@@ -45,6 +45,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"

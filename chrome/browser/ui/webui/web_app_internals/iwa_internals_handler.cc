@@ -34,6 +34,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
