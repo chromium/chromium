@@ -305,7 +305,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       DevToolsInfoBarDelegate::Callback callback);
   void OnPermissionDialogResult(DevToolsInfoBarDelegate::Callback callback,
                                 permissions::PermissionAction result);
-  bool MaybeStartLogging();
+  void MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
   void HandleAidaRequestError(
       DispatchCallback callback,

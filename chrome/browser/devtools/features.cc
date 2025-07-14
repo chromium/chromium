@@ -138,15 +138,6 @@ BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Let DevTools front-end log extensive VisualElements-style UMA metrics for
-// impressions and interactions.
-BASE_FEATURE(kDevToolsVeLogging,
-             "DevToolsVeLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Run VE logging in a test mode
-const base::FeatureParam<bool> kDevToolsVeLoggingTesting{
-    &kDevToolsVeLogging, "testing", /*default_value=*/false};
-
 // Whether showing animation styles in the styles tab is enabled.
 BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
              "DevToolsAnimationStylesInStylesTab",

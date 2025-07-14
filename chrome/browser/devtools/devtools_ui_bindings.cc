@@ -780,8 +780,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
-  if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging) &&
-      !session_id_for_logging_.is_empty()) {
+  if (!session_id_for_logging_.is_empty()) {
     metrics::structured::StructuredMetricsClient::Record(
         metrics::structured::events::v2::dev_tools::SessionEnd()
             .SetTrigger(delegate_->GetClosedByForLogging())
@@ -1806,9 +1805,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsWellKnown", std::move(devtools_well_known_dict));
 
   base::Value::Dict ve_logging_dict;
-  ve_logging_dict.Set(
-      "enabled", base::FeatureList::IsEnabled(::features::kDevToolsVeLogging));
-  ve_logging_dict.Set("testing", ::features::kDevToolsVeLoggingTesting.Get());
+  ve_logging_dict.Set("enabled", true);
+  ve_logging_dict.Set("testing", false);
   response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
 
   response_dict.Set("isOffTheRecord", profile_->IsOffTheRecord());
@@ -2022,10 +2020,7 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
-bool DevToolsUIBindings::MaybeStartLogging() {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
-    return false;
-  }
+void DevToolsUIBindings::MaybeStartLogging() {
   if (session_id_for_logging_.is_empty()) {
     session_id_for_logging_ = base::UnguessableToken::Create();
     session_start_time_ = base::TimeTicks::Now();
@@ -2062,7 +2057,6 @@ bool DevToolsUIBindings::MaybeStartLogging() {
             .SetSessionId(session_id_for_logging_.GetLowForSerialization())
             .SetIsSignedIn(is_signed_in));
   }
-  return true;
 }
 
 base::TimeDelta DevToolsUIBindings::GetTimeSinceSessionStart() {
