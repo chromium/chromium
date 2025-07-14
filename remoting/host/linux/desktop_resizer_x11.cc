@@ -20,9 +20,11 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_geometry.h"
+#include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/x11_display_util.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/base/glib/gsettings.h"
+#include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
@@ -277,6 +279,29 @@ void DesktopResizerX11::OnGnomeDisplayConfigReceived(
     // interval [0.5, 3.0].
     LOG(WARNING) << "Failed to set text-scaling-factor.";
   }
+}
+
+bool DesktopResizerX11::supportsHighDpiResize() {
+  // High-DPI resize is supported only for Gnome.
+  ScopedGObject<GDBusConnection> connection =
+      TakeGObject(g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr));
+  if (!connection) {
+    return false;
+  }
+  ScopedGObject<GDBusProxy> dbus = TakeGObject(g_dbus_proxy_new_sync(
+      connection, G_DBUS_PROXY_FLAGS_NONE, nullptr, "org.freedesktop.DBus",
+      "/org/freedesktop/DBus", "org.freedesktop.DBus", nullptr, nullptr));
+  if (!dbus) {
+    return false;
+  }
+  auto has_owner = GVariantRef<>::Take(g_dbus_proxy_call_sync(
+      dbus, "NameHasOwner", g_variant_new("(s)", "org.gnome.Shell"),
+      G_DBUS_CALL_FLAGS_NONE, -1, nullptr, nullptr));
+  auto has_owner_bool = GVariantRef<"(b)">::TryFrom(has_owner);
+  if (!has_owner_bool.has_value()) {
+    return false;
+  }
+  return has_owner_bool->get<0>().Into<bool>();
 }
 
 }  // namespace remoting

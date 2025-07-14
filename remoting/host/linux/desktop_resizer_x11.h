@@ -32,6 +32,8 @@ class DesktopResizerX11 : public DesktopResizer {
                          webrtc::ScreenId screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
+  static bool supportsHighDpiResize();
+
  private:
   using OutputInfoList = std::vector<
       std::pair<x11::RandR::Output, x11::RandR::GetOutputInfoReply>>;
