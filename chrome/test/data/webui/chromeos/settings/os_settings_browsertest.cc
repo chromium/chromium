@@ -232,7 +232,6 @@ class OSSettingsDeviceTestSplitAndBacklightEnabled
         /*enabled=*/
         {
             ash::features::kInputDeviceSettingsSplit,
-            ash::features::kEnableKeyboardBacklightControlInSettings,
         },
         /*disabled=*/{});
   }
@@ -250,7 +249,6 @@ class OSSettingsDeviceTestAltAndSplitAndBacklightEnabled
         {
             ash::features::kAltClickAndSixPackCustomization,
             ash::features::kInputDeviceSettingsSplit,
-            ash::features::kEnableKeyboardBacklightControlInSettings,
         },
         /*disabled=*/{});
   }

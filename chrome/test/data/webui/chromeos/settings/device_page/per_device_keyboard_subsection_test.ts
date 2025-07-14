@@ -56,16 +56,6 @@ suite('<settings-per-device-keyboard-subsection>', () => {
   }
 
   /**
-   * Override enableKeyboardBacklightControlInSettings feature flag.
-   * @param {!boolean} isEnabled
-   */
-  function setKeyboardBacklightControlEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableKeyboardBacklightControlInSettings: isEnabled,
-    });
-  }
-
-  /**
    * Changes the external state of the keyboard.
    */
   function changeIsExternalState(isExternal: boolean): Promise<void> {
@@ -379,33 +369,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
       });
 
   test(
-      'Verify keyboard backlight control elements visibility with flag',
-      async () => {
-        setKeyboardBacklightControlEnabled(true);
-        await changeIsExternalState(false);
-
-        // Initially, elements should be visible.
-        assertTrue(isVisible(getElement('#rgbKeyboardControlLink')));
-        assertTrue(isVisible(getElement('#keyboardAutoBrightnessToggle')));
-        assertTrue(isVisible(getElement('#keyboardBrightnessSlider')));
-
-        // Disable keyboard backlight control flag and reinitialize.
-        setKeyboardBacklightControlEnabled(false);
-        await initializePerDeviceKeyboardSubsection(
-            fakeKeyboards, /*rgbKeyboardSupported=*/ true,
-            /*hasKeyboardBacklight=*/ true,
-            /*hasAmbientLightSensor=*/ true);
-        await changeIsExternalState(false);
-
-        // Elements should be hidden after flag is disabled.
-        assertFalse(isVisible(getElement('#rgbKeyboardControlLink')));
-        assertFalse(isVisible(getElement('#keyboardAutoBrightnessToggle')));
-        assertFalse(isVisible(getElement('#keyboardBrightnessSlider')));
-      });
-
-  test(
       'Verify elements visibility with keyboard backlight status', async () => {
-        setKeyboardBacklightControlEnabled(true);
         await initializePerDeviceKeyboardSubsection(
             fakeKeyboards, /*rgbKeyboardSupported=*/ true,
             /*hasKeyboardBacklight=*/ true,
@@ -425,7 +389,6 @@ suite('<settings-per-device-keyboard-subsection>', () => {
       });
 
   test('Verify keyboard auto brightness toggle visibility', async () => {
-    setKeyboardBacklightControlEnabled(true);
     await initializePerDeviceKeyboardSubsection(
         fakeKeyboards, /*rgbKeyboardSupported=*/ true,
         /*hasKeyboardBacklight=*/ true,
@@ -443,7 +406,6 @@ suite('<settings-per-device-keyboard-subsection>', () => {
   });
 
   test('Verify rgb keyboard control link visiblity', async () => {
-    setKeyboardBacklightControlEnabled(true);
     await initializePerDeviceKeyboardSubsection(
         fakeKeyboards, /*rgbKeyboardSupported=*/ true,
         /*hasKeyboardBacklight=*/ true, /*hasAmbientLightSensor=*/ true);

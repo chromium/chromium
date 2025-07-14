@@ -1122,10 +1122,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsAltClickAndSixPackCustomizationEnabled());
 
   html_source->AddBoolean(
-      "enableKeyboardBacklightControlInSettings",
-      ash::features::IsKeyboardBacklightControlInSettingsEnabled());
-
-  html_source->AddBoolean(
       "enableF11AndF12KeyShortcuts",
       base::FeatureList::IsEnabled(::features::kSupportF11AndF12KeyShortcuts));
 

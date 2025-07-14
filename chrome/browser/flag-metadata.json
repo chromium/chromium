@@ -3645,15 +3645,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-keyboard-backlight-control-in-settings",
-    "owners": [
-      "dpad@google.com",
-      "longbowei@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-keyboard-rewriter-fix",
     "owners": [ "hidehiko@chromium.org" ],
     "expiry_milestone": 140

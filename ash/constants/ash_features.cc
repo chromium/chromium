@@ -763,11 +763,6 @@ BASE_FEATURE(kEnableHostnameSetting,
              "EnableHostnameSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables keyboard backlight control in settings.
-BASE_FEATURE(kEnableKeyboardBacklightControlInSettings,
-             "EnableKeyboardBacklightControlInSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable keyboard rewriter fix.
 BASE_FEATURE(kEnableKeyboardRewriterFix,
              "EnableKeyboardRewriterFix",
@@ -3959,11 +3954,6 @@ bool IsIsolatedWebAppKioskEnabled() {
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
   return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
-}
-
-bool IsKeyboardBacklightControlInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kEnableKeyboardBacklightControlInSettings);
 }
 
 bool IsKeyboardRewriterFixEnabled() {

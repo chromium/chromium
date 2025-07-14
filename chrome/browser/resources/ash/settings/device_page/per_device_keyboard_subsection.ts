@@ -108,15 +108,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         },
       },
 
-      isKeyboardBacklightControlInSettingsEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableKeyboardBacklightControlInSettings');
-        },
-        readOnly: true,
-      },
-
       keyboard: {
         type: Object,
       },
@@ -218,53 +209,50 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private isRgbKeyboardSupported: boolean;
   private hasKeyboardBacklight: boolean;
   private hasAmbientLightSensor: boolean;
-  private isKeyboardBacklightControlInSettingsEnabled: boolean;
   private isLidOpen: boolean;
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
-    if (this.isKeyboardBacklightControlInSettingsEnabled) {
-      // Add keyboardBrightnessChange observer.
-      this.keyboardBrightnessObserverReceiver =
-          new KeyboardBrightnessObserverReceiver(this);
-      this.inputDeviceSettingsProvider.observeKeyboardBrightness(
-          this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
+    // Add keyboardBrightnessChange observer.
+    this.keyboardBrightnessObserverReceiver =
+        new KeyboardBrightnessObserverReceiver(this);
+    this.inputDeviceSettingsProvider.observeKeyboardBrightness(
+        this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
 
-      // Add keyboardAmbientLightSensorChange observer.
-      this.keyboardAmbientLightSensorObserverReceiver =
-          new KeyboardAmbientLightSensorObserverReceiver(this);
-      this.inputDeviceSettingsProvider.observeKeyboardAmbientLightSensor(
-          this.keyboardAmbientLightSensorObserverReceiver.$
-              .bindNewPipeAndPassRemote());
+    // Add keyboardAmbientLightSensorChange observer.
+    this.keyboardAmbientLightSensorObserverReceiver =
+        new KeyboardAmbientLightSensorObserverReceiver(this);
+    this.inputDeviceSettingsProvider.observeKeyboardAmbientLightSensor(
+        this.keyboardAmbientLightSensorObserverReceiver.$
+            .bindNewPipeAndPassRemote());
 
-      // Add LidState Observer.
-      this.lidStateObserverReceiver = new LidStateObserverReceiver(this);
-      this.inputDeviceSettingsProvider
-          .observeLidState(
-              this.lidStateObserverReceiver.$.bindNewPipeAndPassRemote())
-          .then(({isLidOpen}: {isLidOpen: boolean}) => {
-            this.onLidStateChanged(isLidOpen);
-          });
+    // Add LidState Observer.
+    this.lidStateObserverReceiver = new LidStateObserverReceiver(this);
+    this.inputDeviceSettingsProvider
+        .observeLidState(
+            this.lidStateObserverReceiver.$.bindNewPipeAndPassRemote())
+        .then(({isLidOpen}: {isLidOpen: boolean}) => {
+          this.onLidStateChanged(isLidOpen);
+        });
 
-      this.isRgbKeyboardSupported =
+    this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
-          ?.isRgbKeyboardSupported;
-      this.hasKeyboardBacklight =
-          (await this.inputDeviceSettingsProvider.hasKeyboardBacklight())
-              ?.hasKeyboardBacklight;
-      this.hasAmbientLightSensor =
-          (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
-              ?.hasAmbientLightSensor;
+            ?.isRgbKeyboardSupported;
+    this.hasKeyboardBacklight =
+        (await this.inputDeviceSettingsProvider.hasKeyboardBacklight())
+            ?.hasKeyboardBacklight;
+    this.hasAmbientLightSensor =
+        (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
+            ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight && this.isChromeOsKeyboard()) {
-        const crSlider =
-            this.shadowRoot!.querySelector('#keyboardBrightnessSlider')
-                ?.shadowRoot!.querySelector('cr-slider');
-        if (crSlider) {
-          // Set key press increment value to be 10.
-          crSlider.setAttribute('key-press-slider-increment', '10');
-        }
+    if (this.hasKeyboardBacklight && this.isChromeOsKeyboard()) {
+      const crSlider =
+          this.shadowRoot!.querySelector('#keyboardBrightnessSlider')
+              ?.shadowRoot!.querySelector('cr-slider');
+      if (crSlider) {
+        // Set key press increment value to be 10.
+        crSlider.setAttribute('key-press-slider-increment', '10');
       }
     }
   }
@@ -419,9 +407,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private showKeyboardSettings(): boolean {
-    if (!this.isKeyboardBacklightControlInSettingsEnabled) {
-      return true;
-    }
     return this.keyboard.isExternal ||
         (!this.keyboard.isExternal && this.isLidOpen);
   }

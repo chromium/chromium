@@ -118,7 +118,6 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
         {features::kInputDeviceSettingsSplit,
          features::kAltClickAndSixPackCustomization,
          features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings,
          ::features::kSupportF11AndF12KeyShortcuts},
         {});
   }
@@ -1042,7 +1041,6 @@ class DeviceSettingsBrightnessInteractiveUiTest
     feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
          features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings,
          features::kEnableBrightnessControlInSettings},
         {});
   }

@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/known_user.h"
@@ -250,7 +249,6 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
   base::RunLoop run_loop_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakeKeyboardBrightnessControlDelegate> delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(KeyboardBrightnessControllerTest, RecordHasKeyboardBrightness) {
@@ -529,10 +527,7 @@ TEST_F(KeyboardBrightnessControllerTest, SavePrefToKnownUserMultipleUser) {
 }
 
 TEST_F(KeyboardBrightnessControllerTest,
-       RestoreKeyboardBrightnessSettings_FlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
+       RestoreKeyboardBrightnessSettings) {
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -606,83 +601,6 @@ TEST_F(KeyboardBrightnessControllerTest,
   LoginScreenFocusAccount(first_account);
   ExpectKeyboardAmbientLightSensorEnabled(false);
   ExpectKeyboardBrightnessPercent(first_brightness_change_percent);
-}
-
-TEST_F(KeyboardBrightnessControllerTest,
-       RestoreKeyboardBrightnessSettings_FlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
-  // Set initial ALS status.
-  power_manager::SetAmbientLightSensorEnabledRequest request;
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
-  power_manager_client()->set_keyboard_brightness_percent(
-      kInitialKeyboardBrightness);
-
-  // Clear user sessions and reset to the primary login screen.
-  ClearLogin();
-
-  // On the login screen, focus the first user.
-  AccountId first_account = AccountId::FromUserEmail(kUserEmail);
-  LoginScreenFocusAccount(first_account);
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
-
-  // Then, focus the second user.
-  AccountId second_account = AccountId::FromUserEmail(kUserEmailSecondary);
-  LoginScreenFocusAccount(second_account);
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
-
-  // Switch back to the first user, then disable ALS by changing the brightness.
-  LoginScreenFocusAccount(first_account);
-  const double first_brightness_change_percent = 20.0;
-  keyboard_brightness_control_delegate()->HandleSetKeyboardBrightness(
-      first_brightness_change_percent, /*gradual=*/false,
-      KeyboardBrightnessChangeSource::kSettingsApp);
-
-  // ALS should be disabled for the first user.
-  run_loop_.RunUntilIdle();
-  ExpectKeyboardAmbientLightSensorEnabled(false);
-  ExpectKeyboardBrightnessPercent(first_brightness_change_percent);
-
-  // ALS should be disabled for second user because the ALS value is not being
-  // restored from prefs.
-  LoginScreenFocusAccount(second_account);
-  ExpectKeyboardAmbientLightSensorEnabled(false);
-  ExpectKeyboardBrightnessPercent(first_brightness_change_percent);
-
-  // ALS should be disabled for first user after switching back from second
-  // user.
-  LoginScreenFocusAccount(first_account);
-  ExpectKeyboardAmbientLightSensorEnabled(false);
-
-  // Simulate a reboot, which resets the value of the ambient light sensor.
-  // the keyboard brightness.
-  ClearLogin();
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
-  power_manager_client()->set_keyboard_brightness_percent(
-      kInitialKeyboardBrightness);
-
-  // After reboot, ALS should be enabled for the first user by default, the
-  // brightness level should be equal to the initial brightness for the first
-  // user.
-  LoginScreenFocusAccount(first_account);
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
-
-  // After reboot, ALS should be enabled for the second user by default, and
-  // brightness level is default level.
-  LoginScreenFocusAccount(second_account);
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
-
-  // Switch back to the first user, settings should remain the same.
-  LoginScreenFocusAccount(first_account);
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-  ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
 }
 
 TEST_F(KeyboardBrightnessControllerTest, KeyboardALSDisabledReasonPref) {
@@ -790,10 +708,7 @@ TEST_F(KeyboardBrightnessControllerTest, KeyboardAmbientLightEnabledUserPref) {
 }
 
 TEST_F(KeyboardBrightnessControllerTest,
-       RestoreKeyboardALSSettingForNewUser_FlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
+       RestoreKeyboardALSSettingForNewUser) {
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -861,82 +776,6 @@ TEST_F(KeyboardBrightnessControllerTest,
   ExpectKeyboardAmbientLightSensorEnabled(false);
 }
 
-TEST_F(KeyboardBrightnessControllerTest,
-       RestoreKeyboardALSSettingForNewUser_FlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
-  // Set initial ALS and keyboard brightness.
-  power_manager::SetAmbientLightSensorEnabledRequest request;
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
-  power_manager_client()->set_keyboard_brightness_percent(
-      kInitialKeyboardBrightness);
-  run_loop_.RunUntilIdle();
-
-  // Clear user sessions and reset to the primary login screen.
-  ClearLogin();
-
-  // On the login screen, select and login with an existing user.
-  AccountId account_id = AccountId::FromUserEmail({kUserEmail});
-  login_data_dispatcher()->NotifyFocusPod(account_id);
-  LoginScreenFocusAccount(account_id);
-  SimulateUserLogin({kUserEmail});
-
-  // The ambient light sensor should be enabled by default.
-  EXPECT_TRUE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kKeyboardAmbientLightSensorLastEnabled));
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-
-  // Set Keyboard ALS status to false.
-  SetKeyboardAmbientLightSensorEnabled(
-      false,
-      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
-
-  // The synced profile pref should have the correct value (false).
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kKeyboardAmbientLightSensorLastEnabled));
-  ExpectKeyboardAmbientLightSensorEnabled(false);
-
-  // Simulate a reboot, which resets the value of the ambient light sensor and
-  // the keyboard brightness.
-  ClearLogin();
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
-  power_manager_client()->set_keyboard_brightness_percent(
-      kInitialKeyboardBrightness);
-
-  // Simulate a login with a second user.
-  SimulateNewUserFirstLogin(kUserEmailSecondary);
-
-  // Verify default keyboard brightness settings.
-  EXPECT_TRUE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kKeyboardAmbientLightSensorLastEnabled));
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-
-  // Manually set the user pref, which will be synced to the first user later.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kKeyboardAmbientLightSensorLastEnabled, false);
-
-  // Now, login the first user again, as if it's that user's first time
-  // logging in on this device.
-  SimulateNewUserFirstLogin(kUserEmail);
-
-  // The value of the synced profile pref for the keyboard ambient light sensor
-  // should be false, because on the "other device" that value was set to false.
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kKeyboardAmbientLightSensorLastEnabled));
-
-  // However, because the flag is disabled, the keyboard  ambient light sensor
-  // preference will not be restored, and thus the keyboard ambient light sensor
-  // should be disabled.
-  ExpectKeyboardAmbientLightSensorEnabled(true);
-}
-
 TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightness_Cause) {
   // Keyboard brightness changes from Quick Settings should have cause
   // "USER_REQUEST".
@@ -958,9 +797,6 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightness_Cause) {
 
 TEST_F(KeyboardBrightnessControllerTest,
        ReenableKeyboardAmbientLightSensor_Reboot_DisabledFromSettingsApp) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1023,9 +859,6 @@ TEST_F(KeyboardBrightnessControllerTest,
 
 TEST_F(KeyboardBrightnessControllerTest,
        ReenableKeyboardAmbientLightSensor_Reboot_DisabledFromBrightnessKey) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1085,9 +918,6 @@ TEST_F(KeyboardBrightnessControllerTest,
 
 TEST_F(KeyboardBrightnessControllerTest,
        BrightnessSettingsUnchanged_DeviceLocked) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1126,9 +956,6 @@ TEST_F(KeyboardBrightnessControllerTest,
 TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_NoSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has no sensor. ALS should not be re-enabled after login.
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1180,9 +1007,6 @@ TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_NoSensor) {
 TEST_F(KeyboardBrightnessControllerTest, RestoreBrightnessSettings_HasSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // when the device has a sensor. ALS should be re-enabled after login.
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Set initial ALS and keyboard brightness.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1237,8 +1061,6 @@ TEST_F(KeyboardBrightnessControllerTest,
        RecordStartupKeyboardAmbientLightSensorStatus) {
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Keyboard.Startup.AmbientLightSensorEnabled", 0);
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
   power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
@@ -1482,9 +1304,6 @@ TEST_F(KeyboardBrightnessControllerTest,
 
 TEST_F(KeyboardBrightnessControllerTest,
        HistogramTest_SetBrightnessAfterSystemRestoration) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableKeyboardBacklightControlInSettings);
-
   // Start on the login screen
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
