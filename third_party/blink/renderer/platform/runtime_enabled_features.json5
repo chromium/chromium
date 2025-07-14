@@ -1850,6 +1850,14 @@
       status: "stable",
       copied_from_base_feature_if: "overridden",
     },
+    // https://chromestatus.com/feature/5111042975465472
+    // document.patch, <template patchfor> etc.
+    {
+      name: "DocumentPatching",
+      status: {
+        "default": "experimental",
+      },
+    },
     {
       name: "DocumentPictureInPictureAPI",
       status: {

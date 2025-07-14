@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_part.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
@@ -207,7 +208,7 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
   // instead be inside the template element's template contents, after its last
   // child (if any).
   if (auto* template_element = DynamicTo<HTMLTemplateElement>(*task.parent)) {
-    task.parent = template_element->TemplateContentOrDeclarativeShadowRoot();
+    task.parent = template_element->InsertionTarget();
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents, so bail out.
     if (!task.parent)
@@ -898,6 +899,31 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
+  if (RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
+    Attribute* patchfor_attribute =
+        token->GetAttributeItem(html_names::kPatchforAttr);
+    // TODO(nrosenthal): make this actually work when inside declarative shadow
+    // DOM.
+    Element* patch_target =
+        patchfor_attribute ? CurrentElement()->GetTreeScope().getElementById(
+                                 patchfor_attribute->Value())
+                           : nullptr;
+    if (patch_target) {
+      // For now, a template is either targeting a shadow root or a patch.
+      declarative_shadow_root_mode = String();
+
+      // Like with shadowrootmode, the template is discarded.
+      should_attach_template = false;
+
+      // A patch replaces the existing children of the target.
+      patch_target->RemoveChildren();
+
+      // From now on, parsed children of the template are inserted directly to
+      // the patch target.
+      template_element->SetOverrideInsertionTarget(*patch_target);
+    }
+  }
+
   if (!declarative_shadow_root_mode.IsNull() &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
     auto focus_delegation = template_stack_item->GetAttributeItem(
@@ -933,7 +959,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
       UseCounter::Count(host->GetDocument(),
                         WebFeature::kStreamingDeclarativeShadowDOM);
       should_attach_template = false;
-      template_element->SetDeclarativeShadowRoot(*host->AuthorShadowRoot());
+      template_element->SetOverrideInsertionTarget(*host->AuthorShadowRoot());
     }
   }
   if (should_attach_template) {
@@ -1035,9 +1061,8 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
           DynamicTo<HTMLTemplateElement>(*dummy_task.parent)) {
     // If the Document was detached in the middle of parsing, the template
     // element won't be able to initialize its contents.
-    if (auto* content =
-            template_element->TemplateContentOrDeclarativeShadowRoot()) {
-      dummy_task.parent = content;
+    if (auto* insertion_target = template_element->InsertionTarget()) {
+      dummy_task.parent = insertion_target;
     }
   }
 
@@ -1098,9 +1123,8 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents. Fallback to the
     // current node's document in that case..
-    if (auto* content =
-            template_element->TemplateContentOrDeclarativeShadowRoot()) {
-      return content->GetDocument();
+    if (auto* insertion_target = template_element->InsertionTarget()) {
+      return insertion_target->GetDocument();
     }
   }
   return CurrentNode()->GetDocument();

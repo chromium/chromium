@@ -47,7 +47,7 @@ HTMLTemplateElement::HTMLTemplateElement(Document& document)
 HTMLTemplateElement::~HTMLTemplateElement() = default;
 
 DocumentFragment* HTMLTemplateElement::content() const {
-  CHECK(!declarative_shadow_root_);
+  CHECK(!override_insertion_target_);
   if (!content_ && GetExecutionContext())
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
         GetDocument().EnsureTemplateDocument(),
@@ -77,7 +77,7 @@ void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {
 
 void HTMLTemplateElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_);
-  visitor->Trace(declarative_shadow_root_);
+  visitor->Trace(override_insertion_target_);
   HTMLElement::Trace(visitor);
 }
 
