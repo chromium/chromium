@@ -1,10 +1,15 @@
 # Local Prototyping and Testing Chromium Web Platform Features with Web Platform Tests
 
+This document can be useful if you want to create a local prototype of a new
+web feature and test it using WPT before proposing any changes in WebDriver BiDi
+or in Chromium.
+
 This guide details the process of configuring your local development environment
 for prototyping and testing new web features. It covers the entire workflow for
 Chromium browsers, from initial ideation and implementing Chromium DevTools
-Protocol (CDP) methods to creating and running Web Platform Tests (WPT). The
-following aspects are covered:
+Protocol (CDP) methods to creating and running Web Platform Tests (WPT).
+
+The following aspects are covered:
 1. Chrome Devtools Protocol (CDP)
 1. WebDriver BiDi CDDL
 1. Chromium BiDi
@@ -32,7 +37,12 @@ Let’s assume the build artefacts have paths `${LOCAL_BROWSER_BIN}`,
 
 ## WebDriver BiDi CDDL
 WebDriver BiDi uses [CDDL](https://datatracker.ietf.org/doc/html/rfc8610) to
-declare the types for commands and events. Clone the
+declare the types for commands and events. To prototype changes to the WebDriver
+BiDi protocol's CDDL before they are merged into the main repository, follow
+these steps.
+
+### Clone repository
+Clone the
 [WebDriver BiDi repository](https://github.com/w3c/webdriver-bidi), add the new
 methods and events to the CDDL schemas. The specification text can be omitted at
 this prototyping stage. You can refer to the
@@ -56,10 +66,20 @@ scripts/cddl/generate.js
 This will create a file `all.cddl`. Let its path be `${LOCAL_CDDL}`.
 
 ### External Specifications
-Some of the WebDriver BiDi commands are declared and described in external
-specifications, like [Permissions](https://www.w3.org/TR/permissions/). For
-prototyping purposes this can be ignored and the main specifications CDDL can be
-used for all the changes.
+If the changes are done in an existing external spec, for example
+[Permissions](https://www.w3.org/TR/permissions/) or
+[Web Bluetooth](https://webbluetoothcg.github.io/web-bluetooth/), the CDDL
+should be generated differently. For example, for changes in "Web Bluetooth":
+1. Checkout [`web-bluetooth`](https://webbluetoothcg.github.io/web-bluetooth/)
+   spec locally.
+1. Enter the `web-bluetooth` spec directory.
+1. Run providing the proper path to the `webdriver-bidi` spec folder.
+```sh
+../webdriver-bidi/scripts/cddl/generate.js ./index.bs
+mv all.cddl bluetooth.cddl
+```
+This will generate `bluetooth.cddl` in the `web-bluetooth` folder. Let its path
+ be `${LOCAL_CDDL}`.
 
 ## Chromium BiDi
 [Chromium BiDi](https://github.com/GoogleChromeLabs/chromium-bidi) is an
