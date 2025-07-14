@@ -108,6 +108,7 @@ import java.util.List;
 public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private static final int CUSTOM_MENU_ITEM_ID_START =
             1512; // Random id to avoid possible collisions.
+    private static final int MAX_CUSTOM_MENU_ITEMS = 4;
     private static final String TAG = "CCMenuPopulator";
     private static final String UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_SELECTED =
             "CustomTabs.ContextMenu.SelectedContextualCustomActionType";
@@ -350,6 +351,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mCustomActionMap = new SparseArray<>();
         mPendingIntentSender = new PendingIntentSender();
         if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
+            if (customContentActions.size() > MAX_CUSTOM_MENU_ITEMS) {
+                customContentActions = customContentActions.subList(0, MAX_CUSTOM_MENU_ITEMS);
+            }
             mCustomContentActions = customContentActions;
         } else {
             mCustomContentActions = List.of();
@@ -707,6 +711,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         CustomTabsIntent.CONTENT_TARGET_TYPE_LINK);
                 intent.putExtra(
                         CustomTabsIntent.EXTRA_TRIGGERED_CUSTOM_CONTENT_ACTION_ID, action.getId());
+                intent.putExtra(
+                        CustomTabsIntent.EXTRA_CONTEXT_LINK_URL, mParams.getLinkUrl().getSpec());
+                intent.putExtra(CustomTabsIntent.EXTRA_CONTEXT_LINK_TEXT, mParams.getLinkText());
                 try {
                     mPendingIntentSender.send(pendingIntent, mContext, 0, intent);
                 } catch (PendingIntent.CanceledException e) {
@@ -743,6 +750,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                     action.getId());
                             intent.putExtra(
                                     CustomTabsIntent.EXTRA_CONTEXT_IMAGE_DATA_URI, imageUri);
+                            intent.putExtra(
+                                    CustomTabsIntent.EXTRA_CONTEXT_IMAGE_URL,
+                                    mParams.getSrcUrl().getSpec());
+                            intent.putExtra(
+                                    CustomTabsIntent.EXTRA_CONTEXT_IMAGE_ALT_TEXT,
+                                    getTitleOrGuessIfNotPresent());
                             intent.setData(Uri.parse(mItemDelegate.getPageUrl().getSpec()));
                             try {
                                 mPendingIntentSender.send(pendingIntent, mContext, 0, intent);
@@ -797,12 +810,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             verifyGenericCopyImageActionIsAllowedByPolicy(
                     mParams.getSrcUrl().getSpec(),
                     () -> {
-                        String title = mParams.getTitleText();
-                        if (TextUtils.isEmpty(title)) {
-                            title =
-                                    URLUtil.guessFileName(
-                                            mParams.getSrcUrl().getSpec(), null, null);
-                        }
+                        String title = getTitleOrGuessIfNotPresent();
                         mItemDelegate.onOpenInEphemeralTab(mParams.getSrcUrl(), title);
                     });
         } else if (itemId == R.id.contextmenu_copy_image) {
@@ -1358,6 +1366,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 // Use jpeg as a generic image type to be shared. Most apps accepting jpeg
                 // should also accept other image types.
                 : ShareHelper.getShareableIconAndNameForFileContentType("image/jpeg");
+    }
+
+    private String getTitleOrGuessIfNotPresent() {
+        String title = mParams.getTitleText();
+        if (TextUtils.isEmpty(title)) {
+            title = URLUtil.guessFileName(mParams.getSrcUrl().getSpec(), null, null);
+        }
+        return title;
     }
 
     /**

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -1981,8 +1982,17 @@ public class ChromeContextMenuPopulatorTest {
                 capturedIntent.getIntExtra(
                         CustomTabsIntent.EXTRA_TRIGGERED_CUSTOM_CONTENT_ACTION_ID, -1));
         assertEquals(
+                "The intent extra for the clicked content target type should be LINK.",
                 CustomTabsIntent.CONTENT_TARGET_TYPE_LINK,
                 capturedIntent.getIntExtra(CustomTabsIntent.EXTRA_CLICKED_CONTENT_TARGET_TYPE, -1));
+        assertEquals(
+                "The intent extra for the context link URL should match the link's URL.",
+                LINK_URL,
+                capturedIntent.getStringExtra(CustomTabsIntent.EXTRA_CONTEXT_LINK_URL));
+        assertEquals(
+                "The intent extra for the context link text should match the link's text.",
+                LINK_TEXT,
+                capturedIntent.getStringExtra(CustomTabsIntent.EXTRA_CONTEXT_LINK_TEXT));
     }
 
     @Test
@@ -2082,15 +2092,159 @@ public class ChromeContextMenuPopulatorTest {
                 capturedIntent.getIntExtra(
                         CustomTabsIntent.EXTRA_TRIGGERED_CUSTOM_CONTENT_ACTION_ID, -1));
         assertEquals(
+                "The intent extra for the clicked content target type should be IMAGE.",
                 CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE,
                 capturedIntent.getIntExtra(CustomTabsIntent.EXTRA_CLICKED_CONTENT_TARGET_TYPE, -1));
+        assertEquals(
+                "The intent extra for the context image URL should match the source URL.",
+                IMAGE_SRC_URL,
+                capturedIntent.getStringExtra(CustomTabsIntent.EXTRA_CONTEXT_IMAGE_URL));
+        assertEquals(
+                "The intent extra for the context image alt text should match the title text.",
+                IMAGE_TITLE_TEXT,
+                capturedIntent.getStringExtra(CustomTabsIntent.EXTRA_CONTEXT_IMAGE_ALT_TEXT));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             assertEquals(
+                    "The intent extra for the context image data URI should match the retrieved"
+                            + " URI.",
                     RETRIEVED_IMAGE_URI,
                     capturedIntent.getParcelableExtra(
                             CustomTabsIntent.EXTRA_CONTEXT_IMAGE_DATA_URI, Uri.class));
         }
-        assertEquals(PAGE_URL, capturedIntent.getData().toString());
+        assertEquals(
+                "The intent's data URI should match the page URL.",
+                PAGE_URL,
+                capturedIntent.getData().toString());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    public void testCustomContentActions_enforcesLimitWithMixedActionTypes() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+
+        List<CustomContentAction> oversizedActionList = new ArrayList<>();
+        // Action 0 (Link) - Expected to be included
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                100,
+                                "Link Action 0",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        0,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_LINK)
+                        .build());
+        // Action 1 (Image) - Expected to be included
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                101,
+                                "Image Action 1",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        1,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE)
+                        .build());
+        // Action 2 (Link) - Expected to be included
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                102,
+                                "Link Action 2",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        2,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_LINK)
+                        .build());
+        // Action 3 (Image) - Expected to be included
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                103,
+                                "Image Action 3",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        3,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE)
+                        .build());
+        // Action 4 (Link) - Expected to be EXCLUDED
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                104,
+                                "Link Action 4",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        4,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_LINK)
+                        .build());
+        // Action 5 (Image) - Expected to be EXCLUDED
+        oversizedActionList.add(
+                new CustomContentAction.Builder(
+                                105,
+                                "Image Action 5",
+                                PendingIntent.getBroadcast(
+                                        ContextUtils.getApplicationContext(),
+                                        5,
+                                        new Intent(),
+                                        PendingIntent.FLAG_IMMUTABLE),
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE)
+                        .build());
+
+        ContextMenuParams mixedParams =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        new GURL(PAGE_URL),
+                        new GURL(LINK_URL),
+                        LINK_TEXT,
+                        GURL.emptyGURL(),
+                        new GURL(IMAGE_SRC_URL),
+                        IMAGE_TITLE_TEXT,
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB,
+                mixedParams,
+                oversizedActionList);
+
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        assertNotNull(
+                "Expected 'Link Action 0' to be present.",
+                findItemWithTitle(menuState, "Link Action 0"));
+        assertNotNull(
+                "Expected 'Image Action 1' to be present.",
+                findItemWithTitle(menuState, "Image Action 1"));
+        assertNotNull(
+                "Expected 'Link Action 2' to be present.",
+                findItemWithTitle(menuState, "Link Action 2"));
+        assertNotNull(
+                "Expected 'Image Action 3' to be present.",
+                findItemWithTitle(menuState, "Image Action 3"));
+
+        assertNull(
+                "'Link Action 4' should have been excluded.",
+                findItemWithTitle(menuState, "Link Action 4"));
+        assertNull(
+                "'Image Action 5' should have been excluded.",
+                findItemWithTitle(menuState, "Image Action 5"));
     }
 
     /**
