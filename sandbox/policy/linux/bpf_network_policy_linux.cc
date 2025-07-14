@@ -280,6 +280,8 @@ ResultExpr NetworkProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_connect:
     case __NR_bind:
     case __NR_getsockname:
+      // TODO(crbug.com/40052246): restrict sendmmsg() for the network service,
+      // probably with RestrictSockSendFlags().
     case __NR_sendmmsg:
       return Allow();
     case __NR_socket:
