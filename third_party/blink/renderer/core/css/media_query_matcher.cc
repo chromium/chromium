@@ -87,11 +87,8 @@ MediaQueryList* MediaQueryMatcher::MatchMedia(const String& query) {
       document_->HaveRenderBlockingStylesheetsLoaded() &&
       !document_->View()->DidFirstLayout() && !document_->LoadEventStarted() &&
       !document_->IsInMainFrame()) {
-    // With the feature enabled, we skip the synchronous forced layout update
-    // in Document::ImplicitClose(), so we have to force layout here to
-    // compute starting values for media queries.
-    DCHECK(base::FeatureList::IsEnabled(
-        blink::features::kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe));
+    // If this is a subframe, and it did not perform a layout yet,
+    // we have to force layout here as a starting value for media queries.
     document_->UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
   }
 
