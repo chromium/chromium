@@ -118,6 +118,7 @@ class ExtensionActionPopup implements Destroyable {
         mPopupWindow.setDesiredContentSize(
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_width),
                 resources.getDimensionPixelSize(R.dimen.extension_action_popup_min_height));
+        mPopupWindow.setFocusable(true);
 
         contents.setDelegate(new ContentsDelegate());
     }
