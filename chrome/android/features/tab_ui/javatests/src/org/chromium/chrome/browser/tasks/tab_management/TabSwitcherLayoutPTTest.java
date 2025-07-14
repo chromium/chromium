@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT;
 
 import android.graphics.Bitmap;
@@ -134,23 +133,23 @@ public class TabSwitcherLayoutPTTest {
     /** Enters the regular Tab Switcher, making sure all tabs have a thumbnail. */
     private RegularTabSwitcherStation enterRegularHtsWithThumbnailChecking(
             PageStation currentStation) {
-        RegularTabSwitcherStation tabSwitcherStation = currentStation.openRegularTabSwitcher();
-        noopTo().pickUpCarryOn(
+        return currentStation
+                .openRegularTabSwitcherAnd()
+                .pickUpCarryOnAnd(
                         new TabThumbnailsCapturedCarryOn(
-                                tabSwitcherStation.tabModelSelectorElement.get(),
-                                /* isIncognito= */ false));
-        return tabSwitcherStation;
+                                currentStation.getTabModelSelector(), /* isIncognito= */ false))
+                .completeAndGet(RegularTabSwitcherStation.class);
     }
 
     /** Enters the Incognito Tab Switcher, making sure all tabs have a thumbnail. */
     private IncognitoTabSwitcherStation enterIncognitoHtsWithThumbnailChecking(
             PageStation currentStation) {
-        IncognitoTabSwitcherStation tabSwitcherStation = currentStation.openIncognitoTabSwitcher();
-        noopTo().pickUpCarryOn(
+        return currentStation
+                .openIncognitoTabSwitcherAnd()
+                .pickUpCarryOnAnd(
                         new TabThumbnailsCapturedCarryOn(
-                                tabSwitcherStation.tabModelSelectorElement.get(),
-                                /* isIncognito= */ true));
-        return tabSwitcherStation;
+                                currentStation.getTabModelSelector(), /* isIncognito= */ true))
+                .completeAndGet(IncognitoTabSwitcherStation.class);
     }
 
     @Test

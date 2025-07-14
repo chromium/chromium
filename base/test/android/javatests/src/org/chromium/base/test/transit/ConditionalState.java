@@ -129,6 +129,11 @@ public abstract class ConditionalState {
      */
     public abstract String getName();
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     /**
      * @return the lifecycle {@link Phase} this ConditionalState is in.
      */

@@ -83,9 +83,4 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
                 mId,
                 mCustomName != null ? mCustomName : getClass().getSimpleName());
     }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
 }

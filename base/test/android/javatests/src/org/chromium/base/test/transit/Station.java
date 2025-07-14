@@ -78,11 +78,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         return mName;
     }
 
-    @Override
-    public String toString() {
-        return mName;
-    }
-
     /**
      * @return the self-incrementing id for logging purposes.
      */

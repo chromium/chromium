@@ -137,4 +137,61 @@ public class Trip extends Transition {
             }
         }
     }
+
+    /** Returns a ConditionalState entered in this Trip. */
+    public <StateT extends ConditionalState> StateT get(Class<StateT> stateClass) {
+        ConditionalState candidate = null;
+        if (Station.class.isAssignableFrom(stateClass)) {
+            if (mDestinationStation == null) {
+                throw new IllegalArgumentException("No destination Station");
+            }
+            if (!stateClass.isAssignableFrom(mDestinationStation.getClass())) {
+                throw new IllegalArgumentException(
+                        String.format(
+                                "Destination %s is not a %s",
+                                mDestinationStation.getName(), stateClass.getName()));
+            }
+
+            candidate = mDestinationStation;
+        } else if (Facility.class.isAssignableFrom(stateClass)) {
+            for (Facility<?> facility : mFacilitiesToEnter) {
+                if (stateClass.isAssignableFrom(facility.getClass())) {
+                    if (candidate != null) {
+                        throw new IllegalArgumentException(
+                                String.format(
+                                        "Two or more Facilities are a %s: %s, %s",
+                                        stateClass.getName(),
+                                        candidate.getName(),
+                                        facility.getName()));
+                    }
+                    candidate = facility;
+                }
+            }
+            if (candidate == null) {
+                throw new IllegalArgumentException(
+                        String.format("No entered Facility is a %s", stateClass.getName()));
+            }
+        } else if (CarryOn.class.isAssignableFrom(stateClass)) {
+            for (CarryOn carryOn : mCarryOnsToPickUp) {
+                if (stateClass.isAssignableFrom(carryOn.getClass())) {
+                    if (candidate != null) {
+                        throw new IllegalArgumentException(
+                                String.format(
+                                        "Two or more CarryOns are a %s: %s, %s",
+                                        stateClass.getName(),
+                                        candidate.getName(),
+                                        carryOn.getName()));
+                    }
+                    candidate = carryOn;
+                }
+            }
+            if (candidate == null) {
+                throw new IllegalArgumentException(
+                        String.format("No CarryOn picked up matches %s", stateClass.getName()));
+            }
+        }
+        StateT result = stateClass.cast(candidate);
+        assert result != null;
+        return result;
+    }
 }

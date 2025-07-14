@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
@@ -131,18 +132,30 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
     public RegularTabSwitcherStation openRegularTabSwitcher() {
+        return openRegularTabSwitcherAnd().completeAndGet(RegularTabSwitcherStation.class);
+    }
+
+    /** Start a Trip to open the tab switcher by pressing the toolbar tab switcher button. */
+    public TripBuilder openRegularTabSwitcherAnd() {
         assert !mIsIncognito;
         return tabSwitcherButtonElement
                 .clickTo()
-                .arriveAt(RegularTabSwitcherStation.from(getTabModelSelector()));
+                .arriveAtAnd(RegularTabSwitcherStation.from(getTabModelSelector()));
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
     public IncognitoTabSwitcherStation openIncognitoTabSwitcher() {
+        return openIncognitoTabSwitcherAnd().completeAndGet(IncognitoTabSwitcherStation.class);
+    }
+
+    /**
+     * Start a Trip to open the incognito tab switcher by pressing the toolbar tab switcher button.
+     */
+    public TripBuilder openIncognitoTabSwitcherAnd() {
         assert mIsIncognito;
         return tabSwitcherButtonElement
                 .clickTo()
-                .arriveAt(IncognitoTabSwitcherStation.from(getTabModelSelector()));
+                .arriveAtAnd(IncognitoTabSwitcherStation.from(getTabModelSelector()));
     }
 
     /** Loads a |url| leading to a web page in the same tab and waits to transition. */
