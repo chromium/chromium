@@ -21,11 +21,7 @@ tluk@chromium.org       #{LAST_RESORT_SUGGESTION}
 # For accessibility-related changes.
 dpranke@google.com      #{LAST_RESORT_SUGGESTION}
 
-# Prefer avi@, ellyjones@, or lgrey@ for mac specific changes.
-per-file *_mac.*=avi@chromium.org
-per-file *_cocoa.*=avi@chromium.org
-per-file *.mm=avi@chromium.org
-
+# Prefer ellyjones@, kerenzhu@, or lgrey@ for mac specific changes.
 per-file *_mac.*=lgrey@chromium.org
 per-file *_cocoa.*=lgrey@chromium.org
 per-file *.mm=lgrey@chromium.org
