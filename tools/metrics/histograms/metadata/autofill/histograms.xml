@@ -5347,7 +5347,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ProfileImport.SilentUpdatesProfileImportType"
-    enum="AutofillSilentUpdatesProfileImportType" expires_after="2025-12-12">
+    enum="AutofillProfileImportType" expires_after="2025-12-12">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
