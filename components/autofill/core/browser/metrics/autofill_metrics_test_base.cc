@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -37,6 +38,9 @@
 namespace autofill::autofill_metrics {
 
 namespace {
+
+using ::testing::NiceMock;
+
 void SetProfileTestData(AutofillProfile* profile) {
   test::SetProfileInfo(profile, "Elvis", "Aaron", "Presley",
                        "theking@gmail.com", "RCA", "3734 Elvis Presley Blvd.",
@@ -69,13 +73,13 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
   test_api(*this).SetExternalDelegate(
       std::make_unique<TestAutofillExternalDelegate>(&*this));
   test_api(*this).set_credit_card_access_manager(
-      std::make_unique<MockCreditCardAccessManager>(this));
+      std::make_unique<NiceMock<MockCreditCardAccessManager>>(this));
 }
 
 void TestBrowserAutofillManager::Reset() {
   autofill::TestBrowserAutofillManager::Reset();
   test_api(*this).set_credit_card_access_manager(
-      std::make_unique<MockCreditCardAccessManager>(this));
+      std::make_unique<NiceMock<MockCreditCardAccessManager>>(this));
 }
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
