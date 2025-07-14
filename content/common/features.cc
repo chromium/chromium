@@ -543,6 +543,15 @@ BASE_FEATURE(kSkipGrantAccessToDataPathIfAlreadySet,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, ensure high-rank processes are on the LRU list while app is in
+// background or the effective binding state is in conflict with low rank
+// processes.
+BASE_FEATURE(kStrictHighRankProcessLRU,
+             "StrictHighRankProcessLRU",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient,
              "TextInputClient",

@@ -490,13 +490,17 @@ public final class ChildProcessLauncherHelperImpl {
                                     new BindingManager(
                                             context,
                                             BindingManager.NO_MAX_SIZE,
-                                            sSandboxedChildConnectionRanking);
+                                            sSandboxedChildConnectionRanking,
+                                            ChildProcessLauncherHelperImpl
+                                                    ::onBindingChangedImplicitly);
                         } else {
                             sBindingManager =
                                     new BindingManager(
                                             context,
                                             allocator.getMaxNumberOfAllocations(),
-                                            sSandboxedChildConnectionRanking);
+                                            sSandboxedChildConnectionRanking,
+                                            ChildProcessLauncherHelperImpl
+                                                    ::onBindingChangedImplicitly);
                         }
                         ChildProcessConnectionMetrics.getInstance()
                                 .setBindingManager(sBindingManager);
@@ -519,6 +523,7 @@ public final class ChildProcessLauncherHelperImpl {
                     }
                     if (sSandboxedChildConnectionRanking != null) {
                         sSandboxedChildConnectionRanking.recordProcessRanking();
+                        sSandboxedChildConnectionRanking.onSentToBackground();
                     }
                 });
     }
@@ -528,6 +533,12 @@ public final class ChildProcessLauncherHelperImpl {
         for (ChildProcessLauncherHelperImpl helper : sLauncherByPid.values()) {
             if (!helper.mReducePriorityOnBackground) continue;
             helper.reducePriorityOnBackgroundOnLauncherThread();
+        }
+    }
+
+    private static void onBindingChangedImplicitly(ChildProcessConnection connection) {
+        if (sSandboxedChildConnectionRanking != null) {
+            sSandboxedChildConnectionRanking.onLowRankConnectionMayBeUpdated(connection);
         }
     }
 
@@ -557,11 +568,16 @@ public final class ChildProcessLauncherHelperImpl {
         LauncherThread.removeCallbacks(sDelayedBackgroundTask);
         LauncherThread.post(
                 () -> {
+                    if (sSandboxedChildConnectionRanking != null) {
+                        sSandboxedChildConnectionRanking.onBroughtToForeground();
+                    }
                     for (ChildProcessLauncherHelperImpl helper : sLauncherByPid.values()) {
                         if (!helper.mReducePriorityOnBackground) continue;
                         helper.raisePriorityOnForegroundOnLauncherThread();
                     }
-                    if (sBindingManager != null) sBindingManager.onBroughtToForeground();
+                    if (sBindingManager != null) {
+                        sBindingManager.onBroughtToForeground();
+                    }
                 });
     }
 

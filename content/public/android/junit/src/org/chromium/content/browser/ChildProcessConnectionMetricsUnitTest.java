@@ -38,7 +38,10 @@ public class ChildProcessConnectionMetricsUnitTest {
         mRanking = new LinkedList<ChildProcessConnection>();
         mBindingManager =
                 new BindingManager(
-                        RuntimeEnvironment.application, BindingManager.NO_MAX_SIZE, mRanking);
+                        RuntimeEnvironment.application,
+                        BindingManager.NO_MAX_SIZE,
+                        mRanking,
+                        /* onChangedImplicitly= */ null);
         mConnectionMetrics = new ChildProcessConnectionMetrics();
         mConnectionMetrics.setBindingManager(mBindingManager);
     }

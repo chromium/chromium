@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Manages oom bindings used to bound child services.
@@ -42,6 +43,7 @@ class BindingManager implements ComponentCallbacks2 {
     private final int mMaxSize;
     private final Iterable<ChildProcessConnection> mRanking;
     private final Runnable mDelayedClearer;
+    private final @Nullable Consumer<ChildProcessConnection> mOnChangedImplicitly;
 
     // If not null, this is the connection in |mConnections| that does not have a binding added
     // by BindingManager.
@@ -103,22 +105,31 @@ class BindingManager implements ComponentCallbacks2 {
 
     private void removeOldConnections(int numberOfConnections) {
         assert numberOfConnections <= mConnections.size();
+        ChildProcessConnection firstRemovedConnection = null;
         int numRemoved = 0;
         for (ChildProcessConnection connection : mRanking) {
             if (mConnections.contains(connection)) {
-                removeBindingIfNeeded(connection);
+                boolean bindingRemoved = removeBindingIfNeeded(connection);
                 mConnections.remove(connection);
+                if (bindingRemoved && firstRemovedConnection == null) {
+                    firstRemovedConnection = connection;
+                }
                 if (++numRemoved == numberOfConnections) break;
             }
         }
+        if (firstRemovedConnection != null && mOnChangedImplicitly != null) {
+            mOnChangedImplicitly.accept(firstRemovedConnection);
+        }
     }
 
-    private void removeBindingIfNeeded(ChildProcessConnection connection) {
-        if (connection == mWaivedConnection) {
-            mWaivedConnection = null;
-        } else {
+    private boolean removeBindingIfNeeded(ChildProcessConnection connection) {
+        boolean removeBinding = connection != mWaivedConnection;
+        if (removeBinding) {
             removeBinding(connection);
+        } else {
+            mWaivedConnection = null;
         }
+        return removeBinding;
     }
 
     private void ensureLowestRankIsWaived() {
@@ -130,10 +141,16 @@ class BindingManager implements ComponentCallbacks2 {
         if (mWaivedConnection != null) {
             assert mConnections.contains(mWaivedConnection);
             addBinding(mWaivedConnection);
+            if (mOnChangedImplicitly != null) {
+                mOnChangedImplicitly.accept(mWaivedConnection);
+            }
             mWaivedConnection = null;
         }
         if (!mConnections.contains(lowestRanked)) return;
         removeBinding(lowestRanked);
+        if (mOnChangedImplicitly != null) {
+            mOnChangedImplicitly.accept(lowestRanked);
+        }
         mWaivedConnection = lowestRanked;
     }
 
@@ -202,15 +219,27 @@ class BindingManager implements ComponentCallbacks2 {
 
     /**
      * Construct instance with maxSize.
+     *
      * @param context Android's context.
      * @param maxSize The maximum number of connections or NO_MAX_SIZE for unlimited connections.
      * @param ranking The ranking of {@link ChildProcessConnection}s based on importance.
+     * @param onChangedImplicitly A callback that is run when connections are bound/unbound to/from
+     *     a service binding implicitly. Note that this does not report the binding change is for
+     *     explict connection (e.g. the added connection on addConnection()), but this reports for
+     *     the connections that are bound/unbound for ensureLowestRankIsWaived(),
+     *     removeOldConnections(). When multiple connections are bound/unbound in a row, this skips
+     *     some of them but just reports the lowest ranked connection.
      */
-    BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking) {
+    BindingManager(
+            Context context,
+            int maxSize,
+            Iterable<ChildProcessConnection> ranking,
+            @Nullable Consumer<ChildProcessConnection> onChangedImplicitly) {
         assert LauncherThread.runningOnLauncherThread();
         Log.i(TAG, "Visible binding enabled: maxSize=%d", maxSize);
 
         mMaxSize = maxSize;
+        mOnChangedImplicitly = onChangedImplicitly;
         mRanking = ranking;
         if (mMaxSize <= 0 && mMaxSize != NO_MAX_SIZE) {
             throw new IllegalArgumentException(

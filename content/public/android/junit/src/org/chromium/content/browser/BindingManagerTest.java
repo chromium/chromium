@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser;
 
+import static android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE;
@@ -79,8 +80,15 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager = new BindingManager(mActivity, BINDING_COUNT_LIMIT, mIterable);
-        mVariableManager = new BindingManager(mActivity, BindingManager.NO_MAX_SIZE, mIterable);
+        mManager =
+                new BindingManager(
+                        mActivity, BINDING_COUNT_LIMIT, mIterable, /* onChangedImplicitly= */ null);
+        mVariableManager =
+                new BindingManager(
+                        mActivity,
+                        BindingManager.NO_MAX_SIZE,
+                        mIterable,
+                        /* onChangedImplicitly= */ null);
     }
 
     @After
@@ -492,5 +500,117 @@ public class BindingManagerTest {
         } else {
             checkConnections(connections, new boolean[] {true, true, true, true, true, false});
         }
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testOnChangedImplicitlyCallback() {
+        final List<ChildProcessConnection> changedConnections = new ArrayList<>();
+        BindingManager manager =
+                new BindingManager(
+                        mActivity,
+                        6,
+                        mIterable,
+                        (connection) -> changedConnections.add(connection));
+
+        ChildProcessConnection[] connections = new ChildProcessConnection[6];
+        for (int i = 0; i < connections.length; i++) {
+            connections[i] = createTestChildProcessConnection(i + 1, manager, mIterable);
+        }
+
+        // Just adding connections has no effect.
+        Assert.assertTrue(changedConnections.isEmpty());
+
+        manager.rankingChanged();
+        changedConnections.clear();
+
+        // rankingChanged without ranking change has no effect.
+        manager.rankingChanged();
+        Assert.assertTrue(changedConnections.isEmpty());
+
+        // Change ranking, the old waived should be bound, and new one waived.
+        mIterable.set(0, connections[1]);
+        mIterable.set(1, connections[0]);
+        manager.rankingChanged();
+        Assert.assertEquals(Arrays.asList(connections[0], connections[1]), changedConnections);
+        changedConnections.clear();
+
+        // Change ranking back.
+        mIterable.set(0, connections[0]);
+        mIterable.set(1, connections[1]);
+        manager.rankingChanged();
+        Assert.assertEquals(Arrays.asList(connections[1], connections[0]), changedConnections);
+        changedConnections.clear();
+
+        // If the lowest ranked connection is not changed, it has no effect.
+        mIterable.set(2, connections[1]);
+        mIterable.set(1, connections[2]);
+        manager.rankingChanged();
+        Assert.assertTrue(changedConnections.isEmpty());
+
+        // Change ranking back.
+        mIterable.set(1, connections[1]);
+        mIterable.set(2, connections[2]);
+
+        // TRIM_MEMORY_RUNNING_MODERATE should trigger the callback.
+        manager.onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
+        ShadowLooper.runUiThreadTasks();
+        // connection 0, 1 are removed. But connections[0] is already unbound, so only
+        // connections[1] is unbound.
+        Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
+        changedConnections.clear();
+
+        // Add connections back for the next test.
+        for (ChildProcessConnection c : connections) {
+            manager.addConnection(c);
+        }
+        manager.rankingChanged();
+        changedConnections.clear();
+
+        // TRIM_MEMORY_RUNNING_LOW should trigger the callback.
+        manager.onTrimMemory(TRIM_MEMORY_RUNNING_LOW);
+        ShadowLooper.runUiThreadTasks();
+        // connection 0, 1, 2 are removed. And connection 1, 2 are unbound and the first unbound
+        // connections[1] is reported.
+        Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
+        changedConnections.clear();
+
+        // TRIM_MEMORY_BACKGROUND should trigger the callback and clear all connections.
+        manager.onTrimMemory(TRIM_MEMORY_BACKGROUND);
+        ShadowLooper.runUiThreadTasks();
+        Assert.assertEquals(Arrays.asList(connections[3]), changedConnections);
+        changedConnections.clear();
+
+        // TRIM_MEMORY_RUNNING_MODERATE should not trigger the callback because there are no
+        // connections.
+        manager.onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
+        ShadowLooper.runUiThreadTasks();
+        Assert.assertTrue(changedConnections.isEmpty());
+
+        // TRIM_MEMORY_BACKGROUND should not trigger the callback because there are no connections.
+        manager.onTrimMemory(TRIM_MEMORY_BACKGROUND);
+        ShadowLooper.runUiThreadTasks();
+        Assert.assertTrue(changedConnections.isEmpty());
+
+        // Add connections back for the next test.
+        for (ChildProcessConnection c : connections) {
+            manager.addConnection(c);
+        }
+        manager.rankingChanged();
+        changedConnections.clear();
+
+        ChildProcessConnection connection = createTestChildProcessConnection(7, null, mIterable);
+        // A new connection exceeds the max size, trigger rotating.
+        manager.addConnection(connection);
+        // Removes the lowest ranked connection (connections[0]) without unbinding.
+        Assert.assertTrue(changedConnections.isEmpty());
+        changedConnections.clear();
+
+        connection = createTestChildProcessConnection(8, null, mIterable);
+        // A new connection exceeds the max size, trigger rotating.
+        manager.addConnection(connection);
+        // Removes the lowest ranked connection (connections[1]) and unbind it.
+        Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
+        changedConnections.clear();
     }
 }

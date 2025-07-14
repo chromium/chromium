@@ -45,6 +45,8 @@ public class ContentFeatureList {
 
     public static final String SMART_ZOOM = "SmartZoom";
 
+    public static final String STRICT_HIGH_RANK_PROCESS_LRU = "StrictHighRankProcessLRU";
+
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "WebBluetoothNewPermissionsBackend";
 
@@ -71,6 +73,10 @@ public class ContentFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sAccessibilityDeprecateJavaNodeCacheDisableCache =
                     sAccessibilityDeprecateJavaNodeCache.newBooleanParam("disable_cache", false);
+
+    public static final MutableFlagWithSafeDefault sStrictHighRankProcessLRU =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(), STRICT_HIGH_RANK_PROCESS_LRU, false);
 
     public static final MutableFlagWithSafeDefault sGroupRebindingForGroupImportance =
             new MutableFlagWithSafeDefault(
