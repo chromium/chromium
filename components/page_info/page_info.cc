@@ -1546,7 +1546,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
     return;
   }
 
-  PageInfoUI::CookiesNewInfo cookies_info;
+  PageInfoUI::CookiesInfo cookies_info;
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -45,9 +45,9 @@ const char* GetVectorIconName(views::ImageView* image_view) {
   return image_view->GetImageModel().GetVectorIcon().vector_icon()->name;
 }
 
-PageInfoCookiesContentView::CookiesNewInfo DefaultCookieInfoForTests(
+PageInfoCookiesContentView::CookiesInfo DefaultCookieInfoForTests(
     int days_to_expiration = 0) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info;
+  PageInfoCookiesContentView::CookiesInfo cookie_info;
   cookie_info.allowed_sites_count = 10;
   // base::Time() represents a null when used as an expiration.
   cookie_info.expiration =
@@ -167,7 +167,7 @@ class PageInfoCookiesContentViewPre3pcdTest
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedByDefault) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kHidden;
   content_view()->SetCookieInfo(cookie_info);
@@ -183,7 +183,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 }
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   content_view()->SetCookieInfo(cookie_info);
 
@@ -217,7 +217,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedPermanent) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   content_view()->SetCookieInfo(cookie_info);
@@ -252,7 +252,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedTemporary) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   content_view()->SetCookieInfo(cookie_info);
@@ -287,7 +287,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesBlockedByPolicy) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   content_view()->SetCookieInfo(cookie_info);
@@ -320,7 +320,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedByPolicy) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
@@ -354,7 +354,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesBlockedByExtension) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   content_view()->SetCookieInfo(cookie_info);
@@ -387,7 +387,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedByExtension) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
@@ -423,7 +423,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesBlockedBySetting) {
   // This is not be possible, but the UI still should be able to handle this
   // state correctly.
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   content_view()->SetCookieInfo(cookie_info);
@@ -457,7 +457,7 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
 TEST_F(PageInfoCookiesContentViewPre3pcdTest,
        ThirdPartyCookiesAllowedBySetting) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
@@ -496,7 +496,7 @@ class PageInfoCookiesContentView3pcdTitleAndDescriptionTest
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysTitleAndDescriptionWhenCookiesLimitedWithTemporaryException) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kLimited;
@@ -513,7 +513,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysTitleAndDescriptionWhenCookiesBlockedWithTemporaryException) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
@@ -530,7 +530,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysBubbleDescriptionLabelWhenCookiesLimited) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kLimited;
   content_view()->SetCookieInfo(cookie_info);
@@ -544,7 +544,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysBubbleDescriptionLabelWhenCookiesBlocked) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
   content_view()->SetCookieInfo(cookie_info);
@@ -558,7 +558,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysLabelsWhenCookiesBlockedInIncognitoMode) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
   cookie_info.is_incognito = true;
@@ -581,7 +581,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysLabelsWhenCookiesAllowedInIncognitoMode) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
@@ -605,7 +605,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysDescriptionWhenCookiesAllowedEnforcedByTpcdGrant) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kLimited;
@@ -622,7 +622,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_P(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysTitleAndDescriptionWhenCookiesBlocked) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests(kDaysToExpiration);
   cookie_info.blocking_status = GetParam();
   content_view()->SetCookieInfo(cookie_info);
@@ -638,7 +638,7 @@ TEST_P(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
 
 TEST_P(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
        DisplaysTitleAndDescriptionWhenCookiesAllowedWithPermanentException) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = GetParam();
@@ -667,7 +667,7 @@ class PageInfoCookiesContentViewAlwaysBlock3pcsIncognito
 
 TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
        DisplaysIncognitoDescriptionWhenInIncognito) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.is_incognito = true;
   content_view()->SetCookieInfo(cookie_info);
@@ -693,7 +693,7 @@ class PageInfoCookiesContentView3pcdCookieToggleTest
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
        DisplaysOffToggleWhenCookiesLimited) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kLimited;
   content_view()->SetCookieInfo(cookie_info);
@@ -712,7 +712,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
        DisplaysOffToggleWhenCookiesBlocked) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
   content_view()->SetCookieInfo(cookie_info);
@@ -731,7 +731,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
        DisplaysOffToggleWhenCookiesBlockedInIncognitoMode) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
   cookie_info.is_incognito = true;
@@ -751,7 +751,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
        DisplaysOnToggleWhenCookiesAllowedInIncognitoMode) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
@@ -772,7 +772,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
        DisplaysOnToggleWhenCookiesAllowed) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = GetParam();
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
@@ -792,7 +792,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
        LabelAndEnforcementShownWhenCookiesAllowedEnforcedBySetting) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
@@ -819,7 +819,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
        LabelHiddenAndEnforcementShownWhenCookiesAllowedEnforcedByPolicy) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
@@ -839,7 +839,7 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
 
 TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
        LabelHiddenAndEnforcementShownWhenCookiesAllowedEnforcedByExtension) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   cookie_info.controls_state = CookieControlsState::kAllowed3pc;
@@ -867,7 +867,7 @@ class PageInfoCookiesContentViewTrackingProtectionBubbleTest
 
 TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
        DisplaysPauseProtectionsUiWhenProtectionsActive) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kActiveTp;
   content_view()->SetCookieInfo(cookie_info);
@@ -893,7 +893,7 @@ TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
 TEST_F(
     PageInfoCookiesContentViewTrackingProtectionBubbleTest,
     DisplaysPauseProtectionsUiWhenProtectionsActiveAnd3pcsAllowedByEnterprisePolicy) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kActiveTp;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
@@ -921,7 +921,7 @@ TEST_F(
 TEST_F(
     PageInfoCookiesContentViewTrackingProtectionBubbleTest,
     DisplaysPauseProtectionsUiWhenProtectionsActiveAnd3pcsAllowedByExtension) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kActiveTp;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
@@ -949,7 +949,7 @@ TEST_F(
 TEST_F(
     PageInfoCookiesContentViewTrackingProtectionBubbleTest,
     DisplaysPauseProtectionsUiWhenProtectionsActiveAnd3pcsAllowedByCookieSetting) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kActiveTp;
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
@@ -975,7 +975,7 @@ TEST_F(
 
 TEST_F(PageInfoCookiesContentViewTrackingProtectionBubbleTest,
        DisplaysResumeProtectionsUiWhenProtectionsPaused) {
-  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.controls_state = CookieControlsState::kPausedTp;
   content_view()->SetCookieInfo(cookie_info);

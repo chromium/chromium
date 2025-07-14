@@ -785,13 +785,11 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    PageInfoUI::CookiesNewInfo cookie_info;
+    PageInfoUI::CookiesInfo cookie_info;
     cookie_info.allowed_sites_count = 9;
     cookie_info.enforcement = enforcement_;
     cookie_info.blocking_status = blocking_status_;
     cookie_info.controls_state = controls_state_;
-    // TODO(crbug.com/40854087): Add rws enforcement info when finished
-    // implementing it.
     if (rws_enabled_) {
       const std::u16string kSiteOrigin = u"example.com";
       cookie_info.rws_info = {PageInfoUI::CookiesRwsInfo(kSiteOrigin)};

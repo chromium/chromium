@@ -319,7 +319,7 @@ class PageInfoBubbleViewTestApi {
   }
 
   // Simulates updating the number of blocked and allowed sites and rws info.
-  void SetCookieInfo(const PageInfoUI::CookiesNewInfo& cookie_info) {
+  void SetCookieInfo(const PageInfoUI::CookiesInfo& cookie_info) {
     presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
   }
 
@@ -1016,7 +1016,7 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   EXPECT_EQ(kExpectedChildren, api_->current_view()->children().size());
 
   // Create a fake cookies info.
-  PageInfoUI::CookiesNewInfo cookies;
+  PageInfoUI::CookiesInfo cookies;
   cookies.allowed_sites_count = 10;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
@@ -1269,7 +1269,7 @@ class PageInfoBubbleViewCookiesSubpageTitleTest
 
 TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
        DisplaysCookiesAndSiteDataTitle) {
-  PageInfoUI::CookiesNewInfo cookie_info;
+  PageInfoUI::CookiesInfo cookie_info;
   cookie_info.controls_state = testing::get<0>(GetParam());
   cookie_info.blocking_status = testing::get<1>(GetParam());
   api_->SetCookieInfo(cookie_info);
@@ -1304,7 +1304,7 @@ class PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest
 
 TEST_P(PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
        DisplaysPrivacyAndSiteDataTitle) {
-  PageInfoUI::CookiesNewInfo cookie_info;
+  PageInfoUI::CookiesInfo cookie_info;
   cookie_info.controls_state = GetParam();
   api_->SetCookieInfo(cookie_info);
 

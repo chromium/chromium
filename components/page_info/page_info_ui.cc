@@ -432,10 +432,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
 
 }  // namespace
 
-PageInfoUI::CookiesNewInfo::CookiesNewInfo() = default;
-PageInfoUI::CookiesNewInfo::CookiesNewInfo(CookiesNewInfo&& cookie_info) =
-    default;
-PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;
+PageInfoUI::CookiesInfo::CookiesInfo() = default;
+PageInfoUI::CookiesInfo::CookiesInfo(CookiesInfo&& cookie_info) = default;
+PageInfoUI::CookiesInfo::~CookiesInfo() = default;
 
 PageInfoUI::CookiesRwsInfo::CookiesRwsInfo(const std::u16string& owner_name)
     : owner_name(owner_name) {}

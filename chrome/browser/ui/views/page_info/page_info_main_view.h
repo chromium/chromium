@@ -79,7 +79,7 @@ class PageInfoMainView : public views::View,
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
-  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
+  void SetCookieInfo(const CookiesInfo& cookie_info) override;
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

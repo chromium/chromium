@@ -36,7 +36,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   ~PageInfoCookiesContentView() override;
 
   // PageInfoUI implementations.
-  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
+  void SetCookieInfo(const CookiesInfo& cookie_info) override;
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 

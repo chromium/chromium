@@ -194,7 +194,7 @@ PageInfoMainView::PageInfoMainView(
 
 PageInfoMainView::~PageInfoMainView() = default;
 
-void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
+void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
   // Ensure we don't add this button multiple times in error.
   if (cookie_button_ != nullptr) {
     return;
