@@ -1,6 +1,6 @@
 monorail: {
-  component: "Internals>Core"
+  component: "Internals>MemoryCoordinator"
 }
 buganizer_public: {
-  component_id: 1456128
+  component_id: 1840922
 }
