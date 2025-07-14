@@ -403,6 +403,17 @@
       },
     },
   },
+  'gpu_win11_intel_arc_140v_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '8086:64a0',
+        'os': 'Windows-11',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,
@@ -756,6 +767,12 @@
       '--stop-ui',
       '--gtest_filter="VaapiTest.*"',
     ],
+  },
+  'very_limited_capacity_bot': {
+    'fail_if_unused': False,
+    'swarming': {
+      'expiration': 43200,
+    },
   },
   'win-arm64': {
     'swarming': {

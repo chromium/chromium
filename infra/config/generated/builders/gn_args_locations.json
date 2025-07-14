@@ -942,6 +942,7 @@
     "gpu-fyi-try-win11-amd-rel-64": "try/gpu-fyi-try-win11-amd-rel-64/gn-args.json",
     "gpu-fyi-try-win11-nvidia-4070-rel-64": "try/gpu-fyi-try-win11-nvidia-4070-rel-64/gn-args.json",
     "gpu-fyi-try-win11-qualcomm-rel-64": "try/gpu-fyi-try-win11-qualcomm-rel-64/gn-args.json",
+    "gpu-fyi-try-win11-x64-intel-arc-140v-exp": "try/gpu-fyi-try-win11-x64-intel-arc-140v-exp/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "linux-win-cross-rel": "try/linux-win-cross-rel/gn-args.json",
     "win-annotator-rel": "try/win-annotator-rel/gn-args.json",

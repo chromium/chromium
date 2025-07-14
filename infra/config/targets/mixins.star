@@ -1080,6 +1080,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_win11_intel_arc_140v_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "8086:64a0",
+            "os": "Windows-11",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu-swarming-pool",
     generate_pyl_entry = targets.IGNORE_UNUSED,
     swarming = targets.swarming(
@@ -1380,6 +1395,17 @@ targets.mixin(
     # prevent shards from timing out.
     swarming = targets.swarming(
         expiration_sec = 21600,
+    ),
+)
+
+targets.mixin(
+    name = "very_limited_capacity_bot",
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    # Some FYI bot configurations have a very limited number of bots in the
+    # swarming pool. Increase the default expiration_sec time from 1 hour to
+    # 12 hours to prevent shards from timing out.
+    swarming = targets.swarming(
+        expiration_sec = 43200,
     ),
 )
 

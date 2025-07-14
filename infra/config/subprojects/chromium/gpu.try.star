@@ -585,6 +585,16 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
+    name = "gpu-fyi-try-win11-x64-intel-arc-140v-exp",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (Intel Arc 140V)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+    execution_timeout = 12 * time.hour,
+)
+
+gpu_win_builder(
     name = "gpu-fyi-try-win11-nvidia-4070-rel-64",
     description_html = "Runs GPU tests on NVIDIA RTX 4070 Super GPUs",
     mirrors = [
