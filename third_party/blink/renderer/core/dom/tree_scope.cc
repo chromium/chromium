@@ -42,10 +42,12 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope_adopter.h"
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
@@ -278,6 +280,16 @@ Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   if (type == HitTestPointType::kWebExposed)
     return &Retarget(*element);
   return element;
+}
+
+CustomElementRegistry* TreeScope::customElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  if (!custom_element_registry_) {
+    if (LocalDOMWindow* window = GetDocument().domWindow()) {
+      return window ? window->customElements() : nullptr;
+    }
+  }
+  return custom_element_registry_;
 }
 
 static bool ShouldAcceptNonElementNode(const Node& node) {
@@ -753,6 +765,7 @@ void TreeScope::Trace(Visitor* visitor) const {
   visitor->Trace(svg_tree_scoped_resources_);
   visitor->Trace(style_sheet_list_);
   visitor->Trace(adopted_style_sheets_);
+  visitor->Trace(custom_element_registry_);
 }
 
 IdTargetObserverRegistry& TreeScope::EnsureIdTargetObserverRegistry() {

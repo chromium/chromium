@@ -93,8 +93,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kScrollMarkerGroupContainerData = 34,
     kExplicitlySetElementsForAttr = 35,
     kCSSPseudoElementData = 36,
+    kCustomElementRegistry = 37,
 
-    kNumFields = 37,
+    kNumFields = 38,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -321,6 +322,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   AnchorElementObserver& EnsureAnchorElementObserver(Element*);
   AnchorElementObserver* GetAnchorElementObserver() const;
+
+  CustomElementRegistry* GetCustomElementRegistry() const;
+  void SetCustomElementRegistry(CustomElementRegistry* registry);
 
   void IncrementImplicitlyAnchoredElementCount();
   void DecrementImplicitlyAnchoredElementCount();

@@ -1642,11 +1642,6 @@ Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
   return source;
 }
 
-CustomElementRegistry* Document::customElementRegistry() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  return dom_window_ ? dom_window_->customElements() : nullptr;
-}
-
 bool Document::HasValidNamespaceForElements(const QualifiedName& q_name) {
   // These checks are from DOM Core Level 2, createElementNS
   // http://www.w3.org/TR/DOM-Level-2-Core/core.html#ID-DocCrElNS

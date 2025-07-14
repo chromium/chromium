@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -525,6 +526,15 @@ AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(
 AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
   return static_cast<AnchorElementObserver*>(
       GetField(FieldId::kAnchorElementObserver));
+}
+
+CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
+  return static_cast<CustomElementRegistry*>(
+      GetField(FieldId::kCustomElementRegistry));
+}
+
+void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
+  SetField(FieldId::kCustomElementRegistry, registry);
 }
 
 void ElementRareDataVector::IncrementImplicitlyAnchoredElementCount() {

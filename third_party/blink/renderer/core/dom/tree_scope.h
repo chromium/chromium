@@ -180,7 +180,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void ClearAdoptedStyleSheets();
 
 
-  virtual CustomElementRegistry* customElementRegistry() const = 0;
+  CustomElementRegistry* customElementRegistry() const;
 
   // Given a `node` targeteted by an event, returns the element that this event
   // should be dispatched to.
@@ -230,6 +230,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Member<StyleSheetList> style_sheet_list_;
 
   Member<V8ObservableArrayCSSStyleSheet> adopted_style_sheets_;
+
+  Member<CustomElementRegistry> custom_element_registry_;
 };
 
 inline bool TreeScope::HasElementWithId(const AtomicString& id) const {

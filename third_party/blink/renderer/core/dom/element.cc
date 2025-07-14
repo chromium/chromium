@@ -6347,10 +6347,19 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
   return nullptr;
 }
 
-// Scoped Custom Elements
 CustomElementRegistry* Element::customElementRegistry() const {
   DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  return nullptr;
+  // TODO(crbug.com/429140221) Need to evaluate if storing registry
+  // in element whenever needed is too memory consuming. For now
+  // we'll take the naive approach and assume an element using its tree
+  // scope's registry if not explicitly set.
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    if (auto* registry = data->GetCustomElementRegistry()) {
+      return registry;
+    }
+  }
+
+  return GetTreeScope().customElementRegistry();
 }
 
 void Element::SetIsValue(const AtomicString& is_value) {

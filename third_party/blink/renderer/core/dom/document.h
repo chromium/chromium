@@ -504,8 +504,6 @@ class CORE_EXPORT Document : public ContainerNode,
       const V8UnionElementCreationOptionsOrString* string_or_options,
       ExceptionState& exception_state);
 
-  CustomElementRegistry* customElementRegistry() const override;
-
   // Creates an element without custom element processing.
   Element* CreateRawElement(const QualifiedName&,
                             const CreateElementFlags = CreateElementFlags());
