@@ -37,11 +37,11 @@ class FakeModelBroker {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple local_state_;
   FakeBaseModelAsset base_model_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
   on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
-  TestOnDeviceModelComponentStateManager component_manager_{&pref_service_};
+  TestOnDeviceModelComponentStateManager component_manager_{&local_state_};
   scoped_refptr<OnDeviceModelServiceController> test_controller_;
 };
 

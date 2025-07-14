@@ -25,13 +25,12 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
        {features::kOnDeviceModelValidation,
         {{"on_device_model_validation_delay", "0"}}}},
       {});
-  model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
-  model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
-  pref_service_.SetInteger(
+  model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
+  local_state_.SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
   auto access_controller =
-      std::make_unique<OnDeviceModelAccessController>(pref_service_);
+      std::make_unique<OnDeviceModelAccessController>(local_state_);
   test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
       std::move(access_controller), component_manager_.get()->GetWeakPtr(),
       fake_launcher_.LaunchFn());
