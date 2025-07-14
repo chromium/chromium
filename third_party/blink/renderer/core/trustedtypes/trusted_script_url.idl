@@ -4,8 +4,6 @@
 
 // https://github.com/w3c/trusted-types
 
-typedef [StringContext=TrustedScriptURL] USVString ScriptURLString;
-
 [
     Exposed=(Window, Worker)
 ] interface TrustedScriptURL {

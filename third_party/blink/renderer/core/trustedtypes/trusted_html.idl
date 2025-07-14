@@ -4,8 +4,6 @@
 
 // https://github.com/w3c/trusted-types
 
-typedef [StringContext=TrustedHTML] DOMString HTMLString;
-
 [
     Exposed=(Window, Worker)
 ] interface TrustedHTML {

@@ -855,10 +855,7 @@ def make_v8_to_blink_value(blink_var_name,
                 v8_value_expr,
                 "${exception_state}",
             ]
-        if "StringContext" in idl_type.effective_annotations:
-            arguments.append("${class_like_name}")
-            arguments.append("${property_name}")
-            arguments.append("${execution_context_of_document_tree}")
+
         blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
                                    _1=native_value_tag(
                                        idl_type,
@@ -952,10 +949,6 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         "${isolate}", v8_array,
         str(v8_array_start_index), "${exception_state}"
     ]
-    if "StringContext" in idl_type.element_type.effective_annotations:
-        arguments.append("${class_like_name}")
-        arguments.append("${property_name}")
-        arguments.append("${execution_context_of_document_tree}")
     text = _format(
         pattern,
         _1=blink_var_name,

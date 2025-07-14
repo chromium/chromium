@@ -484,20 +484,6 @@ Summary: Serializable objects support being serialized, and later deserialized, 
 
 This attribute has no effect on code generation and should simply be used in Blink IDL files if the specification uses it. Code to perform the serialization/deserialization must be added to `V8ScriptValueSerializer` for types in `core/` or `V8ScriptValueDeserializerForModules` for types in `modules/`.
 
-### [StringContext=TrustedHTML|TrustedScript|TrustedScriptURL]
-
-Standard: [TrustedType](https://w3c.github.io/trusted-types/dist/spec/#!trustedtypes-extended-attribute)
-
-Summary: Indicate that a DOMString for HTMLs and scripts or USVString for script URLs is to be supplemented with additional Trusted Types enforcement logic.
-
-Usage: Must be specified on a DOMString or a USVString type.
-
-```webidl
-typedef [StringContext=TrustedHTML] DOMString TrustedString;
-attribute TrustedString str;
-void func(TrustedString str);
-```
-
 ### [Transferable]
 
 Standard: [Transferable](https://html.spec.whatwg.org/C/#transferable)

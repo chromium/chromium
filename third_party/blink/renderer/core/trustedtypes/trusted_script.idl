@@ -4,8 +4,6 @@
 
 // https://github.com/w3c/trusted-types
 
-typedef [StringContext=TrustedScript] DOMString ScriptString;
-
 [
     IsCodeLike,
     Exposed=(Window, Worker)

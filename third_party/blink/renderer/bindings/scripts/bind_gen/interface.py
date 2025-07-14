@@ -517,10 +517,6 @@ def _make_reflect_accessor_func_name(cg_context):
 
         if "URL" in cg_context.attribute.extended_attributes:
             return "GetURLAttribute"
-    else:
-        if ("StringContext"
-                in cg_context.attribute.idl_type.effective_annotations):
-            return "SetAttributeWithoutValidation"
 
 
     FAST_ACCESSORS = {

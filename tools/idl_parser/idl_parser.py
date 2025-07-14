@@ -65,7 +65,8 @@ ERROR_REMAP = {
 }
 
 _EXTENDED_ATTRIBUTES_APPLICABLE_TO_TYPES = [
-    'Clamp', 'EnforceRange', 'StringContext', 'TreatNullAs']
+    'Clamp', 'EnforceRange', 'TreatNullAs'
+]
 
 
 def Boolean(val):

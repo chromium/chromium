@@ -173,35 +173,6 @@ template <bindings::IDLStringConvMode mode>
 struct IDLUSVStringBase final : public IDLStringTypeBase {};
 using IDLUSVString = IDLUSVStringBase<bindings::IDLStringConvMode::kDefault>;
 
-// [StringContext=TrustedHTML] DOMString
-template <bindings::IDLStringConvMode mode>
-struct IDLStringStringContextTrustedHTMLBase final : public IDLStringTypeBase {
-};
-using IDLStringStringContextTrustedHTML = IDLStringStringContextTrustedHTMLBase<
-    bindings::IDLStringConvMode::kDefault>;
-using IDLStringLegacyNullToEmptyStringStringContextTrustedHTML =
-    IDLStringStringContextTrustedHTMLBase<
-        bindings::IDLStringConvMode::kLegacyNullToEmptyString>;
-
-// [StringContext=TrustedScript] DOMString
-template <bindings::IDLStringConvMode mode>
-struct IDLStringStringContextTrustedScriptBase final
-    : public IDLStringTypeBase {};
-using IDLStringStringContextTrustedScript =
-    IDLStringStringContextTrustedScriptBase<
-        bindings::IDLStringConvMode::kDefault>;
-using IDLStringLegacyNullToEmptyStringStringContextTrustedScript =
-    IDLStringStringContextTrustedScriptBase<
-        bindings::IDLStringConvMode::kLegacyNullToEmptyString>;
-
-// [StringContext=TrustedScriptURL] USVString
-template <bindings::IDLStringConvMode mode>
-struct IDLUSVStringStringContextTrustedScriptURLBase final
-    : public IDLStringTypeBase {};
-using IDLUSVStringStringContextTrustedScriptURL =
-    IDLUSVStringStringContextTrustedScriptURLBase<
-        bindings::IDLStringConvMode::kDefault>;
-
 // object
 struct IDLObject final : public IDLBaseHelper<ScriptObject> {};
 
