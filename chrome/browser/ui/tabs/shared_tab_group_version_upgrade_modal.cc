@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -20,7 +21,7 @@
 #include "url/gurl.h"
 
 namespace tab_groups {
-
+namespace {
 // Define a DialogModelDelegate to handle button actions.
 class SharedTabGroupVersionDialogDelegate : public ui::DialogModelDelegate {
  public:
@@ -40,15 +41,15 @@ class SharedTabGroupVersionDialogDelegate : public ui::DialogModelDelegate {
 };
 
 void ShowSharedTabGroupVersionUpgradeModal(
-    Browser* browser,
+    base::WeakPtr<Browser> browser,
     tab_groups::VersioningMessageController* versioning_message_controller,
     bool should_show) {
-  if (!should_show) {
+  if (!browser || !versioning_message_controller || !should_show) {
     return;
   }
 
   auto delegate =
-      std::make_unique<SharedTabGroupVersionDialogDelegate>(browser);
+      std::make_unique<SharedTabGroupVersionDialogDelegate>(browser.get());
   SharedTabGroupVersionDialogDelegate* delegate_ptr = delegate.get();
 
   auto dialog_model =
@@ -69,12 +70,14 @@ void ShowSharedTabGroupVersionUpgradeModal(
                       IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON)))
           .Build();
 
-  chrome::ShowBrowserModal(browser, std::move(dialog_model));
+  chrome::ShowBrowserModal(browser.get(), std::move(dialog_model));
 
   versioning_message_controller->OnMessageUiShown(
       tab_groups::VersioningMessageController::MessageType::
           VERSION_OUT_OF_DATE_INSTANT_MESSAGE);
 }
+
+}  // anonymous namespace
 
 void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser) {
   // Only show on normal browser.
@@ -97,8 +100,8 @@ void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser) {
   versioning_message_controller->ShouldShowMessageUiAsync(
       tab_groups::VersioningMessageController::MessageType::
           VERSION_OUT_OF_DATE_INSTANT_MESSAGE,
-      base::BindOnce(&ShowSharedTabGroupVersionUpgradeModal, browser,
-                     versioning_message_controller));
+      base::BindOnce(&ShowSharedTabGroupVersionUpgradeModal,
+                     browser->AsWeakPtr(), versioning_message_controller));
 }
 
 }  // namespace tab_groups
