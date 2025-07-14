@@ -229,6 +229,9 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<bool>
     kNtpMostRelevantTabResumptionModuleFilterLocalTabsParam;
 
+extern const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointMaxAnimationsParam;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
