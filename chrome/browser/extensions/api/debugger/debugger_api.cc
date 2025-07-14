@@ -59,7 +59,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -470,15 +469,11 @@ bool ExtensionDevToolsClientHost::Attach() {
     return false;
   }
 
-  const bool suppress_infobar_by_flag =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kSilentDebuggerExtensionAPI) ||
-      base::FeatureList::IsEnabled(
-          extensions_features::kSilentDebuggerExtensionAPI);
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
   const bool suppress_infobar =
-      suppress_infobar_by_flag ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kSilentDebuggerExtensionAPI) ||
       Manifest::IsPolicyLocation(extension_->location());
 
   if (!suppress_infobar) {

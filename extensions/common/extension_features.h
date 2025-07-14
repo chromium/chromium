@@ -234,9 +234,6 @@ BASE_DECLARE_FEATURE(kUseNewServiceWorkerTaskQueue);
 // type for modifying headers.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
 
-// Show no warning banner when an extension uses CDP's `chrome.debugger`.
-BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
-
 // Disables loading extensions via the `--disable-extensions-except` command
 // line switch.
 BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);
