@@ -126,6 +126,24 @@ class ExperimentalActorPerformActionsFunction
                              EXPERIMENTALACTOR_PERFORMACTIONS)
 };
 
+class ExperimentalActorRequestTabObservationFunction
+    : public ExperimentalActorApiFunction {
+ public:
+  ExperimentalActorRequestTabObservationFunction();
+  ExperimentalActorRequestTabObservationFunction(
+      const ExperimentalActorRequestTabObservationFunction&) = delete;
+  ExperimentalActorRequestTabObservationFunction& operator=(
+      const ExperimentalActorRequestTabObservationFunction&) = delete;
+
+ protected:
+  ~ExperimentalActorRequestTabObservationFunction() override;
+  ResponseAction Run() override;
+  void OnObservationFinished(
+      actor::ActorKeyedService::TabObservationResult observation_result);
+  DECLARE_EXTENSION_FUNCTION("experimentalActor.requestTabObservation",
+                             EXPERIMENTALACTOR_REQUESTTABOBSERVATION)
+};
+
 }  //  namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_

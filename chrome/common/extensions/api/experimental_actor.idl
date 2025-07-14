@@ -40,5 +40,10 @@ namespace experimentalActor {
     // actionsProto: encoded optimization_guide.proto.Actions
     // callback: encoded optimization_guide.proto.ActionsResult
     static void performActions(ArrayBuffer actionsProto, DataCallback callback);
+
+    // Requests a TabObservation for a given tab.
+    // tabId: The session tabId to observe.
+    // callback: encoded optimization_guide.proto.TabObservation
+    static void requestTabObservation(long tabId, DataCallback callback);
   };
 };

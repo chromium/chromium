@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/channel.h"
@@ -385,6 +386,62 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
   }
   Respond(ArgumentList(api::experimental_actor::PerformActions::Results::Create(
       std::move(data_buffer))));
+}
+
+ExperimentalActorRequestTabObservationFunction::
+    ExperimentalActorRequestTabObservationFunction() = default;
+ExperimentalActorRequestTabObservationFunction::
+    ~ExperimentalActorRequestTabObservationFunction() = default;
+
+ExtensionFunction::ResponseAction
+ExperimentalActorRequestTabObservationFunction::Run() {
+  auto params =
+      api::experimental_actor::RequestTabObservation::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(),
+                                    include_incognito_information(),
+                                    &web_contents)) {
+    return RespondNow(Error(
+        ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+                                       base::NumberToString(params->tab_id))));
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  // Can be null for pre-render web-contents.
+  // TODO(crbug.com/369319589): Remove this logic.
+  if (!tab) {
+    return RespondNow(Error(
+        ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+                                       base::NumberToString(params->tab_id))));
+  }
+
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  actor_service->RequestTabObservation(
+      *tab, base::BindOnce(&ExperimentalActorRequestTabObservationFunction::
+                               OnObservationFinished,
+                           this));
+
+  return RespondLater();
+}
+
+void ExperimentalActorRequestTabObservationFunction::OnObservationFinished(
+    actor::ActorKeyedService::TabObservationResult observation_result) {
+  if (!observation_result.has_value()) {
+    Respond(Error(observation_result.error()));
+    return;
+  }
+
+  optimization_guide::proto::TabObservation& tab_observation =
+      **observation_result;
+  std::vector<uint8_t> data_buffer(tab_observation.ByteSizeLong());
+  if (!data_buffer.empty()) {
+    tab_observation.SerializeToArray(&data_buffer[0], data_buffer.size());
+  }
+  Respond(ArgumentList(
+      api::experimental_actor::RequestTabObservation::Results::Create(
+          std::move(data_buffer))));
 }
 
 }  // namespace extensions
