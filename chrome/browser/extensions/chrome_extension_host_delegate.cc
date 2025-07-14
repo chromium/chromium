@@ -7,14 +7,17 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_id.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
+#endif
+
+// This file contains code shared between Android and non-Android platforms.
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -25,43 +28,9 @@ ChromeExtensionHostDelegate::~ChromeExtensionHostDelegate() = default;
 void ChromeExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {
   PrefsTabHelper::CreateForWebContents(web_contents);
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
-}
-
-void ChromeExtensionHostDelegate::CreateTab(
-    std::unique_ptr<content::WebContents> web_contents,
-    const ExtensionId& extension_id,
-    WindowOpenDisposition disposition,
-    const blink::mojom::WindowFeatures& window_features,
-    bool user_gesture) {
-  // Verify that the browser is not shutting down. It can be the case if the
-  // call is propagated through a posted task that was already in the queue when
-  // shutdown started. See crbug.com/625646
-  if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
-    return;
-  }
-
-  ExtensionTabUtil::CreateTab(std::move(web_contents), extension_id,
-                              disposition, window_features, user_gesture);
-}
-
-void ChromeExtensionHostDelegate::ProcessMediaAccessRequest(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback,
-    const Extension* extension) {
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), extension);
-}
-
-bool ChromeExtensionHostDelegate::CheckMediaAccessPermission(
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& security_origin,
-    blink::mojom::MediaStreamType type,
-    const Extension* extension) {
-  return MediaCaptureDevicesDispatcher::GetInstance()
-      ->CheckMediaAccessPermission(render_frame_host, security_origin, type,
-                                   extension);
+#endif
 }
 
 content::PictureInPictureResult

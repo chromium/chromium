@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_HOST_DELEGATE_H_
 
 #include "extensions/browser/extension_host_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

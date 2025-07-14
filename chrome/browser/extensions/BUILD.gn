@@ -213,6 +213,8 @@ source_set("extensions") {
     "chrome_extension_frame_host.h",
     "chrome_extension_function_details.cc",
     "chrome_extension_function_details.h",
+    "chrome_extension_host_delegate.cc",
+    "chrome_extension_host_delegate.h",
     "chrome_extension_registrar_delegate.cc",
     "chrome_extension_registrar_delegate.h",
     "chrome_extension_system.cc",
@@ -530,6 +532,7 @@ source_set("extensions") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
     "//chrome/common",
@@ -612,6 +615,10 @@ source_set("extensions") {
       "api/tabs/tabs_api_android.cc",
       "api/tabs/tabs_event_router_android.cc",
       "api/tabs/tabs_event_router_android.h",
+
+      # TODO(crbug.com/417770773): Rename this file to
+      # chrome_extension_host_delegate_android.cc.
+      "desktop_android/desktop_android_extension_host_delegate.cc",
       "extension_disabled_ui_android.cc",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",
@@ -623,6 +630,7 @@ source_set("extensions") {
     sources += [
       "api/chrome_extensions_api_client_non_android.cc",
       "api/tabs/tabs_api_non_android.cc",
+      "chrome_extension_host_delegate_non_android.cc",
     ]
     public_deps += [ "//components/app_icon_loader" ]
     deps += [ "//chrome/browser/ui/user_education" ]
@@ -773,8 +781,6 @@ source_set("extensions") {
       "app_tab_helper.h",
       "chrome_app_sorting.cc",
       "chrome_app_sorting.h",
-      "chrome_extension_host_delegate.cc",
-      "chrome_extension_host_delegate.h",
       "chrome_extensions_browser_interface_binders.cc",
       "chrome_extensions_browser_interface_binders.h",
       "chrome_kiosk_delegate.h",

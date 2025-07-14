@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
@@ -399,6 +400,11 @@ void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
     std::vector<EarlyExtensionPrefsObserver*>* observers) const {
   observers->push_back(ContentSettingsService::Get(context));
+}
+
+std::unique_ptr<ExtensionHostDelegate>
+ChromeExtensionsBrowserClient::CreateExtensionHostDelegate() {
+  return std::make_unique<ChromeExtensionHostDelegate>();
 }
 
 bool ChromeExtensionsBrowserClient::DidVersionUpdate(

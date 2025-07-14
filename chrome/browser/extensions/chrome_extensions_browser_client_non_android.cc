@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-#include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
@@ -46,11 +45,6 @@ ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     content::BrowserContext* browser_context) {
   return web_app::IsolatedWebAppURLLoaderFactory::CreateForFrame(
       browser_context, app_origin, frame_tree_node_id);
-}
-
-std::unique_ptr<ExtensionHostDelegate>
-ChromeExtensionsBrowserClient::CreateExtensionHostDelegate() {
-  return std::make_unique<ChromeExtensionHostDelegate>();
 }
 
 void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(
