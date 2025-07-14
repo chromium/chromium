@@ -42,14 +42,16 @@ class OffscreenPumpkinWorker {
     // ArrayBuffer.
     // 2. Reconstruct a new object with the original keys and the deserialized
     // values.
-    toPumpkinTagger.pumpkinData = toPumpkinTagger.pumpkinData ?
-        Object.fromEntries(
+    const pumpkinData = toPumpkinTagger.pumpkinData ?
+        Object.fromEntries(await Promise.all(
             Object.entries(toPumpkinTagger.pumpkinData)
-                .map(([key, array]) => [key, new Uint8Array(array).buffer])) as
-            PumpkinConstants.PumpkinData :
+                .map(async ([key, array]) => {
+                  return [key, await Messenger.base64ToArrayBuffer(array)];
+                }))) :
         null;
 
-    this.sandbox_.contentWindow!.postMessage(toPumpkinTagger, '*');
+    this.sandbox_.contentWindow!.postMessage(
+        {...toPumpkinTagger, pumpkinData}, '*');
   }
 
   /**

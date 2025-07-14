@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -52,6 +55,14 @@ ExtensionConsoleErrorObserver::~ExtensionConsoleErrorObserver() {
 
 void ExtensionConsoleErrorObserver::OnErrorAdded(
     const extensions::ExtensionError* error) {
+  auto it = std::find_if(allowed_errors_.begin(), allowed_errors_.end(),
+                         [error](const std::u16string& allowed) {
+                           return base::EndsWith(error->message(), allowed);
+                         });
+  if (it != allowed_errors_.end()) {
+    return;
+  }
+
   // Add a non-fatal failure to the test. Thus the test can continue
   // executing in case the warning/error is helpful in debugging.
   ADD_FAILURE() << "Found extension console warning or error with message: "
@@ -75,6 +86,11 @@ std::string ExtensionConsoleErrorObserver::GetErrorOrWarningAt(
 
 size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
   return errors_.size();
+}
+
+void ExtensionConsoleErrorObserver::AddAllowedError(
+    const std::u16string& allowed) {
+  allowed_errors_.insert(allowed);
 }
 
 HistogramWaiter::HistogramWaiter(std::string_view metric_name) {
@@ -119,6 +135,15 @@ void MagnifierAnimationWaiter::OnTimer() {
   DCHECK(runner_.get());
   if (!controller_->IsOnAnimationForTesting()) {
     runner_->Quit();
+  }
+}
+
+std::string ManifestVersionToString(ManifestVersion version) {
+  switch (version) {
+    case ManifestVersion::kTwo:
+      return "MV2";
+    case ManifestVersion::kThree:
+      return "MV3";
   }
 }
 

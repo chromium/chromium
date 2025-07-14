@@ -131,8 +131,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
     }
   }
 
-  private sendToSandboxedPumpkinTagger_(
-      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): void {
+  private async sendToSandboxedPumpkinTagger_(
+      toPumpkinTagger: PumpkinConstants.ToPumpkinTagger): Promise<void> {
     // Seriazlie ArrayBuffer fields in pumpkinData to send it to the offscren
     // document.
     // 1. Traverse pumpkinData object keys and convert each ArrayBuffer value to
@@ -140,10 +140,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // serializable.
     // 2. Construct a new object with the same keys but serialized values.
     const pumpkinData = toPumpkinTagger.pumpkinData ?
-        Object.fromEntries(
+        Object.fromEntries(await Promise.all(
             Object.entries(toPumpkinTagger.pumpkinData)
-                .map(([key,
-                       buffer]) => [key, Array.from(new Uint8Array(buffer))])) :
+                .map(async ([key, buffer]) => {
+                  return [key, await Messenger.arrayBufferToBase64(buffer)];
+                }))) :
         null;
 
     this.sendToOffscreen_(

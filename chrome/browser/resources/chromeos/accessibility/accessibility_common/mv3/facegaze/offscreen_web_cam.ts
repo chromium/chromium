@@ -92,8 +92,8 @@ class OffscreenWebCam {
     const reply =
         await Messenger.send(OffscreenCommandType.FACEGAZE_SW_INSTALL_ASSETS);
     const assets = {
-      wasm: Messenger.base64ToArrayBuffer(reply.wasm),
-      model: Messenger.base64ToArrayBuffer(reply.model)
+      wasm: await Messenger.base64ToArrayBuffer(reply.wasm),
+      model: await Messenger.base64ToArrayBuffer(reply.model)
     };
 
     // Create a blob to hold the wasm contents.

@@ -200,6 +200,16 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
                                            base::Unretained(this)));
   }
 
+  void TearDownOnMainThread() override {
+    // Ignore browser-shutting-down error for MV3 because service workers
+    // are not killed during fast shutdown phase.
+    if (manifest_version() == ManifestVersion::kThree) {
+      utils()->AddAllowedExtensionError(
+          ExtensionConsoleErrorObserver::kErrorBrowserIsShuttingDown);
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   // Routers to DictationTestUtils methods.
   void WaitForRecognitionStarted() { utils_->WaitForRecognitionStarted(); }
 
@@ -326,14 +336,26 @@ INSTANTIATE_TEST_SUITE_P(
     DictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     OnDeviceTextArea,
     DictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kOnDevice,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 // Tests the behavior of the GetAllSupportedLocales method, specifically how
 // it sets locale data.
@@ -763,7 +785,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationWithAutoclickTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseBothFeatures) {
   ToggleDictationWithKeystroke();
@@ -827,7 +855,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationWithSwitchAccessTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationWithSwitchAccessTest, CanDictate) {
   ToggleDictationWithKeystroke();
@@ -866,14 +900,26 @@ INSTANTIATE_TEST_SUITE_P(
     DictationJaTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationJaTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartCapitalization) {
   ToggleDictationWithKeystroke();
@@ -1022,14 +1068,26 @@ INSTANTIATE_TEST_SUITE_P(
     DictationRegexCommandsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationRegexCommandsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, TypesCommands) {
   std::string expected_text = "";
@@ -1454,7 +1512,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationUITest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
@@ -1678,14 +1742,26 @@ INSTANTIATE_TEST_SUITE_P(
     DictationPumpkinTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationPumpkinTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Input) {
   SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
@@ -1974,14 +2050,26 @@ INSTANTIATE_TEST_SUITE_P(
     DictationContextCheckingTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     NetworkContentEditable,
     DictationContextCheckingTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, EmptyEditable) {
   std::vector<std::string> commands{
@@ -2126,7 +2214,13 @@ INSTANTIATE_TEST_SUITE_P(
     NotificationCenterDictationTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 // Tests that clicking the notification center tray does not crash when
 // dictation is enabled.
@@ -2169,7 +2263,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationFormattedContentEditableTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kFormattedContentEditable,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kFormattedContentEditable,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest, DeletePhrase) {
   SendFinalResultAndWaitForEditableValue("delete a", "This is test");
@@ -2306,7 +2406,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationKeyboardImprovementsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput,
-                                 ManifestVersion::kTwo)));
+                                 ManifestVersion::kTwo),
+                      TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput,
+                                 ManifestVersion::kThree)),
+    [](const testing::TestParamInfo<TestConfig>& params) {
+      return ManifestVersionToString(params.param.manifest_version());
+    });
 
 // Verifies that a nudge is shown in the system UI when Dictation is toggled
 // when there is no focused editable.

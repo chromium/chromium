@@ -139,8 +139,8 @@ export class WebCamFaceLandmarker {
       return;
     }
     return {
-      wasm: Messenger.arrayBufferToBase64(assets.wasm),
-      model: Messenger.arrayBufferToBase64(assets.model)
+      wasm: await Messenger.arrayBufferToBase64(assets.wasm),
+      model: await Messenger.arrayBufferToBase64(assets.model)
     };
   }
 
