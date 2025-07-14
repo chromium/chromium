@@ -26029,6 +26029,24 @@
             ]
         }
     ],
+    "VideoPictureInPictureControlsUpdate2024": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VideoPictureInPictureControlsUpdate2024"
+                    ]
+                }
+            ]
+        }
+    ],
     "VisibilityAwareResourceScheduler": [
         {
             "platforms": [

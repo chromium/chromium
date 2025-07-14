@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -253,6 +254,24 @@ class VideoPictureInPictureWindowControllerBrowserTest
   VideoOverlayWindowViews* GetOverlayWindow() {
     return static_cast<VideoOverlayWindowViews*>(
         window_controller()->GetWindowForTesting());
+  }
+
+  SimpleOverlayWindowImageButton* GetNextSlideButton() {
+    // For the updated controls, there's only one shared next button.
+    if (base::FeatureList::IsEnabled(
+            media::kVideoPictureInPictureControlsUpdate2024)) {
+      return GetOverlayWindow()->next_track_controls_view_for_testing();
+    }
+    return GetOverlayWindow()->next_slide_controls_view_for_testing();
+  }
+
+  SimpleOverlayWindowImageButton* GetPreviousSlideButton() {
+    // For the updated controls, there's only one shared previous button.
+    if (base::FeatureList::IsEnabled(
+            media::kVideoPictureInPictureControlsUpdate2024)) {
+      return GetOverlayWindow()->previous_track_controls_view_for_testing();
+    }
+    return GetOverlayWindow()->previous_slide_controls_view_for_testing();
   }
 
   void LoadTabAndEnterPictureInPicture(Browser* browser,
@@ -1367,10 +1386,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Tests that the back-to-tab, close, and resize controls move properly as
-// the window changes quadrants.
+// Tests that the close and resize controls move properly as the window changes
+// quadrants.
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
-                       MovingQuadrantsMovesBackToTabAndResizeControls) {
+                       MovingQuadrantsMovesCloseAndResizeControls) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureWindowSizePage));
@@ -1419,9 +1438,16 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   resize_button_position =
       GetOverlayWindow()->resize_handle_position_for_testing();
 
-  // The close button should be in the top left corner.
-  EXPECT_GT(center.x(), close_button_position.x());
-  EXPECT_GT(center.y(), close_button_position.y());
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    // For the updated UI, the close button should not move.
+    EXPECT_LT(center.x(), close_button_position.x());
+    EXPECT_GT(center.y(), close_button_position.y());
+  } else {
+    // The close button should be in the top left corner.
+    EXPECT_GT(center.x(), close_button_position.x());
+    EXPECT_GT(center.y(), close_button_position.y());
+  }
   // The resize button should be in the top right corner.
   EXPECT_LT(center.x(), resize_button_position.x());
   EXPECT_GT(center.y(), resize_button_position.y());
@@ -1683,6 +1709,12 @@ class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
     SkipAdButtonVisibility) {
+  // Skip for the updated UI, as it does not yet implement a skip ad button.
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    return;
+  }
+
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
@@ -1828,8 +1860,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(GetOverlayWindow(), nullptr);
 
   // Next Slide button is not displayed initially.
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, false));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible({GetNextSlideButton()}, false));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1838,14 +1869,12 @@ IN_PROC_BROWSER_TEST_F(
   // set.
   ASSERT_TRUE(ExecJs(active_web_contents,
                      "setMediaSessionActionHandler('nextslide');"));
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, true));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible({GetNextSlideButton()}, true));
 
   // Unset action handler and check that Next Slide button is not displayed.
   ASSERT_TRUE(ExecJs(active_web_contents,
                      "unsetMediaSessionActionHandler('nextslide');"));
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, false));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible({GetNextSlideButton()}, false));
 }
 
 // Tests that a Previous Slide button is displayed in the Picture-in-Picture
@@ -1857,8 +1886,8 @@ IN_PROC_BROWSER_TEST_F(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
   // Previous Slide button is not displayed initially.
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, false));
+  EXPECT_NO_FATAL_FAILURE(
+      AssertControlsVisible({GetPreviousSlideButton()}, false));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1867,14 +1896,14 @@ IN_PROC_BROWSER_TEST_F(
   // been set.
   ASSERT_TRUE(ExecJs(active_web_contents,
                      "setMediaSessionActionHandler('previousslide');"));
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, true));
+  EXPECT_NO_FATAL_FAILURE(
+      AssertControlsVisible({GetPreviousSlideButton()}, true));
 
   // Unset action handler and check that Previous Slide button is not displayed.
   ASSERT_TRUE(ExecJs(active_web_contents,
                      "unsetMediaSessionActionHandler('previousslide');"));
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, false));
+  EXPECT_NO_FATAL_FAILURE(
+      AssertControlsVisible({GetPreviousSlideButton()}, false));
 }
 
 // Tests that clicking the Skip Ad button in the Picture-in-Picture window
@@ -1882,6 +1911,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
     SkipAdHandlerCalled) {
+  // Skip for the updated UI, as it does not yet implement a skip ad button.
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPictureInPictureControlsUpdate2024)) {
+    return;
+  }
+
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -2016,8 +2051,7 @@ IN_PROC_BROWSER_TEST_F(
                        VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Make sure the action handler is set before trying to invoke the action.
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, true));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible({GetNextSlideButton()}, true));
 
   // Simulates user clicking "Next Slide" and check the handler function is
   // called.
@@ -2041,8 +2075,8 @@ IN_PROC_BROWSER_TEST_F(
                        VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Make sure the action handler is set before trying to invoke the action.
-  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
-      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, true));
+  EXPECT_NO_FATAL_FAILURE(
+      AssertControlsVisible({GetPreviousSlideButton()}, true));
 
   // Simulates user clicking "Previous Slide" and check the handler function is
   // called.
