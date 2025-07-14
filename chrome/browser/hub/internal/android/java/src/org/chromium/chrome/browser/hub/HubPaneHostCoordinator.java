@@ -34,7 +34,7 @@ public class HubPaneHostCoordinator {
                         .with(COLOR_MIXER, hubColorMixer)
                         .build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
-        mMediator = new HubPaneHostMediator(model, paneSupplier);
+        mMediator = new HubPaneHostMediator(model, paneSupplier, new DefaultPaneOrderController());
     }
 
     /** Cleans up observers and resources. */

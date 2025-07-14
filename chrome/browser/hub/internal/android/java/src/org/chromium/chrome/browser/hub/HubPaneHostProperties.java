@@ -25,6 +25,9 @@ class HubPaneHostProperties {
     public static final WritableObjectPropertyKey<View> PANE_ROOT_VIEW =
             new WritableObjectPropertyKey();
 
+    public static final WritableBooleanPropertyKey SLIDE_ANIMATE_LEFT_TO_RIGHT =
+            new WritableBooleanPropertyKey();
+
     public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
             new WritableBooleanPropertyKey();
 
@@ -32,6 +35,10 @@ class HubPaneHostProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        PANE_ROOT_VIEW, COLOR_MIXER, HAIRLINE_VISIBILITY, SNACKBAR_CONTAINER_CALLBACK,
+        PANE_ROOT_VIEW,
+        COLOR_MIXER,
+        HAIRLINE_VISIBILITY,
+        SNACKBAR_CONTAINER_CALLBACK,
+        SLIDE_ANIMATE_LEFT_TO_RIGHT
     };
 }

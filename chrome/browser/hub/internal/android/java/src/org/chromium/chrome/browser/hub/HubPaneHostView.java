@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
-import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SLIDE_ANIMATION_DURATION_MS;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.animation.AnimationHandler;
 
 import java.util.Objects;
@@ -38,12 +39,14 @@ public class HubPaneHostView extends FrameLayout {
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mFadeAnimatorHandler;
+    private final AnimationHandler mSlideAnimatorHandler;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mFadeAnimatorHandler = new AnimationHandler();
+        mSlideAnimatorHandler = new AnimationHandler();
     }
 
     @Override
@@ -55,38 +58,100 @@ public class HubPaneHostView extends FrameLayout {
         mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
     }
 
-    void setRootView(@Nullable View newRootView) {
+    /**
+     * Sets the root view for the pane host, animating the transition if both old and new views are
+     * non-null.
+     *
+     * @param newRootView The new root view to display.
+     * @param isSlideAnimationLeftToRight Whether the animation should slide from left-to-right
+     *     (true) or right-to-left (false), only when slide animation is enabled.
+     */
+    void setRootView(@Nullable View newRootView, boolean isSlideAnimationLeftToRight) {
+
         final View oldRootView = mCurrentViewRoot;
         mCurrentViewRoot = newRootView;
 
-        mFadeAnimatorHandler.forceFinishAnimation();
-
         if (oldRootView != null && newRootView != null) {
-            newRootView.setAlpha(0);
-            tryAddViewToFrame(newRootView);
-
-            Animator fadeOut = ObjectAnimator.ofFloat(oldRootView, View.ALPHA, 1, 0);
-            fadeOut.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
-
-            Animator fadeIn = ObjectAnimator.ofFloat(newRootView, View.ALPHA, 0, 1);
-            fadeIn.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
-
-            AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playSequentially(fadeOut, fadeIn);
-            animatorSet.addListener(
-                    new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            mPaneFrame.removeView(oldRootView);
-                            oldRootView.setAlpha(1);
-                        }
-                    });
-            mFadeAnimatorHandler.startAnimation(animatorSet);
+            if (isSlideAnimationEnabled()) {
+                // If width is not available, just swap views without animation.
+                if (mPaneFrame.getWidth() == 0) {
+                    mPaneFrame.removeAllViews();
+                    tryAddViewToFrame(newRootView);
+                } else {
+                    animateSlideTransition(oldRootView, newRootView, isSlideAnimationLeftToRight);
+                }
+                return;
+            } else {
+                animateFadeTransition(oldRootView, newRootView);
+            }
         } else if (newRootView == null) {
             mPaneFrame.removeAllViews();
         } else { // oldRootView == null
             tryAddViewToFrame(newRootView);
         }
+    }
+
+    private void animateFadeTransition(View oldRootView, View newRootView) {
+        mFadeAnimatorHandler.forceFinishAnimation();
+
+        newRootView.setAlpha(0);
+        tryAddViewToFrame(newRootView);
+
+        Animator fadeOut = ObjectAnimator.ofFloat(oldRootView, View.ALPHA, 1, 0);
+        fadeOut.setDuration(HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS);
+
+        Animator fadeIn = ObjectAnimator.ofFloat(newRootView, View.ALPHA, 0, 1);
+        fadeIn.setDuration(HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(fadeOut, fadeIn);
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mPaneFrame.removeView(oldRootView);
+                        oldRootView.setAlpha(1);
+                    }
+                });
+        mFadeAnimatorHandler.startAnimation(animatorSet);
+    }
+
+    private void animateSlideTransition(View oldRootView, View newRootView, boolean isLeftToRight) {
+        mSlideAnimatorHandler.forceFinishAnimation();
+        int containerWidth = mPaneFrame.getWidth();
+
+        // Determine start and end positions based on direction.
+        float oldViewEndTranslation = isLeftToRight ? containerWidth : -containerWidth;
+        float newViewStartTranslation = isLeftToRight ? -containerWidth : containerWidth;
+
+        // Ensure old view is at its starting position.
+        oldRootView.setTranslationX(0);
+        // Position new view off-screen.
+        newRootView.setTranslationX(newViewStartTranslation);
+
+        // Ensure new view is added before animation starts.
+        tryAddViewToFrame(newRootView);
+
+        Animator slideOut =
+                ObjectAnimator.ofFloat(oldRootView, View.TRANSLATION_X, 0, oldViewEndTranslation);
+        slideOut.setDuration(PANE_SLIDE_ANIMATION_DURATION_MS);
+
+        Animator slideIn =
+                ObjectAnimator.ofFloat(newRootView, View.TRANSLATION_X, newViewStartTranslation, 0);
+        slideIn.setDuration(PANE_SLIDE_ANIMATION_DURATION_MS);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(slideOut, slideIn);
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mPaneFrame.removeView(oldRootView);
+                        oldRootView.setTranslationX(0);
+                        newRootView.setTranslationX(0);
+                    }
+                });
+        mSlideAnimatorHandler.startAnimation(animatorSet);
     }
 
     void setColorMixer(HubColorMixer mixer) {
@@ -138,5 +203,9 @@ public class HubPaneHostView extends FrameLayout {
     public void setXrSpaceModeObservableSupplier(
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+    }
+
+    private boolean isSlideAnimationEnabled() {
+        return ChromeFeatureList.sHubSlideAnimation.isEnabled();
     }
 }

@@ -40,4 +40,7 @@ public class HubAnimationConstants {
      */
     public static final long PANE_FADE_ANIMATION_DURATION_MS =
             PANE_COLOR_BLEND_ANIMATION_DURATION_MS / 2;
+
+    /** Duration in milliseconds of slide animations for Hub pane changes. */
+    public static final long PANE_SLIDE_ANIMATION_DURATION_MS = 250;
 }

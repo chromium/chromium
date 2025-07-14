@@ -34,6 +34,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -127,6 +129,22 @@ public class HubPaneHostViewUnitTest {
         mPropertyModel.set(PANE_ROOT_VIEW, null);
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
         assertEquals(1, root1.getAlpha(), /* delta= */ 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
+    public void testSetRootView_translationRestored() {
+        View root1 = new View(mActivity);
+        View root2 = new View(mActivity);
+
+        mPropertyModel.set(PANE_ROOT_VIEW, root1);
+        mPropertyModel.set(PANE_ROOT_VIEW, root2);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(0, root2.getTranslationX(), /* delta= */ 0);
+
+        mPropertyModel.set(PANE_ROOT_VIEW, null);
+        mPropertyModel.set(PANE_ROOT_VIEW, root1);
+        assertEquals(0, root1.getTranslationX(), /* delta= */ 0);
     }
 
     @Test
