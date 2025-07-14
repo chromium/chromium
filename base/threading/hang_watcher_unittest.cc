@@ -434,6 +434,8 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnGpuProcessHang) {
                   Pair("HangWatcher.IsThreadHung.GpuProcess.MainThread",
                        BucketsAre(Bucket(true, /*count=*/1))),
                   Pair("HangWatcher.IsThreadHung.GpuProcess.IOThread",
+                       BucketsAre(Bucket(true, /*count=*/1))),
+                  Pair("HangWatcher.IsThreadHung.GpuProcess.CompositorThread",
                        BucketsAre(Bucket(true, /*count=*/1)))));
 }
 
@@ -675,6 +677,10 @@ INSTANTIATE_TEST_SUITE_P(
         {.test_name = "GpuCrashReportsEnabledForIoThread",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
          .feature_params = {{kGpuProcessIoThreadLogLevelParam, "2"}},
+         .expected_hang_count = 1},
+        {.test_name = "GpuCrashReportsEnabledForCompositorThread",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .feature_params = {{kGpuProcessCompositorThreadLogLevelParam, "2"}},
          .expected_hang_count = 1},
         {.test_name = "GpuCrashReportsEnabledForThreadPoolThreads",
          .process_type = HangWatcher::ProcessType::kGPUProcess,

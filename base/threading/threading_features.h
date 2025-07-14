@@ -38,6 +38,7 @@ BASE_EXPORT extern const char kBrowserProcessThreadPoolLogLevelParam[];
 
 BASE_EXPORT extern const char kGpuProcessIoThreadLogLevelParam[];
 BASE_EXPORT extern const char kGpuProcessMainThreadLogLevelParam[];
+BASE_EXPORT extern const char kGpuProcessCompositorThreadLogLevelParam[];
 BASE_EXPORT extern const char kGpuProcessThreadPoolLogLevelParam[];
 
 BASE_EXPORT extern const char kRendererProcessIoThreadLogLevelParam[];

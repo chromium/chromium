@@ -142,7 +142,10 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
               any_thread_hung);
           break;
         case HangWatcher::ThreadType::kCompositorThread:
-          // Not recorded for now.
+          UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
+              UMA_HISTOGRAM_BOOLEAN, sample_ticks, monitoring_period,
+              "HangWatcher.IsThreadHung.GpuProcess.CompositorThread",
+              any_thread_hung);
           break;
         case HangWatcher::ThreadType::kThreadPoolThread:
           // Not recorded for now.
@@ -272,6 +275,8 @@ const char kGpuProcessIoThreadLogLevelParam[] =
     "gpu_process_io_thread_log_level";
 const char kGpuProcessMainThreadLogLevelParam[] =
     "gpu_process_main_thread_log_level";
+const char kGpuProcessCompositorThreadLogLevelParam[] =
+    "gpu_process_compositor_thread_log_level";
 const char kGpuProcessThreadPoolLogLevelParam[] =
     "gpu_process_threadpool_log_level";
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
@@ -279,6 +284,9 @@ constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
     &kEnableHangWatcher, kGpuProcessMainThreadLogLevelParam,
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kGPUProcessCompositorThreadLogLevel{
+    &kEnableHangWatcher, kGpuProcessCompositorThreadLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
     &kEnableHangWatcher, kGpuProcessThreadPoolLogLevelParam,
@@ -499,6 +507,9 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
         std::memory_order_relaxed);
     g_main_thread_log_level.store(
         static_cast<LoggingLevel>(kGPUProcessMainThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_compositor_thread_log_level.store(
+        static_cast<LoggingLevel>(kGPUProcessCompositorThreadLogLevel.Get()),
         std::memory_order_relaxed);
   } else if (process_type == HangWatcher::ProcessType::kRendererProcess) {
     g_threadpool_log_level.store(
