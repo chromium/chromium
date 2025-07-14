@@ -781,7 +781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.TransitionedToReadyState" enum="BooleanSuccess"
-    expires_after="2025-07-14">
+    expires_after="2026-07-14">
   <owner>gavinwill@google.com</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
