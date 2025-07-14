@@ -147,7 +147,13 @@ void MicGainSliderView::Update(bool by_user) {
     // inactive, this slider must be the one for the dual internal mic, which
     // is currently inactive. Sets its level as the front internal mic level
     // by default.
-    device_id = audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic)->id;
+    const AudioDevice* front_mic_device =
+        audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic);
+    if (!front_mic_device) {
+      return;
+    }
+
+    device_id = front_mic_device->id;
   }
 
   level = audio_handler->GetInputGainPercentForDevice(device_id) / 100.f;
