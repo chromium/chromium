@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.MessageQueue;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ResettersForTesting;
@@ -24,17 +25,19 @@ import java.util.concurrent.TimeUnit;
 public class DeferredStartupHandler {
     private static @Nullable DeferredStartupHandler sInstance;
 
+    private final MessageQueue mMessageQueue;
     private final Queue<Runnable> mDeferredTasks = new LinkedList<>();
 
     private @Nullable CountDownLatch mLatchForTesting;
 
     /**
      * This class is an application specific object that handles the deferred startup.
+     *
      * @return The singleton instance of {@link DeferredStartupHandler}.
      */
     public static DeferredStartupHandler getInstance() {
         ThreadUtils.assertOnUiThread();
-        if (sInstance == null) sInstance = new DeferredStartupHandler();
+        if (sInstance == null) sInstance = new DeferredStartupHandler(Looper.myQueue());
         return sInstance;
     }
 
@@ -44,44 +47,44 @@ public class DeferredStartupHandler {
         ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
-    protected DeferredStartupHandler() {}
+    protected DeferredStartupHandler(MessageQueue messageQueue) {
+        mMessageQueue = messageQueue;
+    }
 
     /**
-     * Add the idle handler which will run deferred startup tasks in sequence when idle. This can
-     * be called multiple times by different activities to schedule their own deferred startup
-     * tasks.
+     * Add the idle handler which will run deferred startup tasks in sequence when idle. This can be
+     * called multiple times by different activities to schedule their own deferred startup tasks.
      */
     public void queueDeferredTasksOnIdleHandler() {
         ThreadUtils.assertOnUiThread();
         // Adding multiple IdleHandlers is okay - they'll remove themselves once the queue is empty.
-        Looper.myQueue()
-                .addIdleHandler(
-                        () -> {
-                            try {
-                                Runnable currentTask = mDeferredTasks.poll();
-                                if (currentTask != null) currentTask.run();
-                                if (mDeferredTasks.isEmpty()) {
-                                    if (mLatchForTesting != null) mLatchForTesting.countDown();
-                                    if (sInstance == DeferredStartupHandler.this) sInstance = null;
-                                    return false;
-                                }
-                            } catch (Throwable e) {
-                                // The Android MessageQueue swallows and logs all thrown exceptions
-                                // leading to silently broken deferred startup handlers. Post the
-                                // exception to avoid Android swallowing it.
-                                new Handler()
-                                        .post(
-                                                () -> {
-                                                    throw e;
-                                                });
-                            }
-                            // Pump the queue so we get called back if the queue is still idle.
-                            // Note that we can't simply check myQueue().isIdle() as this will
-                            // continue to return true even if native tasks are queued up (until
-                            // we return control to the Looper).
-                            new Handler().post(CallbackUtils.emptyRunnable());
-                            return true;
-                        });
+        mMessageQueue.addIdleHandler(
+                () -> {
+                    try {
+                        Runnable currentTask = mDeferredTasks.poll();
+                        if (currentTask != null) currentTask.run();
+                        if (mDeferredTasks.isEmpty()) {
+                            if (mLatchForTesting != null) mLatchForTesting.countDown();
+                            if (sInstance == DeferredStartupHandler.this) sInstance = null;
+                            return false;
+                        }
+                    } catch (Throwable e) {
+                        // The Android MessageQueue swallows and logs all thrown exceptions
+                        // leading to silently broken deferred startup handlers. Post the
+                        // exception to avoid Android swallowing it.
+                        new Handler()
+                                .post(
+                                        () -> {
+                                            throw e;
+                                        });
+                    }
+                    // Pump the queue so we get called back if the queue is still idle.
+                    // Note that we can't simply check myQueue().isIdle() as this will
+                    // continue to return true even if native tasks are queued up (until
+                    // we return control to the Looper).
+                    new Handler().post(CallbackUtils.emptyRunnable());
+                    return true;
+                });
     }
 
     /**

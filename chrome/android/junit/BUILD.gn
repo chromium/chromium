@@ -416,7 +416,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/HomeSurfaceTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/IntentHandlerRobolectricTest.java",
       "src/org/chromium/chrome/browser/OmahaServiceStartDelayerTest.java",
-      "src/org/chromium/chrome/browser/ShadowIdleHandlerAwareMessageQueue.java",
       "src/org/chromium/chrome/browser/ShortcutHelperTest.java",
       "src/org/chromium/chrome/browser/SwipeRefreshHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/TabGroupUsageTrackerUnitTest.java",

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.LargeTest;
@@ -118,6 +119,7 @@ public class CustomTabDeferredStartupTest {
                 PageLoadFinishedTabObserver observer,
                 CallbackHelper helper,
                 ChromeActivityTestRule<?> activityTestRule) {
+            super(Looper.getMainLooper().getQueue());
             mObserver = observer;
             mHelper = helper;
             mActivityTestRule = activityTestRule;

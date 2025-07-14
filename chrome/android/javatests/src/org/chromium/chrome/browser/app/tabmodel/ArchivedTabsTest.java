@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.os.Looper;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -51,6 +53,10 @@ import java.util.List;
 public class ArchivedTabsTest {
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
         private final List<Runnable> mTasks = new ArrayList<>();
+
+        FakeDeferredStartupHandler() {
+            super(Looper.getMainLooper().getQueue());
+        }
 
         @Override
         public void addDeferredTask(Runnable task) {

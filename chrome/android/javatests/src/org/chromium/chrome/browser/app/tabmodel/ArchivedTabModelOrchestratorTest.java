@@ -27,6 +27,8 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 
+import android.os.Looper;
+
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
@@ -87,6 +89,10 @@ public class ArchivedTabModelOrchestratorTest {
 
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
         private final List<Runnable> mTasks = new ArrayList<>();
+
+        FakeDeferredStartupHandler() {
+            super(Looper.getMainLooper().getQueue());
+        }
 
         @Override
         public void addDeferredTask(Runnable task) {
