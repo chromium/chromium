@@ -126,6 +126,11 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(int sysno);
 // Restrict the flags of pipe2().
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPipe2();
 
+// Restrict the flags of send(), sendfrom(), sendmsg(), and sendmmsg(), syscalls
+// that send a message to a socket. The flags are allowlisted, but in
+// particular, this denies MSG_OOB.
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno);
+
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_

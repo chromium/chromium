@@ -571,7 +571,68 @@ BPF_DEATH_TEST_C(BaselinePolicy,
   int id;
   setsockopt(fds[0], SOL_SOCKET, SO_DEBUG, &id, sizeof(id));
 }
-#endif
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 SendFlagsFiltered,
+                 DEATH_SUCCESS(),
+                 BaselinePolicy) {
+  int fds[2];
+  PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
+
+  char buf[1] = {'x'};
+// Check allowlisted MSG_DONTWAIT with send. Newer platforms don't have send()
+// anymore.
+#if defined(__NR_send)
+  PCHECK(syscall(__NR_send, fds[0], &buf, 1, MSG_DONTWAIT) != -1);
+#endif  //  defined(__NR_send)
+
+  // Check allowlisted MSG_DONTWAIT with sendto
+  PCHECK(syscall(__NR_sendto, fds[0], &buf, 1, MSG_DONTWAIT, nullptr,
+                 nullptr) != -1);
+
+  // Check allowlisted MSG_DONTWAIT with sendmsg
+  struct msghdr msg = {};
+  PCHECK(syscall(__NR_sendmsg, fds[0], &msg, MSG_DONTWAIT) != -1);
+}
+
+#if defined(__NR_send)
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 SendFlagsFilteredMSG_OOB,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  int fds[2];
+  PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
+
+  char buf[1];
+  // Specifically disallow MSG_OOB
+  syscall(__NR_send, fds[0], &buf, 1, MSG_OOB);
+}
+#endif  //  defined(__NR_send)
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 SendfromFlagsFilteredMSG_OOB,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  int fds[2];
+  PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
+
+  char buf[1];
+  // Specifically disallow MSG_OOB
+  syscall(__NR_sendto, fds[0], &buf, 1, MSG_OOB, nullptr, nullptr);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 SendmsgFlagsFilteredMSG_OOB,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  int fds[2];
+  PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
+  // Specifically disallow MSG_OOB
+  struct msghdr msg = {};
+  syscall(__NR_sendmsg, fds[0], &msg, MSG_DONTWAIT | MSG_OOB);
+}
+
+#endif  // !defined(i386)
 
 }  // namespace
 
