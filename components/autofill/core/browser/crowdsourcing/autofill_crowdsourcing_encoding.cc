@@ -15,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -354,6 +355,68 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
+// Populates the three-bit hashes of the upload contents for form metadata.
+void PopulateThreeBitHashedFormMetadata(const FormStructure& form,
+                                        AutofillUploadContents& upload) {
+  ThreeBitHashedFormMetadata* form_metadata =
+      upload.mutable_three_bit_hashed_form_metadata();
+  if (!form.id_attribute().empty()) {
+    form_metadata->set_id(StrToHash3Bit(form.id_attribute()));
+  }
+  if (!form.name_attribute().empty()) {
+    form_metadata->set_name(StrToHash3Bit(form.name_attribute()));
+  }
+
+  if (!form.button_titles().empty()) {
+    std::string concatenated_button_titles = base::StrCat(
+        base::ToVector(form.button_titles(), [](const ButtonTitleInfo& info) {
+          return base::UTF16ToUTF8(info.first);
+        }));
+    form_metadata->set_button_titles_concatenated(
+        StrToHash3Bit(concatenated_button_titles));
+  }
+}
+
+// Populates the three-bit hashes of the upload contents for a single field.
+void PopulateThreeBitHashedFieldMetadata(
+    const AutofillField& field,
+    AutofillUploadContents::Field& upload_field) {
+  ThreeBitHashedFieldMetadata* field_metadata =
+      upload_field.mutable_three_bit_hashed_field_metadata();
+
+  if (!field.id_attribute().empty()) {
+    field_metadata->set_id(StrToHash3Bit(field.id_attribute()));
+  }
+  if (!field.name_attribute().empty()) {
+    field_metadata->set_name(StrToHash3Bit(field.name_attribute()));
+  }
+  field_metadata->set_type(
+      StrToHash3Bit(FormControlTypeToString(field.form_control_type())));
+  if (!field.label().empty()) {
+    field_metadata->set_label(StrToHash3Bit(field.label()));
+  }
+  if (!field.aria_label().empty()) {
+    field_metadata->set_aria_label(StrToHash3Bit(field.aria_label()));
+  }
+  if (!field.aria_description().empty()) {
+    field_metadata->set_aria_description(
+        StrToHash3Bit(field.aria_description()));
+  }
+  if (!field.placeholder().empty()) {
+    field_metadata->set_placeholder(StrToHash3Bit(field.placeholder()));
+  }
+  if (!field.initial_value().empty()) {
+    field_metadata->set_initial_value(StrToHash3Bit(field.initial_value()));
+  }
+  if (!field.autocomplete_attribute().empty()) {
+    field_metadata->set_autocomplete(
+        StrToHash3Bit(field.autocomplete_attribute()));
+  }
+  if (!field.pattern().empty()) {
+    field_metadata->set_pattern(StrToHash3Bit(field.pattern()));
+  }
+}
+
 // Encodes the fields of `upload_fields` in the in-out parameter `upload`.
 // Helper function for EncodeUploadRequest().
 void EncodeFormFieldsForUpload(
@@ -425,6 +488,10 @@ void EncodeFormFieldsForUpload(
       PopulateRandomizedFieldMetadata(
           *encoder, form, *field,
           added_field->mutable_randomized_field_metadata());
+    }
+
+    if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
+      PopulateThreeBitHashedFieldMetadata(*field, *added_field);
     }
 
     if (field_options) {
@@ -796,6 +863,10 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   if (options.encoder) {
     PopulateRandomizedFormMetadata(*options.encoder, form,
                                    upload.mutable_randomized_form_metadata());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
+    PopulateThreeBitHashedFormMetadata(form, upload);
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());
