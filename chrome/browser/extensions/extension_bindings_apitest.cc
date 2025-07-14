@@ -5,7 +5,6 @@
 // Contains holistic tests of the bindings infrastructure
 
 #include "base/run_loop.h"
-#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -615,12 +614,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
     // Passing a message without an active user gesture shouldn't result in a
     // gesture being active on the receiving end.
     ExtensionTestMessageListener listener;
-    content::EvalJsResult result =
+    EXPECT_EQ(
         content::EvalJs(tab, "document.getElementById('go-button').click()",
-                        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
-    EXPECT_THAT(result, testing::AnyOf(content::EvalJsResult::IsError(),
-                                       content::EvalJsResult::IsOkAndHolds(
-                                           base::test::IsJson(base::Value()))));
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+        base::Value());
 
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("Clicked: false", listener.message());
@@ -630,11 +627,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
     // If there is an active user gesture when the message is sent, we should
     // synthesize a user gesture on the receiving end.
     ExtensionTestMessageListener listener;
-    content::EvalJsResult result =
-        content::EvalJs(tab, "document.getElementById('go-button').click()");
-    EXPECT_THAT(result, testing::AnyOf(content::EvalJsResult::IsError(),
-                                       content::EvalJsResult::IsOkAndHolds(
-                                           base::test::IsJson(base::Value()))));
+    EXPECT_EQ(
+        content::EvalJs(tab, "document.getElementById('go-button').click()"),
+        base::Value());
 
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("Clicked: true", listener.message());
