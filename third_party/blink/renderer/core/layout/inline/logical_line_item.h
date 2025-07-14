@@ -88,7 +88,7 @@ struct LogicalLineItem {
   LogicalLineItem(const InlineItem& inline_item,
                   const ShapeResultView* shape_result,
                   const String& text_content,
-                  FitTextScale fit_text_scale,
+                  const FitTextScale* fit_text_scale,
                   LayoutUnit block_offset,
                   LayoutUnit inline_size,
                   LayoutUnit text_height,
@@ -262,7 +262,7 @@ struct LogicalLineItem {
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
 
   // For text-grow and text-shrink.
-  FitTextScale fit_text_scale;
+  Member<const FitTextScale> fit_text_scale;
 
   // When an item contains only trailing spaces, the original bidi level needs
   // to be ignored, and just use paragraph direction (UAX#9 L1)

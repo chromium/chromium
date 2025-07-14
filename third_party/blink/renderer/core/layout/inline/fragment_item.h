@@ -545,8 +545,9 @@ class CORE_EXPORT FragmentItem final {
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
 
-  // Returns a FitTextScale for text-grow / text-shrink.
-  FitTextScale GetFitTextScale() const;
+  // Returns a pair of text scaling factor and is_scaled_inline_only flag for
+  // text-grow and text-shrink properties.
+  std::pair<float, bool> GetFitTextScale() const;
 
   // Get a description of |this| for the debug purposes.
   String ToString() const;
@@ -606,7 +607,7 @@ class CORE_EXPORT FragmentItem final {
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
 
-  void SetFitTextScale(FitTextScale scale);
+  void SetFitTextScale(const FitTextScale* scale);
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we

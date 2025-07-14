@@ -67,6 +67,7 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(ruby_column);
   visitor->Trace(positioned_float);
   visitor->Trace(exclusion_space_before_position_float);
+  visitor->Trace(fit_text_scale);
 }
 
 String InlineItemResult::ToString(const String& ifc_text_content,
@@ -128,7 +129,9 @@ float FindTextScale(const InlineItemResults& line_items,
       --level;
     } else if (item_type == InlineItem::kText) {
       if (level == 0) {
-        text_scale = line_items[i].fit_text_scale.scale;
+        if (const auto* fit_text_scale = line_items[i].fit_text_scale.Get()) {
+          text_scale = fit_text_scale->scale;
+        }
         break;
       }
     }

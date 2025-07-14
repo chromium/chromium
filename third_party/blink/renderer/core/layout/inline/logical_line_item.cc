@@ -127,6 +127,7 @@ void LogicalLineItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(out_of_flow_positioned_box);
   visitor->Trace(unpositioned_float);
+  visitor->Trace(fit_text_scale);
 }
 
 void LogicalLineItems::Trace(Visitor* visitor) const {

@@ -149,9 +149,12 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       }
       DCHECK(item_result.shape_result);
 
-      float block_scale = item_result.fit_text_scale.is_scaled_inline_only
-                              ? 1.0f
-                              : item_result.fit_text_scale.scale;
+      float scale = 1.0f;
+      float block_scale = 1.0f;
+      if (const auto* fit_text_scale = item_result.fit_text_scale.Get()) {
+        scale = fit_text_scale->scale;
+        block_scale = fit_text_scale->is_scaled_inline_only ? 1.0f : scale;
+      }
       if (quirks_mode_) [[unlikely]] {
         box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,
                                block_scale);
@@ -169,8 +172,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
         LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
         line_box->AddChild(
             item, item_result, item_result.TextOffset(), box->text_top,
-            LayoutUnit((item_result.inline_size - hyphen_inline_size) *
-                       item_result.fit_text_scale.scale),
+            LayoutUnit((item_result.inline_size - hyphen_inline_size) * scale),
             box->text_height, item.BidiLevel());
         PlaceHyphen(item_result, hyphen_inline_size, line_box, box);
       } else if (node_.IsTextCombine()) [[unlikely]] {
@@ -185,8 +187,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       } else {
         line_box->AddChild(item, item_result, item_result.TextOffset(),
                            box->text_top,
-                           LayoutUnit(item_result.inline_size *
-                                      item_result.fit_text_scale.scale),
+                           LayoutUnit(item_result.inline_size * scale),
                            box->text_height, item.BidiLevel());
       }
 
@@ -380,10 +381,13 @@ void LogicalLineBuilder::PlaceHyphen(const InlineItemResult& item_result,
   DCHECK(item_result.hyphen);
   DCHECK_EQ(hyphen_inline_size, item_result.hyphen.InlineSize());
   const InlineItem& item = *item_result.item;
-  hyphen_inline_size *= item_result.fit_text_scale.scale;
+  const auto* fit_text_scale = item_result.fit_text_scale.Get();
+  if (fit_text_scale) {
+    hyphen_inline_size *= fit_text_scale->scale;
+  }
   line_box->AddChild(
       item, ShapeResultView::Create(&item_result.hyphen.GetShapeResult()),
-      item_result.hyphen.Text(), item_result.fit_text_scale, box->text_top,
+      item_result.hyphen.Text(), fit_text_scale, box->text_top,
       hyphen_inline_size, box->text_height, item.BidiLevel());
 }
 

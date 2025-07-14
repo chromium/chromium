@@ -323,8 +323,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK(!text_item.IsSvgText());
     if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
       auto fit_text_scale = text_item.GetFitTextScale();
-      scaling_factor = fit_text_scale.scale;
-      is_scaled_inline_only = fit_text_scale.is_scaled_inline_only;
+      scaling_factor = fit_text_scale.first;
+      is_scaled_inline_only = fit_text_scale.second;
     }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);

@@ -153,7 +153,7 @@ struct CORE_EXPORT InlineItemResult {
   LineBoxStrut padding;
 
   // For text-grow and text-shrink.
-  FitTextScale fit_text_scale;
+  Member<FitTextScale> fit_text_scale;
 
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.

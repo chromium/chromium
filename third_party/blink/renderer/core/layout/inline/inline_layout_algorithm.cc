@@ -259,19 +259,22 @@ bool ScaleLine(bool is_grow,
     if (item.item->Type() != InlineItem::kText) {
       continue;
     }
+    if (!item.fit_text_scale) {
+      item.fit_text_scale = MakeGarbageCollected<FitTextScale>();
+    }
     if (limit) {
       if (is_grow) {
         float max_scale = *limit / item.item->Style()->ComputedFontSize();
-        item.fit_text_scale.scale = std::min(scale_factor, max_scale);
+        item.fit_text_scale->scale = std::min(scale_factor, max_scale);
       } else {
         float min_scale = *limit / item.item->Style()->ComputedFontSize();
-        item.fit_text_scale.scale = std::max(scale_factor, min_scale);
+        item.fit_text_scale->scale = std::max(scale_factor, min_scale);
       }
     } else {
-      item.fit_text_scale.scale = scale_factor;
+      item.fit_text_scale->scale = scale_factor;
     }
-    item.fit_text_scale.is_scaled_inline_only = is_scaled_inline_only;
-    if (item.fit_text_scale.scale != 1.0f) {
+    item.fit_text_scale->is_scaled_inline_only = is_scaled_inline_only;
+    if (item.fit_text_scale->scale != 1.0f) {
       should_scale_line_height = true;
     }
   }
