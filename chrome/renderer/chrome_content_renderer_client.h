@@ -225,6 +225,8 @@ class ChromeContentRendererClient
   std::unique_ptr<blink::WebLinkPreviewTriggerer> CreateLinkPreviewTriggerer()
       override;
 
+  bool IsContentBasedFingerprintingProtectionEnabled();
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   static blink::WebPlugin* CreatePlugin(
       content::RenderFrame* render_frame,
@@ -277,6 +279,9 @@ class ChromeContentRendererClient
       subresource_filter_ruleset_dealer_;
   std::unique_ptr<fingerprinting_protection_filter::UnverifiedRulesetDealer>
       fingerprinting_protection_ruleset_dealer_;
+  // Copied from `blink::web_prefs::WebPreferences` whenever a new top-level
+  // main frame is created.
+  bool content_based_fingerprinting_protection_enabled_ = false;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<safe_browsing::PhishingModelSetterImpl>
       phishing_model_setter_;

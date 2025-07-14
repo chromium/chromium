@@ -104,6 +104,14 @@ IN_PROC_BROWSER_TEST_F(
     ActiveFilter_AllowsOnUserBypassException) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));

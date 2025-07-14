@@ -235,6 +235,7 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -4754,6 +4755,12 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
           features::kIncognitoFingerprintingInterventions) &&
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->IsIncognitoProfile();
+
+  web_prefs->content_based_fingerprinting_protection_enabled =
+      fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionEnabledForIncognitoState(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())
+                  ->IsIncognitoProfile());
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(

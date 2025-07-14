@@ -453,6 +453,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // fingerprinting are enabled.
   bool api_based_fingerprinting_interventions_enabled = false;
 
+  // Whether fingerprinting protection based on page content is enabled.
+  bool content_based_fingerprinting_protection_enabled = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

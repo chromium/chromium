@@ -523,6 +523,59 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterEnabledInIncognitoBrowserTest,
+    NoSubresourcesEvaluatedInRegularBrowsing) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  // Open an incognito instance but keep using the non-incognito browser for
+  // testing.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  SelectFirstBrowser();
+  ASSERT_NE(browser(), incognito);
+
+  GURL url(GetTestUrl(kMultiPlatformTestFrameSetPath));
+
+  // Disallow loading included_script.js as a subresource.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+
+  ASSERT_TRUE(NavigateToDestination(url));
+  NavigateSubframesToCrossOriginSite();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectAllSubframes));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectAllSubframes);
+
+  // Check that `ACTIVATED` UKM logged no entries.
+  ExpectFpfActivatedUkms(test_ukm_recorder, 0u,
+                         /*is_dry_run=*/false);
+
+  // No feature activations.
+  histogram_tester.ExpectBucketCount(
+      ActivationDecisionHistogramName,
+      subresource_filter::ActivationDecision::ACTIVATED, 0);
+  histogram_tester.ExpectBucketCount(
+      ActivationLevelHistogramName,
+      subresource_filter::mojom::ActivationLevel::kEnabled, 0);
+
+  // No Incognito page-specific metrics emitted.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForIncognitoPage,
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadsMatchedRulesForIncognitoPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForIncognitoPage, 0);
+
+  // No other metrics emitted.
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 0);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 0);
+}
+
 class
     FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabledInIncognito
     : public FingerprintingProtectionFilterEnabledInIncognitoBrowserTest {
