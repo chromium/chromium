@@ -294,7 +294,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
 #else
   // Do not discard the tab if it is currently active in its window, or if it is
   // in the same split as the currently active tab.
-  if (base::Contains(tab_strip_model_->GetVisibleTabs(), web_contents(),
+  if (base::Contains(tab_strip_model_->GetForegroundTabs(), web_contents(),
                      &tabs::TabInterface::GetContents)) {
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
   }
