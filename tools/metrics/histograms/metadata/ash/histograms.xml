@@ -6210,8 +6210,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.DeskBarVisibility" enum="DeskBarVisibility"
-    expires_after="2025-08-24">
-  <owner>esum@google.com</owner>
+    expires_after="2026-08-24">
+  <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     Tracks whether the desk bar was opened during an overview mode session, and
@@ -6221,8 +6221,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.DeskCount" units="units"
-    expires_after="2025-08-24">
-  <owner>esum@google.com</owner>
+    expires_after="2026-08-24">
+  <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
     The number of desks open when entering overview mode. Recorded each time
