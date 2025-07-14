@@ -74,7 +74,6 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
       base::Value::List required_permissions,
       base::Value::List optional_permissions) {
     app_ = extensions::ExtensionBuilder("Test ChromeOS System Extension")
-               .SetManifestVersion(3)
                .SetManifestKey("chromeos_system_extension", base::Value::Dict())
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",

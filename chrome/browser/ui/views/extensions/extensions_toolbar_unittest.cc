@@ -106,7 +106,6 @@ ExtensionsToolbarUnitTest::InstallExtension(
     extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestVersion(3)
           .SetLocation(location)
           .AddAPIPermissions(permissions)
           .AddHostPermissions(host_permissions)

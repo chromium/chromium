@@ -128,11 +128,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
 }
 
 // TODO(crbug.com/405148986): Modify this test once the appropriate how to use
-// text is decided for MV3 action extensions.
-TEST_F(ExtensionInstalledBubbleModelTest, MV3ActionExtension) {
-  // An extension with a MV3 action...
+// text is decided for extensions with actions.
+TEST_F(ExtensionInstalledBubbleModelTest, ActionExtension) {
   auto extension = extensions::ExtensionBuilder("Foo")
-                       .SetManifestVersion(3)
                        .SetAction(extensions::ActionInfo::Type::kAction)
                        .Build();
   registrar()->AddExtension(extension);

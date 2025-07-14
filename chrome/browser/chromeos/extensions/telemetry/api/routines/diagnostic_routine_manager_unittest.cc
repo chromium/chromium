@@ -109,7 +109,6 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
     }
     auto extension =
         extensions::ExtensionBuilder("Test ChromeOS System Extension")
-            .SetManifestVersion(3)
             .SetManifestKey("chromeos_system_extension", base::Value::Dict())
             .SetManifestKey(
                 "externally_connectable",

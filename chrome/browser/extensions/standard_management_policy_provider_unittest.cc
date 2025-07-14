@@ -113,7 +113,6 @@ TEST_F(StandardManagementPolicyProviderTest,
   // Dummy CWS extension not installed from the store
   auto extension = ExtensionBuilder("CWSPolicyInstalledExtension")
                        .SetVersion("1.0")
-                       .SetManifestVersion(3)
                        .SetLocation(ManifestLocation::kExternalPolicy)
                        .SetManifestKey("update_url",
                                        extension_urls::kChromeWebstoreUpdateURL)

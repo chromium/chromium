@@ -70,7 +70,6 @@ HostAccessRequestsHelperUnittest::InstallExtensionAndWithholdHostPermissions(
     const std::string& name,
     const std::string& host_permission) {
   auto extension = ExtensionBuilder(name)
-                       .SetManifestVersion(3)
                        .AddHostPermission(host_permission)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .Build();
@@ -86,7 +85,6 @@ scoped_refptr<const Extension>
 HostAccessRequestsHelperUnittest::InstallExtensionWithActiveTab(
     const std::string& name) {
   auto extension = ExtensionBuilder(name)
-                       .SetManifestVersion(3)
                        .SetID(crx_file::id_util::GenerateId(name))
                        .AddAPIPermission("activeTab")
                        .Build();
@@ -385,7 +383,6 @@ TEST_F(HostAccessRequestsHelperUnittest,
   // permissions.
   const std::string extension_name = "Extension";
   auto extension = ExtensionBuilder(extension_name)
-                       .SetManifestVersion(3)
                        .AddHostPermission("http://www.example.com/")
                        .AddAPIPermission("activeTab")
                        .SetID(crx_file::id_util::GenerateId(extension_name))

@@ -1216,7 +1216,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewControllerFeatureRolloutBrowserTest,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just side panel")
           .SetLocation(ManifestLocation::kInternal)
-          .SetManifestVersion(3)
           .AddAPIPermission("sidePanel")
           .Build();
 

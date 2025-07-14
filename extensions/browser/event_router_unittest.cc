@@ -788,7 +788,6 @@ TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("test extension")
-            .SetManifestVersion(3)
             .SetID(id)
             .Build();
     ExtensionRegistry::Get(browser_context())->AddEnabled(extension);

@@ -115,9 +115,9 @@ scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
 
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
     int manifest_version) {
-  if (manifest_version == 3) {
+  if (manifest_version >= 3) {
     return ExtensionBuilder("An extension with web-accessible resources")
-        .SetManifestVersion(3)
+        .SetManifestVersion(manifest_version)
         .SetManifestKey(
             "web_accessible_resources",
             base::Value::List().Append(
@@ -161,9 +161,9 @@ scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension(
 scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
     int manifest_version,
     const std::string& module_extension_id) {
-  if (manifest_version == 3) {
+  if (manifest_version >= 3) {
     return ExtensionBuilder("A module importer extension")
-        .SetManifestVersion(3)
+        .SetManifestVersion(manifest_version)
         .SetManifestKey("import",
                         base::Value::List().Append(
                             base::Value::Dict().Set("id", module_extension_id)))

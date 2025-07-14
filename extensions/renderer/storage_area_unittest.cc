@@ -121,7 +121,6 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
 
 TEST_F(StorageAreaTest, HasOnChanged) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
-                                                 .SetManifestVersion(3)
                                                  .AddAPIPermission("storage")
                                                  .Build();
   RegisterExtension(extension);
@@ -159,9 +158,8 @@ TEST_F(StorageAreaTest, HasOnChanged) {
   }
 }
 
-TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
+TEST_F(StorageAreaTest, PromiseBasedFunctions) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
-                                                 .SetManifestVersion(3)
                                                  .AddAPIPermission("storage")
                                                  .Build();
   RegisterExtension(extension);

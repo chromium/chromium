@@ -138,7 +138,6 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
       const std::string& host_permission) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("extension")
-            .SetManifestVersion(3)
             .AddHostPermission(host_permission)
             .Build();
     extension_registrar()->AddExtension(extension);

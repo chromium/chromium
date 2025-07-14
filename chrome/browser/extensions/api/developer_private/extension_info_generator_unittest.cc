@@ -941,7 +941,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
        RevokedOptionalNonHostPermissionsInfoTest) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
-          .SetManifestVersion(3)
           .AddOptionalAPIPermission("notifications")
           .Build();
   registrar()->AddExtension(extension.get());

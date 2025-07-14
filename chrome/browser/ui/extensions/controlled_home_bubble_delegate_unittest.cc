@@ -50,7 +50,6 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
           extensions::mojom::ManifestLocation::kInternal) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
-            .SetManifestVersion(3)
             .SetLocation(location)
             .SetManifestKey(
                 "chrome_settings_overrides",

@@ -120,7 +120,6 @@ TEST_P(DeveloperModeBindingsSystemUnittest,
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .AddAPIPermission(api_name)
-                                                 .SetManifestVersion(3)
                                                  .Build();
   RegisterExtension(extension);
 
@@ -187,7 +186,6 @@ TEST_P(DeveloperModeBindingsSystemUnittest,
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .AddAPIPermission(api_name)
-                                                 .SetManifestVersion(3)
                                                  .Build();
   RegisterExtension(extension);
 

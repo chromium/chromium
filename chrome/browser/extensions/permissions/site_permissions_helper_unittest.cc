@@ -76,7 +76,6 @@ SitePermissionsHelperUnitTest::InstallExtensionWithPermissions(
     const std::vector<std::string>& host_permissions,
     const std::vector<std::string>& permissions) {
   auto extension = ExtensionBuilder(name)
-                       .SetManifestVersion(3)
                        .AddHostPermissions(host_permissions)
                        .AddAPIPermissions(permissions)
                        .SetID(crx_file::id_util::GenerateId(name))

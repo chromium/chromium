@@ -59,7 +59,6 @@ scoped_refptr<const extensions::Extension>
 ExtensionsToolbarUITest::ForceInstallExtension(const std::string& name) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestVersion(3)
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();

@@ -102,7 +102,6 @@ PermissionsManagerUnittest::AddExtensionWithAPIPermission(
     extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestVersion(3)
           .AddAPIPermission(permission)
           .SetLocation(location)
           .Build();
@@ -120,7 +119,6 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
     const std::string& host_permission) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestVersion(3)
           .AddHostPermission(host_permission)
           .Build();
 

@@ -26,7 +26,6 @@ TEST_F(IdentityHooksDelegateTest, GetAuthToken) {
       "identity", std::make_unique<IdentityHooksDelegate>());
   // Register extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("testExtension")
-                                                 .SetManifestVersion(3)
                                                  .AddAPIPermission("identity")
                                                  .Build();
   RegisterExtension(extension);
