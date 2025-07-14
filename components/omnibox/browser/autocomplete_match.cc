@@ -531,10 +531,12 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     }
   }
 
-  // If the user bookmarks 'chrome://history/q=query', a/ corresponding answer
-  // match shouldn't show the bookmark star.
-  if (is_bookmark && type != Type::HISTORY_EMBEDDINGS_ANSWER)
+  // Some match types should retain their traditional icon even when bookmarked.
+  if (is_bookmark && type != Type::HISTORY_EMBEDDINGS_ANSWER &&
+      type != Type::STARTER_PACK) {
     return omnibox::kBookmarkChromeRefreshIcon;
+  }
+
   if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return AnswerTypeToAnswerIcon(answer_type);
   }
