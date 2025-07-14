@@ -96,9 +96,9 @@ class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
             std::move(mock_controller_ptr));
   }
 
-  void CreateHanlder(bool should_create_with_tab_interface) {
+  void CreateHandlerWithTabInterface(bool set_tab_interface) {
     tabs::TabInterface* tab = nullptr;
-    if (should_create_with_tab_interface) {
+    if (set_tab_interface) {
       tab = browser()->tab_strip_model()->GetActiveTab();
     }
 
@@ -134,7 +134,13 @@ class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
 
 class CustomizeButtonsHandlerBrowserTest
     : public CustomizeButtonsHandlerBrowserTestBase,
-      public testing::WithParamInterface<bool> {};
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpOnMainThread() override {
+    CustomizeButtonsHandlerBrowserTestBase::SetUpOnMainThread();
+    CreateHandlerWithTabInterface(/*set_tab_interface=*/GetParam());
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CustomizeButtonsHandlerBrowserTest,
@@ -143,7 +149,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
-  CreateHanlder(GetParam());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SidePanelOpenTrigger trigger;
@@ -193,7 +198,6 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
 }
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, CloseSidePanel) {
-  CreateHanlder(GetParam());
   ON_CALL(*mock_controller_.get(), IsCustomizeChromeEntryShowing())
       .WillByDefault(testing::Return(true));
 
@@ -213,7 +217,6 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, CloseSidePanel) {
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest,
                        IncrementCustomizeChromeButtonOpenCount) {
-  CreateHanlder(GetParam());
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kNtpCustomizeChromeButtonOpenCount),
             0);
@@ -233,7 +236,6 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest,
                        IncrementWallpaperSearchButtonShownCount) {
-  CreateHanlder(GetParam());
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kNtpWallpaperSearchButtonShownCount),
             0);
@@ -244,17 +246,22 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest,
             1);
 }
 
-class CustomizeButtonsHandlerBrowserTestWithParam
+class CustomizeButtonsHandlerVisibilityParamsTest
     : public CustomizeButtonsHandlerBrowserTestBase,
       public testing::WithParamInterface<
           std::tuple<customize_buttons::mojom::CustomizeChromeSection,
                      customize_buttons::mojom::SidePanelOpenTrigger>> {
- protected:
-  customize_buttons::mojom::CustomizeChromeSection GetSectionParam() {
-    return std::get<0>(GetParam());
+ public:
+  void SetUpOnMainThread() override {
+    CustomizeButtonsHandlerBrowserTestBase::SetUpOnMainThread();
+    CreateHandlerWithTabInterface(/*set_tab_interface=*/false);
   }
 
-  customize_buttons::mojom::SidePanelOpenTrigger GetTriggerParam() {
+ protected:
+  customize_buttons::mojom::CustomizeChromeSection section_param() const {
+    return std::get<0>(GetParam());
+  }
+  customize_buttons::mojom::SidePanelOpenTrigger trigger_param() const {
     return std::get<1>(GetParam());
   }
 
@@ -292,7 +299,7 @@ class CustomizeButtonsHandlerBrowserTestWithParam
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    CustomizeButtonsHandlerBrowserTestWithParam,
+    CustomizeButtonsHandlerVisibilityParamsTest,
     testing::Combine(
         testing::Values(
             customize_buttons::mojom::CustomizeChromeSection::kUnspecified,
@@ -305,9 +312,8 @@ INSTANTIATE_TEST_SUITE_P(
             customize_buttons::mojom::SidePanelOpenTrigger::kNewTabPage,
             customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter)));
 
-IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTestWithParam,
+IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerVisibilityParamsTest,
                        OpenSidePanel) {
-  CreateHanlder(false);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::optional<CustomizeChromeSection> section;
@@ -331,14 +337,9 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTestWithParam,
           web_contents))
       .Times(1);
 
-  const customize_buttons::mojom::CustomizeChromeSection sectionParam =
-      GetSectionParam();
-  const customize_buttons::mojom::SidePanelOpenTrigger triggerParam =
-      GetTriggerParam();
-  handler_->SetCustomizeChromeSidePanelVisible(/*visible=*/true, sectionParam,
-                                               triggerParam);
+  handler_->SetCustomizeChromeSidePanelVisible(
+      /*visible=*/true, section_param(), trigger_param());
 
-  EXPECT_EQ(section.value(), GetExpectedSection(sectionParam));
-  EXPECT_EQ(trigger, GetExpectedTrigger(triggerParam));
-  doc_.FlushForTesting();
+  EXPECT_EQ(section.value(), GetExpectedSection(section_param()));
+  EXPECT_EQ(trigger, GetExpectedTrigger(trigger_param()));
 }
