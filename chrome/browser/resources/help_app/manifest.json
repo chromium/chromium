@@ -5,7 +5,9 @@
   "description": "Chrome OS Help",
   "default_locale": "en",
   "manifest_version": 3,
-  "content_security_policy": "default-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:;",
+  "content_security_policy": {
+    "extension_pages": "default-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; script-src 'self';"
+  },
   "incognito": "split",
   "permissions": [
     "storage"
