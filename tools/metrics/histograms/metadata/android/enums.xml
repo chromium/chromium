@@ -1833,6 +1833,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="FORWARD_BUTTON"/>
   <int value="18" label="RELOAD_BUTTON"/>
   <int value="19" label="MINIMIZE_BUTTON"/>
+  <int value="20" label="CONTROLS_POSITION"/>
 </enum>
 
 <enum name="TopToolbarAllowCaptureReason">
@@ -1857,6 +1858,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="NTP_Y_TRANSLATION"/>
   <int value="13" label="FULLSCREEN"/>
   <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
+  <int value="15" label="LAYOUT_REQUESTED"/>
 </enum>
 
 <!-- LINT.IfChange(TransferInputToVizResult) -->

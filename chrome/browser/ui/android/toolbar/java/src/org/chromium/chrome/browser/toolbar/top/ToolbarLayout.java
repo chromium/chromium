@@ -31,6 +31,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -100,6 +101,7 @@ public abstract class ToolbarLayout extends FrameLayout
     private @Nullable BrowserStateBrowserControlsVisibilityDelegate
             mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    protected BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     private int mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
@@ -811,6 +813,16 @@ public abstract class ToolbarLayout extends FrameLayout
     public void setBrowserControlsVisibilityDelegate(
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
+    }
+
+    /**
+     * Sets the {@link android.provider.Browser} instance the toolbar should use to query the state
+     * of browser controls.
+     */
+    @Initializer
+    public void setBrowserControlsStateProvider(
+            BrowserControlsStateProvider browserControlsStateProvider) {
+        mBrowserControlsStateProvider = browserControlsStateProvider;
     }
 
     // TODO(crbug.com/41484813): Rework the API if this method is called by multiple clients.

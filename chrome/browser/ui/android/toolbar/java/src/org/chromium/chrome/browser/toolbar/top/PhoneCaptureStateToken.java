@@ -11,6 +11,7 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
@@ -34,6 +35,7 @@ class PhoneCaptureStateToken {
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
     private final boolean mIsPaintPreview;
     private final int mUnfocusedLocationBarLayoutWidth;
+    private final int mControlsPosition;
 
     public PhoneCaptureStateToken(
             @ColorInt int tint,
@@ -47,7 +49,8 @@ class PhoneCaptureStateToken {
             boolean isShowingUpdateBadgeDuringLastCapture,
             boolean isPaintPreview,
             float progress,
-            int unfocusedLocationBarLayoutWidth) {
+            int unfocusedLocationBarLayoutWidth,
+            @ControlsPosition int controlsPosition) {
         mTint = tint;
         mTabCount = tabCount;
         mOptionalButtonDataHashCode = Objects.hashCode(optionalButtonData);
@@ -61,6 +64,7 @@ class PhoneCaptureStateToken {
         // Progress is not currently used for comparing snapshot states. It isn't part of the bitmap
         // capture anyway.
         mUnfocusedLocationBarLayoutWidth = unfocusedLocationBarLayoutWidth;
+        mControlsPosition = controlsPosition;
     }
 
     /**
@@ -104,6 +108,8 @@ class PhoneCaptureStateToken {
             // great way to check for equality. Currently default colors should be sufficient for
             // detecting changes to the toolbar.
             return ToolbarSnapshotDifference.HOME_BUTTON;
+        } else if (current.mControlsPosition != next.mControlsPosition) {
+            return ToolbarSnapshotDifference.CONTROLS_POSITION;
         }
         return ToolbarSnapshotDifference.NONE;
     }

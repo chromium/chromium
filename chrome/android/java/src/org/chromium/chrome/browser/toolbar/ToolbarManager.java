@@ -1188,6 +1188,7 @@ public class ToolbarManager
                             DownloadUtils::downloadOfflinePage);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
+            toolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
         }
 

@@ -1594,7 +1594,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private CaptureReadinessResult getReadinessStateWithSuppression() {
-        if (urlHasFocus()) {
+        if (isLayoutRequested() || isInLayout()) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.LAYOUT_REQUESTED);
+        } else if (urlHasFocus()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
         } else if (mUrlFocusChangeInProgress) {
             return CaptureReadinessResult.notReady(
@@ -1668,7 +1670,8 @@ public class ToolbarPhone extends ToolbarLayout
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
                 getToolbarDataProvider().isPaintPreview(),
                 getProgressBar().getProgress(),
-                mUnfocusedLocationBarLayoutWidth);
+                mUnfocusedLocationBarLayoutWidth,
+                mBrowserControlsStateProvider.getControlsPosition());
     }
 
     @Override

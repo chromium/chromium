@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
@@ -345,6 +346,18 @@ public class PhoneCaptureStateTokenTest {
                         mDefaultPhoneCaptureStateToken, otherPhoneCaptureStateToken));
     }
 
+    @Test
+    public void testDifferentControlsPosition() {
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder()
+                        .setControlsPosition(ControlsPosition.BOTTOM)
+                        .build();
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.CONTROLS_POSITION,
+                PhoneCaptureStateToken.getAnyDifference(
+                        mDefaultPhoneCaptureStateToken, otherPhoneCaptureStateToken));
+    }
+
     private class PhoneCustomTabCaptureStateTokenBuilder {
         private @ColorInt int mTint = DEFAULT_TINT;
         private int mTabCount = DEFAULT_TAB_COUNT;
@@ -360,6 +373,7 @@ public class PhoneCaptureStateTokenTest {
         private boolean mIsPaintPreview = DEFAULT_IS_PAINT_PREVIEW;
         private float mProgress = DEFAULT_PROGRESS;
         private int mUnfocusedLocationBarLayoutWidth = DEFAULT_UNFOCUSED_LOCATION_BAR_LAYOUT_WIDTH;
+        private int mControlsPosition = ControlsPosition.TOP;
 
         public PhoneCustomTabCaptureStateTokenBuilder setTint(@ColorInt int tint) {
             mTint = tint;
@@ -433,6 +447,12 @@ public class PhoneCaptureStateTokenTest {
             return this;
         }
 
+        public PhoneCustomTabCaptureStateTokenBuilder setControlsPosition(
+                @ControlsPosition int controlsPosition) {
+            mControlsPosition = controlsPosition;
+            return this;
+        }
+
         public PhoneCaptureStateToken build() {
             VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
             return new PhoneCaptureStateToken(
@@ -447,7 +467,8 @@ public class PhoneCaptureStateTokenTest {
                     mIsShowingUpdateBadgeDuringLastCapture,
                     mIsPaintPreview,
                     mProgress,
-                    mUnfocusedLocationBarLayoutWidth);
+                    mUnfocusedLocationBarLayoutWidth,
+                    mControlsPosition);
         }
     }
 }

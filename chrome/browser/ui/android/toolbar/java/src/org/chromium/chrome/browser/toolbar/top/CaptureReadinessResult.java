@@ -68,6 +68,7 @@ public class CaptureReadinessResult {
         TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION,
         TopToolbarBlockCaptureReason.FULLSCREEN,
         TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
+        TopToolbarBlockCaptureReason.LAYOUT_REQUESTED,
         TopToolbarBlockCaptureReason.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -87,7 +88,8 @@ public class CaptureReadinessResult {
         int NTP_Y_TRANSLATION = 12;
         int FULLSCREEN = 13;
         int TABLET_BUTTON_ANIMATION_IN_PROGRESS = 14;
-        int NUM_ENTRIES = 15;
+        int LAYOUT_REQUESTED = 15;
+        int NUM_ENTRIES = 16;
     }
 
     public static CaptureReadinessResult readyForced() {
