@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "services/on_device_model/public/mojom/on_device_model_service.mojom-forward.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace on_device_model {

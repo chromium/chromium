@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 
 namespace ash::kiosk_vision {

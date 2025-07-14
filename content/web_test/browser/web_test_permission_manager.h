@@ -15,7 +15,6 @@
 #include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/test/mojom/permissions/permission_automation.test-mojom.h"
 #include "url/gurl.h"

@@ -31,7 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "url/gurl.h"
 

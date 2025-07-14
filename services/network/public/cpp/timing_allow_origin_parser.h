@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/component_export.h"
-#include "services/network/public/mojom/timing_allow_origin.mojom-forward.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom.h"
 #include "url/origin.h"
 

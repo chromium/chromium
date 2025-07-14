@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept_registry.h"
 #include "base/gtest_prod_util.h"

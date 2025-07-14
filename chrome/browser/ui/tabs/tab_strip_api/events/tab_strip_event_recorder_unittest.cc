@@ -6,7 +6,6 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom-forward.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

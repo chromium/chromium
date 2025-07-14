@@ -15,8 +15,6 @@
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "chromeos/ash/experiences/arc/intent_helper/open_url_delegate.h"
-#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
-#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"

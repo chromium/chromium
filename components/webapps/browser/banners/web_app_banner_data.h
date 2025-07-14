@@ -9,7 +9,6 @@
 
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/web_app_id.h"
-#include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"

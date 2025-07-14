@@ -9,9 +9,7 @@
 
 #include "base/check.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom-forward.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -12,7 +12,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"

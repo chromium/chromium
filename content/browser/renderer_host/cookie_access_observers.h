@@ -8,7 +8,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 
 namespace content {

@@ -17,7 +17,6 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "services/network/public/mojom/tls_socket.mojom-forward.h"
 
 namespace net {
 class ClientSocketFactory;

@@ -49,8 +49,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
-#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

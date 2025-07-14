@@ -25,7 +25,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/cbor/writer.h"
-#include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/integrity_block_attributes.h"

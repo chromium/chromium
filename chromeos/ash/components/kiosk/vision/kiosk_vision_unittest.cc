@@ -32,7 +32,6 @@
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_image_transport_factory.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "services/video_capture/public/cpp/mock_video_capture_service.h"
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"

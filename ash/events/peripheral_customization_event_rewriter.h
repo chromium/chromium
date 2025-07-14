@@ -6,7 +6,6 @@
 #define ASH_EVENTS_PERIPHERAL_CUSTOMIZATION_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "base/containers/flat_map.h"
