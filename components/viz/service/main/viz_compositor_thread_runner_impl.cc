@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -40,11 +41,39 @@ namespace {
 
 const char kThreadName[] = "VizCompositorThread";
 
+#if BUILDFLAG(IS_ANDROID)
+class VizCompositorThread : public base::android::JavaHandlerThread {
+ public:
+  using ParentType = base::android::JavaHandlerThread;
+  explicit VizCompositorThread(base::ThreadType thread_type)
+      : ParentType(kThreadName, thread_type) {}
+#else   // BUILDFLAG(IS_ANDROID)
+class VizCompositorThread : public base::Thread {
+ public:
+  using ParentType = base::Thread;
+  VizCompositorThread() : ParentType(kThreadName) {}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+ private:
+  void Init() override {
+    ParentType::Init();
+    if (base::HangWatcher::IsCompositorThreadHangWatchingEnabled()) {
+      unregister_thread_closure_ = base::HangWatcher::RegisterThread(
+          base::HangWatcher::ThreadType::kCompositorThread);
+    }
+  }
+  void CleanUp() override {
+    unregister_thread_closure_.RunAndReset();
+    ParentType::CleanUp();
+  }
+
+  base::ScopedClosureRunner unregister_thread_closure_;
+};
+
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   const base::ThreadType thread_type = base::ThreadType::kDisplayCritical;
 #if BUILDFLAG(IS_ANDROID)
-  auto thread = std::make_unique<base::android::JavaHandlerThread>(kThreadName,
-                                                                   thread_type);
+  auto thread = std::make_unique<VizCompositorThread>(thread_type);
   thread->Start();
   thread->task_runner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
@@ -60,10 +89,10 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   auto* platform = ui::OzonePlatform::GetInstance();
   thread_options.message_pump_type =
       platform->GetPlatformProperties().message_pump_type_for_viz_compositor;
-  thread = std::make_unique<base::Thread>(kThreadName);
+  thread = std::make_unique<VizCompositorThread>();
 #endif
   if (!thread)
-    thread = std::make_unique<base::Thread>(kThreadName);
+    thread = std::make_unique<VizCompositorThread>();
 
 #if BUILDFLAG(IS_FUCHSIA)
   // An IO message pump is needed to use FIDL.

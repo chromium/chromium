@@ -721,9 +721,9 @@ void HangWatcher::Stop() {
   g_keep_monitoring.store(true, std::memory_order_relaxed);
 }
 
-bool HangWatcher::IsWatchListEmpty() {
+bool HangWatcher::IsWatchingThreads() {
   AutoLock auto_lock(watch_state_lock_);
-  return watch_states_.empty();
+  return !watch_states_.empty();
 }
 
 void HangWatcher::Wait() {
@@ -786,7 +786,7 @@ void HangWatcher::Run() {
   while (g_keep_monitoring.load(std::memory_order_relaxed)) {
     Wait();
 
-    if (!IsWatchListEmpty() &&
+    if (IsWatchingThreads() &&
         g_keep_monitoring.load(std::memory_order_relaxed)) {
       Monitor();
       if (after_monitor_closure_for_testing_) {
