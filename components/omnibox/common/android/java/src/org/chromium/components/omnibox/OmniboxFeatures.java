@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
@@ -27,8 +28,10 @@ import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,25 @@ public class OmniboxFeatures {
         int ENABLED_IN_TEST = 1;
         int ENABLED_IN_PROD = 2;
     }
+
+    // LINT.IfChange(OmniboxJumpStartState)
+    // TODO(ender): move OmniboxMetrics to //components and relocate this code there.
+    @IntDef({
+        OmniboxJumpStartState.NOT_ELIGIBLE,
+        OmniboxJumpStartState.ENABLED,
+        OmniboxJumpStartState.DISABLED_BY_USER,
+        OmniboxJumpStartState.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface OmniboxJumpStartState {
+        int NOT_ELIGIBLE = 0;
+        int ENABLED = 1;
+        int DISABLED_BY_USER = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:OmniboxJumpStartState)
 
     private static final SharedPreferences sPrefs = ContextUtils.getAppSharedPreferences();
 
@@ -396,6 +418,15 @@ public class OmniboxFeatures {
                             && SysUtils.amountOfPhysicalMemoryKB()
                                     <= sJumpStartOmniboxMemoryThresholdKb.getValue();
             sActivateJumpStartOmnibox = sPrefs.getBoolean(KEY_JUMP_START_OMNIBOX, isEligibleDevice);
+            @OmniboxJumpStartState
+            int state =
+                    isEligibleDevice
+                            ? sActivateJumpStartOmnibox
+                                    ? OmniboxJumpStartState.ENABLED // Eligible and activated
+                                    : OmniboxJumpStartState.DISABLED_BY_USER // Eligible only
+                            : OmniboxJumpStartState.NOT_ELIGIBLE; // Not eligible.
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.Omnibox.JumpStartState", state, OmniboxJumpStartState.COUNT);
         }
         return sActivateJumpStartOmnibox;
     }

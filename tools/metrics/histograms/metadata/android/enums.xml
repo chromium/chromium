@@ -1377,6 +1377,16 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Focus restored on activity recreation."/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxJumpStartState) -->
+
+<enum name="OmniboxJumpStartState">
+  <int value="0" label="Not Eligible"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled By User"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java:OmniboxJumpStartState) -->
+
 <!-- LINT.IfChange(OmniboxSuggestionUiType) -->
 
 <enum name="OmniboxSuggestionUiType">
