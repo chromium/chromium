@@ -78,24 +78,24 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
 
     EXPECT_THAT(fake_frame->GetJavaScriptCallHistory(),
                 UnorderedElementsAre(
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillIsolatedContentWorld(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillAcrossIframes(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillAcrossIframesThrottling(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillIgnoreCheckableElements(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillCorrectUserEditedBitInParsedField(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillAllowDefaultPreventedSubmission(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillDedupeFormSubmission(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillReportFormSubmissionErrors(true);",
-                    u"__gCrWeb.autofill_form_features."
-                    u"setAutofillCountFormSubmissionInRenderer(true);"));
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillAcrossIframes', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillAcrossIframesThrottling', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillIgnoreCheckableElements', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillIsolatedContentWorld', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillCorrectUserEditedBitInParsedField', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillAllowDefaultPreventedSubmission', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillDedupeFormSubmission', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillReportFormSubmissionErrors', [true]);",
+                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
+                    u"'setAutofillCountFormSubmissionInRenderer', [true]);"));
   }
 }
 

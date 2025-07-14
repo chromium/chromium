@@ -242,10 +242,10 @@ TEST_F(AutofillAgentTests,
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
 
-  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"hostFormId\":0,"
-            u"\"section\":\"-default\",\"value\":\"number_value\"},\"3\":{"
-            u"\"hostFormId\":0,\"section\":\"-default\","
-            u"\"value\":\"name_value\"}}}, 0);",
+  EXPECT_EQ(u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillForm', "
+            u"[{\"fields\":{\"2\":{\"hostFormId\":0,\"section\":\"-default\","
+            u"\"value\":\"number_value\"},\"3\":{\"hostFormId\":0,\"section\":"
+            u"\"-default\",\"value\":\"name_value\"}}}, 0]);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -267,9 +267,10 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
                   withValue:u"mattwashere"
                     inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
-            u"2,\"value\":\"mattwashere\"});",
-            fake_main_frame_->GetLastJavaScriptCall());
+  EXPECT_EQ(
+      u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillSpecificFormField', "
+      u"[{\"renderer_id\":2,\"value\":\"mattwashere\"}]);",
+      fake_main_frame_->GetLastJavaScriptCall());
 }
 
 // Test that the updates are applied when filling specific form field is done
@@ -364,9 +365,10 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
       u"mattwashere");
 
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"renderer_id\":"
-            u"2,\"value\":\"mattwashere\"});",
-            fake_main_frame_->GetLastJavaScriptCall());
+  EXPECT_EQ(
+      u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillSpecificFormField', "
+      u"[{\"renderer_id\":2,\"value\":\"mattwashere\"}]);",
+      fake_main_frame_->GetLastJavaScriptCall());
 }
 
 // Tests that `ApplyFieldAction` with `ActionPersistence::kPreview`in

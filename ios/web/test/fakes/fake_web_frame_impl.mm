@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/json/json_writer.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
@@ -129,8 +130,26 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
     call_java_script_function_callback_.Run();
   }
 
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string_view api_name_sv;
+  std::string_view function_name_sv;
+
+  if (name_parts) {
+    api_name_sv = name_parts->first;
+    function_name_sv = name_parts->second;
+  } else {
+    api_name_sv = "";
+    function_name_sv = name;
+  }
+
+  std::u16string api_name = base::UTF8ToUTF16(api_name_sv);
+  std::u16string function_name = base::UTF8ToUTF16(function_name_sv);
+
   std::u16string javascript_call =
-      std::u16string(u"__gCrWeb." + base::UTF8ToUTF16(name) + u"(");
+      std::u16string(u"__gCrWeb.callFunctionInGcrWeb('" + api_name + u"', '" +
+                     function_name + u"', " + u"[");
   bool first = true;
   for (auto& param : parameters) {
     if (!first) {
@@ -141,7 +160,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
     base::JSONWriter::Write(param, &paramString);
     javascript_call += base::UTF8ToUTF16(paramString);
   }
-  javascript_call += u");";
+  javascript_call += u"]);";
   java_script_calls_.push_back(javascript_call);
   return true;
 }
