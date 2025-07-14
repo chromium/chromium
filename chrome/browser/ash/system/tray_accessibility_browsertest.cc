@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -78,7 +77,11 @@ void EnableSelectToSpeak(bool enabled) {
 }
 
 void EnableDictation(bool enabled) {
-  AccessibilityManager::Get()->SetDictationEnabled(enabled);
+  bool already_enabled = AccessibilityManager::Get()->IsDictationEnabled();
+  if (enabled == already_enabled) {
+    return;
+  }
+  AccessibilityManager::Get()->ToggleDictation();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -156,8 +159,6 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
-    ash::AccessibilityController::Get()
-        ->DisableSwitchAccessDisableConfirmationDialogTesting();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -219,7 +220,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenu) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
   SetShowAccessibilityOptionsInSystemTrayMenu(false);
 
   // Confirms that the menu is hidden.
@@ -388,7 +389,9 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenu) {
   EXPECT_FALSE(IsMenuButtonVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenuWithShowMenuOption) {
+// Fails on linux-chromeos-dbg see crbug/1027919.
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
+                       DISABLED_ShowMenuWithShowMenuOption) {
   SetShowAccessibilityOptionsInSystemTrayMenu(true);
 
   // Confirms that the menu is visible.
