@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
 #include "base/timer/elapsed_timer.h"
@@ -1999,6 +2000,21 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     ASSERT_TRUE(renderer_result.has_value());
     EXPECT_EQ(*renderer_result, browser_result);
   }
+}
+
+// This test verifies that a renderer process is correctly sandboxed.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestBase, IsSandboxed) {
+  RenderProcessHost* rph = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(),
+      /*site_instance=*/nullptr);
+  ASSERT_TRUE(rph->Init());
+
+  mojo::Remote<mojom::TestService> service;
+  rph->BindReceiver(service.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<bool> future;
+  service->IsProcessSandboxed(future.GetCallback());
+  ASSERT_TRUE(future.Take());
 }
 
 class CreationObserver : public RenderProcessHostCreationObserver {
