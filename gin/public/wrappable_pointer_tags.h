@@ -22,9 +22,9 @@ enum WrappablePointerTag : uint16_t {
   // avoid overlaps with the type tags of blink::ScriptWrappable.
   kFirstPointerTag = 1501,
   kAutomationPosition = 1501,          // ui::AutomationPosition
-  kGamepadControllerBindings,          // content::GameControllerBindings
   kChromePluginPlaceholder,            // ChromePluginPlaceholder
   kDomAutomationController,            // content::DomAutomationController
+  kGamepadControllerBindings,          // content::GameControllerBindings
   kGpuBenchmarking,                    // content::GpuBenchmarking
   kMojo,                               // ax::Mojo
   kMojoHandle,                         // ax::MojoHandle
@@ -36,11 +36,12 @@ enum WrappablePointerTag : uint16_t {
   kSkiaBenchmarking,                   // content::SkiaBenchmarking
   kStatsCollectionController,          // content::StatsCollectionController
   kSupervisedUserErrorPageController,  // SupervisedUserErrorPageController
-  kTextDecoder,                        // ax::TextDecoder
-  kTextEncoder,                        // ax::TextEncoder
+  kTestGinWrappable,                   // GinWrappable
   kTestObject,                         // gin::TestGinObject
   kTestObject2,                        // gin::MyObject2
-  kLastPointerTag = kTestObject2,
+  kTextDecoder,                        // ax::TextDecoder
+  kTextEncoder,                        // ax::TextEncoder
+  kLastPointerTag = kTextEncoder,
 };
 
 static_assert(kLastPointerTag <

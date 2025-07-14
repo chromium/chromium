@@ -44,6 +44,12 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
     return {};
   }
 
+  // TODO(345640553): Delete the internal fields once DeprecatedWrappable does
+  // not exist anymore.
+  int indices[] = {kWrapperInfoIndex, kEncodedValueIndex};
+  void* values[] = {nullptr, nullptr};
+  wrapper->SetAlignedPointerInInternalFields(2, indices, values);
+
   v8::Object::Wrap(isolate, wrapper, this,
                    static_cast<v8::CppHeapPointerTag>(info->pointer_tag));
   wrapper_.Reset(isolate, wrapper);
