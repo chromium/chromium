@@ -26,6 +26,7 @@ from google.protobuf.message import DecodeError
 from google.protobuf import json_format
 from google.protobuf import text_format
 
+
 def build(outdir: str):
     subprocess.run([
         shutil.which('autoninja'), '-C', outdir,
@@ -34,6 +35,7 @@ def build(outdir: str):
                    stdout=sys.stdout,
                    stderr=sys.stderr,
                    check=True)
+
 
 class RequestHandler(http.server.SimpleHTTPRequestHandler):
     directory = None
@@ -142,7 +144,8 @@ def main():
               file=sys.stderr)
         sys.exit(1)
 
-    # Allows us to import generated proto bindings for common_quality_data.proto.
+    # Allows us to import generated proto bindings for
+    # common_quality_data.proto.
     sys.path.insert(
         0,
         os.path.join(args.outdir, 'pyproto', 'components',
@@ -152,7 +155,11 @@ def main():
 
     with socketserver.ThreadingTCPServer((server_addr, args.port),
                                          RequestHandler) as httpd:
-        print("Server started at localhost:" + str(args.port))
+        url_prefix = f"http://localhost:{args.port}/glic/test_client"
+        print(f"Server started on port {args.port}.",
+              "Use the following command line arguments to connect to it:")
+        print(f'--glic-fre-url="{url_prefix}/fre.html"',
+              f'--glic-guest-url="{url_prefix}/index.html"')
         httpd.serve_forever()
 
 
