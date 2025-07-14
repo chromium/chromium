@@ -13,6 +13,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,11 +62,11 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     // Writing toolkit
     private static final String ACTION_WRITING_TOOLKIT =
             "com.samsung.android.intent.action.WritingToolkit";
-    private static final String WRITING_TOOLKIT_HBD = "actionShowToolKitHbd";
+    private static final String WRITING_TOOLKIT_ACTION_SHOW_HBD = "actionShowToolKitHbd";
     private static final String WRITING_TOOLKIT_SUBJECT = "toolkitSubject";
     private static final String WRITING_TOOLKIT_IS_TEXT_EDITABLE = "isTextEditable";
     private static final String WRITING_TOOLKIT_URI = "honeyboard://writing-toolkit";
-    private static final int MAXIMUM_BUILD_VERSION_CODE_SUPPORTED = 36;
+    private static final int MAXIMUM_BUILD_VERSION_CODE_SUPPORTED = Build.VERSION_CODES.BAKLAVA;
     private static final int SCAN_TEXT_ID;
     private static final ComponentName WRITING_TOOLKIT_COMPONENT =
             new ComponentName(
@@ -75,6 +76,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             "com.samsung.android.feature.SemFloatingFeature";
     private static final String AI_FEATURES_DISABLED_FLAG =
             "SEC_FLOATING_FEATURE_COMMON_DISABLE_NATIVE_AI";
+    private static final String WRITING_TOOLKIT_SELECTED_TEXT = "selectedText";
     private static @Nullable Boolean sIsManageAppsSupported;
     private static @Nullable Boolean sAiFeaturesDisabled;
 
@@ -328,15 +330,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         SelectionPopupController selectionPopupController =
                 SelectionPopupController.fromWebContents(webContents);
         selectionPopupController.setPreserveSelectionOnNextLossOfFocus(true);
-        prepareForWritingToolkit(containerView);
-        if (selectionPopupController.isFocusedNodeEditable()) {
-            return true;
-        }
-
         Intent intent = item.getIntent();
-
-        assert intent != null : "Samsung menu item should have Intent.";
-        startActivity(intent);
+        launchWritingToolkit(containerView, intent, selectionPopupController);
         return true;
     }
 
@@ -344,14 +339,37 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         return SCAN_TEXT_ID != 0 && item.getItemId() == SCAN_TEXT_ID;
     }
 
-    private static void prepareForWritingToolkit(View containerView) {
+    private static void launchWritingToolkit(
+            View containerView,
+            @Nullable Intent intent,
+            SelectionPopupController selectionPopupController) {
         Context context = ContextUtils.getApplicationContext();
         InputMethodManager inputMethodManager =
                 (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
+        if (inputMethodManager == null || intent == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            Bundle data = new Bundle();
+            String selectedText = intent.getStringExtra(WRITING_TOOLKIT_SUBJECT);
+            if (selectedText == null) selectedText = "";
+            data.putString(WRITING_TOOLKIT_SELECTED_TEXT, selectedText);
+            /**
+             * sendAppPrivateCommand API handles Writing Toolkit for both editable and non-editable
+             * fields from B-OS.
+             */
             inputMethodManager.sendAppPrivateCommand(
-                    containerView, WRITING_TOOLKIT_HBD, /* data= */ null);
+                    containerView, WRITING_TOOLKIT_ACTION_SHOW_HBD, data);
+            return;
         }
+        inputMethodManager.sendAppPrivateCommand(
+                containerView, WRITING_TOOLKIT_ACTION_SHOW_HBD, /* data= */ null);
+        /**
+         * sendAppPrivateCommand API handles Writing Toolkit for editable fields, eliminating the
+         * need for startActivity.
+         */
+        if (selectionPopupController.isFocusedNodeEditable()) {
+            return;
+        }
+        startActivity(intent);
     }
 
     private static Intent createWritingToolkitIntent(
