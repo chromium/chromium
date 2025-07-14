@@ -137,9 +137,19 @@ if (use_libcxx_modules) {
     }
     sysroot_modules("sysroot_limits") {
     }
+
+    alias("sysroot_locale") {
+      actual = []
+    }
+
     textual_module("sysroot_math") {
       public_deps = [ ":sysroot_stdlib" ]
     }
+
+    alias("sysroot_pthread") {
+      actual = [":sysroot"]
+    }
+
     textual_module("sysroot_stdatomic") {
     }
     textual_module("sysroot_stdint") {
@@ -204,8 +214,16 @@ if (use_libcxx_modules) {
       public_deps = [ ":sysroot_features" ]
     }
 
+    alias("sysroot_locale") {
+      actual = []
+    }
+
     textual_module("sysroot_math") {
       public_deps = [ ":sysroot_stdlib" ]
+    }
+
+    alias("sysroot_pthread") {
+      actual = [":sysroot"]
     }
 
     textual_module("sysroot_stdatomic") {
@@ -278,7 +296,108 @@ if (use_libcxx_modules) {
       }
     }
 
+    DarwinBasic_modules("MachO") {
+      public_deps = [
+        ":_Builtin_stdbool",
+        ":_Builtin_stdint",
+        ":_limits",
+        ":_string",
+        ":mach",
+        ":std_string_h",
+        ":unistd",
+        ":uuid",
+      ]
+    }
+
+    DarwinBasic_modules("_strings") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinBasic_modules("alloca") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinBasic_modules("gethostuuid") {
+      public_deps = [
+        ":_time",
+        ":uuid",
+      ]
+    }
+
+    DarwinBasic_modules("nl_types") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":sys_types",
+      ]
+    }
+
+    DarwinBasic_modules("pthread") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_signal",
+        ":_time",
+        ":mach",
+      ]
+    }
+
+    DarwinBasic_modules("runetype") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinBasic_modules("sys_select") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_signal",
+        ":_sys_select",
+        ":_time",
+        ":sys_time",
+      ]
+    }
+
     DarwinBasic_modules("sys_types") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_errno",
+        ":_sys_select",
+        ":_useconds_t",
+        ":netinet_in",
+      ]
+    }
+
+    DarwinBasic_modules("sys_wait") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_signal",
+        ":sys_resource",
+        ":sys_types",
+      ]
+    }
+
+    DarwinBasic_modules("sys_resource") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_Builtin_stdint",
+        ":sys_time",
+        ":sys_types",
+      ]
+    }
+
+    DarwinBasic_modules("unistd") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_limits",
+        ":_stdio",
+        ":gethostuuid",
+        ":sys_select",
+        ":uuid",
+      ]
+    }
+
+    DarwinBasic_modules("xlocale") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_locale",
+      ]
     }
 
     template("DarwinFoundation_modules") {
@@ -289,9 +408,33 @@ if (use_libcxx_modules) {
     }
 
     DarwinFoundation_modules("DarwinFoundation") {
+      public_deps = [
+        ":_Builtin_stdarg",
+        ":_Builtin_stddef",
+      ]
     }
 
     DarwinFoundation_modules("_sys_select") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinFoundation_modules("_useconds_t") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinFoundation_modules("mach") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinFoundation_modules("netinet_in") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinFoundation_modules("sys_time") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    DarwinFoundation_modules("uuid") {
       public_deps = [ ":DarwinFoundation" ]
     }
 
@@ -307,48 +450,88 @@ if (use_libcxx_modules) {
     }
 
     c_standard_library_modules("_assert") {
-    }
-
-    c_standard_library_modules("_ctype") {
-    }
-
-    c_standard_library_modules("_errno") {
-    }
-
-    c_standard_library_modules("_inttypes") {
-      public_deps = [ ":_stdint" ]
-    }
-
-    c_standard_library_modules("_limits") {
-    }
-
-    c_standard_library_modules("_locale") {
-    }
-
-    c_standard_library_modules("_setjmp") {
-    }
-
-    c_standard_library_modules("_signal") {
       public_deps = [ ":DarwinFoundation" ]
     }
 
+    c_standard_library_modules("_ctype") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":runetype",
+      ]
+    }
+
+    c_standard_library_modules("_errno") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_fenv") {
+    }
+
+    c_standard_library_modules("_inttypes") {
+      public_deps = [
+        ":_Builtin_stdint",
+        ":_stdint",
+      ]
+    }
+
+    c_standard_library_modules("_limits") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_locale") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_math") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_setjmp") {
+      public_deps = [ ":DarwinFoundation" ]
+    }
+
+    c_standard_library_modules("_signal") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":mach",
+        ":sys_types",
+      ]
+    }
+
     c_standard_library_modules("_stdint") {
+      public_deps = [ ":DarwinFoundation" ]
     }
 
     c_standard_library_modules("_stdio") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":sys_types",
+      ]
     }
 
     c_standard_library_modules("_stdlib") {
       public_deps = [
         ":_signal",
         ":_stdint",
+        ":alloca",
+        ":runetype",
+        ":sys_wait",
       ]
     }
 
     c_standard_library_modules("_string") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":_strings",
+        ":sys_types",
+      ]
     }
 
     c_standard_library_modules("_time") {
+      public_deps = [
+        ":DarwinFoundation",
+        ":sys_types",
+      ]
     }
 
     c_standard_library_modules("_wchar") {
@@ -366,10 +549,12 @@ if (use_libcxx_modules) {
     alias("all_sysroot") {
       actual = [
         ":DarwinFoundation",
+        ":MachO",
         ":__wctype",
         ":_assert",
         ":_ctype",
         ":_errno",
+        ":_fenv",
         ":_inttypes",
         ":_limits",
         ":_locale",
@@ -379,11 +564,26 @@ if (use_libcxx_modules) {
         ":_stdio",
         ":_stdlib",
         ":_string",
+        ":_strings",
+        ":_sys_select",
         ":_time",
+        ":_useconds_t",
         ":_wchar",
         ":_wctype",
-        ":sys_select",
+        ":alloca",
+        ":gethostuuid",
+        ":mach",
+        ":netinet_in",
+        ":nl_types",
+        ":pthread",
+        ":runetype",
+        ":sys_resource",
+        ":sys_time",
         ":sys_types",
+        ":sys_wait",
+        ":unistd",
+        ":uuid",
+        ":xlocale",
       ]
     }
 
@@ -394,7 +594,7 @@ if (use_libcxx_modules) {
       actual = [ ":_errno" ]
     }
     alias("sysroot_fenv") {
-      actual = []
+      actual = [ ":_fenv" ]
     }
     alias("sysroot_inttypes") {
       actual = [ ":_inttypes" ]
@@ -402,8 +602,14 @@ if (use_libcxx_modules) {
     alias("sysroot_limits") {
       actual = [ ":_limits" ]
     }
+    alias("sysroot_locale") {
+      actual = [ ":_locale" ]
+    }
     alias("sysroot_math") {
-      actual = []
+      actual = [ ":_math" ]
+    }
+    alias("sysroot_pthread") {
+      actual = [ ":pthread" ]
     }
     alias("sysroot_stdatomic") {
       actual = []
@@ -412,7 +618,7 @@ if (use_libcxx_modules) {
       actual = [ ":_stdint" ]
     }
     alias("sysroot_stdlib") {
-      actual = []
+      actual = [ ":_stdlib" ]
     }
     alias("sysroot_string") {
       actual = [ ":_string" ]
@@ -444,6 +650,10 @@ if (use_libcxx_modules) {
       ":std_core",
       ":sysroot_stdlib",
     ]
+    if (current_cpu == "arm" || current_cpu == "arm64") {
+      # <arm_acle.h> includes <stdint.h> which requires _Builtin_stdint module.
+      public_deps += [ ":_Builtin_stdint" ]
+    }
   }
 
   builtin_modules("_Builtin_inttypes") {
@@ -537,6 +747,7 @@ if (use_libcxx_modules) {
 
   libcxx_modules("std") {
     public_deps = [
+      ":_Builtin_limits",
       ":_Builtin_stdalign",
       ":std_core",
       ":std_ctype_h",
@@ -549,7 +760,20 @@ if (use_libcxx_modules) {
       ":std_string_h",
       ":std_uchar_h",
       ":std_wctype_h",
+      ":sysroot_locale",
+      ":sysroot_pthread",
     ]
+    if (is_mac) {
+      public_deps += [
+        # <locale> includes <nl_types.h> inside an __APPLE__ macro guard which
+        # requires nl_types module.
+        ":nl_types",
+
+        # __locale_dir/support/apple.h includes __locale_dir/support/bsd_like.h,
+        #  which includes xlocale.h.
+        ":xlocale",
+      ]
+    }
   }
 
   textual_module("std_config") {
@@ -609,6 +833,7 @@ if (use_libcxx_modules) {
     public_deps = [
       ":std_core",
       ":sysroot_math",
+      ":sysroot_stdlib",
     ]
   }
 
