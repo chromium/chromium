@@ -11,7 +11,14 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+namespace extensions {
+class ExtensionMenuDelegate;
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 namespace content {
 class WebContents;
@@ -46,6 +53,10 @@ class ContextMenuHelper
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   content::ContextMenuParams context_menu_params_;
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  std::unique_ptr<extensions::ExtensionMenuDelegate> extension_delegate_;
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
