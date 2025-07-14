@@ -5,12 +5,12 @@
 /**
  * @fileoverview A component for displaying a single NTP Promo.
  */
-import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import './ntp_promo_icons.html.js';
 
-import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -22,7 +22,7 @@ import {getHtml} from './ntp_single_promo.html.js';
 
 export interface NtpSinglePromoElement {
   $: {
-    actionButton: CrButtonElement,
+    actionButton: CrIconButtonElement,
     bodyIcon: HTMLElement,
     bodyText: HTMLElement,
   };

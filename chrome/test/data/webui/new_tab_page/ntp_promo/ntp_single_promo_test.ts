@@ -121,7 +121,7 @@ suite('NtpPromoTest', () => {
     assertDeepEquals(
         [[[promo.id], []]], testProxy.getHandler().getArgs('onPromosShown'));
     assertEquals(promo.bodyText, ntpPromo.$.bodyText.innerText);
-    assertEquals(promo.buttonText, ntpPromo.$.actionButton.innerText);
+    assertEquals(promo.buttonText, ntpPromo.$.actionButton.ariaLabel);
   });
 
   test('set multiple promos chooses the first', async () => {
@@ -133,7 +133,7 @@ suite('NtpPromoTest', () => {
     assertDeepEquals(
         [[[promo.id], []]], testProxy.getHandler().getArgs('onPromosShown'));
     assertEquals(promo.bodyText, ntpPromo.$.bodyText.innerText);
-    assertEquals(promo.buttonText, ntpPromo.$.actionButton.innerText);
+    assertEquals(promo.buttonText, ntpPromo.$.actionButton.ariaLabel);
   });
 
   test('press button', async () => {
