@@ -2818,7 +2818,6 @@ crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
 crbug.com/431034517 external/wpt/css/css-anchor-position/anchor-center-overflow-001.html [ Failure ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
-crbug.com/431033200 [ Mac14 ] external/wpt/css/css-fonts/animations/font-variation-settings-interpolation.html [ Timeout ]
 crbug.com/431030816 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-rtl.html [ Failure ]
 crbug.com/431030816 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vlr.html [ Failure ]
 crbug.com/431030816 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vrl.html [ Failure ]
