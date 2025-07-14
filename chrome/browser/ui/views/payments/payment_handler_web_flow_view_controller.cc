@@ -8,9 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -67,23 +64,6 @@
 
 namespace payments {
 namespace {
-
-std::u16string GetPaymentHandlerDialogTitle(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return std::u16string();
-  }
-
-  // If a page has no explicit <title> set or if it is still loading, the title
-  // may be the URL of the page. We don't wish to show that to a user as the
-  // origin is also shown.
-  const std::u16string title = web_contents->GetTitle();
-  const std::u16string https_prefix =
-      base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
-  return base::StartsWith(title, https_prefix, base::CompareCase::SENSITIVE)
-             ? std::u16string()
-             : title;
-}
 
 // Returns a Google color closest to light_mode_color or dark_mode_color based
 // on whether background_color is considered dark mode, with a minimum
@@ -254,7 +234,11 @@ class PaymentHandlerWebFlowViewController::RoundedCornerViewClipper
 };
 
 std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
-  return GetPaymentHandlerDialogTitle(web_contents());
+  // This method is never called for PaymentHandlerWebFlowViewController. This
+  // class provides its own override of PopulateSheetHeaderView() to support a
+  // custom header layout and does not invoke the base implementation, which is
+  // the only caller of this method.
+  CHECK(false);
 }
 
 void PaymentHandlerWebFlowViewController::FillContentView(
@@ -404,6 +388,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
           ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
           : url::Origin::Create(target_),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  dialog()->OnPaymentHandlerTitleSet();
 
   // Turn off auto-readability because the computed foreground color takes
   // contrast into account.
@@ -570,16 +555,6 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
   // once it just serves as a separator.
   progress_bar_->GetViewAccessibility().SetIsIgnored(progress == 1.0);
   progress_bar_->GetViewAccessibility().SetIsLeaf(progress == 1.0);
-}
-
-void PaymentHandlerWebFlowViewController::TitleWasSet(
-    content::NavigationEntry* entry) {
-  UpdateHeaderView();
-
-  std::u16string title = GetPaymentHandlerDialogTitle(web_contents());
-  if (!title.empty()) {
-    dialog()->OnPaymentHandlerTitleSet();
-  }
 }
 
 void PaymentHandlerWebFlowViewController::AbortPayment() {

@@ -93,7 +93,6 @@ class PaymentHandlerWebFlowViewController
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void LoadProgressChanged(double progress) override;
-  void TitleWasSet(content::NavigationEntry* entry) override;
 
   void AbortPayment();
 

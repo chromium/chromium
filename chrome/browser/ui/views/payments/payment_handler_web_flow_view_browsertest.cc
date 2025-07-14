@@ -27,9 +27,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
                                DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ASSERT_EQ(
       "success",
       content::EvalJs(

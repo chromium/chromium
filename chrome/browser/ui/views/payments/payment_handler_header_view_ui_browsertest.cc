@@ -45,9 +45,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
                                DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ASSERT_EQ(
       "success",
       content::EvalJs(
@@ -104,9 +104,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
   // The pay button should be enabled now.
   ASSERT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
   // The payment app has no icon, so it should not be displayed on the header.
@@ -147,9 +147,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
   // The pay button should be enabled now.
   ASSERT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
   // The cancel button is shown and closes the dialog.
@@ -233,9 +233,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
                                DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ASSERT_EQ(
       "success",
       content::EvalJs(
