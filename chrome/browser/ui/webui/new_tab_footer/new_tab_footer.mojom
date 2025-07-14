@@ -5,6 +5,7 @@
 module new_tab_footer.mojom;
 
 import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Enterprise browser management notice
 struct ManagementNotice {
@@ -37,6 +38,8 @@ interface NewTabFooterHandler {
   // to |GetNtpExtensionName|. If that call did not determine a valid ID,
   // this opens the extension settings page.
   OpenExtensionOptionsPageWithFallback();
+  // Shows context menu.
+  ShowContextMenu(gfx.mojom.Point point);
 };
 
 // WebUI-side handler for requests from the browser.

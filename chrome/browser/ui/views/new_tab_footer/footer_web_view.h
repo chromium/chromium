@@ -8,7 +8,18 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+
+namespace ui {
+class MenuModel;
+}  // namespace ui
+
+namespace views {
+class MenuRunner;
+}  // namespace views
 
 class BrowserWindowInterface;
 class WebUIContentsWrapper;
@@ -33,8 +44,18 @@ class NewTabFooterWebView : public views::WebView,
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
+  void ShowCustomContextMenu(
+      gfx::Point point,
+      std::unique_ptr<ui::MenuModel> menu_model) override;
+  void HideCustomContextMenu() override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<ui::MenuModel> context_menu_model_;
+  // Processes keyboard events not handled by the renderer.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   raw_ptr<BrowserWindowInterface> browser_;
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/webui/new_tab_footer/footer_context_menu.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -27,6 +28,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -40,8 +42,10 @@ NewTabFooterHandler::NewTabFooterHandler(
         pending_handler,
     mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
         pending_document,
+    base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
     content::WebContents* web_contents)
-    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+    : embedder_(embedder),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       document_(std::move(pending_document)),
       handler_{this, std::move(pending_handler)} {
@@ -88,6 +92,16 @@ void NewTabFooterHandler::OpenExtensionOptionsPageWithFallback() {
                                                      curr_ntp_extension_id_);
   }
   OpenUrlInCurrentTab(options_url);
+}
+
+void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
+  const bool is_managed =
+      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
+  // TODO(crbug.com/424878134): Add managed-specific behavior.
+  if (embedder_ && !is_managed) {
+    embedder_->ShowContextMenu(point,
+                               std::make_unique<FooterContextMenu>(profile_));
+  }
 }
 
 void NewTabFooterHandler::UpdateManagementNotice() {

@@ -11,8 +11,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "chrome/browser/ui/webui/new_tab_footer/footer_context_menu.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_handler.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -225,6 +228,35 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, OpenAndCloseCustomizeChrome) {
       // Close the side panel in the first tab.
       CloseSidePanel(kFooterElementId1));
 }
+
+// Test is flaky on Mac, possibly due to the Mac handling of context menus.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest, ContextMenuHidesFooter) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalFooterElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
+
+  const DeepQuery kFooterContainer = {"new-tab-footer-app", "#container"};
+
+  // Disable the "NTP overridden" dialog as it can interfere with this
+  // test.
+  extensions::SetNtpPostInstallUiEnabledForTesting(false);
+  // Override the ntp with an extension.
+  LoadNtpOverridingExtension(browser()->profile());
+  RunTestSequence(
+      // Open extension ntp.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Right click on footer to open context menu.
+      Steps(InstrumentNonTabWebView(kLocalFooterElementId, kNtpFooterId),
+            MoveMouseTo(kLocalFooterElementId, kFooterContainer),
+            ClickMouse(ui_controls::RIGHT)),
+      // Select the "hide footer" option.
+      Steps(WaitForShow(FooterContextMenu::kHideFooterIdForTesting),
+            SelectMenuItem(FooterContextMenu::kHideFooterIdForTesting,
+                           InputType::kMouse)),
+      // Ensure footer hides.
+      WaitForHide(kLocalFooterElementId));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,

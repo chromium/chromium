@@ -8,6 +8,7 @@ assert(!is_android)
 
 source_set("new_tab_footer") {
   sources = [
+    "footer_context_menu.h",
     "new_tab_footer_handler.h",
     "new_tab_footer_helper.h",
     "new_tab_footer_ui.h",
@@ -18,12 +19,14 @@ source_set("new_tab_footer") {
     "//chrome/browser/ui/webui/top_chrome",
     "//components/prefs",
     "//extensions/browser:browser",
+    "//ui/menus:menus",
     "//ui/webui",
   ]
 }
 
 source_set("impl") {
   sources = [
+    "footer_context_menu.cc",
     "new_tab_footer_handler.cc",
     "new_tab_footer_helper.cc",
     "new_tab_footer_ui.cc",
@@ -81,5 +84,8 @@ mojom("mojo_bindings") {
   sources = [ "new_tab_footer.mojom" ]
   webui_module_path = "/"
 
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
@@ -26,6 +27,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
           pending_handler,
       mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
           pending_document,
+      base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
       content::WebContents* web_contents);
 
   NewTabFooterHandler(const NewTabFooterHandler&) = delete;
@@ -37,6 +39,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   void UpdateNtpExtensionName() override;
   void UpdateManagementNotice() override;
   void OpenExtensionOptionsPageWithFallback() override;
+  void ShowContextMenu(const gfx::Point& point) override;
 
   // Returns the bitmap representation of the management logo.
   // Exposed for testing only.
@@ -55,6 +58,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   std::string GetManagementNoticeIconDataUrl();
 
   std::string curr_ntp_extension_id_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebContents> web_contents_;
   PrefChangeRegistrar profile_pref_change_registrar_;
