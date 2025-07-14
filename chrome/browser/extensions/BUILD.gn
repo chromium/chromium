@@ -615,10 +615,7 @@ source_set("extensions") {
       "api/tabs/tabs_api_android.cc",
       "api/tabs/tabs_event_router_android.cc",
       "api/tabs/tabs_event_router_android.h",
-
-      # TODO(crbug.com/417770773): Rename this file to
-      # chrome_extension_host_delegate_android.cc.
-      "desktop_android/desktop_android_extension_host_delegate.cc",
+      "chrome_extension_host_delegate_android.cc",
       "extension_disabled_ui_android.cc",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",

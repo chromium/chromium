@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/chrome_extension_host_delegate.h"
+
 #include <memory>
 
 #include "base/notimplemented.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "content/public/browser/web_contents.h"
 
-// TODO(crbug.com/417770773): Rename this file to
-// chrome_extension_host_delegate_android.cc.
 static_assert(BUILDFLAG(IS_ANDROID));
 
 namespace extensions {
