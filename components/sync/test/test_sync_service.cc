@@ -231,6 +231,16 @@ SyncService::UserActionableError TestSyncService::GetUserActionableError()
   if (user_settings_.IsPassphraseRequiredForPreferredDataTypes()) {
     return UserActionableError::kNeedsPassphrase;
   }
+  if (user_settings_.IsTrustedVaultKeyRequired()) {
+    return UserActionableError::kNeedsTrustedVaultKeyForEverything;
+  }
+  if (user_settings_.IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
+    return UserActionableError::kNeedsTrustedVaultKeyForPasswords;
+  }
+  if (user_settings_.IsTrustedVaultRecoverabilityDegraded()) {
+    return UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything;
+  }
   return UserActionableError::kNone;
 }
 
