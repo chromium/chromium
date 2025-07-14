@@ -49,8 +49,9 @@ WebUIDomains GetWebUIDomains(const GURL& url) {
 // to share a process whilst maintaining independent SiteURLs to allow for
 // WebUIType differentiation.
 bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
-  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme()))
+  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme())) {
     return false;
+  }
 
   WebUIDomains domains = GetWebUIDomains(url);
   // This only applies to WebUI urls with two or more non-empty domains.
@@ -544,8 +545,9 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
     // Only convert the site_url_ if it matches the process_lock_url_, otherwise
     // leave it alone. This will only matter for hosted apps, and we only expect
     // them to differ if an effective URL is defined.
-    if (site_url_ == process_lock_url_)
+    if (site_url_ == process_lock_url_) {
       non_oac_site_info.site_url_ = non_oac_site_info.process_lock_url_;
+    }
   }
   return non_oac_site_info;
 }
@@ -603,10 +605,12 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
   auto a = MakeProcessLockComparisonKey();
   auto b = other.MakeProcessLockComparisonKey();
-  if (a < b)
+  if (a < b) {
     return -1;
-  if (b < a)
+  }
+  if (b < a) {
     return 1;
+  }
   return 0;
 }
 
@@ -622,24 +626,28 @@ std::string SiteInfo::GetDebugString() const {
   std::string debug_string =
       site_url_.is_empty() ? "empty site" : site_url_.possibly_invalid_spec();
 
-  if (process_lock_url_.is_empty())
+  if (process_lock_url_.is_empty()) {
     debug_string += ", empty lock";
-  else if (process_lock_url_ != site_url_)
+  } else if (process_lock_url_ != site_url_) {
     debug_string += ", locked to " + process_lock_url_.possibly_invalid_spec();
+  }
 
-  if (requires_origin_keyed_process_)
+  if (requires_origin_keyed_process_) {
     debug_string += ", origin-keyed";
+  }
 
   if (is_sandboxed_) {
     debug_string += ", sandboxed";
-    if (unique_sandbox_id_ != UrlInfo::kInvalidUniqueSandboxId)
+    if (unique_sandbox_id_ != UrlInfo::kInvalidUniqueSandboxId) {
       debug_string += base::StringPrintf(" (id=%d)", unique_sandbox_id_);
+    }
   }
 
   if (web_exposed_isolation_info_.is_isolated()) {
     debug_string += ", cross-origin isolated";
-    if (web_exposed_isolation_info_.is_isolated_application())
+    if (web_exposed_isolation_info_.is_isolated_application()) {
       debug_string += " application";
+    }
     debug_string += ", coi-origin='" +
                     web_exposed_isolation_info_.origin().GetDebugString() + "'";
   }
@@ -650,32 +658,38 @@ std::string SiteInfo::GetDebugString() const {
     debug_string += ", application isolation not inherited";
   }
 
-  if (is_guest_)
+  if (is_guest_) {
     debug_string += ", guest";
+  }
 
-  if (does_site_request_dedicated_process_for_coop_)
+  if (does_site_request_dedicated_process_for_coop_) {
     debug_string += ", requests coop isolation";
+  }
 
-  if (is_jit_disabled_)
+  if (is_jit_disabled_) {
     debug_string += ", jitless";
+  }
 
   if (are_v8_optimizations_disabled_) {
     debug_string += ", noopt";
   }
 
-  if (is_pdf_)
+  if (is_pdf_) {
     debug_string += ", pdf";
+  }
 
   if (!storage_partition_config_.is_default()) {
     debug_string +=
         ", partition=" + storage_partition_config_.partition_domain() + "." +
         storage_partition_config_.partition_name();
-    if (storage_partition_config_.in_memory())
+    if (storage_partition_config_.in_memory()) {
       debug_string += ", in-memory";
+    }
   }
 
-  if (is_fenced_)
+  if (is_fenced_) {
     debug_string += ", is_fenced";
+  }
 
   if (agent_cluster_key_ && agent_cluster_key_->IsOriginKeyed()) {
     debug_string += ", origin-keyed agent cluster";
@@ -727,11 +741,13 @@ bool SiteInfo::ShouldLockProcessToSite(
   // Don't lock to origin in --single-process mode, since this mode puts
   // cross-site pages into the same process.  Note that this also covers the
   // single-process mode in Android Webview.
-  if (RenderProcessHost::run_renderer_in_process())
+  if (RenderProcessHost::run_renderer_in_process()) {
     return false;
+  }
 
-  if (!RequiresDedicatedProcess(isolation_context))
+  if (!RequiresDedicatedProcess(isolation_context)) {
     return false;
+  }
 
   // Most WebUI processes should be locked on all platforms.  The only exception
   // is NTP, handled via the separate callout to the embedder.
@@ -758,14 +774,16 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
   // --single-process is handled in ShouldTryToUseExistingProcessHost.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kProcessPerSite))
+  if (command_line.HasSwitch(switches::kProcessPerSite)) {
     return true;
+  }
 
   // Error pages should use process-per-site model, as it is useful to
   // consolidate them to minimize resource usage and there is no security
   // drawback to combining them all in the same process.
-  if (is_error_page())
+  if (is_error_page()) {
     return true;
+  }
 
   // Otherwise let the content client decide, defaulting to false.
   return GetContentClient()->browser()->ShouldUseProcessPerSite(browser_context,
@@ -808,8 +826,9 @@ GURL SiteInfo::DetermineProcessLockURL(
   // RenderProcessHost.
   // TODO(tluk): Remove this and replace it with SiteInstance groups once the
   // support lands.
-  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url))
+  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url)) {
     return GetProcessLockForWebUIURL(url_info.url);
+  }
 
   // For the process lock URL, convert |url| to a site without resolving |url|
   // to an effective URL.
@@ -824,11 +843,13 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
   const GURL& real_url = real_url_info.url;
   // Explicitly map all chrome-error: URLs to a single URL so that they all
   // end up in a dedicated error process.
-  if (real_url.SchemeIs(kChromeErrorScheme))
+  if (real_url.SchemeIs(kChromeErrorScheme)) {
     return GetErrorPageSiteAndLockURL();
+  }
 
-  if (should_use_effective_urls)
+  if (should_use_effective_urls) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  }
 
   GURL url = should_use_effective_urls
                  ? SiteInstanceImpl::GetEffectiveURL(
