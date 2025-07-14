@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"
-    expires_after="2023-12-22">
+    expires_after="2025-09-30">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -166,6 +166,9 @@ chromium-metrics-reviews@google.com.
 
     This will be used to evaluate whether hangs are missed during startup
     because of this delay.
+
+    Warning: this histogram was expired from 2023-12-22 to 2025-07-04; data may
+    be missing.
   </summary>
   <token key="ProcessType" variants="ProcessType"/>
 </histogram>

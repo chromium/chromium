@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/process/current_process.h"
@@ -28,6 +29,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -379,6 +381,19 @@ int GpuMain(MainFunctionParams parameters) {
   auto* client = GetContentClient()->gpu();
   if (client) {
     client->PostSandboxInitialized();
+  }
+
+  // Start the HangWatcher now that the sandbox is engaged, if it hasn't already
+  // been started.
+  if (base::HangWatcher::IsEnabled() &&
+      !base::HangWatcher::GetInstance()->IsStarted()) {
+    DCHECK(parameters.hang_watcher_not_started_time.has_value());
+    base::TimeDelta uncovered_hang_watcher_time =
+        base::TimeTicks::Now() -
+        parameters.hang_watcher_not_started_time.value();
+    base::UmaHistogramTimes("HangWatcher.GpuProcess.UncoveredStartupTime",
+                            uncovered_hang_watcher_time);
+    base::HangWatcher::GetInstance()->Start();
   }
 
   // Startup tracing creates a tracing thread, which is incompatible on
