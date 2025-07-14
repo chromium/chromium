@@ -42,19 +42,8 @@ class LensOverlayPageActionIconView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
-  void Layout(PassKey) override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  // Preferred sizes for this view with and without the label set.
-  gfx::Size preferred_size_with_label_;
-  gfx::Size preferred_size_without_label_;
-
-  // Controls the `ShouldShowLabel` behavior.
-  bool should_show_label_ = true;
-
   // A controller for taking a full page screenshot and opening Lens in a new
   // tab if needed for accessibility.
   std::unique_ptr<lens::LensRegionSearchController>
