@@ -150,9 +150,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 prefs.readInt(
                         ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, mMaxInstances);
         if (mMaxInstances > prevInstanceLimit) {
-            // Reset SharedPref for instance limit downgrade if limit has increased.
+            // Reset SharedPrefs for instance limit downgrade if limit has increased.
             prefs.writeBoolean(
                     ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED, false);
+            prefs.writeBoolean(
+                    ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, false);
         }
         prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT, mMaxInstances);
     }

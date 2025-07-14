@@ -1029,7 +1029,8 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         // Show the message only if the message is not already shown.
         if (ChromeSharedPreferences.getInstance()
-                .contains(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN)) {
+                .readBoolean(
+                        ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, false)) {
             return false;
         }
 

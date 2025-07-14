@@ -160,6 +160,7 @@ public class MultiInstanceManagerApi31Test {
         mActivityTestRule.setActivity(newActivity);
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
+        waitForInstanceRestorationMessage();
 
         // Cleanup activities.
         mActivityTestRule.setActivity(firstActivity);
