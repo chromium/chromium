@@ -256,7 +256,7 @@ constexpr base::FeatureParam<std::string>
 
 BASE_FEATURE(kNotificationTelemetry,
              "NotificationTelemetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRedWarningSurvey,
              "RedWarningSurvey",
