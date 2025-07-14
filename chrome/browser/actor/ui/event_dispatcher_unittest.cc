@@ -22,6 +22,8 @@ namespace actor::ui {
 namespace {
 using base::test::TestFuture;
 using testing::_;
+using testing::AllOf;
+using testing::Field;
 using testing::Return;
 using testing::VariantWith;
 using testing::WithArgs;
@@ -162,6 +164,19 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
   TestFuture<mojom::ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
+}
+
+TEST_F(EventDispatcherTest, OneSyncUiEvents) {
+  EXPECT_CALL(
+      *mock_state_manager_,
+      OnUiEvent(VariantWith<TaskStateChanged>(AllOf(
+          Field(&TaskStateChanged::task_id, TaskId(999)),
+          Field(&TaskStateChanged::state, ActorTask::State::kPausedByClient)))))
+      .Times(1);
+  dispatcher_->OnActorTaskChange(UiEventDispatcher::ChangeTaskState{
+      .task_id = TaskId(999),
+      .old_state = ActorTask::State::kActing,
+      .new_state = ActorTask::State::kPausedByClient});
 }
 
 // TODO(crbug.com/425784083): improve unit testing

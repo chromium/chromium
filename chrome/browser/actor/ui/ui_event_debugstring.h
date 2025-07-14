@@ -10,7 +10,8 @@
 namespace actor::ui {
 
 std::string DebugString(const UiEvent&);
-
+std::string DebugString(const AsyncUiEvent&);
+std::string DebugString(const SyncUiEvent&);
 }
 
 #endif  // CHROME_BROWSER_ACTOR_UI_UI_EVENT_DEBUGSTRING_H_

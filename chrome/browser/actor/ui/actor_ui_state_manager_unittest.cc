@@ -324,7 +324,8 @@ INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerActorTaskUiTabScopedTest,
 
 class ActorUiStateManagerUiEventUiTabScopedTest
     : public ActorUiStateManagerTest,
-      public testing::WithParamInterface<std::tuple<UiEvent, UiTabState>> {};
+      public testing::WithParamInterface<std::tuple<AsyncUiEvent, UiTabState>> {
+};
 
 TEST_P(ActorUiStateManagerUiEventUiTabScopedTest,
        OnActorTaskState_UpdateTabScopedUi) {
@@ -337,7 +338,7 @@ MockTabInterface g_mock_tab;
 const auto kUiEventTestValues = [] {
   TaskId task_id(123);
   PageTarget page_target(gfx::Point(100, 200));
-  return std::vector<std::tuple<UiEvent, UiTabState>>{
+  return std::vector<std::tuple<AsyncUiEvent, UiTabState>>{
       {StartingToActOnTab{g_mock_tab.GetHandle(), task_id},
        UiTabState{
            .agent_overlay = AgentOverlayState(/*is_active=*/true),

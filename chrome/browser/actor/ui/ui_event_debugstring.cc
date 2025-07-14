@@ -78,4 +78,12 @@ std::string DebugString(const UiEvent& event) {
   return std::visit(UiEventToDebugStringFn, event);
 }
 
+std::string DebugString(const AsyncUiEvent& event) {
+  return std::visit(UiEventToDebugStringFn, event);
+}
+
+std::string DebugString(const SyncUiEvent& event) {
+  return std::visit(UiEventToDebugStringFn, event);
+}
+
 }  // namespace actor::ui

@@ -36,41 +36,41 @@ class UiEventDebugStringTest : public ::testing::Test {
 };
 
 TEST_F(UiEventDebugStringTest, StartTask) {
-  EXPECT_EQ(DebugString(StartTask(TaskId(123))), "StartTask[id=123]");
+  EXPECT_EQ(DebugString(UiEvent(StartTask(TaskId(123)))), "StartTask[id=123]");
 }
 
 TEST_F(UiEventDebugStringTest, TaskStateChanged) {
-  EXPECT_EQ(
-      DebugString(TaskStateChanged(TaskId(123), ActorTask::State::kActing)),
-      "TaskStateChanged[task_id=123, state=Acting]");
-  EXPECT_EQ(DebugString(TaskStateChanged(TaskId(8675),
-                                         ActorTask::State::kPausedByClient)),
+  EXPECT_EQ(DebugString(SyncUiEvent(
+                TaskStateChanged(TaskId(123), ActorTask::State::kActing))),
+            "TaskStateChanged[task_id=123, state=Acting]");
+  EXPECT_EQ(DebugString(UiEvent(TaskStateChanged(
+                TaskId(8675), ActorTask::State::kPausedByClient))),
             "TaskStateChanged[task_id=8675, state=PausedByClient]");
 }
 
 TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
-  EXPECT_EQ(DebugString(StartingToActOnTab(Handle(), TaskId(123))),
+  EXPECT_EQ(DebugString(UiEvent(StartingToActOnTab(Handle(), TaskId(123)))),
             "StartingToActOnTab[task_id=123, tab=5555]");
 }
 
 TEST_F(UiEventDebugStringTest, StoppedActingOnTab) {
-  EXPECT_EQ(DebugString(StoppedActingOnTab(Handle())),
+  EXPECT_EQ(DebugString(UiEvent(StoppedActingOnTab(Handle()))),
             "StoppedActingOnTab[tab=5555]");
 }
 
 TEST_F(UiEventDebugStringTest, MouseMove) {
-  EXPECT_EQ(DebugString(MouseMove(Handle(), PointTarget())),
+  EXPECT_EQ(DebugString(UiEvent(MouseMove(Handle(), PointTarget()))),
             "MouseMove[target=10,20]");
-  EXPECT_EQ(DebugString(MouseMove(Handle(), DomNodeTarget())),
+  EXPECT_EQ(DebugString(AsyncUiEvent(MouseMove(Handle(), DomNodeTarget()))),
             "MouseMove[target=DomNode[id=30 doc_id=some_document_identifier]]");
 }
 
 TEST_F(UiEventDebugStringTest, MouseClick) {
-  EXPECT_EQ(DebugString(MouseClick(Handle(), MouseClickType::kLeft,
-                                   MouseClickCount::kSingle)),
+  EXPECT_EQ(DebugString(UiEvent(MouseClick(Handle(), MouseClickType::kLeft,
+                                           MouseClickCount::kSingle))),
             "MouseClick[type=LeftClick, count=SingleClick]");
-  EXPECT_EQ(DebugString(MouseClick(Handle(), MouseClickType::kRight,
-                                   MouseClickCount::kDouble)),
+  EXPECT_EQ(DebugString(AsyncUiEvent(MouseClick(
+                Handle(), MouseClickType::kRight, MouseClickCount::kDouble))),
             "MouseClick[type=RightClick, count=DoubleClick]");
 }
 

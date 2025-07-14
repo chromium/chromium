@@ -139,7 +139,7 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
   return {};
 }
 
-void ActorUiStateManager::OnUiEvent(UiEvent event,
+void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
   const UiUpdate new_ui_state = std::visit(GetNewUiStateFn, event);
   // TODO(crbug.com/424495020): Return a callback from the Ui state once
@@ -157,6 +157,10 @@ void ActorUiStateManager::OnUiEvent(UiEvent event,
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+}
+
+void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
+  // TODO(crbug.com/424495020): Implement this function.
 }
 
 #if BUILDFLAG(ENABLE_GLIC)

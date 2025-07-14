@@ -15,7 +15,7 @@
 
 namespace actor::ui {
 // STATUS: Dispatched on first action from a task.  Will be refactored to
-// dispatch at a different point in the actuation flow.
+// dispatch at a different point in the actuation flow and from async to sync.
 struct StartTask {
   actor::TaskId task_id;
 
@@ -24,7 +24,7 @@ struct StartTask {
   ~StartTask();
 };
 
-// STATUS: Not yet dispatched anywhere.
+// STATUS: Dispatched when ActorTask state changes.
 struct TaskStateChanged {
   actor::TaskId task_id;
   ActorTask::State state;
@@ -35,7 +35,7 @@ struct TaskStateChanged {
 };
 
 // STATUS: Dispatched on first action from a task.  Will be refactored to
-// dispatch at a different point in the actuation flow.
+// dispatch at a different point in the actuation flow and from async to sync.
 struct StartingToActOnTab {
   tabs::TabInterface::Handle tab_handle;
   actor::TaskId task_id;
@@ -45,7 +45,8 @@ struct StartingToActOnTab {
   ~StartingToActOnTab();
 };
 
-// STATUS: Not yet dispatched anywhere.
+// STATUS: Not yet dispatched anywhere.  Will be refactored to dispatch at a
+// different point in the actuation flow and from async to sync.
 struct StoppedActingOnTab {
   tabs::TabInterface::Handle tab_handle;
 
@@ -74,6 +75,22 @@ struct MouseClick {
   MouseClick(const MouseClick&);
   ~MouseClick();
 };
+
+// AsyncUiEvents may be sent to ActorUiStateManager's asynchronous handler.
+// ActorUiStateManager must complete the async callback with a result.  Callers
+// may wait for the result callback to allow ActorUiStateManager to finish async
+// work before proceeding.
+using AsyncUiEvent = std::variant<StartTask,
+                                  StartingToActOnTab,
+                                  StoppedActingOnTab,
+                                  MouseClick,
+                                  MouseMove>;
+
+// SyncUiEvents may be sent to ActorUiStateManager's synchronous handler.
+// There's no affordance for ActorUiStateManager to report errors processing
+// these events or for callers to wait for ActorUiStateManager to finish async
+// work before proceeding.
+using SyncUiEvent = std::variant<TaskStateChanged>;
 
 using UiEvent = std::variant<StartTask,
                              StartingToActOnTab,

@@ -45,7 +45,8 @@ class ActorUiStateManagerInterface {
                                       ActorTask::State task_state) = 0;
 
   // Called whenever a ui event occurs.
-  virtual void OnUiEvent(UiEvent event, UiCompleteCallback callback) = 0;
+  virtual void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) = 0;
+  virtual void OnUiEvent(SyncUiEvent event) = 0;
 
   // Notifies the ActorUiTabController of a new `ui_tab_state`.
   // Can be stubbed out to do nothing in tests.

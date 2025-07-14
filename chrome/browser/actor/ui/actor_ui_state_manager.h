@@ -28,7 +28,13 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnActorTaskStateChange(TaskId task_id,
                               ActorTask::State task_state) override;
-  void OnUiEvent(UiEvent event, UiCompleteCallback callback) override;
+
+  // Handles a UiEvent that may be processed asynchronously.
+  void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
+
+  // Handles a UiEvent that must be processed synchronously.
+  void OnUiEvent(SyncUiEvent event) override;
+
   void NotifyUiTabController(tabs::TabInterface& tab,
                              const UiTabState& ui_tab_state) override;
 #if BUILDFLAG(ENABLE_GLIC)

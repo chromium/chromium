@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_UI_EVENT_DISPATCHER_H_
 
 #include "base/functional/callback.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -19,12 +20,19 @@ namespace ui {
 // This object is not thread safe; it expects to be called from a single thread.
 class UiEventDispatcher {
  public:
+  using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   struct FirstActInfo {
     TaskId task_id;
     std::optional<tabs::TabInterface::Handle> tab_handle;
   };
+  struct ChangeTaskState {
+    TaskId task_id;
+    ActorTask::State old_state;
+    ActorTask::State new_state;
+  };
 
-  using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  // TODO(crbug.com/425784083): Add tab changes from ActorTask.
+  using ActorTaskChange = std::variant<ChangeTaskState>;
 
   virtual ~UiEventDispatcher() = default;
 
@@ -42,6 +50,9 @@ class UiEventDispatcher {
   // be made once the UI has initialized.
   virtual void OnPreFirstAct(const FirstActInfo& first_act_info,
                              UiCompleteCallback callback) = 0;
+
+  // Should be called when properties of an ActorTask change.
+  virtual void OnActorTaskChange(const ActorTaskChange& change) = 0;
 };
 
 std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(Profile* profile);

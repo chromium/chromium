@@ -32,8 +32,9 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (override));
   MOCK_METHOD(void,
               OnUiEvent,
-              (UiEvent event, UiCompleteCallback callback),
+              (AsyncUiEvent event, UiCompleteCallback callback),
               (override));
+  MOCK_METHOD(void, OnUiEvent, (SyncUiEvent event), (override));
   MOCK_METHOD(void,
               NotifyUiTabController,
               (tabs::TabInterface & tab, const UiTabState& ui_tab_state),

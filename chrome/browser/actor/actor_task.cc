@@ -60,6 +60,9 @@ void ActorTask::SetState(State state) {
   }
 #endif  // DCHECK_IS_ON()
 
+  ui_event_dispatcher_->OnActorTaskChange(
+      ui::UiEventDispatcher::ChangeTaskState{
+          .task_id = id_, .old_state = state_, .new_state = state});
   state_ = state;
   task_state_change_callback_list_.Notify(id_, state_);
 }
