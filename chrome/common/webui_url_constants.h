@@ -66,6 +66,10 @@ inline constexpr char kChromeUIChromeSigninURL[] = "chrome://chrome-signin/";
 inline constexpr char kChromeUIChromeURLsHost[] = "chrome-urls";
 inline constexpr char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";
 inline constexpr char16_t kChromeUIChromeURLsURL16[] = u"chrome://chrome-urls/";
+inline constexpr char kChromeUIColorPipelineInternalsHost[] =
+    "color-pipeline-internals";
+inline constexpr char kChromeUIColorPipelineInternalsURL[] =
+    "chrome://color-pipeline-internals";
 inline constexpr char kChromeUIComponentsHost[] = "components";
 inline constexpr char kChromeUIComponentsUrl[] = "chrome://components";
 inline constexpr char kChromeUIConflictsHost[] = "conflicts";

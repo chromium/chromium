@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_ml_internals/autofill_ml_internals_ui.h"
+#include "chrome/browser/ui/webui/color_pipeline_internals/color_pipeline_internals_ui.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
@@ -539,10 +540,10 @@ void PopulateChromeWebUIFrameBinders(
       SignoutConfirmationUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
-      UserEducationInternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
-      HistoryClustersSidePanelUI, ShoppingInsightsSidePanelUI,
-      media_router::AccessCodeCastUI, commerce::ProductSpecificationsUI,
-      NewTabFooterUI>(map);
+      ColorPipelineInternalsUI, UserEducationInternalsUI, ReadingListUI,
+      TabSearchUI, WebuiGalleryUI, HistoryClustersSidePanelUI,
+      ShoppingInsightsSidePanelUI, media_router::AccessCodeCastUI,
+      commerce::ProductSpecificationsUI, NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI,

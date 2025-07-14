@@ -1611,6 +1611,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/actor_internals",
       "//chrome/browser/ui/webui/app_management",
+      "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
