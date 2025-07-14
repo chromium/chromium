@@ -30,48 +30,67 @@ export class CrFrameListElement extends CustomElement {
   constructor() {
     super();
 
-    const tabs = this.getRequiredElement('#tablist');
-    this.tabs_ = tabs;
+    this.tabs_ = this.getRequiredElement('#tablist');
+    this.panels_ = this.getRequiredElement('#tabpanels');
+    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
     this.tabs_.addEventListener('keydown', e => this.onKeydown_(e));
     this.tabs_.addEventListener('click', (e: MouseEvent) => {
-      const tabs = this.getTabs_();
-      for (let i = 0; i < e.composedPath().length; i++) {
-        const el = e.composedPath()[i] as HTMLElement;
-        const index = tabs.findIndex(tab => tab === el);
-        if (index !== -1) {
-          this.setAttribute('selected-index', index.toString());
-          break;
-        }
+      const tabs = this.getSlottedTabs_();
+      const clickedTab = (e.target as HTMLElement).closest('[slot="tab"]');
+
+      if (!clickedTab || clickedTab.getAttribute('role') === 'heading') {
+        return;
+      }
+
+      const index = tabs.findIndex(tab => tab === clickedTab);
+      if (index !== -1) {
+        this.setAttribute('selected-index', index.toString());
       }
     });
-
-    const panels = this.getRequiredElement('#tabpanels');
-    this.panels_ = panels;
-    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
   }
 
   connectedCallback() {
-    this.setAttribute('selected-index', '0');
+    if (this.hasAttribute('selected-index')) {
+      return;
+    }
+
+    const tabs = this.getSlottedTabs_();
+    let initialIndex = tabs.findIndex(tab => tab.hasAttribute('selected'));
+
+    // If no tab is pre-selected, find the first non-heading tab to select.
+    if (initialIndex === -1) {
+      initialIndex =
+          tabs.findIndex(tab => tab.getAttribute('role') !== 'heading');
+    }
+    this.setAttribute(
+        'selected-index', (initialIndex > -1 ? initialIndex : 0).toString());
   }
 
   attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
     assert(name === 'selected-index');
     const newIndex = Number(newValue);
     assert(!Number.isNaN(newIndex));
-    this.getPanels_().forEach((panel: Element, index: number) => {
+    this.getSlottedPanels_().forEach((panel: Element, index: number) => {
       panel.toggleAttribute('selected', index === newIndex);
     });
-    this.getTabs_().forEach((tab: HTMLElement, index: number) => {
+    this.getSlottedTabs_().forEach((tab: HTMLElement, index: number) => {
       const isSelected = index === newIndex;
       tab.toggleAttribute('selected', isSelected);
-      // Update tabIndex for a11y
-      tab.setAttribute('tabindex', isSelected ? '0' : '-1');
-      // Update aria-selected attribute for a11y
-      const firstSelection = !tab.hasAttribute('aria-selected');
-      tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-      // Update focus, but don't override initial focus.
-      if (isSelected && !firstSelection) {
-        tab.focus();
+
+      if (tab.getAttribute('role') !== 'heading') {
+        // Update tabIndex for a11y
+        tab.setAttribute('tabindex', isSelected ? '0' : '-1');
+        // Update aria-selected attribute for a11y
+        const firstSelection = !tab.hasAttribute('aria-selected');
+        tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        // Update focus, but don't override initial focus.
+        if (isSelected && !firstSelection) {
+          tab.focus();
+        }
       }
     });
 
@@ -80,12 +99,12 @@ export class CrFrameListElement extends CustomElement {
         {bubbles: true, composed: true, detail: newIndex}));
   }
 
-  private getTabs_(): HTMLElement[] {
+  private getSlottedTabs_(): HTMLElement[] {
     return Array.from(this.tabs_.querySelector('slot')!.assignedElements()) as
         HTMLElement[];
   }
 
-  private getPanels_(): Element[] {
+  private getSlottedPanels_(): Element[] {
     const slots: HTMLSlotElement =
         this.panels_.querySelector('slot[name=panel]')!;
     return Array.from(slots.assignedElements());
@@ -112,9 +131,25 @@ export class CrFrameListElement extends CustomElement {
       delta *= -1;
     }
 
-    const count = this.getTabs_().length;
-    const newIndex =
-        (Number(this.getAttribute('selected-index')) + delta + count) % count;
+    const tabs = this.getSlottedTabs_();
+    const tabsCount = tabs.length;
+
+    if (tabsCount === 0) {
+      return;
+    }
+
+    let newIndex =
+        (Number(this.getAttribute('selected-index')) + delta + tabsCount) %
+        tabsCount;
+
+    // Skip 'heading' tabs as they are not selectable.
+    for (let i = 0; i < tabsCount; i++) {
+      if (tabs[newIndex]?.getAttribute('role') !== 'heading') {
+        break;
+      }
+      newIndex = (newIndex + delta + tabsCount) % tabsCount;
+    }
+
     this.setAttribute('selected-index', newIndex.toString());
 
     // Show focus outline since we used the keyboard.
