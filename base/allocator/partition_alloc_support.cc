@@ -948,6 +948,15 @@ void PartitionAllocSupport::ReconfigureEarlyish(
     ReconfigurePartitionForKnownProcess(process_type);
   }
 
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) && \
+    PA_BUILDFLAG(IS_ANDROID)
+  if (base::android::BackgroundThreadPoolFieldTrial::
+          ShouldUsePriorityInheritanceLocks()) {
+    partition_alloc::internal::SpinningMutex::EnableUsePriorityInheritance();
+  }
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) &&
+        // PA_BUILDFLAG(IS_ANDROID)
+
   // These initializations are only relevant for PartitionAlloc-Everywhere
   // builds.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -1166,15 +1175,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-
-#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) && \
-    PA_BUILDFLAG(IS_ANDROID)
-  if (base::android::BackgroundThreadPoolFieldTrial::
-          ShouldUsePriorityInheritanceLocks()) {
-    partition_alloc::internal::SpinningMutex::EnableUsePriorityInheritance();
-  }
-#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) &&
-        // PA_BUILDFLAG(IS_ANDROID)
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
