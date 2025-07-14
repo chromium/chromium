@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -49,19 +50,12 @@ class TabGroupSyncServiceProxyUnitTest
       const TabGroupSyncServiceProxyUnitTest&) = delete;
 
   Browser* AddBrowser() {
-    Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-    std::unique_ptr<Browser> browser =
-        CreateBrowserWithTestWindowForParams(native_params);
-    Browser* browser_ptr = browser.get();
-    browsers_.emplace_back(std::move(browser));
-    return browser_ptr;
+    return CreateBrowserWithBrowserView(profile(), Browser::TYPE_NORMAL);
   }
 
   content::WebContents* AddTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                          nullptr);
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
 
     content::WebContents* web_contents_ptr = web_contents.get();
 
@@ -113,24 +107,18 @@ class TabGroupSyncServiceProxyUnitTest
 
  private:
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-
-    service_ =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_.get());
-    service_->SetIsInitializedForTesting(true);
+    TestWithBrowserView::SetUp();
+    service_ = tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
+    auto observer =
+        tab_groups::TabGroupSyncServiceInitializedObserver(service_.get());
+    observer.Wait();
   }
-
   void TearDown() override {
-    for (auto& browser : browsers_) {
-      browser->tab_strip_model()->CloseAllTabs();
-    }
+    service_ = nullptr;
+    TestWithBrowserView::TearDown();
   }
-
-  content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::vector<std::unique_ptr<Browser>> browsers_;
   raw_ptr<TabGroupSyncService> service_ = nullptr;
 };
 
