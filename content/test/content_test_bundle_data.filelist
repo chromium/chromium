@@ -6413,6 +6413,7 @@ data/attribution_reporting/databases/version_66.sql
 data/attribution_reporting/databases/version_67.sql
 data/attribution_reporting/databases/version_68.sql
 data/attribution_reporting/databases/version_69.sql
+data/attribution_reporting/databases/version_70.sql
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
 data/attribution_reporting/interop/aggregatable_contributions_with_filtering_ids.json
@@ -6488,6 +6489,9 @@ data/attribution_reporting/interop/max_event_level_reports_per_source.json
 data/attribution_reporting/interop/max_trigger_state_cardinality.json
 data/attribution_reporting/interop/most_recent_source.json
 data/attribution_reporting/interop/multiple_destinations.json
+data/attribution_reporting/interop/navigation_retry_first_attempt.json
+data/attribution_reporting/interop/navigation_retry_second_attempt.json
+data/attribution_reporting/interop/navigation_retry_third_attempt.json
 data/attribution_reporting/interop/null_aggregatable_report.json
 data/attribution_reporting/interop/os_debug_reports.json
 data/attribution_reporting/interop/parse_failures.json

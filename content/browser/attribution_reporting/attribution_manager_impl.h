@@ -34,7 +34,6 @@ struct OsRegistrationItem;
 namespace base {
 class FilePath;
 class Time;
-class TimeDelta;
 class UpdateableSequencedTaskRunner;
 class ValueView;
 }  // namespace base
@@ -296,15 +295,20 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };
 
-// Gets the delay for a report that has failed to be sent
+// Gets the new delayed report time for a report that has failed to be sent
 // `failed_send_attempts` times.
 // Returns `std::nullopt` to indicate that no more attempts should be made.
-// Otherwise, the return value must be positive. `failed_send_attempts` is
-// guaranteed to be positive.
+// Otherwise, the return value must be later than current time.
+// `failed_send_attempts` is guaranteed to be positive.
+//
+// If the `kAttributionReportNavigationBasedRetry` feature is enabled, at the
+// `kAttributionReportNavigationRetryAttempt` send attempt, the report's expiry
+// time will be returned for the navigation-based retry to occur with no issues.
 //
 // Exposed here for testing.
 CONTENT_EXPORT
-std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
+std::optional<base::Time> GetReportTimeForRetry(int failed_send_attempts,
+                                                base::Time report_expiry_time);
 
 }  // namespace content
 

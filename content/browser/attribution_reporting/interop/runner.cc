@@ -58,6 +58,7 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -335,6 +336,14 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
     return response_data;
   }
 
+  std::optional<AttributionResolverDelegate::OfflineReportDelayConfig>
+  GetOfflineReportDelayConfig() const override {
+    return OfflineReportDelayConfig{
+        .min = base::Minutes(5),
+        .max = base::Minutes(5),
+    };
+  }
+
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig
@@ -359,7 +368,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 };
 
 void Handle(const AttributionSimulationEvent::StartRequest& event,
-            AttributionDataHostManager& data_host_manager) {
+            AttributionManager& manager) {
   std::optional<RegistrationEligibility> eligibility =
       attribution_reporting::GetRegistrationEligibility(event.eligibility);
   if (!eligibility.has_value()) {
@@ -370,6 +379,7 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
       event.context_origin, event.fenced, kFrameId,
       /*last_navigation_id=*/kNavigationId);
 
+  auto& data_host_manager = *manager.GetDataHostManager();
   std::optional<blink::AttributionSrcToken> attribution_src_token;
   if (event.eligibility == AttributionReportingEligibility::kNavigationSource) {
     attribution_src_token.emplace();
@@ -383,23 +393,28 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
         *attribution_src_token);
   }
 
-  data_host_manager.NotifyBackgroundRegistrationStarted(
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationStarted(
       BackgroundRegistrationsId(event.request_id), std::move(suitable_context),
       *eligibility, attribution_src_token,
       /*devtools_request_id=*/"");
 }
 
 void Handle(const AttributionSimulationEvent::Response& event,
-            AttributionDataHostManager& data_host_manager) {
-  data_host_manager.NotifyBackgroundRegistrationData(
+            AttributionManager& manager) {
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
       event.url);
 }
 
 void Handle(const AttributionSimulationEvent::EndRequest& event,
-            AttributionDataHostManager& data_host_manager) {
-  data_host_manager.NotifyBackgroundRegistrationCompleted(
+            AttributionManager& manager) {
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId(event.request_id));
+}
+
+void Handle(const AttributionSimulationEvent::Navigation& event,
+            AttributionManager& manager) {
+  manager.UpdateLastNavigationTime(base::Time::Now());
 }
 
 void FastForwardUntilReportsConsumed(AttributionManager& manager,
@@ -442,9 +457,9 @@ RunAttributionInteropSimulation(
   DCHECK(std::ranges::is_sorted(run.events, /*comp=*/{},
                                 &AttributionSimulationEvent::time));
 
-  std::vector<base::test::FeatureRef> enabled_features(
-      {blink::features::kKeepAliveInBrowserMigration,
-       blink::features::kAttributionReportingInBrowserMigration});
+  std::vector<base::test::FeatureRefAndParams> enabled_features(
+      {{blink::features::kKeepAliveInBrowserMigration, {}},
+       {blink::features::kAttributionReportingInBrowserMigration, {}}});
 
   std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
       scoped_api_state;
@@ -452,9 +467,16 @@ RunAttributionInteropSimulation(
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
 
+  if (run.config.needs_retry_after_new_navigation) {
+    enabled_features.push_back(base::test::FeatureRefAndParams(  // IN-TEST
+        kAttributionReportNavigationBasedRetry,
+        {{"navigation_retry_attempt",
+          *run.config.needs_retry_after_new_navigation}}));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(enabled_features,
-                                       /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                                    /*disabled_features=*/{});
 
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(run.config.max_event_level_epsilon);
@@ -587,9 +609,7 @@ RunAttributionInteropSimulation(
                         }));
               }
             },
-            [&](const auto& data) {
-              Handle(data, *manager->GetDataHostManager());
-            }},
+            [&](const auto& data) { Handle(data, *manager); }},
         event.data);
   }
 

@@ -769,7 +769,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
       "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
 
   histograms.ExpectUniqueSample(
-      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 3, 1);
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 4, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Deleted) {
@@ -2114,7 +2114,7 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
       "Conversions.TimeFromTriggerToReportSentSuccessfully",
       kFirstReportingWindow.InHours() + 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 0, 1);
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
@@ -2159,7 +2159,7 @@ TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
 
   histograms.ExpectUniqueSample(
-      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 1, 1);
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
@@ -2375,6 +2375,329 @@ TEST_F(AttributionManagerImplTest,
       "Conversions.TimeFromLastNavigationToDelivery_Failed.EventLevelReport",
       1);
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SendReportWithNavigationRetry_NoTimedRetries) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kAttributionReportNavigationBasedRetry,
+      {{"navigation_retry_attempt", "first_retry"}});
+
+  base::HistogramTester histograms;
+
+  ReportSentCallback report_sent_callback;
+  std::optional<AttributionReport> sent_report;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          report_sent_callback = std::move(callback);
+          sent_report = std::move(report);
+        });
+  }
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Milliseconds(1));
+
+  checkpoint.Call(1);
+
+  // The report is sent at its expected report time.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  checkpoint.Call(2);
+
+  // No send attempts occur at the first retry time of +5 minutes.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // The report is sent at the navigation retry time.
+  task_environment_.FastForwardBy(base::Days(1) - base::Minutes(5));
+  attribution_manager_->UpdateLastNavigationTime(base::Time::Now());
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  ASSERT_TRUE(report_sent_callback);
+  ASSERT_TRUE(sent_report);
+  std::move(report_sent_callback)
+      .Run(*std::move(sent_report), SendResult::Sent(SentResult::kSent,
+                                                     /*status=*/0));
+
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.ExtraReportDelayForSuccessfulSend", base::Days(1), 1);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 1, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SendReportWithNavigationRetry_OneTimedRetry) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kAttributionReportNavigationBasedRetry,
+      {{"navigation_retry_attempt", "second_retry"}});
+
+  base::HistogramTester histograms;
+
+  ReportSentCallback report_sent_callback;
+  std::optional<AttributionReport> sent_report;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(4));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          report_sent_callback = std::move(callback);
+          sent_report = std::move(report);
+        });
+  }
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Milliseconds(1));
+
+  checkpoint.Call(1);
+
+  // The report is sent at its expected report time.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  checkpoint.Call(2);
+
+  // The report attempts to send at the first retry time of +5 minutes.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // No send attempts occur at the second retry time of +15 minutes.
+  task_environment_.FastForwardBy(base::Minutes(15));
+
+  checkpoint.Call(4);
+
+  // The report is sent at the navigation retry time.
+  task_environment_.FastForwardBy(base::Days(1) - base::Minutes(15));
+  attribution_manager_->UpdateLastNavigationTime(base::Time::Now());
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  ASSERT_TRUE(report_sent_callback);
+  ASSERT_TRUE(sent_report);
+  std::move(report_sent_callback)
+      .Run(*std::move(sent_report), SendResult::Sent(SentResult::kSent,
+                                                     /*status=*/0));
+
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.ExtraReportDelayForSuccessfulSend",
+      base::Days(1) + base::Minutes(5), 1);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 2, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SendReportWithNavigationRetry_TwoTimedRetries) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kAttributionReportNavigationBasedRetry,
+      {{"navigation_retry_attempt", "third_retry"}});
+
+  base::HistogramTester histograms;
+
+  ReportSentCallback report_sent_callback;
+  std::optional<AttributionReport> sent_report;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(4));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          report_sent_callback = std::move(callback);
+          sent_report = std::move(report);
+        });
+  }
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Milliseconds(1));
+
+  checkpoint.Call(1);
+
+  // The report is sent at its expected report time.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  checkpoint.Call(2);
+
+  // The report attempts to send at the first retry time of +5 minutes.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // The report attempts to send at the second retry time of +15 minutes.
+  task_environment_.FastForwardBy(base::Minutes(15));
+
+  checkpoint.Call(4);
+
+  // The report is sent at the navigation retry.
+  task_environment_.FastForwardBy(base::Days(1));
+  attribution_manager_->UpdateLastNavigationTime(base::Time::Now());
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  ASSERT_TRUE(report_sent_callback);
+  ASSERT_TRUE(sent_report);
+  std::move(report_sent_callback)
+      .Run(*std::move(sent_report), SendResult::Sent(SentResult::kSent,
+                                                     /*status=*/0));
+
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.ExtraReportDelayForSuccessfulSend",
+      base::Days(1) + base::Minutes(20), 1);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 3, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       SendReportWithNavigationRetry_NavigationRetryFailed) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kAttributionReportNavigationBasedRetry,
+      {{"navigation_retry_attempt", "third_retry"}});
+
+  base::HistogramTester histograms;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(4));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(InvokeReportSentCallback(SentResult::kTransientFailure));
+  }
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Milliseconds(1));
+
+  checkpoint.Call(1);
+
+  // The report is sent at its expected report time.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  checkpoint.Call(2);
+
+  // The report attempts to send at the first retry time of +5 minutes.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // The report attempts to send at the second retry time of +15 minutes.
+  task_environment_.FastForwardBy(base::Minutes(15));
+
+  checkpoint.Call(4);
+
+  // The report attempts to send on navigation.
+  attribution_manager_->UpdateLastNavigationTime(base::Time::Now());
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  // kFailed = 4.
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure2", 4, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
@@ -2893,7 +3216,8 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
       "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
       base::Days(3) + base::Minutes(1), 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure", 0, 1);
+      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure2", 0,
+      1);
 
   // The content is set as the reporting origin. In unit tests, this value is
   // set to "https://report.test". DWA content sanitization extracts the eTLD+1
@@ -3010,7 +3334,8 @@ TEST_F(AttributionManagerImplTest,
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure", 3, 1);
+      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure2", 4,
+      1);
 }
 
 TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
@@ -3043,18 +3368,20 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
 }
 
 TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {
+  base::Time now = base::Time::Now();
   const struct {
     int failed_send_attempts;
-    std::optional<base::TimeDelta> expected;
+    std::optional<base::Time> expected;
   } kTestCases[] = {
-      {1, base::Minutes(5)},
-      {2, base::Minutes(15)},
+      {1, now + base::Minutes(5)},
+      {2, now + base::Minutes(15)},
       {3, std::nullopt},
   };
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected,
-              GetFailedReportDelay(test_case.failed_send_attempts))
+              GetReportTimeForRetry(test_case.failed_send_attempts,
+                                    base::Time::Max()))
         << "failed_send_attempts=" << test_case.failed_send_attempts;
   }
 }

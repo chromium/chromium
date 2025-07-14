@@ -122,6 +122,17 @@ inline constexpr const char kSetReportTimeSql[] =
     "SET report_time=?+ABS(RANDOM()%?)"
     "WHERE report_time<?";
 
+// Set the report time for all reports that are on their navigation-based retry
+// attempt to now + a random number of microseconds between `min_delay` and
+// `max_delay`, both inclusive. We filter out report times that are within this
+// random range so that reports are only updated once.
+inline constexpr const char kSetReportTimeOnNavigationSql[] =
+    "UPDATE reports "
+    "SET report_time=?1+ABS(RANDOM()%?2)"
+    "WHERE failed_send_attempts>0 AND failed_send_attempts=?3 AND "
+    "report_time>=?1+?2"
+    "RETURNING report_type";
+
 // clang-format off
 
 #define ATTRIBUTION_SOURCE_COLUMNS_SQL(prefix) \

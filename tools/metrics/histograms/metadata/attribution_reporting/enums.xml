@@ -308,7 +308,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="None"/>
   <int value="1" label="One retry"/>
   <int value="2" label="Two retries"/>
-  <int value="3" label="Failed"/>
+  <int value="3" label="Three retries"/>
+  <int value="4" label="Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->

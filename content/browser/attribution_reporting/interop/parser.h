@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -78,7 +79,10 @@ struct AttributionSimulationEvent {
     bool connected;
   };
 
-  using Data = std::variant<StartRequest, Response, EndRequest, Connection>;
+  struct Navigation {};
+
+  using Data =
+      std::variant<StartRequest, Response, EndRequest, Connection, Navigation>;
 
   base::Time time;
   Data data;
@@ -106,6 +110,7 @@ struct AttributionInteropConfig {
   double max_event_level_epsilon = 0;
   uint32_t max_trigger_state_cardinality = 0;
   bool needs_cross_app_web = false;
+  std::optional<std::string> needs_retry_after_new_navigation = std::nullopt;
   std::vector<url::Origin> aggregation_coordinator_origins;
 
   AttributionInteropConfig();

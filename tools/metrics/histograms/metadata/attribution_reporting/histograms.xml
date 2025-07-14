@@ -1109,6 +1109,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.ReportsAdjustedOnNavigationRetryAttempt.{ReportType}"
+    units="reports" expires_after="2025-10-26">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of eligible reports adjusted on a successfully committed
+    navigation. A report is eligible for adjustment on navigation when it's at
+    its final retry attempt and the `AttributionReportNavigationBasedRetry`
+    Finch feature is enabled. Recorded once per successful navigation only when
+    at least one report is adjusted.
+  </summary>
+  <token key="ReportType">
+    <variant name="Aggregatable"/>
+    <variant name="Event"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.ReportsDeletedInDataClearOperation.Aggregatable"
     units="conversions" expires_after="2025-09-28">
   <owner>tquintanilla@chromium.org</owner>
@@ -1596,7 +1614,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure"
+<histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure2"
     enum="ConversionReportSendRetryCount" expires_after="2025-12-21">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

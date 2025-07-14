@@ -1,5 +1,8 @@
 {
-  "description": "Report is never sent due to network connectivity",
+  "api_config": {
+    "retry_after_new_navigation": "second_retry"
+  },
+  "description": "Report send retries on navigation with no timed retries",
   "input": {
     "registrations": [
       {
@@ -42,15 +45,21 @@
           }
         ]
       },
-      // Disables report sends.
+      // Forces report to fail timed retry attempts.
       {
-        "timestamp": "2000",
+        "timestamp": "172799000",
         "connection": false
       },
-      // Enables report sends after retry time frame.
+      // Enables report sends after first timed retry.
       {
-        "timestamp": "174100000",
-        "connection": false
+        "timestamp": "173100001",
+        "connection": true
+      },
+      // Report delivers on navigation with 5 minute delay, not on second retry
+      // time.
+      {
+        "timestamp": "174900000",
+        "navigation": true
       }
     ]
   },
@@ -69,6 +78,18 @@
         ],
         "report_time": "0",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "7"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "175200000"
       }
     ]
   }

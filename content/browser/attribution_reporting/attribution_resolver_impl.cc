@@ -1151,6 +1151,32 @@ std::optional<base::Time> AttributionResolverImpl::AdjustOfflineReportTimes() {
   return storage_.GetNextReportTime(base::Time::Min());
 }
 
+std::optional<base::Time>
+AttributionResolverImpl::AdjustNavigationRetryReportTimes() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (auto delay = delegate_->GetOfflineReportDelayConfig()) {
+    if (base::flat_map<AttributionReport::Type, int> report_types =
+            storage_.AdjustNavigationRetryReportTimes(delay->min, delay->max);
+        !report_types.empty()) {
+      if (auto it = report_types.find(AttributionReport::Type::kEventLevel);
+          it != report_types.end()) {
+        base::UmaHistogramCounts100(
+            "Conversions.ReportsAdjustedOnNavigationRetryAttempt.Event",
+            it->second);
+      }
+      if (auto it = report_types.find(
+              AttributionReport::Type::kAggregatableAttribution);
+          it != report_types.end()) {
+        base::UmaHistogramCounts100(
+            "Conversions.ReportsAdjustedOnNavigationRetryAttempt.Aggregatable",
+            it->second);
+      }
+      return storage_.GetNextReportTime(base::Time::Min());
+    }
+  }
+  return std::nullopt;
+}
+
 void AttributionResolverImpl::ClearDataIncludingRateLimit(
     base::Time delete_begin,
     base::Time delete_end,

@@ -156,6 +156,11 @@ TEST_F(AttributionSqlQueryPlanTest, kSetReportTimeSql) {
               ValueIs(UsesIndex("reports_by_report_time")));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kSetReportTimeOnNavigationSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kSetReportTimeOnNavigationSql),
+              ValueIs(UsesCoveringIndex("reports_by_failed_send_attempts")));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kReadSourceToAttributeSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kReadSourceToAttributeSql),
               ValueIs(UsesPrimaryKey()));

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -76,11 +77,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 69;
+  static constexpr int kCurrentVersionNumber = 70;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 69;
+  static constexpr int kCompatibleVersionNumber = 70;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -223,6 +224,9 @@ class CONTENT_EXPORT AttributionStorageSql {
                                   base::Time new_report_time);
   bool AdjustOfflineReportTimes(base::TimeDelta min_delay,
                                 base::TimeDelta max_delay);
+  base::flat_map<AttributionReport::Type, int> AdjustNavigationRetryReportTimes(
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay);
   void ClearAllDataAllTime(bool delete_rate_limit_data);
   void ClearDataWithFilter(
       base::Time delete_begin,
