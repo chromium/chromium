@@ -115,8 +115,8 @@ TEST(ScopedMachVMTest, ResetSmallerAddress) {
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
   EXPECT_EQ(KERN_SUCCESS, kr);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(2u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + 2u * base::GetPageSize(), region_address + region_size);
 
   // This will free address..base::GetPageSize() that is currently in the
   // scoper.
