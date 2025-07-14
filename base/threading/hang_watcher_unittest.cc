@@ -866,6 +866,31 @@ TEST_F(HangWatcherTest, GpuProcessHangReportingCanBeEnabled) {
   EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
+// Test that a single hang gets recorded when multiple threads hung.
+TEST_F(HangWatcherTest, SingleHangRecordedForMultipleThreads) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
+  base::HistogramTester histogram_tester;
+
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
+
+  // Start blocked threads for all thread types and simulate hangs.
+  BlockedThreadsForAllTypes threads(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // A single hang report should be sent, even though two threads hung.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          "HangWatcher.IsThreadHung.BrowserProcess"),
+      UnorderedElementsAre(
+          Pair("HangWatcher.IsThreadHung.BrowserProcess.UIThread.Normal",
+               BucketsAre(Bucket(true, /*count=*/1))),
+          Pair("HangWatcher.IsThreadHung.BrowserProcess.IOThread.Normal",
+               BucketsAre(Bucket(true, /*count=*/1)))));
+}
+
 TEST_F(HangWatcherTest, HangAlreadyRecorded) {
   ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
