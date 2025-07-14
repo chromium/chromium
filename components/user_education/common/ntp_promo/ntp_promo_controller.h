@@ -59,6 +59,9 @@ class NtpPromoController {
   NtpPromoController(NtpPromoRegistry& registry,
                      UserEducationStorageService& storage_service);
 
+  // Determines if there are any showable proms.
+  virtual bool HasShowablePromos() const;
+
   // Provides ordered lists of eligible and completed promos, intended to be
   // displayed by the NTP. May update prefs as a side effect.
   virtual NtpShowablePromos GenerateShowablePromos();

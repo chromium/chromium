@@ -47,6 +47,18 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
+bool NtpPromoController::HasShowablePromos() const {
+  for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
+    if (const auto* spec = registry_->GetNtpPromoSpecification(id)) {
+      if (spec->eligibility_callback().Run(nullptr) !=
+          NtpPromoSpecification::Eligibility::kIneligible) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 NtpShowablePromos NtpPromoController::GenerateShowablePromos() {
   NtpShowablePromos showable_promos;
   const auto now = base::Time::Now();

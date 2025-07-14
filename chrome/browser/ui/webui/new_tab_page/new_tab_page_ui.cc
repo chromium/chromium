@@ -61,6 +61,8 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
@@ -90,6 +92,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -982,10 +985,15 @@ void NewTabPageUI::OnLoad() {
   base::Value::Dict update;
   update.Set("navigationStartTime",
              navigation_start_time_.InMillisecondsFSinceUnixEpoch());
-  update.Set(
-      "modulesEnabled",
-      ntp::HasModulesEnabled(module_id_details_,
-                             IdentityManagerFactory::GetForProfile(profile_)));
+  const bool modules_enabled = ntp::HasModulesEnabled(
+      module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
+  update.Set("modulesEnabled", modules_enabled);
+  const bool show_ntp_promos =
+      !modules_enabled && user_education::features::NtpBrowserPromosEnabled() &&
+      UserEducationServiceFactory::GetForBrowserContext(profile_)
+          ->ntp_promo_controller()
+          ->HasShowablePromos();
+  update.Set("browserPromosEnabled", show_ntp_promos);
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }
