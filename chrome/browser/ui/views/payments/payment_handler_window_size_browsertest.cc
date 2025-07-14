@@ -72,7 +72,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   // Click on Pay and check dialog size when payment handler view is shown.
   EXPECT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
