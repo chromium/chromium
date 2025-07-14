@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event_impl.h"  // no-presubmit-check
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"

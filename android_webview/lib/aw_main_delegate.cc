@@ -36,6 +36,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_features.h"

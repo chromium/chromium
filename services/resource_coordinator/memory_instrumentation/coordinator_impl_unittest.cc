@@ -55,7 +55,6 @@ using base::trace_event::MemoryDumpManager;
 using base::trace_event::MemoryDumpRequestArgs;
 using base::trace_event::MemoryDumpType;
 using base::trace_event::ProcessMemoryDump;
-using base::trace_event::TraceLog;
 using memory_instrumentation::mojom::GlobalMemoryDump;
 using memory_instrumentation::mojom::GlobalMemoryDumpPtr;
 

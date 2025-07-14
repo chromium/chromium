@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/browser_thread.h"

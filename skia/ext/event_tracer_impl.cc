@@ -40,7 +40,7 @@ const uint8_t*
 
 const char* SkChromiumEventTracer::getCategoryGroupName(
       const uint8_t* categoryEnabledFlag) {
-  return base::trace_event::TraceLog::GetCategoryGroupName(categoryEnabledFlag);
+  return TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(categoryEnabledFlag);
 }
 
 SkEventTracer::Handle

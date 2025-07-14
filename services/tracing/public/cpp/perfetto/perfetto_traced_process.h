@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"

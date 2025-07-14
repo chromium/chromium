@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"

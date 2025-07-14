@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"

@@ -101,6 +101,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 
 namespace base {
 class Value;

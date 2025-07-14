@@ -140,9 +140,8 @@ void WriteDebugAnnotations(base::trace_event::TraceEvent* trace_event,
 // using an override here.
 // TODO(crbug.com/343404899): Remove when all embedders migrate to Perfetto.
 void OnAddLegacyTraceEvent(TraceEvent* trace_event) {
-  perfetto::DynamicCategory category(
-      TraceLog::GetInstance()->GetCategoryGroupName(
-          trace_event->category_group_enabled()));
+  perfetto::DynamicCategory category(TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(
+      trace_event->category_group_enabled()));
 
   auto phase = trace_event->phase();
   if (phase == TRACE_EVENT_PHASE_COMPLETE) {
@@ -220,7 +219,7 @@ void OnUpdateLegacyTraceEventDuration(
     const TimeTicks& now,
     const ThreadTicks& thread_now) {
   perfetto::DynamicCategory category(
-      TraceLog::GetInstance()->GetCategoryGroupName(category_group_enabled));
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(category_group_enabled));
   auto phase = TRACE_EVENT_PHASE_END;
   base::TimeTicks timestamp =
       explicit_timestamps ? now : TRACE_TIME_TICKS_NOW();
@@ -370,16 +369,6 @@ TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
 
 TraceLog::~TraceLog() {
   TrackEvent::RemoveSessionObserver(this);
-}
-
-const unsigned char* TraceLog::GetCategoryGroupEnabled(
-    const char* category_group) {
-  return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(category_group);
-}
-
-const char* TraceLog::GetCategoryGroupName(
-    const unsigned char* category_group_enabled) {
-  return TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(category_group_enabled);
 }
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config) {

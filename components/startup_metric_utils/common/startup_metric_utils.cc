@@ -13,6 +13,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"

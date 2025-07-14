@@ -23,7 +23,7 @@
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"  // IWYU pragma: export
 #include "base/trace_event/trace_arguments.h"
-#include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/traced_value_support.h"
 #include "base/tracing_buildflags.h"
 

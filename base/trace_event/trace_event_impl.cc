@@ -169,7 +169,7 @@ void TraceEvent::AppendAsJSON(
     thread_id = thread_id_;
   }
   const char* category_group_name =
-      TraceLog::GetCategoryGroupName(category_group_enabled_);
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(category_group_enabled_.get());
 
   // The thread id might be an int64, however int64 values are not
   // representable in JS and JSON (cf. crbug.com/40228085) since JS
@@ -323,7 +323,8 @@ void TraceEvent::AppendAsJSON(
 
 void TraceEvent::AppendPrettyPrinted(std::ostringstream* out) const {
   *out << name_ << "[";
-  *out << TraceLog::GetCategoryGroupName(category_group_enabled_);
+  *out << TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(
+      category_group_enabled_.get());
   *out << "]";
   if (arg_size() > 0 && arg_name(0)) {
     *out << ", {";

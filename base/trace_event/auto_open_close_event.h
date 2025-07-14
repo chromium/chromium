@@ -10,6 +10,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 
 namespace base {
 namespace trace_event {

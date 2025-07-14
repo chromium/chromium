@@ -44,6 +44,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_buffer.h"
+#include "base/trace_event/trace_log.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"

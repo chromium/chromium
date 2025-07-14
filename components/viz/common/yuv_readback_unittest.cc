@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gl_helper.h"

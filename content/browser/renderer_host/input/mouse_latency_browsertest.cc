@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
+#include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"

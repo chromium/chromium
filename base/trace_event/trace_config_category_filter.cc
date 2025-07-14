@@ -5,6 +5,7 @@
 #include "base/trace_event/trace_config_category_filter.h"
 
 #include <string_view>
+#include <unordered_set>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/pattern.h"

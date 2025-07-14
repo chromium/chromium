@@ -16,6 +16,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
 #include "perf_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"

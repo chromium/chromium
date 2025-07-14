@@ -64,8 +64,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "third_party/zlib/zlib.h"
 
-using base::trace_event::TraceLog;
-
 namespace content {
 namespace {
 

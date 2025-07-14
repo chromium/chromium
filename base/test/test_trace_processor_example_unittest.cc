@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 namespace base::test {
 

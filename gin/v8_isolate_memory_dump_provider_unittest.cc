@@ -11,6 +11,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"

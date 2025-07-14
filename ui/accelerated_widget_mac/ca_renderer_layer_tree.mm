@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"

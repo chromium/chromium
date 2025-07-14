@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 using ::blink_testing::ClearRectFlags;
 using ::blink_testing::FillFlags;

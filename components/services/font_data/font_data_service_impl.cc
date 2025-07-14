@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"

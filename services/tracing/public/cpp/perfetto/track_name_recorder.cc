@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"

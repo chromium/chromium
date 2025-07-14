@@ -39,6 +39,7 @@
 #include "base/process/set_process_title.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_descriptors.h"

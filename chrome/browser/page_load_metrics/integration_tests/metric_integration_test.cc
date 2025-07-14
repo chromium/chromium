@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/trace_event/trace_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"

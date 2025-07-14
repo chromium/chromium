@@ -158,13 +158,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   // Cancels tracing and discards collected data.
   void CancelTracing(const OutputCallback& cb);
 
-  // Called by TRACE_EVENT* macros, don't call this directly.
-  // The name parameter is a category group for example:
-  // TRACE_EVENT0("renderer,webkit", "WebViewImpl::HandleInputEvent")
-  static const unsigned char* GetCategoryGroupEnabled(const char* name);
-  static const char* GetCategoryGroupName(
-      const unsigned char* category_group_enabled);
-
   ProcessId process_id() const { return process_id_; }
 
   // Exposed for unittesting:

@@ -528,7 +528,7 @@ void CoordinatorImpl::OnDumpProcessesForTracing(
     // dump node in the UI.
     TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
         TRACE_EVENT_PHASE_MEMORY_DUMP,
-        base::trace_event::TraceLog::GetCategoryGroupEnabled(
+        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
             base::trace_event::MemoryDumpManager::kTraceCategory),
         "periodic_interval", trace_event_internal::kGlobalScope, dump_guid,
         result->pid, &args, TRACE_EVENT_FLAG_HAS_ID);

@@ -11,6 +11,7 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
+#include "base/trace_event/trace_log.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/base/utils.h"
