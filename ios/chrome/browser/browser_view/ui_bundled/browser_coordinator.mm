@@ -2966,8 +2966,8 @@ enum class ToolbarKind {
   [_BWGCoordinator start];
 }
 
-- (void)dismissBWGFlow {
-  [_BWGCoordinator stop];
+- (void)dismissBWGFlowWithCompletion:(ProceduralBlock)completion {
+  [_BWGCoordinator stopWithCompletion:completion];
   _BWGCoordinator = nil;
 }
 

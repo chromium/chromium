@@ -2837,6 +2837,22 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
+- (void)showBWGSettings {
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showBWGSettings];
+    return;
+  }
+
+  self.settingsNavigationController = [SettingsNavigationController
+      BWGControllerForBrowser:self.mainInterface.browser
+                     delegate:self];
+
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {

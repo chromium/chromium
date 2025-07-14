@@ -86,13 +86,19 @@
 }
 
 - (void)stop {
+  [self stopWithCompletion:nil];
+}
+
+#pragma mark - Public
+
+- (void)stopWithCompletion:(ProceduralBlock)completion {
   _navigationController = nil;
   _BWGCommandsHandler = nil;
   _helpCommandsHandler = nil;
   _mediator = nil;
   _prefService = nil;
   _tracker = nil;
-  [self dismissPresentedViewWithCompletion:nil];
+  [self dismissPresentedViewWithCompletion:completion];
   [super stop];
 }
 
@@ -151,7 +157,7 @@
   [self dismissPresentedViewWithCompletion:^{
     BWGCoordinator* strongSelf = weakSelf;
     [strongSelf presentPageActionMenuIPH];
-    [strongSelf->_BWGCommandsHandler dismissBWGFlow];
+    [strongSelf->_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
   }];
 }
 
@@ -161,7 +167,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   // TODO(crbug.com/419064727): Add metric for dismissing coordinator.
-  [_BWGCommandsHandler dismissBWGFlow];
+  [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
 }
 
 #pragma mark - BWGNavigationControllerDelegate

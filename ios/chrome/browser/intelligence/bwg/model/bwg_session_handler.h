@@ -11,6 +11,9 @@
 
 class WebStateList;
 
+@protocol BWGCommands;
+@protocol SettingsCommands;
+
 // Handler for the BWG sessions.
 @interface BWGSessionHandler : NSObject <BWGSessionDelegate>
 
@@ -18,6 +21,12 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// The BWG commands handler used by this session handler.
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
+
+// The settings commands handler used by this session handler.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
 @end
 

@@ -19,9 +19,10 @@ namespace optimization_guide::proto {
 class PageContext;
 }  // namespace optimization_guide::proto
 
+@class BWGLinkOpeningHandler;
+@class BWGSessionHandler;
+
 @protocol BWGGatewayProtocol;
-@protocol BWGLinkOpeningDelegate;
-@protocol BWGSessionDelegate;
 
 // A browser agent responsible for presenting the BWG overlay and managing
 // its protocol handlers.
@@ -43,14 +44,19 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;
 
+  // Sets the UI command handlers on the session handler. This cannot be called
+  // in the constructor because some objects fail the protocol conformance test
+  // at that time.
+  void SetSessionCommandHandlers();
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
   // Handler for opening links from BWG.
-  __strong id<BWGLinkOpeningDelegate> bwg_link_opening_handler_ = nullptr;
+  __strong BWGLinkOpeningHandler* bwg_link_opening_handler_ = nullptr;
 
   // Handler for the BWG sessions.
-  __strong id<BWGSessionDelegate> bwg_session_handler_ = nullptr;
+  __strong BWGSessionHandler* bwg_session_handler_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_

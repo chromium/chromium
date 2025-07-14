@@ -177,7 +177,7 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
     // Update the snapshot before backgrounding BWG.
     UpdateWebStateSnapshotInStorage();
 
-    [bwg_commands_handler_ dismissBWGFlow];
+    [bwg_commands_handler_ dismissBWGFlowWithCompletion:nil];
   }
 }
 

@@ -18,11 +18,13 @@
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
@@ -88,6 +90,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
     AutofillProfileEditCoordinatorDelegate,
+    BWGSettingsCoordinatorDelegate,
     ClearBrowsingDataCoordinatorDelegate,
     ContentSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
@@ -128,6 +131,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Autofill profile edit coordinator.
 @property(nonatomic, strong)
     AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
+
+// BWG settings coordinator.
+@property(nonatomic, strong) BWGSettingsCoordinator* BWGSettingsCoordinator;
 
 // TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
 // launched. The coordinator for the clear browsing data screen.
@@ -228,6 +234,18 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [baseViewController presentViewController:navigationController
                                    animated:YES
                                  completion:nil];
+  return navigationController;
+}
+
++ (instancetype)
+    BWGControllerForBrowser:(Browser*)browser
+                   delegate:(id<SettingsNavigationControllerDelegate>)delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showBWGSettingsPage];
   return navigationController;
 }
 
@@ -752,6 +770,21 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 #pragma mark - Private
 
+- (void)showBWGSettingsPage {
+  CHECK(IsPageActionMenuEnabled());
+  self.BWGSettingsCoordinator = [[BWGSettingsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.BWGSettingsCoordinator.delegate = self;
+  [self.BWGSettingsCoordinator start];
+}
+
+- (void)stopBWGSettingsCoordinator {
+  self.BWGSettingsCoordinator.delegate = nil;
+  [self.BWGSettingsCoordinator stop];
+  self.BWGSettingsCoordinator = nil;
+}
+
 - (void)stopManageAccountsCoordinator {
   self.manageAccountsCoordinator.delegate = nil;
   [self.manageAccountsCoordinator stop];
@@ -1174,6 +1207,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.manageAccountsCoordinator start];
 }
 
+- (void)showBWGSettings {
+  [self showBWGSettingsPage];
+}
+
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
 // dispatcher.
 - (void)showGoogleServicesSettingsFromViewController:
@@ -1358,6 +1395,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   CHECK_EQ(coordinator, self.manageAccountsCoordinator,
            base::NotFatalUntil::M144);
   [self stopManageAccountsCoordinator];
+}
+
+#pragma mark - BWGSettingsCoordinatorDelegate
+
+- (void)BWGSettingsCoordinatorViewControllerWasRemoved:
+    (BWGSettingsCoordinator*)coordinator {
+  [self stopBWGSettingsCoordinator];
 }
 
 @end
