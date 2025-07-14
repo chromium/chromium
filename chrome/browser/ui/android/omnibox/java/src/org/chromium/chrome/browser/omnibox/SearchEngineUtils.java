@@ -266,11 +266,23 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         if (!mTemplateUrlService.isDefaultSearchEngineGoogle()) {
             // Fall back to next source.
             recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
-            retrieveFaviconFromFaviconUrl(templateUrl);
+            retrieveFaviconFromBuiltinResources(templateUrl);
             return;
         }
 
         setSearchEngineIcon(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
+    }
+
+    private void retrieveFaviconFromBuiltinResources(TemplateUrl templateUrl) {
+        if (OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+            @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
+            if (bm != null) {
+                onFaviconRetrieveCompleted(templateUrl.getFaviconURL(), bm);
+                return;
+            }
+        }
+
+        retrieveFaviconFromFaviconUrl(templateUrl);
     }
 
     private void retrieveFaviconFromFaviconUrl(TemplateUrl templateUrl) {

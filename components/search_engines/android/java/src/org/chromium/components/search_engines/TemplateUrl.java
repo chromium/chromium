@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -88,6 +91,15 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getNewTabURL(mTemplateUrlPtr);
     }
 
+    /**
+     * @return The built-in Search Engine icon (if any)
+     */
+    public @Nullable Bitmap getBuiltInSearchEngineIcon() {
+        byte @Nullable [] pngData =
+                TemplateUrlJni.get().getBuiltInSearchEngineIcon(mTemplateUrlPtr);
+        return pngData == null ? null : BitmapFactory.decodeByteArray(pngData, 0, pngData.length);
+    }
+
     public long getNativePtr() {
         return mTemplateUrlPtr;
     }
@@ -126,5 +138,7 @@ public class TemplateUrl {
         String getNewTabURL(long templateUrlPtr);
 
         GURL getFaviconURL(long templateUrlPtr);
+
+        byte @Nullable [] getBuiltInSearchEngineIcon(long templateUrlPtr);
     }
 }

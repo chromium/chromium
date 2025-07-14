@@ -88,4 +88,4 @@ declare_args() {
 
 # Whether to enable built-in branding assets (logos & marketing snippets) for
 # search providers in choice UIs.
-enable_builtin_search_provider_assets = is_chrome_branded && !is_android
+enable_builtin_search_provider_assets = is_chrome_branded

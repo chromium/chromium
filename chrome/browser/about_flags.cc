@@ -1959,6 +1959,16 @@ const FeatureEntry::FeatureVariation kOmniboxMobileParityVariants[] = {
      std::size(kOmniboxMobileParityEnableEverything)},
 };
 // <-- Omnibox Mobile Parity Update
+// Omnibox Mobile Parity Update V2 -->
+
+const FeatureEntry::FeatureParam
+    kOmniboxMobileParityV2RetrieveBuiltinFavicon[] = {
+        {OmniboxFieldTrial::kMobileParityRetrieveBuiltinFavicon.name, "true"}};
+
+const FeatureEntry::FeatureVariation kOmniboxMobileParityV2Variants[] = {
+    {"with Builtin Favicon", kOmniboxMobileParityV2RetrieveBuiltinFavicon,
+     std::size(kOmniboxMobileParityV2RetrieveBuiltinFavicon)}};
+// <-- Omnibox Mobile Parity Update V2
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -6840,7 +6850,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-mobile-parity-update-v2",
      flag_descriptions::kOmniboxMobileParityUpdateV2Name,
      flag_descriptions::kOmniboxMobileParityUpdateV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdateV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdateV2,
+                                    kOmniboxMobileParityV2Variants,
+                                    "OmniboxMobileParityUpdateV2")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)

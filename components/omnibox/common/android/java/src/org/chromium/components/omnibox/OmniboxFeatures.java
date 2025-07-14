@@ -121,6 +121,9 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2,
                     FeatureState.ENABLED_IN_TEST);
 
+    public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
+            newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false);
+
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveTrueFavicon =
             newBooleanParam(sOmniboxMobileParityUpdate, "retrieve_true_favicon", false);
 
