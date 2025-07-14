@@ -45,23 +45,24 @@
 (define (user-homedir-path subpath)
   (string-append (param homedir-as-literal) subpath))
 
-; A function that specific profiles (i.e. renderer) can call to allow
-; font rendering.
+; A function that specific profiles (i.e. renderer) can call to allow access to
+; fonts. Old fonts are stored in the resource fork, so also grant permission to
+; read xattrs (https://crbug.com/429221317).
 (define (allow-font-access)
   (begin
-    (allow file-read-data
+    (allow file-read-data file-read-xattr
       (subpath "/Library/Fonts")
       (subpath "/System/Library/Fonts")
       (subpath (user-homedir-path "/Library/Fonts"))
     )
     (allow mach-lookup
-      ; https://crbug.com/756145, https://crbug.com/786615
+      ; https://crbug.com/41339707, https://crbug.com/41356325
       (global-name "com.apple.FontObjectsServer")
       (global-name "com.apple.fonts")
     )
     ; To allow accessing downloaded and other hidden fonts in
     ; /System/Library/Asssets/com_apple_MobileAsset_Font*.
-    ; (https://crbug.com/662686)
+    ; (https://crbug.com/41284825)
     (allow file-read* (extension "com.apple.app-sandbox.read"))))
 
 ; A function that profiles can call to allow forcibly disabling the Metal shader
