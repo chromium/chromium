@@ -47,59 +47,10 @@ class Json5FileTest(unittest.TestCase):
                 'random': 'values',
                 'default': 'valid'
             }
-        }, {
-            'name': 'item3',
-            'param1': {
-                'keys': 'valid',
-                'default': 'values'
-            }
         }]
         self.assertEqual(len(actual), len(expected))
         for exp, act in zip(expected, actual):
             self.assertDictEqual(exp['param1'], act['param1'])
-            self.assertIsNone(act['param2'])
-
-    def test_valid_dict_value_parse_override(self):
-        json5_file = Json5File.load_from_files(
-            [self.path_of_test_file('json5_generator_valid_dict_value.json5')])
-        json5_file.load_override_file(
-            self.path_of_test_file(
-                'json5_generator_valid_dict_value.override.json5'))
-
-        actual = json5_file.name_dictionaries
-        expected = [{
-            'name': 'item1',
-            'param1': {
-                'keys': 'valid',
-                'default': 'values'
-            }
-        }, {
-            'name': 'item2',
-            'param1': {
-                'random': 'values',
-                'default': 'valid'
-            }
-        }, {
-            'name': 'item3',
-            'param2': {
-                'key': 'single',
-                'default': 'value'
-            }
-        }, {
-            'name': 'item4',
-            'param1': {
-                'keys': 'valid',
-                'random': 'values'
-            }
-        }]
-        self.assertEqual(len(actual), len(expected))
-        for exp, act in zip(expected, actual):
-            param_name = 'param1'
-            if exp['name'] == 'item3':
-                self.assertIsNone(act['param1'])
-                param_name = 'param2'
-            self.assertDictEqual(exp[param_name], act[param_name])
-
 
     def test_no_valid_keys(self):
         with self.assertRaises(AssertionError):

@@ -263,29 +263,25 @@ When content_shell is run for web tests with `--stable-release-mode` flag, test-
 ```
 After applying most other feature settings, the features requested feature settings (comma-separated) are changed. "disable" is applied later (and takes precedence), regardless of the order the switches appear on the command line. These switches only affect Blink's state. Some features may need to be switched on in Chromium as well; in this case, a specific flag is required.
 
-## For Embedders
-Downstream forks can customize `runtime_enabled_features.json5` without dealing with merge conflicts by adding entries into `runtime_enabled_features.override.json5`. Some examples of how to override can be found in `runtime_enabled_features.override.json5`.
-
 **Announcement**
-[PSA: Runtime Features system is now auto-generated from a .in file.](https://groups.google.com/a/chromium.org/d/msg/blink-dev/JBakhu5J6Qs/re2LkfEslTAJ)
+https://groups.google.com/a/chromium.org/d/msg/blink-dev/JBakhu5J6Qs/re2LkfEslTAJ
 
-**Links**
-* [web tests](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md)
-* [supportedPlatforms](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_features.json5#36)
-* [cssProperties](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/css/css_properties.json5)
-* [virtual test suite](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags)
-* [flag-specific](https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags)
-* [trybot (example)](https://chromium-review.googlesource.com/c/chromium/src/+/1850255)
-* [LayoutNG](https://docs.google.com/document/d/17t6HjA5X8T5xq1LlKoLEGTn_MioGCdEPpijpJeLalK0/edit#heading=h.guvbepjyp0oj)
-* [BlinkGenPropertyTrees](https://crbug.com/836884)
-* [blink launch process](https://www.chromium.org/blink/launching-features)
-* [Blink extended attribute](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/IDLExtendedAttributes.md)
-* [make_runtime_features.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_runtime_features.py)
-* [runtime_enabled_features.json5](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_features.json5)
-* [make_internal_runtime_flags.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_internal_runtime_flags.py)
-* [code_generator_v8.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/scripts/code_generator_v8.py)
-* [virtual/stable](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites;drc=9878f26d52d32871ed1c085444196e5453909eec;l=112)
-* [content/child/runtime_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:content/child/runtime_features.cc)
-* [initialize blink features](https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md)
-* [controlled by chromium feature](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/runtime_enabled_features.json5;drc=70bddadf50a14254072cf7ca0bcf83e4331a7d4f;l=833)
 
+[web tests]: <https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md>
+[supportedPlatforms]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_features.json5#36>
+[cssProperties]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/css/css_properties.json5>
+[virtual test suite]: <https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags>
+[flag-specific]: <https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags>
+[trybot (example)]: <https://chromium-review.googlesource.com/c/chromium/src/+/1850255>
+[LayoutNG]: <https://docs.google.com/document/d/17t6HjA5X8T5xq1LlKoLEGTn_MioGCdEPpijpJeLalK0/edit#heading=h.guvbepjyp0oj>
+[BlinkGenPropertyTrees]: <https://crbug.com/836884>
+[blink launch process]: <https://www.chromium.org/blink/launching-features>
+[Blink extended attribute]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/IDLExtendedAttributes.md>
+[make_runtime_features.py]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_runtime_features.py>
+[runtime_enabled_features.json5]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_features.json5>
+[make_internal_runtime_flags.py]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_internal_runtime_flags.py>
+[code_generator_v8.py]: <https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/scripts/code_generator_v8.py>
+[virtual/stable]: <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites;drc=9878f26d52d32871ed1c085444196e5453909eec;l=112>
+[content/child/runtime_features.cc]: <https://source.chromium.org/chromium/chromium/src/+/main:content/child/runtime_features.cc>
+[initialize blink features]: <https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md>
+[controlled by chromium feature]: <https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/runtime_enabled_features.json5;drc=70bddadf50a14254072cf7ca0bcf83e4331a7d4f;l=833>

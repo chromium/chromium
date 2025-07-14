@@ -719,7 +719,6 @@ blink_python_runner("generated_testing_idls_internal_runtime_flags") {
              "../build/scripts/templates/internal_runtime_flags.h.tmpl",
              "../build/scripts/templates/internal_runtime_flags.idl.tmpl",
              "../platform/runtime_enabled_features.json5",
-             "../platform/runtime_enabled_features.override.json5",
            ]
 
   args = [
@@ -1167,7 +1166,6 @@ blink_python_runner("make_core_generated_permissions_policy_helper") {
              "../build/scripts/make_runtime_features_utilities.py",
              "../build/scripts/templates/policy_helper.cc.tmpl",
              "../platform/runtime_enabled_features.json5",
-             "../platform/runtime_enabled_features.override.json5",
              "./permissions_policy/document_policy_features.json5",
              "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
            ]

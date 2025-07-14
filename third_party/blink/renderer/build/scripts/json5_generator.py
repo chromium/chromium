@@ -125,37 +125,6 @@ class Json5File(object):
         return Json5File(file_paths, merged_doc, default_metadata,
                          default_parameters)
 
-    def load_override_file(self, file_path):
-        assert file_path.endswith(".json5")
-
-        self.file_paths.append(file_path)
-
-        name_dict = {}
-        overrides_list = []
-        with open(os.path.abspath(file_path), encoding='utf-8') as json5_file:
-            doc = json5.loads(json5_file.read())
-            items = doc["data"]
-            if type(items) is list:
-                for item in items:
-                    entry = self._get_entry(item)
-                    name_dict[entry["name"]] = entry
-                    overrides_list.append(entry)
-            else:
-                for key, value in items.items():
-                    value["name"] = key
-                    entry = self._get_entry(value)
-                    overrides_list.append(entry)
-                overrides_list.sort(key=lambda entry: entry["name"])
-
-        for index, entry in enumerate(self.name_dictionaries):
-            name = entry['name']
-            if name in name_dict:
-                self.name_dictionaries[index] = name_dict.pop(name)
-
-        for entry in overrides_list:
-            if entry['name'] in name_dict:
-                self.name_dictionaries.append(entry)
-
     def _process(self, doc):
         # Process optional metadata map entries.
         for key, value in doc.get("metadata", {}).items():
@@ -290,8 +259,7 @@ class Writer(object):
         self.gperf_path = None
         if json5_files:
             self.json5_file = Json5File.load_from_files(
-                self._input_files, self.default_metadata,
-                self.default_parameters)
+                json5_files, self.default_metadata, self.default_parameters)
         match = re.search(r'\bgen[\\/]', output_dir)
         if match:
             self._relative_output_dir = output_dir[match.end():].replace(
