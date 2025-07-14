@@ -21,8 +21,8 @@
 #include <vector>
 
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -244,8 +244,10 @@ size_t g_ghost_node_count_ = 0;
 typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
-base::LazyInstance<AXPlatformNodeWinSet>::Leaky g_alert_targets =
-    LAZY_INSTANCE_INITIALIZER;
+AXPlatformNodeWinSet& GetAlertTargets() {
+  static base::NoDestructor<AXPlatformNodeWinSet> alert_targets;
+  return *alert_targets;
+}
 
 // Sets the multiplier by which large changes to a RangeValueProvider are
 // greater than small changes.
@@ -2119,9 +2121,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
     // Collect all of the objects that have had an alert fired on them that
     // are a descendant of this object.
     std::vector<AXPlatformNodeWin*> alert_targets;
-    for (auto iter = g_alert_targets.Get().begin();
-         iter != g_alert_targets.Get().end(); ++iter) {
-      AXPlatformNodeWin* target = *iter;
+    for (AXPlatformNodeWin* target : GetAlertTargets()) {
       if (IsDescendant(target))
         alert_targets.push_back(target);
     }
@@ -8190,12 +8190,13 @@ HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
 }
 
 void AXPlatformNodeWin::AddAlertTarget() {
-  g_alert_targets.Get().insert(this);
+  GetAlertTargets().insert(this);
 }
 
 void AXPlatformNodeWin::RemoveAlertTarget() {
-  if (g_alert_targets.Get().find(this) != g_alert_targets.Get().end())
-    g_alert_targets.Get().erase(this);
+  if (GetAlertTargets().find(this) != GetAlertTargets().end()) {
+    GetAlertTargets().erase(this);
+  }
 }
 
 void AXPlatformNodeWin::HandleSpecialTextOffset(LONG* offset) {

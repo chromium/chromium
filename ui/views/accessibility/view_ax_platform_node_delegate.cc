@@ -15,8 +15,8 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -57,8 +57,10 @@ struct QueuedEvent {
   int32_t node_id;
 };
 
-base::LazyInstance<std::vector<QueuedEvent>>::Leaky g_event_queue =
-    LAZY_INSTANCE_INITIALIZER;
+std::vector<QueuedEvent>& GetEventQueue() {
+  static base::NoDestructor<std::vector<QueuedEvent>> event_queue;
+  return *event_queue;
+}
 
 // g_is_queueing_events is set to true when we are in the "queueing events"
 // state. It is set to true in PostFlushEventQueueTaskIfNecessary(), and
@@ -68,7 +70,7 @@ base::LazyInstance<std::vector<QueuedEvent>>::Leaky g_event_queue =
 // queue any event that is fired after PostFlushEventQueueTaskIfNecessary()
 // is called, until we begin to flush events.
 bool g_is_queueing_events = false;
-// g_is_flushing is true only when we are iterating over g_event_queue in
+// g_is_flushing is true only when we are iterating over GetEventQueue() in
 // FlushQueue(). While flushing, no new events should be added to the queue, see
 // https://crbug.com/358404368
 bool g_is_flushing = false;
@@ -110,11 +112,11 @@ void FlushQueue() {
   DCHECK(g_is_queueing_events);
   g_is_queueing_events = false;
   g_is_flushing = true;
-  for (QueuedEvent event : g_event_queue.Get()) {
+  for (QueuedEvent event : GetEventQueue()) {
     FireEvent(event);
   }
   g_is_flushing = false;
-  g_event_queue.Get().clear();
+  GetEventQueue().clear();
 }
 
 void PostFlushEventQueueTaskIfNecessary() {
@@ -253,7 +255,7 @@ void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
   }
 
   if (g_is_queueing_events) {
-    g_event_queue.Get().emplace_back(event_type, GetUniqueId());
+    GetEventQueue().emplace_back(event_type, GetUniqueId());
     return;
   }
 
@@ -288,7 +290,7 @@ void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
       // Fire after a delay so that screen readers don't wipe it out when
       // another user-generated event fires simultaneously.
       PostFlushEventQueueTaskIfNecessary();
-      g_event_queue.Get().emplace_back(event_type, GetUniqueId());
+      GetEventQueue().emplace_back(event_type, GetUniqueId());
       return;
     }
     default:
