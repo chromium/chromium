@@ -1321,7 +1321,7 @@ void PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       std::move(callback);
 }
 
-void PrefetchContainer::OnPrefetchComplete(
+void PrefetchContainer::OnPrefetchCompleteInternal(
     const network::URLLoaderCompletionStatus& completion_status) {
   DVLOG(1) << *this << "::OnPrefetchComplete";
 
@@ -1396,8 +1396,14 @@ void PrefetchContainer::OnPrefetchComplete(
         break;
     }
   }
+}
+
+void PrefetchContainer::OnPrefetchComplete(
+    const network::URLLoaderCompletionStatus& completion_status) {
+  OnPrefetchCompleteInternal(completion_status);
 
   std::optional<int> response_code = std::nullopt;
+  int net_error = completion_status.error_code;
   if (net_error == net::OK && GetNonRedirectHead() &&
       GetNonRedirectHead()->headers) {
     response_code = GetNonRedirectHead()->headers->response_code();

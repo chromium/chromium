@@ -897,6 +897,12 @@ class CONTENT_EXPORT PrefetchContainer {
       bool served,
       bool is_nav_prerender);
 
+  // Should be called only from `OnPrefetchComplete()`, so that
+  // `OnPrefetchCompletedOrFailed()` is always called after
+  // `OnPrefetchCompleteInternal()`.
+  void OnPrefetchCompleteInternal(
+      const network::URLLoaderCompletionStatus& completion_status);
+
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
