@@ -70,10 +70,8 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         )",
         kLocalhostAddress, port);
 
-    ASSERT_THAT(
-        EvalJs(shell(), content::test::WrapAsync(open_socket)),
-        AnyOf(EvalJsResult::IsError(),
-              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::Value()))));
+    ASSERT_EQ(EvalJs(shell(), content::test::WrapAsync(open_socket)),
+              base::Value());
   }
 
  protected:

@@ -55,7 +55,6 @@
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over TCP sockets.
 
-using testing::AnyOf;
 using testing::StartsWith;
 
 namespace content {
@@ -257,10 +256,8 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
         )",
         kLocalhostAddress, port);
 
-    ASSERT_THAT(
-        EvalJs(shell(), content::test::WrapAsync(open_socket)),
-        AnyOf(EvalJsResult::IsError(),
-              EvalJsResult::IsOkAndHolds(base::test::IsJson(base::Value()))));
+    ASSERT_EQ(EvalJs(shell(), content::test::WrapAsync(open_socket)),
+              base::Value());
   }
 
  protected:
