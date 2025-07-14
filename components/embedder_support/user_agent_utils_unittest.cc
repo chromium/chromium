@@ -26,6 +26,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -50,6 +51,10 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
 
 namespace embedder_support {
 
@@ -748,15 +753,17 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_TRUE(metadata.full_version.empty());
 }
 
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
 TEST_F(UserAgentUtilsTest, UserAgentMetadataXR) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      blink::features::kClientHintsXRFormFactor);
+      device::features::kForceIsXrDeviceForTesting);
   auto metadata = GetUserAgentMetadata();
   std::vector<std::string> expected_form_factors = {
       (metadata.mobile ? "Mobile" : "Desktop"), "XR"};
   EXPECT_EQ(metadata.form_factors, expected_form_factors);
 }
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
 
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {
   blink::UserAgentMetadata metadata;

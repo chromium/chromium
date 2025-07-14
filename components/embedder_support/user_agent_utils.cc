@@ -32,6 +32,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -54,6 +55,10 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include <sys/utsname.h>
 #endif
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
 
 namespace embedder_support {
 
@@ -711,9 +716,11 @@ std::vector<std::string> GetFormFactorsClientHint(
   std::vector<std::string> form_factors = {
       is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
 
-  if (base::FeatureList::IsEnabled(blink::features::kClientHintsXRFormFactor)) {
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
+  if (device::features::IsXrDevice()) {
     form_factors.push_back(blink::kXRFormFactor);
   }
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VR)
   return form_factors;
 }
 
