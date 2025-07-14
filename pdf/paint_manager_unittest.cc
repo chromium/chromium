@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -129,8 +130,8 @@ class PaintManagerTest : public testing::Test {
 
     // Check if `snapshot` matches `expected_bitmap`.
     snapshot = snapshot->makeSubset(
-        static_cast<GrDirectContext*>(nullptr),
-        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+        skcpu::Recorder::TODO(),
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
 
     SkBitmap snapshot_bitmap;
@@ -175,8 +176,8 @@ class PaintManagerTest : public testing::Test {
 
     // Compare snapshot to `expected_png`.
     snapshot = snapshot->makeSubset(
-        static_cast<GrDirectContext*>(nullptr),
-        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
+        skcpu::Recorder::TODO(),
+        SkIRect::MakeWH(plugin_size.width(), plugin_size.height()), {});
     ASSERT_TRUE(snapshot);
 
     EXPECT_TRUE(

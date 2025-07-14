@@ -421,20 +421,23 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
                                 sk_sp<SkImage> source_image,
                                 sk_sp<SkColorSpace> target_color_space,
                                 skgpu::Mipmapped mip_mapped) {
+  GrDirectContext* gr_context = context->GrContext();
+  CHECK(gr_context);
+  SkRecorder* recorder = gr_context->asRecorder();
   // Step 1: Upload image and generate mips if necessary. If we will be applying
   // a color-space conversion, don't generate mips yet, instead do it after
   // conversion, in step 3.
   bool add_mips_after_color_conversion =
       (target_color_space && mip_mapped == skgpu::Mipmapped::kYes);
   sk_sp<SkImage> uploaded_image = SkImages::TextureFromImage(
-      context->GrContext(), source_image,
+      gr_context, source_image,
       add_mips_after_color_conversion ? skgpu::Mipmapped::kNo : mip_mapped);
 
   // Step 2: Apply a color-space conversion if necessary.
   if (uploaded_image && target_color_space) {
     sk_sp<SkImage> pre_converted_image = uploaded_image;
-    uploaded_image = uploaded_image->makeColorSpace(context->GrContext(),
-                                                    target_color_space);
+    uploaded_image =
+        uploaded_image->makeColorSpace(recorder, target_color_space, {});
 
     if (uploaded_image != pre_converted_image)
       DeleteSkImageAndPreventCaching(context, std::move(pre_converted_image));
@@ -444,8 +447,8 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   // add mips here.
   if (uploaded_image && add_mips_after_color_conversion) {
     sk_sp<SkImage> pre_mipped_image = uploaded_image;
-    uploaded_image = SkImages::TextureFromImage(
-        context->GrContext(), uploaded_image, skgpu::Mipmapped::kYes);
+    uploaded_image = SkImages::TextureFromImage(gr_context, uploaded_image,
+                                                skgpu::Mipmapped::kYes);
     DCHECK_NE(pre_mipped_image, uploaded_image);
     DeleteSkImageAndPreventCaching(context, std::move(pre_mipped_image));
   }
@@ -3652,12 +3655,13 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
     target_color_space = nullptr;
   }
 
+  GrDirectContext* gr_context = context_->GrContext();
+  CHECK(gr_context);
   sk_sp<SkImage> yuva_image = SkImages::TextureFromYUVATextures(
-      context_->GrContext(), yuva_backend_textures,
-      std::move(decoded_color_space));
+      gr_context, yuva_backend_textures, std::move(decoded_color_space));
   if (target_color_space && yuva_image) {
-    return yuva_image->makeColorSpace(context_->GrContext(),
-                                      target_color_space);
+    return yuva_image->makeColorSpace(gr_context->asRecorder(),
+                                      target_color_space, {});
   }
 
   return yuva_image;

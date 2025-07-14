@@ -136,7 +136,7 @@ void DrawGainmapImageRect(SkCanvas* canvas,
           tile_source_images[i] = nullptr;
         } else {
           tile_source_images[i] = tile_source_images[i]->makeSubset(
-              nullptr, tile_subset_rects[i].value());
+              nullptr, tile_subset_rects[i].value(), {});
         }
       }
 

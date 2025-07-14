@@ -36,6 +36,7 @@
 #include "skia/ext/image_operations.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/opacity_filter_canvas.h"
+#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -924,8 +925,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
       return nullptr;
     // Crop the source image to the backdrop_filter_bounds.
     sk_sp<SkImage> cropped_image = SkImages::RasterFromBitmap(backdrop_bitmap);
-    cropped_image = cropped_image->makeSubset(
-        static_cast<GrDirectContext*>(nullptr), RectToSkIRect(filter_clip));
+    cropped_image = cropped_image->makeSubset(skcpu::Recorder::TODO(),
+                                              RectToSkIRect(filter_clip), {});
     cropped_image->asLegacyBitmap(&backdrop_bitmap);
     image_offset = filter_clip.origin();
   }
