@@ -9,6 +9,7 @@ Trace events and performance entries can be joined by navigationId.
 -> id_1 hard-navigation (entry for empty.html)
 
 -> id_2 hard-navigation (entry for soft-navigations.html)
+-> id_2 hard-lcp (entry) after soft-navigations.html
 -> id_2 LCP candidate (trace)
 
 -> id_3 soft-navigation (entry after 1st user click)

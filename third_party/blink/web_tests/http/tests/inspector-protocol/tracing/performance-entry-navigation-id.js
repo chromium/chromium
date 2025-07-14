@@ -101,6 +101,13 @@
     name: 'hard-navigation (entry for soft-navigations.html)'
   });
 
+  const secondHardLCP =
+      await firstEntryAfter(thirdHardNav.startTime, 'largest-contentful-paint');
+  perfEntries.push({
+    navigationId: secondHardLCP.navigationId,
+    name: 'hard-lcp (entry) after soft-navigations.html'
+  });
+
   await userClick('click-target');
 
   const firstSoftNav =
