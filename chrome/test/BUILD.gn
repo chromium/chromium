@@ -6656,7 +6656,6 @@ test("unit_tests") {
     sources += [
       "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
       "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
-      "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",
     ]
   }
 

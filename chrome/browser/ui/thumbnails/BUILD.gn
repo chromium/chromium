@@ -22,6 +22,8 @@ if (!is_android) {
       "thumbnail_scheduler_impl.h",
       "thumbnail_tab_helper.cc",
       "thumbnail_tab_helper.h",
+      "thumbnail_tracker.cc",
+      "thumbnail_tracker.h",
     ]
 
     public_deps = [
@@ -48,12 +50,17 @@ if (!is_android) {
       "thumbnail_capture_driver_unittest.cc",
       "thumbnail_image_unittest.cc",
       "thumbnail_scheduler_impl_unittest.cc",
+      "thumbnail_tracker_unittest.cc",
     ]
 
     deps = [
       ":thumbnails",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser:browser",
+      "//chrome/browser/extensions:extensions",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",

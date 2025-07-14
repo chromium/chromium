@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
-#include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
