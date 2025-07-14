@@ -397,7 +397,16 @@ class QuicNetworkTransactionTest
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_->Packet(packet_number)
+    return ConstructAckPacket(*client_maker_, packet_number, largest_received,
+                              smallest_received);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructAckPacket(
+      QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      uint64_t largest_received,
+      uint64_t smallest_received) {
+    return packet_maker.Packet(packet_number)
         .AddAckFrame(1, largest_received, smallest_received)
         .Build();
   }
@@ -601,8 +610,19 @@ class QuicNetworkTransactionTest
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructConnectUdpRequestPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
-      std::string authority,
-      std::string path,
+      std::string_view authority,
+      std::string_view path,
+      bool fin) {
+    return ConstructConnectUdpRequestPacket(*client_maker_, packet_number,
+                                            stream_id, authority, path, fin);
+  }
+
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructConnectUdpRequestPacket(
+      QuicTestPacketMaker& packet_maker,
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      std::string_view authority,
+      std::string_view path,
       bool fin) {
     quiche::HttpHeaderBlock headers;
     headers[":scheme"] = "https";
@@ -614,7 +634,7 @@ class QuicNetworkTransactionTest
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
     size_t spdy_headers_frame_len;
-    auto rv = client_maker_->MakeRequestHeadersPacket(
+    auto rv = packet_maker.MakeRequestHeadersPacket(
         packet_number, stream_id, fin, priority, std::move(headers),
         &spdy_headers_frame_len, /*should_include_priority_frame=*/false);
     return rv;
@@ -6983,7 +7003,6 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
       .Sync();
 
   socket_factory_.AddSocketDataProvider(&socket_data);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   CreateSession();
 
@@ -6992,6 +7011,254 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
   request_.url = GURL("https://mail.example.org/");
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
+  RunTransaction(&trans);
+  CheckResponsePort(&trans, kQuicProxyChain.First().GetPort());
+  CheckResponseData(&trans, kRespData);
+  EXPECT_EQ(trans.GetResponseInfo()->proxy_chain, kQuicProxyChain);
+  EXPECT_TRUE(socket_data.AllDataConsumed());
+}
+
+// Performs an HTTP/3 request over QUIC proxy tunnel with two proxies.
+TEST_P(QuicNetworkTransactionTest, DoubleProxyConnectQuicServer) {
+  session_params_.enable_quic = true;
+
+  const GURL kUrl("https://mail.example.org/");
+  const GURL kProxy1Url("https://proxy1.example.org");
+  const GURL kProxy2Url("https://proxy2.example.org");
+
+  const auto kQuicProxyChain = ProxyChain::ForIpProtection(
+      {ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                          kProxy1Url.host_piece(), 70),
+       ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                          kProxy2Url.host_piece(), 80)});
+  proxy_resolution_service_ =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  QuicSocketDataProvider socket_data(version_);
+  const quic::QuicStreamId kStreamId0 =
+      GetNthClientInitiatedBidirectionalStreamId(0);
+  int to_proxy1_packet_num = 1;
+  QuicTestPacketMaker to_proxy1(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kProxy1Url.host_piece(), quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true);
+
+  int from_proxy1_packet_num = 1;
+  QuicTestPacketMaker from_proxy1(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kProxy1Url.host_piece(), quic::Perspective::IS_SERVER);
+
+  int to_proxy2_packet_num = 1;
+  QuicTestPacketMaker to_proxy2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kProxy2Url.host_piece(), quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true);
+
+  int from_proxy2_packet_num = 1;
+  QuicTestPacketMaker from_proxy2(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kProxy2Url.host_piece(), quic::Perspective::IS_SERVER);
+
+  int to_endpoint_packet_num = 1;
+  QuicTestPacketMaker to_endpoint(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kUrl.host_piece(), quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/true);
+
+  int from_endpoint_packet_num = 1;
+  QuicTestPacketMaker from_endpoint(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kUrl.host_piece(), quic::Perspective::IS_SERVER);
+
+  // The browser sends the initial settings to proxy1.
+  socket_data
+      .AddWrite("proxy1-initial-settings",
+                to_proxy1.MakeInitialSettingsPacket(to_proxy1_packet_num++))
+      .Sync();
+
+  // The browser sends CONNECT-UDP request to proxy1.
+  socket_data
+      .AddWrite("proxy1-connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    to_proxy1, to_proxy1_packet_num++, kStreamId0,
+                    base::StrCat({kProxy1Url.host_piece(), ":70"}),
+                    base::StrCat({"/.well-known/masque/udp/",
+                                  kProxy2Url.host_piece(), "/80/"}),
+                    /*fin=*/false))
+      .Sync();
+
+  // Proxy1 sends initial settings.
+  socket_data
+      .AddRead("proxy1-server-settings",
+               from_proxy1.MakeInitialSettingsPacket(from_proxy1_packet_num++))
+      .Sync();
+
+  // Proxy1 responds to the CONNECT.
+  socket_data
+      .AddRead("proxy1-ok-response",
+               from_proxy1.MakeResponseHeadersPacket(
+                   from_proxy1_packet_num++, kStreamId0, false,
+                   GetResponseHeaders("200"), nullptr))
+      .Sync();
+
+  // The browser ACKs the OK response packet.
+  socket_data.AddWrite("ack-proxy1-ok",
+                       ConstructAckPacket(to_proxy1, to_proxy1_packet_num++,
+                                          from_proxy1_packet_num - 1,
+                                          from_proxy1_packet_num - 1));
+
+  // The browser sends initial settings and a CONNECT-UDP request to proxy2
+  // via proxy1.
+  socket_data.AddWrite(
+      "proxy2-settings-and-request",
+      to_proxy1.Packet(to_proxy1_packet_num++)
+          .AddMessageFrame(ConstructH3Datagram(
+              kStreamId0, 0,
+              to_proxy2.MakeInitialSettingsPacket(to_proxy2_packet_num++)))
+          .AddMessageFrame(ConstructH3Datagram(
+              kStreamId0, 0,
+              ConstructConnectUdpRequestPacket(
+                  to_proxy2, to_proxy2_packet_num++, kStreamId0,
+                  base::StrCat({kProxy2Url.host_piece(), ":80"}),
+                  base::StrCat(
+                      {"/.well-known/masque/udp/", kUrl.host_piece(), "/443/"}),
+                  /*fin=*/false)))
+          .Build());
+
+  // Proxy2 sends initial settings and an OK response to the CONNECT request,
+  // via proxy1.
+  socket_data.AddRead(
+      "proxy2-server-settings-and-ok-response",
+      from_proxy1.Packet(from_proxy1_packet_num++)
+          .AddMessageFrame(ConstructH3Datagram(
+              kStreamId0, 0,
+              from_proxy2.MakeInitialSettingsPacket(from_proxy2_packet_num++)))
+          .AddMessageFrame(ConstructH3Datagram(
+              kStreamId0, 0,
+              from_proxy2.MakeResponseHeadersPacket(
+                  from_proxy2_packet_num++, kStreamId0, false,
+                  GetResponseHeaders("200"), nullptr)))
+          .Build());
+
+  // The browser ACK's the datagram from proxy1, and acks proxy2's OK response
+  // packet via proxy1.
+  socket_data.AddWrite("proxy2-acks",
+                       to_proxy1.Packet(to_proxy1_packet_num++)
+                           .AddAckFrame(1, 3, 1)
+                           .AddMessageFrame(ConstructH3Datagram(
+                               kStreamId0, 0,
+                               to_proxy2.Packet(to_proxy2_packet_num++)
+                                   .AddAckFrame(1, 2, 1)
+                                   .Build()))
+                           .Build());
+
+  // The browser sends initial settings to the endpoint, via proxy2, via proxy1.
+  socket_data.AddWrite("endpoint-initial-settings",
+                       to_proxy1.Packet(to_proxy1_packet_num++)
+                           .AddMessageFrame(ConstructH3Datagram(
+                               kStreamId0, 0,
+                               to_proxy2.Packet(to_proxy2_packet_num++)
+                                   .AddMessageFrame(ConstructH3Datagram(
+                                       kStreamId0, 0,
+                                       to_endpoint.MakeInitialSettingsPacket(
+                                           to_endpoint_packet_num++)))
+                                   .Build()))
+                           .Build());
+
+  // Make a get request to endpoint via proxy2, via proxy1.
+  socket_data
+      .AddWrite("get-request-to-endpoint",
+                to_proxy1.Packet(to_proxy1_packet_num++)
+                    .AddMessageFrame(ConstructH3Datagram(
+                        kStreamId0, 0,
+                        to_proxy2.Packet(to_proxy2_packet_num++)
+                            .AddMessageFrame(ConstructH3Datagram(
+                                kStreamId0, 0,
+                                to_endpoint.MakeRequestHeadersPacket(
+                                    to_endpoint_packet_num++, kStreamId0, true,
+                                    ConvertRequestPriorityToQuicPriority(
+                                        DEFAULT_PRIORITY),
+                                    GetRequestHeaders("GET", "https", "/",
+                                                      &to_endpoint),
+                                    nullptr,
+                                    /*should_include_priority_frame=*/true)))
+                            .Build()))
+                    .Build())
+      .Sync();
+
+  constexpr const char kRespData[] = "0123456789";
+  // Endpoint sends a response via proxy2, via proxy1.
+  socket_data
+      .AddRead(
+          "endpoint-response",
+          from_proxy1.Packet(from_proxy1_packet_num++)
+              .AddMessageFrame(ConstructH3Datagram(
+                  kStreamId0, 0,
+                  from_proxy2
+                      .Packet(from_proxy2_packet_num++)
+                      // Response headers
+                      .AddMessageFrame(ConstructH3Datagram(
+                          kStreamId0, 0,
+                          from_endpoint.MakeResponseHeadersPacket(
+                              from_endpoint_packet_num++, kStreamId0, false,
+                              GetResponseHeaders("200"), nullptr)))
+                      // Response data
+                      .AddMessageFrame(ConstructH3Datagram(
+                          kStreamId0, 0,
+                          from_endpoint.Packet(from_endpoint_packet_num++)
+                              .AddStreamFrame(kStreamId0, true,
+                                              ConstructDataFrame(kRespData))
+                              .Build()))
+                      .Build()))
+              .Build())
+      .Sync();
+
+  // Browser ACKs endpoint response via proxy1, via proxy2
+  socket_data
+      .AddWrite(
+          "ack-endpoint-response",
+          to_proxy1
+              .Packet(to_proxy1_packet_num++)
+              // Ack to proxy1
+              .AddAckFrame(1, from_proxy1_packet_num - 1,
+                           from_proxy1_packet_num - 1)
+              .AddMessageFrame(ConstructH3Datagram(
+                  kStreamId0, 0,
+                  to_proxy2
+                      .Packet(to_proxy2_packet_num++)
+                      // Ack to proxy2
+                      .AddAckFrame(1, from_proxy2_packet_num - 1,
+                                   from_proxy2_packet_num - 1)
+                      .AddMessageFrame(ConstructH3Datagram(
+                          kStreamId0, 0,
+                          to_endpoint
+                              .Packet(to_endpoint_packet_num++)
+                              // Ack to endpoint
+                              .AddAckFrame(1, from_endpoint_packet_num - 1,
+                                           from_endpoint_packet_num - 1)
+                              .Build()))
+                      .Build()))
+              .Build())
+      .Sync();
+
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  CreateSession();
+
+  // Add an alternate-protocol mapping so that the transaction
+  // uses QUIC to the endpoint.
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+
+  request_.url = kUrl;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
   RunTransaction(&trans);
   CheckResponsePort(&trans, kQuicProxyChain.First().GetPort());
@@ -7084,7 +7351,6 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpServer) {
       .Sync();
 
   socket_factory_.AddSocketDataProvider(&socket_data);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   CreateSession();
 

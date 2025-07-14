@@ -68,7 +68,7 @@ class QuicTestPacketMaker {
   QuicTestPacketMaker(quic::ParsedQuicVersion version,
                       quic::QuicConnectionId connection_id,
                       const quic::QuicClock* clock,
-                      const std::string& host,
+                      std::string_view host,
                       quic::Perspective perspective,
                       bool client_priority_uses_incremental = false,
                       bool use_priority_header = false);
