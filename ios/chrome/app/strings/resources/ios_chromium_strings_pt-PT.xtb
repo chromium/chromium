@@ -91,7 +91,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3102849287235003384">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Tornar o Chromium o navegador predefinido?</translation>
 <translation id="3180939591219927904">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chromium"</translation>
-<translation id="3242612358525156339">Nas definições do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{A mostrar 1 janela do Chromium agora}other{A mostrar {count} janelas do Chromium agora}}</translation>
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
@@ -164,7 +163,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="5042011327527167688">Toque em "Ver com o Google Maps no Chromium".</translation>
 <translation id="5044871537677053278">O Chromium deteta moradas e usa o Google Maps para lhe dar direções e informações locais.</translation>
 <translation id="5048140766121299007">Nas definições de "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", ative a opção "Chromium"</translation>
-<translation id="5048795749726991615">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chromium para o preenchimento automático</translation>
 <translation id="5053429694249468757">A eliminar os dados do Chromium…</translation>
 <translation id="5071749685031362629">Chromium para iOS</translation>
 <translation id="5124429847818367226">Agora, pode usar o Chromium sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>

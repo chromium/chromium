@@ -91,7 +91,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3102849287235003384">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vuoi imposta Chromium come browser predefinito?</translation>
 <translation id="3180939591219927904">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium"</translation>
-<translation id="3242612358525156339">Dalle impostazioni del dispositivo, apri "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e seleziona "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
@@ -164,7 +163,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="5042011327527167688">Tocca l'opzione "Visualizza con Google Maps su Chromium".</translation>
 <translation id="5044871537677053278">Chromium rileva gli indirizzi e utilizza Google Maps per darti indicazioni stradali e informazioni locali.</translation>
 <translation id="5048140766121299007">Dalle impostazioni "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", attiva "Chromium"</translation>
-<translation id="5048795749726991615">Usa la funzionalità Compilazione automatica di Chromium per recuperare facilmente le tue password salvate nelle altre app</translation>
 <translation id="5053429694249468757">Eliminazione dei dati di Chromium in corso…</translation>
 <translation id="5071749685031362629">Chromium per iOS</translation>
 <translation id="5124429847818367226">Ora puoi usare Chromium ogni volta che sfogli o tocchi link in messaggi, documenti e altre app.</translation>

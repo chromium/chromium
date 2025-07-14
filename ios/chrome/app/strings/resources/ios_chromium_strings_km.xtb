@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">ដើម្បីចេញ​ពី​គណនី Google របស់អ្នក​នៅលើ​គ្រប់​គេហទំព័រ សូម​<ph name="BEGIN_LINK" />ចេញពី Chromium<ph name="END_LINK" />។</translation>
 <translation id="3115956258722352278">កំណត់​ឱ្យ Chromium ក្លាយជា​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នកឬ?</translation>
 <translation id="3180939591219927904">បើក "ចាក់សោ​ផ្ទាំងឯកជន នៅពេល​អ្នក​បិទ Chromium"</translation>
-<translation id="3242612358525156339">ពីការកំណត់​ក្នុងឧបករណ៍​របស់​អ្នក សូម​បើក "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" រួច​ជ្រើសរើស "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{ឥឡូវនេះកំពុងបង្ហាញវិនដូ Chromium ចំនួន 1}other{ឥឡូវនេះកំពុងបង្ហាញវិនដូ Chromium ចំនួន {count}}}</translation>
 <translation id="3344973607274501920">Chromium មិនអាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមសាកល្បងពិនិត្យ​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក។</translation>
 <translation id="3366305173356742781">ទិន្នន័យ Chromium នៅក្នុងគណនីរបស់អ្នក</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">ចុច “មើលតាម Google ផែនទីនៅលើ Chromium”។</translation>
 <translation id="5044871537677053278">Chromium រកឃើញអាសយដ្ឋាន និងប្រើប្រាស់ Google ផែនទី ដើម្បីផ្ដល់ឱ្យអ្នកនូវទិសដៅ និងព័ត៌មានក្នុងតំបន់។</translation>
 <translation id="5048140766121299007">ពី​ការកំណត់ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" សូមបើក "Chromium"</translation>
-<translation id="5048795749726991615">ដើម្បីងាយស្រួល​យក​ពាក្យសម្ងាត់​ដែល​បានរក្សាទុករបស់​អ្នក​នៅ​ក្នុង​កម្មវិធីផ្សេងទៀត​របស់​អ្នក សូម​ប្រើ Chromium សម្រាប់​ការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="5053429694249468757">កំពុងលុបទិន្នន័យ Chromium…</translation>
 <translation id="5071749685031362629">Chromium សម្រាប់ iOS</translation>
 <translation id="5124429847818367226">ឥឡូវនេះ អ្នកអាចប្រើ Chromium រាល់ពេលដែល​អ្នករុករក ឬចុចលើតំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត។</translation>

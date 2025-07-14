@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Металл (гялгар)</translation>
 <translation id="1070901266639972381">Шөнө</translation>
 <translation id="1073690811593784042">Шил (өнгөтэй)</translation>
+<translation id="1074287282535157335">4 хувааж эсвэл сараар төлөх (зохих эрхтэйд нь хамаарна)</translation>
 <translation id="1074497978438210769">Аюултай</translation>
 <translation id="1074779248866616641">Үр дүн</translation>
 <translation id="1075364221219156102">Нэвтрэх түлхүүр ашиглах</translation>
@@ -422,7 +423,6 @@
 <translation id="1706625117072057435">Томруулах түвшин</translation>
 <translation id="1706922226983368260">Нэвтрэх түлхүүр • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталгаажуулж чадсангүй; серверийн аюулгүй байдлын сертификат маргаашнаас эхэлнэ. Энэ нь буруу тохируулснаас, эсвэл халдагч этгээд таны холболтод саад учруулснаас болсон байж болзошгүй.}other{Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталгаажуулж чадсангүй; серверийн аюулгүй байдлын сертификат # хоногоос хүчинтэй болно. Энэ нь буруу тохируулснаас, эсвэл халдагч этгээд таны холболтод саад учруулснаас болсон байж болзошгүй.}}</translation>
-<translation id="1709711942721576168">ХОУ-ы горимын товч, ХОУ-ы горимоос асуухын тулд идэвхжүүлнэ үү</translation>
 <translation id="1710259589646384581">Үйлдлийн систем</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" />-г <ph name="VALUE" /> гэж тохируулаагүй тул үл хэрэгссэн.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> таны дотоод компьютерт өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
@@ -657,6 +657,7 @@
 <translation id="2102134110707549001">Хүчтэй нууц үг санал болгох...</translation>
 <translation id="2102495993840063010">Андройд апп</translation>
 <translation id="2102519472192754194">Веб хөтчүүд</translation>
+<translation id="2103210856015238101">Хүрч бөглөх боломжтой лояалти картуудыг бүтэн өндрөөр нээсэн.</translation>
 <translation id="2105838220373099643">Дүрд тоглох тоглоомууд</translation>
 <translation id="2107021941795971877">Хэвлэлийн дэмжлэг</translation>
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
@@ -1297,6 +1298,7 @@
 <translation id="3187472288455401631">Зарын хэмжилт</translation>
 <translation id="3190736958609431397">Хянахаа болих</translation>
 <translation id="3194737229810486521"><ph name="URL" /> таны төхөөрөмжид өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
 <translation id="3201482403106004262">Судалгаатай холбоотой алдаа гарлаа.</translation>
@@ -1449,7 +1451,6 @@
 <translation id="343474037147570563">Таны байршуулсан эсвэл хавсаргасан файлуудыг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч талууд руу илгээнэ. Жишээ нь тэдгээрт эмзэг өгөгдөл эсвэл хортой программ байгаа эсэхийг скан хийж магадгүй бөгөөд тэдгээрийг компанийн бодлогод тулгуурлан хадгалж болох ба танай администратор харна.</translation>
 <translation id="3435557549311968410">Тасралтгүй (богино)</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
-<translation id="3436118221454753036">ХОУ-аас асуух горим</translation>
 <translation id="3440783957068352691">дөрвөлжин</translation>
 <translation id="3441653493275994384">Дэлгэц</translation>
 <translation id="3443504041532578451">Оптик диск (сатин)</translation>
@@ -1774,6 +1775,7 @@
 <translation id="3963721102035795474">Уншигчийн горим</translation>
 <translation id="3965672182149944205">Хаягийг хадгалах уу?</translation>
 <translation id="3966044442021752214">Бүтээгдэхүүний аюулгүй байдал</translation>
+<translation id="396761677631735618">Хүрч бөглөх боломжтой лояалти картуудыг тал өндрөөр нээсэн.</translation>
 <translation id="3969869202926863008">Дотоод сүлжээний хандалт</translation>
 <translation id="3970239200223030389">Олгосон огноо</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
@@ -1894,6 +1896,7 @@
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4169189393773057143">Google Wallet-д лояалти карт удирдах эсвэл эдгээр зөвлөмжийг унтраана уу</translation>
 <translation id="4169535189173047238">Зөвшөөрөхгүй</translation>
+<translation id="4170851022123611628">Лояалти картуудын жагсаалтыг хаасан.</translation>
 <translation id="4171400957073367226">Баталгаажуулалт хийхэд ашигласан гарын үсэг хангалтгүй байна</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Цоож болон түлхүүрчин</translation>
@@ -2097,6 +2100,7 @@
 <translation id="449126573531210296">Google Бүртгэлээрээ синк хийсэн нууц үгнүүдийг шифрлэх</translation>
 <translation id="4493480324863638523">Энэ URL хүчингүй байна. Энэ нь http://example.com эсвэл https://example.com зэрэг стандарт схемтэй URL байх ёстой.</translation>
 <translation id="4494323206460475851">Та зарын сэдвүүдийг тохиргоонд харах, сайтуудтай хуваалцахыг хүсэхгүй байгаагаа блоклох боломжтой. Chrome мөн 4 долоо хоногоос дээш удсан зарын сэдвүүдийг автоматаар устгадаг.</translation>
+<translation id="4497010149473852018">Лояалти картуудыг хүрч бөглөх боломжтой. Гарыг нуусан.</translation>
 <translation id="4500587658229086076">аюултай контент</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> хүн</translation>
 <translation id="450602096898954067">Энэ онцлогийг сайжруулахын тулд өгөгдлийг хянагч хүмүүс харж магадгүй</translation>
@@ -3039,7 +3043,6 @@
 <translation id="6108849843016142864">Хэвлээр явагч, хоёр нутагтнууд</translation>
 <translation id="610911394827799129">Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй</translation>
 <translation id="611018310643025551">Таны хайлт, хамгийн сайн таарах илэрц болон тэдгээрийн хуудасны контентыг Google рүү илгээдэг бөгөөд энэ онцлогийг сайжруулахын тулд тухайн өгөгдлийг хянагч хүмүүс харж магадгүй.</translation>
-<translation id="6115793664998531464"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ХОУ-ы горимоос асуухын тулд Enter дээр дарна уу</translation>
 <translation id="6116338172782435947">Түр санах ойд хуулсан текст, зургийг харах</translation>
 <translation id="6117833587752089929">Гэрэл зураг (сатин)</translation>
 <translation id="6118782133429281336">Эхийн жагсаалт хоосон байна.</translation>

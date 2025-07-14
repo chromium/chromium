@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Желите да подесите Chromium за подразумевани прегледач?</translation>
 <translation id="3180939591219927904">Укључите Закључај картице без архивирања после затварања Chromium-а</translation>
-<translation id="3242612358525156339">У подешавањима уређаја отворите „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изаберите „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Сада се приказује 1 Chromium прозор}one{Сада се приказује {count} Chromium прозор}few{Сада се приказују {count} Chromium прозора}other{Сада се приказује {count} Chromium прозора}}</translation>
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="3366305173356742781">Chromium подаци на налогу</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Додирните Прикажи помоћу Google мапа у Chromium-у.</translation>
 <translation id="5044871537677053278">Chromium открива адресе и користи Google мапе да би вам пружао упутства и локалне информације.</translation>
 <translation id="5048140766121299007">У подешавањима <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> укључите Chromium</translation>
-<translation id="5048795749726991615">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chromium за аутоматско попуњавање</translation>
 <translation id="5053429694249468757">Бришу се Chromium подаци…</translation>
 <translation id="5071749685031362629">Chromium за iOS</translation>
 <translation id="5124429847818367226">Сада можете да користите Chromium сваки пут када прегледате или додирнете линкове у порукама, документима и другим апликацијама.</translation>

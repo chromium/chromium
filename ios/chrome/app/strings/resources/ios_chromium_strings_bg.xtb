@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Искате ли да направите Chromium своя браузър по подразбиране?</translation>
 <translation id="3180939591219927904">Включете опцията „Заключване на разделите в режим „инкогнито“ при затваряне на Chromium“.</translation>
-<translation id="3242612358525156339">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Показва се 1 прозорец на Chromium}other{Показват се {count} прозореца на Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не успя да провери паролите ви. Проверете връзката си с интернет.</translation>
 <translation id="3366305173356742781">Данни в Chromium в профила ви</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Докоснете „Преглед в Google Карти в Chromium“.</translation>
 <translation id="5044871537677053278">Chromium открива адреси и използва Google Карти, за да ви предоставя упътвания и местна информация.</translation>
 <translation id="5048140766121299007">Включете Chromium от настройките в „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“</translation>
-<translation id="5048795749726991615">За да получавате лесно запазените си пароли в други приложения, използвайте Chromium с цел автоматично попълване</translation>
 <translation id="5053429694249468757">Данните в Chromium се изтриват…</translation>
 <translation id="5071749685031362629">Chromium за iOS</translation>
 <translation id="5124429847818367226">Вече можете да използвате Chromium всеки път, когато преглеждате съобщения, документи и други приложения или докоснете връзки в тях.</translation>

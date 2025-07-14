@@ -91,7 +91,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="3180939591219927904">Activează Blochează filele incognito când închizi Chromium</translation>
-<translation id="3242612358525156339">Din setările dispozitivului, deschide <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> și selectează Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Se afișează o fereastră Chromium}few{Se afișează {count} ferestre Chromium}other{Se afișează {count} de ferestre Chromium}}</translation>
 <translation id="3344973607274501920">Chromium nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
@@ -164,7 +163,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5042011327527167688">Atinge Vezi pe Google Maps în Chromium.</translation>
 <translation id="5044871537677053278">Chromium detectează adresele și folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale.</translation>
 <translation id="5048140766121299007">Din setările <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activează Chromium</translation>
-<translation id="5048795749726991615">Pentru a accesa cu ușurință parolele salvate în alte aplicații, folosește Chromium pentru completare automată</translation>
 <translation id="5053429694249468757">Se șterg datele Chromium…</translation>
 <translation id="5071749685031362629">Chromium pentru iOS</translation>
 <translation id="5124429847818367226">Acum poți folosi Chromium oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>

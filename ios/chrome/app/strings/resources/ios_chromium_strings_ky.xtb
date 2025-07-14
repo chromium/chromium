@@ -91,7 +91,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="3102849287235003384">Бардык вебсайттарда Google аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium демейки серепчиңиз болсунбу?</translation>
 <translation id="3180939591219927904">"Chromium жабылганда, жашыруун өтмөктөрдү кулпулоо" параметрин күйгүзүү</translation>
-<translation id="3242612358525156339">Түзмөктүн параметрлеринен "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" бөлүмүнө өтүп, "Chromium'ду" тандаңыз</translation>
 <translation id="328933489847748230">{count,plural, =1{Азыр 1 Chromium терезеси көрсөтүлүүдө}other{Азыр {count} Chromium терезеси көрсөтүлүүдө}}</translation>
 <translation id="3344973607274501920">Chromium сырсөздөрүңүздү текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="3366305173356742781">Аккаунтуңуздагы Chromium маалыматы</translation>
@@ -164,7 +163,6 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="5042011327527167688">"Chromium'дагы Google Карталарда көрүү" дегенди таптап коюңуз.</translation>
 <translation id="5044871537677053278">Chromium багыттарды жана жергиликтүү маалыматты көрсөтүү үчүн, даректерди аныктап, Google Карталарды колдонот.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" параметрлеринен "Chromium'ду" өчүрүү/күйгүзүү</translation>
-<translation id="5048795749726991615">Башка колдонмолордо сакталган сырсөздөрдү оңой терүү максатында автотолтуруу үчүн Chromium'ду колдонуңуз</translation>
 <translation id="5053429694249468757">Chromium маалыматы өчүрүлүүдө…</translation>
 <translation id="5071749685031362629">iOS үчүн Chromium</translation>
 <translation id="5124429847818367226">Эми Chromium'да каалаган убакта сайттарды карап, билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду ача аласыз.</translation>

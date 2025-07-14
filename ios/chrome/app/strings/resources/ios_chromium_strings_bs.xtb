@@ -91,7 +91,6 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="3102849287235003384">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Postaviti Chromium kao zadani preglednik?</translation>
 <translation id="3180939591219927904">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromiuma"</translation>
-<translation id="3242612358525156339">U postavkama uređaja otvorite "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" i odaberite "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromiuma}one{Trenutno se prikazuje {count} prozor Chromiuma}few{Trenutno se prikazuju {count} prozora Chromiuma}other{Trenutno se prikazuje {count} prozora Chromiuma}}</translation>
 <translation id="3344973607274501920">Chromium nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
@@ -164,7 +163,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5042011327527167688">Dodirnite "Pregledajte putem Google Mapa u Chromiumu".</translation>
 <translation id="5044871537677053278">Chromium otkriva adrese i koristi Google Mape da vam daje smjernice i lokalne informacije.</translation>
 <translation id="5048140766121299007">U postavkama "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" uključite "Chromium"</translation>
-<translation id="5048795749726991615">Da lako dobijete sačuvane lozinke u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
 <translation id="5053429694249468757">Brisanje podataka Chromiuma…</translation>
 <translation id="5071749685031362629">Chromium za iOS</translation>
 <translation id="5124429847818367226">Sada možete koristiti Chromium svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>

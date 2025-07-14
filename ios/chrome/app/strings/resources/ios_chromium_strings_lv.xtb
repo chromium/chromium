@@ -91,7 +91,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="3102849287235003384">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vai iestatīt Chromium kā noklusējuma pārlūku?</translation>
 <translation id="3180939591219927904">Ieslēdziet iestatījumu “Bloķēt inkognito cilnes, aizverot pārlūku Chromium”.</translation>
-<translation id="3242612358525156339">Ierīces iestatījumos atveriet sadaļu “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” un atlasiet iespēju “Chromium”.</translation>
 <translation id="328933489847748230">{count,plural, =1{Tagad tiek rādīts viens Chromium logs}zero{Tagad tiek rādīti {count} Chromium logi}one{Tagad tiek rādīts {count} Chromium logs}other{Tagad tiek rādīti {count} Chromium logi}}</translation>
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3366305173356742781">Chromium dati jūsu kontā</translation>
@@ -164,7 +163,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus
 <translation id="5042011327527167688">Pieskarieties vienumam “Skatīt ar Google Maps pārlūkā Chromium”.</translation>
 <translation id="5044871537677053278">Chromium nosaka adreses un izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju.</translation>
 <translation id="5048140766121299007">Sadaļas “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” iestatījumos ieslēdziet opciju “Chromium”.</translation>
-<translation id="5048795749726991615">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izmantojiet pārlūku Chromium automātiskajai aizpildei.</translation>
 <translation id="5053429694249468757">Notiek Chromium datu dzēšana…</translation>
 <translation id="5071749685031362629">Chromium operētājsistēmai iOS</translation>
 <translation id="5124429847818367226">Tagad varat izmantot Chromium ikreiz, kad pārlūkojat saturu vai pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>

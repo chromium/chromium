@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">‏للخروج من حسابك على Google في جميع المواقع الإلكترونية، عليك <ph name="BEGIN_LINK" />الخروج من Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">‏هل تريد أن يكون Chromium المتصفِّح التلقائي؟</translation>
 <translation id="3180939591219927904">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chromium"</translation>
-<translation id="3242612358525156339">‏في إعدادات جهازك، افتح "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" واختَر "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{‏يتم الآن عرض نافذة واحدة في Chromium.}zero{‏يتم الآن عرض {count} نافذة في Chromium.}two{‏يتم الآن عرض نافذتَين ({count}) في Chromium.}few{‏يتم الآن عرض {count} نوافذ في Chromium.}many{‏يتم الآن عرض {count} نافذة في Chromium.}other{‏يتم الآن عرض {count} نافذة في Chromium.}}</translation>
 <translation id="3344973607274501920">‏تعذّر على متصفِّح Chromium التحقُّق من كلمات المرور. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="3366305173356742781">‏بيانات Chromium في حسابك</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">‏انقر على "العرض على Chromium باستخدام خرائط Google".</translation>
 <translation id="5044871537677053278">‏يرصد Chromium العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="5048140766121299007">‏في إعدادات "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"، يُرجى تفعيل Chromium</translation>
-<translation id="5048795749726991615">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، استخدِم Chromium للاستفادة من ميزة "الملء التلقائي".</translation>
 <translation id="5053429694249468757">‏جارٍ حذف بيانات Chromium…</translation>
 <translation id="5071749685031362629">‏‫Chromium لنظام التشغيل iOS</translation>
 <translation id="5124429847818367226">‏يمكنك الآن استخدام Chromium في أي وقت تتصفَّح فيه أو تنقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
@@ -254,6 +252,7 @@
 
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">‏إنّ إشعارات Chromium غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
+<translation id="7195217321165708458">‏‫Gemini في Chromium</translation>
 <translation id="7219205286115692265">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="7222001353246886083">‏البحث عن ${searchPhrase} في Chromium</translation>
 <translation id="7228180817326917122">‏نصيحة بشأن Chromium: اختَر مكان شريط العناوين</translation>

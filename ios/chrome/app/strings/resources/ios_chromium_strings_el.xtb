@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">Για να αποσυνδεθείτε από τον Λογαριασμό σας Google σε όλους τους ιστοτόπους, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Ορισμός Chromium ως προεπιλεγμένου προγράμματος περιήγησης;</translation>
 <translation id="3180939591219927904">Ενεργοποιήστε την επιλογή Κλείδωμα καρτελών ανώνυμης περιήγησης κατά το κλείσιμο του Chromium</translation>
-<translation id="3242612358525156339">Από τις Ρυθμίσεις της συσκευής σας, ανοίξτε το στοιχείο <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> και επιλέξτε Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Εμφανίζεται 1 παράθυρο του Chromium}other{Εμφανίζονται {count} παράθυρα του Chromium}}</translation>
 <translation id="3344973607274501920">Το Chromium δεν μπόρεσε να ελέγξει τους κωδικούς πρόσβασής σας. Δοκιμάστε να ελέγξετε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="3366305173356742781">Δεδομένα Chromium στον λογαριασμό σας</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Πατήστε Προβολή με τους Χάρτες Google στο Chromium.</translation>
 <translation id="5044871537677053278">Το Chromium εντοπίζει διευθύνσεις και χρησιμοποιεί τους Χάρτες Google για να σας παρέχει οδηγίες και τοπικές πληροφορίες.</translation>
 <translation id="5048140766121299007">Από τις ρυθμίσεις<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, ενεργοποιήστε την επιλογή Chromium</translation>
-<translation id="5048795749726991615">Για να λαμβάνετε εύκολα τους αποθηκευμένους κωδικούς πρόσβασης στις άλλες εφαρμογές, χρησιμοποιήστε την Αυτόματη συμπλήρωση του Chromium</translation>
 <translation id="5053429694249468757">Διαγραφή δεδομένων Chromium…</translation>
 <translation id="5071749685031362629">Chromium για iOS</translation>
 <translation id="5124429847818367226">Μπορείτε πλέον να χρησιμοποιείτε το Chromium κάθε φορά που περιηγείστε ή πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές.</translation>

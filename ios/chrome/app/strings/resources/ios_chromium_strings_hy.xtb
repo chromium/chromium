@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
 <translation id="3115956258722352278">Դարձնե՞լ Chromium-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="3180939591219927904">Միացրեք «Կողպեք ինկոգնիտո ներդիրները, երբ փակեք Chromium-ը»</translation>
-<translation id="3242612358525156339">Ձեր սարքի կարգավորումներում բացեք «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» պարամետրը և ընտրեք «Chromium»</translation>
 <translation id="328933489847748230">{count,plural, =1{Այժմ ցուցադրվում է Chromium-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chromium-ի {count} պատուհան}}</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3366305173356742781">Chromium-ի տվյալները ձեր հաշվում</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Հպեք «Դիտել Google Քարտեզների Chromium-ում»։</translation>
 <translation id="5044871537677053278">Chromium-ը գտնում է հասցեները և օգտագործում Google Քարտեզները՝ երթուղիներ գծելու և տեղական տեղեկություններ տրամադրելու համար։</translation>
 <translation id="5048140766121299007">«<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» կարգավորումներից միացրեք «Chromium»-ը</translation>
-<translation id="5048795749726991615">Պահված գաղտնաբառերն այլ հավելվածներում հեշտությամբ մուտքագրելու համար օգտագործեք ինքնալրացման գործառույթը Chromium-ում</translation>
 <translation id="5053429694249468757">Chromium-ի տվյալները ջնջվում են…</translation>
 <translation id="5071749685031362629">Chromium՝ iOS-ի համար</translation>
 <translation id="5124429847818367226">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chromium-ում։</translation>

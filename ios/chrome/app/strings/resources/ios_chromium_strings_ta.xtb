@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">இணையதளங்கள் அனைத்திலும் உங்கள் Google கணக்கில் இருந்து வெளியேற <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumமை இயல்பு உலாவியாக அமைக்கவா?</translation>
 <translation id="3180939591219927904">"Chromiumமை மூடும்போது மறைநிலைப் பக்கங்களைப் பூட்டு" என்பதை ஆன் செய்யவும்</translation>
-<translation id="3242612358525156339">உங்கள் சாதன அமைப்புகளில் "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" என்பதைத் திறந்து "Chromium" என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="328933489847748230">{count,plural, =1{1 Chromium சாளரம் காட்டப்படுகிறது}other{{count} Chromium சாளரங்கள் காட்டப்படுகின்றன}}</translation>
 <translation id="3344973607274501920">Chromium உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும்.</translation>
 <translation id="3366305173356742781">உங்கள் கணக்கில் உள்ள Chromium தரவு</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromiumமில் Google Maps மூலம் காட்டு” என்பதைத் தட்டவும்.</translation>
 <translation id="5044871537677053278">Chromium முகவரிகளைக் கண்டறிந்து, உங்களுக்கு வழிகளையும் உள்ளூர் தகவல்களையும் வழங்க Google Mapsஸைப் பயன்படுத்துகிறது.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" அமைப்புகளில் "Chromium" என்பதை இயக்கவும்</translation>
-<translation id="5048795749726991615">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை மற்ற ஆப்ஸில் எளிதாகப் பெற, தன்னிரப்பி அம்சத்திற்கு Chromiumமைப் பயன்படுத்துங்கள்</translation>
 <translation id="5053429694249468757">Chromium தரவை நீக்குகிறது…</translation>
 <translation id="5071749685031362629">iOSஸுக்கான Chromium</translation>
 <translation id="5124429847818367226">நீங்கள் உலாவும்போது அல்லது மெசேஜ்கள், ஆவணங்கள் அல்லது பிற ஆப்ஸில் உள்ள இணைப்புகளைக் கிளிக் செய்யும்போதெல்லாம் Chromiumமைப் பயன்படுத்தலாம்.</translation>

@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chromium-იდან<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">გსურთ, დააყენოთ Chromium თქვენს ნაგულისხმევ ბრაუზერად?</translation>
 <translation id="3180939591219927904">ჩართეთ „Chromium-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა“</translation>
-<translation id="3242612358525156339">თქვენი მოწყობილობის პარამეტრებიდან გახსენით „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ და აირჩიეთ „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{ახლა ნაჩვენებია Chromium-ის 1 ფანჯარა}other{ახლა ნაჩვენებია Chromium-ის {count} ფანჯარა}}</translation>
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3366305173356742781">Chromium-ის მონაცემები თქვენს ანგარიშში</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">შეხებით აირჩიეთ „Google Maps-ით ნახვა Chromium-ში“.</translation>
 <translation id="5044871537677053278">Chromium აღმოაჩენს მისამართებს და იყენებს Google Maps-ს, რომ შემოგთავაზოთ მიმართულებები და ადგილობრივი ინფორმაცია.</translation>
 <translation id="5048140766121299007">„<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“-ის პარამეტრებში ჩართეთ „Chromium“</translation>
-<translation id="5048795749726991615">თქვენი შენახული პაროლებით თქვენს სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chromium ავტომატური შევსებისთვის</translation>
 <translation id="5053429694249468757">მიმდინარეობს Chromium-ის მონაცემების წაშლა…</translation>
 <translation id="5071749685031362629">Chromium (iOS-ისთვის)</translation>
 <translation id="5124429847818367226">ამიერიდან შეგიძლიათ გამოიყენოთ Chromium, როცა ვებს ათვალიერებთ, ან შეტყობინებებში, დოკუმენტებში თუ სხვა აპებში ბმულებს ეხებით.</translation>

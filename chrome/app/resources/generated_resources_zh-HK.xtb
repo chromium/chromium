@@ -2000,7 +2000,6 @@
 <translation id="2359556993567737338">連接藍牙裝置</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360792123962658445">如果要得到呢個頁面嘅摘要、相關搜尋內容同埋其他實用資料，請揀工具列入面嘅 Google 搜尋側面板掣</translation>
-<translation id="2361100938102002520">您即將在此瀏覽器中新增受管理的設定檔。管理員可控制管該設定檔，並存取其中的資料。</translation>
 <translation id="236117173274098341">優化</translation>
 <translation id="2361340419970998028">正在傳送意見…</translation>
 <translation id="236141728043665931">永遠封鎖存取麥克風</translation>
@@ -2934,6 +2933,7 @@
 <translation id="3008142279736625920">芝士蛋糕</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您在今天內連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}other{<ph name="MANAGER" /> 要求您連接 Wi-Fi 並在期限前下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}}</translation>
+<translation id="3008923556848076408">Gemini 會繼續處理工作</translation>
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009352964623081324">搜尋 + O，然後按 S。此操作用於安裝、管理和自訂語音。</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
@@ -4764,6 +4764,7 @@
 <translation id="4291265871880246274">登入對話框</translation>
 <translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">網站正在播放媒體</translation>
+<translation id="4293219510510666933">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。你亦可提出問題，系統會根據瀏覽記錄提供解答。此設定已開啟。</translation>
 <translation id="4294392694389031609">已從下載記錄中刪除「<ph name="FILE_NAME" />」，但此檔案仍保存在你的裝置上</translation>
 <translation id="4295072614469448764">應用程式已在終端機上完成安裝，其圖示可能會在啟動器中顯示。</translation>
 <translation id="4295979599050707005">請再次登入，確認您的帳戶 <ph name="USER_EMAIL" /> 可用於 Chrome 和 Google Play 的網站、應用程式和擴充程式。您亦可以移除此帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6132,6 +6133,7 @@
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
 <translation id="5280303168922585051">此設定是由你的機構指定，確定要刪除此搜尋引擎嗎？</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
+<translation id="5280966903879030278">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。此設定已關閉。</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
 <translation id="528208740344463258">如要下載並使用 Android 應用程式，請先安裝此必要更新。<ph name="DEVICE_TYPE" /> 更新時，您將無法使用裝置。安裝完成後，<ph name="DEVICE_TYPE" /> 將會重新啟動。</translation>
 <translation id="5283677936944177147">糟糕！系統無法識別裝置型號或序號。</translation>
@@ -6830,6 +6832,7 @@
 <translation id="5800703268655655701">選取淺色或深色主題背景</translation>
 <translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
+<translation id="5801848377610914194">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。此設定已開啟。</translation>
 <translation id="5803689677801500549">已儲存的密碼會在這裡顯示。如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
 <translation id="5804198298544152115">網站通常會追蹤你的手部和手指動作，以擴充沉浸式體驗</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -8408,7 +8411,6 @@
 <translation id="6922763095098248079">您的裝置由您的機構管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="6923633482430812883">連接共用裝置時發生錯誤。請檢查您正連接的檔案伺服器是否支援 SMBv2 或以上版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
-<translation id="6925127338315966709">您即將在此瀏覽器中新增受管理的設定檔。管理員可以控制該設定檔，並存取其中的資料。書籤、記錄、密碼和其他設定可能會同步至您的帳戶，並由管理員管理。</translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
 <translation id="6929760895658557216">Ok Google</translation>
@@ -9278,6 +9280,7 @@
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561759921596375678">開啟音量</translation>
 <translation id="7561982940498449837">關閉選單</translation>
+<translation id="7563576896417108627">自訂和控制 <ph name="APP_NAME" /> (有可用的更新)。</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
 <translation id="756503097602602175">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
@@ -10035,6 +10038,7 @@
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">使用 Google AI 提升創意和生產力</translation>
 <translation id="8066444921260601116">連線對話框</translation>
+<translation id="8068904756674285749">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。你亦可提出問題，系統會根據瀏覽記錄提供解答。此設定已關閉。</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" /> 位置權限</translation>
 <translation id="8070662218171013510">觸感反應</translation>
 <translation id="8071033114691184017">在 iPhone 上使用此密碼</translation>
@@ -10661,6 +10665,7 @@
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="8500044868721690197">已禁止此網站控制你的 MIDI 裝置及將其重新編程</translation>
 <translation id="8500123638242682652">視窗移咗去上面</translation>
+<translation id="8500132602331251964">應用程式有可用的更新</translation>
 <translation id="8502536196501630039">如要使用從 Google Play 下載的應用程式，請先還原您的應用程式。此操作可能會導致部分資料遺失。</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850382998924680137">今天曾查看</translation>

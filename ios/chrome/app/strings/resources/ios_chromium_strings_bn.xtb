@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">সব ওয়েবসাইটে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করতে, <ph name="BEGIN_LINK" />Chromium থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="3115956258722352278">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
 <translation id="3180939591219927904">"Chromium বন্ধ করার সময় ছদ্মবেশী ট্যাব লক করুন" বিকল্প চালু করুন</translation>
-<translation id="3242612358525156339">ডিভাইসের সেটিংস থেকে , "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" খুলুন এবং "Chromium" বেছে নিন</translation>
 <translation id="328933489847748230">{count,plural, =1{এখন ১টি Chromium উইন্ডো দেখানো হচ্ছে}one{এখন {count}টি Chromium উইন্ডো দেখানো হচ্ছে}other{এখন {count}টি Chromium উইন্ডো দেখানো হচ্ছে}}</translation>
 <translation id="3344973607274501920">Chromium আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="3366305173356742781">আপনার অ্যাকাউন্টে Chromium ডেটা</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromium-এ Google Maps-এর মাধ্যমে দেখুন” বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5044871537677053278">Chromium আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" সেটিংস থেকে "Chromium" চালু করুন</translation>
-<translation id="5048795749726991615">আপনার অন্যান্য অ্যাপে আপনার সেভ করা পাসওয়ার্ডগুলি সহজেই পেতে, অটোফিলের জন্য Chromium ব্যবহার করুন</translation>
 <translation id="5053429694249468757">Chromium-এর ডেটা মোছা হচ্ছে…</translation>
 <translation id="5071749685031362629">iOS-এর জন্য Chromium</translation>
 <translation id="5124429847818367226">মেসেজ, ডকুমেন্ট ও অন্যান্য অ্যাপ ব্রাউজ করতে বা এইসবের লিঙ্কে ট্যাপ করতে এখন আপনি যেকোনও সময় Chromium ব্যবহার করত পারবেন।</translation>

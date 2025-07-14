@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">如要在所有網站上登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="3180939591219927904">啟用「關閉 Chromium 時鎖定無痕式分頁」</translation>
-<translation id="3242612358525156339">從裝置的「設定」中開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」，然後選取 [Chromium]</translation>
 <translation id="328933489847748230">{count,plural, =1{宜家顯示緊 1 個 Chromium 視窗}other{宜家顯示緊 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">輕按「在 Chromium 中使用『Google 地圖』查看」。</translation>
 <translation id="5044871537677053278">Chromium 會偵測地址，並使用「Google 地圖」為你規劃路線及提供當地資訊。</translation>
 <translation id="5048140766121299007">在「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」設定中，將「Chromium」切換為開啟</translation>
-<translation id="5048795749726991615">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
 <translation id="5053429694249468757">刪除緊 Chromium 資料…</translation>
 <translation id="5071749685031362629">iOS 版 Chromium</translation>
 <translation id="5124429847818367226">你現在隨時可使用 Chromium 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
@@ -254,6 +252,7 @@
 
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>
+<translation id="7195217321165708458">Chromium 版 Gemini</translation>
 <translation id="7219205286115692265">從 iPad 主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="7222001353246886083">在 Chromium 中搜尋「${searchphrase}」</translation>
 <translation id="7228180817326917122">Chromium 提示：選擇網址列位置</translation>

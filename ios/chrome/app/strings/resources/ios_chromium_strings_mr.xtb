@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">सर्व वेबसाइटवरील तुमच्या Google खाते मधून साइन आउट करण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3115956258722352278">Chromium ला तुमचा डीफॉल्‍ट ब्राउझर बनवायचे आहे का?</translation>
 <translation id="3180939591219927904">"तुम्ही Chromium बंद करता, तेव्हा गुप्त टॅब लॉक करा" हे सुरू करा</translation>
-<translation id="3242612358525156339">तुमच्या डिव्हाइसच्या सेटिंग्जमधून, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" उघडा आणि "Chromium" निवडा</translation>
 <translation id="328933489847748230">{count,plural, =1{आता १ Chromium विंडो दाखवत आहे}other{आता {count} Chromium विंडो दाखवत आहे}}</translation>
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="3366305173356742781">तुमच्या खात्यामधील Chromium डेटा</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromium वर Google Maps सह पहा” वर टॅप करा.</translation>
 <translation id="5044871537677053278">Chromium पत्ते डिटेक्ट करते आणि तुम्हाला दिशानिर्देश व स्थानिक माहिती देण्यासाठी Google Maps वापरते.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" सेटिंग्जमधून, "Chromium" सुरू करा टॉगल करा</translation>
-<translation id="5048795749726991615">इतर अ‍ॅप्समध्ये तुमचे पासवर्ड सहजरीत्या सेव्ह करण्यासाठी, AutoFill साठी Chromium वापरा</translation>
 <translation id="5053429694249468757">Chromium डेटा हटवत आहे…</translation>
 <translation id="5071749685031362629">iOS साठी Chromium</translation>
 <translation id="5124429847818367226">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chromium कधीही वापरू शकता.</translation>

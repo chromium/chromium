@@ -240,19 +240,6 @@
       사용 안함으로 설정하면 로그인 가로채기 대화상자가 트리거되지 않습니다.
       사용 안함으로 설정하면 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />에서 관리 계정 프로필 분리를 시행할 경우에도 대화상자가 표시됩니다.</translation>
 <translation id="1158844608156732189">Kerberos 설정(배열 항목당 1줄)입니다. https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html을 참고하세요.</translation>
-<translation id="1159241725763211010">렌즈 오버레이를 사용하면 실제 웹 콘텐츠 위에 표시된 현재 페이지의 스크린샷과 상호작용하여 Google 검색을 실행할 수 있습니다. 또한 현재 페이지의 문맥을 인지하는 Google 검색도 실행할 수 있습니다. 렌즈 오버레이는 문맥에 맞는 답변을 제공하기 위해 Google에 페이지 콘텐츠를 전송하여 사용자가 현재 있는 페이지의 맥락에 따라 사용자의 질문에 답변합니다.
-
-이 기능을 제어하는 사용자 설정은 없으며, 이 정책에서 사용 중지하지 않는 한 일반적으로 Google을 기본 검색엔진으로 사용하는 모든 사용자에게 이 기능이 제공됩니다.
-
-0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. AI 모델을 개선하기 위해 사람이 데이터를 검토할 수도 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
-
-1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
-
-2 = 기능을 허용하지 않습니다.
-
-정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
-
-생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="1160479894929412407">QUIC 프로토콜 허용</translation>
 <translation id="1160939557934457296">세이프 브라우징 경고 페이지 사용 중지</translation>
 <translation id="1161685818042751282">플랫폼 트러스트 저장소에서 사용자가 추가한 TLS 서버 인증서를 가져오지 않습니다.</translation>
@@ -370,7 +357,6 @@
 <translation id="1262993197422487260">로그인 및 잠금 화면에 비밀번호 표시 버튼 사용 안함</translation>
 <translation id="1265053460044691532">SAML을 통해 인증한 사용자가 오프라인에서 로그인할 수 있는 기간을 제한</translation>
 <translation id="1265076559723566171">EDU 사용자의 제어 설정</translation>
-<translation id="1268561791350382977">렌즈 오버레이를 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="1271811620059192171">정책 전체 그룹 사용 설정</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> 확장 프로그램 설치 요청 사용</translation>
 <translation id="1272798957154751008">Chromad 기기를 클라우드 관리로 이전할 수 있도록 합니다.</translation>
@@ -3706,7 +3692,6 @@ false로 설정되면 버전 정보가 수집되지 않습니다.
 
 정책을 설정하면 지정된 텔레메트리 데이터 유형의 웹사이트 텔레메트리 보고를 제어할 수 있습니다.
 설정하지 않으면 웹사이트 텔레메트리 데이터가 보고되지 않습니다.</translation>
-<translation id="3651483357891254380">AI 모델을 개선하지 않으면서 렌즈 오버레이를 허용합니다.</translation>
 <translation id="3652670852519271837">사이트에서 사용자에게 File System API를 통해 파일 및 디렉터리 읽기 액세스 권한을 요청하도록 허용</translation>
 <translation id="3653237928288822292">기본 검색 공급자 아이콘</translation>
 <translation id="3654906736796256792">오디오 샌드박스 실행 허용</translation>
@@ -8412,7 +8397,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
       정책을 True로 설정하면 다른 설정에서도 허용하는 한 사용자가 <ph name="PLUGIN_VM_NAME" />을(를) 사용하도록 설정됩니다. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 및 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />이(가) True로 설정되고 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 또는 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />이(가) 설정되어야 <ph name="PLUGIN_VM_NAME" />이(가) 실행될 수 있습니다.</translation>
 <translation id="6741318452269220158">정책을 True로 설정하면 기본 동작으로 Native Client가 사용 중지되어 있더라도 Native Client가 계속 실행됩니다.
 정책을 False로 설정하거나 설정하지 않으면 기본 동작이 사용됩니다.</translation>
-<translation id="6743006196954236593">렌즈 오버레이를 허용하지 않습니다.</translation>
 <translation id="6749641778238480311">이전 사용자 동작이나 사용자 확인 없이도 하위 앱 API를 호출할 수 있도록 허용합니다.</translation>
 <translation id="6750902920405577210">신호 강도 변경 이벤트에 관해 보고할 텔레메트리 데이터 목록입니다.
 

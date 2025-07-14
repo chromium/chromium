@@ -63,7 +63,6 @@ Dinge om in ag te neem:
 <translation id="2423077901494354337">Jy sal Chrome nou ten beste op jou toestel benut.</translation>
 <translation id="2427791862912929107">Chrome het kenmerke wat jou help om jou internetdata te bestuur, asook hoe vinnig jy webbladsye kan laai.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
-<translation id="2444854139071078915">Gebruik Chrome vir Outovul om jou gestoorde wagwoorde maklik in jou ander apps te kry</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Dit gebeur wanneer Chrome vir {THRESHOLD} minuut nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}other{Dit gebeur wanneer Chrome vir {THRESHOLD} minute nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}}</translation>
 <translation id="2561231791489583059">Gebruik Chrome as jou verstekblaaier om beskerm te word teen gevaarlike werwe en jou wagwoorde veilig te hou</translation>
 <translation id="2574249610672786438">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
@@ -219,7 +218,6 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Go
 <translation id="6684809838922667136">Maak Chrome beter</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Dit gebeur wanneer Chrome vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chrome vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>
 <translation id="6709398533399187136">Jou wagwoord is in 'n dataskending blootgestel. Google Wagwoordbestuurder beveel aan dat jy dit nou verander.</translation>
-<translation id="6788035488757621217">Maak “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” in jou toestel se instellings oop en kies “Chrome”</translation>
 <translation id="6820553595690137150">Wagfrase-enkripsie sluit nie betaalmetodes en adresse in nie.
 
 <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> om hierdie instelling te verander.</translation>

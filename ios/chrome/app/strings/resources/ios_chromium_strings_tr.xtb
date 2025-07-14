@@ -91,7 +91,6 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3102849287235003384">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium varsayılan tarayıcı yapılsın mı?</translation>
 <translation id="3180939591219927904">"Chromium'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin</translation>
-<translation id="3242612358525156339">Cihazınızda Ayarlar'dan, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" bölümünü açıp "Chromium"u seçin</translation>
 <translation id="328933489847748230">{count,plural, =1{Şu anda 1 Chromium penceresi gösteriliyor}other{Şu anda {count} Chromium penceresi gösteriliyor}}</translation>
 <translation id="3344973607274501920">Chromium, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="3366305173356742781">Hesabınızdaki Chromium verileri</translation>
@@ -164,7 +163,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="5042011327527167688">"Chromium'da Google Haritalar ile görüntüle"ye dokunun.</translation>
 <translation id="5044871537677053278">Chromium, adresleri algılayıp size yol tarifleri ve yerel bilgiler vermek için Google Haritalar'ı kullanır.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ayarlarından "Chromium"u etkinleştirin</translation>
-<translation id="5048795749726991615">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chromium'u kullanın</translation>
 <translation id="5053429694249468757">Chromium verileri siliniyor…</translation>
 <translation id="5071749685031362629">iOS için Chromium</translation>
 <translation id="5124429847818367226">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chromium'u kullanabilirsiniz.</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">میٹل (گلوسی)</translation>
 <translation id="1070901266639972381">رات</translation>
 <translation id="1073690811593784042">شیشہ (رنگین)</translation>
+<translation id="1074287282535157335">‫4 انسٹالمنٹ میں یا ماہانہ ادائیگی کریں (اہلیت کے ساتھ مشروط)</translation>
 <translation id="1074497978438210769">محفوظ نہیں</translation>
 <translation id="1074779248866616641">نتیجہ</translation>
 <translation id="1075364221219156102">پاس کی استعمال کریں</translation>
@@ -422,7 +423,6 @@
 <translation id="1706625117072057435">زوم کی سطحیں</translation>
 <translation id="1706922226983368260">پاس کی • "<ph name="PHONE_NAME" />"</translation>
 <translation id="1706954506755087368">{1,plural, =1{یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ کی میعاد ممکنہ طور پر کل سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔}other{یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ کی میعاد ممکنہ طور پر مستقبل میں  # دن بعد سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔}}</translation>
-<translation id="1709711942721576168">‏‫AI وضع بٹن، AI وضع کی درخواست کرنے کے لیے فعال کریں</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798">نظر انداز کیا گیا کیونکہ <ph name="POLICY_NAME" /> <ph name="VALUE" /> پر سیٹ نہیں ہے۔</translation>
 <translation id="1712552549805331520"><ph name="URL" /> آپ کے مقامی کمپیوٹر پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
@@ -657,6 +657,7 @@
 <translation id="2102134110707549001">مضبوط پاس ورڈ تجویز کریں…</translation>
 <translation id="2102495993840063010">‏Android ایپس</translation>
 <translation id="2102519472192754194">ویب براؤزرز</translation>
+<translation id="2103210856015238101">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں جو پوری اونچائی پر کھلے ہیں۔</translation>
 <translation id="2105838220373099643">رول پلے کرنے والی گیمز</translation>
 <translation id="2107021941795971877">پرنٹ سپورٹس</translation>
 <translation id="2108755909498034140">اپنے کمپیوٹر کو دوبارہ شروع کریں</translation>
@@ -1298,6 +1299,7 @@
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
 <translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
 <translation id="3194737229810486521"><ph name="URL" /> آپ کے آلے پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> پر <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کیلئے سائٹ پوچھ سکتی ہے</translation>
 <translation id="3201482403106004262">سروے میں ایک خرابی پیش آ گئی۔</translation>
@@ -1449,7 +1451,6 @@
 <translation id="343474037147570563">‏جن فائلز کو آپ اپ لوڈ یا منسلک کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہیں۔</translation>
 <translation id="3435557549311968410">مسلسل (مختصر)</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
-<translation id="3436118221454753036">‏‫AI موڈ سے پوچھیں</translation>
 <translation id="3440783957068352691">مربع</translation>
 <translation id="3441653493275994384">اسکرین</translation>
 <translation id="3443504041532578451">آپٹیکل ڈسک (ساٹن)</translation>
@@ -1774,6 +1775,7 @@
 <translation id="3963721102035795474">ریڈر وض‏ع</translation>
 <translation id="3965672182149944205">پتہ محفوظ کریں؟</translation>
 <translation id="3966044442021752214">پروڈکٹ کا تحفظ</translation>
+<translation id="396761677631735618">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں جو آدھی اونچائی پر کھلے ہیں۔</translation>
 <translation id="3969869202926863008">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="3970239200223030389">جاری کرنے کی تاریخ</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
@@ -1894,6 +1896,7 @@
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
 <translation id="4169189393773057143">‏لائلٹی کارڈز کا نظم کریں یا Google والٹ میں ان تجاویز کو بند کریں</translation>
 <translation id="4169535189173047238">اجازت نہ دیں</translation>
+<translation id="4170851022123611628">لائلٹی کارڈز کی فہرست بند ہے۔</translation>
 <translation id="4171400957073367226">توثیق کی غلط دستخط</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">تالے اور تالہ ساز</translation>
@@ -2097,6 +2100,7 @@
 <translation id="449126573531210296">‏مطابقت پذیر کردہ پاس ورڈز کو اپنے Google اکاؤنٹ کے ساتھ مرموز کریں</translation>
 <translation id="4493480324863638523">‏غلط URL۔ معیاری اسکیم والا URL ہونا ضروری ہے، جیسے http://example.com یا https://example.com۔</translation>
 <translation id="4494323206460475851">‏آپ ترتیبات میں اشتہار کے موضوعات دیکھ سکتے ہیں اور ان کو مسدود کر سکتے ہیں جن کا آپ سائٹس کے ساتھ اشتراک نہیں کرنا چاہتے۔ Chrome ‏4 ہفتوں سے پرانے اشتہار کے موضوعات کو خودکار طور پر بھی حذف کر دیتا ہے۔</translation>
+<translation id="4497010149473852018">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="4500587658229086076">غیر محفوظ مواد</translation>
 <translation id="4504850595255879616">‫<ph name="ENGINE" /> لوگ</translation>
 <translation id="450602096898954067">اس خصوصیت کو بہتر بنانے کے لیے تربیت یافتہ تجزیہ کاران ڈیٹا کو دیکھ سکتے ہیں</translation>
@@ -3039,7 +3043,6 @@
 <translation id="6108849843016142864">خزندے اور جل تھلیے</translation>
 <translation id="610911394827799129">‏ممکن ہے کہ ‎<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
 <translation id="611018310643025551">‏آپ کی تلاشیں، بہترین مماثلتیں اور ان کے صفحہ کے مواد Google کو بھیجے جاتے ہیں اور اس خصوصیت کو بہتر بنانے کے لیے انسانی جائزہ کاران دیکھ سکتے ہیں۔</translation>
-<translation id="6115793664998531464">‏‫<ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />، AI وضع کی درخواست کرنے کیلئے Enter دبائیں</translation>
 <translation id="6116338172782435947">کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھیں</translation>
 <translation id="6117833587752089929">تصویر (ساٹن)</translation>
 <translation id="6118782133429281336">اصل فہرست خالی ہے۔</translation>

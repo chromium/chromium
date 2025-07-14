@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Да се направи Chromium ваш стандарден прелистувач?</translation>
 <translation id="3180939591219927904">Вклучете „Заклучувај ги картичките „Инкогнито“ при затворање на Chromium“</translation>
-<translation id="3242612358525156339">Од поставките на вашиот уред, отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Сега се прикажува 1 прозорец на Chromium}one{Сега се прикажуваат {count} прозорец на Chromium}other{Сега се прикажуваат {count} прозорци на Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="3366305173356742781">Податоци од Chromium во вашата сметка</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Допрете „Прикажи со „Карти на Google“ во Chromium“.</translation>
 <translation id="5044871537677053278">Chromium открива адреси и користи „Карти на Google“ за да ви обезбедува насоки и локални информации.</translation>
 <translation id="5048140766121299007">Вклучете го „Chromium“ од поставките „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“</translation>
-<translation id="5048795749726991615">За лесно добивање на зачуваните лозинки во другите апликации, користете Chromium за автоматско пополнување</translation>
 <translation id="5053429694249468757">Се бришат податоци на Chromium…</translation>
 <translation id="5071749685031362629">Chromium за iOS</translation>
 <translation id="5124429847818367226">Отсега може да го користите Chromium секогаш кога ќе прелистувате или допирате линкови во пораки, документи и други апликации.</translation>

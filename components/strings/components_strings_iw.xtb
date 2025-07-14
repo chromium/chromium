@@ -43,7 +43,7 @@
 <translation id="1070333806075222467">Metal (Glossy)</translation>
 <translation id="1070901266639972381">לילה</translation>
 <translation id="1073690811593784042">Glass (Colored)</translation>
-<translation id="1074287282535157335">משלמים ב-4 תשלומים או בתשלום חודשי (בכפוף לזכאות)</translation>
+<translation id="1074287282535157335">תשלום חודשי או 4 תשלומים (בכפוף לזכאות)</translation>
 <translation id="1074497978438210769">לא מאובטח</translation>
 <translation id="1074779248866616641">תוצאה</translation>
 <translation id="1075364221219156102">שימוש במפתח גישה</translation>
@@ -423,7 +423,6 @@
 <translation id="1706625117072057435">רמות מרחק מתצוגה</translation>
 <translation id="1706922226983368260">מפתח גישה • '<ph name="PHONE_NAME" />'</translation>
 <translation id="1706954506755087368">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק מחר. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד יומיים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אמור להיכנס לתוקף רק בעוד # ימים. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.}}</translation>
-<translation id="1709711942721576168">‏כפתור למצב AI, צריך להפעיל כדי לשאול במצב AI</translation>
 <translation id="1710259589646384581">מערכת הפעלה</translation>
 <translation id="1711234383449478798">אין התייחסות למדיניות כי לא הוגדר הערך <ph name="VALUE" /> ב-<ph name="POLICY_NAME" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> רוצה לאחסן נתונים במחשב המקומי שלך באופן קבוע</translation>
@@ -658,7 +657,7 @@
 <translation id="2102134110707549001">הצעת סיסמה חזקה…</translation>
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
 <translation id="2102519472192754194">דפדפני אינטרנט</translation>
-<translation id="2103210856015238101">רשימת כרטיסי מועדון הלקוחות שזמינים למילוי במגע נפתחה בגובה המלא של המסך.</translation>
+<translation id="2103210856015238101">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בגובה המלא של המסך.</translation>
 <translation id="2105838220373099643">משחקי תפקידים</translation>
 <translation id="2107021941795971877">תמיכות להדפסה</translation>
 <translation id="2108755909498034140">אתחול המחשב</translation>
@@ -1451,7 +1450,6 @@
 <translation id="343474037147570563">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">אבטחה</translation>
-<translation id="3436118221454753036">‏מצב AI: רוצה לשאול משהו?</translation>
 <translation id="3440783957068352691">ריבוע</translation>
 <translation id="3441653493275994384">מסך</translation>
 <translation id="3443504041532578451">Optical Disc (Satin)</translation>
@@ -1776,7 +1774,7 @@
 <translation id="3963721102035795474">מצב קורא</translation>
 <translation id="3965672182149944205">לשמור את הכתובת?</translation>
 <translation id="3966044442021752214">בטיחות המוצר</translation>
-<translation id="396761677631735618">רשימת כרטיסי מועדון הלקוחות שזמינים למילוי במגע נפתחה בחצי מגובה המסך.</translation>
+<translation id="396761677631735618">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בחצי מגובה המסך.</translation>
 <translation id="3969869202926863008">גישה לרשת המקומית</translation>
 <translation id="3970239200223030389">תאריך ההנפקה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -1906,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{פריט אחד (<ph name="ITEM_COUNT" />) נוסף}one{<ph name="ITEM_COUNT" /> פריטים נוספים}two{<ph name="ITEM_COUNT" /> פריטים נוספים}other{<ph name="ITEM_COUNT" /> פריטים נוספים}}</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4177501066905053472">נושאים של מודעות</translation>
+<translation id="4178863275556660738">תשלום באמצעות אמצעי תשלום שהם לא כרטיסים</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
 <translation id="4190446002599583608">‏חיפוש בהיסטוריה, באמצעות AI</translation>
@@ -2101,7 +2100,7 @@
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
 <translation id="4493480324863638523">‏כתובת URL לא חוקית. הסכימה של כתובת ה-URL צריכה להיות רגילה, כלומר: http://example.com או https://example.com.</translation>
 <translation id="4494323206460475851">‏אפשר לראות את נושאי המודעות בהגדרות ולחסום את הנושאים שלא רוצים שישותפו עם אתרים. Chrome גם מוחק באופן אוטומטי נושאי מודעות שנוספו לפני יותר מ-4 שבועות.</translation>
-<translation id="4497010149473852018">רשימת כרטיסי מועדון הלקוחות שזמינים למילוי במגע. המקלדת מוסתרת.</translation>
+<translation id="4497010149473852018">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע. המקלדת מוסתרת.</translation>
 <translation id="4500587658229086076">תוכן לא מאובטח</translation>
 <translation id="4504850595255879616">‫<ph name="ENGINE" /> אנשים</translation>
 <translation id="450602096898954067">בודקים אנושיים עשויים לראות את הנתונים כדי לשפר את התכונה</translation>
@@ -3049,7 +3048,6 @@ Del</translation>
 <translation id="6108849843016142864">זוחלים ודו-חיים</translation>
 <translation id="610911394827799129">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="611018310643025551">‏החיפושים שלך, ההתאמות הטובות ביותר ותוכן הדפים שלהם נשלחים אל Google. יכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו.</translation>
-<translation id="6115793664998531464">‏‫<ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, אפשר להקיש על Enter כדי לשאול במצב AI</translation>
 <translation id="6116338172782435947">גישה אל טקסט ותמונות שהועתקו ללוח</translation>
 <translation id="6117833587752089929">Photo (Satin)</translation>
 <translation id="6118782133429281336">רשימת המקורות ריקה.</translation>
@@ -3562,6 +3560,7 @@ Del</translation>
 <translation id="6970885655016700774">Fabric (Archival)</translation>
 <translation id="6971439137020188025">‏יצירה מהירה של מצגת חדשה ב-Google Slides</translation>
 <translation id="6972629891077993081">‏מכשירי ממשק אנושי (HID)</translation>
+<translation id="6972867931824045907">‏כדי להשתמש בלוח העריכה, צריך להיכנס אל <ph name="LINK" /> ולתת ל-Chrome גישה.</translation>
 <translation id="6973656660372572881">‏צוינו שרתי Proxy קבועים וכתובת אתר של הסקריפט מסוג ‎.Pac</translation>
 <translation id="6973988895180423160">‏3.5x5 אינץ'</translation>
 <translation id="6978121630131642226">מנועי חיפוש</translation>

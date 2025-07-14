@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3115956258722352278">要將 Chromium 設為預設瀏覽器嗎？</translation>
 <translation id="3180939591219927904">開啟「關閉 Chromium 時鎖定無痕分頁」</translation>
-<translation id="3242612358525156339">在裝置的「設定」中開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」並選取「Chromium」</translation>
 <translation id="328933489847748230">{count,plural, =1{目前顯示 1 個 Chromium 視窗}other{目前顯示 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">輕觸「在 Chromium 中使用 Google 地圖查看」。</translation>
 <translation id="5044871537677053278">Chromium 會偵測地址，並使用 Google 地圖提供路線和當地資訊。</translation>
 <translation id="5048140766121299007">前往「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」設定，將「Chromium」切換為開啟</translation>
-<translation id="5048795749726991615">只要使用 Chromium 的自動填入功能，即可在其他應用程式中輕鬆使用已儲存的密碼</translation>
 <translation id="5053429694249468757">正在刪除 Chromium 資料…</translation>
 <translation id="5071749685031362629">iOS 版 Chromium</translation>
 <translation id="5124429847818367226">你現在隨時可以使用 Chromium 上網或開啟訊息、文件和其他應用程式中的連結。</translation>

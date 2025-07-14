@@ -91,7 +91,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3102849287235003384">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Queres que Chromium sexa o teu navegador predeterminado?</translation>
 <translation id="3180939591219927904">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
-<translation id="3242612358525156339">Na configuración do teu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> e selecciona Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventá de Chromium}other{Mostrando {count} ventás de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium na túa conta</translation>
@@ -164,7 +163,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="5042011327527167688">Toca Ver con Google Maps en Chromium.</translation>
 <translation id="5044871537677053278">Chromium detecta enderezos e usa Google Maps para darche indicacións e información local.</translation>
 <translation id="5048140766121299007">Na configuración de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activa Chromium</translation>
-<translation id="5048795749726991615">Usa Chromium para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="5053429694249468757">Eliminando datos de Chromium…</translation>
 <translation id="5071749685031362629">Chromium para iOS</translation>
 <translation id="5124429847818367226">Agora podes usar Chromium sempre que navegues ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>

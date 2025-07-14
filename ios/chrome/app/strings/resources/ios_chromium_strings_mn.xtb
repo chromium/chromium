@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium-г таны өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="3180939591219927904">"Таныг Chromium-г хаахад нууцлалтай табыг түгжих" тохиргоог асаана уу</translation>
-<translation id="3242612358525156339">Төхөөрөмжийнхөө тохиргооноос "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"-г нээж, "Chromium"-г сонгоно уу</translation>
 <translation id="328933489847748230">{count,plural, =1{Одоо Chromium-н 1 цонхыг харуулж байна}other{Одоо Chromium-н {count} цонхыг харуулж байна}}</translation>
 <translation id="3344973607274501920">Chromium таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="3366305173356742781">Таны бүртгэлийн Chromium-н өгөгдөл</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromium-н Google Газрын зургаар харах”-ыг товшино уу.</translation>
 <translation id="5044871537677053278">Chromium танд чиглэл болон орон нутгийн мэдээллийг өгөхийн тулд хаягуудыг илрүүлж, Google Газрын зургийг ашигладаг.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" тохиргооноос "Chromium"-г асаагаарай</translation>
-<translation id="5048795749726991615">Бусад аппад хадгалсан нууц үгнүүдээ хялбархан авахын тулд Автоматаар бөглөх хэсэгт Chromium-г ашиглана уу</translation>
 <translation id="5053429694249468757">Chromium-н өгөгдлийг устгаж байна…</translation>
 <translation id="5071749685031362629">iOS-т зориулсан Chromium</translation>
 <translation id="5124429847818367226">Та одоо мессеж, документ болон бусад апп дахь холбоосыг үзэх эсвэл товшихын тулд Chromium-г хүссэн үедээ ашиглах боломжтой.</translation>
@@ -254,6 +252,7 @@
 
 Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй бөгөөд мөн хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chromium-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-н мэдэгдлийг одоогоор таны төхөөрөмжийн тохиргоонд унтраасан байна.</translation>
+<translation id="7195217321165708458">Chromium дахь Gemini</translation>
 <translation id="7219205286115692265">Өөрийн iPad-н үндсэн нүүрний суурилуулагчаас Chromium-д илүү хурдан хандана уу.</translation>
 <translation id="7222001353246886083">${searchPhrase}-г Chromium-с хайх</translation>
 <translation id="7228180817326917122">Chromium-н зөвлөгөө: Хаяг оруулах хэсгийн байрлалаа сонгоно уу</translation>

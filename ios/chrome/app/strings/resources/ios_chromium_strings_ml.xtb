@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">എല്ലാ വെബ്സൈറ്റുകളിലും നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യാൻ <ph name="BEGIN_LINK" />Chromium-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromium നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കണോ?</translation>
 <translation id="3180939591219927904">Chromium അടയ്‌ക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക" ഓണാക്കുക</translation>
-<translation id="3242612358525156339">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ക്രമീകരണത്തിൽ, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" തുറന്ന് "Chromium" തിരഞ്ഞെടുക്കുക</translation>
 <translation id="328933489847748230">{count,plural, =1{ഇപ്പോൾ 1 Chromium വിൻഡോ കാണിക്കുന്നു}other{ഇപ്പോൾ {count} Chromium വിൻഡോകൾ കാണിക്കുന്നു}}</translation>
 <translation id="3344973607274501920">Chromium-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനായില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.</translation>
 <translation id="3366305173356742781">നിങ്ങളുടെ അക്കൗണ്ടിലെ Chromium ഡാറ്റ</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromium-ൽ Google Maps ഉപയോഗിച്ച് കാണുക” ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5044871537677053278">വിലാസങ്ങൾ കണ്ടെത്തി നിങ്ങൾക്ക് വഴികളും പ്രാദേശിക വിവരങ്ങളും നൽകുന്നതിന് Chromium, Google Maps ഉപയോഗിക്കുന്നു.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ക്രമീകരണത്തിൽ നിന്ന്, "Chromium" ഓണാക്കുക</translation>
-<translation id="5048795749726991615">മറ്റ് ആപ്പുകളിൽ നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ എളുപ്പത്തിൽ ലഭിക്കാൻ, സ്വയമേവ പൂരിപ്പിക്കലിനായി Chromium ഉപയോഗിക്കുക</translation>
 <translation id="5053429694249468757">Chromium ഡാറ്റ ഇല്ലാതാക്കുന്നു…</translation>
 <translation id="5071749685031362629">iOS-നുള്ള Chromium</translation>
 <translation id="5124429847818367226">നിങ്ങൾ ബ്രൗസ് ചെയ്യുമ്പോഴോ സന്ദേശങ്ങളിലോ ഡോക്യുമെന്റുകളിലോ മറ്റ് ആപ്പുകളിലോ ലിങ്കുകളിൽ ടാപ്പ് ചെയ്യുമ്പോഴോ എപ്പോൾ വേണമെങ്കിലും നിങ്ങൾക്ക് ഇപ്പോൾ Chromium ഉപയോഗിക്കാം.</translation>

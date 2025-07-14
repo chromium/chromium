@@ -91,7 +91,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vols establir Chromium com a navegador predeterminat?</translation>
 <translation id="3180939591219927904">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
-<translation id="3242612358525156339">Des de la configuració del dispositiu, obre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i selecciona Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{S'està mostrant 1 finestra de Chromium}other{S'estan mostrant {count} finestres de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
@@ -164,7 +163,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5042011327527167688">Toca Mostra amb Google Maps a Chromium.</translation>
 <translation id="5044871537677053278">Chromium detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="5048140766121299007">A la configuració d'<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activa Chromium</translation>
-<translation id="5048795749726991615">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chromium per a Emplenament automàtic</translation>
 <translation id="5053429694249468757">S'estan suprimint les dades de Chromium…</translation>
 <translation id="5071749685031362629">Chromium per a iOS</translation>
 <translation id="5124429847818367226">Ara pots utilitzar Chromium cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>

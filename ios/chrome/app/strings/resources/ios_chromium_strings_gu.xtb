@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK" />Chromiumમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Chromiumને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="3180939591219927904">“જ્યારે તમે Chromium બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો</translation>
-<translation id="3242612358525156339">તમારા ડિવાઇસના સેટિંગમાંથી, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ખોલો અને "Chromium" પસંદ કરો</translation>
 <translation id="328933489847748230">{count,plural, =1{હવે 1 Chromium વિન્ડો બતાવી રહી છે}one{હવે {count} Chromium વિન્ડો બતાવી રહી છે}other{હવે {count} Chromium વિન્ડો બતાવી રહી છે}}</translation>
 <translation id="3344973607274501920">Chromium તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="3366305173356742781">તમારા એકાઉન્ટમાંનો Chromium ડેટા</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">“Chromium પર Google Maps વડે જુઓ” પર ટૅપ કરો.</translation>
 <translation id="5044871537677053278">Chromium તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Maps પર સરનામાં શોધે છે અને પછી તેનો ઉપયોગ કરે છે.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" સેટિંગમાં જઈને, "Chromium"ને ટૉગલ કરીને ચાલુ કરો</translation>
-<translation id="5048795749726991615">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા માટે, Chromiumની ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="5053429694249468757">Chromiumનો ડેટા ડિલીટ કરી રહ્યાં છીએ…</translation>
 <translation id="5071749685031362629">iOS માટે Chromium</translation>
 <translation id="5124429847818367226">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકો છો.</translation>

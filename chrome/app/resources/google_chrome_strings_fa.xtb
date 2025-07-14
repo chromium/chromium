@@ -315,6 +315,7 @@
 <translation id="4895437082222824641">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
 <translation id="4918844574251943176">تصویر کپی شد</translation>
 <translation id="492720062778050435">‏Chrome توصیه می‌کند این افزونه را بررسی کنید</translation>
+<translation id="4946912144186040233">‏‫Chrome فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند. این تنظیم خاموش است.</translation>
 <translation id="4953650215774548573">‏تنظیم Google Chrome به عنوان مرورگر پیش‌فرضتان</translation>
 <translation id="495931528404527476">‏در Chrome</translation>
 <translation id="4969674060580488087">‏ChromeOS Flex نتوانست داده‌هایتان را همگام‌سازی کند زیرا جزئیات ورود به سیستم حسابتان به‌روز نیست.</translation>
@@ -323,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏روی «مدیر گذرواژه Google» کلیک کنید</translation>
 <translation id="504867494566807945">‏پیوندها را از هر برنامه‌ای در Chrome باز کنید. همچنین برای دسترسی آسان، Chrome به نوار وظیفه شما سنجاق می‌شود.</translation>
+<translation id="5049567194145991071">‏وقتی روی «متوجهم» کلیک کنید، هرزمان در Chrome به سیستم وارد شده باشید، می‌توانید گذرواژه‌ها و داده‌های دیگر را در «حساب Google» خود ذخیره کنید و از آن‌ها استفاده کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="USER_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="5120334927898581447">‏ورود به سیستم Chrome هنگام وارد شدن به سیستم دیگر سرویس‌های Google</translation>
 <translation id="5126049312684316860">‏Chrome صفحه‌های بیشتری را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بار شوند</translation>
@@ -507,6 +509,7 @@
 <translation id="7481213027396403996">‏دریافت قوی‌ترین امنیت Chrome</translation>
 <translation id="749228101751499733">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و موارد دیگر «حساب Google» خود در Chrome استفاده کنید. ‫<ph name="SHORTCUT" /> می‌تواند تنظیمات سرویس‌های Google را تغییر دهد.</translation>
 <translation id="7496017508659652909">‏‫Chrome صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو کردن سریع‌تر شود. <ph name="BEGIN_LINK" />درباره پیش‌بارگیری صفحه‌ها بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">‏‫Chrome فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند. این تنظیم روشن است.</translation>
 <translation id="7514258452813684157">‏سرویس به‌روزرسان Google</translation>
 <translation id="7515191208480168435">‏می‌توانید «لنز Google» را برای دسترسی آسان سنجاق کنید</translation>
 <translation id="7535429826459677826">‏Google Chrome نسخه Dev</translation>
@@ -539,6 +542,7 @@
 <translation id="7801699035218095297">‏Google Chrome می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="7808348361785373670">‏حذف از Chrome...</translation>
 <translation id="7825851276765848807">‏بدلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
+<translation id="7826342993930002256">‏‫Chrome شما، در همه‌جا</translation>
 <translation id="7827099906024714326">‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را تأیید کند. اگر اکنون از سیستم خارج شوید، این داده‌ها حذف خواهد شد.</translation>
 <translation id="7845233973568007926">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید رایانه را بازراه‌اندازی کنید.</translation>
 <translation id="7872446069773932638">درحال بارگیری… <ph name="SECONDS" /> ثانیه باقی مانده است</translation>

@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="3115956258722352278">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้นใช่ไหม</translation>
 <translation id="3180939591219927904">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chromium"</translation>
-<translation id="3242612358525156339">จากการตั้งค่าของอุปกรณ์ ให้เปิด "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" และเลือก "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{กำลังแสดงหน้าต่าง Chromium 1 หน้าต่าง}other{กำลังแสดงหน้าต่าง Chromium {count} หน้าต่าง}}</translation>
 <translation id="3344973607274501920">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3366305173356742781">ข้อมูล Chromium ในบัญชี</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">แตะ "ดูด้วย Google Maps ใน Chromium"</translation>
 <translation id="5044871537677053278">Chromium ตรวจหาที่อยู่และใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่</translation>
 <translation id="5048140766121299007">เปิด "Chromium" จากการตั้งค่า "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
-<translation id="5048795749726991615">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้โดยง่าย ให้ใช้ Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="5053429694249468757">กำลังลบข้อมูลใน Chromium…</translation>
 <translation id="5071749685031362629">Chromium สำหรับ iOS</translation>
 <translation id="5124429847818367226">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่ท่องเว็บหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
@@ -254,6 +252,7 @@
 
 เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="7192111075364461693">ตอนนี้การแจ้งเตือนของ Chromium ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
+<translation id="7195217321165708458">Gemini ใน Chromium</translation>
 <translation id="7219205286115692265">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลักของ iPad</translation>
 <translation id="7222001353246886083">ค้นหา ${searchPhrase} ใน Chromium</translation>
 <translation id="7228180817326917122">เคล็ดลับสำหรับ Chromium: เลือกตำแหน่งของแถบที่อยู่</translation>

@@ -91,7 +91,6 @@
 <translation id="3102849287235003384">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Зрабіць Chromium стандартным браўзерам?</translation>
 <translation id="3180939591219927904">Уключыце параметр "Блакіраваць укладкі ў рэжыме інкогніта пры закрыцці Chromium".</translation>
-<translation id="3242612358525156339">У наладах прылады адкрыйце пункт меню "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" і выберыце "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Зараз паказана 1 акно Chromium}one{Зараз паказана {count} акно Chromium}few{Зараз паказаны {count} акны Chromium}many{Зараз паказаны {count} акон Chromium}other{Зараз паказаны {count} акна Chromium}}</translation>
 <translation id="3344973607274501920">Браўзеру Chromium не ўдалося праверыць паролі. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="3366305173356742781">Даныя Chromium у вашым уліковым запісе</translation>
@@ -164,7 +163,6 @@
 <translation id="5042011327527167688">Націсніце View with Google Maps on Chromium ("Праглядзець на Google Картах у Chromium").</translation>
 <translation id="5044871537677053278">Chromium выяўляе адрасы і выкарыстоўвае Google Карты, каб пракладаць маршруты і паказваць інфармацыю пра мясцовыя аб’екты.</translation>
 <translation id="5048140766121299007">У раздзеле "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" уключыце пераключальнік для Chromium</translation>
-<translation id="5048795749726991615">Для зручнага аўтазапаўнення захаваных пароляў у іншых праграмах выкарыстоўвайце Chromium</translation>
 <translation id="5053429694249468757">Ідзе выдаленне даных з Chromium…</translation>
 <translation id="5071749685031362629">Chromium для iOS</translation>
 <translation id="5124429847818367226">Цяпер вы можаце выкарыстоўваць Chromium, каб праглядаць вэб-старонкі і адкрываць спасылкі ў паведамленнях, дакументах і іншых праграмах.</translation>

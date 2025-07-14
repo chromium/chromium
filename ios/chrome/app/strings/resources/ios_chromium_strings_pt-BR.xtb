@@ -91,7 +91,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Definir o Chromium como o navegador padrão?</translation>
 <translation id="3180939591219927904">Ative a opção "Bloquear guias anônimas ao fechar o Chromium"</translation>
-<translation id="3242612358525156339">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando agora 1 janela do Chromium}one{Mostrando agora {count} janela do Chromium}other{Mostrando agora {count} janelas do Chromium}}</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
@@ -164,7 +163,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5042011327527167688">Toque em "Abrir com o Google Maps no Chromium".</translation>
 <translation id="5044871537677053278">O Chromium detecta endereços e usa o Google Maps para mostrar rotas e informações locais.</translation>
 <translation id="5048140766121299007">Nas configurações de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, ative o Chromium</translation>
-<translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
 <translation id="5053429694249468757">Excluindo dados do Chromium…</translation>
 <translation id="5071749685031362629">Chromium para iOS</translation>
 <translation id="5124429847818367226">Agora você pode usar o Chromium sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>

@@ -63,7 +63,6 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="2423077901494354337">Anda kini dapat memaksimalkan penggunaan Chrome di perangkat Anda.</translation>
 <translation id="2427791862912929107">Chrome memiliki berbagai fitur yang dapat membantu Anda mengelola data internet dan seberapa cepat Anda dapat memuat halaman web.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="2444854139071078915">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, gunakan Chrome untuk Isi Otomatis</translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}}</translation>
 <translation id="2561231791489583059">Gunakan Chrome sebagai browser default agar Anda tetap terlindungi dari situs berbahaya &amp; sandi Anda tetap aman</translation>
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
@@ -219,7 +218,6 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="6684809838922667136">Buat Chrome menjadi lebih baik</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>
-<translation id="6788035488757621217">Dari setelan perangkat, buka "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", lalu pilih "Chrome"</translation>
 <translation id="6820553595690137150">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.
 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>

@@ -19,7 +19,6 @@
 <translation id="1070689840697074178">PDFகளை இங்கே பதிவிறக்கலாம்</translation>
 <translation id="107147699690128016">ஃபைல் நீட்டிப்பை மாற்றினால் இந்த ஃபைல் வேறொரு ஆப்ஸில் திறக்கக்கூடும், இது உங்கள் சாதனத்திற்குத் தீங்கிழைக்கக்கூடும்.</translation>
 <translation id="1080365971383768617">உங்கள் அனைத்துச் சாதனங்களிலும் கடவுச்சொற்கள்</translation>
-<translation id="1087176310396019910">ஸ்பேமாக இருக்கலாம்</translation>
 <translation id="1087799850623149508">முகவரிப் பட்டியைத் தொட்டுப் பிடித்திருப்பதன் மூலம் அதைக் கீழே நகர்த்தலாம்</translation>
 <translation id="1089606299949659462">சரிபார்ப்பு முடிந்தது!</translation>
 <translation id="1094555143448724771">பிற சாதனங்களில் உள்ள உலாவிப் பக்கங்களைப் பார்க்க, உலாவிப் பக்கங்களையும் பதிவையும் ஒத்திசையுங்கள்</translation>
@@ -1191,7 +1190,6 @@
 <translation id="6342069812937806050">இப்போது</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
-<translation id="6347010704471250799">அறிவிப்பைக் காட்டு</translation>
 <translation id="6356893102071098867">நீங்கள் சரியான கணக்கைத் தேர்வுசெய்துள்ளீர்களா என்பதைச் சரிபாருங்கள்</translation>
 <translation id="6363990818884053551">ஒத்திசைவைத் தொடங்க, இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>
