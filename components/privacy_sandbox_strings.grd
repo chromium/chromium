@@ -369,10 +369,10 @@
             Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site.
+            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
             Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -389,10 +389,10 @@
             Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site.
+            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
             Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
