@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,7 +16,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +47,9 @@ public class ButtonVisibilityRuleUnitTest {
     @Mock View mExpandButton;
     @Mock View mOptionalButton;
 
-    ViewGroup.LayoutParams mLayoutParams = new ViewGroup.LayoutParams(48, 48);
+    @Mock ViewTreeObserver mViewTreeObserver;
+
+    LayoutParams mLayoutParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
 
     @Before
     public void setup() {
@@ -61,6 +66,7 @@ public class ButtonVisibilityRuleUnitTest {
                 };
         for (View button : buttons) {
             when(button.getLayoutParams()).thenReturn(mLayoutParams);
+            when(button.getMeasuredWidth()).thenReturn(48);
         }
     }
 
@@ -266,5 +272,29 @@ public class ButtonVisibilityRuleUnitTest {
         verify(mCustom1Button).setVisibility(eq(View.GONE));
         verify(mMinimizeButton).setVisibility(eq(View.GONE));
         verify(mOptionalButton).setVisibility(eq(View.GONE));
+    }
+
+    @Test
+    public void delayRefreshTillViewsFinishMeasurementPhase() {
+        int toolbarWidth = 24 + 68; // close button should be hidden
+        ButtonVisibilityRule buttonVisibilityRule =
+                new ButtonVisibilityRule(68, /* activated= */ true);
+        when(mCloseButton.getMeasuredWidth()).thenReturn(0);
+        when(mCloseButton.getViewTreeObserver()).thenReturn(mViewTreeObserver);
+        var onPreDrawCaptor = ArgumentCaptor.forClass(ViewTreeObserver.OnPreDrawListener.class);
+
+        // Adding button doesn't lead to refresh operation hiding the button, since the button
+        // hasn't finished the measurement phase.
+        buttonVisibilityRule.setToolbarWidth(toolbarWidth);
+        buttonVisibilityRule.addButton(ButtonId.CLOSE, mCloseButton, true);
+
+        verify(mViewTreeObserver).addOnPreDrawListener(onPreDrawCaptor.capture());
+        verify(mCloseButton, never()).setVisibility(anyInt());
+
+        // Now that the measurement is done, the delayed refresh() should run to hide the button.
+        when(mCloseButton.getMeasuredWidth()).thenReturn(48);
+        onPreDrawCaptor.getValue().onPreDraw();
+
+        verify(mCloseButton).setVisibility(eq(View.GONE));
     }
 }
