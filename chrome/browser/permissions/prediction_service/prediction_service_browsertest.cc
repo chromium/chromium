@@ -163,9 +163,12 @@ class PermissionsAiv3HandlerFake : public PermissionsAiv3Handler {
             model_provider,
             optimization_target,
             request_type,
-            // Somehow the browser tests are failing if these are not
-            // `GetCurrentDefault()` task runners.
+            /*model_executor_task_runner=*/
             base::SequencedTaskRunner::GetCurrentDefault(),
+            // The reply_task_runner needs to be the same as the current thread
+            // because we use a ui selector member function as a callback and we
+            // can't use a weak_ptr to the ui selector on a different thread.
+            /*reply_task_runner=*/
             base::SequencedTaskRunner::GetCurrentDefault(),
             std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
 

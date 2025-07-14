@@ -43,10 +43,11 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
           model_provider,
           optimization_target,
           request_type,
+          /*model_executor_task_runner=*/
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
+          /*reply_task_runner-=*/base::SequencedTaskRunner::GetCurrentDefault(),
+          /*model_executor=*/
           std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
 
 PermissionsAiv3Handler::~PermissionsAiv3Handler() = default;
