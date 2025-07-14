@@ -635,7 +635,8 @@ class WebAccessibleResourcesServiceWorkerBrowserTest
 // web accessible resource.
 // Regression test for crbug.com/375395102.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesServiceWorkerBrowserTest,
-                       DNRRedirect) {
+                       // TODO(crbug.com/429438829): Re-enable this test
+                       DISABLED_DNRRedirect) {
   // Register a service worker and navigate to a page it controls.
   RegisterServiceWorker("example.com", "fetch_event_pass_through.js",
                         std::nullopt);
