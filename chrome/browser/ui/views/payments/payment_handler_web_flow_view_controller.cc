@@ -60,6 +60,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -98,6 +99,8 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
                                       contrast_ratio);
 }
 
+}  // namespace
+
 // The progress bar used in the Payment Handler UI.
 class PaymentHandlerProgressBar : public views::ProgressBar {
   METADATA_HEADER(PaymentHandlerProgressBar, views::ProgressBar)
@@ -106,7 +109,7 @@ class PaymentHandlerProgressBar : public views::ProgressBar {
   PaymentHandlerProgressBar() { SetPreferredHeight(2); }
   ~PaymentHandlerProgressBar() override = default;
 
-  base::WeakPtr<views::ProgressBar> GetWeakPtr() {
+  base::WeakPtr<PaymentHandlerProgressBar> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -115,6 +118,41 @@ class PaymentHandlerProgressBar : public views::ProgressBar {
 };
 
 BEGIN_METADATA(PaymentHandlerProgressBar)
+END_METADATA
+
+// The origin label used in the header of the Payment Handler UI.
+class PaymentHandlerOriginLabel : public views::Label {
+  METADATA_HEADER(PaymentHandlerOriginLabel, views::Label)
+
+ public:
+  PaymentHandlerOriginLabel() {
+    SetElideBehavior(gfx::ELIDE_HEAD);
+    SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  }
+  ~PaymentHandlerOriginLabel() override = default;
+
+  // Set the color based on the background color of the header.
+  void SetColorBasedOnBackground(SkColor background_color) {
+    // Get the closest label color to kColorPrimaryForeground, with a minimum
+    // readable contrast ratio.
+    SkColor foreground = GetContrastingGoogleColor(
+        gfx::kGoogleGrey900, gfx::kGoogleGrey200, background_color,
+        color_utils::kMinimumReadableContrastRatio);
+    SetAutoColorReadabilityEnabled(false);
+    SetEnabledColor(foreground);
+    SetBackgroundColor(background_color);
+  }
+
+  base::WeakPtr<PaymentHandlerOriginLabel> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PaymentHandlerOriginLabel> weak_ptr_factory_{this};
+};
+
+BEGIN_METADATA(PaymentHandlerOriginLabel)
 END_METADATA
 
 // The close ('X') button used in the header of the Payment Handler UI.
@@ -152,8 +190,6 @@ class PaymentHandlerCloseButton : public views::ImageButton {
 
 BEGIN_METADATA(PaymentHandlerCloseButton)
 END_METADATA
-
-}  // namespace
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -360,16 +396,14 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   }
 
   // Add the origin label.
-  const url::Origin origin =
+  origin_label_ =
+      container->AddChildView(std::make_unique<PaymentHandlerOriginLabel>())
+          ->GetWeakPtr();
+  origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
       web_contents()
           ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
-          : url::Origin::Create(target_);
-  auto* origin_label = container->AddChildView(std::make_unique<views::Label>(
-      url_formatter::FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
-  origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
-  origin_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
-  origin_label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+          : url::Origin::Create(target_),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   // Turn off auto-readability because the computed foreground color takes
   // contrast into account.
@@ -380,14 +414,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
         background->color().ResolveToSkColor(container->GetColorProvider());
   }
 
-  // Get the closest label color to kColorPrimaryForeground, with a minimum
-  // readable contrast ratio.
-  SkColor foreground = GetContrastingGoogleColor(
-      gfx::kGoogleGrey900, gfx::kGoogleGrey200, background_color,
-      color_utils::kMinimumReadableContrastRatio);
-  origin_label->SetAutoColorReadabilityEnabled(false);
-  origin_label->SetEnabledColor(foreground);
-  origin_label->SetBackgroundColor(background_color);
+  origin_label_->SetColorBasedOnBackground(background_color);
 
   if (progress_bar_) {
     // Set the progress bar colors based on the header background color. The

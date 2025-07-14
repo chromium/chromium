@@ -15,17 +15,19 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/view.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace views {
-class ProgressBar;
+class View;
 }
 
 namespace payments {
 
+class PaymentHandlerCloseButton;
+class PaymentHandlerOriginLabel;
+class PaymentHandlerProgressBar;
 class PaymentRequestDialogView;
 class PaymentRequestSpec;
 class PaymentRequestState;
@@ -103,8 +105,9 @@ class PaymentHandlerWebFlowViewController
   DeveloperConsoleLogger log_;
   raw_ptr<Profile> profile_;
   GURL target_;
-  base::WeakPtr<views::ProgressBar> progress_bar_;
-  base::WeakPtr<views::View> close_button_;
+  base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
+  base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;
+  base::WeakPtr<PaymentHandlerCloseButton> close_button_;
   PaymentHandlerOpenWindowCallback first_navigation_complete_callback_;
   // Used to present modal dialog triggered from the payment handler web view,
   // e.g. an authenticator dialog.
