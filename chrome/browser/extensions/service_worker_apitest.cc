@@ -2142,7 +2142,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySpanning) {
+// TODO(crbug.com/431836247): Re-enable this test once flakiness is fixed.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, DISABLED_TabsQuerySpanning) {
   ExtensionTestMessageListener ready_listener("Script started regular",
                                               ReplyBehavior::kWillReply);
 
