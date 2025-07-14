@@ -6,7 +6,7 @@
 // ash/webui/personalization_app/tools/gen_tsconfig.py --root_out_dir out/pc \
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
-import {ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
@@ -18,6 +18,10 @@ function getTestName(): string|null {
   let testName = new URL(window.location.href).searchParams.get('test');
   if (testName?.startsWith('DISABLED_')) {
     testName = testName.substring('DISABLED_'.length);
+  }
+  const lastSlashIndex = testName?.lastIndexOf('/');
+  if (lastSlashIndex !== -1) {
+    testName = testName ? testName.substring(0, lastSlashIndex) : null;
   }
   return testName;
 }
@@ -1015,10 +1019,36 @@ class ApiTests extends ApiTestFixtureBase {
     journalHost.stop();
   }
 
+  async testGetHostCapabilities() {
+    assertTrue(!!this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    const expectedCapabilities: HostCapability[] = this.testParams ?? [];
+    assertTrue(
+        expectedCapabilities.every(
+            (expected: HostCapability) => capabilities.has(expected)),
+        `Expect each of ${
+            this.capabilitiesToString(expectedCapabilities)} is in ${
+            this.capabilitiesToString(Array.from(capabilities))}`);
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertTrue(!!this.host.closePanel);
     await this.host.closePanel();
     await observeSequence(this.host.panelActive()).waitForValue(false);
+  }
+
+  private capabilitiesToString(capabilities: HostCapability[]): string {
+    return `[${capabilities.map(this.capabilityToString).join(',')}]`;
+  }
+
+  private capabilityToString(capability: HostCapability): string {
+    switch (capability) {
+      case HostCapability.SCROLL_TO_PDF:
+        return 'SCROLL_TO_PDF';
+      default:
+        return 'NEW_ENUM_NOT_IMPLEMENTED';
+    }
   }
 }
 

@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
@@ -102,6 +103,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTabAndPreloading",
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
+      "GlicGetHostCapabilityApiTest",
   };
 }
 
@@ -531,6 +533,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testAllTestsAreRegistered) {
     }
     for (int j = 0; j < test_suite->total_test_count(); ++j) {
       std::string name = test_suite->GetTestInfo(j)->name();
+      // Strips out the test variants suffix.
+      name = name.substr(0, name.find_last_of('/'));
       if (name.starts_with("DISABLED_")) {
         cc_test_names.insert(name.substr(9));
       } else {
@@ -1593,6 +1597,53 @@ IN_PROC_BROWSER_TEST_F(MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
       InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html")));
   ContinueJsTest();
 }
+
+class GlicGetHostCapabilityApiTest
+    : public GlicApiTestWithOneTab,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GlicGetHostCapabilityApiTest() {
+    const bool enable_features = GetParam();
+    if (enable_features) {
+      std::vector<base::test::FeatureRefAndParams> enabled_features = {
+          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}}};
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          enabled_features,
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{});
+    }
+  }
+  ~GlicGetHostCapabilityApiTest() override = default;
+
+  static std::string PrintTestVariant(
+      const ::testing::TestParamInfo<bool>& info) {
+    return info.param ? "EnabledFeatures" : "DisabledFeatures";
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
+  const bool enable_features = GetParam();
+  if (enable_features) {
+    ExecuteJsTest({
+        .params = base::Value(base::Value::List().Append(
+            base::to_underlying(mojom::HostCapability::kScrollToPdf))),
+    });
+  } else {
+    ExecuteJsTest();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicGetHostCapabilityApiTest,
+    ::testing::Bool(),
+    &GlicGetHostCapabilityApiTest::PrintTestVariant);
 
 }  // namespace
 }  // namespace glic

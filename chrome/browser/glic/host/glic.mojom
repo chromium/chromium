@@ -253,6 +253,8 @@ struct WebClientInitialState {
   bool enable_maybe_refresh_user_status;
   // Whether multi tab is enabled.
   bool enable_multi_tab;
+  // The list of capabilities of the host.
+  array<HostCapability> host_capabilities;
 };
 
 // Options for getting tab context.
@@ -1022,4 +1024,10 @@ struct OpenSettingsOptions {
   // Optionally select a field to be highlighted while opening the Glic settings
   // page.
   SettingsPageField highlightField;
+};
+
+// Describes the capability of the glic host.
+enum HostCapability {
+  // Glic host supports ScrollTo() with PDF documents.
+  kScrollToPdf = 0,
 };

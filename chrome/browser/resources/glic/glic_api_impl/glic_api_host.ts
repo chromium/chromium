@@ -18,7 +18,8 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptionsMojoType as GetPinCandidatesOptionsMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
 import {SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, DraggableArea, GetPinCandidatesOptions, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {HostCapability as HostCapabilityMojo} from '../glic.mojom-webui.js';
+import type {ActInFocusedTabParams, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ScrollToErrorReason} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
@@ -261,6 +262,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
     const chromeVersion = initialState.chromeVersion.components;
+    const hostCapabilities = initialState.hostCapabilities;
 
     return {
       initialState: replaceProperties(initialState, {
@@ -275,6 +277,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         },
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         fitWindow: initialState.sizingMode === WebClientSizingMode.kFitWindow,
+        hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
       }),
     };
   }
@@ -1426,4 +1429,9 @@ function getPinCandidatesOptionsFromClient(options: GetPinCandidatesOptions):
 function byteArrayFromClient(buffer: ArrayBuffer): number[] {
   const byteArray = new Uint8Array(buffer);
   return Array.from(byteArray);
+}
+
+function hostCapabilitiesToClient(capabilities: HostCapabilityMojo[]):
+    HostCapability[] {
+  return capabilities.map(capability => capability as number as HostCapability);
 }

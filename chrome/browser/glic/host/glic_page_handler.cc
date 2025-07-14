@@ -564,6 +564,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         features::kGlicUserStatusRefreshApi.Get();
     state->enable_multi_tab =
         base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
+    if (features::kGlicScrollToPDF.Get()) {
+      state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
+    }
 
     std::move(callback).Run(std::move(state));
   }

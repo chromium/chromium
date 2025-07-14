@@ -88,3 +88,5 @@ assertNever<CheckEnumCompatibility<
 assertNever<CheckEnumCompatibility<
     Omit<typeof mojom.SettingsPageField, 'kNone'>,
     typeof api.SettingsPageField>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.HostCapability, typeof api.HostCapability>>();
