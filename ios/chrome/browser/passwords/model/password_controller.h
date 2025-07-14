@@ -19,8 +19,8 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @class CommandDispatcher;
-@protocol PasswordControllerDelegate;
 @class SharedPasswordController;
+@protocol PasswordControllerDelegate;
 
 namespace password_manager {
 class PasswordManagerClient;
@@ -60,8 +60,8 @@ class PasswordReuseDetectionManagerClient;
 // CommandDispatcher for dispatching commands.
 @property(nonatomic) CommandDispatcher* dispatcher;
 
-// The shared password controller that handles all non //ios/chrome specific
-// business logic.
+// Controller which encapsulates interactions with components-layer password
+// manager logic.
 @property(nonatomic, readonly)
     SharedPasswordController* sharedPasswordController;
 

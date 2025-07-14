@@ -37,7 +37,6 @@ source_set("ui_bundled") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -68,6 +67,18 @@ source_set("constants") {
   sources = [
     "password_constants.h",
     "password_constants.mm",
+  ]
+}
+
+source_set("password_suggestion_utils") {
+  sources = [
+    "password_suggestion_utils.h",
+    "password_suggestion_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/passwords/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 

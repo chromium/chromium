@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -91,8 +92,11 @@ id<GREYMatcher> KeyboardAccessoryBackupPasswordSuggestion(NSString* realm) {
           @"%@, %@, %@", kExampleUsername, realm,
           l10n_util::GetNSString(
               IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL)]);
-  return grey_allOf(KeyboardAccessoryPasswordSuggestion(realm),
-                    grey_ancestor(accessibility_label_matcher), nullptr);
+  id<GREYMatcher> backup_icon = grey_accessibilityID(
+      kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
+  return grey_allOf(accessibility_label_matcher,
+                    grey_descendant(KeyboardAccessoryPasswordSuggestion(realm)),
+                    grey_descendant(backup_icon), nullptr);
 }
 
 // Matcher for the credit card suggestion chip.

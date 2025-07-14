@@ -9,7 +9,6 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,9 +26,6 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
 // The max number of lines for the cell title label.
 const int kMaxNumberOfLinesForCellTitleLabel = 2;
-
-// Point size for the symbol that's replacing the cell favicon.
-constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
 
 }  // namespace
 
@@ -393,19 +389,14 @@ constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
   self.activityIndicatorView = nil;
 }
 
-- (void)replaceFaviconWithSymbol:(NSString*)symbolName {
-  if (!symbolName) {
+- (void)replaceFaviconWithSymbol:(UIImage*)symbol {
+  if (!symbol) {
     return;
   }
 
   // Make sure the activity indicator isn't running.
   [self stopAnimatingActivityIndicator];
 
-  UIImage* symbol =
-      SymbolWithPalette(DefaultSymbolWithPointSize(
-                            symbolName, kFaviconReplacementSymbolPointSize),
-                        @[ [UIColor colorNamed:kTextPrimaryColor] ]);
-  symbol.accessibilityIdentifier = symbolName;
   UIImageView* symbolImageView = [[UIImageView alloc] initWithImage:symbol];
   symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
   symbolImageView.backgroundColor = self.backgroundColor;

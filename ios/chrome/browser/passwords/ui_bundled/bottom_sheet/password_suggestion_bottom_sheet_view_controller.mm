@@ -345,8 +345,8 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   TableViewURLCell* URLCell =
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
-  if (suggestion.type == autofill::SuggestionType::kBackupPasswordEntry) {
-    [URLCell replaceFaviconWithSymbol:kHistorySymbol];
+  if (suggestion.icon) {
+    [URLCell replaceFaviconWithSymbol:suggestion.icon];
   } else {
     auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
       DCHECK(attributes);

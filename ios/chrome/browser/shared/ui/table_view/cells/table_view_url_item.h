@@ -101,9 +101,8 @@
 // Sets the background color for the favicon container view.
 - (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;
 
-// Replaces the favicon with a custom symbol associated with the given
-// `symbolName`. `symbolName` needs to be a valid name for an existing resource.
-- (void)replaceFaviconWithSymbol:(NSString*)symbolName;
+// Replaces the favicon with a custom `symbol`.
+- (void)replaceFaviconWithSymbol:(UIImage*)symbol;
 
 @end
 

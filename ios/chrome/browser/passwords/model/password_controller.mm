@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_shared_password_controller.h"
 #import "ios/chrome/browser/passwords/model/notify_auto_signin_view_controller.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -198,7 +199,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
              passwordManager:_passwordManager.get()];
     PasswordControllerDriverHelper* driverHelper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
-    _sharedPasswordController = [[SharedPasswordController alloc]
+    _sharedPasswordController = [[IOSChromeSharedPasswordController alloc]
         initWithWebState:_webState
                  manager:_passwordManager.get()
               formHelper:formHelper

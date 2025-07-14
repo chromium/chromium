@@ -45,7 +45,9 @@ enum class SuggestionIconType {
   // Home address profile icon.
   kAccountHome = 1,
   // Work address profile icon.
-  kAccountWork = 2
+  kAccountWork = 2,
+  // Backup password icon.
+  kBackupPassword = 3,
 };
 
 // Represents a user-selectable suggestion for a single field within a form
