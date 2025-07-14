@@ -434,9 +434,10 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       std::make_unique<InspectorMediaEventHandler>(inspector_context));
   handlers.push_back(std::make_unique<RenderMediaEventHandler>(player_id));
 
-  // This must be created for every new WebMediaPlayer
+  // This must be created for every new WebMediaPlayer. We use the inspector
+  // task runner so logs are properly flushed even when frozen.
   auto media_log = std::make_unique<BatchingMediaLog>(
-      render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
+      render_frame_->GetTaskRunner(blink::TaskType::kInternalInspector),
       std::move(handlers));
 
   EnsureDecoderFactory();
