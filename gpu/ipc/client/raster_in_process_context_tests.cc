@@ -42,7 +42,6 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
       return nullptr;
 
     ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
     attributes.enable_gpu_rasterization = true;
     attributes.enable_gles2_interface = false;
     attributes.enable_raster_interface = true;

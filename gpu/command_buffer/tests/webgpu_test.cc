@@ -117,7 +117,6 @@ void WebGPUTest::Initialize(const Options& options) {
       std::make_unique<viz::TestGpuServiceHolder>(gpu_preferences);
 
   ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.enable_gles2_interface = false;
   attributes.context_type = CONTEXT_TYPE_WEBGPU;
 

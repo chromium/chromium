@@ -60,8 +60,6 @@ class GLHelperTest : public testing::Test {
     feature_list_.Init();
 
     ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
-
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
         viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,

@@ -2001,7 +2001,6 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   }
 
   gl::GLContextAttribs attribs;
-  attribs.bind_generates_resource = false;
   attribs.global_texture_share_group = true;
   attribs.global_semaphore_share_group = true;
   attribs.robust_resource_initialization = true;

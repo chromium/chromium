@@ -291,7 +291,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateOffscreenContext(
   // This is for an offscreen context, so the default framebuffer doesn't need
   // alpha, depth, stencil, antialiasing.
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = support_gles2_interface;
   attributes.enable_raster_interface = support_raster_interface;

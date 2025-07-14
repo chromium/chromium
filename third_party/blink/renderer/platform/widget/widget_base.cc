@@ -884,7 +884,6 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   // This is for an offscreen context for the compositor. So the default
   // framebuffer doesn't need alpha, depth, stencil, antialiasing.
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   // VideoResourceUpdater was the only usage of gles2 interface from this
   // RasterContextProvider and now we use RasterInterface in

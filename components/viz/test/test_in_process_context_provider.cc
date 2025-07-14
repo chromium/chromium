@@ -63,7 +63,6 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   auto* holder = TestGpuServiceHolder::GetInstance();
 
   gpu::ContextCreationAttribs attribs;
-  attribs.bind_generates_resource = false;
 
   if (type_ == TestContextType::kGLES2) {
     attribs.enable_gles2_interface = true;

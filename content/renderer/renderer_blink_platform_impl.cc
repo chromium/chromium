@@ -741,7 +741,6 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   Collect3DContextInformation(gl_info, gpu_info);
 
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
   // TODO(crbug.com/391648152, zmo): today if Skia backend is set, Chrome either
   // runs in GPU acceleration mode, either on top of real GPU, or on top of

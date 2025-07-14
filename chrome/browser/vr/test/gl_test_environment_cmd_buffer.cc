@@ -54,8 +54,6 @@ namespace vr {
 
 GlTestEnvironment::GlTestEnvironment(const gfx::Size frame_buffer_size) {
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
-
   context_ = std::make_unique<gpu::GLInProcessContext>();
   auto result =
       context_->Initialize(gpu::GetTestGpuThreadHolder()->GetTaskExecutor(),

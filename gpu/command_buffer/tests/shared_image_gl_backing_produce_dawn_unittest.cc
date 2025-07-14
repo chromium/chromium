@@ -48,8 +48,6 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
     }
 
     gpu::ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
-
     gl_context_ = std::make_unique<GLInProcessContext>();
     ContextResult result =
         gl_context_->Initialize(GetGpuServiceHolder()->task_executor(),

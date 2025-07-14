@@ -182,8 +182,6 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     bool use_passthrough_cmd_decoder) {
   gl::GLContextAttribs attribs;
   if (use_passthrough_cmd_decoder) {
-    attribs.bind_generates_resource = false;
-
     // Always use the global texture and semaphore share group for the
     // passthrough command decoder
     attribs.global_texture_share_group = true;

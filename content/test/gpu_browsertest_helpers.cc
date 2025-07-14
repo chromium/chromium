@@ -51,7 +51,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     bool wants_raster_interface) {
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.enable_gles2_interface = !wants_raster_interface;
   attributes.enable_grcontext = false;
   attributes.enable_raster_interface = wants_raster_interface;

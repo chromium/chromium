@@ -69,7 +69,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   constexpr bool kAutomaticFlushes = false;
 
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = false;
   attributes.enable_raster_interface = true;

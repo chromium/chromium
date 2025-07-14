@@ -360,7 +360,6 @@ class ImageDecodeAcceleratorStubTest
     init_params->attribs = ContextCreationAttribs();
     init_params->attribs.enable_gles2_interface = false;
     init_params->attribs.enable_raster_interface = true;
-    init_params->attribs.bind_generates_resource = false;
     init_params->active_url = GURL();
     ContextResult result = ContextResult::kTransientFailure;
     Capabilities capabilities;

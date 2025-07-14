@@ -233,8 +233,6 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   EstablishAndWait();
 
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
-
   auto impl = std::make_unique<gpu::CommandBufferProxyImpl>(
       GetGpuChannel(), content::kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());

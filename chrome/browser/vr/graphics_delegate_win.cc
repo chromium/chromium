@@ -27,8 +27,6 @@ void GraphicsDelegateWin::Initialize(base::OnceClosure on_initialized) {
   gpu_channel_host_ = factory->EstablishGpuChannelSync();
 
   gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
-
   context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       gpu_channel_host_, content::kGpuStreamIdDefault,
       content::kGpuStreamPriorityUI, GURL(std::string("chrome://gpu/VrUiWin")),

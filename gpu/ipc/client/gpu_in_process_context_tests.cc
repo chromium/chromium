@@ -30,7 +30,6 @@ class ContextTestBase : public testing::Test {
  public:
   std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext() {
     gpu::ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
     // TODO(crbug.com/351775836): Move ChromeOS to use TestGpuServiceHolder.

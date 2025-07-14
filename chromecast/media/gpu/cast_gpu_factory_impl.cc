@@ -80,7 +80,6 @@ CastGpuFactoryImpl::CreateOpenGLContextProvider() {
   attributes.stencil_size = 0;
   attributes.samples = 0;
   attributes.sample_buffers = 0;
-  attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
   attributes.enable_raster_interface = false;
@@ -288,7 +287,6 @@ void CastGpuFactoryImpl::SetupContext() {
   attributes.stencil_size = 0;
   attributes.samples = 0;
   attributes.sample_buffers = 0;
-  attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
   attributes.enable_raster_interface = false;

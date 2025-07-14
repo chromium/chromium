@@ -61,7 +61,6 @@ class GLHelperBenchmark : public testing::Test {
  protected:
   void SetUp() override {
     ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
     attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
 
     context_ = std::make_unique<GLInProcessContext>();

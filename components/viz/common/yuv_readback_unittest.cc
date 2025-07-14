@@ -42,8 +42,6 @@ class YUVReadbackTest : public testing::Test {
  protected:
   YUVReadbackTest() : context_(std::make_unique<gpu::GLInProcessContext>()) {
     gpu::ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
-
     auto result = context_->Initialize(
         TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
         gpu::SharedMemoryLimits());
