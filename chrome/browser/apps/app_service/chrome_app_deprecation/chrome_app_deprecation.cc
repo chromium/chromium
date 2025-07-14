@@ -393,12 +393,9 @@ void AssignComponentUpdaterAllowlists(
         component_data) {
   auto* state = DeprecationState::GetInstance();
 
-  if (!component_version.IsValid() ||
-      !(component_version > state->last_allowlist_component_version)) {
-    return;
-  }
-
-  if (!component_data) {
+  // We do not need to verify the version number here, as it has been already
+  // checked in LoadComponentUpdaterAllowlists.
+  if (!component_version.IsValid() || !component_data) {
     return;
   }
 
@@ -416,6 +413,9 @@ void AssignComponentUpdaterAllowlists(
       std::unordered_set<std::string>(
           component_data->kiosk_session_allowlist().begin(),
           component_data->kiosk_session_allowlist().end());
+
+  state->last_allowlist_component_version = component_version;
+  g_load_component_updater_allowlists_complete_for_testing = true;
 }
 
 void LoadComponentUpdaterAllowlists(const base::Version& component_version,
@@ -423,6 +423,7 @@ void LoadComponentUpdaterAllowlists(const base::Version& component_version,
   auto* state = DeprecationState::GetInstance();
   if (!component_version.IsValid() ||
       !(component_version > state->last_allowlist_component_version)) {
+    g_load_component_updater_allowlists_complete_for_testing = true;
     return;
   }
 
@@ -501,7 +502,21 @@ void AssignComponentUpdaterAllowlistsForTesting(
     const base::Version& component_version,
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data) {
-  AssignComponentUpdaterAllowlists(component_version, component_data);
+  AssignComponentUpdaterAllowlists(component_version,
+                                   component_data);  // IN-TEST
+}
+
+void LoadComponentUpdaterAllowlistsForTesting(
+    const base::Version& component_version,
+    const base::FilePath& file_path) {
+  LoadComponentUpdaterAllowlists(component_version, file_path);  // IN-TEST
+}
+
+bool g_load_component_updater_allowlists_complete_for_testing;
+
+base::Version GetLastAllowlistComponentVersionForTesting() {
+  auto* state = DeprecationState::GetInstance();
+  return state->last_allowlist_component_version;
 }
 
 }  // namespace apps::chrome_app_deprecation
