@@ -65,7 +65,12 @@ public class VersioningModalDialog {
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable Runnable mExitRunnable;
 
-    private VersioningModalDialog(
+    /**
+     * @param context Used to load resources and launch intents.
+     * @param modalDialogManager Used to show as a dialog.
+     * @param exitRunnable The runnable to run when exiting the modal dialog.
+     */
+    public VersioningModalDialog(
             Context context,
             ModalDialogManager modalDialogManager,
             @Nullable Runnable exitRunnable) {
@@ -74,7 +79,8 @@ public class VersioningModalDialog {
         mExitRunnable = exitRunnable;
     }
 
-    private void show() {
+    /** Shows a dialog prompting the user to update Chrome both negative and positive buttons. */
+    public void show() {
         mModalDialogManager.showDialog(getModelBuilder().build(), ModalDialogType.APP);
     }
 

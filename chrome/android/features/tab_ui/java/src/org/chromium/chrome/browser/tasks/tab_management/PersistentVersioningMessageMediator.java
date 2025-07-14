@@ -16,8 +16,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.MessageCardType.VERSION_OUT_OF_DATE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.MESSAGE_CARD;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.VERSION_OUT_OF_DATE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
@@ -104,23 +103,24 @@ public class PersistentVersioningMessageMediator {
     private final Context mContext;
     private final VersioningMessageController mVersioningMessageController;
     private final ModelList mModelList;
-    private final ModalDialogManager mModalDialogManager;
+    private final VersioningModalDialog mVersioningModalDialog;
 
     /**
      * @param context The current context.
      * @param versioningMessageController The controller for providing versioning messages.
      * @param modelList The {@link ModelList} to which the message card will be added.
-     * @param modalDialogManager The modal dialog manager.
+     * @param versioningModalDialog The manager for the versioning modal dialog.
      */
-    private PersistentVersioningMessageMediator(
+    @VisibleForTesting
+    PersistentVersioningMessageMediator(
             Context context,
             VersioningMessageController versioningMessageController,
             ModelList modelList,
-            ModalDialogManager modalDialogManager) {
+            VersioningModalDialog versioningModalDialog) {
         mContext = context;
         mVersioningMessageController = versioningMessageController;
         mModelList = modelList;
-        mModalDialogManager = modalDialogManager;
+        mVersioningModalDialog = versioningModalDialog;
     }
 
     /** Queues a message card item to be displayed in the model list if required. */
@@ -136,14 +136,14 @@ public class PersistentVersioningMessageMediator {
                 new TabGroupListVersioningMessageData(
                         mContext, this::onPrimaryAction, this::onDismiss);
 
-        mModelList.add(new ListItem(MESSAGE_CARD, createPropertyModel(messageData)));
+        mModelList.add(new ListItem(VERSION_OUT_OF_DATE, createPropertyModel(messageData)));
 
         mVersioningMessageController.onMessageUiShown(
                 MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
     }
 
     private void onPrimaryAction() {
-        VersioningModalDialog.show(mContext, mModalDialogManager);
+        mVersioningModalDialog.show();
     }
 
     private void onDismiss(@MessageService.MessageType int type) {
@@ -156,7 +156,7 @@ public class PersistentVersioningMessageMediator {
     void removeMessageCard() {
         for (int index = 0; index < mModelList.size(); index++) {
             ListItem listItem = mModelList.get(index);
-            if (listItem.type != MESSAGE_CARD) return;
+            if (listItem.type != VERSION_OUT_OF_DATE) return;
             if (isVersioningMessage(listItem.model)) {
                 mModelList.removeAt(index);
                 break;
@@ -187,6 +187,14 @@ public class PersistentVersioningMessageMediator {
                 .build();
     }
 
+    /**
+     * Builds a mediator for the persistent messaging card.
+     *
+     * @param context The context used for obtaining the message strings.
+     * @param profile The original profile.
+     * @param modelList The model list representing the tab group list.
+     * @param modalDialogManager Used to show modal dialogs.
+     */
     public static @Nullable PersistentVersioningMessageMediator build(
             Context context,
             Profile profile,
@@ -199,7 +207,10 @@ public class PersistentVersioningMessageMediator {
 
         VersioningMessageController versioningMessageController =
                 tabGroupSyncService.getVersioningMessageController();
+        VersioningModalDialog versioningModalDialog =
+                new VersioningModalDialog(context, modalDialogManager, /* exitRunnable= */ null);
+
         return new PersistentVersioningMessageMediator(
-                context, versioningMessageController, modelList, modalDialogManager);
+                context, versioningMessageController, modelList, versioningModalDialog);
     }
 }

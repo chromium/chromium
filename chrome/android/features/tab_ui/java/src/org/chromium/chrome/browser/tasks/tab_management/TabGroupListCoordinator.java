@@ -59,18 +59,12 @@ import java.lang.annotation.RetentionPolicy;
 /** Orchestrates the displaying of a list of interactable tab groups. */
 @NullMarked
 public class TabGroupListCoordinator {
-    @IntDef({RowType.TAB_GROUP, RowType.MESSAGE_CARD})
+    @IntDef({RowType.TAB_GROUP, RowType.TAB_GROUP_REMOVED, RowType.VERSION_OUT_OF_DATE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface RowType {
         int TAB_GROUP = 0;
-        int MESSAGE_CARD = 1;
-    }
-
-    @IntDef({MessageCardType.TAB_GROUP_REMOVED, MessageCardType.VERSION_OUT_OF_DATE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface MessageCardType {
-        int TAB_GROUP_REMOVED = 0;
-        int VERSION_OUT_OF_DATE = 1;
+        int TAB_GROUP_REMOVED = 1;
+        int VERSION_OUT_OF_DATE = 2;
     }
 
     private final TabGroupListView mView;
@@ -132,11 +126,13 @@ public class TabGroupListCoordinator {
         mSimpleRecyclerViewAdapter.registerType(
                 RowType.TAB_GROUP, tabGroupRowLayoutBuilder, TabGroupRowViewBinder::bind);
 
-        ViewBuilder<MessageCardView> tabGroupMessageCardLayoutBuilder =
-                new LayoutViewBuilder<>(R.layout.tab_grid_message_card_item);
         mSimpleRecyclerViewAdapter.registerType(
-                RowType.MESSAGE_CARD,
-                tabGroupMessageCardLayoutBuilder,
+                RowType.TAB_GROUP_REMOVED,
+                new LayoutViewBuilder<MessageCardView>(R.layout.tab_grid_message_card_item),
+                MessageCardViewBinder::bind);
+        mSimpleRecyclerViewAdapter.registerType(
+                RowType.VERSION_OUT_OF_DATE,
+                new LayoutViewBuilder<MessageCardView>(R.layout.tab_grid_message_card_item),
                 MessageCardViewBinder::bind);
 
         mView =
@@ -150,7 +146,7 @@ public class TabGroupListCoordinator {
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
                         context,
-                        /* isTabStrip= */ false,
+                        /* isTabStrip */ false,
                         R.dimen.default_favicon_corner_radius,
                         TabFavicon::getBitmap);
         FaviconResolver faviconResolver =

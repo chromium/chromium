@@ -13,8 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ALL;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.MessageCardType.TAB_GROUP_REMOVED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.MESSAGE_CARD;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.TAB_GROUP_REMOVED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
 import android.content.Context;
@@ -235,7 +234,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
                         .with(TabListModel.CardProperties.CARD_TYPE, MESSAGE)
                         .with(MessageCardViewProperties.MESSAGE_TYPE, 99) // Not TAB_GROUP_REMOVED
                         .build();
-        mModelList.add(new ListItem(MESSAGE_CARD, wrongTypeModel));
+        mModelList.add(new ListItem(TAB_GROUP_REMOVED, wrongTypeModel));
 
         DismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
         dismissProvider.dismiss(DISMISS_MSG_TYPE);

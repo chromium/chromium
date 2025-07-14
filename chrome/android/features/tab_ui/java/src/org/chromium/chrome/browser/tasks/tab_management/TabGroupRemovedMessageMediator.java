@@ -17,8 +17,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.RIGHT_MARGIN_OVERRIDE_PX;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.MessageCardType.TAB_GROUP_REMOVED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.MESSAGE_CARD;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.TAB_GROUP_REMOVED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
@@ -149,7 +148,8 @@ public class TabGroupRemovedMessageMediator {
                 new TabGroupRemovedMessageData(
                         mContext, messageList, ignored -> dismissAction(messageList));
 
-        mModelList.add(new MVCListAdapter.ListItem(MESSAGE_CARD, createPropertyModel(messageData)));
+        mModelList.add(
+                new MVCListAdapter.ListItem(TAB_GROUP_REMOVED, createPropertyModel(messageData)));
     }
 
     private void dismissAction(List<PersistentMessage> tabGroupRemovedMessages) {
@@ -167,7 +167,7 @@ public class TabGroupRemovedMessageMediator {
     void removeMessageCard() {
         for (int index = 0; index < mModelList.size(); index++) {
             MVCListAdapter.ListItem listItem = mModelList.get(index);
-            if (listItem.type != MESSAGE_CARD) return;
+            if (listItem.type != TAB_GROUP_REMOVED) return;
             if (isGroupRemovedMessage(listItem.model)) {
                 mModelList.removeAt(index);
                 break;
