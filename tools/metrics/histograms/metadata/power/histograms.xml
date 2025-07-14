@@ -1072,6 +1072,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}.{Visibility}"
+    enum="CpuTimeMetricsThreadType" expires_after="2025-12-14">
+  <owner>eseckler@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Total seconds of CPU time consumed by Chrome's {ProcessType} process, split
+    by thread type and process visibility. Currently only implemented on
+    Android. For every second of CPU time consumed by one thread, a sample is
+    recorded into the bucket for the thread's type. CPU time consumed by a
+    process that cannot be attributed to a specific thread is recorded into the
+    &quot;UnattributedThread&quot; bucket. Samples are recorded periodically
+    depending on the task load of each process's main thread. The histogram thus
+    shows the total sum of CPU time seconds spent per thread type (within
+    {ProcessType} processes) across all users when the process {Visibility}.
+
+    For a histogram of daily per-user values, select &quot;Per-Client
+    Aggregation Mode&quot;.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser" summary="browser"/>
+    <variant name="GPU" summary="GPU"/>
+    <variant name="Other" summary="other type of"/>
+    <variant name="Renderer" summary="renderer"/>
+  </token>
+  <token key="Visibility">
+    <variant name="Background" summary="is in the background"/>
+    <variant name="Foreground" summary="is in the foreground"/>
+    <variant name="Unattributed" summary="visibility is unknown"/>
+  </token>
+</histogram>
+
 <histogram
     name="Power.DarkMode{prefers-color-scheme}.InferredDarkPageColorScheme"
     enum="BooleanIsDarkColorScheme" expires_after="2023-09-24">

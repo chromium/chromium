@@ -76,6 +76,48 @@ const char* GetPerThreadHistogramNameForProcessType(ProcessTypeForUma type) {
   }
 }
 
+const char* GetPerThreadHistogramNameForProcessTypeForeground(
+    ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.CpuTimeSecondsPerThreadType.Browser.Foreground";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.CpuTimeSecondsPerThreadType.Renderer.Foreground";
+    case ProcessTypeForUma::kGpu:
+      return "Power.CpuTimeSecondsPerThreadType.GPU.Foreground";
+    default:
+      return "Power.CpuTimeSecondsPerThreadType.Other.Foreground";
+  }
+}
+
+const char* GetPerThreadHistogramNameForProcessTypeBackground(
+    ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.CpuTimeSecondsPerThreadType.Browser.Background";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.CpuTimeSecondsPerThreadType.Renderer.Background";
+    case ProcessTypeForUma::kGpu:
+      return "Power.CpuTimeSecondsPerThreadType.GPU.Background";
+    default:
+      return "Power.CpuTimeSecondsPerThreadType.Other.Background";
+  }
+}
+
+const char* GetPerThreadHistogramNameForProcessTypeUnattributed(
+    ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.CpuTimeSecondsPerThreadType.Browser.Unattributed";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.CpuTimeSecondsPerThreadType.Renderer.Unattributed";
+    case ProcessTypeForUma::kGpu:
+      return "Power.CpuTimeSecondsPerThreadType.GPU.Unattributed";
+    default:
+      return "Power.CpuTimeSecondsPerThreadType.Other.Unattributed";
+  }
+}
+
 const char* GetAvgCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
   switch (type) {
     case ProcessTypeForUma::kBrowser:
@@ -207,7 +249,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     DETACH_FROM_SEQUENCE(thread_pool_);
   }
 
-  void CollectOnThreadPool() {
+  void CollectOnThreadPool(std::optional<bool> is_visible) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
 
     // This might overflow. We only care that it is different for each cycle.
@@ -262,7 +304,8 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
             cumulative_time - thread_details->reported_cpu_time;
         unattributed_delta -= thread_delta;
 
-        ReportThreadCpuTimeDelta(thread_details->type, thread_delta);
+        ReportThreadCpuTimeDelta(thread_details->type, thread_delta,
+                                 is_visible);
         thread_details->reported_cpu_time = cumulative_time;
       }
 
@@ -284,7 +327,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     // GetCumulativeCPUUsage() failed so `unattributed_delta` started at 0.
     if (unattributed_delta.is_positive()) {
       ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType::kUnattributedThread,
-                               unattributed_delta);
+                               unattributed_delta, is_visible);
     }
   }
 
@@ -296,16 +339,40 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
   };
 
   void ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType type,
-                                base::TimeDelta cpu_time_delta) {
+                                base::TimeDelta cpu_time_delta,
+                                std::optional<bool> is_visible) {
     // Histogram name cannot change after being used once. That's ok since this
     // only depends on the process type, which also doesn't change.
     static const char* histogram_name =
         GetPerThreadHistogramNameForProcessType(process_type_);
+    static const char* histogram_name_foreground =
+        GetPerThreadHistogramNameForProcessTypeForeground(process_type_);
+    static const char* histogram_name_background =
+        GetPerThreadHistogramNameForProcessTypeBackground(process_type_);
+    static const char* histogram_name_unattributed =
+        GetPerThreadHistogramNameForProcessTypeUnattributed(process_type_);
+
     // Histograms use int internally. Make sure it doesn't overflow.
     int capped_value = std::min<int64_t>(cpu_time_delta.InMicroseconds(),
                                          std::numeric_limits<int>::max());
     UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name, type, capped_value,
                                      base::Time::kMicrosecondsPerSecond);
+
+    if (is_visible.has_value()) {
+      if (*is_visible) {
+        UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name_foreground, type,
+                                         capped_value,
+                                         base::Time::kMicrosecondsPerSecond);
+      } else {
+        UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name_background, type,
+                                         capped_value,
+                                         base::Time::kMicrosecondsPerSecond);
+      }
+    } else {
+      UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name_unattributed, type,
+                                       capped_value,
+                                       base::Time::kMicrosecondsPerSecond);
+    }
   }
 
   CpuTimeMetricsThreadType GuessThreadType(base::PlatformThreadId tid) {
@@ -407,13 +474,14 @@ void ProcessCpuTimeMetrics::OnVisibilityChanged(bool visible) {
   // Collect high-level metrics that include a visibility breakdown and
   // attribute them to the old value of |is_visible_| before updating it.
   CollectHighLevelMetricsOnThreadPool();
+  detailed_metrics_->CollectOnThreadPool(is_visible_);
   is_visible_ = visible;
 }
 
 void ProcessCpuTimeMetrics::PerformFullCollectionOnThreadPool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
   CollectHighLevelMetricsOnThreadPool();
-  detailed_metrics_->CollectOnThreadPool();
+  detailed_metrics_->CollectOnThreadPool(is_visible_);
 }
 
 void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
@@ -487,14 +555,6 @@ void ProcessCpuTimeMetrics::ReportAverageCpuLoad(
     cpu_load_report_time_ = now;
     cpu_time_on_last_load_report_ = cumulative_cpu_time;
   }
-}
-
-void ProcessCpuTimeMetrics::PerformFullCollectionForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessCpuTimeMetrics::PerformFullCollectionOnThreadPool,
-                     base::Unretained(this)));
 }
 
 void ProcessCpuTimeMetrics::WaitForCollectionForTesting() const {

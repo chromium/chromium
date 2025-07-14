@@ -76,16 +76,7 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
       "Power.CpuTimeSecondsPerProcessType.Foreground", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_foreground, 1);
 
-  // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =
-      histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
-                                kSamplingProfilerThreadBucket);
-  EXPECT_EQ(thread_cpu_seconds, 0);
-
-  metrics->PerformFullCollectionForTesting();
-  metrics->WaitForCollectionForTesting();
-
-  thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
                                 kSamplingProfilerThreadBucket);
   EXPECT_GE(thread_cpu_seconds, 1);
@@ -146,16 +137,7 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
       "Power.CpuTimeSecondsPerProcessType.Background", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_background, 1);
 
-  // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =
-      histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
-                                kSamplingProfilerThreadBucket);
-  EXPECT_EQ(thread_cpu_seconds, 0);
-
-  metrics->PerformFullCollectionForTesting();
-  metrics->WaitForCollectionForTesting();
-
-  thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
                                 kSamplingProfilerThreadBucket);
   EXPECT_GE(thread_cpu_seconds, 1);

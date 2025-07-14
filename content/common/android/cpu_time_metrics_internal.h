@@ -66,7 +66,6 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override;
 
-  void PerformFullCollectionForTesting();
   void WaitForCollectionForTesting() const;
 
   static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting();
