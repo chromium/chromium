@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -37,6 +38,21 @@ std::string_view GetPrefName(AutofillProfile::RecordType record_type) {
       return prefs::kAutofillHomeMetadata;
     case AutofillProfile::RecordType::kAccountWork:
       return prefs::kAutofillWorkMetadata;
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+    case AutofillProfile::RecordType::kAccount:
+      NOTREACHED();
+  }
+}
+
+// These prefs track the number of silent updates performed for Home and Work.
+// They are not part of the generic metadata dict, since they are not synced.
+std::string_view GetSilentUpdateCountPrefName(
+    AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case AutofillProfile::RecordType::kAccountHome:
+      return prefs::kAutofillSilentUpdatesToHomeAddress;
+    case AutofillProfile::RecordType::kAccountWork:
+      return prefs::kAutofillSilentUpdatesToWorkAddress;
     case AutofillProfile::RecordType::kLocalOrSyncable:
     case AutofillProfile::RecordType::kAccount:
       NOTREACHED();
@@ -138,6 +154,35 @@ void HomeAndWorkMetadataStore::ApplyChange(
                          std::move(metadata));
 }
 
+void HomeAndWorkMetadataStore::RecordSilentUpdate(
+    const AutofillProfile& profile) {
+  if (!profile.IsHomeAndWorkProfile()) {
+    return;
+  }
+  // Record that a silent update has happened and emit how many silent updates
+  // this particular H/W `profile` has received since the last sign-out.
+  std::string_view pref_name =
+      GetSilentUpdateCountPrefName(profile.record_type());
+  int silent_update_count = pref_service_->GetInteger(pref_name) + 1;
+  pref_service_->SetInteger(pref_name, silent_update_count);
+  base::UmaHistogramCounts100("Autofill.HomeAndWork.SilentUpdates.Performed",
+                              silent_update_count);
+}
+
+void HomeAndWorkMetadataStore::RecordProfileFill(
+    const AutofillProfile& profile) const {
+  if (!profile.IsHomeAndWorkProfile()) {
+    return;
+  }
+  // Emit whether the filled H/W `profile` has received any silent updates since
+  // the last sign-out.
+  bool has_silent_updates =
+      pref_service_->GetInteger(
+          GetSilentUpdateCountPrefName(profile.record_type())) > 0;
+  base::UmaHistogramBoolean("Autofill.HomeAndWork.SilentUpdates.Usage",
+                            has_silent_updates);
+}
+
 void HomeAndWorkMetadataStore::OnStateChanged(
     syncer::SyncService* sync_service) {
   if (sync_service->GetTransportState() !=
@@ -150,6 +195,16 @@ void HomeAndWorkMetadataStore::OnStateChanged(
   // metadata should be redownloaded during the next sign-in.
   pref_service_->ClearPref(prefs::kAutofillHomeMetadata);
   pref_service_->ClearPref(prefs::kAutofillWorkMetadata);
+
+  // Since silent updates are not synced through prefs, emit how many silent
+  // updates are lost due to the sign-out.
+  int total_silent_updates =
+      pref_service_->GetInteger(prefs::kAutofillSilentUpdatesToHomeAddress) +
+      pref_service_->GetInteger(prefs::kAutofillSilentUpdatesToWorkAddress);
+  base::UmaHistogramCounts100("Autofill.HomeAndWork.SilentUpdates.Lost",
+                              total_silent_updates);
+  pref_service_->ClearPref(prefs::kAutofillSilentUpdatesToHomeAddress);
+  pref_service_->ClearPref(prefs::kAutofillSilentUpdatesToWorkAddress);
 }
 
 }  // namespace autofill

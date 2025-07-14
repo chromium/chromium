@@ -151,6 +151,12 @@ inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
 // HomeAndWorkMetadataStore.
 inline constexpr char kAutofillHomeMetadata[] = "autofill.home_metadata";
 inline constexpr char kAutofillWorkMetadata[] = "autofill.work_metadata";
+// The total number of silent updates for Home and Work performed since the last
+// signed in. Not synced, as silent updates for Home and Work are not synced.
+inline constexpr char kAutofillSilentUpdatesToHomeAddress[] =
+    "autofill.silent_updates.home";
+inline constexpr char kAutofillSilentUpdatesToWorkAddress[] =
+    "autofill.silent_updates.work";
 
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this

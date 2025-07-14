@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -25,6 +26,8 @@
 namespace autofill {
 
 namespace {
+
+using base::Bucket;
 
 class HomeAndWorkMetadataStoreTest : public testing::Test {
  public:
@@ -192,6 +195,62 @@ TEST_F(HomeAndWorkMetadataStoreTest, ClearPrefs) {
   sync_service()->SetSignedOut();
   sync_service()->FireStateChanged();
   EXPECT_TRUE(pref_service()->GetDict(prefs::kAutofillHomeMetadata).empty());
+}
+
+// Tests that Autofill.HomeAndWork.SilentUpdates.Performed is emitted whenever
+// silent updates are performed.
+TEST_F(HomeAndWorkMetadataStoreTest, SilentUpdatesPerformed) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
+  // Simulate two silent updates.
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  base::HistogramTester histogram_tester;
+  metadata_store.RecordSilentUpdate(profile);
+  metadata_store.RecordSilentUpdate(profile);
+
+  // Expect two samples, indicating that the same address was updated twice.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeAndWork.SilentUpdates.Performed"),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+}
+
+// Tests that Autofill.HomeAndWork.SilentUpdates.Lost is emitted on sign-out.
+TEST_F(HomeAndWorkMetadataStoreTest, SilentUpdatesLost) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
+  AutofillProfile home = test::GetFullProfile();
+  test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile work = test::GetFullProfile();
+  test_api(work).set_record_type(AutofillProfile::RecordType::kAccountWork);
+  metadata_store.RecordSilentUpdate(home);
+  metadata_store.RecordSilentUpdate(work);
+
+  base::HistogramTester histogram_tester;
+  sync_service()->SetSignedOut();
+  sync_service()->FireStateChanged();
+  histogram_tester.ExpectUniqueSample("Autofill.HomeAndWork.SilentUpdates.Lost",
+                                      2, 1);
+}
+
+// Tests that Autofill.HomeAndWork.SilentUpdates.Usage is emitted correctly.
+TEST_F(HomeAndWorkMetadataStoreTest, SilentUpdateUsage) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
+  AutofillProfile home = test::GetFullProfile();
+  test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile work = test::GetFullProfile();
+  test_api(work).set_record_type(AutofillProfile::RecordType::kAccountWork);
+  metadata_store.RecordSilentUpdate(home);
+
+  base::HistogramTester histogram_tester;
+  metadata_store.RecordProfileFill(home);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.HomeAndWork.SilentUpdates.Usage", true, 1);
+  metadata_store.RecordProfileFill(work);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeAndWork.SilentUpdates.Usage"),
+              BucketsAre(Bucket(true, 1), Bucket(false, 1)));
 }
 
 }  // namespace

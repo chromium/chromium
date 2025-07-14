@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
@@ -289,8 +290,13 @@ void ProfileImportProcess::ApplyImport() {
   }
 
   // Apply silent updates.
+  HomeAndWorkMetadataStore* home_and_work_metadata_store =
+      address_data_manager_->home_and_work_metadata_store();
   for (const AutofillProfile& updated_profile : silently_updated_profiles_) {
     address_data_manager_->UpdateProfile(updated_profile);
+    if (home_and_work_metadata_store) {
+      home_and_work_metadata_store->RecordSilentUpdate(updated_profile);
+    }
   }
 
   if (!confirmed_import_candidate_.has_value()) {

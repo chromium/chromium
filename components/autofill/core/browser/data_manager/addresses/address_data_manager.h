@@ -303,6 +303,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
     return alternative_state_name_map_updater_.get();
   }
 
+  HomeAndWorkMetadataStore* home_and_work_metadata_store() {
+    return home_and_work_metadata_.get();
+  }
+
  protected:
   friend class AddressDataManagerTestApi;
 

@@ -3616,7 +3616,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.HomeAndWork.ProfileFiltered" enum="BooleanFiltered"
-    expires_after="2025-12-20">
+    expires_after="2026-05-01">
   <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3629,8 +3629,42 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.HomeAndWork.SilentUpdates.Lost" units="SilentUpdates"
+    expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    On sign-out, emits the total number of silent updates to Home and Work
+    addresses since the previous sign-out. Since these silent updates are not
+    synced, this corresponds to the total number of silent updates lost.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.HomeAndWork.SilentUpdates.Performed"
+    units="SilentUpdates" expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Whenever a Home and Work address is updated, emits the total number of
+    silent updates that this address has received since the last sign-out. The
+    total count of this metrics puts the number of
+    Autofill.HomeAndWork.SilentUpdates.Lost into perspective.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.HomeAndWork.SilentUpdates.Usage"
+    enum="BooleanAutofillHomeAndWorkSilentUpdateUsage"
+    expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Whenever a Home and Work address is filled, logs whether this address has
+    received any silent updates since the last sign-out.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.HomeAndWork.SuggestionPresent.{SuggestionType}"
-    enum="BooleanYesNo" expires_after="2025-12-12">
+    enum="BooleanYesNo" expires_after="2026-05-01">
   <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5222,7 +5256,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision"
-    enum="AutofillProfileImportDecision" expires_after="2025-12-16">
+    enum="AutofillProfileImportDecision" expires_after="2026-05-01">
   <owner>jsobiech@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

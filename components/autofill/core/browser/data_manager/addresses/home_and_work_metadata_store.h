@@ -72,6 +72,14 @@ class HomeAndWorkMetadataStore : public syncer::SyncServiceObserver {
   // Persists the `change` in prefs, if it applies to a Home and Work profile.
   void ApplyChange(const AutofillProfileChange& change);
 
+  // Metadata around address substructure learned through silent updates are
+  // synced for non-H/W addresses. For H/W, they are only kept locally and not
+  // synced through this class. In order to understand how much utility is lost
+  // metrics around silent updates and the usage of silently updated profiles
+  // are tracked.
+  void RecordSilentUpdate(const AutofillProfile& profile);
+  void RecordProfileFill(const AutofillProfile& profile) const;
+
  private:
   // Applies metadata to a single profile, returning the modified profile.
   // If the profile was removed from Chrome, nullopt is returned.

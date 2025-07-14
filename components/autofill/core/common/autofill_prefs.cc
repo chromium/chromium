@@ -123,6 +123,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
     registry->RegisterDictionaryPref(
         kAutofillWorkMetadata,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+    registry->RegisterIntegerPref(kAutofillSilentUpdatesToHomeAddress, 0);
+    registry->RegisterIntegerPref(kAutofillSilentUpdatesToWorkAddress, 0);
   }
 }
 
