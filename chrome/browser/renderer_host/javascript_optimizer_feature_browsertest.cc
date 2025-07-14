@@ -27,6 +27,8 @@ class JavascriptOptimizerBrowserTest : public PlatformBrowserTest {
     PlatformBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(&embedded_https_test_server());
+
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   content::WebContents* web_contents() {
@@ -70,8 +72,6 @@ class JavascriptOptimizerBrowserTest_OriginKeyedProcessesByDefault
 // by default via chrome://settings.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        V8SiteSettingDefaultOff) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -86,8 +86,6 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
 // via chrome://settings for a specific site.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        DisabledViaSiteSpecificSetting) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -111,8 +109,6 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionOriginLoadedInSubframeIsNotIsolatedOnFirstNavigation) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
@@ -175,8 +171,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionOriginLoadedFirstWillBeIsolatedInSubframe) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
@@ -228,8 +222,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     RemoveRuleOriginIsStillIsolatedButIsAllowed) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
-
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
@@ -297,7 +289,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionForSiteAppliesToSubSite) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -333,7 +324,6 @@ IN_PROC_BROWSER_TEST_F(
     GTEST_SKIP()
         << "skipping: OriginKeyedProcessesEnabledByDefault needs to be true";
   }
-  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -364,7 +354,6 @@ IN_PROC_BROWSER_TEST_F(
 // that sub.a.com's behavior can differ from a.com's behavior.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
                        ExceptionForSiteAppliesToSubSiteButCannotBeOverridden) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
@@ -448,7 +437,6 @@ IN_PROC_BROWSER_TEST_F(
   }
 #endif
 
-  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
@@ -504,7 +492,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_NoOriginKeyedProcessesByDefault,
     ExceptionForTopFrameDoesNotApplyToSubFrame) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -547,7 +534,6 @@ IN_PROC_BROWSER_TEST_F(
 // JavaScript optimization is handled correctly.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest, ProcessLimitWorks) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
-  ASSERT_TRUE(embedded_https_test_server().Start());
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(
       chrome_test_utils::GetProfile(this));
