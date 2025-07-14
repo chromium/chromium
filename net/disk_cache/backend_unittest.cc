@@ -4293,7 +4293,13 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
             simple_cache_impl_->index()->init_method());
 }
 
-TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
+// TODO(crbug.com/430656242): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SimpleCacheNegMaxSize DISABLED_SimpleCacheNegMaxSize
+#else
+#define MAYBE_SimpleCacheNegMaxSize SimpleCacheNegMaxSize
+#endif
+TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
   SetCacheType(net::GENERATED_BYTE_CODE_CACHE);
 
   SetMaxSize(-1);
