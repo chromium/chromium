@@ -13,11 +13,13 @@
                         password:(NSString*)password
                         siteName:(NSString*)siteName
                             host:(NSString*)host
-                             URL:(const GURL&)URL {
+                             URL:(const GURL&)URL
+              isBackupCredential:(BOOL)isBackupCredential {
   self = [super initWithSiteName:siteName host:host URL:URL];
   if (self) {
     _username = [username copy];
     _password = [password copy];
+    _isBackupCredential = isBackupCredential;
   }
   return self;
 }
@@ -48,20 +50,25 @@
   if (otherObject.URL != self.URL) {
     return NO;
   }
+  if (otherObject.isBackupCredential != self.isBackupCredential) {
+    return NO;
+  }
   return YES;
 }
 
 - (NSUInteger)hash {
   return [base::SysUTF8ToNSString(self.URL.spec()) hash] ^
-         [self.username hash] ^ [self.password hash];
+         [self.username hash] ^ [self.password hash] ^ self.isBackupCredential;
 }
 
 - (NSString*)description {
-  return [NSString
-      stringWithFormat:
-          @"<%@ (%p): username: %@, siteName: %@, host: %@, URL: %@>",
-          NSStringFromClass([self class]), self, self.username, self.siteName,
-          self.host, base::SysUTF8ToNSString(self.URL.spec())];
+  return
+      [NSString stringWithFormat:@"<%@ (%p): username: %@, siteName: %@, host: "
+                                 @"%@, URL: %@, isBackupCredential: %d>",
+                                 NSStringFromClass([self class]), self,
+                                 self.username, self.siteName, self.host,
+                                 base::SysUTF8ToNSString(self.URL.spec()),
+                                 self.isBackupCredential];
 }
 
 @end

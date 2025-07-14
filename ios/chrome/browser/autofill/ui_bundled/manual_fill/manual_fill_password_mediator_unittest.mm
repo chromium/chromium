@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
+#import "base/test/run_until.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -39,7 +40,7 @@ namespace {
 // Creates a password form.
 PasswordForm CreatePasswordForm() {
   PasswordForm form;
-  form.username_value = u"test@egmail.com";
+  form.username_value = u"test@gmail.com";
   form.password_value = u"strongPa55w0rd";
   form.signon_realm = "http://www.example.com/";
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -114,7 +115,10 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
             .get());
   }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void WaitUntilPasswordIsSavedToStore() {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return GetTestStore().stored_passwords().size() == 1; }));
+  }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -133,12 +137,11 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchDidComplete) {
   // Set the mediator's form fetcher.
   [mediator()
       setFormFetcher:std::make_unique<password_manager::FakeFormFetcher>()];
-  EXPECT_TRUE([mediator() conformsToProtocol:@protocol(FormFetcherConsumer)]);
+  ASSERT_TRUE([mediator() conformsToProtocol:@protocol(FormFetcherConsumer)]);
+  id<FormFetcherConsumer> form_fetcher_consumer =
+      static_cast<id<FormFetcherConsumer>>(mediator());
 
   OCMExpect([consumer() presentCredentials:[OCMArg isNotNil]]);
-
-  ManualFillPasswordMediator<FormFetcherConsumer>* form_fetcher_consumer =
-      static_cast<ManualFillPasswordMediator<FormFetcherConsumer>*>(mediator());
 
   [form_fetcher_consumer fetchDidComplete];
 
@@ -150,14 +153,16 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchDidComplete) {
 TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
   // Set the mediator's saved passwords presenter.
   mediator().savedPasswordsPresenter = presenter();
-  EXPECT_TRUE([mediator()
+  ASSERT_TRUE([mediator()
       conformsToProtocol:@protocol(SavedPasswordsPresenterObserver)]);
+  id<SavedPasswordsPresenterObserver> saved_passwords_presenter_observer =
+      static_cast<id<SavedPasswordsPresenterObserver>>(mediator());
 
   // Add password form to store so we get a result when getting the passwords
   // from the saved passwords presenter.
   PasswordForm form = CreatePasswordForm();
   GetTestStore().AddLogin(form);
-  RunUntilIdle();
+  WaitUntilPasswordIsSavedToStore();
 
   OCMExpect([consumer()
       presentCredentials:[OCMArg checkWithBlock:^(
@@ -167,10 +172,35 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
         return YES;
       }]]);
 
-  ManualFillPasswordMediator<
-      SavedPasswordsPresenterObserver>* saved_passwords_presenter_observer =
-      static_cast<ManualFillPasswordMediator<SavedPasswordsPresenterObserver>*>(
-          mediator());
+  // Call `savedPasswordsDidChange` to trigger a call to `fetchAllPasswords`.
+  [saved_passwords_presenter_observer savedPasswordsDidChange];
+
+  EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Tests that the consumer is notified with the right credentials when a
+// password form with a backup password is fetched.
+TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerWithBackupCredential) {
+  // Set the mediator's saved passwords presenter.
+  mediator().savedPasswordsPresenter = presenter();
+  ASSERT_TRUE([mediator()
+      conformsToProtocol:@protocol(SavedPasswordsPresenterObserver)]);
+  id<SavedPasswordsPresenterObserver> saved_passwords_presenter_observer =
+      static_cast<id<SavedPasswordsPresenterObserver>>(mediator());
+
+  // Add a password form with a backup password to the store.
+  PasswordForm form = CreatePasswordForm();
+  form.SetPasswordBackupNote(u"backup password");
+  GetTestStore().AddLogin(form);
+  WaitUntilPasswordIsSavedToStore();
+
+  OCMExpect([consumer()
+      presentCredentials:[OCMArg checkWithBlock:^(
+                                     NSArray<ManualFillCredentialItem*>*
+                                         credential_items) {
+        EXPECT_EQ([credential_items count], 2u);
+        return YES;
+      }]]);
 
   // Call `savedPasswordsDidChange` to trigger a call to `fetchAllPasswords`.
   [saved_passwords_presenter_observer savedPasswordsDidChange];

@@ -432,10 +432,27 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     createManualFillCredentialsFromPasswordForms:
         (std::vector<PasswordForm>)passwordForms {
   std::vector<ManualFillCredentialAndPasswordForm> credentials;
-  for (auto& passwordForm : passwordForms) {
+  for (const auto& passwordForm : passwordForms) {
     ManualFillCredential* manualFillCredential =
-        [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
-    credentials.push_back({manualFillCredential, std::move(passwordForm)});
+        [[ManualFillCredential alloc] initWithPasswordForm:passwordForm
+                                                  isBackup:NO];
+
+    // Create an additional ManualFillCredential for the backup password if
+    // existing.
+    if (std::optional<std::u16string> backupPassword =
+            passwordForm.GetPasswordBackup()) {
+      PasswordForm tempPasswordForm = passwordForm;
+      tempPasswordForm.password_value = backupPassword.value();
+      ManualFillCredential* backupManualFillCredential =
+          [[ManualFillCredential alloc] initWithPasswordForm:tempPasswordForm
+                                                    isBackup:YES];
+
+      credentials.push_back({manualFillCredential, passwordForm});
+      credentials.push_back(
+          {backupManualFillCredential, std::move(passwordForm)});
+    } else {
+      credentials.push_back({manualFillCredential, std::move(passwordForm)});
+    }
   }
 
   return credentials;

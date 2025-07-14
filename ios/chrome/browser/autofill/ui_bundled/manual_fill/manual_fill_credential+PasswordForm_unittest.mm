@@ -12,62 +12,87 @@
 using password_manager::PasswordForm;
 using ManualFillCredentialFormPasswordiOSTest = PlatformTest;
 
+namespace {
+
+constexpr NSString* kPassword = @"password_value";
+constexpr NSString* kUsername = @"username_value";
+constexpr NSString* kUrl = @"http://www.alpha.example.com/path/";
+
+// Creates a password form for the given `url`.
+PasswordForm CreatePasswordForm(NSString* url) {
+  PasswordForm password_form = PasswordForm();
+  password_form.password_value = base::SysNSStringToUTF16(kPassword);
+  password_form.username_value = base::SysNSStringToUTF16(kUsername);
+  password_form.url = GURL(base::SysNSStringToUTF16(url));
+  return password_form;
+}
+
+}  // namespace
+
 // Tests the creation of a credential from a password form.
 TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationHTTPURL) {
-  NSString* password = @"password_value";
-  NSString* username = @"username_value";
   NSString* url = @"http://www.alpha.example.com/path/";
 
-  PasswordForm passwordForm = PasswordForm();
-  passwordForm.password_value = base::SysNSStringToUTF16(password);
-  passwordForm.username_value = base::SysNSStringToUTF16(username);
-  passwordForm.url = GURL(base::SysNSStringToUTF16(url));
+  PasswordForm password_form = CreatePasswordForm(url);
   ManualFillCredential* credential =
-      [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
+      [[ManualFillCredential alloc] initWithPasswordForm:password_form
+                                                isBackup:NO];
 
   EXPECT_TRUE(credential);
-  EXPECT_NSEQ(username, credential.username);
-  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(kUsername, credential.username);
+  EXPECT_NSEQ(kPassword, credential.password);
   EXPECT_NSEQ(@"example.com", credential.siteName);
   EXPECT_NSEQ(@"alpha.example.com", credential.host);
+  EXPECT_FALSE(credential.isBackupCredential);
 }
 
 // Tests the creation of a credential from a password form.
 TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationHTTPSURL) {
-  NSString* password = @"password_value";
-  NSString* username = @"username_value";
   NSString* url = @"https://www.alpha.example.com/path/";
 
-  PasswordForm passwordForm = PasswordForm();
-  passwordForm.password_value = base::SysNSStringToUTF16(password);
-  passwordForm.username_value = base::SysNSStringToUTF16(username);
-  passwordForm.url = GURL(base::SysNSStringToUTF16(url));
+  PasswordForm password_form = CreatePasswordForm(url);
   ManualFillCredential* credential =
-      [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
+      [[ManualFillCredential alloc] initWithPasswordForm:password_form
+                                                isBackup:NO];
 
   EXPECT_TRUE(credential);
-  EXPECT_NSEQ(username, credential.username);
-  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(kUsername, credential.username);
+  EXPECT_NSEQ(kPassword, credential.password);
   EXPECT_NSEQ(@"example.com", credential.siteName);
   EXPECT_NSEQ(@"alpha.example.com", credential.host);
+  EXPECT_FALSE(credential.isBackupCredential);
 }
 
 // Tests the creation of a credential from a password form.
 TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationNoWWW) {
-  NSString* password = @"password_value";
-  NSString* username = @"username_value";
   NSString* url = @"http://alpha.example.com/path/";
 
-  PasswordForm passwordForm = PasswordForm();
-  passwordForm.password_value = base::SysNSStringToUTF16(password);
-  passwordForm.username_value = base::SysNSStringToUTF16(username);
-  passwordForm.url = GURL(base::SysNSStringToUTF16(url));
+  PasswordForm password_form = CreatePasswordForm(url);
   ManualFillCredential* credential =
-      [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
+      [[ManualFillCredential alloc] initWithPasswordForm:password_form
+                                                isBackup:NO];
 
   EXPECT_TRUE(credential);
-  EXPECT_NSEQ(username, credential.username);
-  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(kUsername, credential.username);
+  EXPECT_NSEQ(kPassword, credential.password);
   EXPECT_NSEQ(@"example.com", credential.siteName);
   EXPECT_NSEQ(@"alpha.example.com", credential.host);
+  EXPECT_FALSE(credential.isBackupCredential);
+}
+
+// Tests the creation of a backup credential.
+TEST_F(ManualFillCredentialFormPasswordiOSTest, CreationBackupCredential) {
+  NSString* url = @"https://www.alpha.example.com/path/";
+
+  PasswordForm password_form = CreatePasswordForm(url);
+  ManualFillCredential* credential =
+      [[ManualFillCredential alloc] initWithPasswordForm:password_form
+                                                isBackup:YES];
+
+  EXPECT_TRUE(credential);
+  EXPECT_NSEQ(kUsername, credential.username);
+  EXPECT_NSEQ(kPassword, credential.password);
+  EXPECT_NSEQ(@"example.com", credential.siteName);
+  EXPECT_NSEQ(@"alpha.example.com", credential.host);
+  EXPECT_TRUE(credential.isBackupCredential);
 }

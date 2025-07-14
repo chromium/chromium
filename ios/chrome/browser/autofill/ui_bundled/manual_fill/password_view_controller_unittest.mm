@@ -130,12 +130,13 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
               kItemTypeSampleOne);
   }
 
-  ManualFillCredential* credential = [[ManualFillCredential alloc]
-      initWithUsername:@"test@example.com"
-              password:@""
-              siteName:@""
-                  host:@""
-                   URL:GURL("https://example.com")];
+  ManualFillCredential* credential =
+      [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
+                                            password:@""
+                                            siteName:@""
+                                                host:@""
+                                                 URL:GURL("https://example.com")
+                                  isBackupCredential:NO];
 
   // Add an password data item.
   ManualFillCredentialItem* password_item =
@@ -202,12 +203,13 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
   // Override the type for the test.
   plus_address_item.type = kItemTypeSampleTwo;
 
-  ManualFillCredential* credential = [[ManualFillCredential alloc]
-      initWithUsername:@"test@example.com"
-              password:@""
-              siteName:@""
-                  host:@""
-                   URL:GURL("https://example.com")];
+  ManualFillCredential* credential =
+      [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
+                                            password:@""
+                                            siteName:@""
+                                                host:@""
+                                                 URL:GURL("https://example.com")
+                                  isBackupCredential:NO];
   ManualFillCredentialItem* password_item =
       [[ManualFillCredentialItem alloc] initWithCredential:credential
                                  isConnectedToPreviousItem:NO

@@ -16,14 +16,20 @@
 // The password related to this credential.
 @property(nonatomic, readonly) NSString* password;
 
+// Whether this credential is a backup to a regular one.
+@property(nonatomic, assign) BOOL isBackupCredential;
+
 // Default init.
 - (instancetype)initWithUsername:(NSString*)username
                         password:(NSString*)password
                         siteName:(NSString*)siteName
                             host:(NSString*)host
-                             URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
+                             URL:(const GURL&)URL
+              isBackupCredential:(BOOL)isBackupCredential
+    NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use `initWithUsername:password:siteName:host:URL`.
+// Unavailable. Please use
+// `initWithUsername:password:siteName:host:URL:isBackupCredential:`.
 - (instancetype)initWithSiteName:(NSString*)siteName
                             host:(NSString*)host
                              URL:(const GURL&)URL NS_UNAVAILABLE;

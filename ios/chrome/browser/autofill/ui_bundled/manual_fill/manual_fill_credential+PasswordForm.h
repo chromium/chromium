@@ -13,9 +13,11 @@ struct PasswordForm;
 
 @interface ManualFillCredential (PasswordForm)
 
-// Convenience initializer from a PasswordForm.
+// Convenience initializer from a PasswordForm. `isBackup` indicates whether the
+// given `passwordForm` represents a regular or backup password.
 - (instancetype)initWithPasswordForm:
-    (const password_manager::PasswordForm&)passwordForm;
+                    (const password_manager::PasswordForm&)passwordForm
+                            isBackup:(BOOL)isBackup;
 
 @end
 
