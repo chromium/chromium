@@ -168,6 +168,10 @@ static_library("phonehub") {
     "//ui/gfx",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Sources only include files used in the debug UI.
@@ -220,6 +224,10 @@ static_library("debug") {
     "//chromeos/ash/components/phonehub/proto",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -254,6 +262,10 @@ static_library("test_support") {
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//skia",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
