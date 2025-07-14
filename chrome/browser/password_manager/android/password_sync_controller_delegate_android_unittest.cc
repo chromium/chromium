@@ -9,8 +9,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -25,6 +27,7 @@ namespace password_manager {
 namespace {
 
 using base::Bucket;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -74,7 +77,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
-  base::MockRepeatingClosure mock_sync_state_changed_callback_;
+  StrictMock<base::MockRepeatingClosure> mock_sync_state_changed_callback_;
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
   raw_ptr<StrictMock<MockPasswordSyncControllerDelegateBridge>> bridge_;
@@ -189,6 +192,83 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 }
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnUserActionableErrorChangedToNonTrustedVaultRelatedError) {
+  CoreAccountInfo test_info = GetTestAccountInfo();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
+  testing::Mock::VerifyAndClearExpectations(bridge());
+  testing::Mock::VerifyAndClearExpectations(sync_state_changed_cb());
+
+  sync_service()->GetUserSettings()->SetPassphraseRequired();
+
+  // Check that observing an unrelated event will not trigger another
+  // notification.
+  sync_controller_delegate()->OnStateChanged(sync_service());
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnUserActionableErrorChangedToTrustedVaultRelatedError) {
+  CoreAccountInfo test_info = GetTestAccountInfo();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
+  testing::Mock::VerifyAndClearExpectations(bridge());
+  testing::Mock::VerifyAndClearExpectations(sync_state_changed_cb());
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnStateChanged(sync_service());
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       OnUserActionableErrorChangedFromTrustedVaultRelatedError) {
+  CoreAccountInfo test_info = GetTestAccountInfo();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
+  testing::Mock::VerifyAndClearExpectations(bridge());
+  testing::Mock::VerifyAndClearExpectations(sync_state_changed_cb());
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnStateChanged(sync_service());
+}
+
+TEST_F(
+    PasswordSyncControllerDelegateAndroidTest,
+    OnUserActionableErrorChangedFromTrustedVaultRelatedErrorFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kReloadPasswordsOnTrustedVaultEncryptionChange);
+
+  CoreAccountInfo test_info = GetTestAccountInfo();
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync, test_info);
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+
+  EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
+  sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
+  testing::Mock::VerifyAndClearExpectations(bridge());
+  testing::Mock::VerifyAndClearExpectations(sync_state_changed_cb());
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+
+  // Check that no notification is sent if the feature is turned off.
+  sync_controller_delegate()->OnStateChanged(sync_service());
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
        MetrcisWhenCredentialManagerNotificationSucceeds) {
   base::HistogramTester histogram_tester;
 
@@ -254,6 +334,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        AttachesObserverOnSyncServiceInitialized) {
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing);
+  EXPECT_CALL(*sync_state_changed_cb(), Run);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
   EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
 }

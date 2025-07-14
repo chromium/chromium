@@ -181,6 +181,12 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 // Enables improvements to password change functionality.
 BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 
+#if BUILDFLAG(IS_ANDROID)
+// The feature flag for reloading passwords when the trusted vault encryption
+// state changes.
+BASE_DECLARE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 inline constexpr base::FeatureParam<std::string>
     kPasswordChangeSuccessSurveyTriggerId{
         &kImprovedPasswordChangeService, "PasswordChangeSuccessSurveyTriggerId",

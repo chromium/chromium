@@ -28,6 +28,8 @@ class PasswordSyncControllerDelegateAndroid
       public PasswordSyncControllerDelegateBridge::Consumer {
  public:
   using IsPwdSyncEnabled = base::StrongAlias<struct IsPwdSyncEnabledTag, bool>;
+  using HasTrustedVaultError =
+      base::StrongAlias<struct HasTrustedVaultErrorTag, bool>;
 
   explicit PasswordSyncControllerDelegateAndroid(
       std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge);
@@ -72,6 +74,9 @@ class PasswordSyncControllerDelegateAndroid
 
   // Last sync status set in CredentialManager.
   std::optional<IsPwdSyncEnabled> credential_manager_sync_setting_;
+
+  // Last trusted vault key related error state received from `SyncService`.
+  std::optional<HasTrustedVaultError> sync_service_has_trusted_vault_error_;
 
   // Callback to be invoked every time the password sync status changes.
   base::RepeatingClosure on_pwd_sync_state_changed_;
