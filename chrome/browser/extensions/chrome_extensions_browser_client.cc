@@ -80,6 +80,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -392,6 +393,12 @@ bool ChromeExtensionsBrowserClient::AllowCrossRendererResourceLoad(
 PrefService* ChromeExtensionsBrowserClient::GetPrefServiceForContext(
     content::BrowserContext* context) {
   return static_cast<Profile*>(context)->GetPrefs();
+}
+
+void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
+    content::BrowserContext* context,
+    std::vector<EarlyExtensionPrefsObserver*>* observers) const {
+  observers->push_back(ContentSettingsService::Get(context));
 }
 
 bool ChromeExtensionsBrowserClient::DidVersionUpdate(

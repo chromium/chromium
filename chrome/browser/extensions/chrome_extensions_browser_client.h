@@ -297,7 +297,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
 
-  // May be null on some platforms (e.g. Android).
   std::unique_ptr<UserScriptListener> user_script_listener_;
 
   scoped_refptr<EventRouterForwarder> event_router_forwarder_;

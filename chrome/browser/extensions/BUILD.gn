@@ -1690,6 +1690,7 @@ source_set("chrome_extensions_browser_client") {
     "//components/safe_browsing/core/common:features",
     "//components/sessions",
     "//components/update_client",
+    "//extensions/browser/api/content_settings",
     "//extensions/browser/updater",
     "//extensions/browser/updater:keepalive",
   ]
@@ -1719,7 +1720,6 @@ source_set("chrome_extensions_browser_client") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/web_applications",
-      "//extensions/browser/api/content_settings",
     ]
 
     if (is_chromeos) {

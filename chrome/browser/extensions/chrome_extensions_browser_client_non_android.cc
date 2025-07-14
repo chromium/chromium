@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/site_instance.h"
-#include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 
 namespace extensions {
@@ -33,12 +32,6 @@ void ChromeExtensionsBrowserClient::Init() {
 
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();
-}
-
-void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
-    content::BrowserContext* context,
-    std::vector<EarlyExtensionPrefsObserver*>* observers) const {
-  observers->push_back(ContentSettingsService::Get(context));
 }
 
 ProcessManagerDelegate*

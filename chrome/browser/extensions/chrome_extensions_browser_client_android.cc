@@ -88,10 +88,6 @@ void ChromeExtensionsBrowserClient::Init() {
   user_script_listener_ = std::make_unique<UserScriptListener>();
 }
 
-void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
-    content::BrowserContext* context,
-    std::vector<EarlyExtensionPrefsObserver*>* observers) const {}
-
 ProcessManagerDelegate*
 ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return nullptr;
