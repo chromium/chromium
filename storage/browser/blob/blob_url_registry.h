@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // doesn't exist.
   mojo::PendingRemote<blink::mojom::Blob> GetBlobFromUrl(const GURL& url);
 
-  size_t url_count() const { return url_to_blob_.size(); }
+  size_t url_count() const { return url_to_data_.size(); }
 
   void AddTokenMapping(const base::UnguessableToken& token,
                        const GURL& url,
@@ -150,14 +150,22 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // not allowing the reverse.
   base::WeakPtr<BlobUrlRegistry> fallback_;
 
-  std::map<GURL, mojo::PendingRemote<blink::mojom::Blob>> url_to_blob_;
+  struct BlobUrlData {
+    BlobUrlData();
+    ~BlobUrlData();
+    BlobUrlData(BlobUrlData&&);
+    BlobUrlData& operator=(BlobUrlData&&);
+
+    mojo::PendingRemote<blink::mojom::Blob> blob;
+    blink::StorageKey storage_key;
+    url::Origin origin;
+    int render_process_host_id;
+  };
+
+  std::map<GURL, BlobUrlData> url_to_data_;
   std::map<base::UnguessableToken,
            std::pair<GURL, mojo::PendingRemote<blink::mojom::Blob>>>
       token_to_url_and_blob_;
-
-  std::map<GURL, blink::StorageKey> url_to_storage_key_;
-  std::map<GURL, url::Origin> url_to_origin_;
-  std::map<GURL, int> url_to_render_process_host_id_;
 
   // When the renderer uses the BlobUrlRegistry from a frame context or from a
   // main thread worklet context, a navigation-associated interface is used to
