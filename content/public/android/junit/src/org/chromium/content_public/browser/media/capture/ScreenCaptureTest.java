@@ -5,7 +5,9 @@
 package org.chromium.content_public.browser.media.capture;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -180,8 +182,7 @@ public class ScreenCaptureTest {
 
     @After
     public void tearDown() {
-        // Clean up static state to avoid interference between tests.
-        ScreenCapture.onForegroundServiceRunning(false);
+        ScreenCapture.resetStaticStateForTesting();
         ScreenCaptureJni.setInstanceForTesting(null);
     }
 
@@ -222,6 +223,48 @@ public class ScreenCaptureTest {
                         eq(mImageHandlerStates.get(0).surface),
                         eq(null),
                         eq(null));
+    }
+
+    @Test
+    public void testStartCaptureThrowsIfNoPickResult() {
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertThrows(AssertionError.class, () -> mScreenCapture.startCapture());
+        verify(mMediaProjection, never())
+                .createVirtualDisplay(
+                        any(), anyInt(), anyInt(), anyInt(), anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void testStartCaptureFailsIfResultCanceled() {
+        final ActivityResult canceledResult =
+                new ActivityResult(Activity.RESULT_CANCELED, new Intent());
+        ScreenCapture.onPick(mWebContents, canceledResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertFalse(mScreenCapture.startCapture());
+        assertTrue(mImageHandlerStates.isEmpty());
+        verify(mMediaProjection, never())
+                .createVirtualDisplay(
+                        any(), anyInt(), anyInt(), anyInt(), anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void testStartCaptureFailsIfNoMediaProjection() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ShadowMediaProjectionManager.setMediaProjection(null);
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertFalse(mScreenCapture.startCapture());
+        assertTrue(mImageHandlerStates.isEmpty());
+    }
+
+    @Test
+    public void testOnPickThrowsIfCalledTwice() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        assertThrows(
+                AssertionError.class, () -> ScreenCapture.onPick(mWebContents, activityResult));
     }
 
     @Test

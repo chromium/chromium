@@ -150,6 +150,11 @@ public class ScreenCapture implements ImageHandler.Delegate {
         assert oldPickState == null;
     }
 
+    static void resetStaticStateForTesting() {
+        sLatch.close();
+        sNextPickState.set(null);
+    }
+
     private @Nullable Context maybeGetContext() {
         final WindowAndroid window = assumeNonNull(mWebContents).getTopLevelNativeWindow();
         if (window == null) return null;
