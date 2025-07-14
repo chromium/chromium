@@ -350,8 +350,9 @@ class SupervisedUserExtensionWebstorePrivateApiTest
   void SetUpOnMainThread() override {
     ExtensionWebstorePrivateApiTest::SetUpOnMainThread();
 
-    extensions_delegate_ =
-        std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
+    extensions_delegate_ = static_cast<SupervisedUserExtensionsDelegateImpl*>(
+        BrowserContextKeyedAPIFactory<ManagementAPI>::GetIfExists(profile())
+            ->GetSupervisedUserExtensionsDelegate());
 
 #if BUILDFLAG(IS_CHROMEOS)
     auto dialog_provider =
@@ -372,7 +373,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 #if BUILDFLAG(IS_CHROMEOS)
     fake_parent_access_dialog_provider_ = nullptr;
 #endif
-    extensions_delegate_.reset();
+    extensions_delegate_ = nullptr;
     ExtensionWebstorePrivateApiTest::TearDownOnMainThread();
   }
 
@@ -436,7 +437,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
   }
 
  protected:
-  std::unique_ptr<SupervisedUserExtensionsDelegateImpl> extensions_delegate_;
+  raw_ptr<SupervisedUserExtensionsDelegateImpl> extensions_delegate_;
 
  private:
   // Create another embedded test server to avoid starting the same one twice.

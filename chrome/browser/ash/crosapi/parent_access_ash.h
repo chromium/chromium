@@ -43,21 +43,13 @@ class ParentAccessAsh : public mojom::ParentAccess {
       const gfx::ImageSkia& favicon,
       GetWebsiteParentApprovalCallback callback) override;
 
-  void GetExtensionParentApproval(
-      const std::u16string& extension_name,
-      const std::u16string& child_display_name,
-      const gfx::ImageSkia& icon,
-      const std::vector<crosapi::mojom::ExtensionPermissionPtr> permissions,
-      bool requests_disabled,
-      GetExtensionParentApprovalCallback callback) override;
-
-  using ParentAccessCallback =
-      base::OnceCallback<void(crosapi::mojom::ParentAccessResultPtr)>;
-
   ash::ParentAccessDialogProvider* SetDialogProviderForTest(
       std::unique_ptr<ash::ParentAccessDialogProvider> provider);
 
  private:
+  using ParentAccessCallback =
+      base::OnceCallback<void(crosapi::mojom::ParentAccessResultPtr)>;
+
   // Shows the dialog with the specified parameters.
   // params:  The parameters for the dialog.
   // callback:  The crosapi callback to call when dialog completes.
