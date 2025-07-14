@@ -8,15 +8,8 @@
 
 namespace syncer {
 
-ModelError::ModelError(const base::Location& location,
-                       const std::string& message)
-    : location_(location), message_(message) {}
-
-ModelError::ModelError(const base::Location& location,
-                       Type model_error_type)
-    : location_(location), type_(model_error_type) {
-  CHECK_NE(model_error_type, Type::kUnspecified);
-}
+ModelError::ModelError(const base::Location& location, Type model_error_type)
+    : location_(location), type_(model_error_type) {}
 
 ModelError::~ModelError() = default;
 
@@ -33,13 +26,8 @@ ModelError::Type ModelError::type() const {
 }
 
 std::string ModelError::ToString() const {
-  if (type_ != ModelError::Type::kUnspecified) {
-    return absl::StrFormat(
-        "%s - Model error type: %d",
-        location_.ToString(), static_cast<int>(type_));
-  } else {
-    return absl::StrFormat("%s: %s", location_.ToString(), message_);
-  }
+  return absl::StrFormat("%s - Model error type: %d", location_.ToString(),
+                         static_cast<int>(type_));
 }
 
 }  // namespace syncer

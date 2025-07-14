@@ -633,7 +633,8 @@ TEST_F(NigoriDataTypeProcessorTest,
   // Simulate returning error at MergeFullSyncData()
   ON_CALL(*mock_nigori_sync_bridge(), MergeFullSyncData)
       .WillByDefault([&](const std::optional<EntityData>& data) {
-        return ModelError(FROM_HERE, "some error");
+        return ModelError(FROM_HERE,
+                          syncer::ModelError::Type::kGenericTestError);
       });
 
   UpdateResponseDataList updates;
@@ -662,7 +663,8 @@ TEST_F(NigoriDataTypeProcessorTest,
   // Simulate returning error at ApplyIncrementalSyncChanges()
   ON_CALL(*mock_nigori_sync_bridge(), ApplyIncrementalSyncChanges)
       .WillByDefault([&](const std::optional<EntityData>& data) {
-        return ModelError(FROM_HERE, "some error");
+        return ModelError(FROM_HERE,
+                          syncer::ModelError::Type::kGenericTestError);
       });
 
   UpdateResponseDataList updates;
@@ -679,7 +681,8 @@ TEST_F(NigoriDataTypeProcessorTest,
 
 TEST_F(NigoriDataTypeProcessorTest,
        ShouldCallErrorHandlerIfModelErrorBeforeSyncStarts) {
-  processor()->ReportError(ModelError(FROM_HERE, "some error"));
+  processor()->ReportError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   syncer::DataTypeActivationRequest request;
   base::MockCallback<ModelErrorHandler> error_handler_callback;

@@ -789,7 +789,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringActivation) {
 
   // Report error while the activation is in flight, i.e. before ConnectSync()
   // is invoked.
-  ModelError error{FROM_HERE, "boom"};
+  ModelError error{FROM_HERE, syncer::ModelError::Type::kGenericTestError};
   type_processor()->ReportError(error);
 
   // Mimic completion.
@@ -814,7 +814,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringMerge) {
 
 // Test that errors before it's called are passed to `start_callback` correctly.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
@@ -822,7 +822,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   ResetState(false);
   OnSyncStarting();
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
 
   // Test an error loading pending data.
   ResetStateWriteItem(kKey1, kValue1);
@@ -833,7 +833,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
 
   // Test an error prior to metadata load.
   ResetState(false);
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
   ModelReadyToSync();
@@ -841,7 +841,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   // Test an error prior to pending data load.
   ResetStateWriteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError({FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 }
@@ -2995,7 +2995,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->OnSyncStopping(KEEP_METADATA);
   ASSERT_FALSE(error_reported());
 
-  ModelError error{FROM_HERE, "boom"};
+  ModelError error{FROM_HERE, syncer::ModelError::Type::kGenericTestError};
   type_processor()->ReportError(error);
   // Error was raised but did not trigger ErrorReceived().
   // Note: If an error is issued to the error_handler but the expectation is not

@@ -636,7 +636,7 @@ TEST_F(DataTypeManagerImplTest, OneFailingController) {
   ASSERT_EQ(DataTypeController::MODEL_STARTING,
             GetController(BOOKMARKS)->state());
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
   // This should be CONFIGURED but is not properly handled in
@@ -1291,7 +1291,7 @@ TEST_F(DataTypeManagerImplTest,
 TEST_F(DataTypeManagerImplTest, ModelLoadError) {
   InitDataTypeManager({BOOKMARKS});
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   // Bookmarks is never started due to hitting a model load error.
   testing::InSequence seq;
@@ -1476,7 +1476,7 @@ TEST_F(DataTypeManagerImplTest, ConnectDataTypeAfterLoadModelsError) {
 
   // Make bookmarks fail LoadModels. Passwords load normally.
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   GetController(PASSWORDS)->model()->SimulateModelStartFinished();
 
   // Connect should be called for passwords, but not bookmarks.
@@ -1692,7 +1692,7 @@ TEST_F(DataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
   ASSERT_TRUE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
 
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
   EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
@@ -1707,7 +1707,7 @@ TEST_F(DataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
   // `observer_` which checks for OnConfigurationDone() and should fails when
   // it's called unexpectedly.
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   task_environment_.RunUntilIdle();
 }
 
@@ -1831,7 +1831,7 @@ TEST_F(DataTypeManagerImplTest, ShouldHandleStoppingTypesFailure) {
   ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
 
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
 
   EXPECT_CALL(observer_, OnConfigureStart());
@@ -1863,7 +1863,7 @@ TEST_F(DataTypeManagerImplTest, ShouldHandleStoppedTypesFailure) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
 
   testing::InSequence seq;

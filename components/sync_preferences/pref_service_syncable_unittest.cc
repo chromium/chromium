@@ -159,7 +159,8 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
     }
     if (fail_next_) {
       fail_next_ = false;
-      return syncer::ModelError(FROM_HERE, "Error");
+      return syncer::ModelError(FROM_HERE,
+                                syncer::ModelError::Type::kGenericTestError);
     }
     return std::nullopt;
   }

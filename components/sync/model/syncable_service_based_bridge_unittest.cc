@@ -418,7 +418,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateErrorDuringStart) {
   // Instrument MergeDataAndStartSyncing() to return an error.
   ON_CALL(syncable_service_, MergeDataAndStartSyncing)
-      .WillByDefault(Return(ModelError(FROM_HERE, "Test error")));
+      .WillByDefault(Return(
+          ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError)));
 
   EXPECT_CALL(mock_error_handler_, Run);
 
@@ -584,7 +585,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // We fake an error, reported by the bridge.
   EXPECT_CALL(mock_error_handler_, Run);
-  real_processor_->ReportError(ModelError(FROM_HERE, "Fake error"));
+  real_processor_->ReportError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_TRUE(real_processor_->GetError());
 
   // Further local changes should be ignored.
@@ -847,7 +849,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Instrument MergeDataAndStartSyncing() to return an error.
   EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing)
-      .WillOnce(Return(ModelError(FROM_HERE, "Test error")));
+      .WillOnce(Return(
+          ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError)));
   EXPECT_CALL(mock_error_handler_, Run);
 
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));

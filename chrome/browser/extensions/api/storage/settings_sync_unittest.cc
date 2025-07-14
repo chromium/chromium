@@ -114,7 +114,7 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
       const syncer::SyncChangeList& change_list) override {
     if (fail_all_requests_) {
       return syncer::ModelError(FROM_HERE,
-                                "MockSyncChangeProcessor: configured to fail");
+                                syncer::ModelError::Type::kGenericTestError);
     }
     for (const auto& sync_change : change_list) {
       changes_.push_back(std::make_unique<SettingSyncData>(sync_change));

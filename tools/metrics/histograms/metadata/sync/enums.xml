@@ -1126,7 +1126,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SyncModelError">
   <summary>Specific error types encountered by the sync data types.</summary>
-  <int value="0" label="kUnspecified"/>
+  <int value="0" label="(Obsolete) kUnspecified"/>
   <int value="1" label="kPasswordDbInitFailed"/>
   <int value="2" label="kPasswordMergeDecryptionFailed"/>
   <int value="3" label="kPasswordMergeUpdateFailed"/>
@@ -1306,6 +1306,7 @@ chromium-metrics-reviews@google.com.
   <int value="184" label="kContactInfoFailedToDeleteProfilesOnDisableSync"/>
   <int value="185" label="kContactInfoFailedToLoadAutofillWebDatabase"/>
   <int value="186" label="kContactInfoFailedToLoadProfilesFromTable"/>
+  <int value="187" label="kGenericTestError"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->

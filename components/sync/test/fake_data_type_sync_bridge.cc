@@ -193,7 +193,7 @@ std::optional<ModelError> FakeDataTypeSyncBridge::MergeFullSyncData(
     EntityChangeList entity_data) {
   if (error_next_) {
     error_next_ = false;
-    return ModelError(FROM_HERE, "boom");
+    return ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError);
   }
 
   std::set<std::string> remote_storage_keys;
@@ -238,7 +238,7 @@ std::optional<ModelError> FakeDataTypeSyncBridge::ApplyIncrementalSyncChanges(
     EntityChangeList entity_changes) {
   if (error_next_) {
     error_next_ = false;
-    return ModelError(FROM_HERE, "boom");
+    return ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError);
   }
 
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
@@ -288,7 +288,8 @@ std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetDataForCommit(
     StorageKeyList keys) {
   if (error_next_) {
     error_next_ = false;
-    change_processor()->ReportError({FROM_HERE, "boom"});
+    change_processor()->ReportError(
+        {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
     return nullptr;
   }
 
@@ -306,7 +307,8 @@ std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetDataForCommit(
 std::unique_ptr<DataBatch> FakeDataTypeSyncBridge::GetAllDataForDebugging() {
   if (error_next_) {
     error_next_ = false;
-    change_processor()->ReportError({FROM_HERE, "boom"});
+    change_processor()->ReportError(
+        {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
     return nullptr;
   }
 

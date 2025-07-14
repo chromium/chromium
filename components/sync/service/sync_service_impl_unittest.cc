@@ -1751,7 +1751,7 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToFailedTypes) {
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
   InitializeService(std::move(params));
   get_controller(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Model error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   EXPECT_CALL(*sync_invalidations_service(),
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
@@ -1837,7 +1837,7 @@ TEST_F(SyncServiceImplTest, ShouldUnsubscribeOnTypeFailure) {
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
                                            Not(ContainsDataType(BOOKMARKS)))));
   get_controller(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Model error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   service()->DataTypePreconditionChanged(BOOKMARKS);
   base::RunLoop().RunUntilIdle();
 }
@@ -1927,7 +1927,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
   base::RunLoop().RunUntilIdle();
 
   get_controller(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Model error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::DataTypeDownloadStatus::kError);
 }

@@ -271,9 +271,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
       if (!maybe_settings.status().ok()) {
         errors.emplace_back(
             FROM_HERE,
-            base::StringPrintf("Error getting current sync state for %s/%s: %s",
-                               extension_id_.c_str(), key.c_str(),
-                               maybe_settings.status().message.c_str()));
+            syncer::ModelError::Type::kSettingsFailedToGetLocalSettingForKey);
         continue;
       }
       current_value = maybe_settings.settings().Extract(key);

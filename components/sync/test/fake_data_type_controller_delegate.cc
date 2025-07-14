@@ -138,7 +138,8 @@ void FakeDataTypeControllerDelegate::ClearMetadataIfStopped() {
 }
 
 void FakeDataTypeControllerDelegate::ReportBridgeErrorForTest() {
-  SimulateModelError(ModelError(FROM_HERE, "Report error for test"));
+  SimulateModelError(
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 }
 
 }  // namespace syncer

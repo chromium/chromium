@@ -106,7 +106,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
 TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   DataTypeSet types;
   types.Put(BOOKMARKS);
@@ -136,7 +136,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
   testing::Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 }
 
 // Test that OnAllDataTypesReadyForConfigure is called when all datatypes that
@@ -218,7 +218,7 @@ TEST_F(SyncModelLoadManagerTest,
   // Simulate model load error for APPS and finish loading it. This should
   // trigger OnAllDataTypesReadyForConfigure.
   GetController(APPS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::FAILED);
 }
 
@@ -257,7 +257,7 @@ TEST_F(SyncModelLoadManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   // Apps datatype reports failure.
   GetController(APPS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   testing::Mock::VerifyAndClearExpectations(&delegate_);
 
@@ -552,7 +552,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotClearMetadataIfFailed) {
   // Bring the underlying model to a failed state. Note that this does *not*
   // bring the controller into the FAILED state yet.
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   DataTypeSet types{BOOKMARKS};
@@ -758,7 +758,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
   // continue and not wait for the failed type.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
   GetController(BOOKMARKS)->model()->SimulateModelError(
-      ModelError(FROM_HERE, "Test error"));
+      ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError));
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
 
   // No crash from LoadModels.
