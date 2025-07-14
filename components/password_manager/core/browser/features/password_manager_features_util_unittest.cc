@@ -11,6 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -178,6 +179,10 @@ TEST_F(PasswordManagerFeaturesUtilTest,
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
+  // GetSelectedTypesForAccount may check some prefs in SignInPrefs. Ensure that
+  // they are registered for this test.
+  SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
+
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   pref_service_.registry()->RegisterDictionaryPref(
       prefs::kObsoleteAccountStoragePerAccountSettings);

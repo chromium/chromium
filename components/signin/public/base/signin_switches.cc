@@ -232,12 +232,7 @@ BASE_FEATURE(kAllowlistScopesForMdmErrors,
 
 BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,
              "EnableExtensionsExplicitBrowserSignin",
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExtensionsExplicitBrowserSigninEnabled() {
   return base::FeatureList::IsEnabled(kEnableExtensionsExplicitBrowserSignin);
