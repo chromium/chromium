@@ -6138,15 +6138,6 @@ const char kWebRtcAllowWgcScreenCapturerDescription[] =
     "screen area. The DXGI API is used as screen capture API when this flag is "
     "disabled.";
 
-const char kWebRtcAllowWgcWindowCapturerName[] =
-    "Use Windows WGC API for window capture";
-const char kWebRtcAllowWgcWindowCapturerDescription[] =
-    "Use Windows.Graphics.Capture API based windows capturer in combination "
-    "with the WebRTC based Web API getDisplayMedia. Requires  Windows 10, "
-    "version 1803 or higher. Adds a thin yellow border around the captured "
-    "window area. The GDI API is used as window capture API when this flag is "
-    "disabled.";
-
 const char kWebRtcWgcRequireBorderName[] = "Border around WGC captures";
 const char kWebRtcWgcRequireBorderDescription[] =
     "When using WGC to capture a window or a screen, draw a border around the "

@@ -10221,11 +10221,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "webrtc-allow-wgc-window-capturer",
-    "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
-    "expiry_milestone": 139
-  },
-  {
     "name": "webrtc-hw-decoding",
     "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
     // This flag does not expire because it allows users to enable or disable

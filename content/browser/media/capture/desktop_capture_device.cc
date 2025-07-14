@@ -912,12 +912,10 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
       options.set_allow_wgc_zero_hertz(IsWgcZeroHzEnabledForScreenCapture());
     }
   }
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
-    options.set_allow_wgc_window_capturer(true);
-    if (source.type == DesktopMediaID::TYPE_WINDOW) {
-      options.set_allow_wgc_zero_hertz(
-          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
-    }
+  options.set_allow_wgc_window_capturer(true);
+  if (source.type == DesktopMediaID::TYPE_WINDOW) {
+    options.set_allow_wgc_zero_hertz(
+        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
   }
 
   options.set_wgc_require_border(
@@ -1033,15 +1031,7 @@ DesktopCaptureDevice::DesktopCaptureDevice(
   const bool wgc_screen_zero_hertz = IsWgcZeroHzEnabledForScreenCapture();
   const bool wgc_window_zero_hertz =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
-  const bool wgc_screen_capturer = IsWgcEnabledForScreenCapture();
-  const bool wgc_window_capturer =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer);
-  if (!wgc_window_capturer && !wgc_screen_capturer) {
-    zero_hertz_is_supported = true;
-  } else if (!wgc_window_capturer && wgc_screen_capturer) {
-    zero_hertz_is_supported =
-        (type == DesktopMediaID::TYPE_SCREEN) ? wgc_screen_zero_hertz : true;
-  } else if (wgc_window_capturer && !wgc_screen_capturer) {
+  if (!IsWgcEnabledForScreenCapture()) {
     zero_hertz_is_supported =
         (type == DesktopMediaID::TYPE_WINDOW) ? wgc_window_zero_hertz : true;
   } else {

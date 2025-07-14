@@ -3579,9 +3579,6 @@ extern const char kUseWinrtMidiApiDescription[];
 extern const char kWebRtcAllowWgcScreenCapturerName[];
 extern const char kWebRtcAllowWgcScreenCapturerDescription[];
 
-extern const char kWebRtcAllowWgcWindowCapturerName[];
-extern const char kWebRtcAllowWgcWindowCapturerDescription[];
-
 extern const char kWebRtcWgcRequireBorderName[];
 extern const char kWebRtcWgcRequireBorderDescription[];
 
