@@ -139,8 +139,6 @@ def _DownloadAndAnalyze(signed_prefix,
   if not android_go_system_gz:
     webview = make_artifact('arm/AndroidWebviewStable.aab')
     webview64 = make_artifact('arm_64/AndroidWebviewStable.aab')
-    monochrome = make_artifact('arm/MonochromeStable.aab')
-    monochrome64 = make_artifact('arm_64/MonochromeStable.aab')
     trichrome_chrome = make_artifact('arm/TrichromeChromeGoogleStable.aab')
     trichrome_webview = make_artifact('arm/TrichromeWebViewGoogleStable.aab')
     trichrome_library = make_artifact('arm/TrichromeLibraryGoogleStable.apk')
@@ -190,8 +188,6 @@ def _DownloadAndAnalyze(signed_prefix,
   metrics = {}
   webview.AddSize(metrics)
   webview64.AddSize(metrics)
-  monochrome.AddSize(metrics)
-  monochrome64.AddSize(metrics)
   trichrome_chrome.AddSize(metrics)
   trichrome_webview.AddSize(metrics)
   trichrome_library.AddSize(metrics)
@@ -222,7 +218,7 @@ def _DownloadAndAnalyze(signed_prefix,
   metrics['Android Go (TriChrome) Install Size'] = go_install_size
   metrics[android_go_system_gz_title] = android_go_system_gz_size
 
-  monochrome.AddMethodCount(metrics)
+  trichrome_chrome.AddMethodCount(metrics)
 
   # Separate where spreadsheet has computed columns for easier copy/paste.
   _DumpCsvAndClear(metrics)
