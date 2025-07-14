@@ -9526,7 +9526,6 @@ crbug.com/430344948 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 # Gardener 2025-07-11
 crbug.com/431038525 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure Pass ]
 crbug.com/431036874 [ Mac12 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure Pass ]
-crbug.com/431033198 [ Mac12 ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
 crbug.com/431033198 [ Win ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
 crbug.com/431033198 [ Linux ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure ]
 crbug.com/431170125 [ Win11-arm64 ] external/wpt/css/cssom-view/idlharness.html [ Failure Pass ]
@@ -9537,3 +9536,4 @@ crbug.com/431553197 [ Mac12-arm64 ] http/tests/inspector-protocol/tracing/perfor
 crbug.com/431553197 [ Mac13-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
 crbug.com/431553197 [ Mac14-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
 crbug.com/431553197 [ Mac15-arm64 ] http/tests/inspector-protocol/tracing/performance-entry-navigation-id.js [ Failure Pass ]
+crbug.com/431095012 [ Mac ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
