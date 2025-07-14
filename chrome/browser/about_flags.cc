@@ -8869,6 +8869,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kPermissionElement)},
 
+    {"permission-promise-lifetime-modulation",
+     flag_descriptions::kPermissionPromiseLifetimeModulationName,
+     flag_descriptions::kPermissionPromiseLifetimeModulationDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kPermissionPromiseLifetimeModulation)},
+
     {"left-hand-side-activity-indicators",
      flag_descriptions::kLeftHandSideActivityIndicatorsName,
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,
@@ -11347,6 +11354,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"permissions-ai-v3", flag_descriptions::kPermissionsAIv3Name,
      flag_descriptions::kPermissionsAIv3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv3)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"exclude-display-in-mirror-mode",
      flag_descriptions::kExcludeDisplayInMirrorModeName,

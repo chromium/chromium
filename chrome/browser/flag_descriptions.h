@@ -318,6 +318,9 @@ extern const char kClearInstanceInfoWhenClosedIntentionallyName[];
 extern const char kClearInstanceInfoWhenClosedIntentionallyDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kPermissionPromiseLifetimeModulationName[];
+extern const char kPermissionPromiseLifetimeModulationDescription[];
+
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 extern const char kEnableBenchmarkingChoiceDisabled[];

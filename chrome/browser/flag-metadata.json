@@ -7685,6 +7685,15 @@
     "expiry_milestone": 144
   },
   {
+    "name": "permission-promise-lifetime-modulation",
+    "owners": [
+      "elklm@chromium.org",
+      "hempjudith@google.com",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "permission-site-settings-radio-button",
     "owners": [
       "lyf@chromium.org",
@@ -7701,7 +7710,7 @@
     ],
     "expiry_milestone": 144
   },
-	{
+  {
     "name": "permissions-ai-v3",
     "owners": [
       "elklm@chromium.org",

@@ -517,6 +517,13 @@ const char kClearInstanceInfoWhenClosedIntentionallyDescription[] =
     "window is explicitly closed by the user (eg: via the Close button).";
 #endif
 
+const char kPermissionPromiseLifetimeModulationName[] =
+    "PermissionPromiseLifetimeModulation";
+const char kPermissionPromiseLifetimeModulationDescription[] =
+    "Modulates the lifetime of a permission promise based on the prompt's UI "
+    "treatment. When the prompt is non-prominent, the promise settlement is "
+    "expedited to synchronize with the request manager state.";
+
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
 const char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "

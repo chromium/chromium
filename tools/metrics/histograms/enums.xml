@@ -10333,6 +10333,8 @@ from previous Chrome versions.
   <int value="-1378071979" label="CroshSWA:enabled"/>
   <int value="-1377367284" label="SiteDataImprovements:disabled"/>
   <int value="-1377186702" label="DesktopIOSPromotion:disabled"/>
+  <int value="-1377163704"
+      label="PermissionPromiseLifetimeModulation:disabled"/>
   <int value="-1376510363" label="ServiceWorkerScriptFullCodeCache:disabled"/>
   <int value="-1376258171" label="InstanceSwitcher:enabled"/>
   <int value="-1376006534" label="WinUseBrowserSpellChecker:disabled"/>
@@ -16357,6 +16359,7 @@ from previous Chrome versions.
   <int value="855981832" label="BatchFetchRequests:enabled"/>
   <int value="856250802" label="webtransport-developer-mode"/>
   <int value="856414742" label="ShoppingAlternateServer:disabled"/>
+  <int value="856932547" label="PermissionPromiseLifetimeModulation:enabled"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
