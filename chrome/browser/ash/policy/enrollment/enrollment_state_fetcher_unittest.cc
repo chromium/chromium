@@ -432,8 +432,7 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
   if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
-    // State keys are not requested, this test doesn't apply.
-    return;
+    GTEST_SKIP() << "State keys are not requested, this test doesn't apply.";
   }
 
   base::HistogramTester histograms;
@@ -459,8 +458,7 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
   if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
-    // State keys are not requested, this test doesn't apply.
-    return;
+    GTEST_SKIP() << "State keys are not requested, this test doesn't apply.";
   }
 
   base::HistogramTester histograms;
@@ -484,8 +482,7 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysRetrievalSucceedOnRetry) {
   if (!AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
-    // State keys are not requested, this test doesn't apply.
-    return;
+    GTEST_SKIP() << "State keys are not requested, this test doesn't apply.";
   }
 
   ExpectOwnershipCheck();
