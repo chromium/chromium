@@ -70,6 +70,12 @@ using video_track_recorder::kVEAEncoderMinResolutionWidth;
 namespace blink {
 
 template <>
+struct CrossThreadCopier<media::EncoderStatus>
+    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
 struct CrossThreadCopier<std::optional<media::VideoEncoder::CodecDescription>>
     : public CrossThreadCopierPassThrough<
           std::optional<media::VideoEncoder::CodecDescription>> {

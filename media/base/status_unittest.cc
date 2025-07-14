@@ -532,9 +532,6 @@ TEST_F(StatusTest, Okayness) {
 }
 
 TEST_F(StatusTest, MustHaveOkOrHelperMethod) {
-  static_assert(internal::StatusTraitsHelper<CustomDefaultValue>::has_default,
-                "WOW");
-
   auto nook = internal::StatusTraitsHelper<NoOkStatusTypeTraits>::OkEnumValue();
   ASSERT_FALSE(nook.has_value());
 
@@ -628,32 +625,6 @@ TEST_F(StatusTest, OrTypeMapping) {
 
   auto case_5 = GetStartingValue(5).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
   ASSERT_TRUE(case_5 == MapValueCodeTraits::Codes::kBadStartCode);
-}
-
-TEST_F(StatusTest, OrTypeMappingToOtherOrType) {
-  using A = TypedStatus<NoOkStatusTypeTraits>;
-  using B = TypedStatus<MapValueCodeTraits>;
-
-  auto unwrap = [](std::unique_ptr<int> ptr) -> A::Or<int> {
-    if (!ptr)
-      return A::Codes::kFoo;
-    return *ptr;
-  };
-
-  // Returns a valid unique ptr, maps unwraps, and is successful
-  B::Or<std::unique_ptr<int>> b1 = GetStartingValue(0);
-  A::Or<int> a1 = std::move(b1).MapValue(unwrap, A::Codes::kBar);
-  ASSERT_TRUE(a1.has_value() && std::move(a1).value() == 36);
-
-  // Returns a nullptr, not and error. so the unwrapper gives a kFoo.
-  B::Or<std::unique_ptr<int>> b2 = GetStartingValue(3);
-  A::Or<int> a2 = std::move(b2).MapValue(unwrap, A::Codes::kBar);
-  ASSERT_TRUE(a2 == A::Codes::kFoo);
-
-  // b3 is an error here, so Mapping it will wrap it in kBar.
-  B::Or<std::unique_ptr<int>> b3 = GetStartingValue(5);
-  A::Or<int> a3 = std::move(b3).MapValue(unwrap, A::Codes::kBar);
-  ASSERT_TRUE(a3 == A::Codes::kBar);
 }
 
 TEST_F(StatusTest, TestDefaultMessageHelper) {

@@ -24,15 +24,6 @@ template <typename T, typename U>
 struct StructTraits;
 }  // namespace mojo
 
-#define POST_STATUS_AND_RETURN_ON_FAILURE(eval_to_status, cb, ret) \
-  do {                                                             \
-    const auto EVALUATED = (eval_to_status);                       \
-    if (!EVALUATED.is_ok()) {                                      \
-      cb.Run(std::move(EVALUATED));                                \
-      return ret;                                                  \
-    }                                                              \
-  } while (0)
-
 namespace media {
 
 // See media/base/status.md for details and instructions for
@@ -45,15 +36,36 @@ using StatusCodeType = uint16_t;
 // This is the type that TypedStatusTraits::Group should be.
 using StatusGroupType = std::string_view;
 
-namespace internal {
-
+// Concept declaring what is required of all types to be used as a parameter
+// to a TypedStatus template.
 template <typename T>
-struct SecondArgType {};
+concept TypedStatusImplTraits =
+    // T::Codes is an enum which has all the nested status codes in it
+    std::is_enum_v<typename T::Codes> &&
+    // T::Group() must exist and return a StatusGroupType
+    requires {
+      { T::Group() } -> std::same_as<StatusGroupType>;
+    } &&
+    // If T::OkEnumValue() is defined and T::Codes::kOk is a member of the
+    // codes enumeration, T::OkEnumValue() must return T::Codes::kOk
+    ([]() -> bool {
+      if constexpr (!requires { T::Codes::kOk; }) {
+        return true;
+      } else if constexpr (!requires { &T::OkEnumValue(); }) {
+        return true;
+      } else {
+        return T::OkEnumValue() == T::Codes::kOk;
+      }
+    }());
 
-template <typename R, typename A1, typename A2>
-struct SecondArgType<R(A1, A2)> {
-  using Type = A2;
-};
+// Concept declaring that T = TypedStatus<V> is constructable from an F iff
+// V::OnCreateFrom(T*, F) is declared.
+template <typename T, typename F>
+concept TypedStatusConstructableFrom = requires(T* t, F f) {
+  { T::Traits::OnCreateFrom(t, f) } -> std::same_as<void>;
+} && TypedStatusImplTraits<typename T::Traits>;
+
+namespace internal {
 
 struct MEDIA_EXPORT StatusData {
   StatusData();
@@ -86,50 +98,15 @@ struct MEDIA_EXPORT StatusData {
   base::Value data;
 };
 
-#define NAME_DETECTOR(detector_name, field)                         \
-  template <typename T>                                             \
-  struct detector_name {                                            \
-    template <typename>                                             \
-    struct field##is_enum {                                         \
-      constexpr static bool value = false;                          \
-    };                                                              \
-    template <typename V>                                           \
-      requires(requires { V::field; })                              \
-    struct field##is_enum<V> {                                      \
-      constexpr static bool value = true;                           \
-    };                                                              \
-    template <typename>                                             \
-    struct field##_is_member {                                      \
-      constexpr static bool value = false;                          \
-    };                                                              \
-    template <typename V>                                           \
-      requires(requires { &V::field; })                             \
-    struct field##_is_member<V> {                                   \
-      constexpr static bool value = true;                           \
-    };                                                              \
-    constexpr static bool as_enum_value = field##is_enum<T>::value; \
-    constexpr static bool as_method = field##_is_member<T>::value;  \
-  }
-
-NAME_DETECTOR(HasOkCode, kOk);
-NAME_DETECTOR(HasSetDefaultOk, OkEnumValue);
-NAME_DETECTOR(HasEnumValueSerializer, ReadableCodeName);
-
-#undef NAME_DETECTOR
-
 // Helper class to allow traits with no default enum.
-template <typename T>
+template <TypedStatusImplTraits T>
 struct StatusTraitsHelper {
-  static constexpr bool has_ok = HasOkCode<typename T::Codes>::as_enum_value;
-  static constexpr bool has_default = HasSetDefaultOk<T>::as_method;
-  static constexpr bool has_code_repr = HasEnumValueSerializer<T>::as_method;
-
   // If T defines OkEnumValue(), then return it. Otherwise, return an
   // T::Codes::kOk if that's defined, or std::nullopt if its not.
   static constexpr std::optional<typename T::Codes> OkEnumValue() {
-    if constexpr (has_default) {
+    if constexpr (requires { &T::OkEnumValue; }) {
       return T::OkEnumValue();
-    } else if constexpr (has_ok) {
+    } else if constexpr (requires { T::Codes::kOk; }) {
       return T::Codes::kOk;
     } else {
       return std::nullopt;
@@ -140,11 +117,11 @@ struct StatusTraitsHelper {
                                           T::Codes code) {
     if (!message.empty()) {
       return std::string(message);
-    }
-    if constexpr (has_code_repr) {
+    } else if constexpr (requires { &T::ReadableCodeName; }) {
       return T::ReadableCodeName(code);
+    } else {
+      return "";
     }
-    return "";
   }
 };
 
@@ -173,33 +150,13 @@ struct MEDIA_EXPORT StatusConstants {
 };
 
 // See media/base/status.md for details and instructions for using TypedStatus.
-template <typename T>
+template <TypedStatusImplTraits T>
 class MEDIA_EXPORT TypedStatus {
-  static_assert(std::is_enum<typename T::Codes>::value,
-                "TypedStatus Traits::Codes must be an enum type.");
-  static_assert(std::is_same<decltype(T::Group), StatusGroupType()>::value,
-                "TypedStatus Traits::Group() must return StatusGroupType.");
-
-  // Check that, if there is both `kOk` and a default value, that the default
-  // value is `kOk`.
-  constexpr static bool verify_default_okayness() {
-    // Fancy new (c++17) thing: remember that 'if constexpr' short-circuits at
-    // compile-time, so the later clauses don't have to be compilable if the
-    // the earlier ones match.  Specifically, it's okay to reference `kOk` even
-    // if `T::Codes` doesn't have `kOk`, since we check for it first.
-    if constexpr (!internal::StatusTraitsHelper<T>::has_ok)
-      return true;
-    else if constexpr (!internal::StatusTraitsHelper<T>::has_default)
-      return true;
-    else
-      return T::OkEnumValue() == T::Codes::kOk;
-  }
-  static_assert(verify_default_okayness(),
-                "If kOk is defined, then either no default, or default==kOk");
-
  public:
-  // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
+  // Required for some of the helper concepts that are declared above.
   using Traits = T;
+
+  // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
   using Codes = typename T::Codes;
   using Callback = base::OnceCallback<void(TypedStatus<T>)>;
 
@@ -218,61 +175,55 @@ class MEDIA_EXPORT TypedStatus {
       : TypedStatus() {}
 
   // Used to implicitly create a TypedStatus from a TypedStatus::Codes value.
-  TypedStatus(Codes code,
-              const base::Location& location = base::Location::Current())
+  TypedStatus(Codes code, const base::Location& location = FROM_HERE)
       : TypedStatus(code, "", location) {}
 
   TypedStatus(std::tuple<Codes, std::string_view> pack,
-              const base::Location& location = base::Location::Current())
+              const base::Location& location = FROM_HERE)
       : TypedStatus(std::get<0>(pack), std::get<1>(pack), location) {}
 
   // Used to allow returning {TypedStatus::Codes::kValue, CastFrom} implicitly
-  // iff TypedStatus::Traits::OnCreateFrom is implemented.
-  template <typename _T = Traits>
-    requires(requires { &_T::OnCreateFrom; })
-  TypedStatus(
-      Codes code,
-      const typename internal::SecondArgType<decltype(_T::OnCreateFrom)>::Type&
-          data,
-      const base::Location& location = base::Location::Current())
+  // iff TypedStatus::T::OnCreateFrom is implemented.
+  template <typename D>
+    requires(TypedStatusConstructableFrom<TypedStatus<T>, D>)
+  TypedStatus(Codes code,
+              const D& data,
+              const base::Location& location = FROM_HERE)
       : TypedStatus(code, "", location) {
-    // TODO(tmathmeyer) I think we can make this dcheck a static assert.
     DCHECK(data_);
-    Traits::OnCreateFrom(this, data);
+    T::OnCreateFrom(this, data);
   }
 
   // Used to allow returning {TypedStatus::Codes::kValue, "message", CastFrom}
-  // implicitly iff TypedStatus::Traits::OnCreateFrom is implemented.
-  template <typename _T = Traits>
-    requires(requires { &_T::OnCreateFrom; })
-  TypedStatus(
-      Codes code,
-      std::string_view message,
-      const typename internal::SecondArgType<decltype(_T::OnCreateFrom)>::Type&
-          data,
-      const base::Location& location = base::Location::Current())
+  // implicitly iff TypedStatus::T::OnCreateFrom is implemented.
+  template <typename D>
+    requires(TypedStatusConstructableFrom<TypedStatus<T>, D>)
+  TypedStatus(Codes code,
+              std::string_view message,
+              const D& data,
+              const base::Location& location = FROM_HERE)
       : TypedStatus(code, message, location) {
     DCHECK(data_);
-    Traits::OnCreateFrom(this, data);
+    T::OnCreateFrom(this, data);
   }
 
   // Used to allow returning {TypedStatus::Codes::kValue, cause}
-  template <typename CausalStatusType>
-    requires(!std::is_same_v<CausalStatusType, Traits>)
+  template <TypedStatusImplTraits O>
+    requires(!std::is_same_v<O, T>)
   TypedStatus(Codes code,
-              TypedStatus<CausalStatusType>&& cause,
-              const base::Location& location = base::Location::Current())
+              TypedStatus<O>&& cause,
+              const base::Location& location = FROM_HERE)
       : TypedStatus(code, "", location) {
     DCHECK(data_);
     AddCause(std::move(cause));
   }
 
   // Used to allow returning {TypedStatus::Codes::kValue, "message", cause}
-  template <typename CausalStatusType>
+  template <TypedStatusImplTraits O>
   TypedStatus(Codes code,
               std::string_view message,
-              TypedStatus<CausalStatusType>&& cause,
-              const base::Location& location = base::Location::Current())
+              TypedStatus<O>&& cause,
+              const base::Location& location = FROM_HERE)
       : TypedStatus(code, message, location) {
     DCHECK(data_);
     AddCause(std::move(cause));
@@ -287,7 +238,7 @@ class MEDIA_EXPORT TypedStatus {
   // implicitly as a typed status.
   TypedStatus(Codes code,
               std::string_view message,
-              const base::Location& location = base::Location::Current()) {
+              const base::Location& location = FROM_HERE) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
     if (code == internal::StatusTraitsHelper<Traits>::OkEnumValue()) {
@@ -295,7 +246,7 @@ class MEDIA_EXPORT TypedStatus {
       return;
     }
     data_ = std::make_unique<internal::StatusData>(
-        Traits::Group(), static_cast<StatusCodeType>(code),
+        T::Group(), static_cast<StatusCodeType>(code),
         internal::StatusTraitsHelper<Traits>::GetMessage(message, code));
     data_->AddLocation(location);
   }
@@ -318,7 +269,7 @@ class MEDIA_EXPORT TypedStatus {
   }
 
   const std::string group() const {
-    return data_ ? data_->group : std::string(Traits::Group());
+    return data_ ? data_->group : std::string(T::Group());
   }
 
   const std::string& message() const {
@@ -333,8 +284,7 @@ class MEDIA_EXPORT TypedStatus {
   // fail on an OK status.
   // NOTE: This should never be given a parameter when called - It is defaulted
   // in order to grab the caller location.
-  TypedStatus<T>&& AddHere(
-      const base::Location& location = base::Location::Current()) && {
+  TypedStatus<T>&& AddHere(const base::Location& location = FROM_HERE) && {
     DCHECK(data_);
     // We can't call MediaSerialize directly, because we can't include the
     // default serializers header, since it includes this header.
@@ -359,14 +309,14 @@ class MEDIA_EXPORT TypedStatus {
   }
 
   // Add |cause| as the error that triggered this one.
-  template <typename AnyTraitsType>
+  template <TypedStatusImplTraits AnyTraitsType>
   TypedStatus<T>&& AddCause(TypedStatus<AnyTraitsType>&& cause) && {
     AddCause(std::move(cause));
     return std::move(*this);
   }
 
   // Add |cause| as the error that triggered this one.
-  template <typename AnyTraitsType>
+  template <TypedStatusImplTraits AnyTraitsType>
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
     data_->cause = std::move(cause.data_);
@@ -384,16 +334,16 @@ class MEDIA_EXPORT TypedStatus {
     return other.code() != code();
   }
 
-  template <typename OtherType>
+  template <typename O>
   class Or {
    private:
     template <typename X>
     struct OrTypeUnwrapper {
-      using type = Or<X>;
+      using Type = Or<X>;
     };
     template <typename X>
     struct OrTypeUnwrapper<Or<X>> {
-      using type = Or<X>;
+      using Type = Or<X>;
     };
 
    public:
@@ -411,13 +361,12 @@ class MEDIA_EXPORT TypedStatus {
       DCHECK(!error_->is_ok());
     }
 
-    // Create an Or type implicitly from the alternate OtherType.
-    Or(OtherType&& value) : value_(std::move(value)) {}
-    Or(const OtherType& value) : value_(value) {}
+    // Create an Or type implicitly from the alternate O.
+    Or(O&& value) : value_(std::move(value)) {}
+    Or(const O& value) : value_(value) {}
 
     // Create an Or type explicitly from a code
-    Or(typename T::Codes code,
-       const base::Location& location = base::Location::Current())
+    Or(typename T::Codes code, const base::Location& location = FROM_HERE)
         : error_(TypedStatus<T>(code, "", location)) {
       DCHECK(!error_->is_ok());
     }
@@ -428,7 +377,7 @@ class MEDIA_EXPORT TypedStatus {
     Or(typename T::Codes code,
        const First& first,
        const Rest&... rest,
-       const base::Location& location = base::Location::Current())
+       const base::Location& location = FROM_HERE)
         : error_(TypedStatus<T>(code, first, rest..., location)) {
       DCHECK(!error_->is_ok());
     }
@@ -464,7 +413,7 @@ class MEDIA_EXPORT TypedStatus {
 
     // Return the value, if we have one.
     // Callers should ensure that this |has_value()|.
-    OtherType value() && {
+    O value() && {
       CHECK(value_);
       auto value = std::move(std::get<0>(*value_));
       value_.reset();
@@ -473,12 +422,12 @@ class MEDIA_EXPORT TypedStatus {
 
     // Return constref of the value, if we have one.
     // Callers should ensure that this |has_value()|.
-    const OtherType& operator->() const {
+    const O& operator->() const {
       CHECK(value_);
       return std::get<0>(*value_);
     }
 
-    const OtherType& operator*() const {
+    const O& operator*() const {
       CHECK(value_);
       return std::get<0>(*value_);
     }
@@ -492,52 +441,27 @@ class MEDIA_EXPORT TypedStatus {
       return error_ ? error_->code() : *helper::OkEnumValue();
     }
 
-    template <typename FnType,
-              typename ReturnType =
-                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
-              typename OrReturn = typename OrTypeUnwrapper<ReturnType>::type>
-    OrReturn MapValue(FnType&& lambda) && {
+    template <typename Fn,
+              typename R = decltype(std::declval<Fn>()(std::declval<O>()))>
+    typename OrTypeUnwrapper<R>::Type MapValue(Fn&& lambda) && {
       CHECK(error_ || value_);
       if (!has_value()) {
         auto error = std::move(*error_);
         error_.reset();
         return error;
       }
-      CHECK(value_);
       auto value = std::move(std::get<0>(*value_));
       value_.reset();
-      return lambda(std::move(value));
-    }
-
-    template <typename FnType,
-              typename ReturnType =
-                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
-              typename ConvertTo = typename ReturnType::ErrorType>
-    ReturnType MapValue(
-        FnType&& lambda,
-        typename ConvertTo::Codes on_error,
-        std::string_view message = "",
-        base::Location location = base::Location::Current()) && {
-      CHECK(error_ || value_);
-      if (!has_value()) {
-        auto error = std::move(*error_);
-        error_.reset();
-        return ConvertTo(on_error, message, location)
-            .AddCause(std::move(error));
-      }
-      CHECK(value_);
-      auto value = std::move(std::get<0>(*value_));
-      value_.reset();
-      return lambda(std::move(value));
+      return std::invoke(std::forward<Fn>(lambda), std::move(value));
     }
 
    private:
     std::optional<TypedStatus<T>> error_;
 
-    // We wrap |OtherType| in a container so that windows COM wrappers work.
+    // We wrap |O| in a container so that windows COM wrappers work.
     // They override operator& and similar, and won't compile in a
     // std::optional.
-    std::optional<std::tuple<OtherType>> value_;
+    std::optional<std::tuple<O>> value_;
   };
 
   static Callback BindOkContinuation(Callback err,
@@ -567,7 +491,7 @@ class MEDIA_EXPORT TypedStatus {
   friend struct internal::MediaSerializerDebug<TypedStatus<T>>;
 
   // Allow AddCause.
-  template <typename StatusEnum>
+  template <TypedStatusImplTraits O>
   friend class TypedStatus;
 };
 
