@@ -30,6 +30,7 @@ class BrowserWindowInterface;
 class ExtensionFunction;
 class GURL;
 class Profile;
+class TabListInterface;
 class TabStripModel;
 
 namespace content {
@@ -177,7 +178,7 @@ class ExtensionTabUtil {
   static api::tabs::Tab CreateTabObject(content::WebContents* web_contents,
                                         ScrubTabBehavior scrub_tab_behavior,
                                         const Extension* extension,
-                                        TabStripModel* tab_strip,
+                                        TabListInterface* tab_list,
                                         int tab_index);
   // Creates a base::Value::Dict representing the window for the given
   // `browser`, and scrubs any privacy-sensitive data that `extension` does not
@@ -217,6 +218,12 @@ class ExtensionTabUtil {
                                    api::tabs::Tab* tab,
                                    ScrubTabBehavior scrub_tab_behavior);
 
+  // Populates `tab_list_interface` and `tab_index` for the tab indicated by
+  // the given `web_contents`. Returns true on success.
+  static bool GetTabListInterface(content::WebContents& web_contents,
+                                  TabListInterface** tab_list_out,
+                                  int* tab_index_out);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Gets the `tab_strip_model` and `tab_index` for the given `web_contents`.
   static bool GetTabStripModel(const content::WebContents* web_contents,
@@ -243,10 +250,10 @@ class ExtensionTabUtil {
                          bool include_incognito,
                          content::WebContents** contents);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Gets the extensions-specific Group ID.
   static int GetGroupId(const tab_groups::TabGroupId& id);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Gets the window ID that the group belongs to.
   static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
