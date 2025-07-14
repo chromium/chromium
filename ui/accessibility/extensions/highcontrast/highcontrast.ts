@@ -178,40 +178,14 @@ function update(): void {
       html.setAttribute('hc', modeAndScheme);
     if (html.getAttribute('hcx') !== stringScheme)
       html.setAttribute('hcx', stringScheme);
-
-    /*
-    * After applying filters to <html>, we sometimes encounter a "frozen
-    * scroll" bug, especially if styles are applied before layout/rendering
-    * has fully settled.
-    *
-    * To avoid this, we delay execution with two nested requestAnimationFrame()
-    * calls:
-    *
-    * 1. First requestAnimationFrame:
-    *    Waits for the current frame to complete. This ensures that DOM updates
-    *    (like setting the `hc`/`hcx` attributes or injected styles) are flushed
-    *    and the layout is recalculated.
-    *
-    * 2. Second requestAnimationFrame:
-    *    Runs after the next paint. This guarantees that all computed styles
-    *    and filters are visually applied and lets us safely make adjustments
-    *    (like forcing a minHeight or applying a 3D transform) without triggering
-    *    the "frozen scroll" issue seen on some dynamic pages (e.g. Google Docs,
-    *    Calendar).
-    */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        html.style.minHeight = '101vh';
-        html.style.transform = 'translateZ(0)';
-      });
-    });
-
+    html.style.backfaceVisibility = 'hidden';
   } else {
     html.setAttribute('hc', mode + '0');
     html.setAttribute('hcx', '0');
     setTimeout(() => {
       html.removeAttribute('hc');
       html.removeAttribute('hcx');
+      html.style.backfaceVisibility = '';
       const bg =
           document.getElementById('hc_extension_bkgnd') as HTMLDivElement |
           null;
