@@ -69,6 +69,23 @@ bool GetAttribute(const std::string& attribute_list,
   return true;
 }
 
+// Fetches a time attribute from the |attribute_list| and returns it as a
+// base::Time.
+std::optional<base::Time> GetTimeAttribute(const std::string& attribute_list,
+                                           const std::string& attribute) {
+  std::string value;
+  if (GetAttribute(attribute_list, attribute, &value)) {
+    int64_t time;
+    if (!base::StringToInt64(value, &time)) {
+      return std::nullopt;
+    }
+    if (time > 0) {
+      return base::Time::UnixEpoch() + base::Seconds(time);
+    }
+  }
+  return std::nullopt;
+}
+
 // Given the URL of a page and a favicon data URL, adds an appropriate record
 // to the given favicon usage vector.
 void DataURLToFaviconUsage(const GURL& link_url,
@@ -155,15 +172,8 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   std::string value;
 
   // Add date
-  *add_date = base::Time::Now();
-  if (GetAttribute(attribute_list, kAddDateAttribute, &value)) {
-    int64_t time;
-    base::StringToInt64(value, &time);
-    // Upper bound it at 32 bits.
-    if (0 < time && time < (1LL << 32)) {
-      *add_date = base::Time::FromTimeT(time);
-    }
-  }
+  *add_date = GetTimeAttribute(attribute_list, kAddDateAttribute)
+                  .value_or(base::Time::Now());
 
   if (GetAttribute(attribute_list, kToolbarFolderAttribute, &value) &&
       base::EqualsCaseInsensitiveASCII(value, "true")) {
@@ -182,6 +192,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
                            GURL* favicon,
                            std::u16string* shortcut,
                            base::Time* add_date,
+                           std::optional<base::Time>* last_visit_date,
                            std::u16string* post_data) {
   const char kItemOpen[] = "<A";
   const char kItemClose[] = "</A>";
@@ -190,6 +201,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   const char kIconAttribute[] = "ICON";
   const char kShortcutURLAttribute[] = "SHORTCUTURL";
   const char kAddDateAttribute[] = "ADD_DATE";
+  const char kLastVisitAttribute[] = "LAST_VISIT";
   const char kPostDataAttribute[] = "POST_DATA";
 
   std::string line = stripDt(lineDt);
@@ -199,6 +211,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   shortcut->clear();
   post_data->clear();
   *add_date = base::Time::Now();
+  *last_visit_date = std::nullopt;
 
   if (!base::StartsWith(line, kItemOpen, base::CompareCase::SENSITIVE)) {
     return false;
@@ -250,14 +263,11 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
   }
 
   // Add date
-  if (GetAttribute(attribute_list, kAddDateAttribute, &value)) {
-    int64_t time;
-    base::StringToInt64(value, &time);
-    // Upper bound it at 32 bits.
-    if (0 < time && time < (1LL << 32)) {
-      *add_date = base::Time::FromTimeT(time);
-    }
-  }
+  *add_date = GetTimeAttribute(attribute_list, kAddDateAttribute)
+                  .value_or(base::Time::Now());
+
+  // Last visit date
+  *last_visit_date = GetTimeAttribute(attribute_list, kLastVisitAttribute);
 
   // Post data.
   if (GetAttribute(attribute_list, kPostDataAttribute, &value)) {
@@ -387,12 +397,14 @@ void ContentBookmarkParser::Parse(
     std::u16string shortcut;
     GURL url, favicon;
     base::Time add_date;
+    std::optional<base::Time> last_visit_date;
     std::u16string post_data;
     bool is_bookmark;
     // TODO(http://b/1196285): We do not support POST based keywords yet.
-    is_bookmark = ParseBookmarkFromLine(line, charset, &title, &url, &favicon,
-                                        &shortcut, &add_date, &post_data) ||
-                  ParseMinimumBookmarkFromLine(line, charset, &title, &url);
+    is_bookmark =
+        ParseBookmarkFromLine(line, charset, &title, &url, &favicon, &shortcut,
+                              &add_date, &last_visit_date, &post_data) ||
+        ParseMinimumBookmarkFromLine(line, charset, &title, &url);
 
     // If bookmark contains a valid replaceable url and a keyword then import
     // it as search engine.
@@ -419,6 +431,7 @@ void ContentBookmarkParser::Parse(
 
       user_data_importer::ImportedBookmarkEntry entry;
       entry.creation_time = add_date;
+      entry.last_visit_time = last_visit_date;
       entry.url = url;
       entry.title = title;
 

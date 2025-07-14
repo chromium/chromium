@@ -26,6 +26,7 @@ struct ImportedBookmarkEntry {
   std::vector<std::u16string> path;
   std::u16string title;
   base::Time creation_time;
+  std::optional<base::Time> last_visit_time;
 };
 
 }  // namespace user_data_importer

@@ -192,6 +192,7 @@ void ContentBookmarkParserWithData::ExpectFirstFirefox23Bookmark(
   EXPECT_EQ(u"Google", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1376102167), entry.creation_time);
+  EXPECT_FALSE(entry.last_visit_time.has_value());
   EXPECT_EQ(0U, entry.path.size());
   EXPECT_EQ("https://www.google.com/", entry.url.spec());
 }
@@ -358,6 +359,12 @@ TEST_F(ContentBookmarkParserWithData,
   EXPECT_EQ(u"Google", result->bookmarks[0].title);
   EXPECT_EQ(u"Outlook", result->bookmarks[1].title);
   EXPECT_EQ(u"Speed Test", result->bookmarks[2].title);
+  EXPECT_EQ(base::Time::FromTimeT(1424779391),
+            result->bookmarks[0].last_visit_time);
+  EXPECT_EQ(base::Time::FromTimeT(1424779398),
+            result->bookmarks[1].last_visit_time);
+  EXPECT_EQ(base::Time::FromTimeT(1424779406),
+            result->bookmarks[2].last_visit_time);
 }
 
 TEST_F(ContentBookmarkParserWithData, ToolbarFolder) {

@@ -15,10 +15,6 @@ ImportedBookmarkEntry::ImportedBookmarkEntry(
 ImportedBookmarkEntry::~ImportedBookmarkEntry() = default;
 
 bool ImportedBookmarkEntry::operator==(
-    const ImportedBookmarkEntry& other) const {
-  return (in_toolbar == other.in_toolbar && is_folder == other.is_folder &&
-          url == other.url && path == other.path && title == other.title &&
-          creation_time == other.creation_time);
-}
+    const ImportedBookmarkEntry& other) const = default;
 
 }  // namespace user_data_importer
