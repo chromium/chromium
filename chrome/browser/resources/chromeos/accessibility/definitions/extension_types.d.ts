@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,26 @@
 declare namespace chrome {
   export namespace extensionTypes {
 
+    export type ColorArray = number[];
+
+    export interface ImageDataType {}
+
     export enum ImageFormat {
       JPEG = 'jpeg',
       PNG = 'png',
     }
 
+    export interface Rect {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    }
+
     export interface ImageDetails {
       format?: ImageFormat;
       quality?: number;
+      rect?: Rect;
     }
 
     export enum RunAt {

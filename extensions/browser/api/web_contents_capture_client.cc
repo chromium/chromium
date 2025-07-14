@@ -54,6 +54,7 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
 
   image_format_ = kDefaultFormat;
   image_quality_ = kDefaultQuality;
+  gfx::Rect source_rect;
 
   if (image_details) {
     if (image_details->format != api::extension_types::ImageFormat::kNone) {
@@ -62,11 +63,19 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
     if (image_details->quality) {
       image_quality_ = *image_details->quality;
     }
+    // If `rect` parameter is set, use it to get the correct region to capture.
+    if (image_details->rect) {
+      const auto& rect = *image_details->rect;
+      source_rect.SetRect(rect.x, rect.y, rect.width, rect.height);
+      float scale = view->GetDeviceScaleFactor();
+      source_rect = gfx::ScaleToEnclosingRect(source_rect, scale);
+    }
   }
 
-  view->CopyFromSurface(gfx::Rect(),  // Copy entire surface area.
-                        gfx::Size(),  // Result contains device-level detail.
-                        std::move(callback));
+  view->CopyFromSurface(
+      source_rect,  // An empty rect will capture the entire surface.
+      gfx::Size(),  // Result contains device-level detail.
+      std::move(callback));
 
 #if BUILDFLAG(IS_CHROMEOS)
   SYSLOG(INFO) << "Screenshot taken";

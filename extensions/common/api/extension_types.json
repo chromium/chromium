@@ -34,9 +34,37 @@
         "description": "The format of an image."
       },
       {
+        "id": "Rect",
+        "type": "object",
+        "description": "An object specifying the area of the document to capture, in CSS pixels, relative to the page. All properties default to 0.",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The x coordinate of the rectangle."
+          },
+          "y": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The y coordinate of the rectangle."
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The width of the rectangle."
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The height of the rectangle."
+          }
+        },
+        "nodoc": true
+      },
+      {
         "id": "ImageDetails",
         "type": "object",
-        "description": "Details about the format and quality of an image.",
+        "description": "Details about the format, quality, and area of an image.",
         "properties": {
           "format": {
             "$ref": "ImageFormat",
@@ -49,6 +77,12 @@
             "minimum": 0,
             "maximum": 100,
             "description": "When format is <code>\"jpeg\"</code>, controls the quality of the resulting image.  This value is ignored for PNG images.  As quality is decreased, the resulting image will have more visual artifacts, and the number of bytes needed to store it will decrease."
+          },
+          "rect": {
+            "$ref": "Rect",
+            "optional": true,
+            "description": "An object specifying the area of the document to capture, in CSS pixels, relative to the page. If omitted, the currently visible viewport is captured.",
+            "nodoc": true
           }
         }
       },

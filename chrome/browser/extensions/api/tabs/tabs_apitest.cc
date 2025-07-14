@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -19,11 +20,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -257,6 +260,21 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
+  ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
+                                                    ReplyBehavior::kWillReply);
+  auto get_device_pixel_ratio = [this, &device_pixel_handler](
+                                    const std::string& message) {
+    content::WebContents* active_tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(active_tab);
+    content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
+    ASSERT_TRUE(view);
+    float scale = view->GetDeviceScaleFactor();
+    device_pixel_handler.Reply(base::NumberToString(scale));
+  };
+  device_pixel_handler.SetOnRepeatedlySatisfied(
+      base::BindLambdaForTesting(get_device_pixel_ratio));
+
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_jpeg"))
       << message_;
 }
@@ -269,6 +287,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
+  ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
+                                                    ReplyBehavior::kWillReply);
+  auto get_device_pixel_ratio = [this, &device_pixel_handler](
+                                    const std::string& message) {
+    content::WebContents* active_tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(active_tab);
+    content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
+    ASSERT_TRUE(view);
+    float scale = view->GetDeviceScaleFactor();
+    device_pixel_handler.Reply(base::NumberToString(scale));
+  };
+  device_pixel_handler.SetOnRepeatedlySatisfied(
+      base::BindLambdaForTesting(get_device_pixel_ratio));
+
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_png"))
       << message_;
 }
