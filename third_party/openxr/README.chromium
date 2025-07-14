@@ -35,6 +35,8 @@ The following changes should be reflected in `src_overrides/patches`:
 * Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
 ignore loading in Android ContentProvider supplied paths while investigating and
 waiting for upstreaming.
+* Forked api_layer_interface.cpp to unblock a libc++ roll by cherry-picking
+https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/554
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

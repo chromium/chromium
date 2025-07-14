@@ -110,7 +110,6 @@ if (enable_openxr) {
       "src/src/common/platform_utils.hpp",
       "src/src/common/xr_dependencies.h",
       "src/src/common/xr_linear.h",
-      "src/src/loader/api_layer_interface.cpp",
       "src/src/loader/api_layer_interface.hpp",
       "src/src/loader/exception_handling.hpp",
       "src/src/loader/loader_core.cpp",
@@ -130,6 +129,7 @@ if (enable_openxr) {
       "src/src/loader/xr_generated_loader.hpp",
       "src/src/xr_generated_dispatch_table_core.c",
       "src/src/xr_generated_dispatch_table_core.h",
+      "src_overrides/src/loader/api_layer_interface.cpp",
       "src_overrides/src/loader/manifest_file.cpp",
     ]
 
