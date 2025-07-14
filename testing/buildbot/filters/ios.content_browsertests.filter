@@ -479,3 +479,7 @@
 # https://crrev.com/c/6656174. The test couldn't get a video element in the
 # document.
 -BlobUrlBrowserTest.NoPartitioningForMediaBlobUrlNavigations
+
+# TODO(crbug.com/431553196): The test has been failing since
+# #935 build on the bot(https://ci.chromium.org/ui/p/chromium/builders/ci/ios-blink-rel-fyi/935/blamelist).
+-FencedFrameNestedModesTest/FencedFrameNestedModesTest.NestedModes/ParentModeOpaqueAds_ChildModeOpaqueAds
