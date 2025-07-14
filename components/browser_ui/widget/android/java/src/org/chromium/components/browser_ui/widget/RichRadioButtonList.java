@@ -31,7 +31,8 @@ import java.util.List;
  * column or in a two-column grid layout, managing its own RecyclerView and Adapter.
  */
 @NullMarked
-public class RichRadioButtonList extends FrameLayout {
+public class RichRadioButtonList extends FrameLayout
+        implements RichRadioButtonAdapter.OnItemSelectedListener {
 
     /** The layout mode for the RichRadioButtonList. */
     @IntDef({LayoutMode.VERTICAL_SINGLE_COLUMN, LayoutMode.TWO_COLUMN_GRID})
@@ -42,6 +43,7 @@ public class RichRadioButtonList extends FrameLayout {
     }
 
     private @Nullable RichRadioButtonAdapter mAdapter;
+    private @Nullable RichRadioButtonAdapter.OnItemSelectedListener mOnItemSelectedListener;
 
     private @Nullable List<RichRadioButtonData> mCurrentOptions;
     private @LayoutMode int mCurrentLayoutMode;
@@ -70,7 +72,7 @@ public class RichRadioButtonList extends FrameLayout {
     public void initialize(
             @NonNull List<RichRadioButtonData> options,
             @LayoutMode int layoutMode,
-            @NonNull RichRadioButtonAdapter.OnItemSelectedListener listener) {
+            @Nullable RichRadioButtonAdapter.OnItemSelectedListener listener) {
         if (mInitialized) {
             throw new IllegalStateException("RichRadioButtonList can only be initialized once.");
         }
@@ -78,6 +80,7 @@ public class RichRadioButtonList extends FrameLayout {
 
         mCurrentOptions = options;
         mCurrentLayoutMode = layoutMode;
+        mOnItemSelectedListener = listener;
 
         RecyclerView.LayoutManager layoutManager;
         int spacingPx =
@@ -99,7 +102,7 @@ public class RichRadioButtonList extends FrameLayout {
         }
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new RichRadioButtonAdapter(mCurrentOptions, listener, mCurrentLayoutMode);
+        mAdapter = new RichRadioButtonAdapter(mCurrentOptions, mCurrentLayoutMode);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -115,6 +118,14 @@ public class RichRadioButtonList extends FrameLayout {
         if (mAdapter != null) {
             mAdapter.setSelectedItem(itemId);
         }
+    }
+
+    /**
+     * Releases references held by this component. This method should be called when the component
+     * is no longer needed to avoid memory leaks.
+     */
+    public void destroy() {
+        mOnItemSelectedListener = null;
     }
 
     /** Clears all existing ItemDecorations from the RecyclerView. */
@@ -166,12 +177,10 @@ public class RichRadioButtonList extends FrameLayout {
         }
     }
 
-    RecyclerView getRecyclerViewForTesting() {
-        return mRecyclerView;
-    }
-
-    @Nullable
-    RichRadioButtonAdapter getAdapterForTesting() {
-        return mAdapter;
+    @Override
+    public void onItemSelected(@NonNull String selectedId) {
+        if (mOnItemSelectedListener != null) {
+            mOnItemSelectedListener.onItemSelected(selectedId);
+        }
     }
 }

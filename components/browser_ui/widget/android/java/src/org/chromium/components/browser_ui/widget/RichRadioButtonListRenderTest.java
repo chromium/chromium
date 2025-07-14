@@ -167,9 +167,7 @@ public class RichRadioButtonListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRadioButtonListView.initialize(
-                            testData,
-                            RichRadioButtonList.LayoutMode.VERTICAL_SINGLE_COLUMN,
-                            (selectedId) -> {});
+                            testData, RichRadioButtonList.LayoutMode.VERTICAL_SINGLE_COLUMN, null);
                     mRichRadioButtonListView.setSelectedItem("item_0");
                 });
         waitForViewToBeRendered(mRichRadioButtonListView);
@@ -184,9 +182,7 @@ public class RichRadioButtonListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRadioButtonListView.initialize(
-                            testData,
-                            RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID,
-                            (selectedId) -> {});
+                            testData, RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID, null);
                     mRichRadioButtonListView.setSelectedItem("item_1");
                 });
         waitForViewToBeRendered(mRichRadioButtonListView);
@@ -201,9 +197,7 @@ public class RichRadioButtonListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRadioButtonListView.initialize(
-                            testData,
-                            RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID,
-                            (selectedId) -> {});
+                            testData, RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID, null);
                     mRichRadioButtonListView.setSelectedItem("item_2");
                 });
         waitForViewToBeRendered(mRichRadioButtonListView);
@@ -218,9 +212,7 @@ public class RichRadioButtonListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRadioButtonListView.initialize(
-                            testData,
-                            RichRadioButtonList.LayoutMode.VERTICAL_SINGLE_COLUMN,
-                            (selectedId) -> {});
+                            testData, RichRadioButtonList.LayoutMode.VERTICAL_SINGLE_COLUMN, null);
                     mRichRadioButtonListView.setSelectedItem("item_0");
                 });
         waitForViewToBeRendered(mRichRadioButtonListView);
@@ -236,9 +228,7 @@ public class RichRadioButtonListRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRadioButtonListView.initialize(
-                            testData,
-                            RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID,
-                            (selectedId) -> {});
+                            testData, RichRadioButtonList.LayoutMode.TWO_COLUMN_GRID, null);
                     mRichRadioButtonListView.setSelectedItem("item_1");
                 });
         waitForViewToBeRendered(mRichRadioButtonListView);
