@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ai/ai_test_utils.h"
 
+#include <cstdint>
+#include <utility>
+
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
@@ -45,16 +48,35 @@ AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
 
 void AITestUtils::FakeMonitor::ExpectReceivedUpdate(
     uint64_t expected_downloaded_bytes,
+    uint64_t expected_total_bytes,
+    base::OnceClosure callback) {
+  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
+      .WillOnce([callback = std::move(callback), expected_downloaded_bytes,
+                 expected_total_bytes](uint64_t downloaded_bytes,
+                                       uint64_t total_bytes) mutable {
+        EXPECT_EQ(downloaded_bytes, expected_downloaded_bytes);
+        EXPECT_EQ(total_bytes, expected_total_bytes);
+        std::move(callback).Run();
+      });
+}
+
+void AITestUtils::FakeMonitor::ExpectReceivedUpdate(
+    uint64_t expected_downloaded_bytes,
     uint64_t expected_total_bytes) {
   base::RunLoop download_progress_run_loop;
-  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
-      .WillOnce(
-          testing::Invoke([&](uint64_t downloaded_bytes, uint64_t total_bytes) {
-            EXPECT_EQ(downloaded_bytes, expected_downloaded_bytes);
-            EXPECT_EQ(total_bytes, expected_total_bytes);
-            download_progress_run_loop.Quit();
-          }));
+  ExpectReceivedUpdate(expected_downloaded_bytes, expected_total_bytes,
+                       download_progress_run_loop.QuitClosure());
   download_progress_run_loop.Run();
+}
+
+void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
+    uint64_t expected_downloaded_bytes,
+    uint64_t expected_total_bytes,
+    base::OnceClosure callback) {
+  ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
+                           expected_downloaded_bytes, expected_total_bytes),
+                       AIUtils::kNormalizedDownloadProgressMax,
+                       std::move(callback));
 }
 
 void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 
+#include <cstdint>
+
+#include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/current_thread.h"
@@ -43,7 +46,18 @@ class AIModelDownloadProgressManagerTest : public testing::Test {
 
  private:
   void SetUp() override {
-    EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
+    EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+        .WillRepeatedly([](const std::string& id, CrxUpdateItem* item) {
+          item->state = update_client::ComponentState::kNew;
+
+          // Currently the `AIDownloadProgressManager` doesn't check these
+          // fields, so we can set them to anything.
+          item->id = id;
+          item->downloaded_bytes = 0;
+          item->total_bytes = 100;
+
+          return true;
+        });
   }
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -66,10 +80,6 @@ TEST_F(AIModelDownloadProgressManagerTest,
     EXPECT_EQ(manager.GetNumberOfReporters(), 1);
 
     {
-      // Adding a second observer we'll result in component ids being called
-      // again.
-      EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
-
       // Adding an Observer, should create a reporter.
       AITestUtils::FakeMonitor monitor2;
       manager.AddObserver(&component_update_service_,
@@ -520,8 +530,17 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 
-  EXPECT_CALL(component_update_service_, GetComponentIDs())
-      .WillOnce(testing::Return(std::vector<std::string>({component1.id()})));
+  EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item = component1.CreateUpdateItem(
+            update_client::ComponentState::kUpToDate, 0);
+        return true;
+      })
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item =
+            component2.CreateUpdateItem(update_client::ComponentState::kNew, 0);
+        return true;
+      });
 
   manager.AddObserver(&component_update_service_,
                       monitor.BindNewPipeAndPassRemote(),
@@ -541,8 +560,22 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
   AITestUtils::FakeComponent component2("component_id2", 1000);
   AITestUtils::FakeComponent component3("component_id3", 500);
 
-  EXPECT_CALL(component_update_service_, GetComponentIDs())
-      .WillOnce(testing::Return(std::vector<std::string>({component1.id()})));
+  EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item = component1.CreateUpdateItem(
+            update_client::ComponentState::kUpToDate, 0);
+        return true;
+      })
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item =
+            component2.CreateUpdateItem(update_client::ComponentState::kNew, 0);
+        return true;
+      })
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item =
+            component3.CreateUpdateItem(update_client::ComponentState::kNew, 0);
+        return true;
+      });
 
   manager.AddObserver(&component_update_service_,
                       monitor.BindNewPipeAndPassRemote(),
@@ -570,9 +603,17 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 
-  EXPECT_CALL(component_update_service_, GetComponentIDs())
-      .WillOnce(testing::Return(
-          std::vector<std::string>({component1.id(), component2.id()})));
+  EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item = component1.CreateUpdateItem(
+            update_client::ComponentState::kUpToDate, 0);
+        return true;
+      })
+      .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+        *item = component2.CreateUpdateItem(
+            update_client::ComponentState::kUpToDate, 0);
+        return true;
+      });
 
   manager.AddObserver(&component_update_service_,
                       monitor.BindNewPipeAndPassRemote(),
@@ -580,6 +621,92 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
   monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
   monitor.ExpectReceivedUpdate(AIUtils::kNormalizedDownloadProgressMax,
                                AIUtils::kNormalizedDownloadProgressMax);
+}
+
+TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
+       ObservesComponentsMidDownload) {
+  AIModelDownloadProgressManager manager;
+  AITestUtils::FakeMonitor monitor1;
+  AITestUtils::FakeMonitor monitor2;
+  AITestUtils::FakeComponent component("component_id1", 100);
+
+  // First, `monitor1` observes `component`.
+  {
+    EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+        .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+          *item = component.CreateUpdateItem(
+              update_client::ComponentState::kNew, 0);
+          return true;
+        });
+    manager.AddObserver(&component_update_service_,
+                        monitor1.BindNewPipeAndPassRemote(), {component.id()});
+  }
+
+  // Only `monitor1` will receive this update since `monitor2` is not observing.
+  SendUpdate(component, ComponentState::kDownloading, 0);
+  monitor1.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+  monitor2.ExpectNoUpdate();
+
+  // Now both `monitor1` and `monitor2` are observing `component`.
+  {
+    EXPECT_CALL(component_update_service_, GetComponentDetails(_, _))
+        .WillOnce([&](const std::string& id, CrxUpdateItem* item) {
+          *item = component.CreateUpdateItem(
+              update_client::ComponentState::kDownloading, 0);
+          return true;
+        });
+    manager.AddObserver(&component_update_service_,
+                        monitor2.BindNewPipeAndPassRemote(), {component.id()});
+  }
+
+  // Send the first update to for `monitor2` waiting more than 50ms so that both
+  // monitors receive it.
+  constexpr int64_t update1_for_monitor2 = 60;
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component, ComponentState::kDownloading, update1_for_monitor2);
+  {
+    base::RunLoop run_loop;
+    base::RepeatingClosure update_callback =
+        base::BarrierClosure(2, run_loop.QuitClosure());
+
+    // `monitor1` should still be normalized against the total bytes of the
+    // component.
+    monitor1.ExpectReceivedNormalizedUpdate(
+        update1_for_monitor2, component.total_bytes(), update_callback);
+
+    // This is `monitor2`'s first update so it should receive zero and be
+    // normalized against the remaining bytes.
+    monitor2.ExpectReceivedNormalizedUpdate(
+        0, component.total_bytes() - update1_for_monitor2, update_callback);
+
+    run_loop.Run();
+  }
+
+  // Send a second update to for `monitor2` waiting more than 50ms so that both
+  // monitors receive it.
+  constexpr int64_t update2_for_monitor2 = 75;
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component, ComponentState::kDownloading, update2_for_monitor2);
+  {
+    base::RunLoop run_loop;
+    base::RepeatingClosure update_callback =
+        base::BarrierClosure(2, run_loop.QuitClosure());
+
+    // `monitor1` should still be normalized against the total bytes of the
+    // component.
+    monitor1.ExpectReceivedNormalizedUpdate(
+        update2_for_monitor2, component.total_bytes(), update_callback);
+
+    // `monitor2` should still be normalized against the remaining bytes it
+    // observed on its first update. The downloaded bytes should also not
+    // include any bytes that were downloaded before `monitor2` started
+    // observing.
+    monitor2.ExpectReceivedNormalizedUpdate(
+        update2_for_monitor2 - update1_for_monitor2,
+        component.total_bytes() - update1_for_monitor2, update_callback);
+
+    run_loop.Run();
+  }
 }
 
 }  // namespace on_device_ai
