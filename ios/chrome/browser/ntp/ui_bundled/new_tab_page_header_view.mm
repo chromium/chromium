@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -850,9 +851,23 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   if (colorPalette) {
     [_fakeLocationBar setStartColor:colorPalette.omniboxColor
                            endColor:colorPalette.omniboxColor];
+
+    _customizationMenuButton.backgroundColor = colorPalette.secondaryColor;
+    _customizationMenuButton.tintColor = colorPalette.tintColor;
   } else {
     [_fakeLocationBar setStartColor:FakeboxTopColor()
                            endColor:FakeboxBottomColor()];
+
+    UIColor* backgroundColor =
+        IsSignInButtonNoAvatarEnabled()
+            ? [[UIColor colorNamed:kSolidWhiteColor]
+                  colorWithAlphaComponent:0.75]
+            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+                  colorWithAlphaComponent:0.8];
+    _customizationMenuButton.backgroundColor = backgroundColor;
+    _customizationMenuButton.tintColor = [UIColor
+        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
+                                                    : kTextSecondaryColor)];
   }
 }
 

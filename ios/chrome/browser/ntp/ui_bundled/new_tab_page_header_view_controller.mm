@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -140,6 +141,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
+  // The current NTP color palette.
+  NewTabPageColorPalette* _colorPalette;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -592,17 +595,20 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
           : ntp_home::kCustomizationMenuIconSize);
   [customizationMenuButton setImage:icon forState:UIControlStateNormal];
 
-  UIColor* backgroundColor =
-      IsSignInButtonNoAvatarEnabled()
-          ? [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75]
-          : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                colorWithAlphaComponent:0.8];
-  customizationMenuButton.backgroundColor = backgroundColor;
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    UIColor* backgroundColor =
+        IsSignInButtonNoAvatarEnabled()
+            ? [[UIColor colorNamed:kSolidWhiteColor]
+                  colorWithAlphaComponent:0.75]
+            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+                  colorWithAlphaComponent:0.8];
+    customizationMenuButton.backgroundColor = backgroundColor;
 
-  UIColor* tintColor = [UIColor
-      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                  : kTextSecondaryColor)];
-  customizationMenuButton.tintColor = tintColor;
+    UIColor* tintColor = [UIColor
+        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
+                                                    : kTextSecondaryColor)];
+    customizationMenuButton.tintColor = tintColor;
+  }
 
   customizationMenuButton.accessibilityIdentifier =
       kNTPCustomizationMenuButtonIdentifier;
@@ -638,12 +644,16 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     UIButtonConfiguration* config =
         [UIButtonConfiguration plainButtonConfiguration];
     config.background.backgroundColor =
-        [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75];
+        _colorPalette ? _colorPalette.secondaryColor
+                      : [[UIColor colorNamed:kSolidWhiteColor]
+                            colorWithAlphaComponent:0.75];
     NSDictionary* attributes = @{
       NSFontAttributeName : PreferredFontForTextStyle(
           UIFontTextStyleSubheadline, UIFontWeightSemibold,
           kIdentityDiscMaxFontSize),
-      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
+      NSForegroundColorAttributeName : _colorPalette
+          ? _colorPalette.tintColor
+          : [UIColor colorNamed:kBlue600Color],
     };
     config.attributedTitle = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
@@ -922,6 +932,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
   [_headerView updateBackgroundWithColorPalette:colorPalette];
+  _colorPalette = colorPalette;
+
+  [self updateIdentityDiscState];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate
