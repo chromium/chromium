@@ -205,6 +205,9 @@ extern const char
 extern const char kClientSideDetectionShowScamVerdictWarningName[];
 extern const char kClientSideDetectionShowScamVerdictWarningDescription[];
 
+extern const char kClipboardChangeEventName[];
+extern const char kClipboardChangeEventDescription[];
+
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 
@@ -718,9 +721,6 @@ extern const char kGlicPanelResetOnSessionTimeoutDescription[];
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
-
-extern const char kClipboardContentsIdName[];
-extern const char kClipboardContentsIdDescription[];
 
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];

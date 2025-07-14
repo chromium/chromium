@@ -11976,10 +11976,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAXTreeFixingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAXTreeFixing)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-    {"enable-clipboard-contents-id",
-     flag_descriptions::kClipboardContentsIdName,
-     flag_descriptions::kClipboardContentsIdDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kClipboardContentsId)},
+    {"enable-clipboardchange-event",
+     flag_descriptions::kClipboardChangeEventName,
+     flag_descriptions::kClipboardChangeEventDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kClipboardChangeEvent)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -909,13 +909,6 @@
       name: "ClipboardChangeEvent",
       base_feature: "none",
     },
-    {
-      // Enables the API for getting a unique token of the system clipboard's
-      // current state.
-      // https://chromestatus.com/feature/5124993439236096
-      name: "ClipboardContentsId",
-      status: "test",
-    },
     // This ensures that clipboard event fires on a target node which is
     // focused in case no visible selection is present.
     // crbug.com/40735783

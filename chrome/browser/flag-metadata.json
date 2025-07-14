@@ -2892,14 +2892,14 @@
    "expiry_milestone": 140
   },
   {
-    "name": "enable-clipboard-contents-id",
-    "owners": [ "zgroza@chromium.org" ],
-    "expiry_milestone": 149
-  },
-  {
     "name": "enable-clipboard-data-controls-android",
     "owners": ["clhager@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 145
+  },
+  {
+    "name": "enable-clipboardchange-event",
+    "owners": ["roraja@microsoft.com", "ragoulik@microsoft.com", "zgroza@chromium.org"],
+    "expiry_milestone": 149
   },
   {
     "name": "enable-cloud-identifiers",

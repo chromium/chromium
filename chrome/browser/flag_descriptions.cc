@@ -306,6 +306,11 @@ const char kClassifyUrlOnProcessResponseEventDescription[] =
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 
+const char kClipboardChangeEventName[] = "ClipboardChangeEvent";
+const char kClipboardChangeEventDescription[] =
+    "Enables the `clipboardchange` event API. See: "
+    "https://chromestatus.com/feature/5085102657503232";
+
 const char kClipboardMaximumAgeName[] = "Clipboard maximum age";
 const char kClipboardMaximumAgeDescription[] =
     "Limit the maximum age for recent clipboard content";
@@ -1170,12 +1175,6 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
-
-const char kClipboardContentsIdName[] = "Clipboard contentsId API";
-const char kClipboardContentsIdDescription[] =
-    "Enables the API for getting a unique token of the system clipboard's "
-    "current state. For details, see "
-    "https://github.com/explainers-by-googlers/clipboard-contents-id";
 
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
