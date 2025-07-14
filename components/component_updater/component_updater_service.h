@@ -194,17 +194,16 @@ class ComponentUpdateService {
 
   virtual ~ComponentUpdateService() = default;
 
- private:
   // Returns details about registered component in the |item| parameter. The
   // function returns true in case of success and false in case of errors.
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
+ private:
   friend class screen_ai::ScreenAIDownloaderNonChromeOS;
   friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
-  FRIEND_TEST_ALL_PREFIXES(ComponentUpdaterTest, ComponentDetails);
   FRIEND_TEST_ALL_PREFIXES(ComponentUpdaterTest, UpdatesDisabled);
 };
 
