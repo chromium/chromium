@@ -41,6 +41,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -262,6 +263,7 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2)
     public void testLastTabEmpty_phone_noSearchEngineLogo_noIntent() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
