@@ -176,6 +176,14 @@ ScopedJavaLocalRef<jstring> JNI_NativeTestServer_GetEchoMethodURL(JNIEnv* env) {
       env, cronet::TestServer::GetEchoMethodURL());
 }
 
+ScopedJavaLocalRef<jstring> JNI_NativeTestServer_GetUseEncodingURL(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& jencoding) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, cronet::TestServer::GetUseEncodingURL(
+               base::android::ConvertJavaStringToUTF8(env, jencoding)));
+}
+
 ScopedJavaLocalRef<jstring> JNI_NativeTestServer_GetRedirectToEchoBody(
     JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(

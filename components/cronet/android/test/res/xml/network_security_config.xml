@@ -10,6 +10,10 @@ found in the LICENSE file.
   <base-config>
     <trust-anchors>
       <certificates src="@raw/quicroot"/>
+      <!-- Used by native test server (net::EmbeddedTestServer). It is unclear
+           why EmbeddedTestServer::RegisterTestCerts() does not consistently
+           work. -->
+      <certificates src="@raw/root_ca_cert"/>
       <certificates src="system"/>
     </trust-anchors>
   </base-config>

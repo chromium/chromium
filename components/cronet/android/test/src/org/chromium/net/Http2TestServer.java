@@ -125,25 +125,6 @@ public final class Http2TestServer {
         return getServerUrl() + Http2TestHandler.ECHO_TRAILERS_PATH;
     }
 
-    /** @return url of a brotli-encoded server resource. */
-    public static String getServeSimpleBrotliResponse() {
-        return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_BROTLI_RESPONSE;
-    }
-
-    /**
-     * @return url of a zstd-encoded server resource.
-     */
-    public static String getServeSimpleZstdResponse() {
-        return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_ZSTD_RESPONSE;
-    }
-
-    /**
-     * @return url of a shared-brotli-encoded server resource.
-     */
-    public static String getServeSharedBrotliResponse() {
-        return getServerUrl() + Http2TestHandler.SERVE_SHARED_BROTLI_RESPONSE;
-    }
-
     /**
      * @return url of the reporting collector
      */

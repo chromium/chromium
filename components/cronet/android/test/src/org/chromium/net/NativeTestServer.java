@@ -97,6 +97,10 @@ public final class NativeTestServer {
         return NativeTestServerJni.get().getEchoMethodURL();
     }
 
+    public static String getUseEncodingURL(String encoding) {
+        return NativeTestServerJni.get().getUseEncodingURL(encoding);
+    }
+
     public static String getRedirectToEchoBody() {
         return NativeTestServerJni.get().getRedirectToEchoBody();
     }
@@ -267,6 +271,8 @@ public final class NativeTestServer {
         String getEchoAllHeadersURL();
 
         String getEchoMethodURL();
+
+        String getUseEncodingURL(String encoding);
 
         String getRedirectToEchoBody();
 

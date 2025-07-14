@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -59,25 +60,53 @@ std::unique_ptr<net::test_server::HttpResponse> SimpleRequest() {
 
 std::unique_ptr<net::test_server::HttpResponse> UseEncodingInResponse(
     const net::test_server::HttpRequest& request) {
-  std::string encoding;
   DCHECK(base::StartsWith(request.relative_url, kUseEncodingPath,
                           base::CompareCase::INSENSITIVE_ASCII));
 
-  encoding = request.relative_url.substr(strlen(kUseEncodingPath));
+  // Each of these is a compression of the string "The quick brown fox jumps
+  // over the lazy dog\n".
+  std::string_view encoding =
+      std::string_view(request.relative_url).substr(strlen(kUseEncodingPath));
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  if (!encoding.compare("brotli")) {
-    const uint8_t quickfoxCompressed[] = {
+  if (encoding == "brotli") {
+    static const uint8_t kCompressed[] = {
         0x0b, 0x15, 0x80, 0x54, 0x68, 0x65, 0x20, 0x71, 0x75, 0x69, 0x63, 0x6b,
         0x20, 0x62, 0x72, 0x6f, 0x77, 0x6e, 0x20, 0x66, 0x6f, 0x78, 0x20, 0x6a,
         0x75, 0x6d, 0x70, 0x73, 0x20, 0x6f, 0x76, 0x65, 0x72, 0x20, 0x74, 0x68,
         0x65, 0x20, 0x6c, 0x61, 0x7a, 0x79, 0x20, 0x64, 0x6f, 0x67, 0x03};
-    std::string quickfoxCompressedStr(
-        reinterpret_cast<const char*>(quickfoxCompressed),
-        sizeof(quickfoxCompressed));
-    http_response->set_code(net::HTTP_OK);
-    http_response->set_content(quickfoxCompressedStr);
-    http_response->AddCustomHeader(std::string("content-encoding"),
-                                   std::string("br"));
+    http_response->set_content(base::as_string_view(kCompressed));
+    http_response->AddCustomHeader("content-encoding", "br");
+  } else if (encoding == "dcb") {
+    // Contents of a "Dictionary-Compressed Brotli" stream when:
+    // * Dictionary = "A dictionary"
+    // * Payload = "This is compressed test data using a test dictionary"
+    //
+    // Accordingly to draft-ietf-httpbis-compression-dictionary-08 the stream is
+    // composed of: a header (magic number "ff:44:43:42" & SHA-256 of
+    // Dictionary) and the compressed payload.
+    //
+    // The compressed payload can be obtained via //third-party/brotli:brotli by
+    // passing: --dictionary=Dictionary --input=Payload (make sure to be
+    // consistent with the presence of EOL).
+    static const uint8_t kCompressed[] = {
+        0xff, 0x44, 0x43, 0x42, 0x0a, 0xa3, 0x69, 0x01, 0x4f, 0x7f, 0xab,
+        0x37, 0x0b, 0xe9, 0x40, 0x74, 0x69, 0x85, 0x45, 0xc7, 0xbb, 0x93,
+        0x2e, 0xc4, 0x61, 0x25, 0x27, 0x8f, 0x37, 0xbf, 0x34, 0xab, 0x02,
+        0xa3, 0x5a, 0xec, 0xa1, 0x98, 0x01, 0x80, 0x22, 0xe0, 0x26, 0x4b,
+        0x95, 0x5c, 0x19, 0x18, 0x9d, 0xc1, 0xc3, 0x44, 0x0e, 0x5c, 0x6a,
+        0x09, 0x9d, 0xf0, 0xb0, 0x01, 0x47, 0x14, 0x87, 0x14, 0x6d, 0xfb,
+        0x60, 0x96, 0xdb, 0xae, 0x9e, 0x79, 0x54, 0xe3, 0x69, 0x03, 0x29};
+    http_response->set_content(base::as_string_view(kCompressed));
+    http_response->AddCustomHeader("content-encoding", "dcb");
+  } else if (encoding == "zstd") {
+    static const uint8_t kCompressed[] = {
+        0x28, 0xb5, 0x2f, 0xfd, 0x24, 0x2c, 0x61, 0x01, 0x00, 0x54, 0x68, 0x65,
+        0x20, 0x71, 0x75, 0x69, 0x63, 0x6b, 0x20, 0x62, 0x72, 0x6f, 0x77, 0x6e,
+        0x20, 0x66, 0x6f, 0x78, 0x20, 0x6a, 0x75, 0x6d, 0x70, 0x73, 0x20, 0x6f,
+        0x76, 0x65, 0x72, 0x20, 0x74, 0x68, 0x65, 0x20, 0x6c, 0x61, 0x7a, 0x79,
+        0x20, 0x64, 0x6f, 0x67, 0x0a, 0xe4, 0xa7, 0xbc, 0x87};
+    http_response->set_content(base::as_string_view(kCompressed));
+    http_response->AddCustomHeader("content-encoding", "zstd");
   }
   return std::move(http_response);
 }
