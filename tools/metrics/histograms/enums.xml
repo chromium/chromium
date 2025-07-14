@@ -20050,6 +20050,7 @@ from previous Chrome versions.
   <int value="0" label="Unknown"/>
   <int value="1" label="Clear Key"/>
   <int value="2" label="Widevine"/>
+  <int value="3" label="PlayReady"/>
 </enum>
 
 <enum name="MediaKeySystemLegacy">
