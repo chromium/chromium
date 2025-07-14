@@ -96,6 +96,7 @@ class ProductSpecificationsEntryPointController;
 
 namespace tabs {
 class GlicNudgeController;
+class GlicActorTaskIconController;
 }
 
 namespace tab_groups {
@@ -228,6 +229,10 @@ class BrowserWindowFeatures {
 
   tabs::GlicNudgeController* glic_nudge_controller() {
     return glic_nudge_controller_.get();
+  }
+
+  tabs::GlicActorTaskIconController* glic_actor_task_icon_controller() {
+    return glic_actor_task_icon_controller_.get();
   }
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
@@ -455,6 +460,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+
+  std::unique_ptr<tabs::GlicActorTaskIconController>
+      glic_actor_task_icon_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
