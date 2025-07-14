@@ -120,6 +120,7 @@ class ReadAnythingUntrustedPageHandler :
   void DidUpdateAudioMutingState(bool muted);
   void WebContentsDestroyed();
   void OnActiveAXTreeIDChanged();
+  bool CheckForPdfContentAfterLoad();
 
   // read_anything::mojom::UntrustedPageHandler:
   void OnVoiceChange(const std::string& voice,
@@ -287,6 +288,11 @@ class ReadAnythingUntrustedPageHandler :
   base::ScopedObservation<translate::TranslateDriver,
                           translate::TranslateDriver::LanguageDetectionObserver>
       translate_observation_{this};
+
+  // Timer used for checking for pdf contents after the page has loaded.
+  // Otherwise, it may incorrectly return that the page is not a pdf if
+  // reading mode checks if a page is a pdf immediately after loading.
+  base::OneShotTimer timer_;
 
   base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };
