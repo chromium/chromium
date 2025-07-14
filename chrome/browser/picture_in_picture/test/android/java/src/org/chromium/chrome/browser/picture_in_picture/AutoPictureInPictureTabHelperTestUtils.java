@@ -29,17 +29,11 @@ public class AutoPictureInPictureTabHelperTestUtils {
     }
 
     /**
-     * Checks if the given {@link WebContents} is currently in auto picture-in-picture. Because it's
-     * used for polling on the UI thread, it must not block.
-     */
-    public static boolean isInAutoPictureInPicture(WebContents webContents) {
-        return AutoPictureInPictureTabHelperTestUtilsJni.get()
-                .isInAutoPictureInPicture(webContents);
-    }
-
-    /**
-     * Polls the UI thread until the auto picture-in-picture state for the given {@link WebContents}
+     * Polls the UI thread until the auto-PiP trigger state for the given {@link WebContents}
      * matches the {@code expectedInPip} state.
+     *
+     * <p>This state is true only when the browser automatically enters Picture-in-Picture, and
+     * false if PiP was entered manually or is not active.
      *
      * @param webContents The WebContents to check.
      * @param expectedInPip The expected auto picture-in-picture state.
@@ -48,7 +42,32 @@ public class AutoPictureInPictureTabHelperTestUtils {
     public static void waitForAutoPictureInPictureState(
             WebContents webContents, boolean expectedInPip, String failureMessage) {
         CriteriaHelper.pollUiThread(
-                () -> isInAutoPictureInPicture(webContents) == expectedInPip, failureMessage);
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                        .isInAutoPictureInPicture(webContents)
+                                == expectedInPip,
+                failureMessage);
+    }
+
+    /**
+     * Polls the UI thread until the PiP window visibility state for the given {@link WebContents}
+     * matches the {@code expectedInPip} state.
+     *
+     * <p>This state is true if a Picture-in-Picture window is visible, regardless of whether it was
+     * triggered automatically or manually.
+     *
+     * @param webContents The WebContents to check.
+     * @param expectedInPip The expected picture-in-picture video state.
+     * @param failureMessage The message to display if the criteria is not met.
+     */
+    public static void waitForPictureInPictureVideoState(
+            WebContents webContents, boolean expectedInPip, String failureMessage) {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                        .hasPictureInPictureVideo(webContents)
+                                == expectedInPip,
+                failureMessage);
     }
 
     /** Checks if auto picture-in-picture has been registered for the given {@link WebContents}. */
@@ -94,6 +113,8 @@ public class AutoPictureInPictureTabHelperTestUtils {
 
         boolean hasAutoPictureInPictureBeenRegistered(
                 @JniType("content::WebContents*") WebContents webContents);
+
+        boolean hasPictureInPictureVideo(@JniType("content::WebContents*") WebContents webContents);
 
         void setHasHighMediaEngagement(
                 @JniType("content::WebContents*") WebContents webContents,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.picture_in_picture;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -30,13 +31,14 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.media.MediaFeatures;
@@ -48,7 +50,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
+    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
 })
 @EnableFeatures({
     BlinkFeatures.MEDIA_SESSION_ENTER_PICTURE_IN_PICTURE,
@@ -66,8 +68,11 @@ public class AutoPictureInPictureTabHelperTest {
     private WebPageStation mPage;
 
     private static final String VIDEO_ID = "video";
+    private static final String PIP_BUTTON_ID = "pip";
     private static final String AUTO_PIP_VIDEO_PAGE =
             "/chrome/test/data/media/picture-in-picture/autopip-video.html";
+    private static final String AUTO_PIP_NOT_REGISTERED_PAGE =
+            "/chrome/test/data/media/picture-in-picture/autopip-no-register.html";
 
     @Before
     public void setUp() {
@@ -85,35 +90,20 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
-    public void testAutoPipWorksAndStops() throws TimeoutException {
+    public void testCanAutopipWithMediaPlaying() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         // Verify if the loaded page registers auto pip.
         assertTrue(
                 AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
                         webContents));
 
-        // Create a new tab to switch to later, then switch back to set up the test state.
+        // Create a new tab in the background to switch to later.
         Tab originalTab = mPage.getTab();
-        PageStation page = mPage.openNewTabFast();
-        Tab newTab = page.getTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelUtils.selectTabById(
-                            mActivity.getTabModelSelector(),
-                            originalTab.getId(),
-                            TabSelectionType.FROM_USER);
-                });
+        Tab newTab = createNewTabInBackground(originalTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP with new background tab.");
 
-        // Override and mock high media engagement value.
-        AutoPictureInPictureTabHelperTestUtils.setHasHighMediaEngagement(webContents, true);
-
-        // Starting playing.
-        DOMUtils.playMedia(webContents, VIDEO_ID);
-        DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
-
-        // Manually set audio focus for testing. It's needed because programmatically
-        // starting a video on Android doesn't gain audio focus.
-        AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
+        fulfillVideoPlaybackConditions(webContents);
 
         // Switch away from the tab. This should trigger auto-PiP.
         ThreadUtils.runOnUiThreadBlocking(
@@ -138,6 +128,208 @@ public class AutoPictureInPictureTabHelperTest {
                 webContents, false, "Did not exit auto-PiP after tab shown.");
     }
 
+    // TODO(crbug.com/421608904): add a test case for camera/mic based video auto-PiP.
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipIfNotRegistered() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_NOT_REGISTERED_PAGE);
+        // Verify the page does not register for auto-pip.
+        assertFalse(
+                "Page should not have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // Since the site did not register for auto-pip, it should not enter.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP if not registered.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipWithoutPlayback() {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        // Fulfill media engagement conditions, but do not start playback.
+        AutoPictureInPictureTabHelperTestUtils.setHasHighMediaEngagement(webContents, true);
+        AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // Should not enter auto-PiP without playback.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP without playback.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipWhenPaused() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+        // Pause playback.
+        DOMUtils.pauseMedia(webContents, VIDEO_ID);
+        DOMUtils.waitForMediaPauseBeforeEnd(webContents, VIDEO_ID);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // Should not enter auto-PiP when paused.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP when paused.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotCloseManuallyOpenedPip() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Fulfill all conditions for auto-PiP to ensure its logic is exercised when the tab is
+        // hidden later. This also starts video playback.
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Manually open PiP by simulating a click on the PiP button.
+        DOMUtils.clickNodeWithJavaScript(webContents, PIP_BUTTON_ID);
+        AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
+                webContents, true, "Did not enter PiP after manual request.");
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // The PiP window should still be open.
+        AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
+                webContents, true, "PiP should remain open after switching tabs.");
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not trigger auto-PiP with existing PiP.");
+
+        // Switch back to the original tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            originalTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // The PiP window should still be open.
+        AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
+                webContents, true, "PiP should remain open after switching back.");
+    }
+
+    @Test
+    @MediumTest
+    public void testDoesNotAutopipWithoutHttps() throws TimeoutException {
+        mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(false);
+
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+
+        // Should not enter auto-PiP on an insecure context.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Should not enter auto-PiP on an insecure context.");
+    }
+
+    /**
+     * Fulfills the video playback conditions required for auto-PiP to trigger.
+     *
+     * @param webContents The WebContents on which to fulfill the conditions.
+     * @throws TimeoutException if the media does not start playing within the timeout period.
+     */
+    private void fulfillVideoPlaybackConditions(WebContents webContents) throws TimeoutException {
+        // Override and mock high media engagement value.
+        AutoPictureInPictureTabHelperTestUtils.setHasHighMediaEngagement(webContents, true);
+
+        // Start playing the video.
+        DOMUtils.playMedia(webContents, VIDEO_ID);
+        DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
+
+        // Manually set audio focus for testing. It's needed because programmatically
+        // starting a video on Android doesn't gain audio focus.
+        AutoPictureInPictureTabHelperTestUtils.setHasAudioFocusForTesting(webContents, true);
+    }
+
+    /**
+     * Loads the given page URL and initializes {@link AutoPictureInPictureTabHelper} for testing.
+     *
+     * @param pageUrl The URL of the page to load.
+     * @return The {@link WebContents} of the loaded page.
+     */
     private WebContents loadUrlAndInitializeForTest(String pageUrl) {
         String url = mActivityTestRule.getTestServer().getURL(pageUrl);
         mPage = mPage.loadWebPageProgrammatically(url);
@@ -145,5 +337,23 @@ public class AutoPictureInPictureTabHelperTest {
         WebContents webContents = mActivity.getCurrentWebContents();
         AutoPictureInPictureTabHelperTestUtils.initializeForTesting(webContents);
         return webContents;
+    }
+
+    /**
+     * Creates a new tab in the background.
+     *
+     * @param parentTab The parent tab for the new tab.
+     * @return The newly created {@link Tab}.
+     */
+    private Tab createNewTabInBackground(Tab parentTab) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return mActivity
+                            .getCurrentTabCreator()
+                            .createNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                    parentTab);
+                });
     }
 }

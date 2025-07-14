@@ -37,6 +37,12 @@ JNI_AutoPictureInPictureTabHelperTestUtils_HasAutoPictureInPictureBeenRegistered
   return tab_helper->HasAutoPictureInPictureBeenRegistered();
 }
 
+jboolean JNI_AutoPictureInPictureTabHelperTestUtils_HasPictureInPictureVideo(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  return web_contents->HasPictureInPictureVideo();
+}
+
 void JNI_AutoPictureInPictureTabHelperTestUtils_SetHasHighMediaEngagement(
     JNIEnv* env,
     content::WebContents* web_contents,
