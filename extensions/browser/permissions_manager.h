@@ -357,6 +357,9 @@ class PermissionsManager : public KeyedService {
   using PassKey = base::PassKey<PermissionsManager>;
   friend class HostAccessRequestsHelper;
 
+  // Returns the restricted and permitted sites by user.
+  std::pair<URLPatternSet, URLPatternSet> GetUserBlockedAndAllowedSites() const;
+
   // Called whenever `user_permissions_` have changed.
   void OnUserPermissionsSettingsChanged();
 

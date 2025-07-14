@@ -275,6 +275,14 @@ PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
     user_permissions_.permitted_sites =
         GetSitesFromPrefs(extension_prefs_, kPermittedSites);
   }
+
+  // The user host restrictions will be empty when feature
+  // `kExtensionsMenuAccessControl` is disabled
+  auto [user_blocked_sites, user_allowed_sites] =
+      GetUserBlockedAndAllowedSites();
+  PermissionsData::SetUserHostRestrictions(
+      util::GetBrowserContextId(browser_context_),
+      std::move(user_blocked_sites), std::move(user_allowed_sites));
 }
 
 PermissionsManager::~PermissionsManager() {
@@ -300,6 +308,25 @@ BrowserContextKeyedServiceFactory* PermissionsManager::GetFactory() {
 void PermissionsManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kUserPermissions.name);
+}
+
+std::pair<URLPatternSet, URLPatternSet>
+PermissionsManager::GetUserBlockedAndAllowedSites() const {
+  // TODO(http://crbug.com/1268198): AddOrigin() below can fail if the
+  // added URLPattern doesn't parse (such as if the schemes are invalid). We
+  // need to make sure that origins added to this list only contain schemes that
+  // are valid for extensions to act upon (and gracefully handle others).
+  URLPatternSet user_blocked_sites;
+  for (const auto& site : user_permissions_.restricted_sites) {
+    user_blocked_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+  }
+
+  URLPatternSet user_allowed_sites;
+  for (const auto& site : user_permissions_.permitted_sites) {
+    user_allowed_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+  }
+
+  return {std::move(user_blocked_sites), std::move(user_allowed_sites)};
 }
 
 void PermissionsManager::UpdateUserSiteSetting(const url::Origin& origin,
@@ -987,16 +1014,8 @@ void PermissionsManager::RemoveObserver(Observer* observer) {
 }
 
 void PermissionsManager::OnUserPermissionsSettingsChanged() {
-  // TODO(http://crbug.com/1268198): AddOrigin() below can fail if the
-  // added URLPattern doesn't parse (such as if the schemes are invalid). We
-  // need to make sure that origins added to this list only contain schemes that
-  // are valid for extensions to act upon (and gracefully handle others).
-  URLPatternSet user_blocked_sites;
-  for (const auto& site : user_permissions_.restricted_sites)
-    user_blocked_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
-  URLPatternSet user_allowed_sites;
-  for (const auto& site : user_permissions_.permitted_sites)
-    user_allowed_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+  auto [user_blocked_sites, user_allowed_sites] =
+      GetUserBlockedAndAllowedSites();
 
   PermissionSet user_allowed_set(APIPermissionSet(), ManifestPermissionSet(),
                                  user_allowed_sites.Clone(),
