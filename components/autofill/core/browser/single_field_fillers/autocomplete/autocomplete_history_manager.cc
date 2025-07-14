@@ -154,37 +154,9 @@ void AutocompleteHistoryManager::Init(
     if (version_info::GetMajorVersionNumberAsInt() > last_cleaned_version) {
       // Trigger the cleanup.
       profile_database_->RemoveExpiredAutocompleteEntries(base::BindOnce(
-          &AutocompleteHistoryManager::OnWebDataServiceRequestDone,
-          weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+          &AutocompleteHistoryManager::OnAutofillCleanupReturned,
+          weak_ptr_factory_.GetWeakPtr()));
     }
-  }
-}
-
-void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
-    std::optional<QueryHandler> query_handler,
-    WebDataServiceBase::Handle current_handle,
-    std::unique_ptr<WDTypedResult> result) {
-  DCHECK(current_handle);
-
-  if (!result) {
-    // Returning early here if |result| is null.  We've seen this happen on
-    // Linux due to NFS dismounting and causing sql failures.
-    // See http://crbug.com/68783.
-    return;
-  }
-
-  WDResultType result_type = result->GetType();
-  switch (result_type) {
-    case AUTOFILL_VALUE_RESULT:
-      DCHECK(query_handler);
-      OnAutofillValuesReturned(current_handle, std::move(result),
-            *std::move(query_handler));
-      break;
-    case AUTOFILL_CLEANUP_RESULT:
-      OnAutofillCleanupReturned(current_handle, std::move(result));
-      break;
-    default:
-      break;
   }
 }
 
@@ -203,7 +175,7 @@ bool AutocompleteHistoryManager::GetFormValuesForElementName(
   if (profile_database_) {
     pending_query_ = profile_database_->GetFormValuesForElementName(
         field.name(), field.value(), kMaxAutocompleteMenuItems,
-        base::BindOnce(&AutocompleteHistoryManager::OnWebDataServiceRequestDone,
+        base::BindOnce(&AutocompleteHistoryManager::OnAutofillValuesReturned,
                        weak_ptr_factory_.GetWeakPtr(),
                        QueryHandler(field.global_id(), field.value(),
                                     std::move(on_suggestions_returned))));
@@ -252,10 +224,15 @@ void AutocompleteHistoryManager::SendSuggestions(
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(
+    QueryHandler query_handler,
     WebDataServiceBase::Handle current_handle,
-    std::unique_ptr<WDTypedResult> result,
-    QueryHandler query_handler) {
-  DCHECK(result);
+    std::unique_ptr<WDTypedResult> result) {
+  if (!result) {
+    // Returning early here if `result` is null.  We've seen this happen on
+    // Linux due to NFS dismounting and causing sql failures.
+    // See http://crbug.com/68783.
+    return;
+  }
   DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
 
   if (!pending_query_ || *pending_query_ != current_handle) {

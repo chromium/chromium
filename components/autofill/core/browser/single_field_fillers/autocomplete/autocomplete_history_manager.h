@@ -99,10 +99,6 @@ class AutocompleteHistoryManager : public KeyedService {
             PrefService* pref_service,
             bool is_off_the_record);
 
-  void OnWebDataServiceRequestDone(std::optional<QueryHandler> query_handler,
-                                   WebDataServiceBase::Handle h,
-                                   std::unique_ptr<WDTypedResult> result);
-
   // Returns true if the field has a meaningful `name`.
   // An input field name 'field_2' bears no semantic meaning and there is a
   // chance that a different website or different form uses the same field name
@@ -120,6 +116,23 @@ class AutocompleteHistoryManager : public KeyedService {
       SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
 
+  // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
+  // `current_handle` is the DB query handle, and is used to retrieve the
+  // handler associated with that query.
+  // `result` contains the Autocomplete suggestions retrieved from the DB that,
+  // if valid, will be passed to the callback in `query_handler`.
+  void OnAutofillValuesReturned(QueryHandler query_handler,
+    WebDataServiceBase::Handle current_handle,
+    std::unique_ptr<WDTypedResult> result);
+
+  // Function handling WebDataService responses of type AUTOFILL_CLEANUP_RESULT.
+  // `current_handle` is the DB query handle, and is used to retrieve the
+  // handler associated with that query.
+  // `result` contains the number of entries that were cleaned-up, it is
+  // currently unused.
+  void OnAutofillCleanupReturned(WebDataServiceBase::Handle current_handle,
+      std::unique_ptr<WDTypedResult> result);
+
  private:
   friend class AutocompleteHistoryManagerTest;
 
@@ -128,22 +141,6 @@ class AutocompleteHistoryManager : public KeyedService {
   // autocomplete additions.
   void SendSuggestions(const std::vector<AutocompleteEntry>& entries,
                        QueryHandler query_handler);
-
-  // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
-  // `current_handle` is the DB query handle, and is used to retrieve the
-  // handler associated with that query.
-  // `result` contains the Autocomplete suggestions retrieved from the DB that,
-  // if valid, will be passed to the callback in `query_handler`.
-  void OnAutofillValuesReturned(WebDataServiceBase::Handle current_handle,
-                                std::unique_ptr<WDTypedResult> result,
-                                QueryHandler query_handler);
-
-  // Function handling WebDataService responses of type AUTOFILL_CLEANUP_RESULT.
-  // |current_handle| is the DB query handle, and is used to retrieve the
-  // handler associated with that query.
-  // |result| contains the number of entries that were cleaned-up.
-  void OnAutofillCleanupReturned(WebDataServiceBase::Handle current_handle,
-                                 std::unique_ptr<WDTypedResult> result);
 
   // Returns true if the given |field| and its value are valid to be saved as a
   // new or updated Autocomplete entry.
