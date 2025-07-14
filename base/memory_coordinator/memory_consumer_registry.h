@@ -39,6 +39,10 @@ class BASE_EXPORT MemoryConsumerRegistry {
   static MemoryConsumerRegistry& Get();
   static void Set(MemoryConsumerRegistry* instance);
 
+  // Returns true if the global instance is registered.
+  // TODO(406578344):  Remove this when the registry is always registered.
+  static bool IsAvailable();
+
   // Adds/Removes an instance of MemoryConsumer with a specific
   // `consumer_id` and `traits`.
   void AddMemoryConsumer(std::string_view consumer_id,

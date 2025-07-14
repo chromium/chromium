@@ -39,6 +39,11 @@ void MemoryConsumerRegistry::Set(MemoryConsumerRegistry* instance) {
   g_memory_consumer_registry = instance;
 }
 
+// static
+bool MemoryConsumerRegistry::IsAvailable() {
+  return !!g_memory_consumer_registry;
+}
+
 void MemoryConsumerRegistry::AddMemoryConsumer(std::string_view consumer_id,
                                                MemoryConsumerTraits traits,
                                                MemoryConsumer* consumer) {

@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_consumer_registry.h"
 
 namespace content {
 
@@ -29,6 +30,11 @@ void BindBrowserMemoryConsumerRegistry(
     ChildProcessId child_process_id,
     mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
         pending_receiver) {
+  // TODO(406578344): Remove this when the global registry is always available.
+  if (!base::MemoryConsumerRegistry::IsAvailable()) {
+    return;
+  }
+
   auto& instance = GetInstance();
   instance.Bind(process_type, child_process_id, std::move(pending_receiver));
 }
