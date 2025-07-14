@@ -366,7 +366,18 @@ PrefetchService::PrefetchService(BrowserContext* browser_context)
                      ? std::make_unique<PrefetchScheduler>(this)
                      : nullptr) {}
 
-PrefetchService::~PrefetchService() = default;
+PrefetchService::~PrefetchService() {  // NOLINT(modernize-use-equals-default)
+  // This is to avoid notifying `PrefetchService::OnWillBeDestroyed()` in the
+  // middle of `PrefetchService` destruction.
+  // This is for the future when we add some logic to `OnWillBeDestroyed()`.
+  // Currently `OnWillBeDestroyed()` is empty and thus this is no-op and we have
+  // to skip `modernize-use-equals-default` check.
+  for (const auto& iter : owned_prefetches()) {
+    if (iter.second) {
+      iter.second->RemoveObserver(this);
+    }
+  }
+}
 
 void PrefetchService::SetPrefetchServiceDelegateForTesting(
     std::unique_ptr<PrefetchServiceDelegate> delegate) {
@@ -380,12 +391,7 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
 
 void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
-  const base::WeakPtr<PrefetchContainer> prefetch_container =
-      owned_prefetch_container->GetWeakPtr();
-  DCHECK(prefetch_container);
-  auto prefetch_container_key = prefetch_container->key();
-
-  RecordExistingPrefetchWithMatchingURL(prefetch_container);
+  RecordExistingPrefetchWithMatchingURL(*owned_prefetch_container);
 
   enum class Action {
     kTakeOldWithMigration,
@@ -416,7 +422,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
   //
   // TODO(crbug.com/372186548): Revisit the merging process and comments here
   // and below.
-  auto prefetch_iter = owned_prefetches().find(prefetch_container_key);
+  auto prefetch_iter = owned_prefetches().find(owned_prefetch_container->key());
   Action action = [&]() {
     if (prefetch_iter == owned_prefetches().end()) {
       return Action::kTakeNew;
@@ -477,22 +483,30 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     case Action::kReplaceOldWithNew:
       ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr(),
                              /*should_progress=*/false);
-      // There should be no existing entry for `prefetch_container_key`.
-      CHECK(owned_prefetches_
-                .emplace(prefetch_container_key,
-                         std::move(owned_prefetch_container))
-                .second);
-      prefetch_container->OnAddedToPrefetchService();
+      AddPrefetchContainerToOwnedPrefetches(
+          std::move(owned_prefetch_container));
       break;
     case Action::kTakeNew:
-      // There should be no existing entry for `prefetch_container_key`.
-      CHECK(owned_prefetches_
-                .emplace(prefetch_container_key,
-                         std::move(owned_prefetch_container))
-                .second);
-      prefetch_container->OnAddedToPrefetchService();
+      AddPrefetchContainerToOwnedPrefetches(
+          std::move(owned_prefetch_container));
       break;
   }
+}
+
+void PrefetchService::AddPrefetchContainerToOwnedPrefetches(
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
+  const base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetch_container->GetWeakPtr();
+
+  // There should be no existing entry for `prefetch_container_key`.
+  CHECK(owned_prefetches_
+            .emplace(prefetch_container->key(),
+                     std::move(owned_prefetch_container))
+            .second);
+
+  prefetch_container->OnAddedToPrefetchService();
+
+  prefetch_container->AddObserver(this);
 }
 
 bool PrefetchService::IsPrefetchDuplicate(
@@ -1866,6 +1880,20 @@ PrefetchService::OnPrefetchResponseStarted(
   return std::nullopt;
 }
 
+void PrefetchService::OnWillBeDestroyed(PrefetchContainer& prefetch_container) {
+}
+
+void PrefetchService::OnGotInitialEligibility(
+    PrefetchContainer& prefetch_container,
+    PreloadingEligibility eligibility) {}
+
+void PrefetchService::OnDeterminedHead(PrefetchContainer& prefetch_container) {}
+
+void PrefetchService::OnPrefetchCompletedOrFailed(
+    PrefetchContainer& prefetch_container,
+    const network::URLLoaderCompletionStatus& completion_status,
+    const std::optional<int>& response_code) {}
+
 void PrefetchService::OnPrefetchResponseCompleted(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status) {
@@ -2039,7 +2067,7 @@ base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {
 }
 
 void PrefetchService::RecordExistingPrefetchWithMatchingURL(
-    base::WeakPtr<PrefetchContainer> prefetch_container) const {
+    const PrefetchContainer& prefetch_container) const {
   bool matching_prefetch = false;
   int num_matching_prefetches = 0;
 
@@ -2050,7 +2078,7 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
 
   for (const auto& prefetch_iter : owned_prefetches()) {
     if (prefetch_iter.second &&
-        prefetch_iter.second->GetURL() == prefetch_container->GetURL()) {
+        prefetch_iter.second->GetURL() == prefetch_container.GetURL()) {
       matching_prefetch = true;
       num_matching_prefetches++;
 
@@ -2070,12 +2098,12 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
       }
 
       if (prefetch_iter.second->HasSameReferringURLForMetrics(
-              *prefetch_container)) {
+              prefetch_container)) {
         num_matching_prefetch_same_referrer++;
       }
 
       if (prefetch_iter.second->GetReferringRenderFrameHostId() ==
-          prefetch_container->GetReferringRenderFrameHostId()) {
+          prefetch_container.GetReferringRenderFrameHostId()) {
         num_matching_prefetch_same_rfh++;
       }
     }

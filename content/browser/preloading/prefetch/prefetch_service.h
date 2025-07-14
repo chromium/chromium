@@ -75,7 +75,10 @@ enum class PrefetchRedirectNetworkContextTransition {
 // checking the eligibility of the prefetch, making the network request for the
 // prefetch, and provide prefetched resources to URL loader interceptor when
 // needed.
-class CONTENT_EXPORT PrefetchService {
+//
+// `PrefetchService` is an `PrefetchContainer::Observer` to `PrefetchContainer`s
+// in `owned_prefetches_`.
+class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
  public:
   static PrefetchService* GetFromFrameTreeNodeId(
       FrameTreeNodeId frame_tree_node_id);
@@ -87,7 +90,7 @@ class CONTENT_EXPORT PrefetchService {
   // be true, since |PrefetchService| will be indirectly owned by
   // |BrowserContext|.
   explicit PrefetchService(BrowserContext* browser_context);
-  virtual ~PrefetchService();
+  ~PrefetchService() override;
 
   PrefetchService(const PrefetchService&) = delete;
   const PrefetchService& operator=(const PrefetchService&) = delete;
@@ -312,6 +315,10 @@ class CONTENT_EXPORT PrefetchService {
   void AddPrefetchContainerWithoutStartingPrefetch(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
+  // Adds to `owned_prefetches_`.
+  void AddPrefetchContainerToOwnedPrefetches(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
+
   // Starts the network requests for as many prefetches in |prefetch_queue_| as
   // possible.
   void Prefetch();
@@ -366,6 +373,16 @@ class CONTENT_EXPORT PrefetchService {
   std::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       network::mojom::URLResponseHead* head);
+
+  // PrefetchContainer::Observer overrides:
+  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
+  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override;
+  void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
+  void OnPrefetchCompletedOrFailed(
+      PrefetchContainer& prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code) override;
 
   // Called when the response for |prefetch_container| has completed when using
   // the streaming URL loader.
@@ -434,7 +451,7 @@ class CONTENT_EXPORT PrefetchService {
   // |prefetch_container| but from a different referring RenderFrameHost.
   // Records the result to a UMA histogram.
   void RecordExistingPrefetchWithMatchingURL(
-      base::WeakPtr<PrefetchContainer> prefetch_container) const;
+      const PrefetchContainer& prefetch_container) const;
 
   // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
   // (implicitly). This argument is meaningful only if `UsePrefetchScheduler()`.
@@ -509,10 +526,15 @@ class CONTENT_EXPORT PrefetchService {
   // Prefetches owned by `this`. All `PrefetchContainer`s added by
   // `AddPrefetchContainer*` will be stored here.
   //
-  // `PrefetchContainer`s in `owned_prefetches_` must be always destructed
-  // either by `ResetPrefetchContainer()` or `~PrefetchService()` dtor.
+  // `PrefetchContainer`s in `owned_prefetches_` must be always:
+  // - Added by `AddPrefetchContainerToOwnedPrefetches()`.
+  // - Destructed either by:
+  //   - `ResetPrefetchContainer()` or
+  //   - `~PrefetchService()` dtor.
+  //
   // Use `owned_prefetches()` wherever possible, to avoid unintentional
   // destruction of `PrefetchContainer`s in `owned_prefetches_`.
+  //
   // Note that `PrefetchContainer` not added to `owned_prefetches_` can be
   // destroyed elsewhere even if it has a relevant `PrefetchService` (e.g. in
   // `PrefetchContainer::MigrateNewlyAdded()`).
