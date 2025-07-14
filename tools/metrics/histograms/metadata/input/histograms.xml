@@ -2356,6 +2356,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Touch.DevicePosture.{Instance}" enum="PostureMode"
+    expires_after="2026-06-20">
+  <owner>robliao@chromium.org</owner>
+  <owner>arakeri@microsoft.com</owner>
+  <owner>wangsongjin@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the device posture mode (tablet or desktop) usage patterns across
+    different device. This metric is only logged once per browser session when
+    initializing the singleton `TouchUiController` at startup. This metric is
+    only available on Windows. The metric is not logged on devices that have
+    explicitly disabled convertibility.
+
+    Startup: Records the device posture mode detected at browser startup.
+
+    Switch: Records the device posture mode is switched to another.
+  </summary>
+  <token key="Instance">
+    <variant name="Startup"/>
+    <variant name="Switch"/>
+  </token>
+</histogram>
+
 <histogram name="Untrusted.InputMethod.PhysicalKeyboard.VietnameseActions"
     enum="VietnameseActions" expires_after="2025-01-05">
   <owner>jhtin@chromium.org</owner>

@@ -80,6 +80,20 @@ void RecordMaxTouchPointsSupportedBySystem(int max_touch_points) {
 
 #if BUILDFLAG(IS_WIN)
 
+void RecordDevicePostureModeOnStartup(bool tablet_mode) {
+  base::UmaHistogramEnumeration("Touch.DevicePosture.Startup",
+                                tablet_mode
+                                    ? TouchUiController::PostureMode::kTablet
+                                    : TouchUiController::PostureMode::kDesktop);
+}
+
+void RecordDevicePostureModeOnSwitch(bool tablet_mode) {
+  base::UmaHistogramEnumeration("Touch.DevicePosture.Switch",
+                                tablet_mode
+                                    ? TouchUiController::PostureMode::kTablet
+                                    : TouchUiController::PostureMode::kDesktop);
+}
+
 bool IsWndProcMessageObserved(UINT message) {
 #if BUILDFLAG(USE_BLINK)
   return message == WM_SETTINGCHANGE || message == WM_POINTERDEVICECHANGE;
@@ -201,6 +215,11 @@ TouchUiController::TouchUiController(TouchUiState touch_ui_state)
 TouchUiController::~TouchUiController() = default;
 
 void TouchUiController::OnTabletModeToggled(bool enabled) {
+#if BUILDFLAG(IS_WIN)
+  if (tablet_mode_ != enabled) {
+    RecordDevicePostureModeOnSwitch(enabled);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   const bool was_touch_ui = touch_ui();
   tablet_mode_ = enabled;
   if (touch_ui() != was_touch_ui)
@@ -229,6 +248,12 @@ void TouchUiController::SetInitialTabletMode(bool enabled) {
   if (touch_ui() != was_touch_ui) {
     TRACE_EVENT0("ui", "TouchUiController.NotifyListeners");
     callback_list_.Notify();
+  }
+
+  const auto& convertibility_enabled =
+      base::win::GetConvertibilityEnabledOverride();
+  if (!convertibility_enabled || *convertibility_enabled) {
+    RecordDevicePostureModeOnStartup(enabled);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -10,6 +10,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/mock_touch_ui_controller.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 namespace ui {
 
 namespace {
@@ -31,6 +35,7 @@ class TestObserver {
 class TouchUiControllerTest : public testing::Test {
  public:
   using TouchUiState = ::ui::TouchUiController::TouchUiState;
+  using PostureMode = ::ui::TouchUiController::PostureMode;
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -94,6 +99,52 @@ TEST_F(TouchUiControllerTest, TabletToggledOnTouchUiAuto) {
   EXPECT_FALSE(controller.touch_ui());
   EXPECT_EQ(2, observer.touch_ui_changes());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(TouchUiControllerTest, RecordDevicePostureMode) {
+  const char kStartup[] = "Touch.DevicePosture.Startup";
+  const char kSwitch[] = "Touch.DevicePosture.Switch";
+  base::HistogramTester histogram_tester;
+
+  base::win::ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  auto csm_false = []() { return false; };
+  {
+    // Verify the startup histogram is not fired if the device is not
+    // convertible.
+    base::win::ScopedDeviceConvertibilityStateForTesting scoped_state(
+        false, false, csm_false, std::nullopt,
+        /*convertibility_enabled=*/false);
+    TouchUiController controller(TouchUiState::kAuto);
+    RunUntilIdle();
+    histogram_tester.ExpectBucketCount(kStartup, PostureMode::kDesktop, 0);
+    histogram_tester.ExpectBucketCount(kStartup, PostureMode::kTablet, 0);
+  }
+  {
+    // Verify the startup histogram for implicitly convertible devices and
+    // posture mode of desktop.
+    base::win::ScopedDeviceConvertibilityStateForTesting scoped_state(
+        false, false, csm_false, std::nullopt,
+        /*convertibility_enabled=*/std::nullopt);
+    TouchUiController controller(TouchUiState::kAuto);
+    RunUntilIdle();
+    histogram_tester.ExpectBucketCount(kStartup, PostureMode::kDesktop, 1);
+    histogram_tester.ExpectBucketCount(kStartup, PostureMode::kTablet, 0);
+
+    // Verify the tablet switch happens when the device posture mode
+    // changes from desktop to tablet.
+    controller.OnTabletModeToggled(true);
+    histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kTablet, 1);
+    histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kDesktop, 0);
+
+    // Verify the desktop switch happens when the device posture mode
+    // changes from tablet to desktop.
+    controller.OnTabletModeToggled(false);
+    histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kDesktop, 1);
+    histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kTablet, 1);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_BLINK)
 TEST_F(TouchUiControllerTest, DetectPointerDevices) {

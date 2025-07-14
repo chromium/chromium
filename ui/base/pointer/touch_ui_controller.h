@@ -37,6 +37,15 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
     kEnabled,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. See PostureMode in:
+  // tools/metrics/histograms/metadata/input/enums.xml
+  enum class PostureMode {
+    kTablet = 0,
+    kDesktop = 1,
+    kMaxValue = kDesktop,
+  };
+
   class COMPONENT_EXPORT(UI_BASE) TouchUiScoperForTesting {
    public:
     explicit TouchUiScoperForTesting(bool enabled,

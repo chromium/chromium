@@ -696,6 +696,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="Touchpad digitizer"/>
 </enum>
 
+<enum name="PostureMode">
+  <int value="0" label="Tablet"/>
+  <int value="1" label="Desktop"/>
+</enum>
+
 <enum name="PrimaryPointerType">
   <int value="0" label="No pointer"/>
   <int value="1" label="Coarse pointer"/>
