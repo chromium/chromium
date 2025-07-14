@@ -17,10 +17,6 @@ const base::Location& ModelError::location() const {
   return location_;
 }
 
-const std::string& ModelError::message() const {
-  return message_;
-}
-
 ModelError::Type ModelError::type() const {
   return type_;
 }

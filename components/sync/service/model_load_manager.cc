@@ -223,7 +223,7 @@ void ModelLoadManager::ModelLoadCallback(
     preferred_types_without_errors_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
     StopDatatypeImpl(
-        SyncError(error->location(), SyncError::MODEL_ERROR, error->message()),
+        SyncError(error->location(), SyncError::MODEL_ERROR, error->ToString()),
         SyncStopMetadataFate::KEEP_METADATA, dtc, base::DoNothing());
     NotifyDelegateIfReadyForConfigure();
     return;

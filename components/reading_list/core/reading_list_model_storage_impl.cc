@@ -109,7 +109,7 @@ void ReadingListModelStorageImpl::OnDatabaseLoad(
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
-    std::move(load_callback_).Run(base::unexpected(error->message()));
+    std::move(load_callback_).Run(base::unexpected(error->ToString()));
     return;
   }
 
@@ -146,7 +146,7 @@ void ReadingListModelStorageImpl::OnReadAllMetadata(
   TRACE_EVENT0("ui", "ReadingListModelStorageImpl::OnReadAllMetadata");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
-    std::move(load_callback_).Run(base::unexpected(error->message()));
+    std::move(load_callback_).Run(base::unexpected(error->ToString()));
   } else {
     loaded_ = true;
     std::move(load_callback_)
@@ -165,7 +165,7 @@ void ReadingListModelStorageImpl::OnStoreCreated(
     std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
-    std::move(load_callback_).Run(base::unexpected(error->message()));
+    std::move(load_callback_).Run(base::unexpected(error->ToString()));
     return;
   }
   store_ = std::move(store);

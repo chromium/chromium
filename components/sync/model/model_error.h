@@ -208,10 +208,6 @@ class ModelError {
   // error is set.
   const base::Location& location() const;
 
-  // The message explaining the error this object represents. Can only be called
-  // if the error is set.
-  const std::string& message() const;
-
   // The type of the error this object represents. Only set if the error type is
   // known. Otherwise, returns ModelErrorType::kUnspecified.
   ModelError::Type type() const;
@@ -221,7 +217,6 @@ class ModelError {
 
  private:
   base::Location location_;
-  std::string message_;
   // The type of the error. This is optional to ensure backwards compatibility.
   // It is used for metrics collection.
   Type type_;
