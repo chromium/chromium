@@ -9,7 +9,6 @@ for more details about the presubmit API built into depot_tools.
 """
 
 from filecmp import dircmp
-import os
 import os.path
 import subprocess
 import tempfile
