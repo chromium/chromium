@@ -22,7 +22,7 @@ MEDIA_EXPORT std::pair<float, float> EWMAAndMaxPower_C(float initial_value,
                                                        int len,
                                                        float smoothing_factor);
 
-#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+#if defined(ARCH_CPU_X86_FAMILY)
 MEDIA_EXPORT void FMAC_SSE(const float src[],
                            float scale,
                            int len,

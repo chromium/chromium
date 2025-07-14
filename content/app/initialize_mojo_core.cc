@@ -78,7 +78,7 @@ void InitializeMojoCore() {
     // allocate shared memory.
     mojo::SharedMemoryUtils::InstallBaseHooks();
   }
-#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace content
