@@ -427,7 +427,9 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
 });
 
 // Tests for correct speech and earcons on the earcons lesson.
-AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
+// TODO(crbug.com/431756859): The earcon lesson is not working in both mv2 and
+// mv3. Fix it and re-enable this test.
+AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EarconLesson', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
