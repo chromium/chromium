@@ -23,7 +23,8 @@ class COMPONENT_EXPORT(INPUT) InputUtils {
  private:
   FRIEND_TEST_ALL_PREFIXES(UtilsTest,
                            InputToVizNotSupportedOnOlderSecurityPatchLevel);
-  static bool HasSecurityUpdate(const std::string& security_patch);
+  FRIEND_TEST_ALL_PREFIXES(UtilsTest, AndroidBaklavaPlusHasSecurityPatch);
+  static bool HasSecurityUpdate(const std::string& security_patch, int sdk_int);
 
   // Checks if other static member variables has been initialized.
   static bool initialized_;

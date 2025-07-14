@@ -12,8 +12,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
 #endif
@@ -35,17 +33,17 @@ jboolean JNI_InputUtils_IsTransferInputToVizSupported(JNIEnv* env) {
 // Check whether the fix for `CVE-2025-0097` is present, which went in Feb 2025
 // security update: https://source.android.com/docs/security/bulletin/2025-02-01
 // static
-bool InputUtils::HasSecurityUpdate(const std::string& security_patch) {
+bool InputUtils::HasSecurityUpdate(const std::string& security_patch,
+                                   int sdk_int) {
+  if (sdk_int >= base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+    // Security patch is present on Android 16+.
+    return true;
+  }
   base::Time min_security_patch_date;
   CHECK(base::Time::FromString("2025-02-05", &min_security_patch_date));
 
   base::Time security_patch_date;
   if (!base::Time::FromString(security_patch.c_str(), &security_patch_date)) {
-    {
-      // TODO(427757664): Cleanup after investigation.
-      SCOPED_CRASH_KEY_STRING64("b427757664", "security_patch", security_patch);
-      base::debug::DumpWithoutCrashing();
-    }
     return false;
   }
 
@@ -70,7 +68,8 @@ bool InputUtils::IsTransferInputToVizSupported() {
   // potentially wasted effort).
   if (!initialized_) {
     has_security_update_ =
-        HasSecurityUpdate(base::android::android_info::security_patch());
+        HasSecurityUpdate(base::android::android_info::security_patch(),
+                          base::android::android_info::sdk_int());
     initialized_ = true;
   }
   // Enable on user debug builds to have test coverage on older Android 15 bots.

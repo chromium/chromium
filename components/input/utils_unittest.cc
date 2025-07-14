@@ -12,24 +12,28 @@
 
 namespace input {
 
-class UtilsTest : public testing::Test {
- public:
-  UtilsTest() {
-    scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(UtilsTest, InputToVizNotSupportedOnOlderSecurityPatchLevel) {
+TEST(UtilsTest, InputToVizNotSupportedOnOlderSecurityPatchLevel) {
   const std::vector<std::pair<std::string, bool>> security_patches = {
       {"2024-03-06", false}, {"2025-01-06", false}, {"2025-02-01", false},
       {"2025-02-05", true},  {"2025-03-01", true},  {"2025-12-31", true},
   };
 
   for (const auto& [date, expectation] : security_patches) {
-    EXPECT_EQ(InputUtils::HasSecurityUpdate(date), expectation);
+    EXPECT_EQ(InputUtils::HasSecurityUpdate(
+                  date, base::android::android_info::SdkVersion::SDK_VERSION_V),
+              expectation);
+  }
+}
+
+TEST(UtilsTest, AndroidBaklavaPlusHasSecurityPatch) {
+  const std::vector<std::string> security_patches = {
+      "2024-03-06", "2025-01-06", "2025-02-01",
+      "2025-02-05", "2025-03-01", "2025-12-31",
+  };
+
+  for (const auto& date : security_patches) {
+    EXPECT_TRUE(InputUtils::HasSecurityUpdate(
+        date, base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA));
   }
 }
 
