@@ -624,12 +624,33 @@ bool ui::IsNSRange(id value) {
   // Check to see if any of the Cocoa wrappers refer to an invalid backing
   // AXPlatformNode. If so, then we need to re-create the _children Cocoa
   // wrappers.
-  if (_children) {
-    for (NSInteger child_index = [_children count] - 1; child_index >= 0;
-         --child_index) {
-      BrowserAccessibilityCocoa* child = _children[child_index];
+  BrowserAccessibility* browserAccessibility =
+      static_cast<BrowserAccessibility*>([self nodeDelegate]);
+  const std::vector<int32_t>& indirectChildIds = _owner->GetIntListAttribute(
+      ax::mojom::IntListAttribute::kIndirectChildIds);
 
-      if (![child instanceActive] || ![child nodeDelegate]) {
+  if (_children) {
+    size_t child_count = [_children count];
+    if ((browserAccessibility->PlatformChildCount() +
+         indirectChildIds.size()) != child_count) {
+      // Number of children have changed.
+      // TODO(crbug.com/425758499): investigate why this occurs; once ready,
+      // CHECK above condition along with experiment.
+      _children = nil;
+      child_count = 0;
+    }
+
+    for (size_t child_index = 0; child_index < child_count; child_index++) {
+      BrowserAccessibilityCocoa* child = _children[child_index];
+      BrowserAccessibility* browserAccessibilityChild =
+          static_cast<BrowserAccessibility*>([child nodeDelegate]);
+      if (![child instanceActive] || !browserAccessibilityChild ||
+          browserAccessibilityChild->PlatformGetParent() !=
+              [self nodeDelegate]) {
+        // Child unexpectedly refers to a deleted browser accessibility or a
+        // reparented node.
+        // TODO(crbug.com/425758499): investigate why this occurs; once ready,
+        // CHECK above condition along with experiment.
         _children = nil;
         break;
       }
@@ -662,8 +683,6 @@ bool ui::IsNSRange(id value) {
     }
 
     // Also, add indirect children (if any).
-    const std::vector<int32_t>& indirectChildIds = _owner->GetIntListAttribute(
-        ax::mojom::IntListAttribute::kIndirectChildIds);
     for (ui::AXNodeID childId : indirectChildIds) {
       BrowserAccessibility* child = _owner->manager()->GetFromID(childId);
       if (!child) {
