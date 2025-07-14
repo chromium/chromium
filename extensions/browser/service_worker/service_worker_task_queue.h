@@ -391,6 +391,12 @@ class ServiceWorkerTaskQueue : public KeyedService,
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token) const;
 
+  // Gets the worker state and context ID for a given activation.
+  // If the activation is not current, returns a null worker state.
+  std::tuple<ServiceWorkerState*, SequencedContextId>
+  GetWorkerStateForActivation(const ExtensionId& extension_id,
+                              const base::UnguessableToken& activation_token);
+
   const ServiceWorkerState* GetWorkerState(
       const SequencedContextId& context_id) const;
   ServiceWorkerState* GetWorkerState(const SequencedContextId& context_id);

@@ -142,34 +142,25 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
     int64_t service_worker_version_id,
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!IsCurrentActivation(extension_id, activation_token)) {
-    return;
+  auto [worker_state, context_id] =
+      GetWorkerStateForActivation(extension_id, activation_token);
+  if (worker_state) {
+    const WorkerId worker_id = {extension_id, render_process_id,
+                                service_worker_version_id, thread_id};
+    worker_state->DidStartServiceWorkerContext(context_id, worker_id);
   }
-
-  const SequencedContextId context_id = {
-      extension_id, browser_context_->UniqueId(), activation_token};
-  const WorkerId worker_id = {extension_id, render_process_id,
-                              service_worker_version_id, thread_id};
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-
-  worker_state->DidStartServiceWorkerContext(context_id, worker_id);
 }
 
 void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
     const WorkerId& worker_id) {
-  auto activation_token = GetCurrentActivationToken(worker_id.extension_id);
-  if (!activation_token) {
-    // Extension has been deactivated so worker state should already be erased.
-    return;
+  if (auto activation_token =
+          GetCurrentActivationToken(worker_id.extension_id)) {
+    auto [worker_state, context_id] =
+        GetWorkerStateForActivation(worker_id.extension_id, *activation_token);
+    if (worker_state) {
+      worker_state->Reset();
+    }
   }
-
-  const SequencedContextId context_id = {
-      worker_id.extension_id, browser_context_->UniqueId(), *activation_token};
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  // If the extension is still activated, worker state should still exist.
-  CHECK(worker_state);
-  worker_state->Reset();
 }
 
 void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
@@ -180,20 +171,15 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
     int64_t service_worker_version_id,
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!IsCurrentActivation(extension_id, activation_token)) {
-    return;
-  }
-
-  const SequencedContextId context_id = {
-      extension_id, browser_context_->UniqueId(), activation_token};
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-
-  worker_state->DidStopServiceWorkerContext(worker_id, service_worker_scope);
-  if (g_test_observer) {
-    g_test_observer->DidStopServiceWorkerContext(extension_id);
+  auto [worker_state, context_id] =
+      GetWorkerStateForActivation(extension_id, activation_token);
+  if (worker_state) {
+    worker_state->DidStopServiceWorkerContext(worker_id, service_worker_scope);
+    if (g_test_observer) {
+      g_test_observer->DidStopServiceWorkerContext(context_id.extension_id);
+    }
   }
 }
 
@@ -907,6 +893,24 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessage(
 void ServiceWorkerTaskQueue::OnDestruct(
     content::ServiceWorkerContext* context) {
   StopObserving(context);
+}
+
+std::tuple<ServiceWorkerState*, SequencedContextId>
+ServiceWorkerTaskQueue::GetWorkerStateForActivation(
+    const ExtensionId& extension_id,
+    const base::UnguessableToken& activation_token) {
+  if (!IsCurrentActivation(extension_id, activation_token)) {
+    return {};
+  }
+
+  const SequencedContextId context_id = {
+      extension_id, browser_context_->UniqueId(), activation_token};
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+
+  // If the extension is still activated, worker state should still exist.
+  CHECK(worker_state);
+
+  return {worker_state, context_id};
 }
 
 bool ServiceWorkerTaskQueue::IsWorkerUnregistrationSuccess(
