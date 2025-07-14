@@ -124,12 +124,38 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
       break;
 
     case HangWatcher::ProcessType::kGPUProcess:
-      // Not recorded for now.
+      // `SetShuttingDown` is not called for the GPU process. If we ever decide
+      // to track shutdown hangs, we'll need the histograms below to be suffixed
+      // with ".Shutdown".
       CHECK(!shutting_down);
+
+      switch (thread_type) {
+        case HangWatcher::ThreadType::kIOThread:
+          UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
+              UMA_HISTOGRAM_BOOLEAN, sample_ticks, monitoring_period,
+              "HangWatcher.IsThreadHung.GpuProcess.IOThread", any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kMainThread:
+          UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
+              UMA_HISTOGRAM_BOOLEAN, sample_ticks, monitoring_period,
+              "HangWatcher.IsThreadHung.GpuProcess.MainThread",
+              any_thread_hung);
+          break;
+        case HangWatcher::ThreadType::kCompositorThread:
+          // Not recorded for now.
+          break;
+        case HangWatcher::ThreadType::kThreadPoolThread:
+          // Not recorded for now.
+          break;
+      }
       break;
 
     case HangWatcher::ProcessType::kRendererProcess:
+      // `SetShuttingDown` is not called for the renderer process. If we ever
+      // decide to track shutdown hangs, we'll need the histograms below to be
+      // suffixed with ".Shutdown".
       CHECK(!shutting_down);
+
       switch (thread_type) {
         case HangWatcher::ThreadType::kIOThread:
           UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
@@ -156,7 +182,11 @@ void LogStatusHistogram(HangWatcher::ThreadType thread_type,
       break;
 
     case HangWatcher::ProcessType::kUtilityProcess:
+      // `SetShuttingDown` is not called for the Utility process. If we ever
+      // decide to track shutdown hangs, we'll need the histograms below to be
+      // suffixed with ".Shutdown".
       CHECK(!shutting_down);
+
       switch (thread_type) {
         case HangWatcher::ThreadType::kIOThread:
           UMA_HISTOGRAM_BOOLEAN(
@@ -216,6 +246,11 @@ BASE_FEATURE(kEnableHangWatcher,
 #endif
 );
 
+// Enable HangWatcher on the GPU process.
+BASE_FEATURE(kEnableHangWatcherOnGpuProcess,
+             "EnableHangWatcherOnGpuProcess",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 // Browser process.
 // Note: Do not use the prepared macro as of no need for a local cache.
 const char kBrowserProcessIoThreadLogLevelParam[] = "io_thread_log_level";
@@ -241,13 +276,13 @@ const char kGpuProcessThreadPoolLogLevelParam[] =
     "gpu_process_threadpool_log_level";
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
     &kEnableHangWatcher, kGpuProcessIoThreadLogLevelParam,
-    static_cast<int>(LoggingLevel::kNone)};
+    static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
     &kEnableHangWatcher, kGpuProcessMainThreadLogLevelParam,
-    static_cast<int>(LoggingLevel::kNone)};
+    static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
     &kEnableHangWatcher, kGpuProcessThreadPoolLogLevelParam,
-    static_cast<int>(LoggingLevel::kNone)};
+    static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // Renderer process.
 // Note: Do not use the prepared macro as of no need for a local cache.
@@ -409,10 +444,11 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
 
   bool enable_hang_watcher = base::FeatureList::IsEnabled(kEnableHangWatcher);
 
-  // Do not start HangWatcher in the GPU process until the issue related to
-  // invalid magic signature in the GPU WatchDog is fixed
-  // (https://crbug.com/1297760).
-  if (process_type == ProcessType::kGPUProcess) {
+  // The issue related to invalid magic signature in the GPU WatchDog is fixed
+  // (https://crbug.com/1297760), we can now rollout HangWatcher on the GPU
+  // process.
+  if (process_type == ProcessType::kGPUProcess &&
+      !base::FeatureList::IsEnabled(kEnableHangWatcherOnGpuProcess)) {
     enable_hang_watcher = false;
   }
 

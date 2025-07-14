@@ -236,6 +236,19 @@ TEST_P(HangWatcherEnabledTest, HangWatcherEnabled) {
   EXPECT_TRUE(hang_watcher.IsEnabled());
 }
 
+TEST(HangWatcherGpuEnabledTest, HangWatcherDisabledOnGpuProcessByDefault) {
+  ScopedFeatureList feature_list_(base::kEnableHangWatcher);
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+  EXPECT_FALSE(hang_watcher.IsEnabled());
+}
+
+TEST(HangWatcherGpuEnabledTest, HangWatcherEnabledOnGpuProcessViaFeature) {
+  ScopedFeatureList feature_list_(base::kEnableHangWatcher);
+  ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+  EXPECT_TRUE(hang_watcher.IsEnabled());
+}
+
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -464,6 +477,27 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnBrowserProcessHang) {
                BucketsAre(Bucket(true, /*count=*/1)))));
 }
 
+TEST_F(HangWatcherTest, HistogramsLoggedOnGpuProcessHang) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
+  ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
+  HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+
+  // Start blocked threads for all thread types and simulate hangs.
+  BlockedThreadsForAllTypes threads(/*timeout=*/base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // Check that histograms are only recorded for the expected threads.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "HangWatcher.IsThreadHung.GpuProcess"),
+              UnorderedElementsAre(
+                  Pair("HangWatcher.IsThreadHung.GpuProcess.MainThread",
+                       BucketsAre(Bucket(true, /*count=*/1))),
+                  Pair("HangWatcher.IsThreadHung.GpuProcess.IOThread",
+                       BucketsAre(Bucket(true, /*count=*/1)))));
+}
+
 struct AnyCriticalTestParam {
   std::string test_name;
   HangWatcher::ProcessType process_type;
@@ -492,6 +526,10 @@ INSTANTIATE_TEST_SUITE_P(
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
          .thread_type = HangWatcher::ThreadType::kMainThread,
          .is_critical = true},
+        {.test_name = "GpuProcessIsCritical",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .thread_type = HangWatcher::ThreadType::kMainThread,
+         .is_critical = true},
         // Test each critical thread types for one process type:
         {.test_name = "MainThreadIsCritical",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
@@ -516,7 +554,8 @@ INSTANTIATE_TEST_SUITE_P(
 // Checks that Any and AnyCritical are correctly recorded for different process
 // and thread types.
 TEST_P(HangWatcherAnyCriticalThreadTests, AnyCriticalThreadHung) {
-  ScopedFeatureList feature_list_(kEnableHangWatcher);
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
+  ScopedFeatureList enable_gpu_hang_watcher(kEnableHangWatcherOnGpuProcess);
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(GetParam().process_type);
@@ -678,6 +717,27 @@ INSTANTIATE_TEST_SUITE_P(
          .feature_params = {{kBrowserProcessThreadPoolLogLevelParam, "2"}},
          .expected_hang_count = 1},
 
+        // GPU process.
+        {.test_name = "GpuCrashReportsDisabledByDefault",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .expected_hang_count = 0},
+        {.test_name = "GpuCrashReportsDisabledAtLogLevel1",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .feature_params = {{kGpuProcessMainThreadLogLevelParam, "1"}},
+         .expected_hang_count = 0},
+        {.test_name = "GpuCrashReportsEnabledForMainThread",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .feature_params = {{kGpuProcessMainThreadLogLevelParam, "2"}},
+         .expected_hang_count = 1},
+        {.test_name = "GpuCrashReportsEnabledForIoThread",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .feature_params = {{kGpuProcessIoThreadLogLevelParam, "2"}},
+         .expected_hang_count = 1},
+        {.test_name = "GpuCrashReportsEnabledForThreadPoolThreads",
+         .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .feature_params = {{kGpuProcessThreadPoolLogLevelParam, "2"}},
+         .expected_hang_count = 1},
+
         // Renderer process.
         {.test_name = "RendererCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
@@ -732,7 +792,9 @@ TEST_P(HangWatcherLogLevelTest, CrashLogLevels) {
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   ScopedFeatureList enable_hang_watcher;
   enable_hang_watcher.InitWithFeaturesAndParameters(
-      {{kEnableHangWatcher, GetParam().feature_params}}, {});
+      {{kEnableHangWatcher, GetParam().feature_params},
+       {kEnableHangWatcherOnGpuProcess, {}}},
+      {});
   ManualHangWatcher hang_watcher(GetParam().process_type,
                                  GetParam().emit_crashes);
 
@@ -747,6 +809,7 @@ TEST_P(HangWatcherLogLevelTest, CrashLogLevels) {
   EXPECT_EQ(hang_watcher.GetHangCount(), GetParam().expected_hang_count);
 }
 
+// Test that hangs get recorded for the browser process.
 TEST_F(HangWatcherTest, Hang) {
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
@@ -755,6 +818,39 @@ TEST_F(HangWatcherTest, Hang) {
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
+}
+
+// Tests that hangs don't get recorded for the GPU process by default.
+TEST_F(HangWatcherTest, GpuProcessHangReportingDisabledByDefault) {
+  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
+  ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // Hang reports are disabled by default on the GPU process.
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
+}
+
+// Tests that hang detection can be enabled on the GPU process.
+TEST_F(HangWatcherTest, GpuProcessHangReportingCanBeEnabled) {
+  ScopedFeatureList enable_hang_watcher;
+  enable_hang_watcher.InitWithFeaturesAndParameters(
+      {{kEnableHangWatcher, {{kGpuProcessMainThreadLogLevelParam, "2"}}},
+       {kEnableHangWatcherOnGpuProcess, {}}},
+      {});
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
+
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  // Hang reports are disabled by default on the GPU process.
   hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
