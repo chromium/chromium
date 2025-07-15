@@ -165,6 +165,10 @@ source_set("unit_tests") {
     "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
     "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -212,6 +216,10 @@ source_set("browser_tests") {
     "//chrome/browser/ash/child_accounts/parent_access_code:browser_tests",
     "//chrome/browser/ash/child_accounts/time_limits:browser_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_chromeos_device) {
