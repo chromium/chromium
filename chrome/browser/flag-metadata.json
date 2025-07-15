@@ -9522,11 +9522,6 @@
     "expiry_milestone" : 145
   },
   {
-    "name" : "toolbar-pinning",
-    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "top-chrome-desktop-ui@chromium.org" ],
-    "expiry_milestone" : 135
-  },
-  {
     "name": "top-chrome-toast-refinements",
     "owners": [
       "agale@google.com",
