@@ -118,6 +118,17 @@ async def run_command_output_async(args, **kwargs):
     return stdout
 
 
+async def run_command_all_output_async(args, **kwargs):
+    logger.info('Running command: %s', args)
+    process = await asyncio.create_subprocess_exec(
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        **kwargs)
+    stdout, stderr = await process.communicate()
+    return ('%s' % args, process.returncode, stdout, stderr)
+
+
 def lenient_run_command_output(args, **kwargs):
     """Runs a command, being fairly tolerant of errors.
 

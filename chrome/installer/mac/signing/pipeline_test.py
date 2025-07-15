@@ -127,7 +127,8 @@ class TestPipelineHelpers(unittest.TestCase):
         dist_config = dist.to_config(config)
         paths = self.paths.replace_work('/$W')
 
-        pipeline._customize_and_sign_chrome(paths, dist_config, '$D', None)
+        asyncio.run(
+            pipeline._customize_and_sign_chrome(paths, dist_config, '$D', None))
 
         manager.assert_has_calls([
             mock.call.copy_files('/$I/App Product.app', '/$W'),
@@ -163,7 +164,8 @@ class TestPipelineHelpers(unittest.TestCase):
         dist_config = dist.to_config(config)
         paths = self.paths.replace_work('/$W')
 
-        pipeline._customize_and_sign_chrome(paths, dist_config, '$D', None)
+        asyncio.run(
+            pipeline._customize_and_sign_chrome(paths, dist_config, '$D', None))
 
         manager.assert_has_calls([
             mock.call.copy_files('/$I/App Product.app', '/$W'),
@@ -201,18 +203,20 @@ class TestPipelineHelpers(unittest.TestCase):
         notary_paths = paths.replace_work('/$D')
 
         signed_frameworks = {}
-        pipeline._customize_and_sign_chrome(paths, base_dist_config,
-                                            notary_paths.work,
-                                            signed_frameworks)
+        asyncio.run(
+            pipeline._customize_and_sign_chrome(paths, base_dist_config,
+                                                notary_paths.work,
+                                                signed_frameworks))
 
         branded_dist = model.Distribution(
             branding_code='c0de', packaging_name_fragment='Branded')
         branded_dist_config = branded_dist.to_config(config)
         paths = self.paths.replace_work('/$W')
 
-        pipeline._customize_and_sign_chrome(paths, branded_dist_config,
-                                            notary_paths.work,
-                                            signed_frameworks)
+        asyncio.run(
+            pipeline._customize_and_sign_chrome(paths, branded_dist_config,
+                                                notary_paths.work,
+                                                signed_frameworks))
 
         channel_dist = model.Distribution(
             channel_customize=True,
@@ -223,9 +227,10 @@ class TestPipelineHelpers(unittest.TestCase):
         channel_dist_config = channel_dist.to_config(config)
         paths = self.paths.replace_work('/$W')
 
-        pipeline._customize_and_sign_chrome(paths, channel_dist_config,
-                                            notary_paths.work,
-                                            signed_frameworks)
+        asyncio.run(
+            pipeline._customize_and_sign_chrome(paths, channel_dist_config,
+                                                notary_paths.work,
+                                                signed_frameworks))
 
         manager.assert_has_calls([
             mock.call.copy_files('/$I/App Product.app', '/$W'),
@@ -1105,8 +1110,9 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
 
 @mock.patch.multiple(
     'signing.commands', **{
-        m: mock.DEFAULT for m in ('move_file', 'copy_files', 'run_command',
-                                  'make_dir', 'shutil', 'os')
+        m: mock.DEFAULT
+        for m in ('move_file', 'copy_files', 'run_command',
+                  'run_command_all_output_async', 'make_dir', 'shutil', 'os')
     })
 @mock.patch.multiple('signing.notarize',
                      **{m: mock.DEFAULT for m in ('submit', 'staple')})
@@ -1125,6 +1131,7 @@ class TestSignAll(unittest.TestCase):
         self.paths = model.Paths('/$I', '/$O', None)
 
     def test_sign_basic_distribution_dmg(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1152,15 +1159,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1177,6 +1184,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_zip(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1203,15 +1211,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1226,6 +1234,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_inflated_distribution_dmg(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1255,15 +1264,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable-5000', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable-5000'),
+                                                   cwd='/$W_1/stable-5000'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable-5000'), mock.ANY),
             mock.call.run_command([
@@ -1285,6 +1294,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_pkg(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1312,15 +1322,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1337,6 +1347,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_dmg_zip(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1365,15 +1376,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1393,6 +1404,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_dmg_pkg(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1422,15 +1434,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1452,6 +1464,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_pkg_zip(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1480,15 +1493,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1508,6 +1521,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_basic_distribution_dmg_pkg_zip(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1538,15 +1552,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
 
@@ -1571,6 +1585,7 @@ class TestSignAll(unittest.TestCase):
         ])
 
     def test_sign_no_packaging(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1583,15 +1598,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
             mock.call.shutil.rmtree('/$W_1'),
@@ -1601,9 +1616,10 @@ class TestSignAll(unittest.TestCase):
         ])
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
-        self.assertEqual(1, kwargs['run_command'].call_count)
+        self.assertEqual(1, kwargs['run_command_all_output_async'].call_count)
 
     def test_sign_notarize_wait_no_staple(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -1621,15 +1637,15 @@ class TestSignAll(unittest.TestCase):
             # First customize the distribution and sign it.
             mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
                                                  '/$W_1/stable', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
 
             # Prepare the app for notarization.
-            mock.call.run_command([
+            mock.call.run_command_all_output_async([
                 'zip', '--recurse-paths', '--symlinks', '--quiet',
                 '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
             ],
-                                  cwd='/$W_1/stable'),
+                                                   cwd='/$W_1/stable'),
             mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
-            mock.call.shutil.rmtree('/$W_2'),
 
             # Make the DMG.
             mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
