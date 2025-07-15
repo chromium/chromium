@@ -600,10 +600,8 @@ public class UrlOverridingTest {
                 // Some tests have a long delay before starting the load.
                 loadCallback.waitForCallback(loadCount, 1, 20, TimeUnit.SECONDS);
             } catch (TimeoutException ex) {
-                // Non-subframe clicks shouldn't be flaky. Tablets also appear to be flaky.
-                if (!params.willLoadSubframe
-                        && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                mTabbedActivityTestRule.getActivity())) {
+                // Non-subframe clicks shouldn't be flaky.
+                if (!params.willLoadSubframe) {
                     throw ex;
                 }
                 // Subframe clicks are flaky so re-try them if nothing started loading.
