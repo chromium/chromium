@@ -387,6 +387,10 @@ UIColor* DimColorIncognito() {
   return _match.has_tab_match.value_or(false);
 }
 
+- (BOOL)isSearchWithAim {
+  return _match.IsVerbatimType() && !_match.IsVerbatimUrlSuggestion();
+}
+
 - (id<OmniboxPedal>)pedal {
   return nil;
 }

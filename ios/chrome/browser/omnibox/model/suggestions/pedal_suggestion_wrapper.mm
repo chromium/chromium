@@ -24,9 +24,11 @@
 - (BOOL)supportsDeletion {
   return NO;
 }
+
 - (BOOL)hasAnswer {
   return NO;
 }
+
 - (BOOL)isURL {
   return NO;
 }
@@ -34,21 +36,31 @@
 - (BOOL)isAppendable {
   return NO;
 }
+
 - (BOOL)isTabMatch {
   return NO;
 }
+
+- (BOOL)isSearchWithAim {
+  return NO;
+}
+
 - (NSNumber*)suggestionGroupId {
   return nil;
 }
+
 - (NSNumber*)suggestionSectionId {
   return nil;
 }
+
 - (BOOL)isTailSuggestion {
   return NO;
 }
+
 - (NSString*)commonPrefix {
   return nil;
 }
+
 - (NSInteger)numberOfLines {
   return 1;
 }
