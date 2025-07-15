@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -16,19 +17,24 @@ import org.chromium.ui.base.DeviceFormFactor;
 @NullMarked
 public class TabGroupingActionProvider implements ContextualPageActionController.ActionProvider {
 
-    private final GroupSuggestionsButtonController mGroupSuggestionsButtonController;
+    private final Supplier<GroupSuggestionsButtonController>
+            mGroupSuggestionsButtonControllerSupplier;
 
     public TabGroupingActionProvider(
-            GroupSuggestionsButtonController groupSuggestionsButtonController) {
-        mGroupSuggestionsButtonController = groupSuggestionsButtonController;
+            Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController) {
+        mGroupSuggestionsButtonControllerSupplier = groupSuggestionsButtonController;
     }
 
     @Override
     public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
+        if (!mGroupSuggestionsButtonControllerSupplier.hasValue()) {
+            return;
+        }
+
         if (action == AdaptiveToolbarButtonVariant.TAB_GROUPING) {
-            mGroupSuggestionsButtonController.onButtonShown(tab);
+            mGroupSuggestionsButtonControllerSupplier.get().onButtonShown(tab);
         } else {
-            mGroupSuggestionsButtonController.onButtonHidden();
+            mGroupSuggestionsButtonControllerSupplier.get().onButtonHidden();
         }
     }
 
@@ -37,7 +43,9 @@ public class TabGroupingActionProvider implements ContextualPageActionController
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    if (tab == null || tab.getWindowAndroid() == null) {
+                    if (tab == null
+                            || tab.getWindowAndroid() == null
+                            || !mGroupSuggestionsButtonControllerSupplier.hasValue()) {
                         signalAccumulator.setSignal(
                                 AdaptiveToolbarButtonVariant.TAB_GROUPING, false);
                         return;
@@ -63,7 +71,9 @@ public class TabGroupingActionProvider implements ContextualPageActionController
 
                     signalAccumulator.setSignal(
                             AdaptiveToolbarButtonVariant.TAB_GROUPING,
-                            mGroupSuggestionsButtonController.shouldShowButton(tab, windowId));
+                            mGroupSuggestionsButtonControllerSupplier
+                                    .get()
+                                    .shouldShowButton(tab, windowId));
                 });
     }
 }
