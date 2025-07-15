@@ -96,6 +96,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/webapps/common/web_app_id.h"
@@ -1304,37 +1305,34 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       continue;
     }
 
-    TabStripModel* tab_strip =
-        browser->GetBrowserForMigrationOnly()->tab_strip_model();
-    DCHECK(tab_strip);
-    for (int i = 0; i < tab_strip->count(); ++i) {
-      WebContents* web_contents = tab_strip->GetWebContentsAt(i);
-
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
       if (index > -1 && i != index) {
         continue;
       }
+
+      ::tabs::TabInterface* tab = tab_list->GetTab(i);
+      CHECK(tab);
+      content::WebContents* web_contents = tab->GetContents();
 
       if (!web_contents) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.highlighted,
-                       tab_strip->IsTabSelected(i))) {
+      if (!MatchesBool(params->query_info.highlighted, tab->IsSelected())) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.active,
-                       i == tab_strip->active_index())) {
+      if (!MatchesBool(params->query_info.active, tab->IsActivated())) {
         continue;
       }
 
-      if (!MatchesBool(params->query_info.pinned, tab_strip->IsTabPinned(i))) {
+      if (!MatchesBool(params->query_info.pinned, tab->IsPinned())) {
         continue;
       }
 
       if (group_id.has_value()) {
-        std::optional<tab_groups::TabGroupId> group =
-            tab_strip->GetTabGroupForTab(i);
+        std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
         if (group_id.value() == -1) {
           if (group.has_value()) {
             continue;
