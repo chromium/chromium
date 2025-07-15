@@ -330,4 +330,47 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
   return list;
 }
 
+void ComputeAccountFields(
+    const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  for (const auto& account : accounts) {
+    account->fields.clear();
+    if (account->idp_claimed_login_state.value_or(
+            account->browser_trusted_login_state) ==
+        IdentityRequestAccount::LoginState::kSignIn) {
+      // We only show fields for signups.
+      continue;
+    }
+    for (auto field : rp_fields) {
+      switch (field) {
+        case IdentityRequestDialogDisclosureField::kName:
+          if (!account->name.empty()) {
+            account->fields.push_back(field);
+          }
+          break;
+        case IdentityRequestDialogDisclosureField::kEmail:
+          if (!account->email.empty()) {
+            account->fields.push_back(field);
+          }
+          break;
+        case IdentityRequestDialogDisclosureField::kPicture:
+          if (account->picture.is_valid()) {
+            account->fields.push_back(field);
+          }
+          break;
+        case IdentityRequestDialogDisclosureField::kPhoneNumber:
+          if (!account->phone.empty()) {
+            account->fields.push_back(field);
+          }
+          break;
+        case IdentityRequestDialogDisclosureField::kUsername:
+          if (!account->username.empty()) {
+            account->fields.push_back(field);
+          }
+          break;
+      };
+    }
+  }
+}
+
 }  // namespace content

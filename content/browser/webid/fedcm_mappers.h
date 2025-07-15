@@ -104,6 +104,12 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(
 CONTENT_EXPORT std::vector<IdentityRequestDialogDisclosureField>
 GetDisclosureFields(const std::optional<std::vector<std::string>>& fields);
 
+// Computes the effective fields for an account based on the requested fields,
+// the login state and the available account data.
+CONTENT_EXPORT void ComputeAccountFields(
+    const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
+    std::vector<IdentityRequestAccountPtr>& accounts);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_FEDCM_MAPPERS_H_

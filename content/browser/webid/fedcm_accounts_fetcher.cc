@@ -593,21 +593,6 @@ void FedCmAccountsFetcher::ComputeLoginStates(
   }
 }
 
-void FedCmAccountsFetcher::ComputeAccountFields(
-    const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
-    std::vector<IdentityRequestAccountPtr>& accounts) {
-  for (const auto& account : accounts) {
-    if (account->idp_claimed_login_state.value_or(
-            account->browser_trusted_login_state) == LoginState::kSignIn) {
-      // We only show fields for signups.
-      continue;
-    }
-    // TODO(crbug.com/412969669): Don't include fields that the IDP did not
-    // include in the accounts response.
-    account->fields = rp_fields;
-  }
-}
-
 void FedCmAccountsFetcher::HandleAccountsFetchFailure(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::optional<bool> old_idp_signin_status,
