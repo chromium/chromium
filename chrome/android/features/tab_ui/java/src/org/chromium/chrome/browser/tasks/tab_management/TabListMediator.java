@@ -531,6 +531,11 @@ class TabListMediator implements TabListNotificationHandler {
 
                     boolean selected = model.get(TabProperties.IS_SELECTED);
                     model.set(TabProperties.IS_SELECTED, !selected);
+
+                    SavedTabGroup tabGroup = mTabGroupSyncService.getGroup(syncId);
+                    if (tabGroup != null) {
+                        updateThumbnailFetcher(model, tabGroup);
+                    }
                 }
             };
 
