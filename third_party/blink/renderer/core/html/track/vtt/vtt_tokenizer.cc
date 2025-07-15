@@ -165,7 +165,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
         WEBVTT_ADVANCE_TO(kStartTagClassState);
       } else if (cc == '/') {
         WEBVTT_ADVANCE_TO(kEndTagState);
-      } else if (WTF::IsASCIIDigit(cc)) {
+      } else if (IsASCIIDigit(cc)) {
         result.Append(cc);
         WEBVTT_ADVANCE_TO(kTimestampTagState);
       } else if (cc == '>' || cc == kEndOfFileMarker) {

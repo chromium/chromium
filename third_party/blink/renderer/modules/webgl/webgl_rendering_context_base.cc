@@ -486,10 +486,11 @@ class ReplaceNonASCII {
     unsigned len = source_string.length();
     for (unsigned i = 0; i < len; ++i) {
       UChar current = source_string[i];
-      if (WTF::IsASCII(current))
+      if (IsASCII(current)) {
         builder_.Append(current);
-      else
+      } else {
         builder_.Append('?');
+      }
     }
   }
 

@@ -491,7 +491,7 @@ std::optional<CharType> ParseNamespacePrefixNewSpec(
     // A string is a valid namespace prefix if its length is at least 1 and
     // it does not contain ASCII whitespace, U+0000 NULL, U+002F (/), or
     // U+003E (>).
-    if (c == '>' || c == '/' || !c || WTF::IsASCIISpaceWHATWG(c)) {
+    if (c == '>' || c == '/' || !c || IsASCIISpaceWHATWG(c)) {
       return c;
     }
   }
@@ -510,7 +510,7 @@ std::optional<CharType> ParseAttributeLocalNameNewSpec(
     // A string is a valid attribute local name if its length is at least 1
     // and it does not contain ASCII whitespace, U+0000 NULL, U+002F (/),
     // U+003D (=), or U+003E (>).
-    if (!c || WTF::IsASCIISpaceWHATWG(c) || c == '/' || c == '=' || c == '>') {
+    if (!c || IsASCIISpaceWHATWG(c) || c == '/' || c == '=' || c == '>') {
       return c;
     }
   }
@@ -532,8 +532,8 @@ std::optional<CharType> ParseElementLocalNameNewSpec(
       // If name contains ASCII whitespace, U+0000 NULL, U+002F (/), or U+003E
       // (>), then return false.
       next_char = characters[i];
-      if (!next_char || WTF::IsASCIISpaceWHATWG(next_char) ||
-          next_char == '/' || next_char == '>') {
+      if (!next_char || IsASCIISpaceWHATWG(next_char) || next_char == '/' ||
+          next_char == '>') {
         return next_char;
       }
     }

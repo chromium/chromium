@@ -47,7 +47,7 @@
 // strings or characters if the intent is to do processing only if the
 // character is ASCII.
 
-namespace WTF {
+namespace blink {
 
 template <typename CharType>
 constexpr inline bool IsASCII(CharType c) {
@@ -194,22 +194,6 @@ inline bool IsASCIIAlphaCaselessEqual(CharType css_character, char character) {
   return false;
 }
 
-}  // namespace WTF
-
-using WTF::IsASCII;
-using WTF::IsASCIIAlpha;
-using WTF::IsASCIIAlphaCaselessEqual;
-using WTF::IsASCIIAlphanumeric;
-using WTF::IsASCIIDigit;
-using WTF::IsASCIIHexDigit;
-using WTF::IsASCIILower;
-using WTF::IsASCIIPrintable;
-using WTF::IsASCIISpace;
-using WTF::IsASCIIUpper;
-using WTF::LowerNibbleToASCIIHexDigit;
-using WTF::ToASCIIHexValue;
-using WTF::ToASCIILower;
-using WTF::ToASCIIUpper;
-using WTF::UpperNibbleToASCIIHexDigit;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_CTYPE_H_

@@ -176,7 +176,7 @@ inline CharDecompositionType DecompositionType(UChar32 c) {
 inline bool IsSpaceOrNewline(UChar c) {
   // Use IsASCIISpace() for basic Latin-1.
   // This will include newlines, which aren't included in Unicode DirWS.
-  return c <= 0x7F ? WTF::IsASCIISpace(c) : Direction(c) == kWhiteSpaceNeutral;
+  return c <= 0x7F ? IsASCIISpace(c) : Direction(c) == kWhiteSpaceNeutral;
 }
 
 }  // namespace blink::unicode

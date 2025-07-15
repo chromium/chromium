@@ -56,7 +56,7 @@ bool IsValidDoctypeName(const base::span<const CharType>& characters) {
   // U+0000 NULL, or U+003E (>).
   for (unsigned i = 0; i < characters.size(); i++) {
     if (!characters[i] || characters[i] == '>' ||
-        WTF::IsASCIISpaceWHATWG(characters[i])) {
+        IsASCIISpaceWHATWG(characters[i])) {
       return false;
     }
   }

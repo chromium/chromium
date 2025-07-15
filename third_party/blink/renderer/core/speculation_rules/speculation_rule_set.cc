@@ -119,7 +119,7 @@ bool IsValidTag(const String& tag) {
 
   return VisitCharacters(tag, [](const auto& chars) {
     for (char ch : chars) {
-      if (!WTF::IsASCIIPrintable(ch)) {
+      if (!IsASCIIPrintable(ch)) {
         return false;
       }
     }
