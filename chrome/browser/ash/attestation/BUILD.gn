@@ -175,6 +175,10 @@ source_set("test_with_shadow_variables") {
     "//third_party/securemessage",
     "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("attestation_proto") {

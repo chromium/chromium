@@ -163,6 +163,10 @@ source_set("unit_tests") {
     # Tests from subdirectories:
     "//chrome/browser/ash/system_web_apps/apps:unit_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_chromeos_device) {
