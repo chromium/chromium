@@ -24,6 +24,11 @@ enum class SettingValue {
   ENABLED,
 };
 
+enum class Agents {
+  kCrowdStrikeFalcon = 0,
+  kMaxValue = 0,
+};
+
 struct ExecutableMetadata {
   ExecutableMetadata();
 

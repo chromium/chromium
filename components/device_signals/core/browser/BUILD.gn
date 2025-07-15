@@ -63,8 +63,14 @@ static_library("browser") {
   }
 
   if (is_win || is_mac || is_linux) {
-    public += [ "os_signals_collector.h" ]
-    sources += [ "os_signals_collector.cc" ]
+    public += [
+      "detected_agent_client.h",
+      "os_signals_collector.h",
+    ]
+    sources += [
+      "detected_agent_client.cc",
+      "os_signals_collector.cc",
+    ]
   }
 
   if (is_win) {
@@ -150,7 +156,10 @@ source_set("unit_tests") {
   ]
 
   if (is_win || is_mac || is_linux) {
-    sources += [ "os_signals_collector_unittest.cc" ]
+    sources += [
+      "detected_agent_client_unittest.cc",
+      "os_signals_collector_unittest.cc",
+    ]
   }
 
   if (is_win || is_mac) {
