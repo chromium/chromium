@@ -82,6 +82,8 @@ class GlicZeroStateSuggestionsManager {
   base::CallbackListSubscription
       current_zero_state_suggestions_pinned_tab_change_subscription_;
 
+  bool pause_pinned_subscription_updates = false;
+
   base::WeakPtrFactory<GlicZeroStateSuggestionsManager> weak_ptr_factory_{this};
 };
 

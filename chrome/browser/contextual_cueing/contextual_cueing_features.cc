@@ -5,6 +5,11 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "chrome/common/chrome_features.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic_features.mojom.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace contextual_cueing {
 
@@ -91,5 +96,12 @@ const base::FeatureParam<bool> kAllowContextualSuggestionsForSearchResultsPages(
     &kGlicZeroStateSuggestions,
     "ZSSAllowContextualSuggestionsForSearchResultsPages",
     true);
+
+#if BUILDFLAG(ENABLE_GLIC)
+const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
+    &glic::mojom::features::kZeroStateSuggestionsV2,
+    "ZSSMaxPinnedPagesForTriggeringSuggestions",
+    3);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace contextual_cueing

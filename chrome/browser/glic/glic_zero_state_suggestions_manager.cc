@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
@@ -49,8 +50,16 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const std::vector<content::WebContents*>& pinned_tab_data) {
-  // TODO(b/431038465) Add gating to not call when it wouldn't
-  // meaningfully change the resulting suggestions.
+  if (pinned_tab_data.size() >
+      static_cast<size_t>(
+          contextual_cueing::kMaxPinnedPagesForTriggeringSuggestions.Get())) {
+    if (pause_pinned_subscription_updates) {
+      return;
+    }
+    pause_pinned_subscription_updates = true;
+  } else {
+    pause_pinned_subscription_updates = false;
+  }
   if (contextual_cueing_service_) {
     contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(

@@ -70,6 +70,8 @@ extern const base::FeatureParam<bool> kReturnEmptyForSameDocumentNavigation;
 extern const base::FeatureParam<bool>
     kAllowContextualSuggestionsForSearchResultsPages;
 
+// How many pages can be pinned and still trigger a zero state suggestion.
+extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_
