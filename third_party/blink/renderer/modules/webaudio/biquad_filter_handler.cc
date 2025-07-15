@@ -40,13 +40,17 @@ constexpr uint32_t kNumberOfChannels = 1;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
 bool HasConstantValues(float* values, int frames_to_process) {
+  if (frames_to_process <= 1) {
+    return true;
+  }
+
   // Load the initial value
   const float value = values[0];
-  // This initialization ensures that we correctly handle the first frame and
-  // start the processing from the second frame onwards, effectively excluding
-  // the first frame from the subsequent comparisons in the non-SIMD paths
-  // it guarantees that we don't redundantly compare the first frame again
-  // during the loop execution.
+
+  // Initialize to 1 to avoid redundantly comparing the first frame in the
+  // non-SIMD path, although this will be re-initialized to 0 on platforms with
+  // SIMD enabled for byte alignment purposes so it is only an optimization on
+  // platforms without SIMD.
   int processed_frames = 1;
 
 #if defined(__SSE2__)
@@ -231,7 +235,7 @@ class BiquadDSPKernel final {
                           const float* gain,
                           const float* detune);
 
- protected:
+ private:
   BiquadProcessor* GetBiquadProcessor() {
     return static_cast<BiquadProcessor*>(Processor());
   }
@@ -239,12 +243,11 @@ class BiquadDSPKernel final {
   void UpdateCoefficientsIfNecessary(int)
       EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
-  Biquad biquad_;
-
- private:
   // Compute the tail time using the BiquadFilter coefficients at
   // index `coef_index`.
   void UpdateTailTime(int coef_index);
+
+  Biquad biquad_;
 
   // Synchronize process() with getting and setting the filter coefficients.
   mutable base::Lock process_lock_;
