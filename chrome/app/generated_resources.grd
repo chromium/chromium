@@ -1742,8 +1742,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
         </message>
-        <message name="IDS_FIND_EXTENSIONS" desc="The find extensions menu item in the app menu">
-          Find &amp;Extensions
+        <message name="IDS_FIND_EXTENSIONS" desc="The explore extensions menu item in the app menu">
+          Explore &amp;Extensions
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
