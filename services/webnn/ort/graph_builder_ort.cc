@@ -94,6 +94,7 @@ constexpr base::cstring_view kOpTypeSplit = "Split";
 constexpr base::cstring_view kOpTypeTanh = "Tanh";
 constexpr base::cstring_view kOpTypeTile = "Tile";
 constexpr base::cstring_view kOpTypeTranspose = "Transpose";
+constexpr base::cstring_view kOpTypeTriangular = "Trilu";
 constexpr base::cstring_view kOpTypeWhere = "Where";
 
 // Pooling operations
@@ -1796,6 +1797,28 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
                         attributes);
 }
 
+void GraphBuilderOrt::AddTriangularOperation(
+    const mojom::Triangular& triangular) {
+  const std::string node_name = GenerateNodeName(triangular.label);
+  const std::string input = GetOperandNameById(triangular.input_operand_id);
+  const std::string output = GetOperandNameById(triangular.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.triangular_input.Supports(
+      GetOperand(triangular.input_operand_id).descriptor));
+
+  const std::string diagonal =
+      CreateScalarInitializer(static_cast<int64_t>(triangular.diagonal));
+  std::array<const char*, 2> inputs = {input.c_str(), diagonal.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrUpper = "upper";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrUpper, static_cast<int64_t>(triangular.upper))};
+
+  model_editor_.AddNode(kOpTypeTriangular, node_name, inputs, outputs,
+                        attributes);
+}
+
 void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   const std::string node_name = GenerateNodeName(where.label);
   std::string condition = GetOperandNameById(where.condition_operand_id);
@@ -2022,6 +2045,10 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
+      case mojom::Operation::Tag::kTriangular: {
+        AddTriangularOperation(*operation->get_triangular());
+        break;
+      }
       case mojom::Operation::Tag::kWhere: {
         AddWhereOperation(*operation->get_where());
         break;
@@ -2036,7 +2063,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kTriangular:
         NOTREACHED() << "[WebNN] Unsupported operation.";
     }
   }

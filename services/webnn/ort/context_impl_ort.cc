@@ -64,6 +64,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kUint8, OperandDataType::kInt8, OperandDataType::kInt32};
 
+  static constexpr SupportedDataTypes kFloat16To32Int64 = {
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt64};
+
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
       BatchNormalizationAxis::kChannelsFirst,
@@ -233,7 +237,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*tanh_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tile_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*transpose_input=*/{SupportedDataTypes::All(), kMaxRank},
-       /*triangular_input=*/{},
+       /*triangular_input=*/{kFloat16To32Int64, {2, 8}},
        /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
        // TODO(crbug.com/429859156): ORT CPU EP should support int8, uint32, and
        // uint64 for where operation.
