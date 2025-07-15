@@ -22,15 +22,19 @@ from json_parse import OrderedDict
 # idl_parser expects to be able to import certain files in its directory,
 # so let's set things up the way it wants.
 _idl_generators_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                    os.pardir, os.pardir, 'ppapi', 'generators')
-if _idl_generators_path in sys.path:
+                                    'ppapi', 'generators')
+# The ppapi idl_parser also needs access to ply, which exists in //third_party,
+# so also put it onto the path.
+_ply_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir,
+                         os.pardir, 'third_party')
+
+sys.path.insert(0, _idl_generators_path)
+sys.path.insert(0, _ply_path)
+try:
   import idl_parser
-else:
-  sys.path.insert(0, _idl_generators_path)
-  try:
-    import idl_parser
-  finally:
-    sys.path.pop(0)
+finally:
+  sys.path.pop(0)
+  sys.path.pop(0)
 
 
 def ProcessComment(comment):

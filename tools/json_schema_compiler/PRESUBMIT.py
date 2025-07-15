@@ -44,6 +44,18 @@ PYLINT_FILES_TO_SKIP = [
     'idl_schema_test.py',
     'ts_definition_generator.py',
     'preview.py',
+    'ppapi/generators/idl_ast.py',
+    'ppapi/generators/idl_log.py',
+    'ppapi/generators/idl_lint.py',
+    'ppapi/generators/idl_namespace.py',
+    'ppapi/generators/idl_option.py',
+    'ppapi/generators/idl_lexer.py',
+    'ppapi/generators/idl_node.py',
+    'ppapi/generators/idl_outfile.py',
+    'ppapi/generators/idl_visitor.py',
+    'ppapi/generators/idl_propertynode.py',
+    'ppapi/generators/idl_release.py',
+    'ppapi/generators/idl_parser.py',
 ]
 
 
