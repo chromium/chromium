@@ -60,7 +60,7 @@ namespace features {
 const base::FeatureParam<size_t> kMaxRetryCount{&blink::features::kFetchRetry,
                                                 "max_retry_count", 10};
 const base::FeatureParam<base::TimeDelta> kMinRetryDelta{
-    &blink::features::kFetchRetry, "min_retry_delta", base::Seconds(5)};
+    &blink::features::kFetchRetry, "min_retry_delta", base::Milliseconds(500)};
 const base::FeatureParam<double> kMinRetryBackoffFactor{
     &blink::features::kFetchRetry, "min_retry_backoff", 1.0};
 const base::FeatureParam<base::TimeDelta> kMaxRetryAge{
@@ -428,13 +428,6 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
                                     request_id_, "url", last_url_);
 
-  if (resource_request_.fetch_retry_options.has_value()) {
-    // Append Retry-GUID as a header to the request if the fetch opts-in to
-    // retry. This GUID will be stable for all attempts of this fetch, from the
-    // first (non-retry) load to all potential retry attempts.
-    resource_request_.headers.SetHeader(
-        kRetryGuidHeader, base::Uuid::GenerateRandomV4().AsLowercaseString());
-  }
   original_resource_request_ = resource_request_;
 
   LogFetchKeepAliveRequestMetric("Total");
@@ -982,9 +975,6 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
   // Retry using the original request, even if the failure happens after
   // redirects.
   resource_request_ = original_resource_request_;
-  // Add retry information in the header.
-  resource_request_.headers.SetHeader(kRetryAttemptsHeader,
-                                      base::NumberToString(retry_count_));
 
   // TODO(crbug.com/417930271): Track the retry as a state in the
   // KeepAliveRequestTracker too.
