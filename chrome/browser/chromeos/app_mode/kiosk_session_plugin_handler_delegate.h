@@ -8,7 +8,7 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"

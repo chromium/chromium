@@ -20,7 +20,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"

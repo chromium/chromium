@@ -2572,7 +2572,6 @@ static_library("browser") {
     "//net",
     "//net:extras",
     "//pdf:buildflags",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//rlz/buildflags",
     "//services/audio/public/cpp",

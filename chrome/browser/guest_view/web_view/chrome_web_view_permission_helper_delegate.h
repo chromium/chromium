@@ -8,9 +8,9 @@
 #include "chrome/common/buildflags.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
+#include "content/public/common/buildflags.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)

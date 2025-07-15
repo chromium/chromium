@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "content/public/common/buildflags.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace content {
 

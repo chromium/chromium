@@ -14,10 +14,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "net/http/http_util.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "base/test/test_future.h"

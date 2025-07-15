@@ -221,7 +221,6 @@ source_set("browser") {
     "//mojo/public/js:resources",
     "//net",
     "//net:extras",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/audio",
     "//services/audio/public/cpp",

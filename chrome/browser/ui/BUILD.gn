@@ -612,7 +612,6 @@ static_library("ui") {
     "//gpu/config",
     "//media",
     "//net",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//rlz/buildflags",
     "//services/device/public/cpp:device_features",

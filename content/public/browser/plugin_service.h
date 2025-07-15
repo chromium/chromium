@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"

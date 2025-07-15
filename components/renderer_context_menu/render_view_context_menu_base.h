@@ -21,7 +21,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/site_instance.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"

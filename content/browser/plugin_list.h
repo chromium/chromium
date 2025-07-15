@@ -14,8 +14,8 @@
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/webplugininfo.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"

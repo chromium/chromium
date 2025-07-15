@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;

@@ -228,6 +228,7 @@ static_library("common_lib") {
     "//components/variations/net",
     "//components/visitedlink/common",
     "//components/webui/flags:switches",
+    "//content/public/common:buildflags",
     "//google_apis",
     "//gpu/command_buffer/service",
     "//gpu/config",
@@ -235,7 +236,6 @@ static_library("common_lib") {
     "//media",
     "//mojo/public/cpp/bindings",
     "//pdf:buildflags",
-    "//ppapi/buildflags",
     "//sandbox/policy",
     "//skia",
     "//third_party/icu",
@@ -455,7 +455,7 @@ static_library("non_code_constants") {
     ":buildflags",
     ":version_header",
     "//base",
-    "//ppapi/buildflags",
+    "//content/public/common:buildflags",
   ]
 
   public_deps = [
@@ -483,11 +483,11 @@ component("chrome_features") {
     ":non_code_constants",
     "//base",
     "//components/offline_pages/buildflags",
+    "//content/public/common:buildflags",
     "//device/vr/buildflags",
     "//extensions/buildflags",
     "//media:media_buildflags",
     "//net:buildflags",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//rlz/buildflags",
   ]
@@ -514,7 +514,6 @@ static_library("url_constants") {
     "//content/public/common",
     "//extensions/buildflags",
     "//net:buildflags",
-    "//ppapi/buildflags:buildflags",
     "//printing/buildflags",
   ]
   deps = [
@@ -561,9 +560,9 @@ static_library("constants") {
     "//components/bookmarks/common",
     "//components/offline_pages/buildflags",
     "//components/policy/core/common:policy_path_constants",
+    "//content/public/common:buildflags",
     "//extensions/buildflags",
     "//media:media_buildflags",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]

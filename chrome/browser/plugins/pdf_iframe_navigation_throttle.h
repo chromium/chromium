@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 namespace content {
 class NavigationThrottleRegistry;

@@ -54,7 +54,6 @@ include_rules = [
   "+mojo/core/embedder",
   "+mojo/public",
   "+net",
-  "+ppapi",
   "+printing",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",

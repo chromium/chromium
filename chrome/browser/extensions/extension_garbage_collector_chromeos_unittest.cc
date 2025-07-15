@@ -28,11 +28,11 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/common/extension_builder.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"

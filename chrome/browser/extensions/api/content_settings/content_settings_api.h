@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "content/public/common/buildflags.h"
 #include "extensions/browser/extension_function.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace content {
 struct WebPluginInfo;

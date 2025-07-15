@@ -17,8 +17,8 @@ source_set("content_settings") {
 
   public_deps = [
     "//base",
+    "//content/public/common:buildflags",
     "//extensions/browser",
-    "//ppapi/buildflags",
   ]
 
   deps = [

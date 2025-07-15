@@ -40,7 +40,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -11,7 +11,6 @@ include_rules = [
   "+components/webapps/isolated_web_apps",
   "+components/soda",
   "+media/cdm",
-  "+ppapi/thunk",
   "+third_party/widevine",
   "+third_party/zxcvbn-cpp"
 ]

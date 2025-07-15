@@ -31,12 +31,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"

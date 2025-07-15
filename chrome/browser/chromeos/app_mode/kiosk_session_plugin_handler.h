@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"

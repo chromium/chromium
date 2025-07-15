@@ -284,7 +284,6 @@ source_set("common_sources") {
     "//device/vr/buildflags",
     "//media",
     "//media/mojo/mojom",
-    "//ppapi/buildflags",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//skia",
@@ -345,7 +344,7 @@ source_set("common_sources") {
       "content_plugin_info.cc",
       "content_plugin_info.h",
     ]
-    public_deps += [ "//ppapi/buildflags" ]
+    public_deps += [ "//content/public/common:buildflags" ]
   }
 
   if (use_clang_profiling_inside_sandbox) {

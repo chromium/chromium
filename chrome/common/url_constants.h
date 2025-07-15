@@ -21,9 +21,9 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "net/net_buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 
 namespace chrome {
 

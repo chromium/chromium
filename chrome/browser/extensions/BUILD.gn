@@ -1055,7 +1055,6 @@ source_set("extensions") {
       "//google_apis",
       "//media:media_buildflags",
       "//pdf:buildflags",
-      "//ppapi/buildflags",
       "//printing/buildflags",
       "//rlz/buildflags",
       "//services/audio/public/cpp",

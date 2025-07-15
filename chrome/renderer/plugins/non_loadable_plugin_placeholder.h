@@ -5,7 +5,7 @@
 #ifndef CHROME_RENDERER_PLUGINS_NON_LOADABLE_PLUGIN_PLACEHOLDER_H_
 #define CHROME_RENDERER_PLUGINS_NON_LOADABLE_PLUGIN_PLACEHOLDER_H_
 
-#include "ppapi/buildflags/buildflags.h"
+#include "content/public/common/buildflags.h"
 
 namespace base {
 class FilePath;

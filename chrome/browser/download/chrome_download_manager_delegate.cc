@@ -87,6 +87,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/origin_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -94,7 +95,6 @@
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "net/base/network_change_notifier.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)

@@ -5,7 +5,6 @@
 #include "chrome/common/chrome_switches.h"
 
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 namespace switches {

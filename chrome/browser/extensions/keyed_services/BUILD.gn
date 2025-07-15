@@ -23,9 +23,9 @@ source_set("keyed_service_factories") {
     "//chrome/browser/extensions",
     "//chrome/browser/extensions/api:keyed_service_factories",
     "//chrome/common:buildflags",
+    "//content/public/common:buildflags",
     "//extensions/buildflags",
     "//pdf:buildflags",
-    "//ppapi/buildflags:buildflags",
     "//printing/buildflags:buildflags",
   ]
 }

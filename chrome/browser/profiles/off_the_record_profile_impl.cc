@@ -85,11 +85,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "net/http/transport_security_state.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/scoped_user_pref_update.h"

@@ -21,12 +21,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 

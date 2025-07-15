@@ -30,7 +30,6 @@ include_rules = [
   "+content/public/test",
   "+media/media_buildflags.h",
   "+mojo/public",
-  "+ppapi/buildflags",
 
   # Don't allow inclusion of these other libs we shouldn't be calling directly.
   "-webkit",
