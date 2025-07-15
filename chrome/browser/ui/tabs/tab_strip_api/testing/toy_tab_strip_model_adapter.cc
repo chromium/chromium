@@ -39,7 +39,7 @@ void ToyTabStripModelAdapter::ActivateTab(size_t idx) {
 }
 
 void ToyTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
-                                      Position position) {
+                                      const Position& position) {
   tab_strip_->MoveTab(handle, position.index());
 }
 

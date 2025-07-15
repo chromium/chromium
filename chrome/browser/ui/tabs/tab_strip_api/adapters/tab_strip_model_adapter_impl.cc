@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
 
+#include "base/notimplemented.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api {
@@ -44,12 +47,67 @@ void TabStripModelAdapterImpl::ActivateTab(size_t index) {
   tab_strip_model_->ActivateTabAt(index);
 }
 
-void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab, Position position) {
+void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
+                                       const Position& position) {
   auto maybe_index = GetIndexForHandle(tab);
   CHECK(maybe_index.has_value());
   auto index = maybe_index.value();
-  tab_strip_model_->MoveWebContentsAt(index, position.index(),
-                                      /*select_after_move=*/false);
+  // If the position has no parent, move within the unpinned collection.
+  if (!position.parent_id().has_value()) {
+    const int to_position =
+        tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
+    tab_strip_model_->MoveWebContentsAt(index, to_position,
+                                        /*select_after_move=*/false,
+                                        /*group=*/std::nullopt);
+    return;
+  }
+
+  std::optional<tabs::TabCollectionHandle> collection_handle =
+      position.parent_id().value().ToTabCollectionHandle();
+  CHECK(collection_handle.has_value());
+  const tabs::TabCollection* collection = collection_handle.value().Get();
+
+  const bool to_pinned =
+      (collection->type() == tabs::TabCollection::Type::PINNED);
+  if (to_pinned != tab_strip_model_->IsTabPinned(index)) {
+    // Modify the start position if tab has been moved from pinned to
+    // unpinned or vice versa.
+    index = tab_strip_model_->SetTabPinned(index, to_pinned);
+  }
+
+  // Calculate the absolute index based on the collection type.
+  int to_position = 0;
+  std::optional<tab_groups::TabGroupId> to_group;
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::PINNED:
+      // For the pinned collection, the index is absolute from the start.
+      to_position = position.index();
+      break;
+
+    case tabs::TabCollection::Type::GROUP: {
+      to_group = tab_strip_model_->FindGroupIdFor(
+          *collection_handle, base::PassKey<TabStripModelAdapterImpl>());
+      CHECK(to_group.has_value());
+      const TabGroup* group =
+          tab_strip_model_->group_model()->GetTabGroup(*to_group);
+      CHECK(group);
+      to_position = group->ListTabs().start() + position.index();
+      break;
+    }
+    case tabs::TabCollection::Type::UNPINNED:
+      to_position =
+          tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
+      break;
+    // TODO(crbug.com/412709271) Callers can not move a Tab within TabStrip and
+    // SplitTab collections. This should return an error to the client.
+    case tabs::TabCollection::Type::TABSTRIP:
+    case tabs::TabCollection::Type::SPLIT:
+      NOTIMPLEMENTED();
+      return;
+  }
+
+  tab_strip_model_->MoveWebContentsAt(index, to_position,
+                                      /*select_after_move=*/false, to_group);
 }
 
 tabs_api::mojom::TabCollectionContainerPtr

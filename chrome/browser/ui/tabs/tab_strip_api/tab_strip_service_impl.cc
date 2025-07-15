@@ -272,6 +272,8 @@ void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
     return;
   }
 
+  // TODO(crbug.com/409086859): Add error handling for cases where a position's
+  // parent id is impossible to be moved to.
   tab_strip_model_adapter_->MoveTab(tab_handle, position);
 
   std::move(callback).Run(mojo_base::mojom::Empty::New());
