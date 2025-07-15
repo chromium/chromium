@@ -9,13 +9,23 @@
 namespace actor::ui {
 using ::tabs::TabInterface;
 
-ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {}
+ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {
+  tab_subscriptions_.push_back(tab.RegisterDidActivate(
+      base::BindRepeating(&ActorUiTabController::OnTabActivationChanged,
+                          weak_factory_.GetWeakPtr(), /*is_activated=*/true)));
+  tab_subscriptions_.push_back(tab.RegisterWillDeactivate(
+      base::BindRepeating(&ActorUiTabController::OnTabActivationChanged,
+                          weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
+}
+
 ActorUiTabController::~ActorUiTabController() = default;
+
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state) {
   // TODO(crbug.com/425952887): Implement this function.
   if (current_ui_tab_state_ != ui_tab_state) {
     // TODO(crbug.com/428216197): Only notify relevant UI components on change.
     current_ui_tab_state_ = ui_tab_state;
+    NotifyTabScopedUiComponents(ui_tab_state, tab_->IsActivated());
   }
 }
 
@@ -26,6 +36,17 @@ void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
 
 void ActorUiTabController::ClearActiveTaskId() {
   active_task_id_ = TaskId(0);
+}
+
+void ActorUiTabController::NotifyTabScopedUiComponents(
+    const UiTabState& ui_tab_state,
+    bool tab_activated) {
+  // TODO(crbug.com/425952887): Implement this function.
+}
+
+void ActorUiTabController::OnTabActivationChanged(bool is_activated,
+                                                  tabs::TabInterface* tab) {
+  NotifyTabScopedUiComponents(current_ui_tab_state_, is_activated);
 }
 
 }  // namespace actor::ui
