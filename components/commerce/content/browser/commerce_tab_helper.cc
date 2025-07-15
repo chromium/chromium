@@ -4,6 +4,8 @@
 
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 
+#include "components/commerce/core/shopping_service.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

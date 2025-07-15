@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -60,6 +59,7 @@ namespace commerce {
 
 class DiscountsPageActionController;
 class ProductSpecificationsPageActionController;
+class ShoppingService;
 
 // This tab helper is used to update and maintain the state of UI for commerce
 // features.
