@@ -76,8 +76,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorBookmarkButtonIcon] = {kColorToolbarButtonIconDefault};
   mixer[kColorBookmarkFavicon] = {kColorToolbarButtonIcon};
-  mixer[kColorDownloadShelfContentAreaSeparator] = {
-      kColorToolbarContentAreaSeparator};
   mixer[kColorInfoBarForeground] = {ui::kColorNativeLabelForeground};
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};

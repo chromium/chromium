@@ -98,8 +98,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       ui::kColorSysNeutralOutline};
   mixer[kColorDownloadToolbarButtonAnimationForeground] =
-      AdjustHighlightColorForContrast(ui::kColorSysPrimary,
-                                      kColorDownloadShelfBackground);
+      AdjustHighlightColorForContrast(ui::kColorSysPrimary, ui::kColorSysBase);
 
   // Extensions colors.
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
@@ -315,24 +314,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
   mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
-  mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
-      ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
-                                 kColorDownloadShelfBackground),
-      kColorDownloadShelfBackground);
   mixer[kColorDownloadItemIconDangerous] = {ui::kColorSysError};
   mixer[kColorDownloadItemIconWarning] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorSysPrimary};
   mixer[kColorDownloadItemTextDangerous] = {ui::kColorSysError};
   mixer[kColorDownloadItemTextWarning] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorDownloadShelfBackground] = {ui::kColorSysBase};
-  mixer[kColorDownloadShelfButtonIcon] = {kColorDownloadShelfForeground};
-  mixer[kColorDownloadShelfButtonIconDisabled] = {ui::kColorSysStateDisabled};
-  mixer[kColorDownloadShelfButtonText] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorDownloadShelfBackground,
-                          color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorDownloadShelfContentAreaSeparator] = {
-      kColorToolbarSeparatorDefault};
-  mixer[kColorDownloadShelfForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {
       ui::kColorSysNeutralContainer};
   mixer[kColorFindBarBackground] = {ui::kColorSysSurface};

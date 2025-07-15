@@ -206,12 +206,10 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
   // Update to the new toolbar style if needed.
   FullscreenToolbarStyle new_style;
   if (fullscreen_utils::IsInContentFullscreen(browser)) {
-    browser_view()->HideDownloadShelf();
     new_style = FullscreenToolbarStyle::TOOLBAR_NONE;
   } else {
     bool always_show = fullscreen_utils::IsAlwaysShowToolbarEnabled(browser);
     new_style = GetUserPreferredToolbarStyle(always_show);
-    browser_view()->UnhideDownloadShelf();
   }
 
   if (browser_view()->UsesImmersiveFullscreenMode()) {

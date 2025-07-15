@@ -18,16 +18,10 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_ui_context_menu.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/ui/views/download/download_item_view.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
-
-DownloadUiContextMenuView::DownloadUiContextMenuView(
-    DownloadItemView* download_item_view)
-    : DownloadUiContextMenu(download_item_view->model()->GetWeakPtr()),
-      download_item_view_(download_item_view) {}
 
 DownloadUiContextMenuView::DownloadUiContextMenuView(
     base::WeakPtr<DownloadUIModel> download_ui_model)

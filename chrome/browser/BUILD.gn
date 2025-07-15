@@ -3827,8 +3827,6 @@ static_library("browser") {
       "download/download_item_web_app_data.h",
       "download/download_open_prompt.cc",
       "download/download_open_prompt.h",
-      "download/download_shelf.cc",
-      "download/download_shelf.h",
       "download/download_ui_context_menu.cc",
       "download/download_ui_context_menu.h",
       "download/download_warning_desktop_hats_utils.cc",
@@ -9233,8 +9231,6 @@ static_library("test_support") {
     sources += [
       "apps/intent_helper/preferred_apps_test_util.cc",
       "apps/intent_helper/preferred_apps_test_util.h",
-      "download/test_download_shelf.cc",
-      "download/test_download_shelf.h",
       "hid/mock_hid_device_observer.cc",
       "hid/mock_hid_device_observer.h",
       "notifications/notification_test_util.cc",

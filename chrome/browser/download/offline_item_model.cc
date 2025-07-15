@@ -265,11 +265,6 @@ GURL OfflineItemModel::GetURL() const {
   return offline_item_ ? offline_item_->url : GURL();
 }
 
-bool OfflineItemModel::ShouldRemoveFromShelfWhenComplete() const {
-  // TODO(shaktisahu): Add more appropriate logic.
-  return false;
-}
-
 OfflineContentProvider* OfflineItemModel::GetProvider() const {
   Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =

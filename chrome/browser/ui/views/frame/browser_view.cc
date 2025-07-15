@@ -113,7 +113,6 @@
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
-#include "chrome/browser/ui/views/download/download_shelf_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -1160,7 +1159,6 @@ BrowserView::~BrowserView() {
   contents_separator_ = nullptr;
   loading_bar_ = nullptr;
   find_bar_host_view_ = nullptr;
-  download_shelf_ = nullptr;
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
   contents_container_view_ = nullptr;
@@ -1228,10 +1226,6 @@ BrowserView* BrowserView::GetBrowserViewForBrowser(const Browser* browser) {
     return nullptr;
   }
   return GetBrowserViewForNativeWindow(browser->window()->GetNativeWindow());
-}
-
-void BrowserView::SetDownloadShelfForTest(DownloadShelf* download_shelf) {
-  download_shelf_ = download_shelf;
 }
 
 // static
@@ -3386,35 +3380,6 @@ void BrowserView::ShowOneClickSigninConfirmation(
                                        std::move(confirmed_callback));
 }
 
-void BrowserView::SetDownloadShelfVisible(bool visible) {
-  DCHECK(download_shelf_);
-  browser_->UpdateDownloadShelfVisibility(visible);
-
-  // SetDownloadShelfVisible can force-close the shelf, so make sure we lay out
-  // everything correctly, as if the animation had finished. This doesn't
-  // matter for showing the shelf, as the show animation will do it.
-  ToolbarSizeChanged(false);
-}
-
-bool BrowserView::IsDownloadShelfVisible() const {
-  return download_shelf_ && download_shelf_->IsShowing();
-}
-
-DownloadShelf* BrowserView::GetDownloadShelf() {
-  // Don't show download shelf if download bubble is enabled, except that the
-  // shelf is already showing (this can happen if prefs were changed at
-  // runtime).
-  if (download::IsDownloadBubbleEnabled() && !download_shelf_) {
-    return nullptr;
-  }
-  if (!download_shelf_) {
-    download_shelf_ =
-        AddChildView(std::make_unique<DownloadShelfView>(browser_.get(), this));
-    GetBrowserViewLayout()->set_download_shelf(download_shelf_->GetView());
-  }
-  return download_shelf_;
-}
-
 views::View* BrowserView::GetTopContainer() {
   return top_container_;
 }
@@ -4197,14 +4162,6 @@ void BrowserView::EnsureFocusOrder() {
     infobar_container_->InsertAfterInFocusList(top_container_);
   }
 
-  // We want the download shelf to come after the contents container (which also
-  // contains the debug console, etc.) This prevents it from intruding into the
-  // focus order, but makes it easily accessible by using SHIFT-TAB (reverse
-  // focus traversal) from the toolbar/omnibox.
-  if (download_shelf_ && contents_container_) {
-    download_shelf_->GetView()->InsertAfterInFocusList(contents_container_);
-  }
-
 #if DCHECK_IS_ON()
   // Make sure we didn't create any cycles in the focus order.
   CheckFocusListForCycles(top_container_);
@@ -4834,9 +4791,6 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   }
   if (infobar_container_) {
     panes->push_back(infobar_container_);
-  }
-  if (download_shelf_) {
-    panes->push_back(download_shelf_->GetView());
   }
   if (unified_side_panel_) {
     panes->push_back(unified_side_panel_);
@@ -5509,7 +5463,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
 
 bool BrowserView::MaybeShowInfoBar(WebContents* contents) {
   // TODO(beng): Remove this function once the interface between
-  //             InfoBarContainer, DownloadShelfView and WebContents and this
+  //             InfoBarContainer and WebContents and this
   //             view is sorted out.
   return true;
 }
@@ -6112,23 +6066,6 @@ void BrowserView::UpdateUIForTabFullscreen() {
 
 WebContents* BrowserView::GetWebContentsForExclusiveAccess() {
   return GetActiveWebContents();
-}
-
-void BrowserView::UnhideDownloadShelf() {
-  if (download_shelf_) {
-    download_shelf_->Unhide();
-  }
-}
-
-void BrowserView::HideDownloadShelf() {
-  if (download_shelf_) {
-    download_shelf_->Hide();
-  }
-
-  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
-  for (StatusBubble* status_bubble : status_bubbles) {
-    status_bubble->Hide();
-  }
 }
 
 bool BrowserView::CanUserEnterFullscreen() const {

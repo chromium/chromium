@@ -833,59 +833,6 @@ TEST_F(DownloadItemModelTest, HasSupportedImageMimeType) {
   EXPECT_FALSE(model().HasSupportedImageMimeType());
 }
 
-TEST_F(DownloadItemModelTest, ShouldRemoveFromShelfWhenComplete) {
-  const struct TestCase {
-    DownloadItem::DownloadState state;
-    bool is_dangerous;  // Expectation for IsDangerous().
-    bool is_auto_open;  // Expectation for GetOpenWhenComplete().
-    bool auto_opened;   // Whether the download was successfully
-                        // auto-opened. Expecation for GetAutoOpened().
-    bool expected_result;
-  } kTestCases[] = {
-    // All the valid combinations of state, is_dangerous, is_auto_open and
-    // auto_opened.
-    //
-    //                              .--- Is dangerous.
-    //                             |       .--- Auto open or temporary.
-    //                             |      |      .--- Auto opened.
-    //                             |      |      |      .--- Expected result.
-    { DownloadItem::IN_PROGRESS, false, false, false, false},
-    { DownloadItem::IN_PROGRESS, false, true , false, true },
-    { DownloadItem::IN_PROGRESS, true , false, false, false},
-    { DownloadItem::IN_PROGRESS, true , true , false, false},
-    { DownloadItem::COMPLETE,    false, false, false, false},
-    { DownloadItem::COMPLETE,    false, true , false, false},
-    { DownloadItem::COMPLETE,    false, false, true , true },
-    { DownloadItem::COMPLETE,    false, true , true , true },
-    { DownloadItem::CANCELLED,   false, false, false, false},
-    { DownloadItem::CANCELLED,   false, true , false, false},
-    { DownloadItem::CANCELLED,   true , false, false, false},
-    { DownloadItem::CANCELLED,   true , true , false, false},
-    { DownloadItem::INTERRUPTED, false, false, false, false},
-    { DownloadItem::INTERRUPTED, false, true , false, false},
-    { DownloadItem::INTERRUPTED, true , false, false, false},
-    { DownloadItem::INTERRUPTED, true , true , false, false}
-  };
-
-  SetupDownloadItemDefaults();
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(item(), GetOpenWhenComplete())
-        .WillRepeatedly(Return(test_case.is_auto_open));
-    EXPECT_CALL(item(), GetState())
-        .WillRepeatedly(Return(test_case.state));
-    EXPECT_CALL(item(), IsDangerous())
-        .WillRepeatedly(Return(test_case.is_dangerous));
-    EXPECT_CALL(item(), GetAutoOpened())
-        .WillRepeatedly(Return(test_case.auto_opened));
-
-    EXPECT_EQ(test_case.expected_result,
-              model().ShouldRemoveFromShelfWhenComplete());
-    Mock::VerifyAndClearExpectations(&item());
-    Mock::VerifyAndClearExpectations(&model());
-  }
-}
-
 TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
   // A few aliases for DownloadDangerTypes since the full names are fairly
   // verbose.

@@ -79,9 +79,6 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     bookmark_bar_ = bookmark_bar;
   }
-  void set_download_shelf(views::View* download_shelf) {
-    download_shelf_ = download_shelf;
-  }
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     contents_border_widget_ = contents_border_widget;
   }
@@ -120,7 +117,6 @@ class BrowserViewLayout : public views::LayoutManager {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, BrowserViewLayout);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, Layout);
-  FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, LayoutDownloadShelf);
   class WebContentsModalDialogHostViews;
 
   // Layout the following controls, starting at |top|, returns the coordinate
@@ -148,10 +144,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Updates |top_container_|'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
   void UpdateTopContainerBounds();
-
-  // Layout the Download Shelf, returns the coordinate of the top of the
-  // control, for laying out the previous control.
-  int LayoutDownloadShelf(int bottom);
 
   // Layout the contents border, which indicates the tab is being captured.
   void LayoutContentBorder();
@@ -190,7 +182,6 @@ class BrowserViewLayout : public views::LayoutManager {
   raw_ptr<views::View> loading_bar_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
-  raw_ptr<views::View> download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.

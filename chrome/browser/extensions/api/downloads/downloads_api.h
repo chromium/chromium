@@ -284,6 +284,7 @@ class DownloadsOpenFunction : public ExtensionFunction {
   static OnPromptCreatedCallback* on_prompt_created_cb_;
 };
 
+// TODO(crbug.com/40858206): Remove this deprecated function.
 class DownloadsSetShelfEnabledFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("downloads.setShelfEnabled",

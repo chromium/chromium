@@ -55,13 +55,7 @@ void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
   UpdateMinimumSize();
 }
 
-void BrowserNonClientFrameView::OnFullscreenStateChanged() {
-  if (frame_->IsFullscreen()) {
-    browser_view_->HideDownloadShelf();
-  } else {
-    browser_view_->UnhideDownloadShelf();
-  }
-}
+void BrowserNonClientFrameView::OnFullscreenStateChanged() {}
 
 bool BrowserNonClientFrameView::CaptionButtonsOnLeadingEdge() const {
   return false;

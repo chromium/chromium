@@ -15,7 +15,6 @@
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
-#include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"

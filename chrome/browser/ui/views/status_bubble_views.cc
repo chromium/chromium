@@ -480,13 +480,11 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
 #if BUILDFLAG(IS_MAC)
     // Mac's window has rounded corners, but the corner radius might be
     // different on different versions. Status bubble will use its own round
-    // corner on Mac when there is no download shelf beneath.
-    if (!status_bubble_->download_shelf_is_visible_) {
-      if (base::i18n::IsRTL() != (style_ == BubbleStyle::kStandard)) {
-        round_corner(gfx::RRectF::Corner::kLowerLeft);
-      } else {
-        round_corner(gfx::RRectF::Corner::kLowerRight);
-      }
+    // corner on Mac.
+    if (base::i18n::IsRTL() != (style_ == BubbleStyle::kStandard)) {
+      round_corner(gfx::RRectF::Corner::kLowerLeft);
+    } else {
+      round_corner(gfx::RRectF::Corner::kLowerRight);
     }
 #endif
   }
@@ -942,10 +940,6 @@ void StatusBubbleViews::MouseMovedAt(const gfx::Point& location,
   }
 }
 
-void StatusBubbleViews::UpdateDownloadShelfVisibility(bool visible) {
-  download_shelf_is_visible_ = visible;
-}
-
 void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
   DCHECK(view_);
   // Get the position of the frame.
@@ -997,17 +991,13 @@ void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
       view_->SetStyle(StatusView::BubbleStyle::kStandard);
     }
 
-    // Check if the bubble sticks out from the monitor or will obscure
-    // download shelf.
+    // Check if the bubble sticks out from the monitor.
     gfx::NativeView view = base_view_->GetWidget()->GetNativeView();
     gfx::Rect monitor_rect =
         display::Screen::GetScreen()->GetDisplayNearestView(view).work_area();
     const int bubble_bottom_y = top_left.y() + position_.y() + size_.height();
 
-    if (bubble_bottom_y + offset > monitor_rect.height() ||
-        (download_shelf_is_visible_ &&
-         (view_->GetStyle() == StatusView::BubbleStyle::kFloating ||
-          view_->GetStyle() == StatusView::BubbleStyle::kBottom))) {
+    if (bubble_bottom_y + offset > monitor_rect.height()) {
       // The offset is still too large. Move the bubble to the right and reset
       // Y offset_ to zero.
       view_->SetStyle(StatusView::BubbleStyle::kStandardRight);

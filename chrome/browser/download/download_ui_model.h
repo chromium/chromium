@@ -76,6 +76,10 @@ class DownloadUIModel {
   };
 
   // Abstract base class for building StatusText
+  // TODO(crbug.com/401528883): Clean up vestiges of the download shelf. Unify
+  // the strings/logic as much as possible. Rename StatusTextBuilder to
+  // DownloadPageStatusTextBuilder, and make all usages specify which set of
+  // strings is desired by providing a builder explicitly.
   class StatusTextBuilderBase {
    public:
     virtual ~StatusTextBuilderBase() = default;
@@ -140,8 +144,6 @@ class DownloadUIModel {
   };
 
   using DownloadUIModelPtr = std::unique_ptr<DownloadUIModel>;
-
-  DownloadUIModel();
 
   explicit DownloadUIModel(
       std::unique_ptr<StatusTextBuilderBase> status_text_builder);
@@ -249,19 +251,6 @@ class DownloadUIModel {
   // Is this download an insecure download, but not something more severe?
   // Implies IsDangerous() and !IsMalicious().
   virtual bool IsInsecure() const;
-
-  // Returns |true| if this download is expected to complete successfully and
-  // thereafter be removed from the shelf.  Downloads that are opened
-  // automatically or are temporary will be removed from the shelf on successful
-  // completion.
-  //
-  // Returns |false| if the download is not expected to complete (interrupted,
-  // cancelled, dangerous, malicious), or won't be removed on completion.
-  //
-  // Since the expectation of successful completion may change, the return value
-  // of this function will change over the course of a download.
-  // TODO(crbug.com/401528883): Remove this function.
-  virtual bool ShouldRemoveFromShelfWhenComplete() const;
 
   // Returns |true| if the download started animation (download icon animates
   // towards the UI) should be displayed for this download.

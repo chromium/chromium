@@ -372,42 +372,6 @@ bool DownloadItemModel::IsInsecure() const {
   return download_->IsInsecure();
 }
 
-bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
-  switch (download_->GetState()) {
-    case DownloadItem::IN_PROGRESS:
-      // If the download is dangerous or malicious, we should display a warning
-      // on the shelf until the user accepts the download.
-      if (IsDangerous())
-        return false;
-
-      // If the download is a trusted extension, temporary, or will be opened
-      // automatically, then it should be removed from the shelf on completion.
-      // TODO(crbug.com/40129365): The logic for deciding opening behavior
-      // should
-      //                          be in a central location.
-      return (download_crx_util::IsTrustedExtensionDownload(profile(),
-                                                            *download_) ||
-              download_->IsTemporary() || download_->GetOpenWhenComplete() ||
-              download_->ShouldOpenFileBasedOnExtension());
-
-    case DownloadItem::COMPLETE:
-      // If the download completed, then rely on GetAutoOpened() to check for
-      // opening behavior. This should accurately reflect whether the download
-      // was successfully opened.  Extensions, for example, may fail to open.
-      return download_->GetAutoOpened() || download_->IsTemporary();
-
-    case DownloadItem::CANCELLED:
-    case DownloadItem::INTERRUPTED:
-      // Interrupted or cancelled downloads should remain on the shelf.
-      return false;
-
-    case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
-  }
-
-  NOTREACHED();
-}
-
 bool DownloadItemModel::ShouldShowDownloadStartedAnimation() const {
   return !download_->IsSavePackageDownload() &&
          !download_crx_util::IsTrustedExtensionDownload(profile(), *download_);

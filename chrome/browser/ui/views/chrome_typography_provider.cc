@@ -46,8 +46,7 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
 #else
     return context == views::style::CONTEXT_LABEL ||
            context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-           context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
-           context == CONTEXT_DOWNLOAD_SHELF;
+           context == CONTEXT_DIALOG_BODY_TEXT_SMALL;
 #endif
   }
 
@@ -68,7 +67,6 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
   constexpr int kBodyTextLargeSize = 13;
   constexpr int kCR23ButtonTextSize = 13;
   constexpr int kDefaultSize = 12;
-  constexpr int kStatusSize = 10;
   constexpr int kBadgeSize = 9;
 
   ui::ResourceBundle::FontDetails details;
@@ -100,12 +98,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
       break;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
-    case CONTEXT_DOWNLOAD_SHELF:
       details.size_delta =
           gfx::PlatformFont::GetFontSizeDelta(kBodyTextLargeSize);
-      break;
-    case CONTEXT_DOWNLOAD_SHELF_STATUS:
-      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kStatusSize);
       break;
     default:
       break;
@@ -171,20 +165,6 @@ ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
     style = views::style::STYLE_PRIMARY;
   } else if (style == views::style::STYLE_SECONDARY_MONOSPACED) {
     style = views::style::STYLE_SECONDARY;
-  }
-
-  if (context == CONTEXT_DOWNLOAD_SHELF ||
-      context == CONTEXT_DOWNLOAD_SHELF_STATUS) {
-    switch (style) {
-      case STYLE_RED:
-        return kColorDownloadItemForegroundDangerous;
-      case STYLE_GREEN:
-        return kColorDownloadItemForegroundSafe;
-      case views::style::STYLE_DISABLED:
-        return kColorDownloadItemForegroundDisabled;
-      default:
-        return kColorDownloadItemForeground;
-    }
   }
 
   switch (style) {
@@ -268,7 +248,6 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case views::style::CONTEXT_TABLE_ROW:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
-    case CONTEXT_DOWNLOAD_SHELF:
       return body_large_height;
     default:
       return default_height;

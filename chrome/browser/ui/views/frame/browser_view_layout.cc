@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/download/download_shelf_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
@@ -360,10 +359,8 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   // Top container requires updated toolbar and bookmark bar to compute bounds.
   UpdateTopContainerBounds();
 
-  // Layout items at the bottom of the view.
-  const int bottom = LayoutDownloadShelf(browser_view->height());
-
   // Layout the contents container in the remaining space.
+  const int bottom = browser_view->height();
   LayoutContentsContainerView(top, bottom);
 
   LayoutContentBorder();
@@ -860,17 +857,6 @@ void BrowserViewLayout::UpdateTopContainerBounds() {
   }
   top_container_->SetBoundsRect(top_container_bounds);
   SetClipPathWithBottomAllowance(top_container_);
-}
-
-int BrowserViewLayout::LayoutDownloadShelf(int bottom) {
-  TRACE_EVENT0("ui", "BrowserViewLayout::LayoutDownloadShelf");
-  if (download_shelf_ && download_shelf_->GetVisible()) {
-    const int height = download_shelf_->GetPreferredSize().height();
-    download_shelf_->SetBounds(vertical_layout_rect_.x(), bottom - height,
-                               vertical_layout_rect_.width(), height);
-    bottom -= height;
-  }
-  return bottom;
 }
 
 void BrowserViewLayout::LayoutContentBorder() {

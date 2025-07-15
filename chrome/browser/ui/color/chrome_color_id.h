@@ -112,32 +112,16 @@
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
   /* Desktop to iOS promo bubble. */ \
   E_CPONLY(kColorDesktopToIOSPromoFooterSubtitleLabel) \
-  /* Common Download colors. */ \
+  /* Download bubble and toolbar button colors. */\
   E_CPONLY(kColorDownloadItemIconDangerous) \
   E_CPONLY(kColorDownloadItemTextDangerous) \
   E_CPONLY(kColorDownloadItemIconWarning) \
   E_CPONLY(kColorDownloadItemTextWarning) \
-  /* Download bubble colors. */\
   E_CPONLY(kColorDownloadBubbleInfoBackground) \
   E_CPONLY(kColorDownloadBubbleInfoIcon) \
   E_CPONLY(kColorDownloadBubbleRowHover) \
   E_CPONLY(kColorDownloadBubbleShowAllDownloadsIcon) \
   E_CPONLY(kColorDownloadBubblePrimaryIcon) \
-  /* Download shelf colors. */ \
-  E_CPONLY(kColorDownloadItemForeground) \
-  E_CPONLY(kColorDownloadItemForegroundDangerous) \
-  E_CPONLY(kColorDownloadItemForegroundDisabled) \
-  E_CPONLY(kColorDownloadItemForegroundSafe) \
-  E_CPONLY(kColorDownloadItemProgressRingBackground) \
-  E_CPONLY(kColorDownloadItemProgressRingForeground) \
-  E_CPONLY(kColorDownloadShelfBackground) \
-  E_CPONLY(kColorDownloadShelfButtonBackground) \
-  E_CPONLY(kColorDownloadShelfButtonText) \
-  E_CPONLY(kColorDownloadShelfButtonIcon) \
-  E_CPONLY(kColorDownloadShelfButtonIconDisabled) \
-  E_CPONLY(kColorDownloadShelfContentAreaSeparator) \
-  E_CPONLY(kColorDownloadShelfForeground) \
-  E_CPONLY(kColorDownloadStartedAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonAnimationBackground) \
   E_CPONLY(kColorDownloadToolbarButtonAnimationForeground) \

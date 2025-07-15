@@ -71,7 +71,6 @@ class StatusBubbleViews : public StatusBubble {
   void SetURL(const GURL& url) override;
   void Hide() override;
   void MouseMoved(bool left_content) override;
-  void UpdateDownloadShelfVisibility(bool visible) override;
 
  protected:
   views::Widget* popup() { return popup_.get(); }
@@ -155,9 +154,6 @@ class StatusBubbleViews : public StatusBubble {
 
   // Manages the expansion of a status bubble to fit a long URL.
   std::unique_ptr<StatusViewExpander> expand_view_;
-
-  // If the download shelf is visible, do not obscure it.
-  bool download_shelf_is_visible_ = false;
 
   // If the bubble has already been expanded, and encounters a new URL,
   // change size immediately, with no hover.

@@ -44,7 +44,6 @@
 class Browser;
 class BrowserView;
 class DownloadBubbleUIController;
-class DownloadShelf;
 class ExclusiveAccessContext;
 class ExtensionsContainer;
 class FindBar;
@@ -494,13 +493,6 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) = 0;
-
-  // Whether or not the shelf view is visible.
-  virtual bool IsDownloadShelfVisible() const = 0;
-
-  // Returns the DownloadShelf. Returns null if download shelf is disabled. This
-  // can happen if the new download bubble UI is enabled.
-  virtual DownloadShelf* GetDownloadShelf() = 0;
 
   // Returns the TopContainerView.
   virtual views::View* GetTopContainer() = 0;

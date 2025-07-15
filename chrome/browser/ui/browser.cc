@@ -1492,13 +1492,6 @@ void Browser::OpenFile() {
                                   base::FilePath::StringType(), parent_window);
 }
 
-void Browser::UpdateDownloadShelfVisibility(bool visible) {
-  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
-  for (StatusBubble* status_bubble : status_bubbles) {
-    status_bubble->UpdateDownloadShelfVisibility(visible);
-  }
-}
-
 bool Browser::CanSaveContents(content::WebContents* web_contents) const {
   return chrome::CanSavePage(this);
 }

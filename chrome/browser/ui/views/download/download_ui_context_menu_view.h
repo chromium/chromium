@@ -13,8 +13,6 @@
 #include "chrome/browser/download/download_ui_context_menu.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
-class DownloadItemView;
-
 namespace gfx {
 class Rect;
 }
@@ -28,8 +26,6 @@ class DownloadBubbleUIController;
 
 class DownloadUiContextMenuView : public DownloadUiContextMenu {
  public:
-  // TODO(crbug.com/40756678): Remove dependency on DownloadItemView.
-  explicit DownloadUiContextMenuView(DownloadItemView* download_item_view);
   explicit DownloadUiContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
   DownloadUiContextMenuView(
@@ -58,11 +54,6 @@ class DownloadUiContextMenuView : public DownloadUiContextMenu {
 
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // Parent download item view.
-  // TODO(crbug.com/40756678): Remove dependency on DownloadItemView.
-  raw_ptr<DownloadItemView> download_item_view_ = nullptr;
-
-  // Use this instead of DownloadItemView to submit download for feedback.
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   base::OnceClosure on_menu_will_show_callback_;

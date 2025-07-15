@@ -43,7 +43,6 @@
 #include "chrome/browser/download/download_open_prompt.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
-#include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -1628,8 +1627,6 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
     if (download::IsDownloadBubbleEnabled() &&
         browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-    } else if (browser->window()->IsDownloadShelfVisible()) {
-      browser->window()->GetDownloadShelf()->Close();
     }
   }
 
@@ -1679,8 +1676,6 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
     if (download::IsDownloadBubbleEnabled() &&
         browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-    } else if (browser->window()->IsDownloadShelfVisible()) {
-      browser->window()->GetDownloadShelf()->Close();
     }
   }
 

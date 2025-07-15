@@ -358,27 +358,6 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   // TODO(jamescook): Tab strip and bookmark bar.
 }
 
-TEST_F(BrowserViewLayoutTest, LayoutDownloadShelf) {
-  constexpr int kHeight = 50;
-  std::unique_ptr<views::View> download_shelf =
-      CreateFixedSizeView(gfx::Size(kBaseWidth, kHeight));
-  layout()->set_download_shelf(download_shelf.get());
-
-  // If the download shelf isn't visible, it doesn't move the bottom edge.
-  download_shelf->SetVisible(false);
-  constexpr int kBottom = 500;
-  EXPECT_EQ(kBottom, layout()->LayoutDownloadShelf(kBottom));
-
-  // A visible download shelf moves the bottom edge up.
-  download_shelf->SetVisible(true);
-  constexpr int kTop = kBottom - kHeight;
-  EXPECT_EQ(kTop, layout()->LayoutDownloadShelf(kBottom));
-  EXPECT_EQ(gfx::Rect(0, kTop, 0, kHeight), download_shelf->bounds());
-
-  // avoid dangling pointer.
-  layout()->set_download_shelf(nullptr);
-}
-
 TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
   // Top controls are fully shown.
   delegate()->set_should_draw_tab_strip(false);

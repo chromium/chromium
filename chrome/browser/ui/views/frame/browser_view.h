@@ -186,8 +186,6 @@ class BrowserView : public BrowserWindow,
     return top_controls_slide_controller_.get();
   }
 
-  void SetDownloadShelfForTest(DownloadShelf* download_shelf);
-
   // Returns the constraining bounding box that should be used to lay out the
   // FindBar within. This is _not_ the size of the find bar, just the bounding
   // box it should be laid out within. The coordinate system of the returned
@@ -622,10 +620,6 @@ class BrowserView : public BrowserWindow,
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override;
-  // TODO(beng): Not an override, move somewhere else.
-  void SetDownloadShelfVisible(bool visible);
-  bool IsDownloadShelfVisible() const override;
-  DownloadShelf* GetDownloadShelf() override;
   views::View* GetTopContainer() override;
   views::View* GetLensOverlayView() override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
@@ -659,8 +653,6 @@ class BrowserView : public BrowserWindow,
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;
-  void HideDownloadShelf();
-  void UnhideDownloadShelf();
 
   void ShowEmojiPanel() override;
   void ShowCaretBrowsingDialog() override;
@@ -1006,8 +998,8 @@ class BrowserView : public BrowserWindow,
   void UpdateDevToolsForContents(content::WebContents* web_contents,
                                  bool update_devtools_web_contents);
 
-  // Updates various optional child Views, e.g. Bookmarks Bar, Info Bar or the
-  // Download Shelf in response to a change notification from the specified
+  // Updates various optional child Views, e.g. Bookmarks Bar, Info Bar
+  // in response to a change notification from the specified
   // |contents|. |contents| can be null. In this case, all optional UI will be
   // removed.
   void UpdateUIForContents(content::WebContents* contents);
@@ -1166,8 +1158,6 @@ class BrowserView : public BrowserWindow,
   // |  |------------------------------------------------------------|  |
   // |  |  contents_web_view_ (or multi_contents_view_ if defined)   |  |
   // |  --------------------------------------------------------------  |
-  // |------------------------------------------------------------------|
-  // | Active downloads (download_shelf_)                               |
   // --------------------------------------------------------------------
 
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
@@ -1240,9 +1230,6 @@ class BrowserView : public BrowserWindow,
   // relative to views which paint into layers and views with an associated
   // NativeView.
   raw_ptr<View> find_bar_host_view_ = nullptr;
-
-  // The download shelf.
-  raw_ptr<DownloadShelf> download_shelf_ = nullptr;
 
   // The InfoBarContainerView that contains InfoBars for the current tab.
   raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;

@@ -155,38 +155,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorCastDialogHelpIcon] = {ui::kColorAccent};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
-  mixer[kColorDownloadItemForeground] = {kColorDownloadShelfForeground};
-  mixer[kColorDownloadItemForegroundDangerous] = ui::PickGoogleColor(
-      ui::kColorAlertHighSeverity, kColorDownloadShelfBackground,
-      color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
-      ui::AlphaBlend(kColorDownloadItemForeground,
-                     kColorDownloadShelfBackground, gfx::kGoogleGreyAlpha600),
-      kColorDownloadShelfBackground, kColorDownloadItemForeground);
-  mixer[kColorDownloadItemForegroundSafe] = ui::PickGoogleColor(
-      ui::kColorAlertLowSeverity, kColorDownloadShelfBackground,
-      color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadItemIconDangerous] = {ui::kColorAlertHighSeverity};
   mixer[kColorDownloadItemIconWarning] = {ui::kColorSecondaryForeground};
-  mixer[kColorDownloadItemProgressRingBackground] = ui::SetAlpha(
-      kColorDownloadItemProgressRingForeground, gfx::kGoogleGreyAlpha400);
-  mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorDownloadItemTextDangerous] = {ui::kColorAlertHighSeverity};
   mixer[kColorDownloadItemTextWarning] = {ui::kColorSecondaryForeground};
-  mixer[kColorDownloadShelfBackground] = {kColorToolbar};
-  mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
-  mixer[kColorDownloadShelfButtonIcon] = {kColorToolbarButtonIcon};
-  mixer[kColorDownloadShelfButtonIconDisabled] = {
-      kColorToolbarButtonIconDisabled};
-  mixer[kColorDownloadShelfButtonText] =
-      ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelfBackground,
-                          color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorDownloadShelfContentAreaSeparator] = ui::AlphaBlend(
-      kColorDownloadShelfButtonIcon, kColorDownloadShelfBackground, 0x3A);
-  mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
-  mixer[kColorDownloadStartedAnimationForeground] =
-      PickGoogleColor(ui::kColorAccent, kColorDownloadShelfBackground,
-                      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorDownloadToolbarButtonActive] =
       ui::PickGoogleColor(ui::kColorThrobber, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
@@ -925,8 +897,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   if (!ShouldApplyHighContrastColors(key)) {
     return;
   }
-  mixer[kColorDownloadShelfContentAreaSeparator] = {
-      kColorToolbarContentAreaSeparator};
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] = {kColorToolbarText};

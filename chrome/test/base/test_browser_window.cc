@@ -318,13 +318,6 @@ sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool TestBrowserWindow::IsDownloadShelfVisible() const {
-  return false;
-}
-
-DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
-  return &download_shelf_;
-}
 views::View* TestBrowserWindow::GetTopContainer() {
   return nullptr;
 }

@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/test_download_shelf.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -209,8 +208,6 @@ class TestBrowserWindow : public BrowserWindow {
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override {}
-  bool IsDownloadShelfVisible() const override;
-  DownloadShelf* GetDownloadShelf() override;
   views::View* GetTopContainer() override;
   views::View* GetLensOverlayView() override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
@@ -305,7 +302,6 @@ class TestBrowserWindow : public BrowserWindow {
   };
 
   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
-  TestDownloadShelf download_shelf_{nullptr};
   TestLocationBar location_bar_;
   gfx::NativeWindow native_window_ = gfx::NativeWindow();
 

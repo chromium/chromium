@@ -25,7 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -348,8 +348,16 @@ void ShowHistory(Browser* browser) {
 
 void ShowDownloads(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowDownloads"));
-  if (browser->window() && browser->window()->IsDownloadShelfVisible()) {
-    browser->window()->GetDownloadShelf()->Close();
+  // Hide the download bubble if it is showing, to avoid redundancy with the
+  // chrome://downloads page we are about to open.
+  if (browser->window() && browser->window()->GetDownloadBubbleUIController() &&
+      browser->window()
+          ->GetDownloadBubbleUIController()
+          ->GetDownloadDisplayController()) {
+    browser->window()
+        ->GetDownloadBubbleUIController()
+        ->GetDownloadDisplayController()
+        ->HideBubble();
   }
   ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
 }

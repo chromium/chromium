@@ -651,8 +651,6 @@ class Browser : public TabStripModelObserver,
   // Show various bits of UI
   void OpenFile();
 
-  void UpdateDownloadShelfVisibility(bool visible);
-
   // Whether the specified WebContents can be saved.
   // Saving can be disabled e.g. for the DevTools window.
   bool CanSaveContents(content::WebContents* web_contents) const;

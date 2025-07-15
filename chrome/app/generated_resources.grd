@@ -1890,29 +1890,6 @@ are declared in tools/grit/grit_args.gni.
         <ph name="ENGINE_NAME">$1<ex>Google</ex></ph> (Default)
       </message>
 
-      <!-- Download Shelf-->
-      <message name="IDS_ACCNAME_DOWNLOADS_BAR" desc="Accessible name for the entire downloads bar, read to screen reader users when navigating into the grouping">
-        Downloads bar
-      </message>
-      <if expr="use_titlecase">
-        <message name="IDS_HIDE_DOWNLOADS" desc="Button label for screenreader users, for button at the corner of the download shelf that closes the download shelf (title case)">
-          Close Downloads Bar
-        </message>
-        <message name="IDS_SHOW_ALL_DOWNLOADS" desc="Button label shown at the corner of the download shelf that opens the downloads page (title case)">
-          Show All
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_HIDE_DOWNLOADS" desc="Button label for screenreader users, for button at the corner of the download shelf that closes the download shelf (sentence case)">
-          Close downloads bar
-        </message>
-        <message name="IDS_SHOW_ALL_DOWNLOADS" desc="Button label shown at the corner of the download shelf that opens the downloads page (sentence case)">
-          Show all
-        </message>
-      </if>
-      <message name="IDS_DOWNLOAD_STARTED" desc="Message announced to screenreader users when a download starts.">
-        Download started
-      </message>
       <!-- Download Error Messages-->
       <!-- *_STATUS_*: Short message in the download on the shelf.-->
       <!-- *_DESCRIPTION_*: Corresponding more descriptive message on the download page.-->
@@ -2180,10 +2157,6 @@ are declared in tools/grit/grit_args.gni.
          desc="Status that the file download will be opened when the download completes.">
         Opening when complete
       </message>
-      <message name="IDS_DOWNLOAD_STATUS_OPENING"
-               desc="Temporary status shown when a user has clicked to open a downloaded file.">
-        Opening <ph name="FILE">$1<ex>image.jpg</ex></ph>...
-      </message>
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_SHORT" desc="Short status text that appears on unknown-sized downloads in progress.">
         In progress
       </message>
@@ -2237,14 +2210,6 @@ are declared in tools/grit/grit_args.gni.
          desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing. This variant is shown when the user is enrolled in the Advanced Protection program.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> was blocked by Advanced Protection.
       </message>
-      <message name="IDS_PROMPT_DEEP_SCANNING_DOWNLOAD"
-        desc="Message shown in the download shelf when a download is being scanned">
-        Checking <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> with your organization's security policies...
-      </message>
-      <message name="IDS_PROMPT_DEEP_SCANNING_DOWNLOAD_SHORT"
-        desc="Message shown in the download shelf when a download is being scanned, without the file name">
-        Checking with your organization's security policies.
-      </message>
       <message name="IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD"
         desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
@@ -2260,10 +2225,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_PASSWORD_PROTECTED"
         desc="Message shown in the download shelf when a download is blocked for being encrypted">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is encrypted. Ask its owner to decrypt.
-      </message>
-      <message name="IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_SAFE"
-        desc="Message shown in the download shelf when a download is finished being scanned, and no issues were found">
-        Security checks are done
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING"
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to warn the user">
@@ -2428,9 +2389,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_DOWNLOAD_NO_DOWNLOADS" desc="A message shown when the user has no downloads to show on chrome://downloads.">
         Files you download appear here
-      </message>
-      <message name="IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT" desc="Text for the dropdown button that opens the download item options menu">
-        Options menu
       </message>
       <message name="IDS_DOWNLOAD_LINK_RESUME"
                desc="In the download view, 'Resume' link text">
@@ -17981,37 +17939,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <!-- Data sharing UI strings -->
     <message name="IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE" desc="Title of the data sharing bubble">
       Data Sharing
-    </message>
-
-    <!-- Deep scanning open now dialog strings -->
-    <message name="IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE" desc="Title shown in tab modal dialog when the user attempts to open a download while deep scanning is in progress">
-      Scan in progress, open now?
-    </message>
-    <message name="IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_MESSAGE" desc="Message shown in tab modal dialog when the user attempts to open a download while deep scanning is in progress">
-      An unknown file is being scanned for dangerous content.
-    </message>
-    <message name="IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_ACCEPT_BUTTON" desc="The text on the accept button in tab modal dialog when the user attempts to open a download while deep scanning is in progress">
-      Open now
-    </message>
-
-    <!-- Deep scanning more info dialog strings -->
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_TITLE" desc="Title shown in tab modal dialog when the user opens a download that recommends deep scanning">
-      Scan file before opening?
-    </message>
-    <message name="IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the user opens a download that recommends deep scanning">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
-    </message>
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the user opens a download that recommends deep scanning">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Safe Browsing for scanning?
-    </message>
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON" desc="The text on the accept button in tab modal dialog when the user opens a download that recommends deep scanning">
-      Send
-    </message>
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_CANCEL_BUTTON" desc="The text on the cancel button in tab modal dialog when the user opens a download that recommends deep scanning">
-      Cancel
-    </message>
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_OPEN_NOW_BUTTON" desc="The text on the open now button in tab modal dialog when the user opens a download that recommends deep scanning">
-      Open now
     </message>
 
     <!-- In product help bubble dialog for users referred from ESB promotions -->

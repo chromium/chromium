@@ -79,7 +79,6 @@ class OfflineItemModel : public DownloadUIModel,
   bool AllDataSaved() const override;
   bool GetFileExternallyRemoved() const override;
   GURL GetURL() const override;
-  bool ShouldRemoveFromShelfWhenComplete() const override;
   offline_items_collection::FailState GetLastFailState() const override;
   GURL GetOriginalURL() const override;
   bool ShouldPromoteOrigin() const override;

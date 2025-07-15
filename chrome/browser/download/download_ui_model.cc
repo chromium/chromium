@@ -154,9 +154,6 @@ std::u16string FailStateDescription(FailState fail_state) {
 
 }  // namespace
 
-DownloadUIModel::DownloadUIModel()
-    : DownloadUIModel::DownloadUIModel(std::make_unique<StatusTextBuilder>()) {}
-
 DownloadUIModel::DownloadUIModel(
     std::unique_ptr<StatusTextBuilderBase> status_text_builder)
     : status_text_builder_(std::move(status_text_builder)) {
@@ -439,10 +436,6 @@ bool DownloadUIModel::IsMalicious() const {
 }
 
 bool DownloadUIModel::IsInsecure() const {
-  return false;
-}
-
-bool DownloadUIModel::ShouldRemoveFromShelfWhenComplete() const {
   return false;
 }
 

@@ -58,7 +58,6 @@
 #include "chrome/browser/download/download_manager_utils.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_request_limiter.h"
-#include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
@@ -512,7 +511,7 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Whether download UI is visible at all (download toolbar button for download
-// bubble, or download shelf).
+// bubble).
 bool IsDownloadUiVisible(BrowserWindow* window) {
   return window->GetDownloadBubbleUIController()
       ->GetDownloadDisplayController()
@@ -521,7 +520,7 @@ bool IsDownloadUiVisible(BrowserWindow* window) {
 }
 
 // Whether download details are visible in the UI (partial view for download
-// bubble, or download shelf).
+// bubble).
 bool IsDownloadDetailedUiVisible(BrowserWindow* window) {
   return window->GetDownloadBubbleUIController()
       ->GetDownloadDisplayController()
@@ -5189,70 +5188,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
   // The download surface should be visible.
   EXPECT_TRUE(IsDownloadDetailedUiVisible(browser()->window()));
 }
-
-// Tests for the download shelf.
-#if BUILDFLAG(IS_CHROMEOS)
-// Test that the download shelf is per-window by starting a download in one
-// tab, opening a second tab, closing the shelf, going back to the first tab,
-// and checking that the shelf is closed.
-IN_PROC_BROWSER_TEST_F(DownloadTest, PerWindowShelf) {
-  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/download-test3.gif");
-  base::FilePath download_file(
-      FILE_PATH_LITERAL("download-test3-attachment.gif"));
-
-  // Download a file and wait.
-  DownloadAndWait(browser(), url);
-
-  base::FilePath file(FILE_PATH_LITERAL("download-test3.gif"));
-  CheckDownload(browser(), download_file, file);
-
-  // Check state.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-
-  // Open a second tab and wait.
-  EXPECT_TRUE(chrome::AddSelectedTabWithURL(
-      browser(), GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-
-  // Hide the download shelf.
-  browser()->window()->GetDownloadShelf()->Close();
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-
-  // Go to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-  // The shelf should now be closed.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-}
-
-// Check whether the downloads shelf is closed when the downloads tab is
-// invoked.
-IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
-  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url =
-      embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
-
-  // Download the file and wait.  We do not expect the Select File dialog.
-  DownloadAndWait(browser(), url);
-
-  // Check state.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-
-  // Open the downloads tab.
-  chrome::ShowDownloads(browser());
-  // The download shelf should now be closed.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Flaky. crbug.com/1383009
 // Test that when downloading an item in Incognito mode, the download surface is

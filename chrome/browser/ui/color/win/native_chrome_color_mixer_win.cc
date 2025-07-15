@@ -297,8 +297,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   }
 
   // High contrast uses system colors.
-  mixer[kColorDownloadShelfContentAreaSeparator] = {
-      kColorToolbarContentAreaSeparator};
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] = {ui::kColorNativeWindowText};

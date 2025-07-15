@@ -42,6 +42,8 @@ class DownloadItemModel : public DownloadUIModel,
 
   // Constructs a DownloadItemModel. The caller must ensure that |download|
   // outlives this object.
+  // TODO(crbug.com/401528883): Make all usages explicitly specify which strings
+  // are desired by providing a StatusTextBuilderBase instance.
   explicit DownloadItemModel(download::DownloadItem* download);
 
   DownloadItemModel(download::DownloadItem* download,
@@ -65,7 +67,6 @@ class DownloadItemModel : public DownloadUIModel,
   bool MightBeMalicious() const override;
   bool IsMalicious() const override;
   bool IsInsecure() const override;
-  bool ShouldRemoveFromShelfWhenComplete() const override;
   bool ShouldShowDownloadStartedAnimation() const override;
   bool ShouldNotifyUI() const override;
   bool WasUINotified() const override;
