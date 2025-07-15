@@ -309,6 +309,18 @@ bool Session::ShouldDeferRequest(
         return dict;
       });
 
+  if (!AllowedToInitiateRefresh(request->initiator())) {
+    request->net_log().AddEvent(
+        net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
+        [&](NetLogCaptureMode capture_mode) {
+          base::Value::Dict dict;
+          dict.Set("refresh_required_reason",
+                   "refresh_not_allowed_for_initiator");
+          return dict;
+        });
+    return false;
+  }
+
   // TODO(crbug.com/353766029): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
@@ -430,6 +442,25 @@ void Session::RecordAccess() {
 bool Session::IncludesUrl(const GURL& url) const {
   return inclusion_rules_.EvaluateRequestUrl(url) ==
          SessionInclusionRules::kInclude;
+}
+
+bool Session::AllowedToInitiateRefresh(
+    const std::optional<url::Origin>& initiator) const {
+  // The initiator is missing only for browser-initiated requests.
+  if (!initiator.has_value()) {
+    return true;
+  }
+
+  if (inclusion_rules_.AllowsRefreshForInitiator(initiator.value())) {
+    return true;
+  }
+
+  for (const std::string& initiator_pattern : allowed_refresh_initiators_) {
+    if (MatchesHostPattern(initiator_pattern, initiator->host())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool Session::ShouldBackoff() const {

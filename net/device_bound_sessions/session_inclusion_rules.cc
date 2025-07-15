@@ -186,6 +186,19 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
   return SessionInclusionRules::kInclude;
 }
 
+bool SessionInclusionRules::AllowsRefreshForInitiator(
+    const url::Origin& initiator) const {
+  if (include_site_ && include_site_->IsSameSiteWith(initiator)) {
+    return true;
+  }
+
+  if (!include_site_ && origin_.IsSameOriginWith(initiator)) {
+    return true;
+  }
+
+  return false;
+}
+
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
   if (!MatchesHostPattern(host_pattern, url.host())) {
     return false;

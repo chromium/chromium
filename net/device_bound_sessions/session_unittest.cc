@@ -501,6 +501,48 @@ TEST_F(SessionTest, DeferredMissingScopeOrigin) {
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
+TEST_F(SessionTest, DeferredAllowedRefreshInitiators) {
+  auto params = CreateValidParams();
+  params.allowed_refresh_initiators = {"*.not-example.test"};
+  // We need a third-party cookie to be included on requests from other
+  // initiators.
+  params.credentials = {SessionParams::Credential{
+      "test_cookie",
+      /*attributes=*/"Secure; Domain=example.test; SameSite=None"}};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  // Create a request matching the fetcher URL.
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Browser-initiated requests can always be deferred
+  request->set_initiator(std::nullopt);
+  EXPECT_TRUE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+
+  // Initiators on the site can always be deferred, despite no matching
+  // initiator pattern.
+  request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
+  EXPECT_TRUE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+
+  // Initiators matching the pattern can be deferred.
+  request->set_initiator(
+      url::Origin::Create(GURL("https://subdomain.not-example.test/")));
+  EXPECT_TRUE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+
+  // Initiators not on the site or matching a rule cannot be deferred.
+  request->set_initiator(
+      url::Origin::Create(GURL("https://some-other-not-example.test/")));
+  EXPECT_FALSE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+}
+
 class InsecureDelegate : public CookieAccessDelegate {
  public:
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override {
@@ -648,11 +690,11 @@ TEST_F(SessionTest, NetLogMissingCookie) {
 
   RecordingNetLogObserver net_log_observer;
   session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_EQ(
-      net_log_observer
-          .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
-          .size(),
-      1u);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(*entries[0].params.FindString("refresh_required_reason"),
+            "missing_cookie");
 }
 
 TEST_F(SessionTest, NetLogNoRefresh) {
@@ -677,11 +719,40 @@ TEST_F(SessionTest, NetLogNoRefresh) {
 
   RecordingNetLogObserver net_log_observer;
   session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_EQ(
-      net_log_observer
-          .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
-          .size(),
-      1u);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(*entries[0].params.FindString("refresh_required_reason"),
+            "refresh_not_required");
+}
+
+TEST_F(SessionTest, NetLogWrongInitiator) {
+  auto params = CreateValidParams();
+  params.allowed_refresh_initiators = {};
+  // We need a third-party cookie to be included on requests from other
+  // initiators.
+  params.credentials = {SessionParams::Credential{
+      "test_cookie",
+      /*attributes=*/"Secure; Domain=example.test; SameSite=None"}};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  request->set_initiator(
+      url::Origin::Create(GURL("https://not-example.test/")));
+
+  RecordingNetLogObserver net_log_observer;
+  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(*entries[0].params.FindString("refresh_required_reason"),
+            "refresh_not_allowed_for_initiator");
 }
 
 TEST_F(SessionTest, RefreshUrlExcludedFromSession) {

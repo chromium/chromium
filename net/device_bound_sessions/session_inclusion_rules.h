@@ -103,6 +103,10 @@ class NET_EXPORT SessionInclusionRules final {
   // conditions are met).
   InclusionResult EvaluateRequestUrl(const GURL& url) const;
 
+  // Returns whether a request with initiator `initiator` is allowed to trigger
+  // a refresh by default.
+  bool AllowsRefreshForInitiator(const url::Origin& initiator) const;
+
   bool may_include_site_for_testing() const { return may_include_site_; }
   const url::Origin& origin() const { return origin_; }
 

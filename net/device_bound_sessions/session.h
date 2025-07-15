@@ -99,6 +99,11 @@ class NET_EXPORT Session {
   // Whether the URL is in-scope for the session.
   bool IncludesUrl(const GURL& url) const;
 
+  // Whether a request initiated by `initiator` is allowed to trigger a
+  // refresh for this session.
+  bool AllowedToInitiateRefresh(
+      const std::optional<url::Origin>& initiator) const;
+
   bool ShouldBackoff() const;
 
   // Inform the session about a refresh so it can decide whether to
