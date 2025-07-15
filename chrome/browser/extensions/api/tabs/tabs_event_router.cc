@@ -542,9 +542,15 @@ void TabsEventRouter::DispatchTabSelectionChanged(
   base::Value::List args;
   base::Value::Dict select_info;
 
-  select_info.Set(
-      tabs_constants::kWindowIdKey,
-      ExtensionTabUtil::GetWindowIdOfTabStripModel(tab_strip_model));
+  int window_id = -1;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model() == tab_strip_model) {
+      window_id = ExtensionTabUtil::GetWindowId(browser);
+      break;
+    }
+  }
+
+  select_info.Set(tabs_constants::kWindowIdKey, window_id);
 
   select_info.Set(kTabIdsKey, std::move(all_tabs));
   args.Append(std::move(select_info));

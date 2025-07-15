@@ -132,11 +132,6 @@ class ExtensionTabUtil {
 #endif
 
   static int GetWindowId(BrowserWindowInterface* browser);
-
-#if !BUILDFLAG(IS_ANDROID)
-  static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   static int GetTabId(const content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
 

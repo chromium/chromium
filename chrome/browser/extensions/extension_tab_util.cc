@@ -496,17 +496,6 @@ int ExtensionTabUtil::GetWindowId(BrowserWindowInterface* browser) {
   return WindowControllerFromBrowser(browser)->GetWindowId();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-int ExtensionTabUtil::GetWindowIdOfTabStripModel(
-    const TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
-      return GetWindowId(browser);
-  }
-  return -1;
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 int ExtensionTabUtil::GetTabId(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
