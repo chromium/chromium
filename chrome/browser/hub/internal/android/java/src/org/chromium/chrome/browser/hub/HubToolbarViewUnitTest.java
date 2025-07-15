@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -161,26 +160,6 @@ public class HubToolbarViewUnitTest {
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         return new DelegateButtonData(displayButtonData, mOnButton);
-    }
-
-    @Test
-    public void testActionButtonVisibility() {
-        FullButtonData fullButtonData = makeTestButtonData();
-        assertEquals(View.GONE, mActionButton.getVisibility());
-
-        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
-        assertEquals(View.VISIBLE, mActionButton.getVisibility());
-    }
-
-    @Test
-    public void testActionButtonCallback() {
-        FullButtonData fullButtonData = makeTestButtonData();
-        mActionButton.callOnClick();
-        verifyNoInteractions(mOnButton);
-
-        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
-        mActionButton.callOnClick();
-        verify(mOnButton).run();
     }
 
     @Test

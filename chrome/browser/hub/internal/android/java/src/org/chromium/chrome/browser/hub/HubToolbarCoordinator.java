@@ -7,6 +7,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import org.chromium.base.Callback;
@@ -36,6 +37,7 @@ public class HubToolbarCoordinator {
     private final MenuButton mMenuButton;
     private final UserEducationHelper mUserEducationHelper;
     private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
+    private final HubActionButtonCoordinator mActionButtonCoordinator;
 
     /**
      * Eagerly creates the component, but will not be rooted in the view tree yet.
@@ -62,6 +64,12 @@ public class HubToolbarCoordinator {
         mUserEducationHelper = userEducationHelper;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsAnimatingSupplier = isHubAnimatingSupplier;
+
+        Button hubActionButton = hubToolbarView.findViewById(R.id.toolbar_action_button);
+        mActionButtonCoordinator =
+                new HubActionButtonCoordinator(
+                        hubActionButton, hubToolbarView, paneManager, hubColorMixer);
+
         PropertyModel model =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, hubColorMixer)
@@ -111,6 +119,7 @@ public class HubToolbarCoordinator {
     public void destroy() {
         mMediator.destroy();
         mIsAnimatingSupplier.removeObserver(mIsAnimatingObserver);
+        mActionButtonCoordinator.destroy();
     }
 
     public boolean isSearchBoxVisible() {
