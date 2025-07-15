@@ -220,4 +220,14 @@ concept IsStackAllocatedTypeV = IsStackAllocatedType<T>::value;
 
 using WTF::IsGarbageCollectedType;
 
+namespace blink {
+using WTF::IsDisallowNew;
+using WTF::IsMemberType;
+using WTF::IsPointerToGarbageCollectedType;
+using WTF::IsStackAllocatedTypeV;
+using WTF::IsTraceable;
+using WTF::IsWeak;
+using WTF::IsWeakMemberType;
+}  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TYPE_TRAITS_H_

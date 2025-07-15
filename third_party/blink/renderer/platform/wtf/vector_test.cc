@@ -46,6 +46,15 @@ namespace WTF {
 HashSet<void*> g_constructed_wrapped_ints;
 unsigned LivenessCounter::live_ = 0;
 
+}  // namespace WTF
+
+namespace blink {
+
+using WTF::DestructCounter;
+using WTF::LivenessCounter;
+using WTF::MoveOnly;
+using WTF::WrappedInt;
+
 namespace {
 
 #define FAIL_COMPILE 0
@@ -225,7 +234,7 @@ TEST(VectorTest, ReverseIterator) {
   EXPECT_TRUE(end == it);
 }
 
-typedef WTF::Vector<std::unique_ptr<DestructCounter>> OwnPtrVector;
+using OwnPtrVector = Vector<std::unique_ptr<DestructCounter>>;
 
 TEST(VectorTest, OwnPtr) {
   int destruct_number = 0;
@@ -292,7 +301,7 @@ TEST(VectorTest, OwnPtr) {
 }
 
 TEST(VectorTest, MoveOnlyType) {
-  WTF::Vector<MoveOnly> vector;
+  Vector<MoveOnly> vector;
   vector.push_back(MoveOnly(1));
   vector.push_back(MoveOnly(2));
   EXPECT_EQ(2u, vector.size());
@@ -319,7 +328,7 @@ TEST(VectorTest, MoveOnlyType) {
   for (wtf_size_t i = 0; i < vector.size(); i++)
     EXPECT_EQ(static_cast<int>(i + 1), vector[i].Value());
 
-  WTF::Vector<MoveOnly> other_vector;
+  Vector<MoveOnly> other_vector;
   vector.swap(other_vector);
   EXPECT_EQ(count, other_vector.size());
   EXPECT_EQ(0u, vector.size());
@@ -761,15 +770,15 @@ TEST(VectorTest, IteratorMultipleInsertion) {
   EXPECT_TRUE(std::is_sorted(v.begin(), v.end()));
 }
 
-TEST(VectorTest, WTFErase) {
+TEST(VectorTest, BlinkErase) {
   Vector<int> v = {1, 2, 3, 3, 5, 3};
-  WTF::Erase(v, 3);
+  blink::Erase(v, 3);
   EXPECT_THAT(v, testing::ElementsAre(1, 2, 5));
 }
 
-TEST(VectorTest, WTFEraseIf) {
+TEST(VectorTest, BlinkEraseIf) {
   Vector<int> v = {1, 2, 3, 4, 5, 6};
-  WTF::EraseIf(v, [](int x) { return x % 2 == 0; });
+  blink::EraseIf(v, [](int x) { return x % 2 == 0; });
   EXPECT_THAT(v, testing::ElementsAre(1, 3, 5));
 }
 
@@ -857,4 +866,4 @@ static_assert(!IsTraceable<Vector<int>>::value,
 
 }  // anonymous namespace
 
-}  // namespace WTF
+}  // namespace blink

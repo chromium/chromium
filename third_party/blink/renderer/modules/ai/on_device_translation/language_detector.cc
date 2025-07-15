@@ -453,12 +453,11 @@ HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     return results;
   }
 
-  const WTF::UncheckedIterator<LanguageDetectionModel::LanguagePrediction>&
-      unknown_iter = std::find_if(
-          predictions.begin(), predictions.end(),
-          [](const LanguageDetectionModel::LanguagePrediction& prediction) {
-            return prediction.language == "unknown";
-          });
+  const auto& unknown_iter = std::find_if(
+      predictions.begin(), predictions.end(),
+      [](const LanguageDetectionModel::LanguagePrediction& prediction) {
+        return prediction.language == "unknown";
+      });
 
   CHECK_NE(unknown_iter, predictions.end());
   double unknown = unknown_iter->score;

@@ -29,6 +29,10 @@
 template <typename T>
 class scoped_refptr;
 
+namespace WTF {
+class PartitionAllocator;
+}
+
 namespace blink {
 
 class AtomicString;
@@ -39,30 +43,30 @@ class StringView;
 
 template <typename T>
 class StringBuffer;
+template <typename T,
+          wtf_size_t inlineCapacity = 0,
+          typename Allocator = WTF::PartitionAllocator>
+class Vector;
 
 }  // namespace blink
 
 namespace WTF {
 
-class PartitionAllocator;
 template <typename T,
-          wtf_size_t inlineCapacity = 0,
+          wtf_size_t inlineBuffer = 0,
           typename Allocator = PartitionAllocator>
-class Vector;
+class Deque;
 
 class OrdinalNumber;
 class SegmentedBuffer;
 class SharedBuffer;
 class TextPosition;
 
-// TODO(crbug.com/422768753): Remove this `using` directive.
+// TODO(crbug.com/422768753): Remove these `using` directives.
 using blink::String;
+using blink::Vector;
 
 }  // namespace WTF
-
-namespace blink {
-using WTF::Vector;
-}  // namespace blink
 
 using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;

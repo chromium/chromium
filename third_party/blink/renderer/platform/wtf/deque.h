@@ -43,6 +43,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -55,9 +56,7 @@ class DequeIterator;
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class DequeConstIterator;
 
-template <typename T,
-          wtf_size_t InlineCapacity = 0,
-          typename Allocator = PartitionAllocator>
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class Deque {
   USE_ALLOCATOR(Deque, Allocator);
 

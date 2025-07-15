@@ -86,7 +86,7 @@
     <DisplayString IncludeView="bare">{string_,view(bare)}</DisplayString>
     <DisplayString>{string_}</DisplayString>
   </Type>
-  <Type Name="WTF::Vector&lt;*&gt;">
+  <Type Name="blink::Vector&lt;*&gt;">
     <DisplayString Condition="size_==0">(empty)</DisplayString>
     <DisplayString Condition="size_==1">[{size_}] {buffer_,1}</DisplayString>
     <DisplayString Condition="size_==2">[{size_}] {buffer_,2}</DisplayString>

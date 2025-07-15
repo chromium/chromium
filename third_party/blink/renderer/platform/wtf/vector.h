@@ -73,12 +73,7 @@ GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
 #define INLINE_CAPACITY InlineCapacity
 #endif
 
-namespace WTF {
-template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-class Vector;
-}
-
-namespace WTF {
+namespace blink {
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight
@@ -88,9 +83,6 @@ static const wtf_size_t kInitialVectorSize = 1;
 #else
 static const wtf_size_t kInitialVectorSize = 4;
 #endif
-
-template <typename T, wtf_size_t inlineBuffer, typename Allocator>
-class Deque;
 
 //
 // Vector Traits
@@ -178,7 +170,7 @@ template <typename T, typename Allocator>
 struct VectorTypeOperations {
   STATIC_ONLY(VectorTypeOperations);
 
-  using ConstructTraits = WTF::ConstructTraits<T, VectorTraits<T>, Allocator>;
+  using ConstructTraits = ConstructTraits<T, VectorTraits<T>, Allocator>;
 
   ALWAYS_INLINE static void Destruct(T* begin, T* end) {
     if constexpr (!VectorTraits<T>::kNeedsDestruction) {
@@ -593,7 +585,7 @@ class VectorBufferBase {
 
 template <typename T,
           wtf_size_t InlineCapacity,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = WTF::PartitionAllocator>
 class VectorBuffer;
 
 template <typename T, typename Allocator>
@@ -1033,7 +1025,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 };
 
 // UncheckedIteraotr<T> is just a wrapper of a T pointer with no bounds
-// checking, and the default iterator implementation of WTF::Vector.
+// checking, and the default iterator implementation of blink::Vector.
 template <typename T>
 class UncheckedIterator {
  public:
@@ -2466,7 +2458,7 @@ inline void Vector<T, InlineCapacity, Allocator>::Reverse() {
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void swap(Vector<T, InlineCapacity, Allocator>& a,
                  Vector<T, InlineCapacity, Allocator>& b) {
-  a.Swap(b);
+  a.swap(b);
 }
 
 template <typename T,
@@ -2643,10 +2635,18 @@ auto ToVector(Range&& range, Proj proj = {}) {
   return Vector<ProjectedType>(std::forward<Range>(range), std::move(proj));
 }
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::Vector;
 }  // namespace blink
+
+// TODO(crbug.com/422768753): Remove these `using` directives.
+namespace WTF {
+using blink::Erase;
+using blink::EraseIf;
+using blink::kVectorNeedsDestructor;
+using blink::ToVector;
+using blink::Vector;
+using blink::VectorBuffer;
+using blink::VectorOperationOrigin;
+using blink::VectorTypeOperations;
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_H_

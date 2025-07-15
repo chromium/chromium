@@ -37,4 +37,8 @@ enum HashTableDeletedValueType { kHashTableDeletedValue };
 
 }  // namespace WTF
 
+namespace blink {
+using WTF::HashTableDeletedValueType;
+}  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_DELETED_VALUE_TYPE_H_

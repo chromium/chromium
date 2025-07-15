@@ -310,21 +310,21 @@ class BlinkLengthPrinter:
         return 'Length(unknown type %i)' % ltype
 
 
-class WTFVectorPrinter:
-    """Pretty Printer for a WTF::Vector.
+class BlinkVectorPrinter:
+    """Pretty Printer for a blink::Vector.
 
     The output of this pretty printer is similar to the output of std::vector's
     pretty printer, which is bundled in gcc.
 
     Example gdb session should look like:
     (gdb) p v
-    $3 = WTF::Vector of length 7, capacity 16 = {7, 17, 27, 37, 47, 57, 67}
+    $3 = blink::Vector of length 7, capacity 16 = {7, 17, 27, 37, 47, 57, 67}
     (gdb) set print elements 3
     (gdb) p v
-    $6 = WTF::Vector of length 7, capacity 16 = {7, 17, 27...}
+    $6 = blink::Vector of length 7, capacity 16 = {7, 17, 27...}
     (gdb) set print array
     (gdb) p v
-    $7 = WTF::Vector of length 7, capacity 16 = {
+    $7 = blink::Vector of length 7, capacity 16 = {
       7,
       17,
       27
@@ -332,7 +332,7 @@ class WTFVectorPrinter:
     }
     (gdb) set print elements 200
     (gdb) p v
-    $8 = WTF::Vector of length 7, capacity 16 = {
+    $8 = blink::Vector of length 7, capacity 16 = {
       7,
       17,
       27,
@@ -374,7 +374,7 @@ class WTFVectorPrinter:
 
     def to_string(self):
         return ('%s of length %d, capacity %d' %
-                ('WTF::Vector', self.val['size_'], self.val['capacity_']))
+                ('blink::Vector', self.val['size_'], self.val['capacity_']))
 
     def display_hint(self):
         return 'array'
@@ -490,7 +490,6 @@ class CcPaintOpBufferPrinter:
 
 def add_pretty_printers():
     pretty_printers = (
-        (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
         (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
         (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
         (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
@@ -502,6 +501,7 @@ def add_pretty_printers():
          BlinkPixelsAndPercentPrinter),
         (re.compile("^blink::String$"), BlinkStringPrinter),
         (re.compile("^blink::StringImpl$"), BlinkStringImplPrinter),
+        (re.compile("^blink::Vector<.*>$"), BlinkVectorPrinter),
         (re.compile("^blink::Length$"), BlinkLengthPrinter),
         (re.compile("^blink::DataRef<.*>$"), BlinkDataRefPrinter),
         (re.compile("^blink::JSONValue$"), BlinkJSONValuePrinter),

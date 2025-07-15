@@ -43,13 +43,13 @@ def __lldb_init_module(debugger, dict):
         'type summary add --expand -F lldb_blink.BlinkAtomicString_SummaryProvider blink::AtomicString'
     )
     debugger.HandleCommand(
-        'type summary add --expand -F lldb_blink.WTFVector_SummaryProvider -x "WTF::Vector<.+>$"'
+        'type summary add --expand -F lldb_blink.BlinkVector_SummaryProvider -x "blink::Vector<.+>$"'
     )
     debugger.HandleCommand(
         'type summary add --expand -F lldb_blink.WTFHashTable_SummaryProvider -x "WTF::HashTable<.+>$"'
     )
     debugger.HandleCommand(
-        'type synthetic add -x "WTF::Vector<.+>$" --python-class lldb_blink.WTFVectorProvider'
+        'type synthetic add -x "blink::Vector<.+>$" --python-class lldb_blink.BlinkVectorProvider'
     )
     debugger.HandleCommand(
         'type synthetic add -x "WTF::HashTable<.+>$" --python-class lldb_blink.WTFHashTableProvider'
@@ -82,8 +82,8 @@ def BlinkAtomicString_SummaryProvider(valobj, dict):
         valobj.GetChildMemberWithName('string_'), dict)
 
 
-def WTFVector_SummaryProvider(valobj, dict):
-    provider = WTFVectorProvider(valobj, dict)
+def BlinkVector_SummaryProvider(valobj, dict):
+    provider = BlinkVectorProvider(valobj, dict)
     return "{ size = %d, capacity = %d }" % (provider.size, provider.capacity)
 
 
@@ -288,7 +288,7 @@ class BlinkLengthProvider:
         return 'Length(unknown type %s)' % ltype
 
 
-class WTFVectorProvider:
+class BlinkVectorProvider:
     def __init__(self, valobj, internal_dict):
         self.valobj = valobj
         self.update()
