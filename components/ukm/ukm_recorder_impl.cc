@@ -1015,7 +1015,12 @@ void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
 
 void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!HasUnknownMetrics(decode_map_, *entry));
+
+  // This should not happen in practice, but possible if an event name
+  // coming from Android implementation in UkmRecorder.java is misspelled.
+  if (HasUnknownMetrics(decode_map_, *entry)) {
+    return;
+  }
 
   NotifyObserversWithNewEntry(*entry);
 
