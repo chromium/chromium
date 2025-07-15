@@ -158,10 +158,6 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // Gets the delay before the next registration.
   virtual base::TimeDelta GetTryRegistrationDelay();
 
-  // Prohibits signout if needed when the account is registered for cloud policy
-  // . Might be no-op for some platforms (eg., iOS and Android).
-  virtual void ProhibitSignoutIfNeeded();
-
   // Returns true when policies can be applied for the profile. The profile has
   // to be at least tied to an account.
   virtual bool CanApplyPolicies(bool check_for_refresh_token);

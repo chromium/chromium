@@ -242,7 +242,7 @@ class UserPolicySigninServiceTest : public testing::Test {
 
     // Sign in to Chrome.
     identity_test_env()->SetPrimaryAccount(kTestUser,
-                                           signin::ConsentLevel::kSync);
+                                           signin::ConsentLevel::kSignin);
 
     // Mimic successful oauth token fetch.
     MakeOAuthTokenFetchSucceed();
@@ -333,7 +333,7 @@ class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
 
     // Set the user as signed in.
     identity_test_env()->SetPrimaryAccount(kTestUser,
-                                           signin::ConsentLevel::kSync);
+                                           signin::ConsentLevel::kSignin);
 
     // Let the SigninService know that the profile has been created.
 #if BUILDFLAG(IS_ANDROID)
@@ -376,7 +376,7 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
 
   // Sign in to Chrome.
   identity_test_env()->SetPrimaryAccount(kTestUser,
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -445,7 +445,7 @@ TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
 
   // Now sign in the user.
   identity_test_env()->SetPrimaryAccount(kTestUser,
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -469,7 +469,7 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
 
   // Now sign in a non-enterprise user (gmail.com domain).
   identity_test_env()->SetPrimaryAccount("non_enterprise_user@gmail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -491,7 +491,7 @@ TEST_F(UserPolicySigninServiceTest, UnregisteredClient) {
 
   // Now sign in the user.
   identity_test_env()->SetPrimaryAccount(kTestUser,
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
 
   // Make oauth token available.
   identity_test_env()->SetRefreshTokenForPrimaryAccount();
@@ -519,7 +519,7 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
 
   // Now sign in the user.
   identity_test_env()->SetPrimaryAccount(kTestUser,
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
 
   // Make oauth token available.
   identity_test_env()->SetRefreshTokenForPrimaryAccount();

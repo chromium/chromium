@@ -87,13 +87,16 @@ void UserPolicySigninService::Shutdown() {
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager && IsSignoutEvent(event)) {
-    UpdateProfileAttributesWhenSignout(profile_, profile_manager);
-    ShutdownCloudPolicyManager();
-  } else if (IsTurnOffSyncEvent(event)) {
-    ShutdownCloudPolicyManager();
+  if (!IsSignoutEvent(event)) {
+    return;
   }
+
+  if (ProfileManager* profile_manager =
+          g_browser_process->profile_manager()) {
+    // `ProfileManager` may be null in tests.
+    UpdateProfileAttributesWhenSignout(profile_, profile_manager);
+  }
+  ShutdownCloudPolicyManager();
 }
 
 void UserPolicySigninService::OnProfileAdded(Profile* profile) {

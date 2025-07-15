@@ -358,7 +358,6 @@ UserPolicySigninServiceBase::GetDeviceDMTokenIfAffiliatedCallback() {
 }
 
 void UserPolicySigninServiceBase::OnRegistrationComplete() {
-  ProhibitSignoutIfNeeded();
   registration_helper_.reset();
 }
 
@@ -376,7 +375,6 @@ void UserPolicySigninServiceBase::
   if (manager->IsClientRegistered()) {
     DVLOG_POLICY(1, POLICY_FETCHING)
         << "Client already registered - not fetching DMToken";
-    ProhibitSignoutIfNeeded();
     return;
   }
 
@@ -401,15 +399,11 @@ void UserPolicySigninServiceBase::
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, registration_callback_.callback(), try_registration_delay);
   }
-
-  ProhibitSignoutIfNeeded();
 }
 
 void UserPolicySigninServiceBase::OnPolicyRefreshed(bool success) {
   policy_fetch_callbacks().Notify(success);
 }
-
-void UserPolicySigninServiceBase::ProhibitSignoutIfNeeded() {}
 
 bool UserPolicySigninServiceBase::CanApplyPolicies(
     bool check_for_refresh_token) {

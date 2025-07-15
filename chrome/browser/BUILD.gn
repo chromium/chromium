@@ -4724,7 +4724,6 @@ static_library("browser") {
         "policy/client_data_delegate_desktop.h",
         "policy/cloud/user_policy_signin_service.cc",
         "policy/cloud/user_policy_signin_service.h",
-        "policy/cloud/user_policy_signin_service_internal.h",
         "policy/file_selection_dialogs_policy_handler.cc",
         "policy/file_selection_dialogs_policy_handler.h",
         "profiles/avatar_menu.cc",

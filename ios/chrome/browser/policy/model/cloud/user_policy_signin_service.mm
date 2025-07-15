@@ -115,8 +115,6 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   return GetTryRegistrationDelayFromPrefs(pref_service_);
 }
 
-void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
-
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
   UpdateLastPolicyCheckTimeInPrefs(pref_service_);
 }

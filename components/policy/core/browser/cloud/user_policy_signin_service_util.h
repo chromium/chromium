@@ -23,10 +23,6 @@ namespace policy {
 POLICY_EXPORT bool IsSignoutEvent(
     const signin::PrimaryAccountChangeEvent& event);
 
-// Returns true if sync was turned off for the account.
-POLICY_EXPORT bool IsTurnOffSyncEvent(
-    const signin::PrimaryAccountChangeEvent& event);
-
 // Returns true if the event is related to sign-in.
 POLICY_EXPORT bool IsAnySigninEvent(
     const signin::PrimaryAccountChangeEvent& event);

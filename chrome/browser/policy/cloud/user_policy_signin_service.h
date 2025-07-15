@@ -100,7 +100,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void InitializeCloudPolicyManager(
       const AccountId& account_id,
       std::unique_ptr<CloudPolicyClient> client) override;
-  void ProhibitSignoutIfNeeded() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   CloudPolicyClient::DeviceDMTokenCallback
   GetDeviceDMTokenIfAffiliatedCallback() override;
