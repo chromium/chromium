@@ -10,13 +10,22 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
+#include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace page_actions {
 class PageActionController;
-}
+
+class RecordIgnoreDelegate {
+ public:
+  virtual ~RecordIgnoreDelegate() = default;
+  // Record that the prompt on app corresponding to app_id being ignored at a
+  // specific time.
+  virtual void RecordIgnore(const webapps::AppId& app_id, base::Time time) = 0;
+};
+}  // namespace page_actions
 
 namespace tabs {
 class TabInterface;
@@ -28,7 +37,8 @@ class TabInterface;
 class PwaInstallPageActionController
     : public content::WebContentsObserver,
       public webapps::AppBannerManager::Observer,
-      public page_actions::PageActionObserver {
+      public page_actions::PageActionObserver,
+      public page_actions::RecordIgnoreDelegate {
  public:
   PwaInstallPageActionController(
       tabs::TabInterface& tab_interface,
@@ -41,7 +51,12 @@ class PwaInstallPageActionController
       const PwaInstallPageActionController&) = delete;
 
   // Sets that the callback (i.e. the action) is being executed.
-  void SetIsExecuting(bool);
+  void SetIsExecuting(bool is_executing) { this->is_executing_ = is_executing; }
+
+  bool GetIsExecuting() const { return is_executing_; }
+
+  // Returns whether an iph is pending.
+  bool GetIphIsPending() const { return iph_pending_; }
 
   // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated(
@@ -56,9 +71,20 @@ class PwaInstallPageActionController
   void OnPageActionIconShown(
       const page_actions::PageActionState& page_action) override;
 
+  // Executes OnIphClosed with a custom delegate for testing.
+  void ExecuteOnIphClosedForTesting(
+      const webapps::ManifestId manifest_id,
+      RecordIgnoreDelegate* record_ignore_delegate);
+
+  //  page_actions::RecordIgnoreDelegate
+  void RecordIgnore(const webapps::AppId& app_id, base::Time time) override;
+
  private:
   // Handles all the logic related to showing and hiding the page action.
   void UpdateVisibility();
+
+  // Returns the controller of all page actions.
+  page_actions::PageActionController& GetPageActionController();
 
   // Requests PageActionController to show this Page Action
   void Show(content::WebContents* web_contents, bool showChip);
@@ -91,7 +117,8 @@ class PwaInstallPageActionController
   bool is_executing_ = false;
 
   raw_ptr<webapps::AppBannerManager> manager_;
-  const raw_ref<tabs::TabInterface> tab_interface_;
+  raw_ref<tabs::TabInterface> tab_interface_;
+  raw_ptr<page_actions::RecordIgnoreDelegate> record_ignore_delegate_;
   const raw_ref<page_actions::PageActionController> page_action_controller_;
 
   // If set, indicates that an IPH is showing and therefore the page action

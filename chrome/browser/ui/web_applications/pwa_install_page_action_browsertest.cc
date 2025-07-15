@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -36,6 +38,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -152,6 +155,18 @@ void PwaInstallIconChangeWaiter::VerifyIconVisibility(views::View* iconView,
   }
   EXPECT_EQ(visible, iconView->GetVisible());
 }
+
+class MockRecordIgnoreDelegate : public page_actions::RecordIgnoreDelegate {
+ public:
+  MockRecordIgnoreDelegate() = default;
+  void RecordIgnore(const webapps::AppId& app_id, base::Time time) override {
+    ignore_was_called_ = true;
+  }
+  bool GetIgnoreWasCalled() { return ignore_was_called_; }
+
+ private:
+  bool ignore_was_called_ = false;
+};
 
 }  // namespace
 
@@ -879,10 +894,49 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
+  auto* const user_education = BrowserUserEducationInterface::From(browser());
+
   // IPH is not shown when the IPH is ignored recently.
-  EXPECT_FALSE(
-      BrowserUserEducationInterface::From(browser())->IsFeaturePromoActive(
-          feature_engagement::kIPHDesktopPwaInstallFeature));
+  EXPECT_FALSE(user_education->IsFeaturePromoQueued(
+                   feature_engagement::kIPHDesktopPwaInstallFeature) ||
+               user_education->IsFeaturePromoActive(
+                   feature_engagement::kIPHDesktopPwaInstallFeature));
+}
+
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+                       OnCloseDoesntRecordIgnoreIfExecuting) {
+  if (!IsMigrationEnabled()) {
+    return;
+  }
+  PwaInstallPageActionController* pwa_install_controller =
+      browser()
+          ->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->pwa_install_page_action_controller();
+  pwa_install_controller->SetIsExecuting(true);
+
+  MockRecordIgnoreDelegate record_ignore;
+  pwa_install_controller->ExecuteOnIphClosedForTesting(GetInstallableAppURL(),
+                                                       &record_ignore);
+  EXPECT_FALSE(record_ignore.GetIgnoreWasCalled());
+}
+
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+                       OnCloseRecordsIgnoreIfNotExecuting) {
+  if (!IsMigrationEnabled()) {
+    return;
+  }
+  PwaInstallPageActionController* pwa_install_controller =
+      browser()
+          ->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->pwa_install_page_action_controller();
+  ASSERT_FALSE(pwa_install_controller->GetIsExecuting());
+
+  MockRecordIgnoreDelegate record_ignore;
+  pwa_install_controller->ExecuteOnIphClosedForTesting(GetInstallableAppURL(),
+                                                       &record_ignore);
+  EXPECT_TRUE(record_ignore.GetIgnoreWasCalled());
 }
 
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {

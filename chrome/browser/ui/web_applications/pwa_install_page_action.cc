@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -41,6 +42,7 @@ PwaInstallPageActionController::PwaInstallPageActionController(
     page_actions::PageActionController& page_action_controller)
     : page_actions::PageActionObserver(kActionInstallPwa),
       tab_interface_(tab_interface),
+      record_ignore_delegate_(this),
       page_action_controller_(page_action_controller),
       iph_is_enabled_(base::FeatureList::IsEnabled(
           feature_engagement::kIPHDesktopPwaInstallFeature)) {
@@ -63,10 +65,6 @@ PwaInstallPageActionController::PwaInstallPageActionController(
                           base::Unretained(this)));
 
   RegisterAsPageActionObserver(page_action_controller_.get());
-}
-
-void PwaInstallPageActionController::SetIsExecuting(bool is_executing) {
-  is_executing_ = is_executing;
 }
 
 void PwaInstallPageActionController::WillDiscardContents(
@@ -208,6 +206,14 @@ void PwaInstallPageActionController::PrimaryMainFrameRenderProcessGone(
   UpdateVisibility();
 }
 
+page_actions::PageActionController&
+PwaInstallPageActionController::GetPageActionController() {
+  page_actions::PageActionController* all_actions_controller =
+      tab_interface_->GetTabFeatures()->page_action_controller();
+  CHECK(all_actions_controller);
+  return *all_actions_controller;
+}
+
 bool PwaInstallPageActionController::ShouldShowIph(
     content::WebContents* web_contents,
     const webapps::WebAppBannerData& data) {
@@ -228,6 +234,13 @@ bool PwaInstallPageActionController::ShouldShowIph(
   auto score = site_engagement::SiteEngagementService::Get(profile)->GetScore(
       web_contents->GetVisibleURL());
 
+  // TODO(crbug.com/421837877): The user education system natively supports
+  // deciding when IPHs should/shouldn't be shown. In the application code, we
+  // should just call for the feature promo to be shown and the user education
+  // will decide to show it or not. This function should be simplified
+  // to only test logic related to the PWA itself. For example:
+  // `score > kIphSiteEngagementThresholdParam` is ok to check but the part that
+  // reads the profile prefs should be removed.
   return score > kIphSiteEngagementThresholdParam.Get() &&
          !web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(
               profile->GetPrefs())
@@ -250,15 +263,28 @@ void PwaInstallPageActionController::OnIphClosed(
   if (is_executing_) {
     return;
   }
+
+  record_ignore_delegate_->RecordIgnore(
+      web_app::GenerateAppIdFromManifestId(manifest_id), base::Time::Now());
+}
+
+void PwaInstallPageActionController::RecordIgnore(const webapps::AppId& app_id,
+                                                  base::Time time) {
   content::WebContents* web_contents = tab_interface_->GetContents();
   if (!web_contents) {
     return;
   }
-
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
-
   web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(prefs).RecordIgnore(
-      web_app::GenerateAppIdFromManifestId(manifest_id), base::Time::Now());
+      app_id, base::Time::Now());
+}
+
+void PwaInstallPageActionController::ExecuteOnIphClosedForTesting(
+    const webapps::ManifestId manifest_id,
+    page_actions::RecordIgnoreDelegate* record_ignore_delegate) {
+  base::AutoReset<raw_ptr<page_actions::RecordIgnoreDelegate>> auto_reset(
+      &record_ignore_delegate_, record_ignore_delegate);
+  PwaInstallPageActionController::OnIphClosed(manifest_id);
 }
