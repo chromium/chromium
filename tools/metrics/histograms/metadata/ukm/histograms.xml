@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.BuildAndStoreLogIsEmpty" enum="Boolean"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.MaxHit.ByEntryHash"
-    enum="UkmEventNameHash" expires_after="2025-11-09">
+    enum="UkmEventNameHash" expires_after="2026-01-11">
   <owner>lucnguyen@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -140,14 +140,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCount2" units="entries"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>Number of serialized UKM entries when storing a UKM log.</summary>
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCountFCP" units="entries"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.IOSLog.OnSuccess" units="records"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.SerializedCount2{UkmSourceIdTypes}"
-    units="sources" expires_after="2025-11-09">
+    units="sources" expires_after="2026-01-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>

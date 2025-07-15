@@ -564,7 +564,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -808,7 +808,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActSurvey.Status"
-    enum="PrivacySandboxActSurveyStatus" expires_after="2025-11-12">
+    enum="PrivacySandboxActSurveyStatus" expires_after="2026-01-11">
   <owner>kjarosz@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>

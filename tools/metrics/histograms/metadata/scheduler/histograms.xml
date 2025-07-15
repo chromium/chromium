@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.SchedQoS.SetProcessStateError" enum="QoSErrorType"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.SchedQoS.SetThreadStateError" enum="QoSErrorType"
-    expires_after="2025-11-09">
+    expires_after="2026-01-11">
   <owner>kawasin@google.com</owner>
   <owner>joelaf@google.com</owner>
   <summary>
