@@ -324,6 +324,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void startPartnerCustomizationDuringFre() {
         launchFirstRunActivity();
         CriteriaHelper.pollInstrumentationThread(
@@ -400,6 +401,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_SearchPromo_HistorySyncPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo().withHistorySyncPromo());
     }
@@ -408,6 +410,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_HistorySyncPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withHistorySyncPromo());
     }
@@ -416,6 +419,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
 
@@ -443,6 +447,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
 
@@ -482,6 +487,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo_HistorySyncPromo()
             throws Exception {
         runFirstRunPagesTest(
@@ -529,6 +535,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -567,6 +574,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
         HistogramWatcher.Builder histogramBuilder =
                 HistogramWatcher.newBuilder()
@@ -742,6 +750,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testMultipleFresBothView() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -758,6 +767,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testMultipleFresBackButton() throws Exception {
         launchViewIntent(TEST_URL);
         FirstRunActivity firstFreActivity = waitForFirstRunActivity();
@@ -806,6 +816,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_FRE_IN_SAME_TASK})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testLaunchFirstRunInSameTask() throws Exception {
         launchCustomTabs(TEST_URL);
         FirstRunActivity firstRunActivity = waitForFirstRunActivity();
@@ -859,6 +870,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testSigninFirstRunLoadPointHistograms() throws Exception {
         var histograms =
                 HistogramWatcher.newBuilder()
@@ -880,6 +892,7 @@ public class FirstRunIntegrationTest {
     // A fake AppRestriction is injected in order to trigger the corresponding code in
     // AppRestrictionsProvider.
     @Policies.Add(@Policies.Item(key = "NoncePolicy", string = "true"))
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testNativeInitBeforeFragmentSkip() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase().withoutSignIn();
         initializePreferences(testCase);
@@ -974,6 +987,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_noPagesShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1037,6 +1051,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_searchEnginePromoDisabledWhilePromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1107,6 +1122,7 @@ public class FirstRunIntegrationTest {
     // Automotive devices do not support coloring the system bars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testEdgeToEdgeEverywhere() {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
