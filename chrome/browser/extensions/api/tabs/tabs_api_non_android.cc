@@ -1252,11 +1252,10 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     // Note: current_browser may still be null.
   }
 
+  // Historically, we queried browsers in creation order. Maintain that behavior
+  // (for now).
   std::vector<BrowserWindowInterface*> all_browsers =
-      GetBrowserWindowInterfacesOrderedByActivation();
-  // Historically, we queried browsers in reverse-activation order. Maintain
-  // that behavior (for now).
-  std::reverse(all_browsers.begin(), all_browsers.end());
+      GetAllBrowserWindowInterfaces();
   for (auto* browser : all_browsers) {
     if (!profile->IsSameOrParent(browser->GetProfile())) {
       continue;
