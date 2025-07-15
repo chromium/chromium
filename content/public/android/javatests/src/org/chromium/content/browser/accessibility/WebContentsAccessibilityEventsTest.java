@@ -645,6 +645,13 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselWithLinks() {
+        performTest("carousel-with-links.html", "carousel-with-links-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_checkboxValidity() {
         performTest("checkbox-validity.html", "checkbox-validity-expected-android.txt");
     }

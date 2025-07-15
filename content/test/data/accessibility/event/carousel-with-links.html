@@ -1,0 +1,48 @@
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+
+  scroll-marker-group: after links;
+
+  /* Scroll marker group is generated on the .carousel element */
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* These are div items children within the carousel */
+  & > div {
+    height: 100%;
+
+    /* Request a scroll marker for this element by setting non-none content */
+    &::scroll-marker {
+      display: inline-block;
+      content: '';
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+    }
+    /* The currently selected scroll marker should be blue */
+    &::scroll-marker:target-current {
+      background: blue;
+    }
+  }
+}
+</style>
+
+<div id=scroller class=carousel>
+  <div id=one>One</div>
+  <div id=two>Two</div>
+  <div id=three>Three</div>
+</div>
+
+<script>
+function go() {
+  document.getElementById("three").scrollIntoView();
+}
+</script>

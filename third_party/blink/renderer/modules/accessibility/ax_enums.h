@@ -121,6 +121,7 @@ enum AXIgnoredReason {
   kAXNotVisible,
   kAXPresentational,
   kAXProbablyPresentational,
+  kAXInactiveCarouselTabContent,
   kAXUninteresting
 };
 

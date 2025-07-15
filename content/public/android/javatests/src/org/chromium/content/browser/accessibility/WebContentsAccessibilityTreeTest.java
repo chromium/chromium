@@ -1509,6 +1509,13 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_carouselWithLinks() {
+        performCssTest("carousel-with-links.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_characterLocations() {
         performHtmlTest("character-locations.html");
     }

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
+#include "third_party/blink/renderer/core/style/scroll_marker_group.h"
 
 namespace blink {
 
@@ -51,8 +52,11 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
 
   void ScrollSelectedIntoView(bool apply_snap_alignment);
 
- private:
+  // Returns the mode of scroll-marker-group property of the originating
+  // element.
+  CORE_EXPORT ScrollMarkerGroup::ScrollMarkerMode ScrollMarkerGroupMode() const;
 
+ private:
   ScrollMarkerPseudoElement* FindNextScrollMarker(const Element* current);
   ScrollMarkerPseudoElement* FindPreviousScrollMarker(const Element* current);
 

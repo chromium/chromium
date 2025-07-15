@@ -29,8 +29,8 @@ class ScrollMarkerGroup : public GarbageCollected<ScrollMarkerGroup> {
   ScrollMarkerMode Mode() const { return mode_; }
   ScrollMarkerPosition Position() const { return position_; }
 
-  bool ModeTabs() const { return mode_ == ScrollMarkerMode::kTabs; }
-  bool ModeLinks() const { return mode_ == ScrollMarkerMode::kLinks; }
+  bool IsInTabsMode() const { return mode_ == ScrollMarkerMode::kTabs; }
+  bool IsInLinksMode() const { return mode_ == ScrollMarkerMode::kLinks; }
   bool PositionAfter() const {
     return position_ == ScrollMarkerPosition::kAfter;
   }

@@ -2027,6 +2027,9 @@ data/accessibility/css/carousel-no-tabs-expected-blink.txt
 data/accessibility/css/carousel-no-tabs.html
 data/accessibility/css/carousel-positioned-buttons-expected-blink.txt
 data/accessibility/css/carousel-positioned-buttons.html
+data/accessibility/css/carousel-with-links-expected-android-external.txt
+data/accessibility/css/carousel-with-links-expected-blink.txt
+data/accessibility/css/carousel-with-links.html
 data/accessibility/css/carousel-with-tabs-expected-android-assist-data.txt
 data/accessibility/css/carousel-with-tabs-expected-android-external.txt
 data/accessibility/css/carousel-with-tabs-expected-auralinux.txt
@@ -2577,6 +2580,8 @@ data/accessibility/event/caret-move-hidden-input-expected-auralinux.txt
 data/accessibility/event/caret-move-hidden-input-expected-uia-win.txt
 data/accessibility/event/caret-move-hidden-input.html
 data/accessibility/event/caret-move.html
+data/accessibility/event/carousel-with-links-expected-android.txt
+data/accessibility/event/carousel-with-links.html
 data/accessibility/event/carousel-with-tabs-expected-android.txt
 data/accessibility/event/carousel-with-tabs-expected-auralinux.txt
 data/accessibility/event/carousel-with-tabs.html

@@ -1128,4 +1128,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
   RunEventTest(FILE_PATH_LITERAL("carousel-with-tabs.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+                       CarouselWithLinks) {
+  RunEventTest(FILE_PATH_LITERAL("carousel-with-links.html"));
+}
+
 }  // namespace content

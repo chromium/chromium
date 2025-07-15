@@ -194,6 +194,8 @@ String IgnoredReasonName(AXIgnoredReason reason) {
       return "presentationalRole";
     case kAXProbablyPresentational:
       return "probablyPresentational";
+    case kAXInactiveCarouselTabContent:
+      return "inactiveCarouselTabContent";
     case kAXUninteresting:
       return "uninteresting";
   }
