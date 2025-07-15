@@ -5,11 +5,9 @@
 #include "components/allocation_recorder/testing/crash_verification.h"
 
 #include <algorithm>
-#include <filesystem>
-#include <iostream>
 #include <iterator>
 #include <memory>
-#include <set>
+#include <ostream>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
@@ -118,8 +116,8 @@ void CrashpadIntegration::SetUp(const base::FilePath& crashpad_database_path) {
             crash_report_database_->GetPendingReports(&reports))
       << "Failed to read list of old pending reports. database='"
       << database_dir_ << '\'';
-  ASSERT_EQ(reports.size(), std::size_t{0})
-      << "Expected no reports at setup time."
+  ASSERT_EQ(reports.size(), 0u)
+      << "Expected no reports at setup time. "
       << "Please choose a unique temporary crashpad_database_path.";
 }
 
@@ -203,7 +201,7 @@ void CrashpadIntegration::TryReadCreatedReport() {
             crash_report_database_->GetPendingReports(&reports))
       << "Failed to read list of pending reports. database='" << database_dir_
       << '\'';
-  ASSERT_EQ(reports.size(), std::size_t{1});
+  ASSERT_EQ(reports.size(), 1u);
   report_ = std::make_unique<crashpad::CrashReportDatabase::Report>(reports[0]);
 }
 
@@ -213,7 +211,7 @@ void CrashpadIntegration::CheckHasNoAllocationRecorderStream() {
 
   const auto allocation_recorder_streams = GetAllocationRecorderStreams();
 
-  EXPECT_EQ(std::size(allocation_recorder_streams), 0ul)
+  EXPECT_EQ(std::size(allocation_recorder_streams), 0u)
       << "Found at least one allocation recorder stream.";
 }
 
@@ -222,7 +220,7 @@ void CrashpadIntegration::GetAllocationRecorderStream(
     const crashpad::MinidumpStream*& allocation_recorder_stream) {
   const auto allocation_recorder_streams = GetAllocationRecorderStreams();
 
-  ASSERT_EQ(std::size(allocation_recorder_streams), 1ul)
+  ASSERT_EQ(std::size(allocation_recorder_streams), 1u)
       << "Didn't find expected number of allocation recorder streams.";
   ASSERT_NE(allocation_recorder_streams.front(), nullptr)
       << "The only allocation recorder stream is nullptr.";
@@ -284,7 +282,7 @@ void VerifyPayload(const bool expect_report_with_content,
     const auto& statistics = operation_report.statistics();
 
     EXPECT_GT(operation_report.memory_operations_size(), 0);
-    EXPECT_GT(statistics.total_number_of_operations(), 0ul);
+    EXPECT_GT(statistics.total_number_of_operations(), 0u);
 
 #if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
     EXPECT_TRUE(statistics.has_total_number_of_collisions());
