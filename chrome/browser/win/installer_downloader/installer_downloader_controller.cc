@@ -150,18 +150,12 @@ void InstallerDownloaderController::OnRemovedBrowserWindow(
   bwi_and_active_tab_tracker_map_.erase(bwi);
 }
 
-bool InstallerDownloaderController::ShouldShowInfobarForActiveContentProfile(
-    base::RepeatingCallback<content::WebContents*()>
-        get_active_web_contents_callback) {
-  auto* contents = get_active_web_contents_callback.Run();
-
-  if (!contents) {
-    return false;
-  }
-
+bool InstallerDownloaderController::ShouldShowInfobarForCurrentProfile() {
   // The infobar should not be shown on guest profiles.
-  if (Profile::FromBrowserContext(contents->GetBrowserContext())
-          ->IsGuestSession()) {
+  BrowserWindowInterface* last_active_window =
+      window_tracker_.get_last_active_window();
+  if (!last_active_window ||
+      last_active_window->GetProfile()->IsGuestSession()) {
     return false;
   }
 
@@ -175,8 +169,7 @@ void InstallerDownloaderController::MaybeShowInfoBar() {
     return;
   }
 
-  if (!ShouldShowInfobarForActiveContentProfile(
-          get_active_web_contents_callback_)) {
+  if (!ShouldShowInfobarForCurrentProfile()) {
     return;
   }
 

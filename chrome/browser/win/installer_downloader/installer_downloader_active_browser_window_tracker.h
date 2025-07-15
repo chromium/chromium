@@ -33,6 +33,10 @@ class InstallerDownloaderActiveBrowserWindowTracker final
 
   ~InstallerDownloaderActiveBrowserWindowTracker() override;
 
+  BrowserWindowInterface* get_last_active_window() {
+    return last_active_window_;
+  }
+
   // Register for active window changes. The callback is invoked immediately
   // with the current active window, then on every subsequent change.
   base::CallbackListSubscription RegisterActiveWindowChangedCallback(

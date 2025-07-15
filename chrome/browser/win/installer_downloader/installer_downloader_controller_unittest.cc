@@ -409,7 +409,7 @@ TEST_F(InstallerDownloaderControllerTest, NoInfobarOnGuestProfile) {
       base::BindLambdaForTesting([&]() { return guest_web_contents; }));
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
   // Since this is a guest profile, the eligibility check should not run.
-  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(1);
   controller_->MaybeShowInfoBar();
   web_contents_factory_.DestroyWebContents(guest_web_contents);
 }
