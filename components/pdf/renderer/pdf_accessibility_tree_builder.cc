@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/page_character_index.h"
 #include "pdf/pdf_features.h"
 #include "services/strings/grit/services_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"

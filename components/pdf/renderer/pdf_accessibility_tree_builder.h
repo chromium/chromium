@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/page_character_index.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

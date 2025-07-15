@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "pdf/accessibility_structs.h"
+#include "pdf/page_character_index.h"
 #include "pdf/pdf_caret_client.h"
 #include "pdf/region_data.h"
 #include "third_party/skia/include/core/SkColor.h"

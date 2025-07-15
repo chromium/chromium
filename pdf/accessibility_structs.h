@@ -10,19 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "pdf/page_character_index.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace chrome_pdf {
-
-struct PageCharacterIndex {
-  // Index of PDF page.
-  uint32_t page_index = 0;
-  // Index of character within the PDF page.
-  uint32_t char_index = 0;
-};
 
 struct Selection {
   PageCharacterIndex start;
