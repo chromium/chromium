@@ -286,10 +286,8 @@ class ActorUiStateManagerActorTaskUiTabScopedTest
       public testing::WithParamInterface<
           std::tuple<ActorTask::State, UiTabState>> {};
 
-// TODO(crbug.com/431292104): Re-enable after the memory sanitizer issue is
-// resolved.
 TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
-       DISABLED_OnActorTaskState_UpdateTabScopedUi) {
+       OnActorTaskState_UpdateTabScopedUi) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   MockTabInterface mock_tab;
   actor_keyed_service()->GetTask(task_id)->AddToTabSet(mock_tab.GetHandle());
@@ -333,53 +331,67 @@ INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerActorTaskUiTabScopedTest,
                          ValuesIn(kActorTaskTestValues));
 
 class ActorUiStateManagerUiEventUiTabScopedTest
-    : public ActorUiStateManagerTest,
-      public testing::WithParamInterface<std::tuple<AsyncUiEvent, UiTabState>> {
+    : public ActorUiStateManagerTest {
+ public:
+  // TODO(crbug.com/424495020): Once a callback is added from tabcontroller, add
+  // RunLoop impl.
+  // The state setting portion of `OnUiEvent` is synchronous and the result is
+  // set immediately. The completion callback is posted and
+  // can be ignored for now.
+  void VerifyUiEvent(AsyncUiEvent event, UiTabState expected_state) {
+    actor_ui_state_manager()->OnUiEvent(event, base::DoNothing());
+    EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_state);
+  }
+
+ protected:
+  MockTabInterface mock_tab_;
 };
 
-// TODO(crbug.com/431292104): Re-enable after the memory sanitizer issue is
-// resolved.
-TEST_P(ActorUiStateManagerUiEventUiTabScopedTest,
-       DISABLED_OnActorTaskState_UpdateTabScopedUi) {
-  auto [ui_event, expected_ui_tab_state] = GetParam();
-  actor_ui_state_manager()->OnUiEvent(ui_event, base::DoNothing());
-  EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnStartingToActOnTab_UpdatesUiCorrectly) {
+  UiTabState expected_ui_tab_state{
+      .agent_overlay = AgentOverlayState(/*is_active=*/true),
+      .handoff_button = {
+          .is_active = true,
+          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+  VerifyUiEvent(StartingToActOnTab{mock_tab_.GetHandle(), TaskId(123)},
+                expected_ui_tab_state);
 }
 
-MockTabInterface g_mock_tab;
-const auto kUiEventTestValues = [] {
-  TaskId task_id(123);
-  PageTarget page_target(gfx::Point(100, 200));
-  return std::vector<std::tuple<AsyncUiEvent, UiTabState>>{
-      {StartingToActOnTab{g_mock_tab.GetHandle(), task_id},
-       UiTabState{
-           .agent_overlay = AgentOverlayState(/*is_active=*/true),
-           .handoff_button =
-               {.is_active = true,
-                .controller = HandoffButtonState::ControlOwnership::kAgent}}},
-      {StoppedActingOnTab{g_mock_tab.GetHandle()},
-       UiTabState{.agent_overlay = AgentOverlayState(/*is_active=*/false),
-                  .handoff_button = {.is_active = false}}},
-      {MouseMove{g_mock_tab.GetHandle(), page_target},
-       UiTabState{
-           .agent_overlay = AgentOverlayState(
-               /*is_active=*/true, /*mouse_down=*/false, page_target),
-           .handoff_button =
-               {.is_active = true,
-                .controller = HandoffButtonState::ControlOwnership::kAgent}}},
-      {MouseClick{g_mock_tab.GetHandle(), MouseClickType::kLeft,
-                  MouseClickCount::kSingle},
-       UiTabState{
-           .agent_overlay =
-               AgentOverlayState(/*is_active=*/true, /*mouse_down=*/true),
-           .handoff_button = {
-               .is_active = true,
-               .controller = HandoffButtonState::ControlOwnership::kAgent}}}};
-}();
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnStoppedActingOnTab_UpdatesUiCorrectly) {
+  UiTabState expected_ui_tab_state{
+      .agent_overlay = AgentOverlayState(/*is_active=*/false),
+      .handoff_button = {.is_active = false}};
+  VerifyUiEvent(StoppedActingOnTab{mock_tab_.GetHandle()},
+                expected_ui_tab_state);
+}
 
-INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerUiEventUiTabScopedTest,
-                         ActorUiStateManagerUiEventUiTabScopedTest,
-                         ValuesIn(kUiEventTestValues));
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnMouseMove_UpdatesUiCorrectly) {
+  PageTarget page_target(gfx::Point(100, 200));
+  UiTabState expected_ui_tab_state{
+      .agent_overlay = AgentOverlayState(
+          /*is_active=*/true, /*mouse_down=*/false, page_target),
+      .handoff_button = {
+          .is_active = true,
+          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+  VerifyUiEvent(MouseMove{mock_tab_.GetHandle(), page_target},
+                expected_ui_tab_state);
+}
+
+TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
+       OnMouseClick_UpdatesUiCorrectly) {
+  UiTabState expected_ui_tab_state{
+      .agent_overlay =
+          AgentOverlayState(/*is_active=*/true, /*mouse_down=*/true),
+      .handoff_button = {
+          .is_active = true,
+          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+  VerifyUiEvent(MouseClick{mock_tab_.GetHandle(), MouseClickType::kLeft,
+                           MouseClickCount::kSingle},
+                expected_ui_tab_state);
+}
 
 }  // namespace
 }  // namespace actor::ui
