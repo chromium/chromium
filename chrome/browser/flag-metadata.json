@@ -246,6 +246,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-desktop-webprefs-large-display",
+    "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 137

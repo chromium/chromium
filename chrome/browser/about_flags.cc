@@ -12767,6 +12767,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidOpenIncognitoAsWindowName,
      flag_descriptions::kAndroidOpenIncognitoAsWindowDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidOpenIncognitoAsWindow)},
+
+    {"android-desktop-webprefs-large-display",
+     flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysName,
+     flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopWebPrefsLargeDisplays)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.

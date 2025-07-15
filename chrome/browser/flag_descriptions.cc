@@ -4767,6 +4767,12 @@ const char kAccountBookmarksAndReadingListBehindOptInDescription[] =
     "Make account bookmarks and reading lists available to users that sign in "
     "via promo in the bookmark manager.";
 
+const char kAndroidDesktopWebPrefsLargeDisplaysName[] =
+    "Android Desktop WebPrefs for Large Displays";
+const char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
+    "Enables large display specific layout/renderer settings for "
+    "Android large form factor devices";
+
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

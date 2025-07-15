@@ -123,6 +123,11 @@ extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidDesktopWebPrefsLargeDisplaysName[];
+extern const char kAndroidDesktopWebPrefsLargeDisplaysDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidNativePagesInNewTabName[];
 extern const char kAndroidNativePagesInNewTabDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
