@@ -32,7 +32,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
-#include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -44,7 +43,6 @@
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/unpacker.h"
 #include "components/update_client/unzip/in_process_unzipper.h"
@@ -187,28 +185,7 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
     return;
   }
 
-  scoped_refptr<device_management_storage::DMStorage> storage = GetDMStorage();
-  std::unique_ptr<device_management_storage::CachedPolicyInfo> info =
-      GetCachedPolicyInfo(storage);
-  std::unique_ptr<::policy::CloudPolicyValidatorBase::ValidationResult>
-      validation_result =
-          enterprise_companion::GetDefaultPolicyFetchResponseValidator().Run(
-              storage->GetDmToken(), storage->GetDeviceID(), info->public_key(),
-              info->timestamp(), response);
-  if (validation_result->status ==
-      ::policy::CloudPolicyValidatorBase::VALIDATION_OK) {
-    std::cout << "  [" << policy_type << "]: satisfies all validation check."
-              << std::endl;
-    return;
-  }
-
-  std::cout << "  [" << policy_type << "] validation failed: " << std::endl;
-  std::cout << "    Policy token: " << validation_result->policy_token
-            << std::endl;
-  std::cout << "    Validation status: "
-            << ::policy::CloudPolicyValidatorBase::StatusToString(
-                   validation_result->status)
-            << std::endl;
+  std::cout << "  [" << policy_type << "]: validation skipped." << std::endl;
 }
 
 void PrintCachedPolicyInfo(
