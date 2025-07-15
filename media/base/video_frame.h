@@ -55,7 +55,7 @@ class ClientNativePixmapFactory;
 }
 
 namespace gpu {
-class GpuMemoryBufferImplNativePixmap;
+class LegacyGpuMemoryBufferForVideo;
 }
 
 namespace media {
@@ -830,7 +830,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
+      std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer,
       base::TimeDelta timestamp);
 
   void MakeScopedMappingForGpuMemoryBuffer(
@@ -920,7 +920,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
-  std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer_;
+  std::unique_ptr<gpu::LegacyGpuMemoryBufferForVideo> gpu_memory_buffer_;
 #endif
 
   // This field will be set by clients when using MappableSI instead of

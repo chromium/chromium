@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
+#ifndef GPU_IPC_COMMON_LEGACY_GPU_MEMORY_BUFFER_FOR_VIDEO_H_
+#define GPU_IPC_COMMON_LEGACY_GPU_MEMORY_BUFFER_FOR_VIDEO_H_
 
 #include <stddef.h>
 
@@ -14,6 +14,10 @@
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 
+namespace arc {
+class GpuArcVideoEncodeAccelerator;
+}
+
 namespace gfx {
 class ClientNativePixmap;
 class ClientNativePixmapFactory;
@@ -23,20 +27,22 @@ namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of GPU memory buffer based on Ozone native pixmap.
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
+// Implementation of GPU memory buffer based on Ozone native pixmap for use by
+// media::VideoFrame until its remaining use case is transitioned to
+// MappableSharedImage.
+// TODO(crbug.com/40263579): Eliminate this class.
+class GPU_IPC_COMMON_EXPORT LegacyGpuMemoryBufferForVideo
     : public GpuMemoryBufferImpl {
  public:
-  GpuMemoryBufferImplNativePixmap(const GpuMemoryBufferImplNativePixmap&) =
-      delete;
-  GpuMemoryBufferImplNativePixmap& operator=(
-      const GpuMemoryBufferImplNativePixmap&) = delete;
+  LegacyGpuMemoryBufferForVideo(const LegacyGpuMemoryBufferForVideo&) = delete;
+  LegacyGpuMemoryBufferForVideo& operator=(
+      const LegacyGpuMemoryBufferForVideo&) = delete;
 
-  ~GpuMemoryBufferImplNativePixmap() override;
+  ~LegacyGpuMemoryBufferForVideo() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType = gfx::NATIVE_PIXMAP;
 
-  static std::unique_ptr<GpuMemoryBufferImplNativePixmap>
+  static std::unique_ptr<LegacyGpuMemoryBufferForVideo>
   CreateFromHandleForTesting(
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
@@ -61,17 +67,36 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
+  // Creates a GpuMemoryBufferImpl from the given |handle| for VideoFrames.
+  // |size| and |format| should match what was used to allocate the |handle|.
+  // NOTE: DO NOT ADD ANY USAGES OF THIS METHOD.
+  // TODO(crbug.com/40263579): Remove this method once all usages are
+  // eliminated.
+  static std::unique_ptr<LegacyGpuMemoryBufferForVideo>
+  CreateFromHandleForVideoFrame(
+      gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) {
+    return CreateFromHandle(client_native_pixmap_factory, std::move(handle),
+                            size, format, usage);
+  }
+
  private:
+  // TODO(crbug.com/404905709): Eliminate this class' creation of GMBs and
+  // remove this friending.
+  friend class arc::GpuArcVideoEncodeAccelerator;
   friend class ClientSharedImage;
 
-  static std::unique_ptr<GpuMemoryBufferImplNativePixmap> CreateFromHandle(
+  static std::unique_ptr<LegacyGpuMemoryBufferForVideo> CreateFromHandle(
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
-  GpuMemoryBufferImplNativePixmap(
+  LegacyGpuMemoryBufferForVideo(
       const gfx::Size& size,
       gfx::BufferFormat format,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
@@ -81,4 +106,4 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
+#endif  // GPU_IPC_COMMON_LEGACY_GPU_MEMORY_BUFFER_FOR_VIDEO_H_

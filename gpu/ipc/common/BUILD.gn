@@ -120,6 +120,8 @@ source_set("ipc_common_sources") {
     sources += [
       "gpu_memory_buffer_impl_native_pixmap.cc",
       "gpu_memory_buffer_impl_native_pixmap.h",
+      "legacy_gpu_memory_buffer_for_video.cc",
+      "legacy_gpu_memory_buffer_for_video.h",
     ]
   }
   if (is_android) {
