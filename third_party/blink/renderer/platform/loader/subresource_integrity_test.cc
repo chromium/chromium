@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -75,10 +76,10 @@ constexpr char kUnsupportedHashFunctionIntegrity[] =
 
 auto CompareIntegrityMetadata = [](const IntegrityMetadata& a,
                                    const IntegrityMetadata& b) {
-  if (a.digest != b.digest) {
-    return WTF::CodeUnitCompareLessThan(a.digest, b.digest);
+  if (a.algorithm != b.algorithm) {
+    return a.algorithm < b.algorithm;
   }
-  return a.algorithm < b.algorithm;
+  return std::ranges::equal(a.digest, b.digest);
 };
 
 }  // namespace
@@ -155,8 +156,11 @@ class SubresourceIntegrityTest : public testing::Test {
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(1u, metadata_set.hashes.size());
     if (metadata_set.hashes.size() > 0) {
+      Vector<uint8_t> expected_binary_digest;
+      ASSERT_TRUE(Base64Decode(expected_digest, expected_binary_digest));
+
       IntegrityMetadata metadata = *metadata_set.hashes.begin();
-      EXPECT_EQ(expected_digest, metadata.digest);
+      EXPECT_EQ(expected_binary_digest, metadata.digest);
       EXPECT_EQ(expected_algorithm, metadata.algorithm);
     }
   }
@@ -639,8 +643,11 @@ class SubresourceIntegritySignatureTest
     if (SignaturesEnabled()) {
       ASSERT_EQ(1u, metadata_set.public_keys.size());
 
+      Vector<uint8_t> binary_digest;
+      ASSERT_TRUE(Base64Decode(digest, binary_digest));
+
       IntegrityMetadata metadata = *metadata_set.public_keys.begin();
-      EXPECT_EQ(digest, metadata.digest);
+      EXPECT_EQ(binary_digest, metadata.digest);
       EXPECT_EQ(IntegrityAlgorithm::kEd25519, metadata.algorithm);
     } else {
       ASSERT_EQ(0u, metadata_set.public_keys.size());
@@ -743,7 +750,7 @@ TEST_P(SubresourceIntegritySignatureTest, ParseMultipleSignatures) {
     StringBuilder attribute;
     for (const auto& pair : signature_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(pair.digest);
+      attribute.Append(Base64Encode(pair.digest));
       attribute.Append(' ');
     }
     SCOPED_TRACE(attribute.ToString());
@@ -787,12 +794,12 @@ TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
     StringBuilder attribute;
     for (const auto& pair : signature_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(pair.digest);
+      attribute.Append(Base64Encode(pair.digest));
       attribute.Append(' ');
     }
     for (const auto& pair : hash_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(pair.digest);
+      attribute.Append(Base64Encode(pair.digest));
       attribute.Append(' ');
     }
     SCOPED_TRACE(attribute.ToString());

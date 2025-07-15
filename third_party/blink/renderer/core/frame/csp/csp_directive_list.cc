@@ -68,21 +68,6 @@ String GetEvalSha256String(const String& content) {
   return StrCat({"eval-", GetSha256String(content)});
 }
 
-// IntegrityMetadata (from SRI) has base64-encoded digest values, but CSP uses
-// binary format. This converts from the former to the latter.
-bool ParseBase64Digest(String base64, Vector<uint8_t>& hash) {
-  DCHECK(hash.empty());
-
-  // We accept base64url-encoded data here by normalizing it to base64.
-  if (!Base64Decode(NormalizeToBase64(base64), hash)) {
-    return false;
-  }
-  if (hash.empty() || hash.size() > kMaxDigestSize) {
-    return false;
-  }
-  return true;
-}
-
 // https://w3c.github.io/webappsec-csp/#effective-directive-for-inline-check
 CSPDirectiveName EffectiveDirectiveForInlineCheck(
     ContentSecurityPolicy::InlineType inline_type) {
@@ -356,12 +341,13 @@ bool AreAllMatchingIntegrityChecksPresent(
   // by the relevant policy:
   for (const IntegrityMetadata& hash : integrity_metadata.hashes) {
     // Convert the hash from integrity metadata format to CSP format.
+    //
+    // TODO(mkwst): Merge these types.
     network::mojom::blink::IntegrityMetadataPtr csp_hash =
         network::mojom::blink::IntegrityMetadata::New();
     csp_hash->algorithm = hash.algorithm;
-    if (!ParseBase64Digest(hash.digest, csp_hash->value)) {
-      return false;
-    }
+    csp_hash->value = hash.digest;
+
     // All integrity hashes must be listed in the CSP.
     if (!CSPSourceListAllowHash(*directive, *csp_hash))
       return false;
@@ -371,12 +357,13 @@ bool AreAllMatchingIntegrityChecksPresent(
   // allowed by the relevant policy:
   for (const IntegrityMetadata& key : integrity_metadata.public_keys) {
     // Convert the hash from integrity metadata format to CSP format.
+    //
+    // TODO(mkwst): Merge these types.
     network::mojom::blink::IntegrityMetadataPtr csp_hash =
         network::mojom::blink::IntegrityMetadata::New();
     csp_hash->algorithm = key.algorithm;
-    if (!ParseBase64Digest(key.digest, csp_hash->value)) {
-      return false;
-    }
+    csp_hash->value = key.digest;
+
     // All integrity hashes must be listed in the CSP.
     if (!CSPSourceListAllowHash(*directive, *csp_hash)) {
       return false;

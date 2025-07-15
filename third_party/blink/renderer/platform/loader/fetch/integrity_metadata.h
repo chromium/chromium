@@ -20,13 +20,15 @@ using IntegrityAlgorithm = network::mojom::blink::IntegrityAlgorithm;
 
 struct PLATFORM_EXPORT IntegrityMetadata {
   IntegrityMetadata() = default;
-  IntegrityMetadata(String digest, IntegrityAlgorithm);
+
+  // Accepts a base64-encoded string, |base64_encoded_digest|.
+  IntegrityMetadata(const String& base64_encoded_digest, IntegrityAlgorithm);
 
   bool operator==(const IntegrityMetadata& other) const {
     return this->digest == other.digest && this->algorithm == other.algorithm;
   }
 
-  String digest;
+  Vector<uint8_t> digest;
   IntegrityAlgorithm algorithm;
 };
 

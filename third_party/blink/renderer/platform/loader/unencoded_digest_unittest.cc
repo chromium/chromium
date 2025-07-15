@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -174,7 +175,7 @@ TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
 
     IntegrityMetadata expected;
     expected.algorithm = test.alg;
-    expected.digest = kHelloWorlds.at(test.alg);
+    ASSERT_TRUE(Base64Decode(kHelloWorlds.at(test.alg), expected.digest));
 
     auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
@@ -221,7 +222,7 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
     for (const auto& algorithm : test.alg) {
       IntegrityMetadata expected;
       expected.algorithm = algorithm;
-      expected.digest = kHelloWorlds.at(algorithm);
+      ASSERT_TRUE(Base64Decode(kHelloWorlds.at(algorithm), expected.digest));
       EXPECT_TRUE(result->digests().Contains(expected));
     }
   }

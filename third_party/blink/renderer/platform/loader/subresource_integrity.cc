@@ -272,10 +272,8 @@ bool SubresourceIntegrity::CheckHashesImpl(
     }
 
     // And finally decode the metadata's digest for comparison.
-    Vector<uint8_t> decoded_metadata;
-    Base64Decode(metadata.digest, decoded_metadata);
     DigestValue expected_value;
-    expected_value.AppendSpan(base::as_byte_span(decoded_metadata));
+    expected_value.AppendSpan(base::as_byte_span(metadata.digest));
 
     // 5.4. If actualValue is a case-sensitive match for expectedValue, return
     // true set hash-match to true and break.
@@ -353,7 +351,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   }
 
   for (const IntegrityMetadata& metadata : integrity_list) {
-    String public_key = metadata.digest;
+    String public_key = Base64Encode(base::as_byte_span(metadata.digest));
     for (const auto& signature : signatures) {
       if (signature->keyid == public_key) {
         return true;
@@ -587,15 +585,14 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
     semantically_valid_signatures++;
 
     for (const auto& key : integrity_metadata.public_keys) {
-      Vector<uint8_t> decoded_key;
-      if (!Base64Decode(key.digest, decoded_key) || decoded_key.size() != 32u) {
+      if (key.digest.size() != 32u) {
         // TODO(391907163): Log an error for invalid public key digests.
         continue;
       }
       if (ED25519_verify(
               reinterpret_cast<const uint8_t*>(source_adaptor.data()),
               source_adaptor.size(), decoded_signature.data(),
-              decoded_key.data())) {
+              key.digest.data())) {
         return true;
       }
     }

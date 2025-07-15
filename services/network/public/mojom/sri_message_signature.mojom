@@ -65,6 +65,7 @@ struct SRIMessageSignature {
   // https://wicg.github.io/signature-based-sri/#profile
   int64? created;
   int64? expires;
+  // TODO(407447367): Store the public key as binary data (`array<uint8>`).
   string? keyid;
   string? nonce;
   string? tag;
@@ -111,7 +112,8 @@ struct SRIMessageSignatureIssue {
   string? signature_base;
 
   // kValidationFailedIntegrityMismatch will populate the expected public keys
-  // which failed to match any signatures' public key.
+  // which failed to match any signatures' public key, stored as base64-encoded
+  // strings that we'll render to developers in devtools issues.
   array<string>? integrity_assertions;
 };
 

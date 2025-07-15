@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -474,7 +475,8 @@ void ResourceRequestHead::SetFetchIntegrity(
 void ResourceRequestHead::SetExpectedPublicKeys(
     const IntegrityMetadataSet& metadata) {
   for (const auto& public_key : metadata.public_keys) {
-    expected_public_keys_.push_back(public_key.digest);
+    expected_public_keys_.push_back(
+        Base64Encode(base::as_byte_span(public_key.digest)));
   }
 }
 

@@ -420,6 +420,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   // This is also called as a side-effect of `SetFetchIntegrity()`.
   void SetExpectedPublicKeys(const IntegrityMetadataSet&);
+
+  // Returns a base64-encoded representation of the expected public keys.
+  //
+  // TODO(407447367): Match the rest of SRI/CSP with a binary representation of
+  // this data (`Vector<uint8_t>`).
   const WTF::Vector<String>& GetExpectedPublicKeys() const {
     return expected_public_keys_;
   }
