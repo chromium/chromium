@@ -177,8 +177,8 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
     // Create a last active time in the past.
     content::WebContentsTester::For(contents)->SetLastActiveTime(
         base::Time::Now() - base::Minutes(1));
-    restored_tabs_.push_back(
-        RestoredTab(contents, is_active, false, false, std::nullopt));
+    restored_tabs_.push_back(RestoredTab(contents, is_active, false, false,
+                                         std::nullopt, std::nullopt));
     if (is_active)
       Show(restored_tabs_.size() - 1);
   }

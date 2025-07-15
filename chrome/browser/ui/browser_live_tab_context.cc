@@ -321,7 +321,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   std::vector<TabLoader::RestoredTab> restored_tabs;
   restored_tabs.emplace_back(web_contents, is_active,
                              !tab.extension_app_id.empty(), tab.pinned,
-                             group_id);
+                             group_id, std::nullopt);
   TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
 
 #else   // BUILDFLAG(ENABLE_SESSION_SERVICE)

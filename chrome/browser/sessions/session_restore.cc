@@ -786,6 +786,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       // but unminimized.
       base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
           new_group_ids;
+
       bool did_show_browser = false;
       RestoreTabsToBrowser(*window, browser, initial_tab_count,
                            browser == browser_to_activate, restored_tabs,
@@ -899,6 +900,10 @@ class SessionRestoreImpl : public BrowserListObserver {
     const int selected_tab_index = std::clamp(
         window.selected_tab_index, 0, static_cast<int>(window.tabs.size() - 1));
 
+    // Capture all the splits and all tabs to split.
+    std::map<split_tabs::SplitTabId, std::vector<tabs::TabInterface*>>
+        tabs_by_split_id;
+
     const base::Time epoch_time = base::Time::UnixEpoch();
     const base::TimeTicks epoch_time_ticks = base::TimeTicks::UnixEpoch();
     for (int i = 0; i < static_cast<int>(window.tabs.size()); ++i) {
@@ -918,8 +923,25 @@ class SessionRestoreImpl : public BrowserListObserver {
       // windows or when launching a hosted app from the app launcher.
       int tab_index = i + initial_tab_count;
       RestoreTab(tab, browser, is_active_browser, restored_tabs, new_group_ids,
-                 tab_index, is_selected_tab, last_active_time_ticks,
-                 tab.last_active_time, did_show_browser);
+                 &tabs_by_split_id, tab_index, is_selected_tab,
+                 last_active_time_ticks, tab.last_active_time,
+                 did_show_browser);
+    }
+
+    if (features::IsRestoringSplitViewEnabled()) {
+      for (const auto& pair : tabs_by_split_id) {
+        const split_tabs::SplitTabId split_id = pair.first;
+        const std::vector<tabs::TabInterface*> tab_contents_list = pair.second;
+        std::vector<int> tab_index_list;
+        for (auto* tab : tab_contents_list) {
+          tab_index_list.push_back(
+              browser->GetTabStripModel()->GetIndexOfTab(tab));
+        }
+        if (!tab_contents_list.empty()) {
+          browser->tab_strip_model()->RestoreSplit(
+              split_id, tab_index_list, split_tabs::SplitTabVisualData());
+        }
+      }
     }
   }
 
@@ -933,6 +955,8 @@ class SessionRestoreImpl : public BrowserListObserver {
                   std::vector<RestoredTab>& restored_tabs,
                   base::flat_map<tab_groups::TabGroupId,
                                  tab_groups::TabGroupId>* new_group_ids,
+                  std::map<split_tabs::SplitTabId,
+                           std::vector<tabs::TabInterface*>>* tabs_by_split_id,
                   const int tab_index,
                   bool is_selected_tab,
                   base::TimeTicks last_active_time_ticks,
@@ -982,8 +1006,16 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     RestoredTab restored_tab(web_contents, is_selected_tab,
                              tab.extension_app_id.empty(), tab.pinned,
-                             new_group);
+                             new_group, tab.split_id);
     restored_tabs.push_back(restored_tab);
+
+    if (features::IsRestoringSplitViewEnabled() && tab.split_id) {
+      // add tab to tabs_by_split_id.
+      tabs::TabInterface* tab_interface =
+          browser->GetTabStripModel()->GetTabForWebContents(
+              restored_tab.contents());
+      (*tabs_by_split_id)[*tab.split_id].push_back(tab_interface);
+    }
 
     // If this isn't the selected tab, there's nothing else to do.
     if (!is_selected_tab) {

@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -110,6 +111,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -1288,6 +1290,98 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAfterDelete) {
   GoBack(new_browser);
   ASSERT_EQ(GetUrl1(),
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+class SplitTabSessionRestoreTest : public SessionRestoreTest {
+ public:
+  SplitTabSessionRestoreTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSideBySide, features::kSideBySideSessionRestore}, {});
+  }
+  SplitTabSessionRestoreTest(const SplitTabSessionRestoreTest&) = delete;
+  SplitTabSessionRestoreTest& operator=(const SplitTabSessionRestoreTest&) =
+      delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SplitTabSessionRestoreTest, TabsWithSplits) {
+  constexpr int kNumTabs = 8;
+
+  // Open |kNumTabs| tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+  for (int i = 1; i < kNumTabs; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GetUrl1(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Pin the first two tabs.
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+
+  // Group the next two tabs.
+  browser()->tab_strip_model()->AddToNewGroup({2, 3});
+
+  // Create three splits for pinned, group, unpinned.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId split_pinned =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {1}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId split_group =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {3}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      4, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId split_unpinned =
+      browser()->tab_strip_model()->AddToNewSplit(
+          {5}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  const auto groups = GetTabGroups(browser()->tab_strip_model());
+
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+  EXPECT_EQ(kNumTabs, new_browser->tab_strip_model()->count());
+  EXPECT_EQ(new_browser->tab_strip_model()->IndexOfFirstNonPinnedTab(), 2);
+  EXPECT_EQ(
+      new_browser->tab_strip_model()
+          ->group_model()
+          ->GetTabGroup(
+              new_browser->tab_strip_model()->GetTabGroupForTab(2).value())
+          ->ListTabs()
+          .length(),
+      2);
+  EXPECT_EQ(new_browser->tab_strip_model()->ListSplits(),
+            std::set<split_tabs::SplitTabId>(
+                {split_pinned, split_group, split_unpinned}));
+  EXPECT_EQ(new_browser->tab_strip_model()
+                ->GetSplitData(split_pinned)
+                ->ListTabs()
+                .size(),
+            2u);
+  EXPECT_EQ(new_browser->tab_strip_model()
+                ->GetSplitData(split_group)
+                ->ListTabs()
+                .size(),
+            2u);
+  EXPECT_EQ(new_browser->tab_strip_model()
+                ->GetSplitData(split_unpinned)
+                ->ListTabs()
+                .size(),
+            2u);
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, StartupPagesWithOnlyNtp) {
