@@ -40,8 +40,6 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
 
   ~MultiProfileSupport() override;
 
-  static MultiProfileSupport* GetInstanceForTest() { return instance_; }
-
   // Initializes the manager after its creation. Should only be called once.
   void Init();
 
@@ -65,10 +63,6 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
                                  bool was_minimized,
                                  bool teleported) override;
   void OnTransitionUserShelfToNewAccount() override;
-
-  // The single instance of MultiProfileSupport, tracked solely for
-  // tests.
-  static MultiProfileSupport* instance_;
 
   using AccountIdToAppWindowObserver =
       std::map<AccountId, std::unique_ptr<AppObserver>>;

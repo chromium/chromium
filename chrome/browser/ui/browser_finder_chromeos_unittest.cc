@@ -71,10 +71,14 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
         AccountId::FromUserEmail(profile_name));
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
     // Force creation of MultiProfileSupport.
-    if (!MultiUserWindowManagerHelper::GetInstance()) {
+    if (auto* helper = MultiUserWindowManagerHelper::GetInstance(); !helper) {
+      // First time. Create MultiUserWindowManagerHelper, which also registers
+      // the current user.
       GetMultiUserWindowManager();
     } else {
-      MultiProfileSupport::GetInstanceForTest()->AddUser(user->GetAccountId());
+      // Second time or later. Explicitly call AddUser is needed to register
+      // the user.
+      helper->AddUser(user->GetAccountId());
     }
     return profile;
   }
