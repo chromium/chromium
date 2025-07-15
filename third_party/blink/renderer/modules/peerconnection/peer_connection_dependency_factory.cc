@@ -1116,8 +1116,16 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     network_manager =
         std::make_unique<blink::EmptyNetworkManager>(network_manager_.get());
   }
+
+  std::unique_ptr<LocalNetworkAccessPermissionFactory> lna_permission_factory;
+  if (RuntimeEnabledFeatures::LocalNetworkAccessWebRTCEnabled()) {
+    lna_permission_factory =
+        std::make_unique<LocalNetworkAccessPermissionFactory>(this);
+  }
+
   auto port_allocator = std::make_unique<P2PPortAllocator>(
-      std::move(network_manager), socket_factory_.get(), port_config);
+      std::move(network_manager), socket_factory_.get(), port_config,
+      std::move(lna_permission_factory));
   if (IsValidPortRange(min_port, max_port))
     port_allocator->SetPortRange(min_port, max_port);
 

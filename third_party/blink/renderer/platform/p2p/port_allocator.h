@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
+namespace webrtc {
+class LocalNetworkAccessPermissionFactoryInterface;
+}
+
 namespace blink {
 
 class PLATFORM_EXPORT P2PPortAllocator : public webrtc::BasicPortAllocator {
@@ -34,9 +38,12 @@ class PLATFORM_EXPORT P2PPortAllocator : public webrtc::BasicPortAllocator {
     bool enable_default_local_candidate = true;
   };
 
-  P2PPortAllocator(std::unique_ptr<webrtc::NetworkManager> network_manager,
-                   webrtc::PacketSocketFactory* socket_factory,
-                   const Config& config);
+  P2PPortAllocator(
+      std::unique_ptr<webrtc::NetworkManager> network_manager,
+      webrtc::PacketSocketFactory* socket_factory,
+      const Config& config,
+      std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
+          lna_permission_factory);
   P2PPortAllocator(const P2PPortAllocator&) = delete;
   P2PPortAllocator& operator=(const P2PPortAllocator&) = delete;
   ~P2PPortAllocator() override;

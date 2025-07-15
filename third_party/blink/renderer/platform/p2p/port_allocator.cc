@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/webrtc/api/local_network_access_permission.h"
 #include "third_party/webrtc_overrides/environment.h"
 
 namespace blink {
@@ -18,10 +19,15 @@ namespace blink {
 P2PPortAllocator::P2PPortAllocator(
     std::unique_ptr<webrtc::NetworkManager> network_manager,
     webrtc::PacketSocketFactory* socket_factory,
-    const Config& config)
+    const Config& config,
+    std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
+        lna_permission_factory)
     : webrtc::BasicPortAllocator(WebRtcEnvironment(),
                                  network_manager.get(),
-                                 socket_factory),
+                                 socket_factory,
+                                 /*turn_customizer=*/nullptr,
+                                 /*relay_port_factory=*/nullptr,
+                                 std::move(lna_permission_factory)),
       network_manager_(std::move(network_manager)),
       config_(config) {
   DCHECK(network_manager_);

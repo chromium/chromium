@@ -89,4 +89,33 @@
 
     await waitForConnectionStateChange(pc, 'connecting');
   }, 'addIceCandidate() doesn\'t crash with granted permission and local address.');
+
+  for (const serverType of ['turn', 'stun']) {
+    for (const permissionStatus of ['granted', 'denied']) {
+      promise_test(async t => {
+        await test_driver.set_permission({ name: 'local-network-access' },
+          permissionStatus);
+
+        const pc = new RTCPeerConnection({
+          iceServers: [{
+            urls: `${serverType}:127.0.0.1:12345`,
+            username: "myuser",
+            credential: "mypassword",
+          }],
+        });
+
+        const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+
+        t.add_cleanup(() => pc.close());
+
+        const offer = await pc.createOffer();
+
+        const iceCandidateFired = waitUntilEvent(pc, 'icecandidate');
+        await pc.setLocalDescription(offer);
+
+        await iceCandidateFired;
+      }, `Using a ${serverType} server with a local address and ` +
+      `${permissionStatus} permission doesn't crash.`);
+    }
+  }
 </script>
