@@ -31,6 +31,7 @@
 
 #include "base/bits.h"
 #include "base/feature_list.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
 #include "partition_alloc/oom.h"

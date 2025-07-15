@@ -12,6 +12,7 @@
 #include "base/hash/md5.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"

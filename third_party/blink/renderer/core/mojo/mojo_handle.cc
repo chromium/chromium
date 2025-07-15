@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 
 #include "base/compiler_specific.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/numerics/safe_math.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/message_pipe.h"

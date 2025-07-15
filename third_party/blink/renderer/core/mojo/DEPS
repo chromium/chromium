@@ -3,3 +3,12 @@ include_rules = [
 
   "+mojo/public",
 ]
+
+specific_include_rules = {
+  "mojo_handle.cc": [
+    # This file makes use of a deprecated API, and needs to directly include this
+    # header as part of that usage. As such this include rule is scoped to just this
+    # file, and should not be used in other files as it is being migrated away from.
+    "+base/memory/platform_shared_memory_region.h",
+  ],
+}
