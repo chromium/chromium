@@ -543,28 +543,58 @@ class AiDataKeyedServiceActorBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/411462297): Move these actor tests into an actor-specific test
-// suite.
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
+  optimization_guide::proto::BrowserStartTask task_request;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   int id = 1;
-  actor::TaskId task_id = actor_service().CreateTask();
-  EXPECT_EQ(task_id.value(), id);
-
-  actor_service().StopTask(task_id);
+  int tab_id = browser()->GetActiveTabInterface()->GetHandle().raw_value();
+  task_request.set_tab_id(tab_id);
+  auto start_task_callback =
+      [&run_loop, &id,
+       &tab_id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), tab_id);
+        run_loop->Quit();
+      };
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback));
+  run_loop->Run();
+  actor_service().StopTask(actor::TaskId(id));
 
   id++;
-  task_id = actor_service().CreateTask();
-  EXPECT_EQ(task_id.value(), id);
+  run_loop = std::make_unique<base::RunLoop>();
+  auto start_task_callback_2 =
+      [&run_loop, &id,
+       &tab_id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), tab_id);
+        run_loop->Quit();
+      };
+  task_request.set_tab_id(tab_id);
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback_2));
+  run_loop->Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
                        StartNavigateStopTask) {
-  int id = 1;
-  actor::TaskId task_id = actor_service().CreateTask();
-  EXPECT_EQ(task_id.value(), id);
-
+  optimization_guide::proto::BrowserStartTask task_request;
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  int id = 1;
   int tab_id = browser()->GetActiveTabInterface()->GetHandle().raw_value();
+  task_request.set_tab_id(tab_id);
+  auto start_task_callback =
+      [&run_loop, &id,
+       &tab_id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), tab_id);
+        run_loop->Quit();
+      };
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback));
+  run_loop->Run();
+
+  run_loop = std::make_unique<base::RunLoop>();
   auto navigate_callback =
       [&run_loop, &id,
        &tab_id](optimization_guide::proto::BrowserActionResult response) {
@@ -585,18 +615,35 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   actor_service().StopTask(actor::TaskId(id));
 
   id++;
-  task_id = actor_service().CreateTask();
-  EXPECT_EQ(task_id.value(), id);
+  run_loop = std::make_unique<base::RunLoop>();
+  auto start_task_callback_2 =
+      [&run_loop, &id,
+       &tab_id](optimization_guide::proto::BrowserStartTaskResult task) {
+        EXPECT_EQ(task.task_id(), id);
+        EXPECT_EQ(task.tab_id(), tab_id);
+        run_loop->Quit();
+      };
+  task_request.set_tab_id(tab_id);
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback_2));
+  run_loop->Run();
 }
 
 // See ExecutionEngineBrowserTest.ForceSameTabNavigation
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
                        ForceSameTabNavigation) {
+  TestFuture<optimization_guide::proto::BrowserStartTaskResult>
+      start_task_result;
   int id = 1;
-  actor::TaskId task_id = actor_service().CreateTask();
-  EXPECT_EQ(task_id.value(), id);
-
   int tab_id = browser()->GetActiveTabInterface()->GetHandle().raw_value();
+  optimization_guide::proto::BrowserStartTask task_request;
+  task_request.set_tab_id(tab_id);
+  actor_service().StartTask(std::move(task_request),
+                            start_task_result.GetCallback());
+  auto& task = start_task_result.Get();
+  EXPECT_EQ(task.task_id(), id);
+  EXPECT_EQ(task.tab_id(), tab_id);
+
   const GURL url = https_server()->GetURL("/actor/target_blank_links.html");
   TestFuture<optimization_guide::proto::BrowserActionResult> navigate_result;
   std::unique_ptr<actor::ToolRequest> action_request =
