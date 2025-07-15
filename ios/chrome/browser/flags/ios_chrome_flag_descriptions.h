@@ -881,6 +881,9 @@ extern const char kSupervisedUserBlockInterstitialV3Description[];
 extern const char kSupervisedUserLocalWebApprovalsName[];
 extern const char kSupervisedUserLocalWebApprovalsDescription[];
 
+extern const char kSyncAutofillWalletCredentialDataName[];
+extern const char kSyncAutofillWalletCredentialDataDescription[];
+
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 

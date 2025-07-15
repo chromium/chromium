@@ -2773,6 +2773,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-omnibox-aim-shortcut", flag_descriptions::kIOSOmniboxAimShortcutName,
      flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSOmniboxAimShortcut)},
+    {"sync-autofill-wallet-credential-data",
+     flag_descriptions::kSyncAutofillWalletCredentialDataName,
+     flag_descriptions::kSyncAutofillWalletCredentialDataDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
     {"autofill-enable-cvc-storage-and-filling-enhancement",
      flag_descriptions::kAutofillEnableCvcStorageAndFillingEnhancementName,
      flag_descriptions::

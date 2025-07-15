@@ -1501,6 +1501,11 @@ const char kSupervisedUserLocalWebApprovalsName[] =
 const char kSupervisedUserLocalWebApprovalsDescription[] =
     "Enables parents to approve blocked websites on a child's device.";
 
+const char kSyncAutofillWalletCredentialDataName[] =
+    "Sync Autofill Wallet Credential Data";
+const char kSyncAutofillWalletCredentialDataDescription[] =
+    "When enabled, allows syncing of the autofill wallet credential data type.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
