@@ -873,7 +873,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     }
   } else if (IsRenderingContext2D() && LowLatencyEnabled() &&
              frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-             GetOrCreateCanvasResourceProviderForCanvas2D()) {
+             GetResourceProviderForCanvas2D() &&
+             GetResourceProviderForCanvas2D()->IsValid()) {
     if (scoped_refptr<CanvasResource> canvas_resource =
             GetResourceProviderForCanvas2D()->ProduceCanvasResource(reason)) {
       const gfx::Rect src_rect(Size());
