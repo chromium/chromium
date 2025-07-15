@@ -9,14 +9,17 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
@@ -260,12 +263,25 @@ void ViewTransitionSupplement::StartTransition(
 void ViewTransitionSupplement::OnTransitionFinished(
     ViewTransition* transition) {
   CHECK(transition);
+
   // Clear the transition so it can be garbage collected if needed (and to
   // prevent callers of GetTransition thinking there's an ongoing transition).
   if (transition == document_transition_) {
     document_transition_ = nullptr;
   } else {
-    element_transitions_.erase(transition->Scope());
+    Element* scope = transition->Scope();
+    element_transitions_.erase(scope);
+    LayoutObject* layout_object = scope->GetLayoutObject();
+    if (scope != scope->GetDocument().documentElement() && layout_object &&
+        !(layout_object->StyleRef().Contain() & kContainsViewTransition) &&
+        layout_object->HasLayer()) {
+      // Element may have had an added stacking context purely for being the
+      // scope of a view transition. Ensure correctness of the adjusted style.
+      layout_object->EnclosingLayer()->SetNeedsCompositingInputsUpdate();
+      scope->SetNeedsStyleRecalc(kLocalStyleChange,
+                                 StyleChangeReasonForTracing::Create(
+                                     style_change_reason::kViewTransition));
+    }
   }
 
   // Notify the animator if the set of active view transitions is empty.

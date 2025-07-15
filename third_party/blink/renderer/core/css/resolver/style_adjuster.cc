@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/core/svg/svg_tspan_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1163,8 +1164,17 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasWithDrawElements(element)) {
+      IsCanvasWithDrawElements(element) ||
+      (builder.Contain() & kContainsViewTransition)) {
     builder.SetForcesStackingContext(true);
+  } else if (element) {
+    // The scoped element of a view transition requires a stacking context.
+    if (const ViewTransition* view_transition =
+            ViewTransitionUtils::GetTransition(*element)) {
+      if (view_transition->Scope() == element) {
+        builder.SetForcesStackingContext(true);
+      }
+    }
   }
 
   if (builder.OverflowX() != EOverflow::kVisible ||
