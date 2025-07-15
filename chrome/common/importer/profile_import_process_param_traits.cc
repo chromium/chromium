@@ -9,7 +9,7 @@
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"
 
 // Generate constructors.
-#include "ipc/struct_constructor_macros.h"
+#include "ipc/ipc_message_null_macros.h"
 #undef CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"
 

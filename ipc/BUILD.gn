@@ -23,7 +23,6 @@ component("ipc") {
     "param_traits_macros.h",
     "param_traits_read_macros.h",
     "param_traits_write_macros.h",
-    "struct_constructor_macros.h",
     "tracing_helpers.h",
     "tracing_helpers_internal.h",
   ]

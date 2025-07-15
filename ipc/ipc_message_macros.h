@@ -40,7 +40,7 @@
 //     #define IPC_MESSAGE_IMPL
 //     #include "path/to/YYY_message_generator.h"
 //     // Generate constructors.
-//     #include "ipc/struct_constructor_macros.h"
+//     #include "ipc/ipc_message_null_macros.h"
 //     #include "path/to/YYY_message_generator.h"
 //     // Generate param traits write methods.
 //     #include "ipc/param_traits_write_macros.h"

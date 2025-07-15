@@ -7,7 +7,7 @@
 #include "chrome/common/common_message_generator.h"
 
 // Generate constructors.
-#include "ipc/struct_constructor_macros.h"
+#include "ipc/ipc_message_null_macros.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_null_macros.h"
 #include "chrome/common/common_message_generator.h"
 

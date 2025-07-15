@@ -11,7 +11,7 @@
 
 // Generate constructors.
 #undef SERVICES_NETWORK_PUBLIC_CPP_P2P_PARAM_TRAITS_H_
-#include "ipc/struct_constructor_macros.h"
+#include "ipc/ipc_message_null_macros.h"
 #include "p2p_param_traits.h"
 
 // Generate param traits write methods.
