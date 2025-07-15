@@ -2778,6 +2778,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillWalletCredentialDataDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
+    {"autofill-enable-cvc-storage-and-filling",
+     flag_descriptions::kAutofillEnableCvcStorageAndFillingName,
+     flag_descriptions::kAutofillEnableCvcStorageAndFillingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCvcStorageAndFilling)},
     {"autofill-enable-cvc-storage-and-filling-enhancement",
      flag_descriptions::kAutofillEnableCvcStorageAndFillingEnhancementName,
      flag_descriptions::
