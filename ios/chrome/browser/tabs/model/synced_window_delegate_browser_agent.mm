@@ -40,7 +40,13 @@ SyncedWindowDelegateBrowserAgent::~SyncedWindowDelegateBrowserAgent() {
 }
 
 SessionID SyncedWindowDelegateBrowserAgent::GetTabIdAt(int index) const {
-  return GetTabAt(index)->GetSessionId();
+  return GetWebStateAt(index)->GetUniqueIdentifier().ToSessionID();
+}
+
+bool SyncedWindowDelegateBrowserAgent::IsPlaceholderTabAt(int index) const {
+  // A tab is considered as "placeholder" if it is not fully
+  // loaded. This corresponds to "unrealized" tabs.
+  return !GetWebStateAt(index)->IsRealized();
 }
 
 bool SyncedWindowDelegateBrowserAgent::IsSessionRestoreInProgress() const {
@@ -85,8 +91,7 @@ bool SyncedWindowDelegateBrowserAgent::IsTabPinned(
 
 sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
     int index) const {
-  return IOSChromeSyncedTabDelegate::FromWebState(
-      browser_->GetWebStateList()->GetWebStateAt(index));
+  return IOSChromeSyncedTabDelegate::FromWebState(GetWebStateAt(index));
 }
 
 #pragma mark - TabsDependencyInstaller
@@ -111,4 +116,11 @@ void SyncedWindowDelegateBrowserAgent::OnActiveWebStateChanged(
     web::WebState* new_active) {
   ResetCachedLastActiveTimeForWebState(old_active);
   ResetCachedLastActiveTimeForWebState(new_active);
+}
+
+#pragma mark - Private methods
+
+web::WebState* SyncedWindowDelegateBrowserAgent::GetWebStateAt(
+    int index) const {
+  return browser_->GetWebStateList()->GetWebStateAt(index);
 }

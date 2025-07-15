@@ -35,6 +35,7 @@ static_library("sync_sessions") {
     "synced_session_tracker.h",
     "synced_tab_delegate.cc",
     "synced_tab_delegate.h",
+    "synced_window_delegate.cc",
     "synced_window_delegate.h",
     "synced_window_delegates_getter.cc",
     "synced_window_delegates_getter.h",

@@ -42,10 +42,14 @@ class SyncedWindowDelegate {
   // see TabStripModel::GetWebContentsAt
   virtual SyncedTabDelegate* GetTabAt(int index) const = 0;
 
-  // Return the tab id for the tab at |index|.
+  // Returns the tab id for the tab at |index|.
   virtual SessionID GetTabIdAt(int index) const = 0;
 
-  // Return true if we are currently restoring sessions asynchronously.
+  // Returns true if the tab at |index| is a placeholder tab (see the method
+  // SyncedTabDelegate::IsPlaceholderTab).
+  virtual bool IsPlaceholderTabAt(int index) const;
+
+  // Returns true if we are currently restoring sessions asynchronously.
   virtual bool IsSessionRestoreInProgress() const = 0;
 
   // Helper methods.

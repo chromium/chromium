@@ -220,11 +220,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
     bool found_tabs = false;
     for (int j = 0; j < tab_count_in_window; ++j) {
       SessionID tab_id = window_delegate->GetTabIdAt(j);
-      SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
-
-      // IsWindowSyncable(), via ShouldSync(), guarantees that tabs are not
-      // null.
-      DCHECK(synced_tab);
+      const bool placeholder_tab = window_delegate->IsPlaceholderTabAt(j);
 
       // If for some reason the tab ID is invalid, skip it.
       if (!tab_id.is_valid()) {
@@ -239,7 +235,8 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       // noone really cares, because the window/tab hierarchy is constructed
       // from the header entity (which has up-to-date IDs). Hence, in order to
       // avoid unnecessary traffic, we avoid updating the entity.
-      if (!synced_tab->IsPlaceholderTab() && RELOAD_TABS == option) {
+      if (!placeholder_tab && RELOAD_TABS == option) {
+        SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
         AssociateTab(synced_tab, batch);
       }
 
@@ -253,12 +250,13 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
 #if BUILDFLAG(IS_ANDROID)
       // Metrics recording will only occur if AssociateWindows is called through
       // a session restore, denoted by is_session_restore.
-      if (synced_tab->IsPlaceholderTab()) {
+      if (placeholder_tab) {
         if (tab && is_session_restore) {
           RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
         } else if (!tab) {
           // The placeholder tab doesn't have a tracked counterpart. This is
           // possible, for example, if the tab was created as a placeholder tab.
+          SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
           bool was_tab_resynced = AssociatePlaceholderTab(
               synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(
                   sessions_client_),
