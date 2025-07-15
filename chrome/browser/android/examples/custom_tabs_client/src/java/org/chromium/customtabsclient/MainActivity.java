@@ -27,12 +27,14 @@ import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_DEFAULT;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -73,6 +75,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
@@ -88,6 +91,7 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
@@ -243,6 +247,25 @@ public class MainActivity extends AppCompatActivity
 
     private final ActivityResultLauncher<Intent> mLauncher =
             AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
+
+    private final ActivityResultLauncher<String> mRequestPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            Toast.makeText(
+                                            this,
+                                            "Notification permission granted!",
+                                            Toast.LENGTH_LONG)
+                                    .show();
+                        } else {
+                            Toast.makeText(
+                                            this,
+                                            "Notification permission denied.",
+                                            Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
 
     private void handleAuthResult(AuthTabIntent.AuthResult result) {
         int messageRes =
@@ -441,6 +464,16 @@ public class MainActivity extends AppCompatActivity
         initializeCctSpinner();
         initializeButtons(savedInstanceState != null);
         mLogImportance.run();
+        askNotificationPermission();
+    }
+
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                mRequestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 
     private void initializeUrlEditTextView() {
