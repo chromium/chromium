@@ -325,6 +325,10 @@ if (!is_android) {
         "//chrome/install_static/test:test_support",
       ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   source_set("browser_tests") {

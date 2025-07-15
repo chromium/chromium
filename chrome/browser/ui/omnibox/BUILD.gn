@@ -186,6 +186,10 @@ if (!is_android) {
       # This target has a circular dependency against //chrome/test:browser_tests
       # due to the inclusion of `chrome/browser/ui/test/test_infobar.h`.
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   if (!is_chromeos_device) {
