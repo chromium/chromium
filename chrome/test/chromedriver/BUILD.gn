@@ -294,6 +294,10 @@ source_set("automation_client_lib") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("lib") {
@@ -406,6 +410,10 @@ source_set("lib") {
     deps += [ ":buildflags" ]
     frameworks = [ "Carbon.framework" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_linux) {
@@ -636,6 +644,10 @@ test("chromedriver_unittests") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_win || is_posix) {

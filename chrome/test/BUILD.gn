@@ -1205,6 +1205,10 @@ static_library("test_support") {
   if (safe_browsing_mode != 0) {
     deps += [ "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
@@ -1706,6 +1710,10 @@ source_set("platform_browser_tests") {
       ]
     }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
@@ -2081,6 +2089,10 @@ if (is_android) {
         "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   proto_library("persisted_tab_data_test_proto") {
@@ -5873,6 +5885,10 @@ if (!is_android) {
     if (enable_webui_generate_code_cache) {
       deps += [ "//ui/webui/resources:code_cache_resources" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -10570,6 +10586,10 @@ test("unit_tests") {
       "../browser/ui/startup/default_browser_prompt/default_browser_prompt_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support_unit") {
@@ -10943,6 +10963,10 @@ if (!is_android) {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   proto_library("test_proto") {
@@ -12003,6 +12027,10 @@ if (!is_android && !is_chromeos_device) {
         "//components/compose/core/browser:features",
       ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -12658,6 +12686,10 @@ if (is_win) {
       "//build/config/win:delayloads",
       "//build/config/win:delayloads_not_for_child_dll",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -12757,6 +12789,10 @@ source_set("xr_browser_tests_common") {
   if (!is_mac && !is_android) {
     data_deps = [ "//chrome:packed_resources" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_linux || is_mac || is_win) {
