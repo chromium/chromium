@@ -297,29 +297,29 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
 }
 
-const auto kActorTaskTestValues = std::vector<
-    std::tuple<ActorTask::State, UiTabState>>{
-    {ActorTask::State::kActing,
-     UiTabState{
-         .agent_overlay = AgentOverlayState(/*is_active=*/true),
-         .handoff_button = {.is_active = true,
-                            .controller =
-                                HandoffButtonState::ControlOwnership::kAgent}}},
-    {ActorTask::State::kReflecting,
-     UiTabState{
-         .agent_overlay = AgentOverlayState(/*is_active=*/true),
-         .handoff_button = {.is_active = true,
-                            .controller =
-                                HandoffButtonState::ControlOwnership::kAgent}}},
-    {ActorTask::State::kPausedByClient,
-     UiTabState{
-         .agent_overlay = AgentOverlayState(/*is_active=*/false),
-         .handoff_button =
-             {.is_active = true,
-              .controller = HandoffButtonState::ControlOwnership::kClient}}},
-    {ActorTask::State::kFinished,
-     UiTabState{.agent_overlay = AgentOverlayState(/*is_active=*/false),
-                .handoff_button = {.is_active = false}}}};
+const auto kActorTaskTestValues =
+    std::vector<std::tuple<ActorTask::State, UiTabState>>{
+        {ActorTask::State::kActing,
+         UiTabState{
+             .actor_overlay = ActorOverlayState(/*is_active=*/true),
+             .handoff_button =
+                 {.is_active = true,
+                  .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+        {ActorTask::State::kReflecting,
+         UiTabState{
+             .actor_overlay = ActorOverlayState(/*is_active=*/true),
+             .handoff_button =
+                 {.is_active = true,
+                  .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+        {ActorTask::State::kPausedByClient,
+         UiTabState{.actor_overlay = ActorOverlayState(/*is_active=*/false),
+                    .handoff_button =
+                        {.is_active = true,
+                         .controller =
+                             HandoffButtonState::ControlOwnership::kClient}}},
+        {ActorTask::State::kFinished,
+         UiTabState{.actor_overlay = ActorOverlayState(/*is_active=*/false),
+                    .handoff_button = {.is_active = false}}}};
 
 INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerActorTaskUiTabScopedTest,
                          ActorUiStateManagerActorTaskUiTabScopedTest,
@@ -345,7 +345,7 @@ class ActorUiStateManagerUiEventUiTabScopedTest
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnStartingToActOnTab_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
-      .agent_overlay = AgentOverlayState(/*is_active=*/true),
+      .actor_overlay = ActorOverlayState(/*is_active=*/true),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kAgent}};
@@ -356,7 +356,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnStoppedActingOnTab_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
-      .agent_overlay = AgentOverlayState(/*is_active=*/false),
+      .actor_overlay = ActorOverlayState(/*is_active=*/false),
       .handoff_button = {.is_active = false}};
   VerifyUiEvent(StoppedActingOnTab{mock_tab_.GetHandle()},
                 expected_ui_tab_state);
@@ -366,7 +366,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnMouseMove_UpdatesUiCorrectly) {
   PageTarget page_target(gfx::Point(100, 200));
   UiTabState expected_ui_tab_state{
-      .agent_overlay = AgentOverlayState(
+      .actor_overlay = ActorOverlayState(
           /*is_active=*/true, /*mouse_down=*/false, page_target),
       .handoff_button = {
           .is_active = true,
@@ -378,8 +378,8 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
 TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
        OnMouseClick_UpdatesUiCorrectly) {
   UiTabState expected_ui_tab_state{
-      .agent_overlay =
-          AgentOverlayState(/*is_active=*/true, /*mouse_down=*/true),
+      .actor_overlay =
+          ActorOverlayState(/*is_active=*/true, /*mouse_down=*/true),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kAgent}};

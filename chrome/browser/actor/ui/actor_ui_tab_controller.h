@@ -41,7 +41,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   // The current ui tab state.
   UiTabState current_ui_tab_state_ = {
-      .agent_overlay = AgentOverlayState(),
+      .actor_overlay = ActorOverlayState(),
       .handoff_button = HandoffButtonState(),
   };
   // The last active task id actuating on this tab.

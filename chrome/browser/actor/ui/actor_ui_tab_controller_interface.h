@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_INTERFACE_H_
 
 #include "chrome/browser/actor/task_id.h"
-#include "chrome/browser/actor/ui/states/agent_overlay_state.h"
+#include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 
 namespace actor::ui {
 
 struct UiTabState {
   bool operator==(const UiTabState& other) const = default;
-  AgentOverlayState agent_overlay;
+  ActorOverlayState actor_overlay;
   HandoffButtonState handoff_button;
 };
 

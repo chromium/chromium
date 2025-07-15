@@ -22,7 +22,7 @@ using tabs::TabInterface;
 // to be shared with tab controller.
 const UiTabState& GetAgentControlledUiTabState() {
   static const UiTabState kAgentState = {
-      .agent_overlay = AgentOverlayState(/*is_active=*/true),
+      .actor_overlay = ActorOverlayState(/*is_active=*/true),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kAgent}};
@@ -31,7 +31,7 @@ const UiTabState& GetAgentControlledUiTabState() {
 
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
-      .agent_overlay = AgentOverlayState(/*is_active=*/false),
+      .actor_overlay = ActorOverlayState(/*is_active=*/false),
       .handoff_button = {
           .is_active = true,
           .controller = HandoffButtonState::ControlOwnership::kClient}};
@@ -40,7 +40,7 @@ const UiTabState& GetPausedUiTabState() {
 
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
-      .agent_overlay = AgentOverlayState(/*is_active=*/false),
+      .actor_overlay = ActorOverlayState(/*is_active=*/false),
       .handoff_button = {
           .is_active = false,
           .controller = HandoffButtonState::ControlOwnership::kClient}};
@@ -80,12 +80,12 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
       },
       [](const MouseClick& e) -> UiUpdate {
         UiTabState ui_tab_state = GetAgentControlledUiTabState();
-        ui_tab_state.agent_overlay.mouse_down = true;
+        ui_tab_state.actor_overlay.mouse_down = true;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
       },
       [](const MouseMove& e) -> UiUpdate {
         UiTabState ui_tab_state = GetAgentControlledUiTabState();
-        ui_tab_state.agent_overlay.mouse_target = e.target;
+        ui_tab_state.actor_overlay.mouse_target = e.target;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
       }};
 }

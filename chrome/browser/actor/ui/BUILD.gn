@@ -21,11 +21,11 @@ source_set("ui") {
 
 source_set("states") {
   public = [
-    "states/agent_overlay_state.h",
+    "states/actor_overlay_state.h",
     "states/handoff_button_state.h",
   ]
 
-  sources = [ "states/agent_overlay_state.cc" ]
+  sources = [ "states/actor_overlay_state.cc" ]
 
   public_deps = [ "//chrome/browser/actor:types" ]
 }
