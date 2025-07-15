@@ -76,13 +76,24 @@ class CertVerifierServiceChromeRootStoreOptionalTest
     : public PlatformBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  void SetUpOnMainThread() override {
+  void SetUp() override {
     // This test puts a test cert in the Chrome Root Store, which will fail in
     // builds where Certificate Transparency is required, so disable CT
     // during this test.
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         false);
 
+    PlatformBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    PlatformBrowserTest::TearDown();
+
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        std::nullopt);
+  }
+
+  void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
@@ -90,8 +101,6 @@ class CertVerifierServiceChromeRootStoreOptionalTest
   }
 
   void TearDownOnMainThread() override {
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        std::nullopt);
     // Reset to default.
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
         true, base::DoNothing());
