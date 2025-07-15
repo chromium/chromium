@@ -57,7 +57,7 @@ SessionParams CreateValidParams() {
                        std::move(scope),
                        std::move(cookie_credentials),
                        unexportable_keys::UnexportableKeyId(),
-                       /*allowed_refresh_initiators=*/{}};
+                       /*allowed_refresh_initiators=*/{"*"}};
 }
 
 TEST_F(SessionTest, ValidService) {
@@ -254,6 +254,13 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
     proto::Session s(sproto);
     base::Time expiry_date = base::Time::Now() - base::Days(1);
     s.set_expiry_time(expiry_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+    EXPECT_FALSE(Session::CreateFromProto(s));
+  }
+
+  // Invalid refresh initiator
+  {
+    proto::Session s(sproto);
+    s.add_allowed_refresh_initiators("a.*.example.test");
     EXPECT_FALSE(Session::CreateFromProto(s));
   }
 }

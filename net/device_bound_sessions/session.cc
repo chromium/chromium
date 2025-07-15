@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -233,14 +234,19 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     return nullptr;
   }
 
-  // TODO(crbug.com/406701307): Restore allowed_refresh_initiator from
-  // disk.
-  std::unique_ptr<Session> result(new Session(
+  std::vector<std::string> allowed_refresh_initiators;
+  allowed_refresh_initiators.reserve(proto.allowed_refresh_initiators_size());
+  for (const std::string& initiator : proto.allowed_refresh_initiators()) {
+    if (!IsValidHostPattern(initiator)) {
+      return nullptr;
+    }
+    allowed_refresh_initiators.emplace_back(initiator);
+  }
+
+  return base::WrapUnique(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
       std::move(cravings), proto.should_defer_when_expired(), creation_date,
-      expiry_date, /*allowed_refresh_initiators=*/{}));
-
-  return result;
+      expiry_date, std::move(allowed_refresh_initiators)));
 }
 
 proto::Session Session::ToProto() const {
@@ -255,8 +261,12 @@ proto::Session Session::ToProto() const {
 
   *session_proto.mutable_session_inclusion_rules() = inclusion_rules_.ToProto();
 
-  for (auto& craving : cookie_cravings_) {
+  for (const auto& craving : cookie_cravings_) {
     session_proto.mutable_cookie_cravings()->Add(craving.ToProto());
+  }
+
+  for (const std::string& initiator : allowed_refresh_initiators_) {
+    *session_proto.add_allowed_refresh_initiators() = initiator;
   }
 
   return session_proto;
@@ -409,7 +419,8 @@ bool Session::IsEqualForTesting(const Session& other) const {
          creation_date_ == other.creation_date_ &&
          expiry_date_ == other.expiry_date_ &&
          key_id_or_error_ == other.key_id_or_error_ &&
-         cached_challenge_ == other.cached_challenge_;
+         cached_challenge_ == other.cached_challenge_ &&
+         allowed_refresh_initiators_ == other.allowed_refresh_initiators_;
 }
 
 void Session::RecordAccess() {

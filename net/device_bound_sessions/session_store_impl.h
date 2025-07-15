@@ -77,6 +77,8 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
                            PruneLoadedEntryWithInvalidSession);
   FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
                            PruneLoadedEntryWithSessionMissingWrappedKey);
+  FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
+                           PruneLoadedEntryWithInvalidRefreshInitiator);
 
   void OnDatabaseLoaded(LoadSessionsCallback callback,
                         base::ElapsedTimer timer,

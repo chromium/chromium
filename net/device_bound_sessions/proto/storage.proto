@@ -108,6 +108,8 @@ message Session {
   // Creation date for session (encoded as microseconds since the Windows
   // epoch).
   optional int64 creation_time = 8;
+  // Initiator sites allowed to trigger refresh from third-party contexts
+  repeated string allowed_refresh_initiators = 9;
 }
 
 // All the sessions associated with a site (eTLD+1) and it's subdomains.
