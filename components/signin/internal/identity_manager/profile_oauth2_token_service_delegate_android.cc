@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -246,6 +247,11 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_access_token =
       ConvertUTF8ToJavaString(env, access_token);
+  // CHECK added to investigate crbug.com/366403142.
+  // Sometimes access_token is unexpectedly empty (for example,
+  // when visiting corp sites), and a previous attempt to throw an exception
+  // caused crashes (see crbug.com/428081405).
+  CHECK(!access_token.empty(), base::NotFatalUntil::M142);
   signin::Java_ProfileOAuth2TokenServiceDelegate_invalidateAccessToken(
       env, java_ref_, j_access_token);
 }
