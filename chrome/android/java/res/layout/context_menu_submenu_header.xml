@@ -25,18 +25,6 @@ found in the LICENSE file.
         android:paddingEnd="@dimen/context_menu_row_item_horizontal_padding"
         android:background="@android:color/transparent" />
 
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/menu_item_icon"
-        android:layout_width="@dimen/context_menu_chip_icon_size"
-        android:layout_height="@dimen/context_menu_chip_icon_size"
-        android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
-        android:gravity="center"
-        android:duplicateParentState="true"
-        android:importantForAccessibility="no"
-        android:visibility="gone"
-        android:tint="@color/default_icon_color_secondary_tint_list"
-        android:tintMode="src_in" />
-
     <TextView
         android:id="@+id/menu_row_text"
         android:layout_width="0dp"
