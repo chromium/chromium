@@ -381,6 +381,15 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
   const VectorOf<ElementHitTestRegion>& GetHitTestRegions() const;
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForCanvas2D(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsRenderingContext2D());
+    CHECK(!resource_provider_for_canvas2d_);
+    resource_provider_for_canvas2d_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -457,15 +466,6 @@ class CORE_EXPORT HTMLCanvasElement final
       float device_scale_factor);
 
   bool RecreateCanvasInGPURasterModeForCanvas2D();
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsRenderingContext2D());
-    CHECK(!resource_provider_for_canvas2d_);
-    resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 

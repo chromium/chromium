@@ -201,6 +201,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
+  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()
+      override;
+
   void PreFinalizeFrame() override;
   void FinalizeFrame(FlushReason) override;
 

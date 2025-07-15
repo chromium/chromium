@@ -52,6 +52,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -102,6 +103,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -1131,6 +1133,107 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasRenderingContext2D::CreateCanvasResourceProvider() {
+  CHECK(!GetResourceProviderForCanvas2D());
+
+  base::WeakPtr<CanvasResourceDispatcher> dispatcher =
+      canvas()->GetOrCreateResourceDispatcher()
+          ? canvas()->GetOrCreateResourceDispatcher()->GetWeakPtr()
+          : nullptr;
+
+  std::unique_ptr<CanvasResourceProvider> provider;
+  const SkAlphaType alpha_type = GetAlphaType();
+  const viz::SharedImageFormat format = GetSharedImageFormat();
+  const gfx::ColorSpace color_space = GetColorSpace();
+  const bool use_gpu = canvas()->ShouldTryToUseGpuRaster() &&
+                       canvas()->ShouldAccelerate2dContext();
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kCallClear;
+  if (use_gpu && canvas()->LowLatencyEnabled()) {
+    // If we can use the gpu and low latency is enabled, we will try to use a
+    // SwapChain if possible.
+    provider = CanvasResourceProvider::CreateSwapChainProvider(
+        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), canvas());
+    // If SwapChain failed or it was not possible, we will try a SharedImage
+    // with a set of flags trying to add Usage Display and Usage Scanout and
+    // Concurrent Read and Write if possible.
+    if (!provider) {
+      gpu::SharedImageUsageSet shared_image_usage_flags =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      if (SharedGpuContext::MaySupportImageChromium() &&
+          (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
+           base::FeatureList::IsEnabled(
+               features::kLowLatencyCanvas2dImageChromium))) {
+        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        shared_image_usage_flags |=
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      }
+      provider = CanvasResourceProvider::CreateSharedImageProvider(
+          canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+          shared_image_usage_flags, canvas());
+    }
+  } else if (use_gpu) {
+    // First try to be optimized for displaying on screen. In the case we are
+    // hardware compositing, we also try to enable the usage of the image as
+    // scanout buffer (overlay)
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    if (SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+    provider = CanvasResourceProvider::CreateSharedImageProvider(
+        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        shared_image_usage_flags, canvas());
+  } else if (SharedGpuContext::MaySupportImageChromium() &&
+             RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+    // In this case, we are using CPU raster and GPU compositing and native
+    // mappable buffers are supported. Try to use a
+    // CanvasResourceProviderSharedImage, which if successful will result in
+    // using a SharedImage that can be mapped onto the CPU for software raster
+    // writes and then read by the display compositor (and potentially used as
+    // an overlay).
+    const gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    provider = CanvasResourceProvider::CreateSharedImageProvider(
+        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
+        shared_image_usage_flags, canvas());
+  }
+
+  // If either of the other modes failed and / or it was not possible to do, we
+  // will backup with a software SharedImage, and if that was not possible with
+  // a Bitmap provider.
+  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
+    // In this case, we are using CPU raster and CPU compositing. Create a
+    // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
+    // buffer that can be written by canvas raster and read by the compositor.
+    provider =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            canvas()->Size(), format, alpha_type, color_space,
+            kShouldInitialize, SharedGpuContext::SharedImageInterfaceProvider(),
+            canvas());
+  }
+  if (!provider) {
+    // The final fallback is to raster into a bitmap that will then either be
+    // uploaded into GPU memory (for GPU compositing) or copied into the Viz
+    // process (for software compositing).
+    provider = CanvasResourceProvider::CreateBitmapProvider(
+        canvas()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        canvas());
+  }
+
+  if (provider) {
+    provider->SetResourceRecyclingEnabled(true);
+  }
+
+  return provider;
 }
 
 CanvasResourceProvider*
