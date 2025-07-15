@@ -119,6 +119,7 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431968526")
     public void dismissButtonClickSkipsSyncConsentPageWhenNoAccountsAreOnDevice() {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newBuilder()
