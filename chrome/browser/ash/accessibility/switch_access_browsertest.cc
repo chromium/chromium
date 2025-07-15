@@ -142,7 +142,14 @@ IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
                test_utils.GetValueForNodeWithClassName("sa_input").c_str());
 }
 
-// TODO(crbug.com/388867933): flaky on MSAN. Deflake and re-enable the test.
+// TODO(crbug.com/388867933): Disabled on MSAN due to a renderer crash. The
+// crash is caused by a use-of-uninitialized-value in
+// blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
+// indicating an underlying Blink issue rather than a problem with the test
+// logic.
+//
+// A separate bug (crbug.com/431933537) is filed to specifically track the
+// blink::CSSParserImpl::ParseStyleSheet issue.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_NavigateGroupings DISABLED_NavigateGroupings
 #else
