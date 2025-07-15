@@ -71,7 +71,7 @@ class CookieControlsBubbleViewController
 
   void FillViewForThirdPartyCookies(CookieControlsEnforcement enforcement,
                                     base::Time expiration);
-  void FillViewForTrackingProtections();
+  void FillViewForTrackingProtections(CookieControlsEnforcement enforcement);
 
   void CloseBubble();
 

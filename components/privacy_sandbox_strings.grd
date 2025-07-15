@@ -383,6 +383,15 @@
           <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
             Help us improve Chrome by telling us why you paused tracking protections
           </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but you made an exception for this site.
+          </message>
         </then>
         <else>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
@@ -402,6 +411,15 @@
           </message>
           <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
             Help us improve Chromium by telling us why you paused tracking protections
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but you made an exception for this site.
           </message>
         </else>
       </if>

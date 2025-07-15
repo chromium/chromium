@@ -30,6 +30,7 @@ class CookieControlsContentView : public views::View {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitle);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescription);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThirdPartyCookiesSummary);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTrackingProtectionsButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleLabel);
@@ -62,6 +63,9 @@ class CookieControlsContentView : public views::View {
   virtual void UpdateFeedbackButtonSubtitle(const std::u16string& subtitle);
 
   virtual void SetTrackingProtectionsButtonReloadingState();
+
+  virtual void SetIncognitoTrackingProtections3pcSummary(
+      const std::u16string& tpc_summary);
 
   virtual views::MdTextButtonWithSpinner* GetTrackingProtectionsButton();
 
@@ -106,6 +110,8 @@ class CookieControlsContentView : public views::View {
       tracking_protections_button_callback_list_;
 
   // Used for Tracking protections UI.
+  void AddThirdPartyCookiesSummaryForTrackingProtectionsUi();
+  raw_ptr<views::Label> tp_bubble_3pc_summary_ = nullptr;
   void AddTrackingProtectionsButton();
   raw_ptr<views::MdTextButtonWithSpinner> tracking_protections_button_ =
       nullptr;

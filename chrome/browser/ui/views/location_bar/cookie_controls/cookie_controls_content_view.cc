@@ -64,10 +64,22 @@ std::unique_ptr<views::View> CreateFullWidthSeparator() {
 std::unique_ptr<views::View> CreatePaddedSeparator() {
   return CreateSeparator(/*padded=*/true);
 }
+
+gfx::Insets UserBypassBubbleInsets() {
+  auto* provider = ChromeLayoutProvider::Get();
+  const int vertical_margin =
+      provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  const int side_margin =
+      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+  return gfx::Insets::VH(vertical_margin, side_margin);
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kDescription);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
+                                      kThirdPartyCookiesSummary);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
                                       kTrackingProtectionsButton);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kToggleButton);
@@ -81,6 +93,7 @@ CookieControlsContentView::CookieControlsContentView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   AddChildView(CreateFullWidthSeparator());
+  AddThirdPartyCookiesSummaryForTrackingProtectionsUi();
   AddContentLabels();
   AddTrackingProtectionsButton();
   AddToggleRow();
@@ -88,17 +101,10 @@ CookieControlsContentView::CookieControlsContentView() {
 }
 
 void CookieControlsContentView::AddContentLabels() {
-  auto* provider = ChromeLayoutProvider::Get();
-  const int vertical_margin =
-      provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-  const int side_margin =
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-
   label_wrapper_ = AddChildView(std::make_unique<views::View>());
   label_wrapper_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  label_wrapper_->SetProperty(views::kMarginsKey,
-                              gfx::Insets::VH(vertical_margin, side_margin));
+  label_wrapper_->SetProperty(views::kMarginsKey, UserBypassBubbleInsets());
   title_ = label_wrapper_->AddChildView(std::make_unique<views::Label>());
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
@@ -111,6 +117,32 @@ void CookieControlsContentView::AddContentLabels() {
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   description_->SetMultiLine(true);
   description_->SetProperty(views::kElementIdentifierKey, kDescription);
+}
+
+void CookieControlsContentView::
+    AddThirdPartyCookiesSummaryForTrackingProtectionsUi() {
+  tp_bubble_3pc_summary_ = AddChildView(std::make_unique<views::Label>());
+  tp_bubble_3pc_summary_->SetProperty(views::kMarginsKey,
+                                      UserBypassBubbleInsets());
+  tp_bubble_3pc_summary_->SetTextContext(
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
+  tp_bubble_3pc_summary_->SetTextStyle(views::style::STYLE_BODY_5);
+  tp_bubble_3pc_summary_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  tp_bubble_3pc_summary_->SetMultiLine(true);
+  tp_bubble_3pc_summary_->SetProperty(views::kElementIdentifierKey,
+                                      kThirdPartyCookiesSummary);
+  tp_bubble_3pc_summary_->SetVisible(false);
+}
+
+void CookieControlsContentView::SetIncognitoTrackingProtections3pcSummary(
+    const std::u16string& tpc_summary) {
+  if (tpc_summary.empty()) {
+    tp_bubble_3pc_summary_->SetVisible(false);
+    return;
+  }
+  tp_bubble_3pc_summary_->SetText(tpc_summary);
+  tp_bubble_3pc_summary_->SetVisible(true);
 }
 
 void CookieControlsContentView::SetToggleIsOn(bool is_on) {

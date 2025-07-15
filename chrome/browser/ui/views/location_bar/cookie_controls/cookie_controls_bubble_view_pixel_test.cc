@@ -330,11 +330,12 @@ class CookieControlsBubbleViewTrackingProtectionUiPixelTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(controls_state_);
+    SetStatus(controls_state_, enforcement_);
     waiter.WaitIfNeededAndGet();
   }
 
-  void SetStatus(CookieControlsState controls_state) {
+  void SetStatus(CookieControlsState controls_state,
+                 CookieControlsEnforcement enforcement) {
     // ShowBubble will initialize the view controller.
     cookie_controls_coordinator_->ShowBubble(
         browser()->GetBrowserView().toolbar_button_provider(),
@@ -345,15 +346,17 @@ class CookieControlsBubbleViewTrackingProtectionUiPixelTest
     // after OnStatusChanged() is called it will pull state from
     // CookieControlsController, which has not been updated to reflect what is
     // needed for this test.
-    view_controller()->OnStatusChanged(
-        controls_state, CookieControlsEnforcement::kNoEnforcement,
-        CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+    view_controller()->OnStatusChanged(controls_state, enforcement,
+                                       CookieBlocking3pcdStatus::kNotIn3pcd,
+                                       base::Time());
     cookie_controls_icon()->DisableUpdatesForTesting();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   CookieControlsState controls_state_ = CookieControlsState::kActiveTp;
+  CookieControlsEnforcement enforcement_ =
+      CookieControlsEnforcement::kNoEnforcement;
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
@@ -364,5 +367,23 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
                        InvokeUi_ProtectionsPaused) {
   controls_state_ = CookieControlsState::kPausedTp;
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_ProtectionsActive_CookieSettingEnforcement) {
+  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_ProtectionsActive_ExtensionEnforcement) {
+  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_ProtectionsActive_EnterpriseEnforcement) {
+  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }

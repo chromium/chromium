@@ -58,6 +58,24 @@ const gfx::VectorIcon& GetToggleIcon(bool enabled) {
   return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
 }
 
+std::u16string Get3pcSummaryStringForEnforcement(
+    CookieControlsEnforcement enforcement) {
+  switch (enforcement) {
+    case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_USER_ALLOWED_DESCRIPTION);
+    case CookieControlsEnforcement::kEnforcedByPolicy:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION);
+    case CookieControlsEnforcement::kEnforcedByExtension:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTIONS_BUBBLE_3PCS_EXTENSION_ALLOWED_DESCRIPTION);
+    case CookieControlsEnforcement::kNoEnforcement:
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
+      return u"";
+  }
+}
+
 }  // namespace
 
 CookieControlsBubbleViewController::CookieControlsBubbleViewController(
@@ -196,7 +214,8 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
   bubble_view_->GetContentView()->PreferredSizeChanged();
 }
 
-void CookieControlsBubbleViewController::FillViewForTrackingProtections() {
+void CookieControlsBubbleViewController::FillViewForTrackingProtections(
+    CookieControlsEnforcement enforcement) {
   bool tp_paused = controls_state_ == CookieControlsState::kPausedTp;
   int desc_title, desc, button_label;
   if (tp_paused) {
@@ -208,6 +227,8 @@ void CookieControlsBubbleViewController::FillViewForTrackingProtections() {
     desc = IDS_TRACKING_PROTECTIONS_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION;
     button_label = IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL;
   }
+  bubble_view_->GetContentView()->SetIncognitoTrackingProtections3pcSummary(
+      tp_paused ? u"" : Get3pcSummaryStringForEnforcement(enforcement));
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonVisible(true);
   bubble_view_->GetContentView()->SetCookiesRowVisible(false);
   bubble_view_->UpdateTitle(
@@ -244,7 +265,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
       return;
     case CookieControlsState::kActiveTp:
     case CookieControlsState::kPausedTp:
-      FillViewForTrackingProtections();
+      FillViewForTrackingProtections(enforcement);
       break;
     case CookieControlsState::kBlocked3pc:
     case CookieControlsState::kAllowed3pc:
