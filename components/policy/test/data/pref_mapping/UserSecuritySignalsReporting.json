@@ -3,7 +3,8 @@
     "os": [
       "mac",
       "win",
-      "linux"
+      "linux",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "enterprise_reporting.user_security_signals.enabled",

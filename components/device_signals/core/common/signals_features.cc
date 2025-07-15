@@ -14,7 +14,11 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
 // Reports.
 BASE_FEATURE(kProfileSignalsReportingEnabled,
              "ProfileSignalsReportingEnabled",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the collection of detected agent signals in Chrome report.
 BASE_FEATURE(kDetectedAgentSignalCollectionEnabled,
