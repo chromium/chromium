@@ -539,13 +539,13 @@ TEST(SessionInclusionRulesTest, ToFromProto) {
   {
     const auto& rule = proto.url_rules(0);
     EXPECT_EQ(rule.rule_type(), proto::RuleType::EXCLUDE);
-    EXPECT_EQ(rule.host_matcher_rule(), "excluded.site.test");
+    EXPECT_EQ(rule.host_pattern(), "excluded.site.test");
     EXPECT_EQ(rule.path_prefix(), "/");
   }
   {
     const auto& rule = proto.url_rules(1);
     EXPECT_EQ(rule.rule_type(), proto::RuleType::INCLUDE);
-    EXPECT_EQ(rule.host_matcher_rule(), "included.site.test");
+    EXPECT_EQ(rule.host_pattern(), "included.site.test");
     EXPECT_EQ(rule.path_prefix(), "/");
   }
 
@@ -599,7 +599,7 @@ TEST(SessionInclusionRulesTest, FailCreateFromInvalidProto) {
   }
   {
     proto::SessionInclusionRules p(proto);
-    p.mutable_url_rules(0)->clear_host_matcher_rule();
+    p.mutable_url_rules(0)->clear_host_pattern();
     EXPECT_FALSE(SessionInclusionRules::CreateFromProto(p));
   }
   {

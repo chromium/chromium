@@ -30,8 +30,7 @@ message UrlRule {
   // Whether the request should be included/excluded if there is a match.
   optional RuleType rule_type = 1;
   // Domain or pattern the URL must match.
-  // TODO(crbug.com/401184805): Rename this field to `host_pattern`.
-  optional string host_matcher_rule = 2;
+  optional string host_pattern = 2;
   // Prefix consisting of path components that the URL must match.
   optional string path_prefix = 3;
 }

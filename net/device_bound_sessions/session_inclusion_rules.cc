@@ -241,7 +241,7 @@ proto::SessionInclusionRules SessionInclusionRules::ToProto() const {
   for (auto& rule : url_rules_) {
     proto::UrlRule rule_proto;
     rule_proto.set_rule_type(GetRuleTypeProto(rule.rule_type));
-    rule_proto.set_host_matcher_rule(rule.host_pattern);
+    rule_proto.set_host_pattern(rule.host_pattern);
     rule_proto.set_path_prefix(rule.path_prefix);
     proto.mutable_url_rules()->Add(std::move(rule_proto));
   }
@@ -267,12 +267,12 @@ std::unique_ptr<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
     std::optional<InclusionResult> rule_type =
         GetInclusionResult(rule_proto.rule_type());
     if (!rule_type.has_value() ||
-        !result->AddUrlRuleIfValid(*rule_type, rule_proto.host_matcher_rule(),
+        !result->AddUrlRuleIfValid(*rule_type, rule_proto.host_pattern(),
                                    rule_proto.path_prefix())) {
       DLOG(ERROR) << "proto rule parse error: " << "type:"
                   << proto::RuleType_Name(rule_proto.rule_type()) << " "
-                  << "matcher:" << rule_proto.host_matcher_rule() << " "
-                  << "prefix:" << rule_proto.path_prefix();
+                  << "host_pattern:" << rule_proto.host_pattern() << " "
+                  << "path_prefix:" << rule_proto.path_prefix();
       return nullptr;
     }
   }
