@@ -14,6 +14,7 @@
 
 namespace password_manager {
 class PasswordFormManager;
+class PasswordManagerClient;
 }
 
 namespace content {
@@ -33,6 +34,7 @@ class ChangePasswordFormFinder {
 
   ChangePasswordFormFinder(
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       const GURL& change_password_url,
       ChangePasswordFormWaiter::PasswordFormFoundCallback callback);
@@ -40,6 +42,7 @@ class ChangePasswordFormFinder {
   ChangePasswordFormFinder(
       base::PassKey<class ChangePasswordFormFinderTest>,
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       const GURL& change_password_url,
       ChangePasswordFormWaiter::PasswordFormFoundCallback callback,
@@ -84,6 +87,7 @@ class ChangePasswordFormFinder {
   void OnFormNotFound();
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
+  const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
   const GURL change_password_url_;
 

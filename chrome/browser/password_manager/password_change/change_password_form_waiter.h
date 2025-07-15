@@ -12,7 +12,9 @@
 
 namespace password_manager {
 class PasswordFormManager;
+class PasswordManagerClient;
 }
+
 namespace content {
 class WebContents;
 }
@@ -32,6 +34,7 @@ class ChangePasswordFormWaiter
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
   ChangePasswordFormWaiter(content::WebContents* web_contents,
+                           password_manager::PasswordManagerClient* client,
                            PasswordFormFoundCallback callback);
 
   ~ChangePasswordFormWaiter() override;
@@ -48,6 +51,7 @@ class ChangePasswordFormWaiter
 
   base::OneShotTimer timeout_timer_;
   const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<password_manager::PasswordManagerClient> client_;
   PasswordFormFoundCallback callback_;
 
   base::WeakPtrFactory<ChangePasswordFormWaiter> weak_ptr_factory_{this};

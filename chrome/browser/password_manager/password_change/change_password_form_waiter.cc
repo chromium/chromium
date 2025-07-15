@@ -4,7 +4,6 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -14,24 +13,30 @@ namespace {
 
 using password_manager::PasswordFormCache;
 
-PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
-  auto* client = static_cast<password_manager::PasswordManagerClient*>(
-      ChromePasswordManagerClient::FromWebContents(web_contents));
+PasswordFormCache* GetFormCache(
+    password_manager::PasswordManagerClient* client) {
   CHECK(client);
-  CHECK(client->GetPasswordManager());
+  if (!client->GetPasswordManager()) {
+    return nullptr;
+  }
 
   auto* cache = client->GetPasswordManager()->GetPasswordFormCache();
   CHECK(cache);
-  return *cache;
+  return cache;
 }
 
 }  // namespace
 
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
     PasswordFormFoundCallback callback)
-    : web_contents_(web_contents), callback_(std::move(callback)) {
-  GetFormCache(web_contents).AddObserver(this);
+    : web_contents_(web_contents),
+      client_(client),
+      callback_(std::move(callback)) {
+  if (auto* cache = GetFormCache(client_)) {
+    cache->AddObserver(this);
+  }
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     DocumentOnLoadCompletedInPrimaryMainFrame();
   } else {
@@ -40,8 +45,10 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
 }
 
 ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
-  CHECK(web_contents_);
-  GetFormCache(web_contents_).RemoveObserver(this);
+  CHECK(client_);
+  if (auto* cache = GetFormCache(client_)) {
+    cache->RemoveObserver(this);
+  }
 }
 
 void ChangePasswordFormWaiter::OnPasswordFormParsed(

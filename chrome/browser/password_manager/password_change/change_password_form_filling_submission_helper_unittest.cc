@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/web_contents_tester.h"
@@ -67,24 +68,13 @@ const char kUrlString[] = "https://www.foo.com/";
 const int password_renderer_id = 1;
 const int new_password_renderer_id = 2;
 
-class FakeChromePasswordManagerClient : public ChromePasswordManagerClient {
+class MockChromePasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
  public:
-  static FakeChromePasswordManagerClient* CreateForWebContentsAndGet(
-      content::WebContents* contents) {
-    auto* client = new FakeChromePasswordManagerClient(contents);
-    contents->SetUserData(UserDataKey(), base::WrapUnique(client));
-    return client;
-  }
-
-  password_manager::WebAuthnCredentialsDelegate*
-  GetWebAuthnCredentialsDelegateForDriver(
-      password_manager::PasswordManagerDriver*) override {
-    return nullptr;
-  }
-
- private:
-  explicit FakeChromePasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents) {}
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (override, const));
 };
 
 std::unique_ptr<KeyedService> CreateOptimizationService(
@@ -196,15 +186,9 @@ class ChangePasswordFormFillingSubmissionHelperTest
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
 
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                            content::BrowserContext,
-                            password_manager::MockPasswordStoreInterface>));
-    // `ChromePasswordManagerClient` observes `AutofillManager`s, so
-    // `ChromeAutofillClient` needs to be set up, too.
-    autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-    FakeChromePasswordManagerClient::CreateForWebContentsAndGet(web_contents());
+    ON_CALL(client_, GetProfilePasswordStore)
+        .WillByDefault(testing::Return(password_store_.get()));
+
     logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
 
     existing_credential_.username_value = kUsername;
@@ -247,7 +231,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
           capture_annotated_page_content = base::NullCallback()) {
     auto verifier = std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
         base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>(),
-        web_contents(), logs_uploader_.get(),
+        web_contents(), client(), logs_uploader_.get(),
         std::move(capture_annotated_page_content), std::move(result_callback));
     verifier->FillChangePasswordForm(manager, kUsername, kOldPassword,
                                      kNewPassword);
@@ -260,9 +244,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
 
   GURL url() const { return GURL(kUrlString); }
 
-  ChromePasswordManagerClient* client() {
-    return ChromePasswordManagerClient::FromWebContents(web_contents());
-  }
+  password_manager::PasswordManagerClient* client() { return &client_; }
 
   MockOptimizationGuideKeyedService* optimization_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
@@ -276,15 +258,15 @@ class ChangePasswordFormFillingSubmissionHelperTest
   }
 
   password_manager::MockPasswordStoreInterface* profile_password_store() {
-    return static_cast<password_manager::MockPasswordStoreInterface*>(
-        ProfilePasswordStoreFactory::GetForProfile(
-            profile(), ServiceAccessType::EXPLICIT_ACCESS)
-            .get());
+    return password_store_.get();
   }
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
+  MockChromePasswordManagerClient client_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
   password_manager::FakeFormFetcher form_fetcher_;
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
   MockStubPasswordManagerDriver driver_;

@@ -98,7 +98,8 @@ TEST_F(PasswordChangeHatsTest, ReportsGeneratedPasswordsAdoption) {
           _, _, _, _, _))
       .Times(1);
 
-  auto password_change_hats = std::make_unique<PasswordChangeHats>(profile());
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeSuccess, base::TimeDelta(),
@@ -128,7 +129,8 @@ TEST_F(PasswordChangeHatsTest, ReportsLeakedPasswordsCount) {
           _, _, _, _, _))
       .Times(1);
 
-  auto password_change_hats = std::make_unique<PasswordChangeHats>(profile());
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled, base::TimeDelta(),
@@ -149,7 +151,8 @@ TEST_F(PasswordChangeHatsTest, ReportsPasswordChangeRuntime) {
           _, _, _, _, _))
       .Times(1);
 
-  auto password_change_hats = std::make_unique<PasswordChangeHats>(profile());
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeError,
                                           base::Milliseconds(50),
@@ -173,7 +176,8 @@ TEST_F(PasswordChangeHatsTest, ReportsMinusOneForCountsWithoutFetchedData) {
           _, _, _, _, _))
       .Times(1);
 
-  auto password_change_hats = std::make_unique<PasswordChangeHats>(profile());
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(kHatsSurveyTriggerPasswordChangeError,
                                           base::Milliseconds(50),

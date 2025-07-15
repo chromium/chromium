@@ -10,18 +10,21 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
@@ -172,7 +175,17 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
       ui_controller_(
           std::make_unique<PasswordChangeUIController>(this, tab_interface)),
-      password_change_hats_(std::make_unique<PasswordChangeHats>(profile_)),
+      password_change_hats_(std::make_unique<PasswordChangeHats>(
+          HatsServiceFactory::GetForProfile(profile_,
+                                            /*create_if_necessary=*/true),
+          ProfilePasswordStoreFactory::GetForProfile(
+              profile_,
+              ServiceAccessType::EXPLICIT_ACCESS)
+              .get(),
+          AccountPasswordStoreFactory::GetForProfile(
+              profile_,
+              ServiceAccessType::EXPLICIT_ACCESS)
+              .get())),
       last_committed_url_(originator_->GetLastCommittedURL()) {
   tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
       base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
@@ -212,7 +225,9 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   CHECK(executor_);
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), logs_uploader_.get(), change_password_url_,
+      executor_.get(),
+      ChromePasswordManagerClient::FromWebContents(executor_.get()),
+      logs_uploader_.get(), change_password_url_,
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -250,7 +265,9 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
 
   submission_verifier_ =
       std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-          executor_.get(), logs_uploader_.get(),
+          executor_.get(),
+          ChromePasswordManagerClient::FromWebContents(executor_.get()),
+          logs_uploader_.get(),
           base::BindOnce(
               &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
               weak_ptr_factory_.GetWeakPtr()));

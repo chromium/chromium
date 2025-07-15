@@ -5,34 +5,24 @@
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
 
 #include "base/strings/to_string.h"
-#include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 
-PasswordChangeHats::PasswordChangeHats(Profile* profile)
-    : hats_service_(
-          HatsServiceFactory::GetForProfile(profile,
-                                            /*create_if_necessary=*/true)) {
+PasswordChangeHats::PasswordChangeHats(
+    HatsService* hats_service,
+    password_manager::PasswordStoreInterface* profile_store,
+    password_manager::PasswordStoreInterface* account_store)
+    : hats_service_(hats_service) {
   if (!hats_service_) {
     // No point in fetching the data if `hats_service_` is nullptr.
     return;
   }
 
-  password_manager::PasswordStoreInterface* profile_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
-  password_manager::PasswordStoreInterface* account_store =
-      AccountPasswordStoreFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
   if (profile_store) {
     fetch_initiated_count_++;
     profile_store->GetAllLogins(weak_ptr_factory_.GetWeakPtr());

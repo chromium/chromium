@@ -23,6 +23,7 @@ class WebContents;
 namespace password_manager {
 class PasswordFormManager;
 class PasswordManagerDriver;
+class PasswordManagerClient;
 }  // namespace password_manager
 
 class PasswordChangeSubmissionVerifier;
@@ -38,6 +39,7 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   ChangePasswordFormFillingSubmissionHelper(
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       base::OnceCallback<void(bool)> result_callback);
 
@@ -45,6 +47,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   ChangePasswordFormFillingSubmissionHelper(
       base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>,
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content,
@@ -122,6 +125,8 @@ class ChangePasswordFormFillingSubmissionHelper {
       password_manager::PasswordFormManager* form_manager);
 
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
+  const raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
   raw_ptr<ModelQualityLogsUploader> logs_uploader_ = nullptr;
 
   base::OnceCallback<void(bool)> callback_;

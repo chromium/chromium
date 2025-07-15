@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -20,6 +19,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -38,12 +38,7 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
 }
 
 std::unique_ptr<Logger> GetLoggerIfAvailable(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return nullptr;
-  }
-  password_manager::PasswordManagerClient* client =
-      ChromePasswordManagerClient::FromWebContents(web_contents);
+    password_manager::PasswordManagerClient* client) {
   if (!client) {
     return nullptr;
   }
@@ -61,9 +56,11 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
 ChangePasswordFormFillingSubmissionHelper::
     ChangePasswordFormFillingSubmissionHelper(
         content::WebContents* web_contents,
+        password_manager::PasswordManagerClient* client,
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(bool)> callback)
     : web_contents_(web_contents),
+      client_(client),
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
   capture_annotated_page_content_ =
@@ -75,15 +72,17 @@ ChangePasswordFormFillingSubmissionHelper::
     ChangePasswordFormFillingSubmissionHelper(
         base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>,
         content::WebContents* web_contents,
+        password_manager::PasswordManagerClient* client,
         ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
             capture_annotated_page_content,
         base::OnceCallback<void(bool)> result_callback)
-    : web_contents_(web_contents),
-      logs_uploader_(logs_uploader),
-      callback_(std::move(result_callback)),
-      capture_annotated_page_content_(
-          std::move(capture_annotated_page_content)) {}
+    : ChangePasswordFormFillingSubmissionHelper(web_contents,
+                                                client,
+                                                logs_uploader,
+                                                std::move(result_callback)) {
+  capture_annotated_page_content_ = std::move(capture_annotated_page_content);
+}
 
 ChangePasswordFormFillingSubmissionHelper::
     ~ChangePasswordFormFillingSubmissionHelper() = default;
@@ -202,7 +201,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     return;
   }
 
-  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_FORM_FILLING_RESULT,
                        submitted_form.has_value());
   }
@@ -211,7 +210,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
     form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
-        web_contents_,
+        web_contents_, client_,
         base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
                            OnChangePasswordFormFound,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -238,7 +237,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
 void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     bool success) {
-  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_ENTER_RESULT,
                        success);
   }
@@ -329,7 +328,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
   CHECK(web_contents_);
   click_helper_.reset();
 
-  if (auto logger = GetLoggerIfAvailable(web_contents_)) {
+  if (auto logger = GetLoggerIfAvailable(client_)) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_SUBMIT_WITH_MODEL_RESULT,
                        result);
   }

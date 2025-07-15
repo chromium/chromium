@@ -6,9 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -17,7 +14,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -33,22 +30,13 @@ namespace {
 using autofill::test::CreateTestFormField;
 using testing::Return;
 
-class FakeChromePasswordManagerClient : public ChromePasswordManagerClient {
+class MockChromePasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
  public:
-  static void CreateForWebContents(content::WebContents* contents) {
-    auto* client = new FakeChromePasswordManagerClient(contents);
-    contents->SetUserData(UserDataKey(), base::WrapUnique(client));
-  }
-
-  password_manager::WebAuthnCredentialsDelegate*
-  GetWebAuthnCredentialsDelegateForDriver(
-      password_manager::PasswordManagerDriver*) override {
-    return nullptr;
-  }
-
- private:
-  explicit FakeChromePasswordManagerClient(content::WebContents* web_contents)
-      : ChromePasswordManagerClient(web_contents) {}
+  MOCK_METHOD(password_manager::PasswordStoreInterface*,
+              GetProfilePasswordStore,
+              (),
+              (override, const));
 };
 
 }  // namespace
@@ -64,16 +52,8 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     OSCryptMocker::SetUp();
 
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                            content::BrowserContext,
-                            password_manager::MockPasswordStoreInterface>));
-
-    // `ChromePasswordManagerClient` observes `AutofillManager`s, so
-    // `ChromeAutofillClient` needs to be set up, too.
-    autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-    FakeChromePasswordManagerClient::CreateForWebContents(web_contents());
+    ON_CALL(client_, GetProfilePasswordStore)
+        .WillByDefault(Return(password_store_.get()));
   }
 
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
@@ -90,9 +70,7 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
     return form_manager;
   }
 
-  ChromePasswordManagerClient* client() {
-    return ChromePasswordManagerClient::FromWebContents(web_contents());
-  }
+  password_manager::PasswordManagerClient* client() { return &client_; }
 
   password_manager::StubPasswordManagerDriver& driver() { return driver_; }
 
@@ -103,6 +81,9 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
+  MockChromePasswordManagerClient client_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
+      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
   password_manager::FakeFormFetcher form_fetcher_;
   password_manager::StubPasswordManagerDriver driver_;
 };
@@ -111,7 +92,8 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormNotFound) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   static_cast<content::WebContentsObserver*>(&waiter)
       ->DocumentOnLoadCompletedInPrimaryMainFrame();
@@ -125,7 +107,8 @@ TEST_F(ChangePasswordFormWaiterTest,
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
   EXPECT_CALL(completion_callback, Run).Times(0);
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout * 2);
@@ -142,7 +125,8 @@ TEST_F(ChangePasswordFormWaiterTest, NotFoundTimeoutResetOnLoadingEvent) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
   static_cast<content::WebContentsObserver*>(&waiter)
       ->DocumentOnLoadCompletedInPrimaryMainFrame();
 
@@ -184,7 +168,8 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormIdentified) {
   form.set_fields(std::move(fields));
   auto form_manager = CreateFormManager(form);
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -207,7 +192,8 @@ TEST_F(ChangePasswordFormWaiterTest, LoginForm) {
   form.set_fields(std::move(fields));
   auto form_manager = CreateFormManager(form);
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run).Times(0);
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -233,7 +219,8 @@ TEST_F(ChangePasswordFormWaiterTest, SignUpForm) {
 
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run).Times(0);
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -259,7 +246,8 @@ TEST_F(ChangePasswordFormWaiterTest, FormlessSettingsPage) {
 
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -287,7 +275,8 @@ TEST_F(ChangePasswordFormWaiterTest, ChangePasswordFormWithHiddenUsername) {
 
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -306,7 +295,8 @@ TEST_F(ChangePasswordFormWaiterTest, NewPasswordFieldAlone) {
 
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -329,7 +319,8 @@ TEST_F(ChangePasswordFormWaiterTest, ChangePasswordFormWithoutConfirmation) {
   form.set_fields(std::move(fields));
   auto form_manager = CreateFormManager(form);
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
@@ -352,7 +343,8 @@ TEST_F(ChangePasswordFormWaiterTest, ChangePasswordFormWithoutOldPassword) {
   form.set_fields(std::move(fields));
   auto form_manager = CreateFormManager(form);
 
-  ChangePasswordFormWaiter waiter(web_contents(), completion_callback.Get());
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  completion_callback.Get());
 
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)

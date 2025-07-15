@@ -18,13 +18,15 @@ class PasswordStoreInterface;
 }  // namespace password_manager
 
 class HatsService;
-class Profile;
 
 // Fetches the product-specific data for password change surveys from password
 // store and provides functionality to launch surveys.
 class PasswordChangeHats : public password_manager::PasswordStoreConsumer {
  public:
-  explicit PasswordChangeHats(Profile* profile);
+  PasswordChangeHats(HatsService* hats_service,
+                     password_manager::PasswordStoreInterface* profile_store,
+                     password_manager::PasswordStoreInterface* account_store);
+
   PasswordChangeHats(const PasswordChangeHats&) = delete;
   PasswordChangeHats& operator=(const PasswordChangeHats&) = delete;
   ~PasswordChangeHats() override;
@@ -44,8 +46,7 @@ class PasswordChangeHats : public password_manager::PasswordStoreConsumer {
       password_manager::PasswordStoreInterface* store,
       password_manager::LoginsResultOrError results_or_error) override;
 
-  // Handles survey displaying logic for `profile`.
-  raw_ptr<HatsService> hats_service_;
+  const raw_ptr<HatsService> hats_service_;
 
   // Count of all saved passwords.
   int64_t passwords_count_ = 0;
