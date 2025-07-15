@@ -197,7 +197,7 @@ public class AdaptiveToolbarFeatures {
     }
 
     public static boolean isTabGroupingPageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_TAB_GROUPING);
+        return ChromeFeatureList.sCpaTabGroupingButton.isEnabled();
     }
 
     static void setDefaultSegmentForTesting(String defaultSegment) {

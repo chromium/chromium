@@ -944,7 +944,10 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/segmentation_platform/TabGroupingActionProviderTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/tab_group_suggestion:toolbar_java",
+    ]
   }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.share") {

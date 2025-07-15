@@ -807,6 +807,11 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCpaSpecUpdate =
             newCachedFlag(
                     CPA_SPEC_UPDATE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sCpaTabGroupingButton =
+            newCachedFlag(
+                    CONTEXTUAL_PAGE_ACTION_TAB_GROUPING,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDisableInstanceLimit =
@@ -1069,6 +1074,7 @@ public abstract class ChromeFeatureList {
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
                     sCpaSpecUpdate,
+                    sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
                     sDisableInstanceLimit,
                     sDisplayEdgeToEdgeFullscreen,

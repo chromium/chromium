@@ -4,39 +4,48 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion.toolbar;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-
-import org.chromium.base.supplier.Supplier;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_suggestion.R;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 
-@NullMarked
-public class GroupSuggestionsButtonController extends BaseButtonDataProvider {
+/**
+ * Controller that handles the state of the group suggestion toolbar button. it handles availability
+ * requests from TabGroupingActionProvider, it handles clicks from
+ * GroupSuggestionsButtonDataProvider and it informs the backend of the outcome (button suppressed,
+ * ignored, clicked, etc).
+ */
+public interface GroupSuggestionsButtonController {
 
-    public GroupSuggestionsButtonController(
-            Supplier<@Nullable Tab> activeTabSupplier, Context context, Drawable buttonDrawable) {
-        super(
-                activeTabSupplier,
-                /* modalDialogManager= */ null,
-                buttonDrawable,
-                /* TODO(salg): Replace placeholder strings. */
-                /* contentDescription= */ context.getString(
-                        R.string.tab_group_suggestion_action_chip_label),
-                /* actionChipLabelResId= */ R.string.tab_group_suggestion_action_chip_label,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.TAB_GROUPING,
-                /* tooltipTextResId= */ R.string.tab_group_suggestion_action_chip_label);
-    }
+    /**
+     * Checks if there's a suggestion available for the current tab. Suggestion is cached, as the
+     * backend needs to be informed about the outcome of it.
+     *
+     * @param tab Tab to check.
+     * @param windowId Window tab belongs to.
+     * @return True if there's a grouping suggestion that applies to the tab, false otherwise.
+     */
+    boolean shouldShowButton(Tab tab, @WindowId int windowId);
 
-    @Override
-    public void onClick(View view) {
-        // TODO(salg): Implement tab grouping.
-    }
+    /**
+     * Called when the group suggestions button is shown for a tab. Used to determine if a
+     * suggestion was actually shown or if it was suppressed (e.g. by a higher priority button).
+     *
+     * @param tab Tab on which the button was shown.
+     */
+    void onButtonShown(Tab tab);
+
+    /**
+     * Called when the group suggestion button is going away. Used to inform the backend that a
+     * suggestion was ignored.
+     */
+    void onButtonHidden();
+
+    /**
+     * Called when the group suggestion button is clicked, it implements the actual tab grouping
+     * operation and it tells the backend that the suggestion was accepted by the user.
+     *
+     * @param tab Tab on which the button was clicked.
+     * @param tabGroupModelFilter Tab group model, used to retrieve tabs and perform the grouping.
+     */
+    void onButtonClicked(Tab tab, TabGroupModelFilter tabGroupModelFilter);
 }
