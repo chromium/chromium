@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_AND_FILL_DIALOG_H_
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
@@ -43,6 +44,10 @@ class SaveAndFillDialog : public views::DialogDelegateView,
  private:
   // Initialize the dialog's contents.
   void InitViews();
+  // Extract user-provided card details from the textfields in the Save and Fill
+  // dialog.
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+  GetUserProvidedDataFromInput() const;
   // Callback that is triggered when the dialog is accepted or canceled.
   void OnDialogClosed(views::Widget::ClosedReason reason);
 

@@ -198,11 +198,37 @@ void SaveAndFillDialog::InitViews() {
   AddChildView(std::move(name_on_card_data_.container));
 }
 
+payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+SaveAndFillDialog::GetUserProvidedDataFromInput() const {
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+      user_provided_card_details;
+
+  user_provided_card_details.card_number =
+      card_number_data_.GetInputTextField().GetText();
+  user_provided_card_details.cardholder_name =
+      name_on_card_data_.GetInputTextField().GetText();
+  user_provided_card_details.security_code =
+      cvc_data_.GetInputTextField().GetText();
+
+  const std::u16string exp_text =
+      std::u16string(expiration_date_data_.GetInputTextField().GetText());
+  size_t slash_pos = exp_text.find(u'/');
+  // This should never happen, as the expiration date field is validated and
+  // formatted before the Save button is enabled.
+  CHECK(slash_pos != std::u16string::npos && slash_pos > 0 &&
+        slash_pos < exp_text.length() - 1);
+
+  user_provided_card_details.expiration_date_month =
+      exp_text.substr(0, slash_pos);
+  user_provided_card_details.expiration_date_year =
+      exp_text.substr(slash_pos + 1);
+
+  return user_provided_card_details;
+}
+
 void SaveAndFillDialog::OnDialogClosed(views::Widget::ClosedReason reason) {
   if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
-    // TODO (crbug.com//378164516): Extract user input from the Save and Fill
-    // dialog.
-    controller_->OnUserAcceptedDialog({});
+    controller_->OnUserAcceptedDialog(GetUserProvidedDataFromInput());
   } else if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
     controller_->OnUserCanceledDialog();
   }

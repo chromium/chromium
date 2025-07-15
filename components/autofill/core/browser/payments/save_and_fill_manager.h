@@ -29,6 +29,14 @@ class SaveAndFillManager {
       const payments::PaymentsAutofillClient::
           UserProvidedCardSaveAndFillDetails&
               user_provided_card_save_and_fill_details) = 0;
+  // Populates a new credit card object with user provided card details from the
+  // Save and Fill dialog. This is called after the user provides credit card
+  // information and accepts the dialog.
+  virtual void PopulateCreditCardInfo(
+      autofill::CreditCard& card,
+      const payments::PaymentsAutofillClient::
+          UserProvidedCardSaveAndFillDetails&
+              user_provided_card_save_and_fill_details) = 0;
 };
 
 }  // namespace autofill::payments

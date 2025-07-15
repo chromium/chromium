@@ -32,6 +32,11 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       const payments::PaymentsAutofillClient::
           UserProvidedCardSaveAndFillDetails&
               user_provided_card_save_and_fill_details) override;
+  void PopulateCreditCardInfo(
+      autofill::CreditCard& card,
+      const payments::PaymentsAutofillClient::
+          UserProvidedCardSaveAndFillDetails&
+              user_provided_card_save_and_fill_details) override;
 
  private:
   const raw_ref<PaymentsAutofillClient> payments_autofill_client_;

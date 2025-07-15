@@ -27,6 +27,13 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
            UserProvidedCardSaveAndFillDetails&
                user_provided_card_save_and_fill_details),
       (override));
+  MOCK_METHOD(void,
+              PopulateCreditCardInfo,
+              (autofill::CreditCard & card,
+               const payments::PaymentsAutofillClient::
+                   UserProvidedCardSaveAndFillDetails&
+                       user_provided_card_save_and_fill_details),
+              (override));
 };
 
 }  // namespace autofill
