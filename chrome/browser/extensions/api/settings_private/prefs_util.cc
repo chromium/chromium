@@ -1108,6 +1108,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[arc::prefs::kArcVisibleExternalStorages] =
       settings_api::PrefType::kList;
+  (*s_allowlist)[ash::prefs::kPowerOptimizedChargingStrategy] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kPowerAdaptiveChargingEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kPowerBatterySaver] =

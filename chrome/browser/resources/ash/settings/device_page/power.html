@@ -183,6 +183,8 @@
 
 <template is="dom-if" if="[[optimizedChargingDialogVisible_]]" restamp>
   <power-optimized-charging-dialog
+      id="optimizedChargingDialog"
+      prefs="{{prefs}}"
       on-close="onOptimizedChargingDialogClose_">
   </power-optimized-charging-dialog>
 </template>

@@ -94,6 +94,11 @@ export function getFakePrefs() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      optimized_charging_strategy: {
+        key: 'power.optimized_charging_strategy',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,  // STRATEGY_ADAPTIVE_CHARGING
+      },
     },
     settings: {
       // TODO(afakhry): Write tests to validate the Night Light slider

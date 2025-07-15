@@ -84,12 +84,13 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPowerAcScreenLockDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
-  registry->RegisterBooleanPref(
-      prefs::kPowerAdaptiveChargingEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(prefs::kPowerAdaptiveChargingEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kPowerAdaptiveChargingNudgeShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kPowerOptimizedChargingStrategy,
+      chromeos::PowerPolicyController::STRATEGY_ADAPTIVE_CHARGING);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenBrightnessPercent,
                                 -1);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenDimDelayMs, 300000);

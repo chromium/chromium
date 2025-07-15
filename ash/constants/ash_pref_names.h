@@ -1353,6 +1353,10 @@ inline constexpr char kPowerChargeLimitEnabled[] = "power.charge_limit_enabled";
 // user.
 inline constexpr char kPowerAdaptiveChargingNudgeShown[] =
     "power.adaptive_charging_nudge_shown";
+// Enum (integer) pref which records the user's selected charging strategy
+// (adaptive charging vs. battery charge limit).
+inline constexpr char kPowerOptimizedChargingStrategy[] =
+    "power.optimized_charging_strategy";
 
 // Boolean pref for if ChromeOS battery saver is active.
 inline constexpr char kPowerBatterySaver[] = "power.cros_battery_saver_active";

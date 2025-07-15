@@ -67,6 +67,14 @@ export enum LidClosedBehavior {
   DO_NOTHING = 3,
 }
 
+/**
+ * Mirrors chromeos::PowerPolicyController::OptimizedChargingStrategy
+ */
+export enum OptimizedChargingStrategy {
+  STRATEGY_ADAPTIVE_CHARGING = 0,
+  STRATEGY_CHARGE_LIMIT = 1,
+}
+
 export interface PowerManagementSettings {
   possibleAcIdleBehaviors: IdleBehavior[];
   possibleBatteryIdleBehaviors: IdleBehavior[];

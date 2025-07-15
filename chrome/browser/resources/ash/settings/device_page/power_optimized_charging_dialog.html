@@ -79,8 +79,7 @@
     </div>
   </div>
   <div slot="body">
-    <cr-radio-group
-        on-selected-changed="onChargingStrategyRadioSelectionChanged_">
+    <cr-radio-group id="radioGroup" selected="{{selectedOption_}}">
       <cr-radio-button id="adaptiveCharging" name="adaptive-charging">
         <div class="cr-radio-button-title-text">
           $i18n{powerAdaptiveChargingLabel}

@@ -36,7 +36,7 @@ import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
 import type {BatteryStatus, DevicePageBrowserProxy, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';
-import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, OptimizedChargingStrategy} from './device_page_browser_proxy.js';
 import {getTemplate} from './power.html.js';
 
 interface IdleOption {
@@ -58,6 +58,9 @@ const SettingsPowerElementBase = DeepLinkingMixin(RouteObserverMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsPowerElement extends SettingsPowerElementBase {
+  static readonly OPTIMIZED_CHARGING_STRATEGY_PREF_NAME =
+      'power.optimized_charging_strategy';
+
   static get is() {
     return 'settings-power';
   }
@@ -209,8 +212,20 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
         computed:
             'computeOptimizedChargingHidden_(adaptiveChargingSupported_, batteryChargeLimitAvailable_)',
       },
+
+      selectedOptimizedChargingStrategy_: {
+        type: Number,
+        value: OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING,
+      },
     };
   }
+
+  static get observers() {
+    return [
+      'optimizedChargingStrategyChanged_(prefs.power.optimized_charging_strategy.value)',
+    ];
+  }
+
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -233,6 +248,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   private optimizedChargingSublabel_: string;
   private optimizedChargingHidden_: boolean;
   private optimizedChargingDialogVisible_: boolean;
+  private selectedOptimizedChargingStrategy_: OptimizedChargingStrategy;
   private batteryIdleManaged_: boolean;
   private batteryIdleOptions_: IdleOption[];
   private batterySaverHidden_: boolean;
@@ -574,6 +590,11 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
     this.adaptiveChargingPref_ = adaptiveChargingPref;
     this.batterySaverFeatureEnabled_ =
         powerManagementSettings.batterySaverFeatureEnabled;
+  }
+
+  private optimizedChargingStrategyChanged_(
+      strategy: OptimizedChargingStrategy): void {
+    this.selectedOptimizedChargingStrategy_ = strategy;
   }
 
   /**

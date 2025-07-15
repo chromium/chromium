@@ -93,7 +93,7 @@ export {SettingsToggleV2Element} from './controls/v2/settings_toggle_v2.js';
 export {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote, DateTimePageRemote} from './date_time_page/date_time_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';
-export {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
+export {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, OptimizedChargingStrategy, PowerSource, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {getDisplaySettingsProvider, setDisplaySettingsProviderForTesting} from './device_page/display_settings_mojo_interface_provider.js';
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeGraphicsTablets2, fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakeMouseButtonActions, fakePointingSticks, fakePointingSticks2, fakeStyluses, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';

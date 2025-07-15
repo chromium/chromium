@@ -5,9 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPowerElement} from 'chrome://os-settings/lazy_load.js';
-import type {BatteryStatus, PowerSource, SettingsToggleButtonElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
-import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
-import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {BatteryStatus, CrButtonElement, CrDialogElement, CrRadioButtonElement, PowerSource, SettingsToggleButtonElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, OptimizedChargingStrategy, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,6 +26,7 @@ suite('<settings-power>', () => {
   async function initSubpage(): Promise<void> {
     clearBody();
     powerSubpage = document.createElement('settings-power');
+    powerSubpage.prefs = getFakePrefs();
     document.body.appendChild(powerSubpage);
     await flushTasks();
   }
@@ -617,6 +617,76 @@ suite('<settings-power>', () => {
           '#optimizedChargingSublabel .sub-label-text');
     }
 
+    function queryOptimizedChargingDialog(): CrDialogElement|null {
+      const dialog =
+          powerSubpage.shadowRoot!
+              .querySelector<HTMLElement>('#optimizedChargingDialog')
+              ?.shadowRoot!.querySelector<CrDialogElement>('#dialog') ??
+          null;
+      return dialog;
+    }
+
+    function queryAdaptiveChargingRadioButtonFromDialog(): CrRadioButtonElement|
+        null {
+      return queryOptimizedChargingDialog()
+                 ?.querySelector<CrRadioButtonElement>('#adaptiveCharging') ??
+          null;
+    }
+
+    function queryChargeLimitRadioButtonFromDialog(): CrRadioButtonElement|
+        null {
+      return queryOptimizedChargingDialog()
+                 ?.querySelector<CrRadioButtonElement>('#chargeLimit') ??
+          null;
+    }
+
+    function queryCancelButtonFromDialog(): CrButtonElement|null {
+      return queryOptimizedChargingDialog()?.querySelector<CrButtonElement>(
+                 '#cancel') ??
+          null;
+    }
+
+    function queryDoneButtonFromDialog(): CrButtonElement|null {
+      return queryOptimizedChargingDialog()?.querySelector<CrButtonElement>(
+                 '#done') ??
+          null;
+    }
+
+    async function openChangeDialog() {
+      const changeButton = queryOptimizedChargingChangeButton();
+      assertTrue(!!changeButton, 'Change button should exist');
+
+      // Click the button to show the dialog.
+      changeButton.click();
+
+      // Ensure the dialog element is stamped into the DOM.
+      await flushTasks();
+    }
+
+    function assertDialogVisible(dialog: CrDialogElement|null): void {
+      assertTrue(!!dialog);
+
+      // CrDialogs themselves don't have width and height in tests for
+      // optimization reasons, so instead assert that the contents (title, body,
+      // and button container) are visible.
+      const title = dialog.querySelector('[slot="title"]');
+      const body = dialog.querySelector('[slot="body"]');
+      const buttonContainer = dialog.querySelector('[slot="button-container"]');
+
+      assertTrue(isVisible(title), 'Dialog have a visible title.');
+      assertTrue(isVisible(body), 'Dialog have a visible body.');
+      assertTrue(
+          isVisible(buttonContainer),
+          'Dialog have a visible button container.');
+    }
+
+    function setStrategyPref(strategy: OptimizedChargingStrategy): void {
+      const newPrefs = getFakePrefs();
+      newPrefs.power.optimized_charging_strategy.value = strategy;
+      powerSubpage.prefs = newPrefs;
+      flush();
+    }
+
     async function initTestState(
         batteryStatus: BatteryStatus|undefined,
         featureEnabled: boolean): Promise<void> {
@@ -810,5 +880,206 @@ suite('<settings-power>', () => {
           assertTrue(!!optimizedChargingChangeButton);
           await assertElementIsDeepLinked(optimizedChargingChangeButton);
         });
+
+    test('can open the change dialog.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+
+      // Verify the dialog is not in the DOM initially.
+      assertFalse(
+          !!queryOptimizedChargingDialog(),
+          'Dialog should not exist before the button is clicked');
+
+      await openChangeDialog();
+
+      // Now that the dialog's state is officially 'open', it should be visible.
+      assertDialogVisible(queryOptimizedChargingDialog());
+    });
+
+    test(
+        'dialog has the adaptive charging option selected based on pref.',
+        async () => {
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          // Explicitly set the strategy to adaptive charging.
+          setStrategyPref(OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING);
+
+          await openChangeDialog();
+
+          const adaptiveChargingRadio =
+              queryAdaptiveChargingRadioButtonFromDialog();
+          const chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+          assertTrue(!!adaptiveChargingRadio);
+          assertTrue(!!chargeLimitRadio);
+
+          assertTrue(adaptiveChargingRadio.checked);
+          assertFalse(chargeLimitRadio.checked);
+        });
+
+    test(
+        'dialog has the charge limit option selected based on pref.',
+        async () => {
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          // Set the strategy to charge limit.
+          setStrategyPref(OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
+
+          await openChangeDialog();
+
+          const adaptiveChargingRadio =
+              queryAdaptiveChargingRadioButtonFromDialog();
+          const chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+          assertTrue(!!adaptiveChargingRadio);
+          assertTrue(!!chargeLimitRadio);
+
+          assertFalse(adaptiveChargingRadio.checked);
+          assertTrue(chargeLimitRadio.checked);
+        });
+
+    test('dialog saves changes made to radio group.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+
+      // Start the test with the previously selected strategy as Charge Limit.
+      setStrategyPref(OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
+
+      // Open the change dialog
+      await openChangeDialog();
+
+      // Get the radio buttons.
+      let adaptiveChargingRadio = queryAdaptiveChargingRadioButtonFromDialog();
+      let chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+      assertTrue(!!adaptiveChargingRadio);
+      assertTrue(!!chargeLimitRadio);
+
+      // Select the Adaptive charging radio element.
+      assertFalse(adaptiveChargingRadio.checked);
+      adaptiveChargingRadio.click();
+      assertTrue(adaptiveChargingRadio.checked);
+
+      // Attempt to save the changes.
+      let doneButton = queryDoneButtonFromDialog();
+      assertTrue(!!doneButton);
+      doneButton.click();
+      await flushTasks();
+      await waitAfterNextRender(powerSubpage);
+
+      // Assert dialog is closed.
+      assertFalse(!!queryOptimizedChargingDialog());
+      assertEquals(
+          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING);
+
+      // Reopen dialog.
+      await openChangeDialog();
+
+      // Refetch the radio buttons.
+      adaptiveChargingRadio = queryAdaptiveChargingRadioButtonFromDialog();
+      chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+      assertTrue(!!adaptiveChargingRadio);
+      assertTrue(!!chargeLimitRadio);
+
+      // Assert the option that was clicked is saved and selected when the
+      // dialog reopens.
+      assertTrue(adaptiveChargingRadio.checked);
+      assertFalse(chargeLimitRadio.checked);
+
+      // Do it again with the other radio button.
+      chargeLimitRadio.click();
+      assertFalse(adaptiveChargingRadio.checked);
+      assertTrue(chargeLimitRadio.checked);
+
+      // Attempt to save the changes.
+      doneButton = queryDoneButtonFromDialog();
+      assertTrue(!!doneButton);
+      doneButton.click();
+      await flushTasks();
+      await waitAfterNextRender(powerSubpage);
+
+      // Assert dialog is closed.
+      assertFalse(!!queryOptimizedChargingDialog());
+      assertEquals(
+          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
+
+      // Reopen dialog.
+      await openChangeDialog();
+
+      // Refetch the radio buttons.
+      adaptiveChargingRadio = queryAdaptiveChargingRadioButtonFromDialog();
+      chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+      assertTrue(!!adaptiveChargingRadio);
+      assertTrue(!!chargeLimitRadio);
+
+      // Assert the option that was clicked is saved and selected when the
+      // dialog reopens.
+      assertFalse(adaptiveChargingRadio.checked);
+      assertTrue(chargeLimitRadio.checked);
+    });
+
+    test('dialog does not save changes when cancelled.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+      // Set up the test with a default selected Charge Limit strategy, and with
+      // the being opened.
+      setStrategyPref(OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
+      await openChangeDialog();
+      let adaptiveChargingRadio = queryAdaptiveChargingRadioButtonFromDialog();
+      let chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+      assertTrue(!!adaptiveChargingRadio);
+      assertTrue(!!chargeLimitRadio);
+
+      // Verify that the Charge Limit radio button is selected.
+      assertTrue(chargeLimitRadio.checked);
+      assertFalse(adaptiveChargingRadio.checked);
+
+      // Select the Adaptive charging radio element.
+      adaptiveChargingRadio.click();
+      assertFalse(chargeLimitRadio.checked);
+      assertTrue(adaptiveChargingRadio.checked);
+
+      // Cancel the dialog.
+      const cancelButton = queryCancelButtonFromDialog();
+      assertTrue(!!cancelButton);
+      cancelButton.click();
+      await flushTasks();
+      await waitAfterNextRender(powerSubpage);
+
+      // Assert the dialog is gone.
+      assertFalse(!!queryOptimizedChargingDialog());
+      assertEquals(
+          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
+
+      // Reopen the dialog.
+      await openChangeDialog();
+
+      // Refetch the radio elements.
+      adaptiveChargingRadio = queryAdaptiveChargingRadioButtonFromDialog();
+      chargeLimitRadio = queryChargeLimitRadioButtonFromDialog();
+      assertTrue(!!adaptiveChargingRadio);
+      assertTrue(!!chargeLimitRadio);
+
+      // Verify the Charge Limit radio button is still selected by default.
+      assertTrue(chargeLimitRadio.checked);
+      assertFalse(adaptiveChargingRadio.checked);
+    });
   });
 });

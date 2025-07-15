@@ -62,6 +62,12 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     ACTION_DO_NOTHING = 3,
   };
 
+  // Note: Do not change these values; they are used by preferences.
+  enum OptimizedChargingStrategy {
+    STRATEGY_ADAPTIVE_CHARGING = 0,
+    STRATEGY_CHARGE_LIMIT = 1,
+  };
+
   // Values of various power-management-related preferences.
   struct PrefValues {
     PrefValues();
