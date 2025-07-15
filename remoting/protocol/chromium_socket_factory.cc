@@ -340,7 +340,7 @@ void UdpPacketSocket::DoSend() {
   while (!send_pending_ && !send_queue_.empty() && error_ == 0) {
     PendingPacket& packet = send_queue_.front();
     webrtc::ApplyPacketOptions(
-        packet.data->bytes(), packet.data->size(),
+        webrtc::ArrayView<uint8_t>(packet.data->bytes(), packet.data->size()),
         packet.options.packet_time_params,
         (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
     int result = socket_->SendTo(
