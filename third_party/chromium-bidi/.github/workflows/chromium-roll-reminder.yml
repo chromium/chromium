@@ -28,5 +28,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           edit-mode: replace
           body: |
-            Please create a Chromium CL to roll latest version of Mapper.
-            Follow the instructions in [Roll into Chromium](https://github.com/GoogleChromeLabs/chromium-bidi#roll-into-chromium).
+            Please make the following steps:
+            1. Create a Chromium CL to roll latest version of Mapper. Follow the instructions in [Roll into Chromium](https://github.com/GoogleChromeLabs/chromium-bidi#roll-into-chromium).
+            1. Update the implementation status in [WebDriver BiDi Implementation Status doc](https://docs.google.com/spreadsheets/d/1bkiPU5eDBCqFkx5p_VSBx_OK8gy9TeHRKQVPHKMATGQ/edit?usp=sharing).
