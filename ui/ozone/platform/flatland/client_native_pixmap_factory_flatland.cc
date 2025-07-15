@@ -4,10 +4,6 @@
 
 #include "base/memory/raw_ptr.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/ozone/platform/flatland/client_native_pixmap_factory_flatland.h"
 
