@@ -345,10 +345,27 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the actor component of Glic is enabled.
 BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the actor ui state manager is enabled.
-BASE_FEATURE(kGlicActorUiStateManager,
-             "GlicActorUiStateManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Controls whether the Actor UI components are enabled.
+BASE_FEATURE(kGlicActorUi, "GlicActorUi", base::FEATURE_ENABLED_BY_DEFAULT);
+
+const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
+const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
+const char kGlicActorUiOverlayMagicCursorName[] =
+    "glic-actor-ui-overlay-magic-cursor";
+const char kGlicActorUiToastName[] = "glic-actor-ui-toast";
+
+// Controls whether the task icon in the actor ui is enabled.
+const base::FeatureParam<bool> kGlicActorUiTaskIcon{
+    &kGlicActorUi, kGlicActorUiTaskIconName, false};
+// Controls whether the Actor Overlay in the actor ui is enabled.
+const base::FeatureParam<bool> kGlicActorUiOverlay{
+    &kGlicActorUi, kGlicActorUiOverlayName, false};
+// Controls whether the Magic Cursor in the Actor Overlay is enabled.
+const base::FeatureParam<bool> kGlicActorUiOverlayMagicCursor{
+    &kGlicActorUi, kGlicActorUiOverlayMagicCursorName, false};
+// Controls whether the toast in the actor ui is enabled.
+const base::FeatureParam<bool> kGlicActorUiToast{&kGlicActorUi,
+                                                 kGlicActorUiToastName, false};
 
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work.
@@ -358,11 +375,6 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 // The overall observation timeout when waiting on a renderer tool to complete.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(10)};
-
-// Controls whether the task icon in the actor ui is enabled.
-BASE_FEATURE(kGlicActorTaskIcon,
-             "GlicActorTaskIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.

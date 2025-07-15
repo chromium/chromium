@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
@@ -39,12 +40,14 @@ ToastIdEnumSet GetActiveToastIds() {
 class ToastServiceBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {commerce::kCompareConfirmationToast, commerce::kProductSpecifications,
-         plus_addresses::features::kPlusAddressesEnabled,
-         safe_browsing::kEsbAsASyncedSetting,
-         data_sharing::features::kDataSharingFeature,
-         toast_features::kPinnedTabToastOnClose},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{commerce::kCompareConfirmationToast, {}},
+         {commerce::kProductSpecifications, {}},
+         {plus_addresses::features::kPlusAddressesEnabled, {}},
+         {safe_browsing::kEsbAsASyncedSetting, {}},
+         {data_sharing::features::kDataSharingFeature, {}},
+         {toast_features::kPinnedTabToastOnClose, {}},
+         {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}}},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }

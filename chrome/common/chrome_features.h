@@ -198,14 +198,32 @@ BASE_DECLARE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate);
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGeoLanguage);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActor);
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorUiStateManager);
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorUi);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiTaskIconName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiOverlayName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiOverlayMagicCursorName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiToastName[];
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiTaskIcon);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiOverlay);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiOverlayMagicCursor);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiToast);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityLocalTimeout);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityTimeout);
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorTaskIcon);
 
 #if BUILDFLAG(ENABLE_GLIC)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlic);

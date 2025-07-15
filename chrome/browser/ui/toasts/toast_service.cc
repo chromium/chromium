@@ -261,7 +261,7 @@ void ToastService::RegisterToasts(
             .Build());
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiStateManager)) {
+  if (features::kGlicActorUiToast.Get()) {
     toast_registry_->RegisterToast(
         ToastId::kGeminiWorkingOnTask,
         ToastSpecification::Builder(kScreensaverAutoIcon,

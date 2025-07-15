@@ -194,7 +194,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
 
-      if (base::FeatureList::IsEnabled(features::kGlicActorTaskIcon)) {
+      if (features::kGlicActorUiTaskIcon.Get()) {
         glic_actor_task_icon_controller_ =
             std::make_unique<tabs::GlicActorTaskIconController>(browser);
       }
