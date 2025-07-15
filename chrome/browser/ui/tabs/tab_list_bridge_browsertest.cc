@@ -109,3 +109,31 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetAllTabs) {
               testing::ElementsAre(MatchesTab(url1), MatchesTab(url2),
                                    MatchesTab(url3)));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveTab) {
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+  const GURL url3("http://three.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Navigate to one.example. This should be the only tab, initially.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_THAT(tab_list_interface->GetActiveTab(), MatchesTab(url1));
+
+  // Open a new tab in the background. The active tab should be unchanged.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_THAT(tab_list_interface->GetActiveTab(), MatchesTab(url1));
+
+  // Open a new tab in the foreground. Now, the active tab should be the new
+  // tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_THAT(tab_list_interface->GetActiveTab(), MatchesTab(url3));
+}

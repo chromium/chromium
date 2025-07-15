@@ -24,6 +24,10 @@ int TabListBridge::GetActiveIndex() const {
   return tab_strip_->active_index();
 }
 
+tabs::TabInterface* TabListBridge::GetActiveTab() {
+  return tab_strip_->GetActiveTab();
+}
+
 void TabListBridge::OpenTab(const GURL& url, int index) {}
 
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {}

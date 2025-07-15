@@ -43,6 +43,10 @@ int TestTabModel::GetActiveIndex() const {
   return 0;
 }
 
+tabs::TabInterface* TestTabModel::GetActiveTab() {
+  return nullptr;
+}
+
 content::WebContents* TestTabModel::GetWebContentsAt(int index) const {
   if (index < static_cast<int>(web_contents_list_.size())) {
     return web_contents_list_[index];
@@ -205,6 +209,11 @@ int OwningTestTabModel::GetActiveIndex() const {
     }
   }
   NOTREACHED();
+}
+
+tabs::TabInterface* OwningTestTabModel::GetActiveTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return active_tab_.get();
 }
 
 content::WebContents* OwningTestTabModel::GetWebContentsAt(int index) const {

@@ -109,6 +109,10 @@ int TabModelJniBridge::GetActiveIndex() const {
   return Java_TabModelJniBridge_index(env, java_object_.get(env));
 }
 
+tabs::TabInterface* TabModelJniBridge::GetActiveTab() {
+  return GetTab(GetActiveIndex());
+}
+
 void TabModelJniBridge::CreateTab(TabAndroid* parent,
                                   WebContents* web_contents,
                                   bool select) {

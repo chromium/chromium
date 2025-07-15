@@ -40,6 +40,9 @@ class TabListInterface {
   // from the selected tab (of which there may be multiple).
   virtual int GetActiveIndex() const = 0;
 
+  // Returns the `TabInterface` for the currently-active tab.
+  virtual tabs::TabInterface* GetActiveTab() = 0;
+
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
   virtual void OpenTab(const GURL& url, int index) = 0;

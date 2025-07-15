@@ -41,6 +41,7 @@ class TestTabModel : public TabModel {
   // Returns tab_count_ if not 0. Otherwise, returns size of web_contents_list_.
   int GetTabCount() const override;
   int GetActiveIndex() const override;
+  tabs::TabInterface* GetActiveTab() override;
   content::WebContents* GetWebContentsAt(int index) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
   void CreateTab(TabAndroid* parent,
@@ -118,6 +119,7 @@ class OwningTestTabModel : public TabModel {
 
   int GetTabCount() const override;
   int GetActiveIndex() const override;
+  tabs::TabInterface* GetActiveTab() override;
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
   void SetActiveIndex(int index) override;
