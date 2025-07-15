@@ -26,15 +26,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   ~ActorUiStateManager() override;
 
   // ActorUiStateManagerInterface:
-  void OnActorTaskStateChange(TaskId task_id,
-                              ActorTask::State task_state) override;
-
-  // Handles a UiEvent that may be processed asynchronously.
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
-
-  // Handles a UiEvent that must be processed synchronously.
   void OnUiEvent(SyncUiEvent event) override;
 
+// TODO(crbug.com/424495020): Post-task icon refactor, look into removing this
+// function from AUSM.
 #if BUILDFLAG(ENABLE_GLIC)
   void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state) override;
@@ -50,6 +46,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
  private:
   void MaybeUpdateProfileScopedUiState();
+  void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
   // Returns completed tasks within the kCompletedTaskExpiryDelay of the
   // `current_time`.

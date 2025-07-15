@@ -78,11 +78,6 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
             }));
         return TabUiUpdate{tab, GetCompletedUiTabState()};
       },
-      [](const TaskStateChanged& e) -> UiUpdate {
-        // TODO(crbug.com/424495020): Move this out of this block,
-        // implementation is incorrect atm.
-        return ProfileUiUpdate{};
-      },
       [](const MouseClick& e) -> UiUpdate {
         UiTabState ui_tab_state = GetAgentControlledUiTabState();
         ui_tab_state.agent_overlay.mouse_down = true;
@@ -101,14 +96,17 @@ ActorUiStateManager::ActorUiStateManager(ActorKeyedService& actor_service)
     : actor_service_(actor_service) {}
 ActorUiStateManager::~ActorUiStateManager() = default;
 
-void ActorUiStateManager::OnActorTaskStateChange(TaskId task_id,
-                                                 ActorTask::State task_state) {
+void ActorUiStateManager::OnActorTaskStateChange(
+    TaskId task_id,
+    ActorTask::State new_task_state) {
   // TODO(crbug.com/424495020): Look into converting this switch into a
   // map/catalog.
   // Notify tab-scoped UI components.
   UiTabState ui_tab_state;
-  switch (task_state) {
+  switch (new_task_state) {
     case ActorTask::State::kCreated:
+      LOG(FATAL)
+          << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
       ui_tab_state = GetAgentControlledUiTabState();
@@ -195,7 +193,10 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
-  // TODO(crbug.com/424495020): Implement this function.
+  std::visit(Visitor{[this](const TaskStateChanged& ret) {
+               this->OnActorTaskStateChange(ret.task_id, ret.state);
+             }},
+             event);
 }
 
 #if BUILDFLAG(ENABLE_GLIC)

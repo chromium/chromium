@@ -27,10 +27,6 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
   ~MockActorUiStateManager() override;
 
   MOCK_METHOD(void,
-              OnActorTaskStateChange,
-              (TaskId task_id, ActorTask::State task_state),
-              (override));
-  MOCK_METHOD(void,
               OnUiEvent,
               (AsyncUiEvent event, UiCompleteCallback callback),
               (override));

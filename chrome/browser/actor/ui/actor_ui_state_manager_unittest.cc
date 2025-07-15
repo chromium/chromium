@@ -66,12 +66,7 @@ class ActorKeyedServiceFake : public ActorKeyedService {
         GetProfile(), std::move(ui_event_dispatcher));
     auto actor_task =
         std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
-    TaskId task_id = AddActiveTask(std::move(actor_task));
-    actor_task_subscriptions_.emplace(
-        task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
-                     &ActorKeyedService::OnActorTaskStateChanged,
-                     weak_ptr_factory_.GetWeakPtr())));
-    return task_id;
+    return AddActiveTask(std::move(actor_task));
   }
 
  private:
@@ -281,6 +276,12 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kInactive);
 }
 
+TEST_F(ActorUiStateManagerTest, OnActorTaskState_kCreatedNewStateCrashes) {
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
+                   TaskStateChanged(TaskId(123), ActorTask::State::kCreated)),
+               "");
+}
+
 class ActorUiStateManagerActorTaskUiTabScopedTest
     : public ActorUiStateManagerTest,
       public testing::WithParamInterface<
@@ -292,18 +293,12 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
   MockTabInterface mock_tab;
   actor_keyed_service()->GetTask(task_id)->AddToTabSet(mock_tab.GetHandle());
   auto [task_state, expected_ui_tab_state] = GetParam();
-  actor_ui_state_manager()->OnActorTaskStateChange(task_id, task_state);
+  actor_ui_state_manager()->OnUiEvent(TaskStateChanged(task_id, task_state));
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
 }
 
 const auto kActorTaskTestValues = std::vector<
     std::tuple<ActorTask::State, UiTabState>>{
-    {ActorTask::State::kCreated,
-     UiTabState{
-         .agent_overlay = AgentOverlayState(/*is_active=*/true),
-         .handoff_button = {.is_active = true,
-                            .controller =
-                                HandoffButtonState::ControlOwnership::kAgent}}},
     {ActorTask::State::kActing,
      UiTabState{
          .agent_overlay = AgentOverlayState(/*is_active=*/true),

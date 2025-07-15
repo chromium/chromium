@@ -87,12 +87,6 @@ class ActorTask {
 
   ExecutionEngine* GetExecutionEngine() const;
 
-  // Register for this callback to detect changes to actor task states.
-  using TaskStateChangeCallback =
-      base::RepeatingCallback<void(TaskId, ActorTask::State)>;
-  base::CallbackListSubscription RegisterTaskStateChange(
-      TaskStateChangeCallback callback);
-
   // Ensures the given tab handle is added (or already exists) in the set of
   // tabs this task operates over.
   void AddToTabSet(tabs::TabHandle tab);
@@ -134,10 +128,6 @@ class ActorTask {
 
   // The set of all tabs this task has acted upon.
   absl::flat_hash_set<tabs::TabHandle> tab_handles_;
-
-  using TaskStateChangeCallbackList =
-      base::RepeatingCallbackList<void(TaskId, ActorTask::State)>;
-  TaskStateChangeCallbackList task_state_change_callback_list_;
 
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
 };

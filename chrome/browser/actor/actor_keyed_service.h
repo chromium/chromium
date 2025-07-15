@@ -113,9 +113,6 @@ class ActorKeyedService : public KeyedService {
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManagerInterface* GetActorUiStateManager();
 
-  // Called whenever an actor task state changes.
-  void OnActorTaskStateChanged(TaskId task_id, ActorTask::State task_state);
-
   bool IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
   Profile* GetProfile();
 
@@ -127,10 +124,6 @@ class ActorKeyedService : public KeyedService {
   void RequestTabObservation(
       const tabs::TabInterface& tab,
       base::OnceCallback<void(TabObservationResult)> callback);
-
- protected:
-  // Holds subscriptions for ActorTask callbacks.
-  std::map<TaskId, base::CallbackListSubscription> actor_task_subscriptions_;
 
  private:
   // Start task is currently asynchronous.

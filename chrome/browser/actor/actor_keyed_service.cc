@@ -117,12 +117,7 @@ TaskId ActorKeyedService::CreateTask() {
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task =
       std::make_unique<ActorTask>(profile_.get(), std::move(execution_engine));
-  TaskId task_id = AddActiveTask(std::move(actor_task));
-  actor_task_subscriptions_.emplace(
-      task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
-                   &ActorKeyedService::OnActorTaskStateChanged,
-                   weak_ptr_factory_.GetWeakPtr())));
-  return task_id;
+  return AddActiveTask(std::move(actor_task));
 }
 
 void ActorKeyedService::StartTask(
@@ -173,10 +168,6 @@ void ActorKeyedService::FinishStartTask(
   auto actor_task = std::make_unique<actor::ActorTask>(
       profile_.get(), std::move(execution_engine));
   actor::TaskId task_id = AddActiveTask(std::move(actor_task));
-  actor_task_subscriptions_.emplace(
-      task_id, GetTask(task_id)->RegisterTaskStateChange(base::BindRepeating(
-                   &ActorKeyedService::OnActorTaskStateChanged,
-                   weak_ptr_factory_.GetWeakPtr())));
 
   optimization_guide::proto::BrowserStartTaskResult result;
   result.set_task_id(task_id.value());
@@ -333,8 +324,6 @@ void ActorKeyedService::StopTask(TaskId task_id) {
     auto ret = inactive_tasks_.insert(std::move(task));
     ret.position->second->Stop();
   }
-
-  actor_task_subscriptions_.erase(task_id);
 }
 
 ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
@@ -355,11 +344,6 @@ ActorTask* ActorKeyedService::GetMostRecentTask() {
 
 ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
-}
-
-void ActorKeyedService::OnActorTaskStateChanged(TaskId task_id,
-                                                ActorTask::State task_state) {
-  GetActorUiStateManager()->OnActorTaskStateChange(task_id, task_state);
 }
 
 bool ActorKeyedService::IsAnyTaskActingOnTab(

@@ -66,7 +66,6 @@ void ActorTask::SetState(State state) {
       ui::UiEventDispatcher::ChangeTaskState{
           .task_id = id_, .old_state = state_, .new_state = state});
   state_ = state;
-  task_state_change_callback_list_.Notify(id_, state_);
 }
 
 void ActorTask::Act(const optimization_guide::proto::BrowserAction& action,
@@ -149,11 +148,6 @@ bool ActorTask::IsPaused() const {
 
 base::Time ActorTask::GetEndTime() const {
   return end_time_;
-}
-
-base::CallbackListSubscription ActorTask::RegisterTaskStateChange(
-    TaskStateChangeCallback callback) {
-  return task_state_change_callback_list_.Add(std::move(callback));
 }
 
 void ActorTask::AddToTabSet(tabs::TabHandle tab_handle) {

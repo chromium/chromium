@@ -42,12 +42,9 @@ class ActorUiStateManagerInterface {
   };
   virtual ~ActorUiStateManagerInterface() = default;
 
-  // Called whenever an actor task state changes.
-  virtual void OnActorTaskStateChange(TaskId task_id,
-                                      ActorTask::State task_state) = 0;
-
-  // Called whenever a ui event occurs.
+  // Handles a UiEvent that may be processed asynchronously.
   virtual void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) = 0;
+  // Handles a UiEvent that must be processed synchronously.
   virtual void OnUiEvent(SyncUiEvent event) = 0;
 
   // Runs the specified function on the ActorUiTabController if the `tab`
