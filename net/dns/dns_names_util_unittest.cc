@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/dns/dns_names_util.h"
 
 #include <climits>
@@ -17,9 +12,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,13 +28,10 @@ namespace {
 using ::testing::Eq;
 using ::testing::Optional;
 
-// ToBytes converts a char* to a std::vector<uint8_t> and includes the
+// ToBytes converts a string literal to a std::vector<uint8_t> and includes the
 // terminating NUL in the result.
-std::vector<uint8_t> ToBytes(const char* in) {
-  size_t size = strlen(in) + 1;
-  std::vector<uint8_t> out(size, 0);
-  memcpy(out.data(), in, size);
-  return out;
+std::vector<uint8_t> ToBytes(base::cstring_view in) {
+  return base::ToVector(base::byte_span_with_nul_from_cstring_view(in));
 }
 
 TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidation) {

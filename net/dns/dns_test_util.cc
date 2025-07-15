@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -46,7 +47,7 @@
 namespace net {
 namespace {
 
-const uint8_t kMalformedResponseHeader[] = {
+constexpr auto kMalformedResponseHeader = std::to_array<uint8_t>({
     // Header
     0x00, 0x14,  // Arbitrary ID
     0x81, 0x80,  // Standard query response, RA, no error
@@ -54,7 +55,7 @@ const uint8_t kMalformedResponseHeader[] = {
     0x00, 0x01,  // 1 RR (answers)
     0x00, 0x00,  // 0 authority RRs
     0x00, 0x00,  // 0 additional RRs
-};
+});
 
 // Create a response containing a valid question (as would normally be validated
 // in DnsTransaction) but completely missing a header-declared answer.
@@ -67,11 +68,11 @@ DnsResponse CreateMalformedResponse(std::string hostname, uint16_t type) {
   // Build response to simulate the barebones validation DnsResponse applies to
   // responses received from the network.
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(
-      sizeof(kMalformedResponseHeader) + query.question().size());
-  UNSAFE_TODO(memcpy(buffer->data(), kMalformedResponseHeader,
-                     sizeof(kMalformedResponseHeader)));
-  UNSAFE_TODO(memcpy(buffer->data() + sizeof(kMalformedResponseHeader),
-                     query.question().data(), query.question().size()));
+      kMalformedResponseHeader.size() + query.question().size());
+  auto out_span = buffer->span();
+  out_span.take_first(kMalformedResponseHeader.size())
+      .copy_from(kMalformedResponseHeader);
+  out_span.copy_from(base::as_byte_span(query.question()));
 
   DnsResponse response(buffer, buffer->size());
   CHECK(response.InitParseWithoutQuery(buffer->size()));
@@ -131,9 +132,7 @@ DnsResourceRecord BuildTestCnameRecord(std::string name,
   CHECK(rdata.has_value());
 
   return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeCNAME,
-                            UNSAFE_TODO(base::span<const uint8_t>(
-                                rdata.value().data(), rdata.value().size())),
-                            ttl);
+                            rdata.value(), ttl);
 }
 
 DnsResourceRecord BuildTestAddressRecord(std::string name,
@@ -162,9 +161,8 @@ DnsResourceRecord BuildTestTextRecord(std::string name,
     rdata.insert(rdata.end(), text_string.begin(), text_string.end());
   }
 
-  return BuildTestDnsRecord(
-      std::move(name), dns_protocol::kTypeTXT,
-      UNSAFE_TODO(base::span<const uint8_t>(rdata.data(), rdata.size())), ttl);
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeTXT, rdata,
+                            ttl);
 }
 
 DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
@@ -180,9 +178,8 @@ DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
   rdata.insert(rdata.end(), alias_domain.value().begin(),
                alias_domain.value().end());
 
-  return BuildTestDnsRecord(
-      std::move(name), dns_protocol::kTypeHttps,
-      UNSAFE_TODO(base::span<const uint8_t>(rdata.data(), rdata.size())), ttl);
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeHttps, rdata,
+                            ttl);
 }
 
 std::pair<uint16_t, std::string> BuildTestHttpsServiceAlpnParam(
@@ -284,9 +281,8 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
     rdata.insert(rdata.end(), param.second.begin(), param.second.end());
   }
 
-  return BuildTestDnsRecord(
-      std::move(name), dns_protocol::kTypeHttps,
-      UNSAFE_TODO(base::span<const uint8_t>(rdata.data(), rdata.size())), ttl);
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeHttps, rdata,
+                            ttl);
 }
 
 DnsResponse BuildTestDnsResponse(
@@ -340,10 +336,8 @@ DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
   CHECK(cname_rdata.has_value());
 
   std::vector<DnsResourceRecord> answers = {
-      BuildTestDnsRecord(
-          std::move(answer_name), dns_protocol::kTypeCNAME,
-          UNSAFE_TODO(base::span<const uint8_t>(cname_rdata.value().data(),
-                                                cname_rdata.value().size()))),
+      BuildTestDnsRecord(std::move(answer_name), dns_protocol::kTypeCNAME,
+                         cname_rdata.value()),
       BuildTestAddressRecord(std::move(cannonname), ip)};
 
   return BuildTestDnsResponse(
@@ -379,9 +373,7 @@ DnsResponse BuildTestDnsPointerResponse(std::string name,
     CHECK(rdata.has_value());
 
     answers.push_back(
-        BuildTestDnsRecord(answer_name, dns_protocol::kTypePTR,
-                           UNSAFE_TODO(base::span<const uint8_t>(
-                               rdata.value().data(), rdata.value().size()))));
+        BuildTestDnsRecord(answer_name, dns_protocol::kTypePTR, rdata.value()));
   }
 
   return BuildTestDnsResponse(std::move(name), dns_protocol::kTypePTR, answers);
@@ -416,10 +408,8 @@ DnsResponse BuildTestDnsServiceResponse(
     CHECK(dns_name.has_value());
     rdata.insert(rdata.end(), dns_name.value().begin(), dns_name.value().end());
 
-    answers.push_back(BuildTestDnsRecord(
-        answer_name, dns_protocol::kTypeSRV,
-        UNSAFE_TODO(base::span<const uint8_t>(rdata.data(), rdata.size())),
-        base::Hours(5)));
+    answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypeSRV,
+                                         rdata, base::Hours(5)));
   }
 
   return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeSRV, answers);
@@ -587,9 +577,9 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
       // completes.
       auto buffer_copy = base::MakeRefCounted<IOBufferWithSize>(
           result->response->io_buffer_size());
-      UNSAFE_TODO(memcpy(buffer_copy->data(),
-                         result->response->io_buffer()->data(),
-                         result->response->io_buffer_size()));
+      buffer_copy->span().copy_from_nonoverlapping(
+          result->response->io_buffer()->first(
+              result->response->io_buffer_size()));
       result_.response = DnsResponse(std::move(buffer_copy),
                                      result->response->io_buffer_size());
       CHECK(result_.response->InitParseWithoutQuery(

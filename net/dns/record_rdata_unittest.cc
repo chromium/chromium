@@ -44,12 +44,8 @@ TEST(RecordRdataTest, ParseSrvRecord) {
 
   DnsRecordParser parser(record, 0, /*num_records=*/0);
   const unsigned first_record_len = 22;
-  base::span<const uint8_t> UNSAFE_TODO(
-      record1_span(record.data(), first_record_len));
-  base::span<const uint8_t> UNSAFE_TODO(record2_span(
-      base::span<const uint8_t>(record).subspan(first_record_len).data(),
-      (record.size() * sizeof(decltype(record)::value_type)) -
-          first_record_len));
+  auto [record1_span, record2_span] =
+      base::span(record).split_at(first_record_len);
   std::unique_ptr<SrvRecordRdata> record1_obj =
       SrvRecordRdata::Create(record1_span, parser);
   ASSERT_TRUE(record1_obj != nullptr);
