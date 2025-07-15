@@ -19,10 +19,16 @@
 // `raw_value` which can be copied around, and even passed between programming
 // languages.
 //
-// To use handles with a class:
-//  - Use `DECLARE_HANDLE_FACTORY(MyClass)` just before your class declaration
+// To use handles with a class, it must inherit from `SupportsHandles<Factory>`
+// where `Factory` is a class that provides handle storage and lookup.
+//
+// For a default factory, which is sufficient for most cases:
+//  - Use `DECLARE_HANDLE_FACTORY(MyClass)` just before your class declaration.
 //  - Inherit from `SupportsHandles<MyClassHandleFactory>`.
-//  - In the corresponding .cc file, use `DEFINE_HANDLE_FACTORY(MyClass)`
+//  - In the corresponding .cc file, use `DEFINE_HANDLE_FACTORY(MyClass)`.
+//
+// For more complex hierarchies of objects, `DECLARE_BASE_HANDLE_FACTORY()` can
+// be used to create a base factory class to derive from.
 //
 // Example:
 // ```
@@ -136,12 +142,20 @@ class HandleFactory {
  protected:
   HandleFactory();
 
+#if DCHECK_IS_ON()
+  const base::SequenceChecker& sequence() const { return sequence_; }
+#endif  // DCHECK_IS_ON()
+
  private:
   friend SupportsHandlesTest;
+
+  // Invoked when a handle is no longer mapped to an object.
+  virtual void OnHandleFreed(int32_t handle_value) {}
 
   int32_t last_handle_value_ GUARDED_BY_CONTEXT(sequence_) = 0;
   std::map<int32_t, StoredPointerType> lookup_table_
       GUARDED_BY_CONTEXT(sequence_);
+
   SEQUENCE_CHECKER(sequence_);
 };
 
@@ -253,10 +267,20 @@ SupportsHandles<Factory>::Handle::Get() const {
 }  // namespace tabs
 
 // Internal; do not use.
+#define DECLARE_BASE_HANDLE_FACTORY_IMPL(ExportName, ForType) \
+  class ForType;                                              \
+  class ExportName ForType##HandleFactoryBase                 \
+      : public ::tabs::internal::HandleFactoryT<ForType> {    \
+   protected:                                                 \
+    ForType##HandleFactoryBase() = default;                   \
+    ~ForType##HandleFactoryBase() override = default;         \
+  }
+
+// Internal; do not use.
 #define DECLARE_HANDLE_FACTORY_IMPL(ExportName, ForType)       \
-  class ForType;                                               \
-  class ExportName ForType##HandleFactory                      \
-      : public ::tabs::internal::HandleFactoryT<ForType> {     \
+  DECLARE_BASE_HANDLE_FACTORY_IMPL(ExportName, ForType);       \
+  class ExportName ForType##HandleFactory final                \
+      : public ForType##HandleFactoryBase {                    \
    public:                                                     \
     static ForType##HandleFactory& GetInstance();              \
                                                                \
@@ -278,6 +302,11 @@ SupportsHandles<Factory>::Handle::Get() const {
 // ```
 #define DECLARE_HANDLE_FACTORY_EXPORT(ExportName, ForType) \
   DECLARE_HANDLE_FACTORY_IMPL(ExportName, ForType)
+
+// Put this in your .h file just before declaring a class that inherits from
+// `ForTypeHandleFactoryBase`.
+#define DECLARE_BASE_HANDLE_FACTORY(ForType) \
+  DECLARE_BASE_HANDLE_FACTORY_IMPL(, ForType)
 
 // Put this in the .cc file that corresponds to the .h file with your
 // `DECLARE_HANDLE_FACTORY()`.

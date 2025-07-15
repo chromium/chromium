@@ -46,6 +46,8 @@ void HandleFactory::FreeHandleValue(base::PassKey<SupportsHandlesBase>,
                                     int32_t handle_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
   CHECK(lookup_table_.erase(handle_value));
+
+  OnHandleFreed(handle_value);
 }
 
 HandleFactory::StoredPointerType HandleFactory::LookupObject(

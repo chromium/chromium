@@ -7166,6 +7166,7 @@ test("unit_tests") {
     "//components/sync_user_events:test_support",
     "//components/tab_groups",
     "//components/tabs:test_support",
+    "//components/tabs:unit_tests",
     "//components/tpcd/metadata/browser",
     "//components/tpcd/metadata/browser:prefs",
     "//components/tpcd/metadata/browser:test_support",
