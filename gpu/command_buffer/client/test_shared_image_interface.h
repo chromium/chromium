@@ -45,10 +45,13 @@ class TestSharedImageInterface : public SharedImageInterface {
       gfx::BufferFormat format);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+  // for default-args overloads
+  using SharedImageInterface::CreateSharedImage;
+
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
+      std::optional<SharedImagePoolId> pool_id) override;
 
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
@@ -58,7 +61,7 @@ class TestSharedImageInterface : public SharedImageInterface {
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
+      std::optional<SharedImagePoolId> pool_id) override;
 
   MOCK_METHOD4(DoCreateSharedImage,
                void(const gfx::Size& size,

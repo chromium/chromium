@@ -50,7 +50,7 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
+      std::optional<SharedImagePoolId> pool_id) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) override;
@@ -58,7 +58,7 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
+      std::optional<SharedImagePoolId> pool_id) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,

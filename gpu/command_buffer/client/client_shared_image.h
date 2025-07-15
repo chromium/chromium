@@ -15,14 +15,16 @@
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -49,14 +51,26 @@ namespace gles2 {
 class GLES2Interface;
 }  // namespace gles2
 
+class SharedImageInterface;
 class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
 class InterfaceBase;
 class RasterScopedAccess;
+struct SharedImageInfo;
+class SharedImageInterfaceHolder;
 class SharedImageTexture;
 class TestSharedImageInterface;
 
 struct ExportedSharedImage;
+
+struct SharedImageMetadata {
+  viz::SharedImageFormat format;
+  gfx::Size size;
+  gfx::ColorSpace color_space;
+  GrSurfaceOrigin surface_origin;
+  SkAlphaType alpha_type;
+  SharedImageUsageSet usage;
+};
 
 // Wrapper around Mailbox and metadata for efficient sharing between threads
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage

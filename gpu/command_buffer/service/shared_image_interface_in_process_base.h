@@ -29,7 +29,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) final;
+      std::optional<SharedImagePoolId> pool_id) final;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) final;
@@ -37,7 +37,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) final;
+      std::optional<SharedImagePoolId> pool_id) final;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,

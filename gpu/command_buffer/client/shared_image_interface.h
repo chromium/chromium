@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_CLIENT_SHARED_IMAGE_INTERFACE_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -13,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_pool_id.h"
@@ -49,22 +51,12 @@ class MockSharedImageInterface;
 
 namespace gpu {
 class ArcSharedImageInterface;
-class ClientSharedImage;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
 class SharedImageInterfaceInProcessBase;
 class TestSharedImageInterface;
-
-struct SharedImageMetadata {
-  viz::SharedImageFormat format;
-  gfx::Size size;
-  gfx::ColorSpace color_space;
-  GrSurfaceOrigin surface_origin;
-  SkAlphaType alpha_type;
-  SharedImageUsageSet usage;
-};
 
 struct SharedImageInfo {
   SharedImageInfo(const viz::SharedImageFormat& format,
@@ -119,7 +111,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) = 0;
+      std::optional<SharedImagePoolId> pool_id /*=std::nullopt*/) = 0;
+
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      const SharedImageInfo& si_info,
+      gpu::SurfaceHandle surface_handle) {
+    return CreateSharedImage(si_info, surface_handle, std::nullopt);
+  }
 
   // Same behavior as the above, except that this version takes |pixel_data|
   // which is used to populate the SharedImage.  |pixel_data| should have the
@@ -146,7 +144,15 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt);
+      std::optional<SharedImagePoolId> pool_id /*=std::nullopt*/);
+
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      const SharedImageInfo& si_info,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage) {
+    return CreateSharedImage(si_info, surface_handle, buffer_usage,
+                             std::nullopt);
+  }
 
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based on `format` and `size`. This

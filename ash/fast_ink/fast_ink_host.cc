@@ -18,6 +18,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/window_tree_host.h"

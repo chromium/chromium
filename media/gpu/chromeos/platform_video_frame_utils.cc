@@ -27,6 +27,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
