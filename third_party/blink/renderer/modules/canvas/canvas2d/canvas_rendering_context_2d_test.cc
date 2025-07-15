@@ -295,7 +295,7 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
 
   void DrawSomething() {
     CanvasElement().DidDraw();
-    CanvasElement().PreFinalizeFrame();
+    Context2D()->PreFinalizeFrame();
     Context2D()->FinalizeFrame(FlushReason::kTesting);
     CanvasElement().PostFinalizeFrame(FlushReason::kTesting);
     // Grabbing an image forces a flush

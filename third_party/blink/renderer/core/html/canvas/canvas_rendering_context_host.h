@@ -62,7 +62,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual void DidDraw(const SkIRect& rect) = 0;
   void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
 
-  virtual void PreFinalizeFrame() = 0;
   virtual void PostFinalizeFrame(FlushReason) = 0;
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                          const SkIRect& damage_rect) = 0;

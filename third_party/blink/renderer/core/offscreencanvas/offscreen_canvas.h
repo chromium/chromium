@@ -109,7 +109,6 @@ class CORE_EXPORT OffscreenCanvas final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(contextrestored, kContextrestored)
 
   // CanvasRenderingContextHost implementation.
-  void PreFinalizeFrame() override {}
   void PostFinalizeFrame(FlushReason) override {}
   void DetachContext() override { context_ = nullptr; }
   CanvasRenderingContext* RenderingContext() const override {

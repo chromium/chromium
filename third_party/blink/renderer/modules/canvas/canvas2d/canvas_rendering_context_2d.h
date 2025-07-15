@@ -201,6 +201,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
+  void PreFinalizeFrame() override;
   void FinalizeFrame(FlushReason) override;
 
   void drawElement(Element* element,

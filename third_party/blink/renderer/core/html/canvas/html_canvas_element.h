@@ -214,7 +214,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void DoDeferredPaintInvalidation();
 
   void InitializeLayerWithCSSProperties(cc::Layer* layer) override;
-  void PreFinalizeFrame() override;
   void PostFinalizeFrame(FlushReason) override;
 
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;

@@ -213,7 +213,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
           })));
-  canvas_element().PreFinalizeFrame();
+  context_->PreFinalizeFrame();
   context_->FinalizeFrame(FlushReason::kTesting);
   canvas_element().PostFinalizeFrame(FlushReason::kTesting);
   platform->RunUntilIdle();

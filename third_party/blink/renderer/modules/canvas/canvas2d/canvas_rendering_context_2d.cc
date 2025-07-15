@@ -870,6 +870,16 @@ void CanvasRenderingContext2D::DrawElementInternal(
       CanvasPerformanceMonitor::DrawType::kElement);
 }
 
+void CanvasRenderingContext2D::PreFinalizeFrame() {
+  // Low-latency 2d canvases produce their frames after the resource gets single
+  // buffered.
+  // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
+  // whether the CRP is guaranteed to always be present).
+  if (canvas() && canvas()->LowLatencyEnabled() && canvas()->IsDirty()) {
+    GetOrCreateCanvas2DResourceProvider();
+  }
+}
+
 void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "CanvasRenderingContext2D::FinalizeFrame");
   if (!IsPaintable()) {
