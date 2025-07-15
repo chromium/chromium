@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_
 
 #include <string_view>
 
@@ -46,4 +46,4 @@ void UmaLogExpectedStatus(std::string_view base_name,
 }
 
 }  // namespace web_app
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_ERROR_UMA_LOGGING_H_

@@ -20,9 +20,9 @@
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
-#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 
 namespace web_app {

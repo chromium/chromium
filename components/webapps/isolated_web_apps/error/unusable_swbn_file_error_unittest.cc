@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,6 +4,10 @@
 
 source_set("isolated_web_apps") {
   sources = [
+    "error/uma_logging.cc",
+    "error/uma_logging.h",
+    "error/unusable_swbn_file_error.cc",
+    "error/unusable_swbn_file_error.h",
     "features.cc",
     "features.h",
     "iwa_key_distribution_histograms.h",
@@ -25,4 +29,16 @@ source_set("isolated_web_apps") {
   ]
 
   deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "error/uma_logging_unittest.cc",
+    "error/unusable_swbn_file_error_unittest.cc",
+  ]
+  deps = [
+    ":isolated_web_apps",
+    "//base/test:test_support",
+  ]
 }

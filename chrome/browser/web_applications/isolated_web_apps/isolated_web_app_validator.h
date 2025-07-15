@@ -11,7 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 
 class GURL;
 class Profile;

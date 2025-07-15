@@ -1,10 +1,9 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 
 namespace web_app {
