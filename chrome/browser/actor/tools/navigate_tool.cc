@@ -53,7 +53,7 @@ void NavigateTool::Validate(ValidateCallback callback) {
   }
 
   MayActOnUrl(url_,
-              /*allow_insecure_http=*/false,
+              /*allow_insecure_http=*/true,
               Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
               journal(), task_id(),
               base::BindOnce(&MayActOnUrlToResult).Then(std::move(callback)));
