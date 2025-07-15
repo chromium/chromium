@@ -103,6 +103,10 @@ tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
   return browser->browser_window_features()->glic_nudge_controller();
 }
 
+void ContextualCueingHelper::PrimaryPageChanged(content::Page& page) {
+  has_first_contentful_paint_ = false;
+}
+
 void ContextualCueingHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Ignore sub-frame and uncommitted navigations.
@@ -135,6 +139,7 @@ void ContextualCueingHelper::DidFinishNavigation(
 
   // Clear zero state suggestions if needed.
   if (base::FeatureList::IsEnabled(kGlicZeroStateSuggestions) &&
+      navigation_handle->IsSameDocument() &&
       ZeroStateSuggestionsPageData::GetForPage(
           web_contents()->GetPrimaryPage())) {
     ZeroStateSuggestionsPageData::DeleteForPage(

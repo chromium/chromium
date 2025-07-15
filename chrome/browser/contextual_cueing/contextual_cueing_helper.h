@@ -40,6 +40,7 @@ class ContextualCueingHelper
   ~ContextualCueingHelper() override;
 
   // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryMainDocumentElementAvailable() override;
