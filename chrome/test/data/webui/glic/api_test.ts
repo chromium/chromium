@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {HostCapability, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
@@ -689,23 +689,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('', profileInfo.givenName);
     assertEquals(false, profileInfo.isManaged!);
     assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
+    assertEquals('Your Chromium', profileInfo.localProfileName);
   }
 
-  async testGetUserProfileInfoDefersWhenInactive() {
+  async testGetUserProfileInfoDoesNotDeferWhenInactive() {
     assertTrue(!!this.host.getUserProfileInfo);
     assertTrue(!!this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
-    const promise = this.host.getUserProfileInfo();
-    try {
-      await waitFor(promise, 200);
-      // We should have thrown here as the promise should not resolve until
-      // advancing to the next step.
-      assertTrue(false);
-    } catch {
-    }
-    await this.advanceToNextStep();
-    const profileInfo = await promise;
+    const profileInfo: UserProfileInfo = await this.host.getUserProfileInfo();
     assertEquals('glic-test@example.com', profileInfo.email);
+    assertEquals('Your Chromium', profileInfo.localProfileName);
   }
 
   async testRefreshSignInCookies() {

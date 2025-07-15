@@ -901,13 +901,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
-    if (ShouldDoGetUserProfileInfoApiActivationGating()) {
-      on_get_user_profile_info_activation_callbacks_.push_back(
-          base::BindOnce(&GlicWebClientHandler::GetUserProfileInfo,
-                         base::Unretained(this), std::move(callback)));
-      return;
-    }
-
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
@@ -1100,18 +1093,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kGlicGetUserProfileInfoApiActivationGating)) {
-      auto to_remove =
-          std::move(on_get_user_profile_info_activation_callbacks_);
-      on_get_user_profile_info_activation_callbacks_.clear();
-      for (auto& cb : to_remove) {
-        std::move(cb).Run();
-      }
-    }
-
-    CHECK(on_get_user_profile_info_activation_callbacks_.empty());
-
+    // The panel is active. If applicable, send out any cached or delayed
+    // updates to the web client.
     if (base::FeatureList::IsEnabled(features::kGlicApiActivationGating) &&
         web_client_) {
       if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
@@ -1119,13 +1102,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       }
       if (cached_focused_tab_data_) {
         MaybeNotifyFocusedTabChanged(std::move(cached_focused_tab_data_));
+        cached_focused_tab_data_ = nullptr;
       }
-      cached_focused_tab_data_ = nullptr;
 
       if (cached_zero_state_suggestions_) {
         web_client_->NotifyZeroStateSuggestionsChanged(
             std::move(cached_zero_state_suggestions_),
             std::move(cached_zero_state_suggestions_options_));
+        cached_zero_state_suggestions_ = nullptr;
+        cached_zero_state_suggestions_options_ = nullptr;
       }
     }
   }
@@ -1317,12 +1302,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
            !active_state_calculator_.IsActive();
   }
 
-  bool ShouldDoGetUserProfileInfoApiActivationGating() const {
-    return base::FeatureList::IsEnabled(
-               features::kGlicGetUserProfileInfoApiActivationGating) &&
-           !active_state_calculator_.IsActive();
-  }
-
   void MaybeNotifyFocusedTabChanged(
       glic::mojom::FocusedTabDataPtr focused_tab_data) {
     if (debouncer_deduper_) {
@@ -1381,7 +1360,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
   JournalHandler journal_handler_;
-  std::vector<base::OnceClosure> on_get_user_profile_info_activation_callbacks_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
 };
 

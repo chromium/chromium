@@ -352,8 +352,6 @@ BASE_DECLARE_FEATURE(kGlicUnloadOnClose);
 // is inactive (see ActiveStateCalculator).
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicApiActivationGating);
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicGetUserProfileInfoApiActivationGating);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicExplicitBackgroundColor);

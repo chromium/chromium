@@ -651,10 +651,6 @@ BASE_FEATURE(kGlicApiActivationGating,
              "GlicApiActivationGating",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicGetUserProfileInfoApiActivationGating,
-             "GlicGetUserProfileInfoApiActivationGating",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, don't try to update the views background color based on the
 // glic client background color.
 BASE_FEATURE(kGlicExplicitBackgroundColor,

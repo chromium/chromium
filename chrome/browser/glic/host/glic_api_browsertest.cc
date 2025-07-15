@@ -1084,11 +1084,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetUserProfileInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
-                       testGetUserProfileInfoDefersWhenInactive) {
+                       testGetUserProfileInfoDoesNotDeferWhenInactive) {
   ExecuteJsTest();
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
