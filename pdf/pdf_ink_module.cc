@@ -359,27 +359,6 @@ const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? &GetDrawingBrush() : nullptr;
 }
 
-int PdfInkModule::GetInputOfTypeCountForPageForTesting(
-    int page_index,
-    ink::StrokeInput::ToolType tool_type) const {
-  CHECK_GE(page_index, 0);
-  auto it = strokes_.find(page_index);
-  if (it == strokes_.end()) {
-    return 0;
-  }
-
-  int count = 0;
-  for (const FinishedStrokeState& stroke_state : it->second) {
-    const ink::StrokeInputBatch& input_batch = stroke_state.stroke.GetInputs();
-    for (ink::StrokeInput input : input_batch) {
-      if (input.tool_type == tool_type) {
-        ++count;
-      }
-    }
-  }
-  return count;
-}
-
 bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 

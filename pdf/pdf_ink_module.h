@@ -93,13 +93,6 @@ class PdfInkModule {
   // drawing state.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
-  // For testing only. Returns the number of stroke inputs of a particular
-  // `tool_type` for a given page at `page_index`. The `page_index` must be
-  // non-negative.
-  int GetInputOfTypeCountForPageForTesting(
-      int page_index,
-      ink::StrokeInput::ToolType tool_type) const;
-
  private:
   friend class PdfInkModuleStrokeTest;
   FRIEND_TEST_ALL_PREFIXES(PdfInkModuleTest, HandleSetAnnotationModeMessage);

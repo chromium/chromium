@@ -1146,6 +1146,28 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     return visible_strokes;
   }
 
+  int GetInputOfTypeCountForPage(int page_index,
+                                 ink::StrokeInput::ToolType tool_type) const {
+    CHECK_GE(page_index, 0);
+    const auto& strokes = ink_module().strokes_;
+    auto it = strokes.find(page_index);
+    if (it == strokes.end()) {
+      return 0;
+    }
+
+    int count = 0;
+    for (const auto& stroke_state : it->second) {
+      const ink::StrokeInputBatch& input_batch =
+          stroke_state.stroke.GetInputs();
+      for (ink::StrokeInput input : input_batch) {
+        if (input.tool_type == tool_type) {
+          ++count;
+        }
+      }
+    }
+    return count;
+  }
+
   void ExpectStrokesAdded(int strokes_affected) {
     CHECK_GT(strokes_affected, 0);
     EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(strokes_affected);
@@ -1378,88 +1400,88 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 TEST_P(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/false);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/true);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, NoAnnotationWithPenIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokePenCheckTest(/*annotation_mode_enabled=*/false);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokePenCheckTest(/*annotation_mode_enabled=*/true);
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
@@ -1473,49 +1495,49 @@ TEST_P(PdfInkModuleStrokeTest, IgnoreTouchEventsAfterPenEvent) {
   ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
                                all_move_points,
                                base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 
   ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
                                all_move_points,
                                base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
   ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
                              all_move_points,
                              base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
   ApplyStrokeWithTouchAtPointsNotHandled(base::span_from_ref(kMouseDownPoint),
                                          all_move_points,
                                          base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
   ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
                              all_move_points,
                              base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 
   ApplyStrokeWithTouchAtPointsNotHandled(base::span_from_ref(kMouseDownPoint),
                                          all_move_points,
                                          base::span_from_ref(kMouseUpPoint));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(6, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(6, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
@@ -1559,11 +1581,11 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithMouseInterruptedByPenEvents) {
   EXPECT_EQ(2, client().stroke_started_count());
   EXPECT_EQ(2, client().modified_stroke_finished_count());
   EXPECT_EQ(0, client().unmodified_stroke_finished_count());
-  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(2, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(3, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
@@ -1588,11 +1610,11 @@ TEST_P(PdfInkModuleStrokeTest, AnnotationWithPenIgnoresMouseEvents) {
   EXPECT_EQ(1, client().stroke_started_count());
   EXPECT_EQ(1, client().modified_stroke_finished_count());
   EXPECT_EQ(0, client().unmodified_stroke_finished_count());
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
-  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(0, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
-  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(2, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
@@ -2499,7 +2521,7 @@ TEST_P(PdfInkModuleStrokeTest, EventWithPastTimeStamp) {
       MouseEventBuilder().CreateLeftMouseUpAtPosition(kMouseUpPoint).Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 
-  EXPECT_EQ(2, ink_module().GetInputOfTypeCountForPageForTesting(
+  EXPECT_EQ(2, GetInputOfTypeCountForPage(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
 }
 
