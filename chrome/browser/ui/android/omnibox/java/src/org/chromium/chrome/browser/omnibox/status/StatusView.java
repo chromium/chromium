@@ -319,6 +319,7 @@ public class StatusView extends LinearLayout {
                     updateAnimationStartTime();
                     mIsAnimatingStatusIconChange = true;
                     keepControlsShownForAnimation();
+                    mIconView.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
                     mIconView
                             .animate()
                             .setDuration(ICON_ROTATION_DURATION_MS)
