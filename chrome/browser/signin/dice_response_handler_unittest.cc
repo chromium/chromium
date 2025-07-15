@@ -66,12 +66,15 @@ constexpr char kAuthorizationCode[] = "authorization_code";
 constexpr char kEmail[] = "test@email.com";
 constexpr int kSessionIndex = 42;
 constexpr char kEligibleForTokenBinding[] = "ES256 RS256";
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
                                crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 constexpr char kTokenBindingOutcomeHistogram[] =
     "Signin.DiceTokenBindingOutcome";
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 DiceResponseParams::AccountInfo GetDiceResponseParamsAccountInfo(
     const std::string& email) {

@@ -58,8 +58,10 @@ namespace {
 // The UMA histograms that logs events related to Dice responses.
 const char kDiceResponseHeaderHistogram[] = "Signin.DiceResponseHeader";
 const char kDiceTokenFetchResultHistogram[] = "Signin.DiceTokenFetchResult";
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 const char kDiceTokenBindingOutcomeHistogram[] =
     "Signin.DiceTokenBindingOutcome";
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 // Used for UMA. Do not reorder, append new values at the end.
 enum DiceResponseHeader {
