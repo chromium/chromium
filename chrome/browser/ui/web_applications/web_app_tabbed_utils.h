@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_TABBED_UTILS_H_
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/webapps/common/web_app_id.h"
-#include "url/gurl.h"
+class Browser;
+class GURL;
+class TabStripModel;
 
 namespace web_app {
 

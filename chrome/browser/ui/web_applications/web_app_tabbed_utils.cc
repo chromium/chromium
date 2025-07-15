@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 
-#include <optional>
-
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
