@@ -981,6 +981,15 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceNone) {
 
 #undef MAYBE_VerticalAlignBottomReplaced
 
+// crbug.com/430665516
+TEST_F(InlineLayoutAlgorithmTest, FitTextDivisionByZero) {
+  SetBodyInnerHTML(R"HTML(
+<div style="text-grow: per-line scale;"><span style="display:inline-block;">
+A</span></div>)HTML");
+
+  // This test passes if no crashes.
+}
+
 // crbug.com/341126037
 TEST_F(InlineLayoutAlgorithmTest, BoxFragmentInRubyCrash) {
   SetBodyInnerHTML(R"HTML(

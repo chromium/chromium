@@ -347,6 +347,9 @@ NOINLINE bool FitLine(const InlineNode node, LineInfo& line_info) {
       static_total_size += item.inline_size;
     }
   }
+  if (flexible_total_size <= 0) {
+    return false;
+  }
 
   float scale_factor =
       (container_width - static_total_size) / flexible_total_size;
