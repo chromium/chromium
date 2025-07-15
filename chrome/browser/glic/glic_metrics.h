@@ -20,12 +20,30 @@
 #include "ui/display/display.h"
 
 class Profile;
+class Browser;
 
 namespace glic {
 class GlicEnabling;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+
+// LINT.IfChange(ChromeRelativePosition)
+enum class ChromeRelativePosition {
+  kAboveLeft = 0,
+  kCenterLeft = 1,
+  kBelowLeft = 2,
+  kAboveCenter = 3,
+  kOverlap = 4,
+  kBelowCenter = 5,
+  kAboveRight = 6,
+  kCenterRight = 7,
+  kBelowRight = 8,
+  kChromeOnOtherDisplay = 9,
+  kNoVisibleChromeBrowser = 10,
+  kMaxValue = kNoVisibleChromeBrowser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ChromeRelativePosition)
 
 // LINT.IfChange(DisplayPosition)
 enum class DisplayPosition {
@@ -210,7 +228,8 @@ class GlicMetrics {
   // Called when the glic window starts to open.
   void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
   // Called just after the the glic window has been loaded into the UI.
-  void OnGlicWindowShown(std::optional<display::Display> display,
+  void OnGlicWindowShown(Browser* browser,
+                         std::optional<display::Display> glic_display,
                          const gfx::Point& glic_center_point);
   // Called when the glic window has been opened and is ready.
   void OnGlicWindowOpenAndReady();
@@ -221,7 +240,8 @@ class GlicMetrics {
   // Called when the glic window stops being resized by the user.
   void OnWidgetUserResizeEnded();
   // Called when the glic window finishes closing.
-  void OnGlicWindowClose(std::optional<display::Display> display,
+  void OnGlicWindowClose(Browser* browser,
+                         std::optional<display::Display> display,
                          const gfx::Point& glic_center_point);
   // Called when glic requests a scroll.
   void OnGlicScrollAttempt();
@@ -271,6 +291,12 @@ class GlicMetrics {
   // Returns the area in the display a given center point is.
   DisplayPosition GetDisplayPositionOfPoint(
       std::optional<display::Display> display,
+      const gfx::Point& glic_center_point);
+
+  // Returns the area relative to the given chrome browser a given center point
+  // is.
+  ChromeRelativePosition GetChromeRelativePositionOfPoint(
+      Browser* browser,
       const gfx::Point& glic_center_point);
 
   base::TimeTicks fre_accepted_time_;

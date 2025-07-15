@@ -655,7 +655,8 @@ void GlicWindowControllerImpl::Show(Browser* browser,
       GetGlicWidget()->GetNearestDisplay();
   gfx::Point glic_center_point =
       GetGlicWidget()->GetWindowBoundsInScreen().CenterPoint();
-  glic_service_->metrics()->OnGlicWindowShown(display, glic_center_point);
+  glic_service_->metrics()->OnGlicWindowShown(browser, display,
+                                              glic_center_point);
 }
 
 void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
@@ -1080,7 +1081,8 @@ void GlicWindowControllerImpl::Close() {
       GetGlicWidget()->GetNearestDisplay();
   gfx::Point glic_center_point =
       GetGlicWidget()->GetWindowBoundsInScreen().CenterPoint();
-  glic_service_->metrics()->OnGlicWindowClose(display, glic_center_point);
+  glic_service_->metrics()->OnGlicWindowClose(
+      BrowserList::GetInstance()->GetLastActive(), display, glic_center_point);
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
                                 host().GetPrimaryWebUiState());
 
