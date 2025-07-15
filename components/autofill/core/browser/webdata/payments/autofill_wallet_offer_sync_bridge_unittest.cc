@@ -292,28 +292,6 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NoData) {
   EXPECT_TRUE(GetAllLocalData().empty());
 }
 
-// Test to ensure whether the data being valid is logged correctly.
-TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_LogDataValidity) {
-  AutofillOfferSpecifics offer_specifics1;
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &offer_specifics1);
-  AutofillOfferSpecifics offer_specifics2;
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData2(),
-                                         &offer_specifics2);
-  offer_specifics2.clear_id();
-
-  EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
-  base::HistogramTester histogram_tester;
-  StartSyncing({offer_specifics1, offer_specifics2});
-
-  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
-                                     true, 1);
-  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
-                                     false, 1);
-}
-
 // Tests that when sync is stopped and the data type is disabled, client should
 // remove all client data.
 TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {

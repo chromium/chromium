@@ -87,7 +87,6 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_executor.h"
@@ -6017,29 +6016,6 @@ TEST_F(BrowserAutofillManagerTest,
           base::Bucket(
               autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
               1)));
-}
-
-TEST_F(BrowserAutofillManagerTest,
-       DidShowSuggestions_LogPromoCodeSuggestionsShownMetric) {
-  FormData form = test::CreateTestMerchantPromoCodeFormData();
-  FormsSeen({form});
-
-  base::HistogramTester histogram_tester;
-  manager().DidShowSuggestions(
-      {Suggestion(SuggestionType::kMerchantPromoCodeEntry)}, form,
-      form.fields().back().global_id(), {});
-  manager().DidShowSuggestions(
-      {Suggestion(SuggestionType::kMerchantPromoCodeEntry)}, form,
-      form.fields().back().global_id(), {});
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.Offer.SuggestionsPopupShown2"),
-      BucketsAre(base::Bucket(autofill_metrics::OffersSuggestionsPopupEvent::
-                                  kOffersSuggestionsPopupShown,
-                              2),
-                 base::Bucket(autofill_metrics::OffersSuggestionsPopupEvent::
-                                  kOffersSuggestionsPopupShownOnce,
-                              1)));
 }
 
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {

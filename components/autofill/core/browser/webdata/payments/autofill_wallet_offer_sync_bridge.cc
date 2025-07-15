@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -190,11 +189,9 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     CHECK(IsEntityDataValid(change->data()));
     const sync_pb::AutofillOfferSpecifics specifics =
         change->data().specifics.autofill_offer();
-    bool offer_valid = IsOfferSpecificsValid(specifics);
-    if (offer_valid) {
+    if (IsOfferSpecificsValid(specifics)) {
       offer_data.push_back(AutofillOfferDataFromOfferSpecifics(specifics));
     }
-    autofill_metrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
 
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();

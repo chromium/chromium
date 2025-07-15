@@ -53,7 +53,7 @@ class MerchantPromoCodeManager : public KeyedService {
       const AutofillClient& client,
       SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
-  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
 
   // Called when offer suggestions are shown; used to record metrics.
   // `field_global_id` is the global id of the field that had suggestions shown.
@@ -70,31 +70,6 @@ class MerchantPromoCodeManager : public KeyedService {
       MerchantPromoCodeManagerTest,
       DoesNotShowPromoCodeOffersIfPaymentsDataManagerDoesNotExist);
 
-  // Records metrics related to the offers suggestions popup.
-  class UMARecorder {
-   public:
-    UMARecorder() = default;
-
-    UMARecorder(const UMARecorder&) = delete;
-    UMARecorder& operator=(const UMARecorder&) = delete;
-
-    ~UMARecorder() = default;
-
-    void OnOffersSuggestionsShown(
-        const FieldGlobalId& field_global_id,
-        const std::vector<const AutofillOfferData*>& offers);
-    void OnOfferSuggestionSelected(SuggestionType type);
-
-   private:
-    friend class MerchantPromoCodeManagerTestApi;
-
-    // The global id of the field that most recently had suggestions shown.
-    FieldGlobalId most_recent_suggestions_shown_field_global_id_;
-
-    // The global id of the field that most recently had a suggestion selected.
-    FieldGlobalId most_recent_suggestion_selected_field_global_id_;
-  };
-
   // Generates suggestions from the `promo_code_offers` and return them via
   // `on_suggestions_returned`. If suggestions were sent, this function also
   // logs metrics for promo code suggestions shown. Data is filtered based on
@@ -109,8 +84,6 @@ class MerchantPromoCodeManager : public KeyedService {
 
   raw_ptr<PaymentsDataManager> payments_data_manager_;
   bool is_off_the_record_;
-
-  UMARecorder uma_recorder_;
 };
 
 }  // namespace autofill

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -127,31 +126,6 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
   set_bubble_view(nullptr);
   promo_code_button_clicked_ = false;
   UpdatePageActionIcon();
-
-  // Log bubble result according to the closed reason.
-  autofill_metrics::OfferNotificationBubbleResultMetric metric;
-  switch (closed_reason) {
-    case PaymentsUiClosedReason::kAccepted:
-      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED;
-      break;
-    case PaymentsUiClosedReason::kClosed:
-      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_CLOSED;
-      break;
-    case PaymentsUiClosedReason::kNotInteracted:
-      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED;
-      break;
-    case PaymentsUiClosedReason::kLostFocus:
-      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
-      break;
-    default:
-      NOTREACHED();
-  }
-  autofill_metrics::LogOfferNotificationBubbleResultMetric(
-      offer_.GetOfferType(), metric, is_user_gesture_);
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
@@ -248,9 +222,6 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
-
-  autofill_metrics::LogOfferNotificationBubbleOfferMetric(offer_.GetOfferType(),
-                                                          is_user_gesture_);
 }
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
