@@ -2253,8 +2253,7 @@ void HTMLCanvasElement::DropAndRecreateExistingCanvas2DResourceProvider() {
 
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
-      RecreateCanvasResourceProviderForCanvas2D(
-          CHECK_DEREF(hibernation_handler_.get()));
+      RecreateCanvasResourceProviderForCanvas2D();
   if (!new_provider) {
     return;
   }
@@ -2310,8 +2309,7 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderForCanvas2D() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  resource_provider = RecreateCanvasResourceProviderForCanvas2D(
-      CHECK_DEREF(hibernation_handler_.get()));
+  resource_provider = RecreateCanvasResourceProviderForCanvas2D();
 
   UpdateMemoryUsage();
 
@@ -2323,9 +2321,9 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderForCanvas2D() {
 }
 
 CanvasResourceProvider*
-HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
-    CanvasHibernationHandler& hibernation_handler) {
+HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
+  CHECK(hibernation_handler_);
 
   auto* resource_provider = GetResourceProviderForCanvas2D();
   if (!resource_provider && !did_fail_to_create_resource_provider_) {
@@ -2346,7 +2344,7 @@ HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
     return nullptr;
   }
 
-  if (!hibernation_handler.IsHibernating()) {
+  if (!hibernation_handler_->IsHibernating()) {
     return resource_provider;
   }
 
@@ -2366,14 +2364,14 @@ HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
   }
 
   PaintImageBuilder builder = PaintImageBuilder::WithDefault();
-  builder.set_image(hibernation_handler.GetImage(),
+  builder.set_image(hibernation_handler_->GetImage(),
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
   resource_provider->RestoreBackBuffer(builder.TakePaintImage());
-  resource_provider->SetRecorder(hibernation_handler.ReleaseRecorder());
+  resource_provider->SetRecorder(hibernation_handler_->ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
-  hibernation_handler.Clear();
-  DCHECK(!hibernation_handler.IsHibernating());
+  hibernation_handler_->Clear();
+  DCHECK(!hibernation_handler_->IsHibernating());
 
   // shouldBeDirectComposited() may have changed.
   SetNeedsCompositingUpdate();

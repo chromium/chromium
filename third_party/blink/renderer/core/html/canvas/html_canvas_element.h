@@ -400,10 +400,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void UpdatePreferred2DRasterMode();
 
   // Recreates the resource provider.
-  // TODO(crbug.com/40280152): Remove parameter once the hibernation handler is
-  // an instance variable of this class.
-  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D(
-      CanvasHibernationHandler& hibernation_handler);
+  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
   void CreateCanvasResourceProviderForCanvas2D();
 
   void ColorSchemeMayHaveChanged();
