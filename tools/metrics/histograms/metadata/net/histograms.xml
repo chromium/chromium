@@ -800,7 +800,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HttpCache.NoVarySearch.NotUsableLostTime" units="ms"
+<histogram name="HttpCache.NoVarySearch.NotUsableLostTime2" units="ms"
     expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
@@ -823,6 +823,9 @@ chromium-metrics-reviews@google.com.
     a hit in the NoVarySearchCache that was later found to be unusable. This
     corresponds to the NoVarySearchUseResult cases &quot;Not openable&quot;,
     &quot;Incomplete body&quot; and &quot;Couldn't conditionalize&quot;.
+
+    This histogram replaced HttpCache.NoVarySearch.NotUsableLostTime, which was
+    logged too eagerly in some edge cases.
   </summary>
 </histogram>
 
