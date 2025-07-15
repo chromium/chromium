@@ -163,6 +163,12 @@ bool ManagementPolicy::ShouldRepairIfCorrupted(const Extension* extension) {
          MustRemainInstalled(extension, nullptr);
 }
 
+bool ManagementPolicy::HasEnterpriseForcedAccess(
+    const extensions::Extension& extension) const {
+  return !UserMayModifySettings(&extension, nullptr) ||
+         MustRemainInstalled(&extension, nullptr);
+}
+
 void ManagementPolicy::UnregisterAllProviders() {
   providers_.clear();
 }

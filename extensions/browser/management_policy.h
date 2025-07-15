@@ -178,6 +178,10 @@ class ManagementPolicy {
   // (it's job of ContentVerifier).
   bool ShouldRepairIfCorrupted(const Extension* extension);
 
+  // Returns whether `extension` cannot have its site access modified by the
+  // user because of policy.
+  bool HasEnterpriseForcedAccess(const extensions::Extension& extension) const;
+
   // For use in testing.
   void UnregisterAllProviders();
   int GetNumProviders() const;
