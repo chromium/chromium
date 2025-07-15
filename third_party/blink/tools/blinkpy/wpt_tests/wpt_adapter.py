@@ -10,7 +10,6 @@ import json
 import logging
 import optparse
 import signal
-import subprocess
 import sys
 import textwrap
 import tempfile
@@ -678,22 +677,18 @@ def parse_arguments(argv):
     return options, args
 
 
-def _install_xcode(xcode_build_version: str):
+def _maybe_install_xcode(build_version: str | None):
+    if not build_version:
+        logger.warning('Skipping Xcode installation (no build version given)')
+        return
+
     path_finder.add_build_ios_to_sys_path()
-    import xcode_util as xcode
-    if xcode_build_version:
-        try:
-            xcode.install_xcode('../../mac_toolchain', xcode_build_version,
-                                '../../Xcode.app', '../../Runtime-ios-',
-                                product.IOS_VERSION)
-        except subprocess.CalledProcessError as e:
-            logger.error('Xcode build version %s failed to install: %s ',
-                         xcode_build_version, e)
-        else:
-            logger.info('Xcode build version %s successfully installed.',
-                        xcode_build_version)
-    else:
-        logger.warning('Skip the Xcode installation, no xcode_build_version.')
+    import xcode_util
+    xcode_util.install_xcode('../../mac_toolchain', build_version,
+                             '../../Xcode.app', '../../Runtime-ios-',
+                             product.IOS_DEVICE, product.IOS_VERSION)
+    logger.info('Xcode build version %s successfully installed.',
+                build_version)
 
 
 def main(argv) -> int:
@@ -716,9 +711,9 @@ def main(argv) -> int:
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
-        if (adapter.product.name == 'chrome_ios'
-                and adapter.options.xcode_build_version):
-            _install_xcode(adapter.options.xcode_build_version)
+        if adapter.product.name == 'chrome_ios':
+            # Xcode needs to be installed early so that `git clone` works.
+            _maybe_install_xcode(adapter.options.xcode_build_version)
         if adapter.options.use_upstream_wpt:
             adapter.checkout_upstream_wpt()
         adapter.set_up_derived_options()
