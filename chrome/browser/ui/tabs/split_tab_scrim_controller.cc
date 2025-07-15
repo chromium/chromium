@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/split_tab_scrim_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/tabs/public/tab_interface.h"
@@ -28,6 +29,10 @@ SplitTabScrimController::SplitTabScrimController(BrowserView* browser_view)
           &SplitTabScrimController::OnActiveTabChange, base::Unretained(this)));
   chip_controller_observation_.Observe(
       browser_view->toolbar()->location_bar()->GetChipController());
+  page_info_bubble_created_subscription_ =
+      PageInfoBubbleView::RegisterPageInfoCreatedCallback(
+          base::BindRepeating(&SplitTabScrimController::OnPageInfoBubbleCreated,
+                              base::Unretained(this)));
 }
 
 SplitTabScrimController::~SplitTabScrimController() = default;
@@ -38,7 +43,7 @@ bool SplitTabScrimController::ShouldShowScrim() {
   return (active_tab &&
           (OmniboxTabHelper::FromWebContents(active_tab->GetContents())
                ->focus_state() != OmniboxFocusState::OMNIBOX_FOCUS_NONE)) ||
-         is_permission_prompt_showing_;
+         is_permission_prompt_showing_ || is_page_info_bubble_showing_;
 }
 
 void SplitTabScrimController::OnOmniboxFocusChanged(
@@ -54,6 +59,18 @@ void SplitTabScrimController::OnPermissionPromptShown() {
 
 void SplitTabScrimController::OnPermissionPromptHidden() {
   is_permission_prompt_showing_ = false;
+  UpdateScrimVisibility();
+}
+
+void SplitTabScrimController::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                        bool visible) {
+  is_page_info_bubble_showing_ = visible;
+  UpdateScrimVisibility();
+}
+
+void SplitTabScrimController::OnWidgetDestroyed(views::Widget* widget) {
+  page_info_bubble_observation_.Reset();
+  is_page_info_bubble_showing_ = false;
   UpdateScrimVisibility();
 }
 
@@ -83,6 +100,15 @@ void SplitTabScrimController::OnTabWillDetach(
   // longer than the web contents it is observing.
   omnibox_tab_helper_observation_.Reset();
   tab_will_detach_subscription_ = base::CallbackListSubscription();
+}
+
+void SplitTabScrimController::OnPageInfoBubbleCreated(
+    content::WebContents* web_contents,
+    views::Widget* bubble_widget) {
+  if (browser_window_interface_->GetActiveTabInterface()->GetContents() ==
+      web_contents) {
+    page_info_bubble_observation_.Observe(bubble_widget);
+  }
 }
 
 void SplitTabScrimController::UpdateScrimVisibility() {

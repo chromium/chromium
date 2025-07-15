@@ -735,6 +735,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, CoordinateScrimShowReasons) {
       WaitForHide(MultiContentsView::kEndContainerViewScrimElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ScrimShowsForPageInfoBubble) {
+  RunTestSequence(
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
+      InstrumentTab(kNewTab),
+      NavigateWebContents(kNewTab, GURL(chrome::kChromeUISettingsURL)),
+      AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      FocusElement(kNewTab),
+      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
+      PressButton(kLocationIconElementId),
+      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      // Clicking the location icon again should close the page info bubble and
+      // hide the scrim.
+      MoveMouseTo(kLocationIconElementId), ClickMouse(),
+      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId));
+}
+
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop
 // on various platforms. These should be re-enabled as support is added.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)

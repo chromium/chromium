@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,6 +39,16 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "url/gurl.h"
+
+namespace {
+PageInfoBubbleView::PageInfoBubbleCreatedCallbackList&
+GetPageInfoBubbleCreatedCallbackList() {
+  static base::NoDestructor<
+      PageInfoBubbleView::PageInfoBubbleCreatedCallbackList>
+      bubble_created_callback_list;
+  return *bubble_created_callback_list;
+}
+}  // namespace
 
 using bubble_anchor_util::AnchorConfiguration;
 using bubble_anchor_util::GetPageInfoAnchorConfiguration;
@@ -210,8 +222,12 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
   if (PageInfo::IsFileOrInternalPage(url) ||
       url.SchemeIs(extensions::kExtensionScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme)) {
-    return new InternalPageInfoBubbleView(anchor_view, anchor_rect, parent_view,
-                                          web_contents, url);
+    InternalPageInfoBubbleView* const internal_page_bubble =
+        new InternalPageInfoBubbleView(anchor_view, anchor_rect, parent_view,
+                                       web_contents, url);
+    GetPageInfoBubbleCreatedCallbackList().Notify(
+        web_contents, internal_page_bubble->GetWidget());
+    return internal_page_bubble;
   }
 
   PageInfoBubbleView* const bubble = new PageInfoBubbleView(
@@ -226,7 +242,16 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     bubble->OpenMerchantTrustPage(
         page_info::MerchantBubbleOpenReferrer::kLocationBarChip);
   }
+  GetPageInfoBubbleCreatedCallbackList().Notify(web_contents,
+                                                bubble->GetWidget());
   return bubble;
+}
+
+// static
+base::CallbackListSubscription
+PageInfoBubbleView::RegisterPageInfoCreatedCallback(
+    PageInfoBubbleCreatedCallback callback) {
+  return GetPageInfoBubbleCreatedCallbackList().Add(std::move(callback));
 }
 
 void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
