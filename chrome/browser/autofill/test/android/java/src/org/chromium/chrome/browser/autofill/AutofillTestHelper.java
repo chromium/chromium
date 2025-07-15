@@ -439,6 +439,7 @@ public class AutofillTestHelper {
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
                 /* cvc= */ "",
                 /* issuerId= */ "",
+                /* benefitSource= */ "",
                 /* productTermsUrl= */ null);
     }
 
@@ -476,6 +477,7 @@ public class AutofillTestHelper {
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
                 /* cvc= */ "",
                 /* issuerId= */ "",
+                /* benefitSource= */ "",
                 /* productTermsUrl= */ null);
     }
 

@@ -192,6 +192,7 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED =
             new CreditCard(
@@ -218,6 +219,7 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_CARD_WITH_CVC =
             new CreditCard(
@@ -245,6 +247,7 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "123",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
 
     private static final Ewallet EWALLET_ACCOUNT =

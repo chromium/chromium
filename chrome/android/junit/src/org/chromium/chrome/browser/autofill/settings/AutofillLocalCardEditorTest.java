@@ -128,6 +128,7 @@ public class AutofillLocalCardEditorTest {
                 /* obfuscatedLastFourDigits= */ "",
                 /* cvc= */ "123",
                 /* issuerId= */ "",
+                /* benefitSource= */ "",
                 /* productTermsUrl= */ null);
     }
 
@@ -158,6 +159,7 @@ public class AutofillLocalCardEditorTest {
                 /* obfuscatedLastFourDigits= */ "",
                 /* cvc= */ "1234",
                 /* issuerId= */ "",
+                /* benefitSource= */ "",
                 /* productTermsUrl= */ null);
     }
 

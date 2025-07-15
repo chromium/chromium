@@ -143,7 +143,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       static_cast<jint>(card.virtual_card_enrollment_state()),
       card.product_description(), card.CardNameForAutofillDisplay(),
       card.ObfuscatedNumberWithVisibleLastFourDigits(), card.cvc(),
-      card.issuer_id(),
+      card.issuer_id(), card.benefit_source(),
       url::GURLAndroid::FromNativeGURL(env, card.product_terms_url()));
 }
 
@@ -194,6 +194,11 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       Java_CreditCard_getIssuerId(env, jcard);
   if (issuer_id) {
     card->set_issuer_id(ConvertJavaStringToUTF8(env, issuer_id));
+  }
+  ScopedJavaLocalRef<jstring> benefit_source =
+      Java_CreditCard_getBenefitSource(env, jcard);
+  if (benefit_source) {
+    card->set_benefit_source(ConvertJavaStringToUTF8(env, benefit_source));
   }
   ScopedJavaLocalRef<jobject> java_product_terms_url =
       Java_CreditCard_getProductTermsUrl(env, jcard);

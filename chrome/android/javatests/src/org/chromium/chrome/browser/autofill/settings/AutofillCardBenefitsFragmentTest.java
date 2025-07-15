@@ -92,6 +92,7 @@ public class AutofillCardBenefitsFragmentTest {
                     /* obfuscatedLastFourDigits= */ "• • • • 0005",
                     /* cvc= */ "",
                     /* issuerId= */ "amex",
+                    /* benefitSource= */ "amex",
                     /* productTermsUrl= */ new GURL("http://www.example.com/amex/terms"));
     private AutofillTestHelper mAutofillTestHelper;
     private UserActionTester mActionTester;
@@ -310,6 +311,7 @@ public class AutofillCardBenefitsFragmentTest {
                         /* obfuscatedLastFourDigits= */ "• • • • 0001",
                         /* cvc= */ "",
                         /* issuerId= */ "amex",
+                        /* benefitSource= */ "amex",
                         /* productTermsUrl= */ new GURL("http://www.example.com/amex/terms")));
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -347,6 +349,7 @@ public class AutofillCardBenefitsFragmentTest {
                         /* obfuscatedLastFourDigits= */ "• • • • 0001",
                         /* cvc= */ "",
                         /* issuerId= */ "amex",
+                        /* benefitSource= */ "amex",
                         /* productTermsUrl= */ new GURL("http://www.example.com/amex/terms")));
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -387,6 +390,7 @@ public class AutofillCardBenefitsFragmentTest {
                         /* obfuscatedLastFourDigits= */ "• • • • 0001",
                         /* cvc= */ "",
                         /* issuerId= */ "capitalone",
+                        /* benefitSource= */ "",
                         /* productTermsUrl= */ new GURL(
                                 "http://www.example.com/capitalone/terms")));
 
@@ -424,6 +428,7 @@ public class AutofillCardBenefitsFragmentTest {
                         /* obfuscatedLastFourDigits= */ "• • • • 0001",
                         /* cvc= */ "",
                         /* issuerId= */ "amex",
+                        /* benefitSource= */ "amex",
                         /* productTermsUrl= */ new GURL("")));
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 

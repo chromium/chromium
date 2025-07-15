@@ -81,6 +81,7 @@ public class PersonalDataManager implements Destroyable {
         private @Nullable GURL mCardArtUrl;
         private String mCvc;
         private final String mIssuerId;
+        private final String mBenefitSource;
         private final @Nullable GURL mProductTermsUrl;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
         private final String mProductDescription;
@@ -112,6 +113,7 @@ public class PersonalDataManager implements Destroyable {
                 @JniType("std::u16string") String obfuscatedLastFourDigits,
                 @JniType("std::u16string") String cvc,
                 @JniType("std::string") String issuerId,
+                @JniType("std::string") String benefitSource,
                 GURL productTermsUrl) {
             return new CreditCard(
                     guid,
@@ -137,6 +139,7 @@ public class PersonalDataManager implements Destroyable {
                     obfuscatedLastFourDigits,
                     cvc,
                     issuerId,
+                    benefitSource,
                     productTermsUrl);
         }
 
@@ -177,6 +180,7 @@ public class PersonalDataManager implements Destroyable {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
         }
 
@@ -204,6 +208,7 @@ public class PersonalDataManager implements Destroyable {
                 String obfuscatedLastFourDigits,
                 String cvc,
                 String issuerId,
+                String benefitSource,
                 @Nullable GURL productTermsUrl) {
             mGUID = guid;
             mOrigin = origin;
@@ -228,6 +233,7 @@ public class PersonalDataManager implements Destroyable {
             mObfuscatedLastFourDigits = obfuscatedLastFourDigits;
             mCvc = cvc;
             mIssuerId = issuerId;
+            mBenefitSource = benefitSource;
             mProductTermsUrl = productTermsUrl;
         }
 
@@ -361,6 +367,11 @@ public class PersonalDataManager implements Destroyable {
         @CalledByNative("CreditCard")
         public String getIssuerId() {
             return mIssuerId;
+        }
+
+        @CalledByNative("CreditCard")
+        public String getBenefitSource() {
+            return mBenefitSource;
         }
 
         @CalledByNative("CreditCard")

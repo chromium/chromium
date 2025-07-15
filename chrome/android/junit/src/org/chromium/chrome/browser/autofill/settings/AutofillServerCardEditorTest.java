@@ -125,6 +125,7 @@ public class AutofillServerCardEditorTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD =
@@ -153,6 +154,7 @@ public class AutofillServerCardEditorTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD =
@@ -181,6 +183,7 @@ public class AutofillServerCardEditorTest {
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "",
                     /* issuerId= */ "",
+                    /* benefitSource= */ "",
                     /* productTermsUrl= */ null);
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
