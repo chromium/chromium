@@ -24,6 +24,28 @@ TrustedHTML* TrustedTypePolicy::createHTML(v8::Isolate* isolate,
                                            const String& input,
                                            const HeapVector<ScriptValue>& args,
                                            ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#create-a-trusted-type-algorithm
+  // with |type name| being TrustedHTML.
+  TrustedHTML* html = createHTMLInternal(isolate, input, args, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  // createHTMLInternal does not do step 4,
+  // "If policyValue is null or undefined, set dataString to the empty string."
+  if (html->toString().IsNull()) {
+    return MakeGarbageCollected<TrustedHTML>(g_empty_string);
+  }
+  return html;
+}
+
+TrustedHTML* TrustedTypePolicy::createHTMLInternal(
+    v8::Isolate* isolate,
+    const String& input,
+    const HeapVector<ScriptValue>& args,
+    ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#get-trusted-type-policy-value-algorithm
+  // Except that we'll pass through null-ish Strings to the caller, so that we
+  // can use this for both createHTML and default policy handling.
   if (!policy_options_->hasCreateHTML()) {
     exception_state.ThrowTypeError(
         "Policy " + name_ +
@@ -44,6 +66,29 @@ TrustedScript* TrustedTypePolicy::createScript(
     const String& input,
     const HeapVector<ScriptValue>& args,
     ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#create-a-trusted-type-algorithm
+  // with |type name| being TrustedScript.
+  TrustedScript* script =
+      createScriptInternal(isolate, input, args, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  // createScriptInternal does not do step 4,
+  // "If policyValue is null or undefined, set dataString to the empty string."
+  if (script->toString().IsNull()) {
+    return MakeGarbageCollected<TrustedScript>(g_empty_string);
+  }
+  return script;
+}
+
+TrustedScript* TrustedTypePolicy::createScriptInternal(
+    v8::Isolate* isolate,
+    const String& input,
+    const HeapVector<ScriptValue>& args,
+    ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#get-trusted-type-policy-value-algorithm
+  // Except that we'll pass through null-ish Strings to the caller, so that we
+  // can use this for both createScript and default policy handling.
   if (!policy_options_->hasCreateScript()) {
     exception_state.ThrowTypeError(
         "Policy " + name_ +
@@ -66,6 +111,29 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURL(
     const String& input,
     const HeapVector<ScriptValue>& args,
     ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#create-a-trusted-type-algorithm
+  // with |type name| being TrustedScriptURL.
+  TrustedScriptURL* script_url =
+      createScriptURLInternal(isolate, input, args, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  // createScriptURLInternal does not do step 4,
+  // "If policyValue is null or undefined, set dataString to the empty string."
+  if (script_url->toString().IsNull()) {
+    return MakeGarbageCollected<TrustedScriptURL>(g_empty_string);
+  }
+  return script_url;
+}
+
+TrustedScriptURL* TrustedTypePolicy::createScriptURLInternal(
+    v8::Isolate* isolate,
+    const String& input,
+    const HeapVector<ScriptValue>& args,
+    ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#get-trusted-type-policy-value-algorithm
+  // Except that we'll pass through null-ish Strings to the caller, so that we
+  // can use this for both createScriptURL and default policy handling.
   if (!policy_options_->hasCreateScriptURL()) {
     exception_state.ThrowTypeError("Policy " + name_ +
                                    "'s TrustedTypePolicyOptions did not "

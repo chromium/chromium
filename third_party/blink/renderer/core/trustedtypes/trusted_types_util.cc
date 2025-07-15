@@ -287,7 +287,7 @@ String GetStringFromScriptHelper(
     return script;
   }
 
-  TrustedScript* result = default_policy->createScript(
+  TrustedScript* result = default_policy->createScriptInternal(
       context->GetIsolate(), script,
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
@@ -320,6 +320,7 @@ String TrustedTypesCheckForHTML(const String& html,
                                 const char* interface_name,
                                 const char* property_name,
                                 ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
   if (!require_trusted_type) {
     return html;
@@ -346,7 +347,7 @@ String TrustedTypesCheckForHTML(const String& html,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedHTML* result = default_policy->createHTML(
+  TrustedHTML* result = default_policy->createHTMLInternal(
       execution_context->GetIsolate(), html,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedHTML",
                              interface_name, property_name),
@@ -355,6 +356,7 @@ String TrustedTypesCheckForHTML(const String& html,
     return g_empty_string;
   }
 
+  // Step 4: Handle null-ish string result.
   if (result->toString().IsNull()) {
     if (TrustedTypeFail(kTrustedHTMLAssignmentAndDefaultPolicyFailed,
                         execution_context, interface_name, property_name,
@@ -373,6 +375,7 @@ String TrustedTypesCheckForScript(const String& script,
                                   const char* interface_name,
                                   const char* property_name,
                                   ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
   if (!require_trusted_type) {
     return script;
@@ -400,7 +403,7 @@ String TrustedTypesCheckForScript(const String& script,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScript* result = default_policy->createScript(
+  TrustedScript* result = default_policy->createScriptInternal(
       execution_context->GetIsolate(), script,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedScript",
                              interface_name, property_name, script),
@@ -410,6 +413,7 @@ String TrustedTypesCheckForScript(const String& script,
     return g_empty_string;
   }
 
+  // Step 4: Handle null-ish string result.
   if (result->toString().IsNull()) {
     if (TrustedTypeFail(kTrustedScriptAssignmentAndDefaultPolicyFailed,
                         execution_context, interface_name, property_name,
@@ -428,6 +432,7 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
                                      const char* interface_name,
                                      const char* property_name,
                                      ExceptionState& exception_state) {
+  // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
   if (!require_trusted_type) {
     return script_url;
@@ -455,7 +460,7 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
   // TODO(ajwong): This can be optimized to avoid a AddRef in the
   // StringCache::CreateStringAndInsertIntoCache() also, but it's a hard mess.
   // Punt for now.
-  TrustedScriptURL* result = default_policy->createScriptURL(
+  TrustedScriptURL* result = default_policy->createScriptURLInternal(
       execution_context->GetIsolate(), script_url,
       GetDefaultCallbackArgs(execution_context->GetIsolate(),
                              "TrustedScriptURL", interface_name, property_name),
@@ -465,6 +470,7 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
     return g_empty_string;
   }
 
+  // Step 4: Handle null-ish string result.
   if (result->toString().IsNull()) {
     if (TrustedTypeFail(kTrustedScriptURLAssignmentAndDefaultPolicyFailed,
                         execution_context, interface_name, property_name,
