@@ -76,6 +76,12 @@ MATCHER_P(HasEncryptionKeyName, expected_key_name, "") {
   return arg.encryption_key_name() == expected_key_name;
 }
 
+// Matcher for sync_pb::EntitySpecifics: verifies that the
+// WebAuthn credential entity's encrypted blob matches the expected value.
+MATCHER_P(EntityHasEncryptedBlob, blob, "") {
+  return arg.specifics().webauthn_credential().encrypted() == blob;
+}
+
 // Matcher for sync_pb::DataTypeState: verifies that initial sync is done.
 MATCHER(HasInitialSyncDone, "") {
   return arg.initial_sync_state() ==

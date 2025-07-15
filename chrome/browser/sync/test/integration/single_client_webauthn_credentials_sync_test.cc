@@ -761,6 +761,41 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
             kDisplayName2);
 }
 
+// Verifies that UpdatePasskeyEncryptedBlob propagates new blob to the server
+// and the local model.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       UpdatePasskeyEncryptedBlob) {
+  ASSERT_TRUE(SetupSync());
+
+  // Add an initial passkey.
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().AddNewPasskeyForTesting(passkey);
+  ASSERT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+
+  // Create a new “encrypted” blob with 32 random bytes.
+  std::string new_encrypted_blob(32, '\0');
+  base::RandBytes(base::as_writable_bytes(base::span(new_encrypted_blob)));
+
+  // Perform the update and wait for the model-observer notification.
+  PasskeyChangeObservationChecker change_checker(
+      kSingleProfile,
+      {{webauthn::PasskeyModelChange::ChangeType::UPDATE, passkey.sync_id()}});
+  EXPECT_TRUE(GetModel().UpdatePasskeyEncryptedBlob(passkey.credential_id(),
+                                                    new_encrypted_blob));
+  EXPECT_TRUE(change_checker.Wait());
+
+  // Local model should now contain the new blob.
+  EXPECT_EQ(GetModel().GetAllPasskeys().at(0).encrypted(), new_encrypted_blob);
+
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(testing::AllOf(
+                      EntityHasSyncId(passkey.sync_id()),
+                      syncer::EntityHasEncryptedBlob(new_encrypted_blob))))
+                  .Wait());
+}
+
 // Tests that attempting to update a non existing passkey returns false.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UpdateNonExistingPasskey) {

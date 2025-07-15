@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // request.
   bool large_blob_written = false;
 
+  // Populated only when largeBlob.write succeeded for enclave responses where
+  // the passkey is modified by a large blob write.
+  std::optional<std::vector<uint8_t>> updated_encrypted_passkey;
+
   // Contains the compressed largeBlob data when the extension form is used.
   // This will be decompressed during processing and used to populate
   // `large_blob`.

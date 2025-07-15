@@ -88,6 +88,13 @@ const char kAddUVKeyCommandName[] = "device/add_uv_key";
 const char kPrfFirst[] = "first";
 const char kPrfSecond[] = "second";
 
+// Keys in a large blob response structure.
+const char kLargeBlobKey[] = "largeBlob";
+const char kLargeBlobDataKey[] = "largeBlobData";
+const char kLargeBlobSizeKey[] = "largeBlobSize";
+const char kLargeBlobWrittenKey[] = "largeBlobWritten";
+const char kEncryptedKey[] = "encrypted";
+
 const cbor::Value::MapValue* cborFindMap(const cbor::Value::MapValue& map,
                                          std::string key) {
   auto value_it = map.find(cbor::Value(key));
@@ -314,6 +321,53 @@ ParseGetAssertionResponse(cbor::Value response_value,
       CredentialType::kPublicKey,
       fido_parsing_utils::Materialize(credential_id));
   response->hmac_secret = std::move(prf_results);
+  const cbor::Value::MapValue* large_blob_map =
+      cborFindMap(*last_response, kLargeBlobKey);
+
+  if (large_blob_map) {
+    const auto* data = cborFindBytestring(*large_blob_map, kLargeBlobDataKey);
+    auto size_it = large_blob_map->find(cbor::Value(kLargeBlobSizeKey));
+    const bool has_data = data != nullptr;
+    const bool has_size = size_it != large_blob_map->end();
+
+    if (has_data != has_size) {
+      return ErrorResponse(
+          "Malformed largeBlob: data/size field mismatch in enclave response.");
+    }
+    if (has_size &&
+        (!size_it->second.is_integer() || size_it->second.GetInteger() < 0)) {
+      return ErrorResponse(
+          "Malformed largeBlob: largeBlobSize must be a non-negative int.");
+    }
+
+    auto it_written = large_blob_map->find(cbor::Value(kLargeBlobWrittenKey));
+    if (it_written != large_blob_map->end() && !it_written->second.is_bool()) {
+      return ErrorResponse(
+          "Malformed largeBlob: largeBlobWritten is not a boolean.");
+    }
+    if (it_written != large_blob_map->end() && it_written->second.GetBool() &&
+        cborFindBytestring(*large_blob_map, kEncryptedKey) == nullptr) {
+      return ErrorResponse(
+          "Malformed largeBlob: encrypted blob data missing when "
+          "largeBlobWritten is true.");
+    }
+
+    // Large blob read path.
+    if (data) {
+      LargeBlob large_blob(std::vector<uint8_t>(*data),
+                           static_cast<uint64_t>(size_it->second.GetInteger()));
+      response->large_blob_extension = std::move(large_blob);
+    }
+
+    // Large blob write acknowledgement path.
+    if (it_written != large_blob_map->end()) {
+      response->large_blob_written = it_written->second.GetBool();
+      if (response->large_blob_written) {
+        response->updated_encrypted_passkey =
+            *cborFindBytestring(*large_blob_map, kEncryptedKey);
+      }
+    }
+  }
 
   return std::move(*response);
 }

@@ -200,6 +200,21 @@ bool TestPasskeyModel::UpdatePasskeyTimestamp(const std::string& credential_id,
   return true;
 }
 
+bool TestPasskeyModel::UpdatePasskeyEncryptedBlob(
+    const std::string& credential_id,
+    const std::string& new_encrypted_blob) {
+  auto it =
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
+  if (it == credentials_.end()) {
+    return false;
+  }
+  it->set_encrypted(new_encrypted_blob);
+  NotifyPasskeysChanged(
+      {PasskeyModelChange(PasskeyModelChange::ChangeType::UPDATE, *it)});
+  return true;
+}
+
 void TestPasskeyModel::NotifyPasskeysChanged(
     const std::vector<PasskeyModelChange>& changes) {
   for (auto& observer : observers_) {

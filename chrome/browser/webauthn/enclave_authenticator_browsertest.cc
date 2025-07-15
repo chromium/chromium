@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -133,6 +134,54 @@ static constexpr char kMakeCredentialLargeBlob[] = R"((() => {
     window.domAutomationController.send(
         "largeblob " + (lb ? lb.supported : lb));
   }, e => window.domAutomationController.send("error " + e));
+})())";
+
+static constexpr char kGetAssertionWriteLargeBlob[] = R"((() => {
+  const credIdB64 = "$1";
+  const blob      = new TextEncoder().encode("hello world");
+
+  // helper
+  const b64ToBuf = b64 => {
+    const bin = atob(b64);
+    const u8  = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) u8[i] = bin.charCodeAt(i);
+    return u8.buffer;
+  };
+
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: "discouraged",
+    allowCredentials: [{ type: "public-key", id: b64ToBuf(credIdB64) }],
+    extensions: { largeBlob: { write: blob } },
+  }}).then(_ => window.domAutomationController.send("write ok"),
+           e  => window.domAutomationController.send("error " + e));
+})())";
+
+static constexpr char kGetAssertionReadLargeBlob[] = R"((() => {
+  const credIdB64 = "$1";
+
+  const b64ToBuf = b64 => {
+    const bin = atob(b64);
+    const u8  = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) u8[i] = bin.charCodeAt(i);
+    return u8.buffer;
+  };
+
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: "discouraged",
+    allowCredentials: [{ type: "public-key", id: b64ToBuf(credIdB64) }],
+    extensions: { largeBlob: { read: true } },
+  }}).then(c => {
+      const lb = c.getClientExtensionResults().largeBlob;
+      const txt = lb && lb.blob
+                  ? new TextDecoder().decode(lb.blob)
+                  : "";
+      window.domAutomationController.send("read " + txt);
+    },
+    e => window.domAutomationController.send("error " + e));
 })())";
 
 static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
@@ -591,6 +640,8 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       pre_tai_run_loop_->Run();
       pre_tai_run_loop_ = std::make_unique<base::RunLoop>();
     }
+
+    void RunMakeCredentialWithLargeBlobSupport(std::string* out_b64);
 
     void WaitForDelegateDestruction() {
       destruction_run_loop_->Run();
@@ -4166,6 +4217,90 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string script_result;
   ASSERT_TRUE(queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"largeblob true\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       GetAssertion_LargeBlobWriteThenRead) {
+  // New empty vault.
+  SetTrustedVaultEmpty();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialLargeBlob);
+
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"largeblob true\"");
+
+  const auto passkeys = passkey_model()->GetAllPasskeys();
+  ASSERT_EQ(passkeys.size(), 1u);
+  const std::string cred_id_b64 =
+      base::Base64Encode(passkeys[0].credential_id());
+
+  auto run_get_and_confirm = [&](const std::string& js) {
+    content::DOMMessageQueue q(web_contents);
+    content::ExecuteScriptAsync(web_contents, js);
+
+    // Wait for Chrome UI.
+    delegate_observer()->WaitForUI();
+
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+    dialog_model()->OnUserConfirmedPriorityMechanism();
+
+    // Collect the JS result.
+    std::string r;
+    CHECK(q.WaitForMessage(&r));
+    return r;
+  };
+
+  // Write the blob.
+  std::string write_js = base::ReplaceStringPlaceholders(
+      kGetAssertionWriteLargeBlob, {cred_id_b64}, nullptr);
+  EXPECT_EQ(run_get_and_confirm(write_js), "\"write ok\"");
+
+  // Read it back and verify contents.
+  std::string read_js = base::ReplaceStringPlaceholders(
+      kGetAssertionReadLargeBlob, {cred_id_b64}, nullptr);
+  EXPECT_EQ(run_get_and_confirm(read_js), "\"read hello world\"");
+}
+
+// Disable large blob for GPM feature flag.
+class EnclaveLargeBlobFlagOffTest : public EnclaveAuthenticatorBrowserTest {
+ public:
+  EnclaveLargeBlobFlagOffTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnLargeBlobForGPM);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnclaveLargeBlobFlagOffTest,
+                       LargeBlobExtensionNotOfferedWhenFlagDisabled) {
+  SetTrustedVaultEmpty();
+  content::WebContents* wc =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue q(wc);
+  content::ExecuteScriptAsync(wc, kMakeCredentialLargeBlob);
+
+  delegate_observer()->WaitForUI();
+  dialog_model()->OnGPMCreatePasskey();
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string result;
+  ASSERT_TRUE(q.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"largeblob false\"");
 }
 
 }  // namespace

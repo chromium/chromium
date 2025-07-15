@@ -31,6 +31,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/network_context_factory.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace device::enclave {
@@ -94,6 +95,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     MakeCredentialCallback callback;
   };
 
+  void DispatchGetAssertion();
+  void OnHaveReencodedLargeBlob(
+      size_t original_size,
+      base::expected<mojo_base::BigBuffer, std::string> maybe_deflated);
+  void OnHaveInflatedLargeBlobForGetAssertion(
+      AuthenticatorGetAssertionResponse,
+      base::expected<mojo_base::BigBuffer, std::string>);
+  void ReturnGetAssertionSuccess(AuthenticatorGetAssertionResponse);
   void DispatchMakeCredentialWithNewUVKey(
       base::span<const uint8_t> uv_public_key);
   void DispatchGetAssertionWithNewUVKey(
@@ -115,6 +124,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
       GetAssertionStatus status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
 
+  data_decoder::DataDecoder* data_decoder();
+
   const std::array<uint8_t, 8> id_;
   const NetworkContextFactory network_context_factory_;
   const std::unique_ptr<CredentialRequest> ui_request_;
@@ -127,6 +138,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
 
   // Set to true when the request included a deferred UV key creation.
   bool includes_new_uv_key_ = false;
+
+  std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

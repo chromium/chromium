@@ -434,6 +434,20 @@ bool PasskeySyncBridge::UpdatePasskeyTimestamp(const std::string& credential_id,
           last_used_time));
 }
 
+bool PasskeySyncBridge::UpdatePasskeyEncryptedBlob(
+    const std::string& credential_id,
+    const std::string& new_encrypted_blob) {
+  return UpdateSinglePasskey(
+      credential_id,
+      base::BindOnce(
+          [](const std::string& blob,
+             sync_pb::WebauthnCredentialSpecifics* passkey) -> bool {
+            passkey->set_encrypted(blob);
+            return true;
+          },
+          new_encrypted_blob));
+}
+
 sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
     std::string_view rp_id,
     const UserEntity& user_entity,

@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
@@ -252,6 +253,15 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
           selected_credential =
               std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
                   std::move(cred));
+          request->save_passkey_callback = base::BindOnce(
+              [](base::WeakPtr<GPMEnclaveTransaction> txn,
+                 sync_pb::WebauthnCredentialSpecifics passkey) {
+                if (txn) {
+                  txn->OnPasskeyEncryptedBlobUpdated(passkey.credential_id(),
+                                                     passkey.encrypted());
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr());
           break;
         }
       }
@@ -306,4 +316,10 @@ void GPMEnclaveTransaction::OnPasskeyCreated(
     sync_pb::WebauthnCredentialSpecifics passkey) {
   passkey_model_->CreatePasskey(passkey);
   delegate_->OnPasskeyCreated(passkey);
+}
+
+void GPMEnclaveTransaction::OnPasskeyEncryptedBlobUpdated(
+    const std::string& credential_id,
+    const std::string& encrypted_data) {
+  passkey_model_->UpdatePasskeyEncryptedBlob(credential_id, encrypted_data);
 }

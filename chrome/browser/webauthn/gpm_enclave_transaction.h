@@ -129,6 +129,8 @@ class GPMEnclaveTransaction {
 
   void HandlePINValidationResult(device::enclave::PINValidationResult result);
   void OnPasskeyCreated(sync_pb::WebauthnCredentialSpecifics passkey);
+  void OnPasskeyEncryptedBlobUpdated(const std::string& credential_id,
+                                     const std::string& encrypted_data);
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<webauthn::PasskeyModel> passkey_model_;

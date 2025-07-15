@@ -144,6 +144,13 @@ class PasskeyModel : public KeyedService {
   virtual bool UpdatePasskeyTimestamp(const std::string& credential_id,
                                       base::Time last_used_time) = 0;
 
+  // Replaces the `encrypted` blob of an existing passkey.
+  // Used when the enclave rotates ciphertext after a large blob
+  // write. Returns false if the credential isn’t found.
+  virtual bool UpdatePasskeyEncryptedBlob(
+      const std::string& credential_id,
+      const std::string& new_encrypted_blob) = 0;
+
   // Creates a passkey for the given RP and user and returns the new entity
   // specifics.
   //
