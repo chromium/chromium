@@ -328,6 +328,13 @@ crbug.com/40946176 [ Mac ] virtual/threaded/external/wpt/css/css-view-transition
 crbug.com/40946176 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 crbug.com/40946176 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/snapshot-containing-block-includes-scrollbar-gutter.html [ Failure Pass ]
 
+# Secure Payment Confirmation Browser Bound Keys are not implemented on Desktop yet.
+crbug.com/377278827 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-created.https.html [ Failure ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/authentication-accepted-bbk-reused.https.html [ Failure ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Failure ]
+crbug.com/377278827 external/wpt/secure-payment-confirmation/enrollment-bbk.https.html [ Failure ]
+
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
 
