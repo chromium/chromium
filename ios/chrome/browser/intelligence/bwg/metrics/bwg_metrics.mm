@@ -6,11 +6,11 @@
 
 #import "base/metrics/histogram_functions.h"
 
-const char kEligibilityHistogram[] = "IOS.BWG.Eligibility";
+const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
-const char kEntryPointHistogram[] = "IOS.BWG.EntryPoint";
+const char kEntryPointHistogram[] = "IOS.Gemini.EntryPoint";
 
-const char kFREEntryPointHistogram[] = "IOS.BWG.FRE.EntryPoint";
+const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 

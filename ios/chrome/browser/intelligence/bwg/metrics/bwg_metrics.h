@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 
-// UMA histogram key for IOS.BWG.Eligibility.
+// UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
 
-// UMA histogram key for IOS.BWG.EntryPoint.
+// UMA histogram key for IOS.Gemini.EntryPoint.
 extern const char kEntryPointHistogram[];
 
-// UMA histogram key for IOS.BWG.FRE.EntryPoint.
+// UMA histogram key for IOS.Gemini.FRE.EntryPoint.
 extern const char kFREEntryPointHistogram[];
 
 // UMA histogram key for IOS.Gemini.FRE.PromoAction.

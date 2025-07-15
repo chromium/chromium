@@ -386,35 +386,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.BWG.Eligibility" enum="Boolean" expires_after="2026-02-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-alchemy@google.com</owner>
-  <summary>
-    Records whether the user is eligible for BWG. Logged when eligibility is
-    checked prior to showing entry points, promos, etc.
-  </summary>
-</histogram>
-
-<histogram name="IOS.BWG.EntryPoint" enum="IOSBWGEntryPoint"
-    expires_after="2026-02-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-alchemy@google.com</owner>
-  <summary>
-    Records the entry point source from which BWG was triggered. Recorded when
-    BWG is triggered.
-  </summary>
-</histogram>
-
-<histogram name="IOS.BWG.FRE.EntryPoint" enum="IOSBWGEntryPoint"
-    expires_after="2026-02-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-alchemy@google.com</owner>
-  <summary>
-    Records the entry point source from which BWG First Run Experience (FRE) was
-    triggered. Recorded when the BWG FRE is triggered.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="2023-09-07">
   <owner>michaeldo@chromium.org</owner>
@@ -2051,6 +2022,36 @@ chromium-metrics-reviews@google.com.
     <variant name="Enter" summary="enter"/>
     <variant name="Exit" summary="exit"/>
   </token>
+</histogram>
+
+<histogram name="IOS.Gemini.Eligibility" enum="Boolean"
+    expires_after="2026-02-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records whether the user is eligible for Gemini. Logged when eligibility is
+    checked prior to showing entry points, promos, etc.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.EntryPoint" enum="IOSGeminiEntryPoint"
+    expires_after="2026-02-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the entry point source from which Gemini was triggered. Recorded
+    when Gemini is triggered.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.FRE.EntryPoint" enum="IOSGeminiEntryPoint"
+    expires_after="2026-02-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the entry point source from which Gemini First Run Experience (FRE)
+    was triggered. Recorded when the Gemini FRE is triggered.
+  </summary>
 </histogram>
 
 <histogram name="IOS.Gemini.FRE.PromoAction" enum="IOSGeminiFREPromoAction"

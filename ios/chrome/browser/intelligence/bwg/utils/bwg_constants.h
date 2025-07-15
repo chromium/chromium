@@ -9,25 +9,25 @@
 
 namespace bwg {
 
-// The different entrypoints from which BWG was opened.
-// Logged as IOSBWGEntryPoint enum for the IOS.BWG.EntryPoint histogram.
-// LINT.IfChange(IOSBWGEntryPoint)
+// The different entrypoints from which Gemini was opened.
+// Logged as IOSGeminiEntryPoint enum for the IOS.Gemini.EntryPoint histogram.
+// LINT.IfChange(EntryPoint)
 enum class EntryPoint {
-  // BWG was opened directly from a BWG promo.
+  // Gemini was opened directly from a Gemini promo.
   Promo = 0,
-  // BWG was opened directly from the overflow menu.
+  // Gemini was opened directly from the overflow menu.
   OverflowMenu = 1,
-  // BWG was opened from the AI Hub.
+  // Gemini was opened from the AI Hub.
   AIHub = 2,
-  // BWG was opened directly from the Omnibox chip, skipping the AI Hub.
+  // Gemini was opened directly from the Omnibox chip, skipping the AI Hub.
   OmniboxChip = 3,
-  // BWG was opened via re opening a tab that had BWG open.
+  // Gemini was opened via re opening a tab that had Gemini open.
   TabReopen = 4,
-  // BWG was opened from the Diamond prototype.
+  // Gemini was opened from the Diamond prototype.
   Diamond = 5,
   kMaxValue = Diamond,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSBWGEntryPoint)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 
 }  // namespace bwg
 
