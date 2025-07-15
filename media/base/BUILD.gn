@@ -68,7 +68,6 @@ source_set("base") {
     "audio_capturer_source.h",
     "audio_codecs.cc",
     "audio_codecs.h",
-    "audio_codecs.h",
     "audio_converter.cc",
     "audio_converter.h",
     "audio_decoder.cc",
