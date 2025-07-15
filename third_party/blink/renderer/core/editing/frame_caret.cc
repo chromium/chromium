@@ -133,10 +133,12 @@ PositionWithAffinity FrameCaret::UpdateAppearance() {
 
   SetBlinkingDisabled(false);
   if (RuntimeEnabledFeatures::CSSCaretAnimationEnabled() &&
-      caret_position.AnchorNode() &&
-      GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode())
-              ->CaretAnimation() == ECaretAnimation::kManual) {
-    SetBlinkingDisabled(true);
+      caret_position.AnchorNode()) {
+    const auto* style =
+        GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
+    if (style && style->CaretAnimation() == ECaretAnimation::kManual) {
+      SetBlinkingDisabled(true);
+    }
   }
 
   // Start blinking with a black caret. Be sure not to restart if we're
@@ -222,9 +224,11 @@ CaretShape FrameCaret::GetCaretShape() const {
   PositionWithAffinity caret_position = CaretPosition();
   CaretShape caret_shape = CaretShape::kBar;
   if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
-    caret_shape = GetCaretShapeFromComputedStyle(
-        *GetComputedStyleForElementOrLayoutObject(
-            *caret_position.AnchorNode()));
+    const auto* style =
+        GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
+    if (style) {
+      caret_shape = GetCaretShapeFromComputedStyle(*style);
+    }
   }
   return caret_shape;
 }
