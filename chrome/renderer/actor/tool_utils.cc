@@ -106,6 +106,16 @@ std::string ToDebugString(const mojom::ToolTargetPtr& target) {
   return ss.str();
 }
 
+bool IsNodeWithinViewport(const blink::WebNode& node) {
+  blink::WebElement element = node.DynamicTo<blink::WebElement>();
+  if (element.IsNull()) {
+    return false;
+  }
+
+  gfx::Rect rect = element.VisibleBoundsInWidget();
+  return !rect.IsEmpty();
+}
+
 mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
                                               int count,
                                               const gfx::PointF& click_point,

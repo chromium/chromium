@@ -47,6 +47,9 @@ bool IsNodeFocused(const content::RenderFrame& frame,
 bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame);
 
+// Returns true if node appears (even partially) in the viewport.
+bool IsNodeWithinViewport(const blink::WebNode& node);
+
 std::string ToDebugString(const mojom::ToolTargetPtr& target);
 
 // Create and dispatch the mouse down event and corresponding mouse up, click

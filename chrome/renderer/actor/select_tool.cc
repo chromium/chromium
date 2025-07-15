@@ -88,6 +88,11 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
         MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
   }
 
+  if (!IsNodeWithinViewport(node)) {
+    return base::unexpected(
+        MakeResult(mojom::ActionResultCode::kElementOffscreen));
+  }
+
   WebSelectElement select = node.DynamicTo<WebSelectElement>();
   if (!select) {
     return base::unexpected(

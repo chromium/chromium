@@ -117,6 +117,10 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
     }
+    if (!IsNodeWithinViewport(scrolling_element)) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kElementOffscreen));
+    }
   }
 
   gfx::Vector2dF offset_physical;

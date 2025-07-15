@@ -1302,6 +1302,30 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
   }
 }
 
+// Test scrolling over a non-scrollable element returns failure.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OffscreenScrollable) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset_y = 80;
+
+  int scroller = GetDOMNodeId(*main_frame(), "#offscreenscroller").value();
+
+  {
+    std::unique_ptr<ToolRequest> action =
+        MakeScrollRequest(*main_frame(), scroller,
+                          /*scroll_offset_x=*/0, scroll_offset_y);
+    TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
+    EXPECT_EQ(0,
+              EvalJs(web_contents(),
+                     "document.getElementById('offscreenscroller').scrollTop"));
+    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  }
+}
+
 // Test that a scrolling over a scroller with overflow in one axis only works
 // correctly.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
@@ -2104,6 +2128,29 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
   }
 
   EXPECT_EQ(GetSelectElementCurrentValue(plain_select_id), "last");
+}
+
+// Test that attempting to select a value that does not exist in the <option>
+// list fails and does not change the current selection.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OffscreenFails) {
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string offscreen_select_id = "#offscreenSelect";
+  int32_t offscreen_select_dom_node_id =
+      GetDOMNodeId(*main_frame(), offscreen_select_id).value();
+
+  const std::string initial_value =
+      GetSelectElementCurrentValue(offscreen_select_id);
+  ASSERT_EQ(initial_value, "alpha");
+
+  std::unique_ptr<ToolRequest> action =
+      MakeSelectRequest(*main_frame(), offscreen_select_dom_node_id, "beta");
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kElementOffscreen);
+
+  EXPECT_EQ(GetSelectElementCurrentValue(offscreen_select_id), initial_value);
 }
 
 // Test that the SelectTool causes the change and input events to fire on the
