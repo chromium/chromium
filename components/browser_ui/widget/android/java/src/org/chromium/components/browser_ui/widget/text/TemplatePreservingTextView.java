@@ -88,8 +88,12 @@ public class TemplatePreservingTextView extends AppCompatTextView {
         // Ellipsize the content to the available width.
         CharSequence clipped = TextUtils.ellipsize(mContent, paint, contentWidth, TruncateAt.END);
 
-        // Build the full string, which should fit within availWidth.
-        return String.format(mTemplate, clipped);
+        // Build the full string, and if it does not fit within availWidth, truncate it further.
+        CharSequence fullString = String.format(mTemplate, clipped);
+        boolean shouldClipFullString = (int) paint.measureText((String) fullString) > availWidth;
+        return shouldClipFullString
+                ? TextUtils.ellipsize(fullString, paint, availWidth, TruncateAt.END)
+                : fullString;
     }
 
     private void updateVisibleText(int availWidth, boolean unspecifiedWidth) {
