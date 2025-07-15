@@ -85,7 +85,7 @@ public class ReaderModeToolbarButtonControllerTest {
     public void buttonSpecChangesWhenInReaderMode() {
         ReaderModeToolbarButtonController controller = createController();
         assertEquals(
-                R.string.show_reading_mode_text,
+                R.string.reader_mode_cpa_button_text,
                 controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
 
         // Simulate the url changing to reader mode, and verify that the button was swapped.
@@ -101,7 +101,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(false);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(null);
         assertEquals(
-                R.string.show_reading_mode_text,
+                R.string.reader_mode_cpa_button_text,
                 controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
 
         // Flip it back
@@ -116,7 +116,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mMockActivityTabProvider.get()).thenReturn(null);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(null);
         assertEquals(
-                R.string.show_reading_mode_text,
+                R.string.reader_mode_cpa_button_text,
                 controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
     }
 }
