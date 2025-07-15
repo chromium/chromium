@@ -30,6 +30,8 @@ enum WrappablePointerTag : uint16_t {
   kJsBinding,                          // js_injection::JsBinding
   kJSHookInterface,                    // extensions::JSHookInterface
   kLastErrorObject,                    // extensions::LastErrorObject
+  kLocalStorageArea,                   // extensions::LocalStorageArea
+  kManagedStorageArea,                 // extensions::ManagedStorageArea
   kMojo,                               // ax::Mojo
   kMojoHandle,                         // ax::MojoHandle
   kNetErrorPageController,             // NetErrorPageController
@@ -37,9 +39,11 @@ enum WrappablePointerTag : uint16_t {
   kPluginPlaceholder,                  // plugins::PluginPlaceholder
   kReadAnythingAppController,          // ReadAnythingAppController
   kSearchBoxBindings,                  // SearchBoxBindings
+  kSessionStorageArea,                 // extensions::SessionStorageArea
   kSkiaBenchmarking,                   // content::SkiaBenchmarking
   kStatsCollectionController,          // content::StatsCollectionController
   kSupervisedUserErrorPageController,  // SupervisedUserErrorPageController
+  kSyncStorageArea,                    // extensions::SyncStorageArea
   kTestGinWrappable,                   // GinWrappable
   kTestObject,                         // gin::TestGinObject
   kTestObject2,                        // gin::MyObject2

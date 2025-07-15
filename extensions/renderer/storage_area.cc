@@ -16,7 +16,10 @@
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 
@@ -25,7 +28,7 @@ namespace extensions {
 namespace {
 
 #define DEFINE_STORAGE_AREA_HANDLERS()                                      \
-  const char* GetTypeName() override {                                      \
+  const char* GetHumanReadableName() const override {                       \
     return "StorageArea";                                                   \
   }                                                                         \
   void Get(gin::Arguments* arguments) {                                     \
@@ -56,8 +59,7 @@ namespace {
 // gin::Wrappables for each of the storage areas. Since each has slightly
 // different properties, and the object template is shared between all
 // instances, this is a little verbose.
-class LocalStorageArea final
-    : public gin::DeprecatedWrappable<LocalStorageArea> {
+class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
  public:
   LocalStorageArea(APIRequestHandler* request_handler,
                    APIEventHandler* event_handler,
@@ -74,11 +76,14 @@ class LocalStorageArea final
 
   ~LocalStorageArea() override = default;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kLocalStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return DeprecatedWrappable<LocalStorageArea>::GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(
                isolate)
         .SetMethod("get", &LocalStorageArea::Get)
         .SetMethod("getKeys", &LocalStorageArea::GetKeys)
@@ -101,10 +106,7 @@ class LocalStorageArea final
   StorageArea storage_area_;
 };
 
-gin::DeprecatedWrapperInfo LocalStorageArea::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
-class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
+class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
  public:
   SyncStorageArea(APIRequestHandler* request_handler,
                   APIEventHandler* event_handler,
@@ -121,11 +123,14 @@ class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
 
   ~SyncStorageArea() override = default;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSyncStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return DeprecatedWrappable<SyncStorageArea>::GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(
                isolate)
         .SetMethod("get", &SyncStorageArea::Get)
         .SetMethod("getKeys", &SyncStorageArea::GetKeys)
@@ -158,11 +163,7 @@ class SyncStorageArea final : public gin::DeprecatedWrappable<SyncStorageArea> {
   StorageArea storage_area_;
 };
 
-gin::DeprecatedWrapperInfo SyncStorageArea::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
-class ManagedStorageArea final
-    : public gin::DeprecatedWrappable<ManagedStorageArea> {
+class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
  public:
   ManagedStorageArea(APIRequestHandler* request_handler,
                      APIEventHandler* event_handler,
@@ -179,11 +180,14 @@ class ManagedStorageArea final
 
   ~ManagedStorageArea() override = default;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kManagedStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return DeprecatedWrappable<ManagedStorageArea>::GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(
                isolate)
         .SetMethod("get", &ManagedStorageArea::Get)
         .SetMethod("getKeys", &ManagedStorageArea::GetKeys)
@@ -200,11 +204,7 @@ class ManagedStorageArea final
   StorageArea storage_area_;
 };
 
-gin::DeprecatedWrapperInfo ManagedStorageArea::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
-class SessionStorageArea final
-    : public gin::DeprecatedWrappable<SessionStorageArea> {
+class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
  public:
   SessionStorageArea(APIRequestHandler* request_handler,
                      APIEventHandler* event_handler,
@@ -221,11 +221,14 @@ class SessionStorageArea final
 
   ~SessionStorageArea() override = default;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSessionStorageArea};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return DeprecatedWrappable<SessionStorageArea>::GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(
                isolate)
         .SetMethod("get", &SessionStorageArea::Get)
         .SetMethod("getKeys", &SessionStorageArea::GetKeys)
@@ -249,9 +252,6 @@ class SessionStorageArea final
 
   StorageArea storage_area_;
 };
-
-gin::DeprecatedWrapperInfo SessionStorageArea::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 #undef DEFINE_STORAGE_AREA_HANDLERS
 
@@ -280,26 +280,26 @@ v8::Local<v8::Object> StorageArea::CreateStorageArea(
     const BindingAccessChecker* access_checker) {
   v8::Local<v8::Object> object;
   if (property_name == "local") {
-    gin::Handle<LocalStorageArea> handle = gin::CreateHandle(
-        isolate, new LocalStorageArea(request_handler, event_handler, type_refs,
-                                      access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<LocalStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else if (property_name == "sync") {
-    gin::Handle<SyncStorageArea> handle = gin::CreateHandle(
-        isolate, new SyncStorageArea(request_handler, event_handler, type_refs,
-                                     access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<SyncStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else if (property_name == "session") {
-    gin::Handle<SessionStorageArea> handle = gin::CreateHandle(
-        isolate, new SessionStorageArea(request_handler, event_handler,
-                                        type_refs, access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<SessionStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   } else {
     CHECK_EQ("managed", property_name);
-    gin::Handle<ManagedStorageArea> handle = gin::CreateHandle(
-        isolate, new ManagedStorageArea(request_handler, event_handler,
-                                        type_refs, access_checker));
-    object = handle.ToV8().As<v8::Object>();
+    auto* area = cppgc::MakeGarbageCollected<ManagedStorageArea>(
+        isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+        event_handler, type_refs, access_checker);
+    object = area->GetWrapper(isolate).ToLocalChecked();
   }
   return object;
 }
