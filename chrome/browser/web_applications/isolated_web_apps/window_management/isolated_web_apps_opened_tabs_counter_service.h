@@ -47,13 +47,30 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
                                                 public BrowserListObserver,
                                                 public TabStripModelObserver {
  public:
+  using CloseWebContentsCallback =
+      base::RepeatingCallback<void(const webapps::AppId&)>;
+  using NotificationAcknowledgedCallback =
+      base::RepeatingCallback<void(const webapps::AppId&)>;
+  using CloseNotificationCallback = base::RepeatingClosure;
+
   explicit IsolatedWebAppsOpenedTabsCounterService(Profile* profile);
   ~IsolatedWebAppsOpenedTabsCounterService() override;
 
   // KeyedService:
   void Shutdown() override;
 
+  void OnNotificationAcknowledged(const webapps::AppId& app_id);
+  void CloseNotification(const webapps::AppId& app_id);
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
+      ClickCloseWindowsButtonClosesChildWindowsAndNotification);
+
+  struct NotificationState {
+    bool is_active = false;
+  };
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
@@ -65,24 +82,29 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
       const TabStripSelectionChange& selection) override;
 
   void HandleOpenerCountIfTracked(content::WebContents* contents);
-  void HandleTabOrWindowClosure(content::WebContents* contents);
+  void HandleTabClosure(content::WebContents* contents);
   std::optional<webapps::AppId> MaybeGetOpenerIsolatedWebAppId(
       content::WebContents* contents);
 
-  void IncrementWindowCountForApp(const webapps::AppId& app_id);
-  void DecrementWindowCountForApp(const webapps::AppId& app_id);
+  void IncrementTabCountForApp(const webapps::AppId& app_id);
+  void DecrementTabCountForApp(const webapps::AppId& app_id);
 
   void UpdateOrRemoveNotificationForOpener(const webapps::AppId& app_id);
   void CreateAndDisplayNotification(const webapps::AppId& app_id,
                                     int current_window_count);
+  void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
 
   Profile* profile() { return &profile_.get(); }
 
   const raw_ref<Profile> profile_;
-  base::flat_map<webapps::AppId, int> app_window_counts_;
+  base::flat_map<webapps::AppId, int> app_tab_counts_;
   base::flat_map<content::WebContents*, webapps::AppId> opened_by_app_map_;
+  std::map<webapps::AppId, NotificationState> notification_states_;
+
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+  base::WeakPtrFactory<IsolatedWebAppsOpenedTabsCounterService>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_

@@ -132,17 +132,18 @@ class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
     ASSERT_TRUE(notification.has_value());
 
     std::u16string expected_title =
-        base::UTF8ToUTF16(app_display_name + " has opened multiple windows.");
+        base::UTF8ToUTF16(app_display_name + " has opened multiple tabs.");
     EXPECT_EQ(notification->title(), expected_title);
 
     std::u16string expected_message =
         base::NumberToString16(opened_window_count) +
-        u" new Chrome windows or tabs have been opened by this app. You "
+        u" new Chrome tabs have been opened by this app. You "
         u"can manage this behavior under \"Pop-ups and Redirects\" permission.";
     EXPECT_EQ(notification->message(), expected_message);
 
-    ASSERT_EQ(notification->buttons().size(), 1u);
+    ASSERT_EQ(notification->buttons().size(), 2u);
     EXPECT_EQ(notification->buttons()[0].title, u"Change permissions");
+    EXPECT_EQ(notification->buttons()[1].title, u"Close opened tabs");
   }
 
  protected:
@@ -155,8 +156,9 @@ class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
-                       SingleIwaMultipleWebContentsOpenedServiceNotification) {
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
+    SingleIwaIsolatedWebAppsOpenedTabsCounterServiceNotification) {
   webapps::AppId app_id = InstallIsolatedWebApp();
   content::WebContents* iwa_opener_web_contents =
       OpenIwaWindow(app_id)->tab_strip_model()->GetActiveWebContents();
@@ -312,4 +314,55 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                             kIsolatedApp1DefaultName);
   CheckNotificationContents(app2_id, /*opened_window_count=*/2,
                             kIsolatedApp2DefaultName);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
+    ClickCloseWindowsButtonClosesChildWindowsAndNotification) {
+  webapps::AppId app_id = InstallIsolatedWebApp();
+  Browser* iwa_browser = OpenIwaWindow(app_id);
+  content::WebContents* iwa_opener_web_contents =
+      iwa_browser->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<void> notification_added_future;
+  display_service_tester_->SetNotificationAddedClosure(
+      notification_added_future.GetRepeatingCallback());
+
+  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
+                                GURL("https://example.com/child1"));
+  EXPECT_FALSE(notification_added_future.IsReady());
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  OpenChildWindowAndExpectNotificationContents(
+      iwa_opener_web_contents, GURL("https://example.com/child2"), app_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
+      kIsolatedApp1DefaultName);
+
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  std::optional<message_center::Notification> notification =
+      display_service_tester_->GetNotification(GetNotificationIdForApp(app_id));
+  ASSERT_TRUE(notification.has_value());
+
+  EXPECT_EQ(isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_.at(
+                app_id),
+            2);
+
+  base::test::TestFuture<void> notification_closed_future;
+  display_service_tester_->SetNotificationClosedClosure(
+      notification_closed_future.GetRepeatingCallback());
+
+  // Button at index 1 is the "Close all" button.
+  notification->delegate()->Click(/*button_index=*/1,
+                                  /*reply=*/std::nullopt);
+
+  // Clicking the button asynchronously closes the child windows and the
+  // notification itself.
+  ASSERT_TRUE(notification_closed_future.Wait());
+
+  ASSERT_FALSE(base::Contains(
+      isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_, app_id));
+
+  EXPECT_EQ(0u, GetNotificationCount());
+  ASSERT_FALSE(iwa_browser->IsBrowserClosing());
 }
