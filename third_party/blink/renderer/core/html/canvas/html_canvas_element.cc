@@ -394,7 +394,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
-  if (!GetOrCreateCanvasResourceProviderForCanvas2D()) {
+  if (!GetResourceProviderForCanvas2D()->IsValid()) {
     return false;
   }
 
