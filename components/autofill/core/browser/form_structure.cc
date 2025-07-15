@@ -773,8 +773,7 @@ size_t FormStructure::field_count() const {
 }
 
 const AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) const {
-  auto it = std::ranges::find(
-      fields_, field_id, [](const auto& field) { return field->global_id(); });
+  auto it = std::ranges::find(fields_, field_id, &FormFieldData::global_id);
   return it != fields_.end() ? it->get() : nullptr;
 }
 

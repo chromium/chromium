@@ -477,9 +477,7 @@ bool AutofillManager::GetCachedFormAndField(
     return false;
   }
   *form_structure = cached_form;
-  auto field_it =
-      std::ranges::find(*cached_form, field_id, &AutofillField::global_id);
-  *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
+  *autofill_field = cached_form->GetFieldById(field_id);
   return *autofill_field != nullptr;
 }
 
