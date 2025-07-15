@@ -80,6 +80,74 @@ function compareBuffersWithConstraints(should, actual, expected, options) {
       .beLessThanOrEqualTo(thresholdDiffCount);
 }
 
+// TODO(saqlain): compareBuffersWithConstraintsModern() is the
+// testharness.js-compatible version of compareBuffersWithConstraints().
+// It replaces the old audit.js-style assertions with
+// standard testharness.js assertions. Once all audit.js tests are migrated,
+// rename this to testTailTime() and delete the old one.
+
+function compareBuffersWithConstraintsModern(actual, expected, options) {
+  if (!options)
+    options = {};
+
+  // Only print out the message if the lengths are different; the
+  // expectation is that they are the same, so don't clutter up the
+  // output.
+  if (actual.length !== expected.length) {
+    assert_equals(
+        actual.length,
+        expected.length,
+        'Length of actual and expected buffers should match');
+  }
+
+  let maxError = -1;
+  let diffCount = 0;
+  let errorPosition = -1;
+  let thresholdSNR = (options.thresholdSNR || 10000);
+
+  let thresholdDiffULP = (options.thresholdDiffULP || 0);
+  let thresholdDiffCount = (options.thresholdDiffCount || 0);
+
+  // By default, the bit depth is 16.
+  let bitDepth = (options.bitDepth || 16);
+  let scaleFactor = Math.pow(2, bitDepth - 1);
+
+  let noisePower = 0, signalPower = 0;
+
+  for (let i = 0; i < actual.length; i++) {
+    let diff = actual[i] - expected[i];
+    noisePower += diff * diff;
+    signalPower += expected[i] * expected[i];
+
+    if (Math.abs(diff) > maxError) {
+      maxError = Math.abs(diff);
+      errorPosition = i;
+    }
+
+    // The reference file is a 16-bit WAV file, so we will almost never get
+    // an exact match between it and the actual floating-point result.
+    if (Math.abs(diff) > scaleFactor)
+      diffCount++;
+  }
+
+  let snr = 10 * Math.log10(signalPower / noisePower);
+  let maxErrorULP = maxError * scaleFactor;
+
+  assert_greater_than_equal(
+      snr, thresholdSNR, 'SNR should be >= threshold (' + thresholdSNR + ')');
+
+  assert_less_than_equal(
+      maxErrorULP,
+      thresholdDiffULP,
+      options.prefix + ': Maximum difference (in ulp units (' + bitDepth +
+          '-bits))');
+
+  assert_less_than_equal(
+      diffCount,
+      thresholdDiffCount,
+      options.prefix + ': Number of differences between results');
+}
+
 // Create an impulse in a buffer of length sampleFrameLength
 function createImpulseBuffer(context, sampleFrameLength) {
   let audioBuffer =
