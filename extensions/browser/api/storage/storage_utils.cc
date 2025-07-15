@@ -28,6 +28,10 @@ constexpr PrefMap kPrefSyncStorageAccessLevel = {"storage_sync_access_level",
                                                  PrefType::kInteger,
                                                  PrefScope::kExtensionSpecific};
 
+constexpr PrefMap kPrefManagedStorageAccessLevel = {
+    "storage_managed_access_level", PrefType::kInteger,
+    PrefScope::kExtensionSpecific};
+
 const PrefMap* GetPrefMapForStorageArea(StorageAreaNamespace storage_area) {
   switch (storage_area) {
     case StorageAreaNamespace::kSession:
@@ -36,8 +40,9 @@ const PrefMap* GetPrefMapForStorageArea(StorageAreaNamespace storage_area) {
       return &kPrefLocalStorageAccessLevel;
     case StorageAreaNamespace::kSync:
       return &kPrefSyncStorageAccessLevel;
-    // Managed and invalid storage areas do not have access levels.
     case StorageAreaNamespace::kManaged:
+      return &kPrefManagedStorageAccessLevel;
+    // An invalid storage area does not have access levels.
     case StorageAreaNamespace::kInvalid:
       NOTREACHED();
   }
@@ -68,8 +73,8 @@ api::storage::AccessLevel GetAccessLevelForArea(
       return api::storage::AccessLevel::kTrustedContexts;
     case StorageAreaNamespace::kLocal:
     case StorageAreaNamespace::kSync:
-      return api::storage::AccessLevel::kTrustedAndUntrustedContexts;
     case StorageAreaNamespace::kManaged:
+      return api::storage::AccessLevel::kTrustedAndUntrustedContexts;
     case StorageAreaNamespace::kInvalid:
       NOTREACHED();
   }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // The extension set the access level to TRUSTED_AND_UNTRUSTED_CONTEXTS for the
-// `local` storage area, while setting `sync` and `session` to the
+// `local` storage area, while setting `sync`, `session`, and `managed` to the
 // `TRUSTED_CONTEXTS` access level.
 const accessibleStorageAreas = ['local'];
 const invalidAccessMessage =
@@ -24,6 +24,11 @@ async function testGetValueSetByBackgroundPage() {
   // storage area has untrusted access. Requires that the background page
   // previously stored {background: '`area`'} for each respective `area`.
   for (const area of accessibleStorageAreas) {
+    // The 'managed' storage area is read-only so the background page cannot
+    // set a value for it.
+    if (area === 'managed') {
+      continue;
+    }
     const value = await chrome.storage[area].get('background');
     chrome.test.assertEq({background: area}, value);
   };
@@ -68,6 +73,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(!!chrome.storage.sync.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.local.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
+    chrome.test.assertTrue(!!chrome.storage.managed.setAccessLevel);
     await chrome.test.assertPromiseRejects(
         chrome.storage.session.setAccessLevel(
             {accessLevel: 'TRUSTED_CONTEXTS'}),
@@ -77,6 +83,10 @@ chrome.test.runTests([
         'Error: Context cannot set the storage access level');
     await chrome.test.assertPromiseRejects(
         chrome.storage.sync.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
+        invalidAccessMessage);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.managed.setAccessLevel(
+            {accessLevel: 'TRUSTED_CONTEXTS'}),
         invalidAccessMessage);
     chrome.test.succeed();
   },

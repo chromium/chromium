@@ -96,17 +96,21 @@ chrome.test.runTests([
   },
 
   async function setAccessLevelFromContentScript() {
-    // TODO(crbug.com/40189208): `setAccessLevel` is exposed to `session`,
-    // `local`, and `sync` but cannot be accessed from a content script. This
-    // will change once we only expose `setAccessLevel` in unprivileged
-    // contexts.
+    // TODO(crbug.com/40189208): `setAccessLevel` is exposed to all valid
+    // storage areas, but cannot be accessed from a content script. This will
+    // change once we only expose `setAccessLevel` in unprivileged contexts.
     chrome.test.assertTrue(!!chrome.storage.sync.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.local.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
+    chrome.test.assertTrue(!!chrome.storage.managed.setAccessLevel);
     await chrome.test.assertPromiseRejects(
         chrome.storage.session.setAccessLevel(
             {accessLevel: 'TRUSTED_CONTEXTS'}),
         invalidAccessMessage);
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.managed.setAccessLevel(
+            {accessLevel: 'TRUSTED_CONTEXTS'}),
+        contextCannotSetAccessLevelMessage);
     await chrome.test.assertPromiseRejects(
         chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
         contextCannotSetAccessLevelMessage);

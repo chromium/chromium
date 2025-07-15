@@ -615,11 +615,10 @@ void StorageFrontend::OnSettingsChanged(
   bool has_area_changed_event_listener =
       event_router->ExtensionHasEventListener(extension_id, area_event_name);
 
-  // Restrict event to privileged context if session, sync, or local access
-  // level is set only to trusted contexts.
+  // Restrict event to privileged context if access level is set only to trusted
+  // contexts.
   std::optional<mojom::ContextType> restrict_to_context_type = std::nullopt;
-  if (storage_area != StorageAreaNamespace::kManaged &&
-      access_level.has_value() &&
+  if (access_level.has_value() &&
       access_level.value() == api::storage::AccessLevel::kTrustedContexts) {
     restrict_to_context_type = mojom::ContextType::kPrivilegedExtension;
   }

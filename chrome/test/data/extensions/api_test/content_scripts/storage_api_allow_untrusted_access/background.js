@@ -13,12 +13,11 @@ async function testSetAndGetValue(area) {
 
 chrome.test.runTests([
   function checkDefaultAccessLevel() {
-    // Make sure `setAccessLevel` is exposed to all storage areas except
-    // `managed`
+    // Make sure `setAccessLevel` is exposed to all storage areas.
     chrome.test.assertTrue(!!chrome.storage.local.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.sync.setAccessLevel);
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
-    chrome.test.assertFalse(!!chrome.storage.managed.setAccessLevel);
+    chrome.test.assertTrue(!!chrome.storage.managed.setAccessLevel);
     chrome.test.succeed();
   },
 
@@ -50,6 +49,13 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function allowUntrustedAccessToManagedStorage() {
+    // Allow context scripts to access the `managed` storage.
+    await chrome.storage.managed.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    chrome.test.succeed();
+  },
+
   // Tests that a content script can listen for storage.session.onChanged,
   // storage.sync.onChanged, and storage.local.onChanged when these storage
   // areas allow untrusted access.
@@ -60,6 +66,8 @@ chrome.test.runTests([
     await chrome.storage.sync.setAccessLevel(
         {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
     await chrome.storage.local.setAccessLevel(
+        {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
+    await chrome.storage.managed.setAccessLevel(
         {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
 
     const expectedMessages = [
@@ -85,6 +93,9 @@ chrome.test.runTests([
     const url = `http://example.com:${config.testServer.port}/simple.html`;
     await openTab(url);
 
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.managed.set({notify: 'yes'}),
+        'Error: This is a read-only store.');
     await chrome.storage.session.set({notify: 'yes'});
     await chrome.storage.sync.set({notify: 'yes'});
     await chrome.storage.local.set({notify: 'yes'});

@@ -42,6 +42,12 @@ chrome.test.runTests([
     const url = `http://example.com:${config.testServer.port}/simple.html`;
     await openTab(url);
 
+    // Check that setting a value for the 'managed' storage area fails, as it
+    // is a read-only store.
+    await chrome.test.assertPromiseRejects(
+        chrome.storage.managed.set({notify: 'yes'}),
+        'Error: This is a read-only store.');
+
     // Setting a value in storage session shouldn't notify the content script
     // when access level only allows trusted access.
     await chrome.storage.session.set({notify: 'yes'});

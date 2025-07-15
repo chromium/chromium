@@ -112,10 +112,7 @@ bool SettingsFunction::PreRunValidation(std::string* error) {
   storage_area_ = StorageAreaFromString(storage_area_string);
   EXTENSION_FUNCTION_PRERUN_VALIDATE(storage_area_ !=
                                      StorageAreaNamespace::kInvalid);
-
-  if (storage_area_ == StorageAreaNamespace::kSession ||
-      storage_area_ == StorageAreaNamespace::kLocal ||
-      storage_area_ == StorageAreaNamespace::kSync) {
+  if (storage_area_ != StorageAreaNamespace::kInvalid) {
     if (!IsAccessToStorageAllowed(storage_area_)) {
       *error = "Access to storage is not allowed from this context.";
       return false;
@@ -424,8 +421,7 @@ void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseAction
 StorageStorageAreaSetAccessLevelFunction::Run() {
-  if (storage_area() == StorageAreaNamespace::kManaged ||
-      storage_area() == StorageAreaNamespace::kInvalid) {
+  if (storage_area() == StorageAreaNamespace::kInvalid) {
     return RespondNow(
         Error("This StorageArea is not available for setting access level"));
   }

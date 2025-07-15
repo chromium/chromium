@@ -195,11 +195,16 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
         .SetMethod("remove", &ManagedStorageArea::Remove)
         .SetMethod("clear", &ManagedStorageArea::Clear)
         .SetMethod("getBytesInUse", &ManagedStorageArea::GetBytesInUse)
+        .SetMethod("setAccessLevel", &ManagedStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &ManagedStorageArea::GetOnChangedEvent);
   }
 
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
+
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
 
   StorageArea storage_area_;
 };
