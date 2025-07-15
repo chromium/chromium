@@ -756,12 +756,7 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
     }
   }
 
-  // Despite the fact that EvalJsResult::value is const, base::Value in general
-  // is moveable and nothing special is done on EvalJsResult destructor, which
-  // means it's safe to const-cast and move the value out of the struct.
-  auto& value = const_cast<base::Value&>(result.value);
-
-  return std::move(value);
+  return std::move(result).TakeValue();
 }
 
 void WebContentsInteractionTestUtil::Execute(const std::string& function) {

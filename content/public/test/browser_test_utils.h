@@ -843,9 +843,12 @@ std::string JsReplace(std::string_view script_template, Args&&... args) {
 //      by calling ExtractString(), ExtractInt(), etc. This will produce a
 //      CHECK failure if the execution didn't result in the appropriate type
 //      of result, or if an exception was thrown.
-struct EvalJsResult {
-  const base::Value value;  // Value; if things went well.
-  const std::string error;  // Error; if things went badly.
+class EvalJsResult {
+ public:
+  // TODO(https://crbug.com/431787497): rename the `error` field, per style
+  // guide rules.
+  // Error; if things went badly.
+  const std::string error;
 
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
@@ -855,12 +858,10 @@ struct EvalJsResult {
   EvalJsResult(const EvalJsResult& value);
 
   // Matchers for successful & unsuccessful runs.
-  static auto IsOk() {
-    return testing::Field(&EvalJsResult::error, testing::Eq(""));
-  }
+  static auto IsOk() { return testing::Property(&EvalJsResult::is_ok, true); }
   template <typename M>
   static auto IsOkAndHolds(M m) {
-    return testing::AllOf(IsOk(), testing::Field(&EvalJsResult::value, m));
+    return testing::AllOf(IsOk(), testing::Field(&EvalJsResult::value_, m));
   }
   static auto IsError() { return testing::Not(IsOk()); }
 
@@ -877,6 +878,13 @@ struct EvalJsResult {
   [[nodiscard]] base::Value::List ExtractList() const;
   [[nodiscard]] base::Value::Dict ExtractDict() const;
 
+  bool is_ok() const { return error.empty(); }
+
+  bool is_string() const { return is_ok() && value_.is_string(); }
+  bool is_bool() const { return is_ok() && value_.is_bool(); }
+  bool is_list() const { return is_ok() && value_.is_list(); }
+  bool is_dict() const { return is_ok() && value_.is_dict(); }
+
   // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
   //
   //    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
@@ -886,21 +894,32 @@ struct EvalJsResult {
   // Error values are incomparable to other values (including other errors).
   template <typename T>
   bool operator==(const T& t) const {
-    return error.empty() && (JsLiteralHelper<T>::Convert(t) == value);
+    return is_ok() && (JsLiteralHelper<T>::Convert(t) == value_);
   }
 
   template <typename T>
   std::partial_ordering operator<=>(const T& t) const {
-    if (!error.empty()) {
+    if (!is_ok()) {
       return std::partial_ordering::unordered;
     }
-    return value <=> JsLiteralHelper<T>::Convert(t);
+    return value_ <=> JsLiteralHelper<T>::Convert(t);
   }
-};
 
-// Provides informative failure messages when the result of EvalJs() is
-// used in a failing ASSERT_EQ or EXPECT_EQ.
-std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
+  // Takes the underlying `base::Value`, presuming no error occurred.
+  [[nodiscard]] base::Value TakeValue() && {
+    CHECK(is_ok());
+    return std::move(value_);
+  }
+
+ private:
+  // Provides informative failure messages when the result of EvalJs() is
+  // used in a failing ASSERT_EQ or EXPECT_EQ.
+  friend std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
+
+  // Value; if things went well. (If an error occurred, `value_.is_none()` is
+  // true.)
+  base::Value value_;
+};
 
 enum EvalJsOptions {
   EXECUTE_SCRIPT_DEFAULT_OPTIONS = 0,

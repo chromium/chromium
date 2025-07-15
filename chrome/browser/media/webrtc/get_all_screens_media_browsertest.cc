@@ -94,7 +94,7 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
     const content::EvalJsResult js_result = content::EvalJs(
         tab->GetPrimaryMainFrame(),
         "typeof navigator.mediaDevices.getAllScreensMedia === 'function';");
-    if (!js_result.value.is_bool()) {
+    if (!js_result.is_bool()) {
       ADD_FAILURE() << "Could not check existence of getAllScreensMedia.";
       return false;
     }
@@ -109,7 +109,7 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
     const content::EvalJsResult js_result = content::EvalJs(
         tab->GetPrimaryMainFrame(),
         "typeof runGetAllScreensMediaAndGetIds === 'function';");
-    if (!js_result.value.is_bool()) {
+    if (!js_result.is_bool()) {
       ADD_FAILURE()
           << "Could not check existence of runGetAllScreensMediaAndGetIds.";
       return false;
@@ -123,7 +123,7 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
 
   const content::EvalJsResult js_result = content::EvalJs(
       tab->GetPrimaryMainFrame(), "runGetAllScreensMediaAndGetIds();");
-  if (!js_result.value.is_string()) {
+  if (!js_result.is_string()) {
     ADD_FAILURE() << "Could not run runGetAllScreensMediaAndGetIds.";
     return false;
   }

@@ -452,7 +452,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
   base::Value GetPageInfo() {
     auto result = EvalJs(shell(), kGetPageInfoScript);
     EXPECT_EQ(result.error, "");
-    return result.value.Clone();
+    return std::move(result).TakeValue();
   }
 
   MHTMLFileInfo GenerateMHTMLForCurrentPage() {

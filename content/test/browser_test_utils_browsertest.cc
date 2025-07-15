@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsAfterLifecycleUpdateErrors) {
     // Test syntax errors.
     auto result = EvalJsAfterLifecycleUpdate(shell(), "}}", "'hi'");
 
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_FALSE(result.is_ok());
     EXPECT_THAT(
         result.error,
         Eq("a JavaScript error: \"SyntaxError: Unexpected token '}'\n"
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsAfterLifecycleUpdateErrors) {
 
     auto result2 = EvalJsAfterLifecycleUpdate(shell(), "'hi'", "]]");
 
-    EXPECT_TRUE(result2.value.is_none());
+    EXPECT_FALSE(result.is_ok());
     EXPECT_THAT(
         result2.error,
         Eq("a JavaScript error: \"SyntaxError: Unexpected token ']'\n"
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsAfterLifecycleUpdateErrors) {
     auto result = EvalJsAfterLifecycleUpdate(
         shell(), "55; throw new Error('whoops');", "'hi'");
 
-    EXPECT_TRUE(result.value.is_none());
+    EXPECT_FALSE(result.is_ok());
     EXPECT_THAT(
         result.error,
         Eq("a JavaScript error: \"Error: whoops\n"
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsAfterLifecycleUpdateErrors) {
     auto result2 = EvalJsAfterLifecycleUpdate(
         shell(), "'hi'", "55; throw new Error('whoopsie');");
 
-    EXPECT_TRUE(result2.value.is_none());
+    EXPECT_FALSE(result.is_ok());
     EXPECT_THAT(
         result2.error,
         Eq("a JavaScript error: \"Error: whoopsie\n"
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest,
                    "/set-header?Content-Security-Policy: script-src 'self'")));
 
   auto result = EvalJsAfterLifecycleUpdate(shell(), "'hi'", "");
-  EXPECT_TRUE(result.value.is_none());
+  EXPECT_FALSE(result.is_ok());
   EXPECT_THAT(
       result.error,
       ::testing::StartsWith(

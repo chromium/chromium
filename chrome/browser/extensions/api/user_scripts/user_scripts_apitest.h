@@ -16,8 +16,8 @@ class FilePath;
 }  // namespace base
 
 namespace content {
+class EvalJsResult;
 class RenderFrameHost;
-struct EvalJsResult;
 }  // namespace content
 
 class GURL;

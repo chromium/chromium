@@ -41,7 +41,7 @@
 
 namespace content {
 
-struct EvalJsResult;
+class EvalJsResult;
 
 }  // namespace content
 

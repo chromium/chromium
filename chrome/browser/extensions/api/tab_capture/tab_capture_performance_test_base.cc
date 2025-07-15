@@ -140,9 +140,9 @@ base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
   auto* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   for (;;) {
-    const auto result = content::EvalJs(web_contents, javascript);
+    auto result = content::EvalJs(web_contents, javascript);
     if (result.error.empty()) {
-      return result.value.Clone();
+      return std::move(result).TakeValue();
     }
     LOG(INFO) << "Race condition: Waiting for extension to come up, before "
                  "'sendMessage' retry...";

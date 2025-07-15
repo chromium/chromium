@@ -1956,7 +1956,7 @@ function generateBid(
     EvalJsResult result =
         EvalJs(adapter, JsReplace("navigator.deprecatedURNToURL($1, $2)",
                                   urn_url, send_reports));
-    if (!result.error.empty() || result.value.is_none()) {
+    if (!result.error.empty() || result == base::Value()) {
       return std::nullopt;
     }
     return GURL(result.ExtractString());
@@ -2275,8 +2275,8 @@ try {
 
     // Otherwise, adAuctionComponents should always return a list, since it
     // forces its input to be a number, and clamps it to the expected range.
-    EXPECT_TRUE(result.value.is_list());
-    if (!result.value.is_list()) {
+    EXPECT_TRUE(result.is_list());
+    if (!result.is_list()) {
       return std::nullopt;
     }
 
@@ -14459,7 +14459,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
     // Some auctions will have no winner, depending on which interest groups
     // were chosen to participate. No need to do anything more for those.
-    if (result.value.is_none()) {
+    if (!result.is_ok() || result == base::Value()) {
       continue;
     }
 

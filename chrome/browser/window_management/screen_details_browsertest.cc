@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, GetScreenDetailsBasic) {
   ASSERT_TRUE(EvalJs(tab, "'getScreenDetails' in self").ExtractBool());
   content::EvalJsResult result =
       EvalJs(tab, content::test::kGetScreenDetailsScript);
-  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result);
 }
 
 // Tests that ScreenDetailed and window.screen both yield display metrics, not
