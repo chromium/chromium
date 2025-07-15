@@ -423,8 +423,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 }
 
 - (void)closeWebState:(web::WebState*)webState {
-  // This should not happen in the result page.
-  NOTREACHED(kLensOverlayNotFatalUntil);
+  [self.delegate lensResultPageWebStateDestroyed];
 }
 
 - (web::WebState*)webState:(web::WebState*)webState
