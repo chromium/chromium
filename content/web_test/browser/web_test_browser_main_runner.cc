@@ -196,6 +196,10 @@ void WebTestBrowserMainRunner::Initialize() {
   // interference. This GPU process is launched 120 seconds after chrome starts.
   command_line.AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);
 
+  // Disable IgnoreDuplicateNavs by default to ensure tests run with predictable
+  // navigation behavior and don't have navigations unintentionally ignored.
+  command_line.AppendSwitch(switches::kDisableIgnoreDuplicateNavsForTesting);
+
   command_line.AppendSwitch(switches::kEnableGpuBenchmarking);
   command_line.AppendSwitch(switches::kEnableLogging);
   command_line.AppendSwitch(switches::kAllowFileAccessFromFiles);

@@ -113,6 +113,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {::switches::kHeadless, std::cref(blink::features::kPaintHolding),
        base::FeatureList::OVERRIDE_DISABLE_FEATURE},
 
+      // Overrides for disable-ignore-duplicate-navs-for-testing.
+      {switches::kDisableIgnoreDuplicateNavsForTesting,
+       std::cref(features::kIgnoreDuplicateNavs),
+       base::FeatureList::OVERRIDE_DISABLE_FEATURE},
+
       // Override for --reduce-user-agent-minor-version.
       {switches::kReduceUserAgentMinorVersion,
        std::cref(blink::features::kReduceUserAgentMinorVersion),

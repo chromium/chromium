@@ -60,6 +60,7 @@ CONTENT_EXPORT extern const char kDisableScrollToTextFragment[];
 CONTENT_EXPORT extern const char kDisableSoftwareCompositingFallback[];
 CONTENT_EXPORT extern const char kDisableGpuWatchdog[];
 CONTENT_EXPORT extern const char kDisableIpcFloodingProtection[];
+CONTENT_EXPORT extern const char kDisableIgnoreDuplicateNavsForTesting[];
 CONTENT_EXPORT extern const char kDisableJavaScriptHarmonyShipping[];
 CONTENT_EXPORT extern const char kDisableLowLatencyDxva[];
 extern const char kDisableHistogramCustomizer[];

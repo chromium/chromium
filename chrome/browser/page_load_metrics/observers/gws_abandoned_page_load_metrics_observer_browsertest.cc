@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -1353,6 +1355,16 @@ class GWSAbandonedPageLoadMetricsObserverWithIgnoreDuplicateFlagBrowserTest
           features::kIgnoreDuplicateNavs);
     }
     GWSAbandonedPageLoadMetricsObserverBrowserTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    GWSAbandonedPageLoadMetricsObserverBrowserTest::
+        SetUpInProcessBrowserTestFixture();
+    // By default, IgnoreDuplicateNavs is disabled in tests to prevent
+    // navigations from being unintentionally ignored. This test requires the
+    // feature, so remove the switch.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kDisableIgnoreDuplicateNavsForTesting);
   }
 
  protected:

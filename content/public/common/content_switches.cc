@@ -170,6 +170,11 @@ const char kDisableGpuWatchdog[] = "disable-gpu-watchdog";
 // can be used.
 const char kDisableIpcFloodingProtection[] = "disable-ipc-flooding-protection";
 
+// Disables the IgnoreDuplicateNavs feature. This prevent navigations from
+// being unintentionally ignored in tests.
+const char kDisableIgnoreDuplicateNavsForTesting[] =
+    "disable-ignore-duplicate-navs-for-testing";
+
 // Disable the RenderThread's HistogramCustomizer.
 const char kDisableHistogramCustomizer[]    = "disable-histogram-customizer";
 

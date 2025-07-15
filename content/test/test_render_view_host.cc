@@ -540,7 +540,11 @@ void TestRenderViewHost::TestOnUpdateStateWithFile(
 
 RenderViewHostImplTestHarness::RenderViewHostImplTestHarness()
     : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  // Disable IgnoreDuplicateNavs to ensure tests run with predictable navigation
+  // behavior and don't have navigations unintentionally ignored.
+  scoped_feature_list_.InitAndDisableFeature(features::kIgnoreDuplicateNavs);
+}
 
 RenderViewHostImplTestHarness::~RenderViewHostImplTestHarness() = default;
 

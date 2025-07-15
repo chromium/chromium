@@ -60,6 +60,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -23532,6 +23533,15 @@ class IgnoreDuplicateNavsBrowserTest
     } else {
       feature_list_.InitAndDisableFeature(features::kIgnoreDuplicateNavs);
     }
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    NavigationControllerBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    // By default, IgnoreDuplicateNavs is disabled in tests to prevent
+    // navigations from being unintentionally ignored. This test requires the
+    // feature, so remove the switch.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kDisableIgnoreDuplicateNavsForTesting);
   }
 
   // Provides meaningful param names instead of /0, /1, ...

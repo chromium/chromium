@@ -382,6 +382,10 @@ void BrowserTestBase::SetUp() {
   command_line->AppendSwitch(
       switches::kDisableBackgroundingOccludedWindowsForTesting);
 
+  // Disable IgnoreDuplicateNavs by default to ensure tests run with predictable
+  // navigation behavior and don't have navigations unintentionally ignored.
+  command_line->AppendSwitch(switches::kDisableIgnoreDuplicateNavsForTesting);
+
   if (enable_pixel_output_) {
     DCHECK(!command_line->HasSwitch(switches::kForceDeviceScaleFactor))
         << "--force-device-scale-factor flag already present. Tests using "

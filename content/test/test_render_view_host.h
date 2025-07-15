@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/input/cursor_manager.h"
@@ -384,6 +385,8 @@ class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
   TestRenderFrameHost* main_test_rfh();
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   ui::test::ScopedSetSupportedResourceScaleFactors
       scoped_set_supported_scale_factors_{{ui::k100Percent}};
 };
