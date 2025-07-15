@@ -94,10 +94,10 @@
   font-family: inherit;
   font-size: inherit;
   line-height: 24px;
-  max-height: calc-size(fit-content, min(size, 196px));
-  min-height: 48px;
+  max-height: calc-size(fit-content, min(size - 24px, 190px));
+  min-height: 72px;
   outline: none;
-  padding: 0;
+  padding: 24px 0 0;
   position: relative;
   resize: none;
   scrollbar-width: none;
