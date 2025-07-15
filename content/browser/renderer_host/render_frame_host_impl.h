@@ -143,6 +143,7 @@
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
@@ -2621,6 +2622,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
+  void SetCrashReportStorageKey(
+      const std::string& key,
+      const std::string& value,
+      SetCrashReportStorageKeyCallback callback) override;
+  void RemoveCrashReportStorageKey(
+      const std::string& key,
+      RemoveCrashReportStorageKeyCallback callback) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
@@ -5507,6 +5515,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::string crash_reporting_group_ = "default";
 
   base::OnceClosure on_process_before_unload_completed_for_testing_;
+
+  // This is written to by the `SetCrashReportStorageKey()` IPC, with data
+  // supplied by the renderer, and read from during
+  // `MaybeGenerateCrashReport()`, to supplement crash reports with this data.
+  std::map<std::string, std::string> crash_storage_map_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

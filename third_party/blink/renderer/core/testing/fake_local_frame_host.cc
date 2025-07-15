@@ -323,6 +323,15 @@ void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
     const blink::FrameToken& target_frame_token,
     blink::mojom::WindowProxyAccessType access_type) {}
 
+void FakeLocalFrameHost::SetCrashReportStorageKey(
+    const WTF::String& key,
+    const WTF::String& value,
+    SetCrashReportStorageKeyCallback callback) {}
+
+void FakeLocalFrameHost::RemoveCrashReportStorageKey(
+    const WTF::String& key,
+    RemoveCrashReportStorageKeyCallback callback) {}
+
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}
 
 void FakeLocalFrameHost::SetStorageAccessApiStatus(

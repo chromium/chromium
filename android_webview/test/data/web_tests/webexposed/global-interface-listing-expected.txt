@@ -1447,6 +1447,11 @@ interface CountQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
+interface CrashReportStorage
+    attribute @@toStringTag
+    method constructor
+    method remove
+    method set
 interface CreateMonitor : EventTarget
     attribute @@toStringTag
     getter ondownloadprogress
@@ -12041,6 +12046,7 @@ namespace console
     getter clientInformation
     getter closed
     getter cookieStore
+    getter crashReport
     getter credentialless
     getter crossOriginEmbedderPolicy
     getter crossOriginIsolated

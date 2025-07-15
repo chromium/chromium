@@ -1091,6 +1091,10 @@
       name: "CorsRFC1918",
     },
     {
+      name: "CrashReportingStorageAPI",
+      status: "experimental",
+    },
+    {
       // Allow WebAuthn relying parties to report information about existing
       // credentials back to credential storage providers.
       // Enabled by default on M132. Remove flag on or after M135.

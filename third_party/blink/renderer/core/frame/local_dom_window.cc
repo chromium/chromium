@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
+#include "third_party/blink/renderer/core/frame/crash_report_storage.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/dom_viewport.h"
@@ -2539,6 +2540,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(isolated_world_csp_map_);
   visitor->Trace(network_state_observer_);
   visitor->Trace(fence_);
+  visitor->Trace(crash_report_storage_);
   visitor->Trace(closewatcher_stack_);
   visitor->Trace(soft_navigation_heuristics_);
   UniversalGlobalScope::Trace(visitor);
@@ -2658,6 +2660,19 @@ Fence* LocalDOMWindow::fence() {
   }
 
   return fence_.Get();
+}
+
+CrashReportStorage* LocalDOMWindow::crashReport() {
+  // TODO(domfarolino): Maybe document this.
+  if (!GetFrame()) {
+    return nullptr;
+  }
+
+  if (!crash_report_storage_) {
+    crash_report_storage_ = MakeGarbageCollected<CrashReportStorage>(*this);
+  }
+
+  return crash_report_storage_.Get();
 }
 
 bool LocalDOMWindow::IsPictureInPictureWindow() const {

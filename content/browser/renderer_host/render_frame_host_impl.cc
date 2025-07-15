@@ -10916,6 +10916,21 @@ void RenderFrameHostImpl::RecordWindowProxyUsageMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RenderFrameHostImpl::SetCrashReportStorageKey(
+    const std::string& key,
+    const std::string& value,
+    SetCrashReportStorageKeyCallback callback) {
+  crash_storage_map_.insert(std::make_pair(key, value));
+  std::move(callback).Run();
+}
+
+void RenderFrameHostImpl::RemoveCrashReportStorageKey(
+    const std::string& key,
+    RemoveCrashReportStorageKeyCallback callback) {
+  crash_storage_map_.erase(key);
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
@@ -16006,6 +16021,11 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
              GetVisibilityState() == PageVisibilityState::kVisible ? "visible"
                                                                    : "hidden");
   }
+
+  for (const auto& pair : crash_storage_map_) {
+    body.Set(pair.first, pair.second);
+  }
+
   if (!reason.empty()) {
     body.Set("reason", reason);
   }

@@ -216,6 +216,10 @@
     // Collection of fenced frame APIs
     // https://github.com/shivanigithub/fenced-frame/issues/14
     [RuntimeEnabled=FencedFrames] readonly attribute Fence? fence;
+
+    // See
+    // https://github.com/WICG/crash-reporting/blob/gh-pages/crashStorage-explainer.md.
+    [RuntimeEnabled=CrashReportingStorageAPI] readonly attribute CrashReportStorage? crashReport;
 };
 
 Window includes GlobalEventHandlers;

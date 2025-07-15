@@ -222,6 +222,35 @@ class ReportingBrowserTestMoreContextData : public BaseReportingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// This is a subclass of `BaseReportingBrowserTest` that specifically tests the
+// `kCrashReportingStorageAPI` feature, which adds a new API to attach string
+// data to crash reports.
+class ReportingBrowserTestCrashReportingStorage
+    : public BaseReportingBrowserTest {
+ public:
+  ReportingBrowserTestCrashReportingStorage() = default;
+
+  ReportingBrowserTestCrashReportingStorage(
+      const ReportingBrowserTestCrashReportingStorage&) = delete;
+  ReportingBrowserTestCrashReportingStorage& operator=(
+      const ReportingBrowserTestCrashReportingStorage&) = delete;
+
+  ~ReportingBrowserTestCrashReportingStorage() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kCrashReportingStorageAPI);
+    BaseReportingBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    BaseReportingBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class ReportingBrowserTestSpecifyCrashEndpoint
     : public BaseReportingBrowserTest {
  public:
@@ -707,6 +736,63 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(*url, main_url.spec());
   EXPECT_EQ("unresponsive", *reason);
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
+                       CrashStorageAPI) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to reporting-enabled page.
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  // Use the crash reporting storage API, to collect some data about the current
+  // page. In this case, just the current origin and the window's outerHeight,
+  // to verify they come out on the other end of the crash report.
+  const int expected_outer_height =
+      content::EvalJs(contents, "window.outerHeight").ExtractInt();
+  EXPECT_TRUE(ExecJs(
+      contents->GetPrimaryMainFrame(),
+      "crashReport.set('self.origin', self.origin + "
+      "'/');crashReport.set('outer_height', "
+      "window.outerHeight);crashReport.set('custom_key', 'custom_value')"));
+  EXPECT_TRUE(ExecJs(contents->GetPrimaryMainFrame(),
+                     "crashReport.remove('custom_key')"));
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List request =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = request.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const std::string* self_origin = body->FindString("self.origin");
+  const std::string* outer_height = body->FindString("outer_height");
+  const std::string* custom_key = body->FindString("custom_key");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(main_url, *url);
+  EXPECT_EQ("unresponsive", *reason);
+  EXPECT_EQ(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL().spec(),
+      *self_origin);
+  EXPECT_EQ(base::ToString(expected_outer_height), *outer_height);
+  // Because `crashReport.remove('custom_key')` was called before the process
+  // crashed, this value is not present in the report body.
+  EXPECT_EQ(custom_key, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
@@ -1231,6 +1317,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          ReportingBrowserTestMoreContextData,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportingBrowserTestCrashReportingStorage,
                          ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          ReportingBrowserTestSpecifyCrashEndpoint,

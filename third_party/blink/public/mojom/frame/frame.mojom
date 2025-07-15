@@ -37,6 +37,7 @@ import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
+import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/drag/drag.mojom";
 import "third_party/blink/public/mojom/favicon/favicon_url.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
@@ -813,6 +814,18 @@ interface LocalFrameHost {
 
   // Sets the StorageAccessApiStatus for the given frame.
   SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
+
+  // Called by `blink::CrashReportStorage`.
+  // TODO(https://crbug.com/400432195): Consider removing this IPC, and
+  // refactoring the implementation to use a shared memory region with the
+  // browser process, and some abstraction that serializes the internal map to
+  // bytes in the shared memory region.
+  [Sync]
+  SetCrashReportStorageKey(string key, string value) => ();
+
+  // Called by `blink::CrashReportStorage`.
+  [Sync]
+  RemoveCrashReportStorageKey(string key) => ();
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

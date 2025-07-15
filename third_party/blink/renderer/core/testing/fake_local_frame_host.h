@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
@@ -224,6 +225,13 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
+  void SetCrashReportStorageKey(
+      const WTF::String& key,
+      const WTF::String& value,
+      SetCrashReportStorageKeyCallback callback) override;
+  void RemoveCrashReportStorageKey(
+      const WTF::String& key,
+      RemoveCrashReportStorageKeyCallback callback) override;
   void NotifyDocumentInteractive() override;
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
 
