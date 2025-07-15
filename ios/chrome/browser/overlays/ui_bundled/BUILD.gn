@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/common",
