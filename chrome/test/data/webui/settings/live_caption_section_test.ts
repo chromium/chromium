@@ -45,6 +45,12 @@ suite('LiveCaptionSection', function() {
     liveCaptionSection = document.createElement('settings-live-caption');
     liveCaptionSection.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
+
+    // Reset default language before every test to prevent state from leaking
+    // from one test into another.
+    liveCaptionSection.setPrefValue(
+        'accessibility.captions.live_caption_language', 'en-US');
+
     document.body.appendChild(liveCaptionSection);
 
     flush();
@@ -142,5 +148,53 @@ suite('LiveCaptionSection', function() {
     flush();
     languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(1, languagePacks.length);
+  });
+
+  test('test more action button aria label', async function() {
+    const defaultLabel = loadTimeData.getString('defaultLanguageLabel');
+    const getMoreButtons = () =>
+        liveCaptionSection.shadowRoot!.querySelectorAll<HTMLElement>(
+            'cr-icon-button.icon-more-vert');
+    let moreButtons = getMoreButtons();
+
+    const englishButton = moreButtons[0]!;
+    assertStringContains(englishButton.ariaLabel!, 'English');
+    assertStringContains(englishButton.ariaLabel!, defaultLabel);
+
+    // Add a new language - French.
+    const addLanguagesButton =
+        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+            '#addLanguage')!;
+    addLanguagesButton.click();
+    flush();
+
+    dialog = liveCaptionSection.shadowRoot!.querySelector(
+        'settings-add-languages-dialog')!;
+    const whenDialogClosed = eventToPromise('close', dialog);
+    dialog.dispatchEvent(
+        new CustomEvent('languages-added', {detail: ['fr-FR']}));
+    dialog.$.dialog.close();
+    flush();
+
+    await Promise.all([
+      whenDialogClosed,
+      browserProxy.whenCalled('installLanguagePacks'),
+    ]);
+
+    // The new language (French) should not have the default label.
+    moreButtons = getMoreButtons();
+    const frenchButton = moreButtons[1]!;
+    assertStringContains(frenchButton.ariaLabel!, 'French');
+    assertStringExcludes(frenchButton.ariaLabel!, defaultLabel);
+
+    // Change the default language to French.
+    frenchButton.click();
+    liveCaptionSection.shadowRoot!
+        .querySelector<HTMLElement>('#make-default-button')!.click();
+    flush();
+    // The English button should no longer have the default label.
+    assertStringExcludes(englishButton.ariaLabel!, defaultLabel);
+    // The French button should have the default label.
+    assertStringContains(frenchButton.ariaLabel!, defaultLabel);
   });
 });

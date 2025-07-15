@@ -168,6 +168,14 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         '#liveCaptionToggleButton')!;
   }
 
+  protected computeMoreButtonAriaLabel_(name: string, code: string): string {
+    let label = this.i18n('moreActionsFor', name);
+    if (this.isDefaultLanguage_(code)) {
+      label += ` ${this.i18n('defaultLanguageLabel')}`;
+    }
+    return label;
+  }
+
   private onLiveCaptionEnabledChanged_(event: Event) {
     const liveCaptionEnabled =
         (event.target as SettingsToggleButtonElement).checked;

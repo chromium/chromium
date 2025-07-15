@@ -74,7 +74,10 @@
               [[item.downloadProgress]]
             </span>
             <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
-                id="more-[[item.language.code]]" on-click="onDotsClick_">
+                id="more-[[item.language.code]]" on-click="onDotsClick_"
+                aria-label="[[computeMoreButtonAriaLabel_(item.displayName,
+              item.code,
+              prefs.accessibility.captions.live_caption_language.value)]]">
             </cr-icon-button>
           </div>
         </template>

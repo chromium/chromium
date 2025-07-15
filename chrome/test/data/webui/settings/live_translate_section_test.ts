@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsLiveTranslateElement} from 'chrome://settings/lazy_load.js';
 import {CaptionsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
@@ -72,5 +72,18 @@ suite('LiveTranslateSection', function() {
             .getPref('accessibility.captions.live_translate_enabled')
             .value;
     assertFalse(newToggleValue);
+  });
+
+  test('test aria label for the target language dropdown menu', function() {
+    liveTranslateSection.setPrefValue(
+        'accessibility.captions.live_translate_enabled', true);
+    flush();
+
+    const dropdown = liveTranslateSection.shadowRoot!.querySelector(
+        '#targetLanguageDropdown')!;
+    const select = dropdown.shadowRoot!.querySelector('select')!;
+    const expectedLabel =
+        loadTimeData.getString('captionsLiveTranslateTargetLanguage');
+    assertEquals(expectedLabel, select.getAttribute('aria-label'));
   });
 });
