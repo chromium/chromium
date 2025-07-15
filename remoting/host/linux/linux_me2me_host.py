@@ -630,7 +630,17 @@ class Desktop(abc.ABC):
     self.crash_uploader_inhibitor = None
 
   def _init_child_env(self):
-    self.child_env = dict(os.environ)
+    # For Wayland, initialize using a safe subset of the current environment.
+    # GNOME starts 'gnome-shell' as a system service, and it may import its
+    # full environment into systemd. This script may run in an environment
+    # with values that may break 'gnome-shell' - see
+    # http://crbug.com/431672013.
+    self.child_env = {}
+    # These are the values set by the remoting-user-session binary when it
+    # launches this script.
+    for key in "USER", "LOGNAME", "HOME", "SHELL", "PATH":
+      if key in os.environ:
+        self.child_env[key] = os.environ[key]
 
     self.child_env["CHROME_REMOTE_DESKTOP_SESSION"] = "1"
 
@@ -1429,6 +1439,14 @@ class XDesktop(Desktop):
 
   def _init_child_env(self):
     super(XDesktop, self)._init_child_env()
+
+    # For backwards compatibility, copy the full environment into
+    # self.child_env, without overwriting any values that were set earlier by
+    # this script.
+    for key in os.environ:
+      if key not in self.child_env:
+        self.child_env[key] = os.environ[key]
+
     # Force GDK to use the X11 backend, as otherwise parts of the host that use
     # GTK can end up connecting to an active Wayland display instead of the
     # CRD X11 session.
