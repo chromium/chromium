@@ -53,6 +53,12 @@
 #include "media/base/win/mf_feature_checks.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 namespace {
 
 const char* kClearKey = media::kClearKeyKeySystem;
@@ -2284,3 +2290,90 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_UNSUPPORTED(
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
+
+// Testing the Enterprise policy kProtectedContentIdentifiersAllowed
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       WidevineHWSecureBlockedWhenPolicyBlocked) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
+
+  // Video robustness.
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+
+  // Audio robustness.
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+
+  // Should be unsupported when the protected media identifier is set to be
+  // blocked by enterprise policy.
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       WidevineHWSecureAllowedWhenPolicyAllowed) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
+
+  // Video robustness.
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+
+  // Audio robustness.
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+#if BUILDFLAG(IS_CHROMEOS)
+  // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
+  // protected media identifier permission is allowed. See
+  // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+#else
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+#endif
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
+                       PlayReadyBlockedWhenPolicyBlocked) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, false);
+
+  // PlayReady hardware secure key systems should be blocked.
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, nullptr));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadyHardwareSecureRobustness));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
+                       PlayReadySuccessWhenPolicyAllowed) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+
+  // PlayReady hardware secure key systems should succeed.
+  EXPECT_SUCCESS(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, nullptr));
+  EXPECT_SUCCESS(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadyHardwareSecureRobustness));
+}
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)

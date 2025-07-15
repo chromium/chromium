@@ -24,6 +24,12 @@ const char kEnterpriseMDMManagementMac[] =
     "management.platform.enterprise_mdm_mac";
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+// Boolean pref indicating whether protected content identifiers are allowed.
+const char kProtectedContentIdentifiersAllowed[] =
+    "policy.protected_content_identifiers.allowed";
+#endif
+
 // Enterprise policy controlled value representing whether the user may be shown
 // HaTS surveys.
 const char kFeedbackSurveysEnabled[] = "policy.feedback_surveys_enabled";

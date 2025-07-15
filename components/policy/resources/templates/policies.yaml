@@ -1379,6 +1379,7 @@ policies:
   1378: DeviceAttributesBlockedForOrigins
   1379: FloatingSsoSessionCookiesIncluded
   1380: ServiceWorkerAutoPreloadEnabled
+  1381: ProtectedContentIdentifiersAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1439,3 +1440,4 @@ atomic_groups:
   57: ControlledFrameSettings
   58: LocalNetworkAccessSettings
   59: DeviceAttributesSettings
+  60: ProtectedContent

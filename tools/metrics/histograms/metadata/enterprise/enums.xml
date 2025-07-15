@@ -2249,6 +2249,7 @@ chromium-metrics-reviews@google.com.
   <int value="1378" label="DeviceAttributesBlockedForOrigins"/>
   <int value="1379" label="FloatingSsoSessionCookiesIncluded"/>
   <int value="1380" label="ServiceWorkerAutoPreload"/>
+  <int value="1381" label="ProtectedContentIdentifiersAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

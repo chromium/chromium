@@ -6,7 +6,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -16,19 +19,13 @@
 #include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/profiles/profile_testing_helper.h"
-#endif
-
 class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
  public:
   ProtectedMediaIdentifierPermissionContextTest()
       : requesting_origin_("https://example.com"),
         requesting_sub_domain_origin_("https://subdomain.example.com") {
     command_line_ = scoped_command_line_.GetProcessCommandLine();
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     profile_testing_helper_.SetUp();
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   }
 
   bool IsOriginAllowed(const GURL& origin) {
@@ -45,9 +42,7 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
 
   base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<base::CommandLine> command_line_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   ProfileTestingHelper profile_testing_helper_;
-#endif
 };
 
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
@@ -129,3 +124,27 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
       profile_testing_helper_.regular_profile()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ProtectedMediaIdentifierPermissionContextTest,
+       ProtectedContentIdentifierAllowedByPolicyDefault) {
+  ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
+      profile_testing_helper_.regular_profile()));
+}
+
+TEST_F(ProtectedMediaIdentifierPermissionContextTest,
+       ProtectedContentIdentifierAllowedByPolicyExplicitlyAllowed) {
+  Profile* profile = profile_testing_helper_.regular_profile();
+  profile->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+
+  ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(profile));
+}
+
+TEST_F(ProtectedMediaIdentifierPermissionContextTest,
+       ProtectedContentIdentifierBlockedByPolicy) {
+  Profile* profile = profile_testing_helper_.regular_profile();
+  profile->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, false);
+
+  ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(profile));
+}

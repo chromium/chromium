@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,6 +42,20 @@
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
 #error This file currently only supports Chrome OS, Android and Windows.
 #endif
+
+namespace {
+
+// Returns whether the use of protected content identifier is allowed by
+// enterprise policy.
+bool IsProtectedContentIdentifierAllowedByPolicy(Profile* profile) {
+  PrefService* service = profile->GetPrefs();
+  DCHECK(service);
+
+  return service->GetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed);
+}
+
+}  // namespace
 
 ProtectedMediaIdentifierPermissionContext::
     ProtectedMediaIdentifierPermissionContext(
@@ -157,6 +172,12 @@ bool ProtectedMediaIdentifierPermissionContext::
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+
+  if (!IsProtectedContentIdentifierAllowedByPolicy(profile)) {
+    DVLOG(1)
+        << "Protected content identifier disabled due to enterprise policy.";
+    return false;
+  }
 
   return true;
 }

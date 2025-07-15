@@ -43,6 +43,9 @@ namespace policy_prefs {
 extern const char kAzureActiveDirectoryManagement[];
 extern const char kEnterpriseMDMManagementWindows[];
 #endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+extern const char kProtectedContentIdentifiersAllowed[];
+#endif
 extern const char kCloudManagementEnrollmentMandatory[];
 extern const char kDlpClipboardCheckSizeLimit[];
 extern const char kDlpReportingEnabled[];

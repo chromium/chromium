@@ -1504,6 +1504,11 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+#endif
+
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
   registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
   registry->RegisterBooleanPref(
