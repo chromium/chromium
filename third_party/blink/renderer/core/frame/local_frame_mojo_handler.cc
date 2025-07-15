@@ -1344,7 +1344,6 @@ void LocalFrameMojoHandler::FinalizeNavigationConfidence(
 
 void LocalFrameMojoHandler::SetV8CompileHints(
     base::ReadOnlySharedMemoryRegion data) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));
   Page* page = GetPage();
   if (page == nullptr) {
     return;

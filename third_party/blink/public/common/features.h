@@ -1521,11 +1521,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // kProduceCompileHintsDataProductionLevel.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceProduceCompileHints);
 
-// Load V8_COMPILE_HINTS optimization data from OptimizationGuide and
-// transmit it to V8. See `ProduceCompileHints` for the data producer side of
-// this feature.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCompileHints);
-
 // Cache information about which functions are compiled and use it for eager-
 // compiling those functions when the same script is loaded again.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);

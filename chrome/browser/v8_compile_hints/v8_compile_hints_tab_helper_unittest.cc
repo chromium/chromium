@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
 using ::testing::An;
@@ -48,9 +47,7 @@ void V8CompileHintsTabHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   CreateSessionServiceTabHelper(web_contents());
   scoped_feature_list_.InitWithFeatures(
-      {blink::features::kConsumeCompileHints,
-       optimization_guide::features::kOptimizationHints},
-      {});
+      {optimization_guide::features::kOptimizationHints}, {});
 
   mock_optimization_guide_keyed_service_ =
       static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(

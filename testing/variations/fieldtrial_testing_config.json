@@ -25691,31 +25691,6 @@
             ]
         }
     ],
-    "V8LocalCompileHints": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LocalCompileHints"
-                    ],
-                    "disable_features": [
-                        "ConsumeCompileHints"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "ConsumeCompileHints",
-                        "LocalCompileHints"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ManagedZoneMemory": [
         {
             "platforms": [

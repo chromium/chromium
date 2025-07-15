@@ -34,17 +34,12 @@ V8CompileHintsTabHelper::V8CompileHintsTabHelper(
       content::WebContentsUserData<V8CompileHintsTabHelper>(*web_contents),
       optimization_guide_decider_(optimization_guide_decider),
       web_contents_(web_contents) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));
   optimization_guide_decider_->RegisterOptimizationTypes(
       {optimization_guide::proto::V8_COMPILE_HINTS});
 }
 
 void V8CompileHintsTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints)) {
-    return;
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider =
