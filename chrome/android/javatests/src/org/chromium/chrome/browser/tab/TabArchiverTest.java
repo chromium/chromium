@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_TH
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -72,6 +73,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -187,6 +189,22 @@ public class TabArchiverTest {
     @AfterClass
     public static void tearDownTestSuite() {
         ActivityFinisher.finishAll();
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testGetTabsToArchive_emptyTabModel() {
+        mRegularTabModel.getTabRemover().forceCloseTabs(TabClosureParams.closeAllTabs().build());
+        assertEquals(0, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        assertEquals(
+                mTabArchiver.getTabsToArchive(
+                        mRegularTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilter()),
+                new ArrayList<>());
     }
 
     @Test
