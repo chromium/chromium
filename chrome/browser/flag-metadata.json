@@ -4584,12 +4584,12 @@
   {
     "name": "enable-wifi-qos",
     "owners": ["chuweih@chromium.org", "jiejiang@chromium.org", "cros-networking@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-wifi-qos-enterprise",
     "owners": ["jiejiang@chromium.org", "cros-networking@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-windows-gaming-input-data-fetcher",
