@@ -8,7 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/base/tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace net::test_server {

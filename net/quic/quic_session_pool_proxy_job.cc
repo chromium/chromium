@@ -5,12 +5,12 @@
 #include "net/quic/quic_session_pool_proxy_job.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/quic_context.h"

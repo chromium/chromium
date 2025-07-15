@@ -302,7 +302,6 @@ component("net") {
     "base/task/task_runner.cc",
     "base/task/task_runner.h",
     "base/trace_event_stub.h",
-    "base/tracing.h",
     "base/transport_info.cc",
     "base/transport_info.h",
     "base/upload_bytes_element_reader.cc",

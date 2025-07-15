@@ -10,11 +10,11 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
-#include "net/base/tracing.h"
 #include "net/http/http_stream_pool.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_close_reason.h"

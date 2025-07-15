@@ -9,12 +9,12 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/tracing.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"

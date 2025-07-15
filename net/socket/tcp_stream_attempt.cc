@@ -9,10 +9,10 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/base/tracing.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
