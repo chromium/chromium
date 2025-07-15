@@ -1,7 +1,7 @@
 Name: AndroidX Test Library
 Short Name: espresso-core
 URL: https://developer.android.com/testing
-Version: 3.7.0-beta01
+Version: 3.7.0-rc01
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
