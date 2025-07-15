@@ -37,6 +37,7 @@
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 // Helper for logging data with remote host IP and authentication state.
