@@ -99,9 +99,16 @@ class TabInterface : public SupportsHandles<TabInterfaceHandleFactory> {
   // };
   virtual base::WeakPtr<TabInterface> GetWeakPtr() = 0;
 
-  // When a tab is in the background, the WebContents may be discarded to save
-  // memory. When a tab is in the foreground it is guaranteed to have a
-  // WebContents.
+  // Returns the WebContents that is currently associated with this tab.
+  //
+  // The returned pointer is guaranteed to be non-null.
+  //
+  // However, the WebContents object *itself* can be replaced, most notably
+  // when a background tab's contents are discarded to save memory.
+  // Callers who need to observe the tab for its entire lifetime should not
+  // cache the WebContents pointer directly. Instead, they should hold a
+  // reference to the TabInterface and call GetContents() when needed, or use
+  // RegisterWillDiscardContents() to be notified of swaps.
   virtual content::WebContents* GetContents() const = 0;
 
   // Closes the tab.
