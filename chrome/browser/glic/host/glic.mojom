@@ -695,7 +695,7 @@ interface WebClientHandler {
   [RuntimeFeature=glic.mojom.features.kZeroStateSuggestionsV2]
   GetZeroStateSuggestionsAndSubscribe(bool is_live,
                           ZeroStateSuggestionsOptions options) =>
-    (ZeroStateSuggestionsV2 zero_state_suggestions);
+    (ZeroStateSuggestionsV2? zero_state_suggestions);
 
   // Returns zero-state suggestions from the currently active tab.
   GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
@@ -869,7 +869,7 @@ interface WebClient {
 
   // Informs the client that the zero state suggestions have changed.
   NotifyZeroStateSuggestionsChanged(
-    ZeroStateSuggestionsV2 suggestions,
+    ZeroStateSuggestionsV2? suggestions,
     ZeroStateSuggestionsOptions options);
 };
 
