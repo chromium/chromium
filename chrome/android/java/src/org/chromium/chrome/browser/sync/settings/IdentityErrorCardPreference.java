@@ -80,7 +80,7 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private void update() {
-        @SyncError int error = SyncSettingsUtils.getIdentityError(mProfile);
+        @SyncError int error = SyncSettingsUtils.getSyncError(mProfile);
         if (error == mIdentityError) {
             // Nothing changed.
             return;

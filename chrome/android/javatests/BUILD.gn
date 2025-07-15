@@ -1243,6 +1243,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
     "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsTest.java",
     "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsWithFakeSyncServiceImplTest.java",
     "src/org/chromium/chrome/browser/sync/settings/PersonalizeGoogleServicesSettingsTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtilsTest.java",
     "src/org/chromium/chrome/browser/sync/ui/PassphraseActivityTest.java",
     "src/org/chromium/chrome/browser/sync/ui/PassphraseTypeDialogFragmentTest.java",
     "src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageTest.java",
@@ -1252,6 +1253,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/user_education:java",
+    "//components/sync/android:sync_java",
   ]
 }
 

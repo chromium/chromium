@@ -361,7 +361,7 @@ public class SyncErrorMessageTest {
         int syncError =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return SyncSettingsUtils.getIdentityError(
+                            return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
                         });
         Assert.assertEquals(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED, syncError);

@@ -124,7 +124,7 @@ public class SyncSettingsUtils {
         }
     }
 
-    /** Returns the type of the sync error, for syncing users. */
+    /** Returns the type of the sync error */
     public static @SyncError int getSyncError(Profile profile) {
         assert profile != null;
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -133,7 +133,8 @@ public class SyncSettingsUtils {
         }
 
         if (!syncService.hasSyncConsent()) {
-            return SyncError.NO_ERROR;
+            // The user is in signed-in non-syncing state
+            return getIdentityError(profile, syncService);
         }
 
         if (!syncService.isInitialSyncFeatureSetupComplete()) {
@@ -558,22 +559,11 @@ public class SyncSettingsUtils {
         return canShowFullName ? fullName : accountEmail;
     }
 
-    /**
-     * Returns the type of the sync error/identity error for signed-in non-syncing users.
-     * TODO(crbug.com/330290259): Merge this into getSyncError().
-     */
-    public static @SyncError int getIdentityError(Profile profile) {
+    /** Returns the type of the sync error/identity error for signed-in non-syncing users. */
+    private static @SyncError int getIdentityError(Profile profile, SyncService syncService) {
         assert profile != null;
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        // TODO(crbug.com/40944114): Consider converting this to an assertion instead.
-        if (syncService == null) {
-            return SyncError.NO_ERROR;
-        }
-
-        // Do not show identity error if sync is enabled.
-        if (syncService.isSyncFeatureEnabled()) {
-            return SyncError.NO_ERROR;
-        }
+        assert syncService != null;
+        assert !syncService.isSyncFeatureEnabled();
 
         // No error for not signed-in users.
         if (!IdentityServicesProvider.get()

@@ -231,7 +231,7 @@ public class SignInPreference extends Preference
         setIcon(profileData.getImage());
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
-                /* alertIconVisible= */ SyncSettingsUtils.getIdentityError(mProfile)
+                /* alertIconVisible= */ SyncSettingsUtils.getSyncError(mProfile)
                         != SyncError.NO_ERROR);
         setOnPreferenceClickListener(null);
 

@@ -312,7 +312,7 @@ public class IdentityDiscController
             return;
         }
 
-        @SyncError int error = SyncSettingsUtils.getIdentityError(mProfile);
+        @SyncError int error = SyncSettingsUtils.getSyncError(mProfile);
         if (error == mIdentityError
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             // Nothing changed.

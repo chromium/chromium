@@ -859,12 +859,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             if (profile == null) {
                 return false;
             }
-            // Return true if there is any identity error(for signed-in users) or sync error(for
-            // syncing users).
-            return SyncSettingsUtils.getIdentityError(profile)
-                            != SyncSettingsUtils.SyncError.NO_ERROR
-                    || SyncSettingsUtils.getSyncError(profile)
-                            != SyncSettingsUtils.SyncError.NO_ERROR;
+            // Return true if there is any error.
+            return SyncSettingsUtils.getSyncError(profile) != SyncSettingsUtils.SyncError.NO_ERROR;
         }
         return false;
     }
@@ -880,9 +876,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             if (profile == null) {
                 return null;
             }
-            if (SyncSettingsUtils.getIdentityError(profile) != SyncSettingsUtils.SyncError.NO_ERROR
-                    || SyncSettingsUtils.getSyncError(profile)
-                            != SyncSettingsUtils.SyncError.NO_ERROR) {
+            if (SyncSettingsUtils.getSyncError(profile) != SyncSettingsUtils.SyncError.NO_ERROR) {
                 return mContext.getString(R.string.menu_settings_account_error);
             }
         }

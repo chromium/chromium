@@ -442,15 +442,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
-    // TODO(crbug.com/330290259): Turn this into `bool shouldShowMessage(error)`.
     private static @SyncError int getError(Profile profile) {
-        @SyncError
-        int error =
-                IdentityServicesProvider.get()
-                                .getIdentityManager(profile)
-                                .hasPrimaryAccount(ConsentLevel.SYNC)
-                        ? SyncSettingsUtils.getSyncError(profile)
-                        : SyncSettingsUtils.getIdentityError(profile);
+        @SyncError int error = SyncSettingsUtils.getSyncError(profile);
         // Do not show sync error message for UPM_BACKEND_OUTDATED or OTHER_ERRORS.
         if (error == SyncError.UPM_BACKEND_OUTDATED || error == SyncError.OTHER_ERRORS) {
             return SyncError.NO_ERROR;
