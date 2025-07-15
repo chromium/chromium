@@ -125,6 +125,12 @@ std::string AddFullHashCacheInfo(
 
 #endif
 
+// Serialization helper functions.
+std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr);
+std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr);
+std::string SerializeClientPhishingRequest(
+    const ClientPhishingRequestAndToken& cprat);
+std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr);
 std::string SerializeJson(base::ValueView value);
 
 }  // namespace safe_browsing::web_ui

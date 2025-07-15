@@ -10,6 +10,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/safe_browsing/core/common/proto/csd.to_value.h"
 
 namespace safe_browsing::web_ui {
 
@@ -214,6 +215,25 @@ std::string AddFullHashCacheInfo(
 }
 
 #endif
+
+std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
+  return SerializeJson(Serialize(cdr));
+}
+
+std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
+  return SerializeJson(Serialize(cdr));
+}
+
+std::string SerializeClientPhishingRequest(
+    const ClientPhishingRequestAndToken& cprat) {
+  base::Value::Dict value = Serialize(cprat.request);
+  value.Set("scoped_oauthtoken", cprat.token);
+  return SerializeJson(std::move(value));
+}
+
+std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
+  return SerializeJson(Serialize(cpr));
+}
 
 std::string SerializeJson(base::ValueView value) {
   return base::WriteJsonWithOptions(value,

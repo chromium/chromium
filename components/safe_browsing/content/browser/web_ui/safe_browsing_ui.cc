@@ -605,25 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
-  return web_ui::SerializeJson(Serialize(cdr));
-}
-
-std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
-  return web_ui::SerializeJson(Serialize(cdr));
-}
-
-std::string SerializeClientPhishingRequest(
-    const web_ui::ClientPhishingRequestAndToken& cprat) {
-  base::Value::Dict value = Serialize(cprat.request);
-  value.Set("scoped_oauthtoken", cprat.token);
-  return web_ui::SerializeJson(std::move(value));
-}
-
-std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
-  return web_ui::SerializeJson(Serialize(cpr));
-}
-
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
   return web_ui::SerializeJson(Serialize(report));
 }
@@ -1122,7 +1103,7 @@ void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
   base::Value::List cdrs_sent;
 
   for (const auto& cdr : cdrs) {
-    cdrs_sent.Append(SerializeClientDownloadRequest(*cdr));
+    cdrs_sent.Append(web_ui::SerializeClientDownloadRequest(*cdr));
   }
 
   AllowJavascript();
@@ -1139,7 +1120,7 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
   base::Value::List cdrs_received;
 
   for (const auto& cdr : cdrs) {
-    cdrs_received.Append(SerializeClientDownloadResponse(*cdr));
+    cdrs_received.Append(web_ui::SerializeClientDownloadResponse(*cdr));
   }
 
   AllowJavascript();
@@ -1156,7 +1137,7 @@ void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
   base::Value::List cprs_sent;
 
   for (const auto& cpr : cprs) {
-    cprs_sent.Append(SerializeClientPhishingRequest(cpr));
+    cprs_sent.Append(web_ui::SerializeClientPhishingRequest(cpr));
   }
 
   AllowJavascript();
@@ -1173,7 +1154,7 @@ void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
   base::Value::List cprs_received;
 
   for (const auto& cpr : cprs) {
-    cprs_received.Append(SerializeClientPhishingResponse(*cpr));
+    cprs_received.Append(web_ui::SerializeClientPhishingResponse(*cpr));
   }
 
   AllowJavascript();
@@ -1547,17 +1528,17 @@ void SafeBrowsingUIHandler::NotifyDownloadUrlCheckedJsListener(
 void SafeBrowsingUIHandler::NotifyClientDownloadRequestJsListener(
     ClientDownloadRequest* client_download_request) {
   AllowJavascript();
-  FireWebUIListener(
-      "sent-client-download-requests-update",
-      base::Value(SerializeClientDownloadRequest(*client_download_request)));
+  FireWebUIListener("sent-client-download-requests-update",
+                    base::Value(web_ui::SerializeClientDownloadRequest(
+                        *client_download_request)));
 }
 
 void SafeBrowsingUIHandler::NotifyClientDownloadResponseJsListener(
     ClientDownloadResponse* client_download_response) {
   AllowJavascript();
-  FireWebUIListener(
-      "received-client-download-responses-update",
-      base::Value(SerializeClientDownloadResponse(*client_download_response)));
+  FireWebUIListener("received-client-download-responses-update",
+                    base::Value(web_ui::SerializeClientDownloadResponse(
+                        *client_download_response)));
 }
 
 void SafeBrowsingUIHandler::NotifyClientPhishingRequestJsListener(
@@ -1571,9 +1552,9 @@ void SafeBrowsingUIHandler::NotifyClientPhishingRequestJsListener(
 void SafeBrowsingUIHandler::NotifyClientPhishingResponseJsListener(
     ClientPhishingResponse* client_phishing_response) {
   AllowJavascript();
-  FireWebUIListener(
-      "received-client-phishing-responses-update",
-      base::Value(SerializeClientPhishingResponse(*client_phishing_response)));
+  FireWebUIListener("received-client-phishing-responses-update",
+                    base::Value(web_ui::SerializeClientPhishingResponse(
+                        *client_phishing_response)));
 }
 
 void SafeBrowsingUIHandler::NotifyCSBRRJsListener(
