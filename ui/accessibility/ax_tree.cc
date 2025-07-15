@@ -35,7 +35,6 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "ui/accessibility/ax_bitset.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -2325,8 +2324,18 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
     observers_.Notify(&AXTreeObserver::OnBoolAttributeChanged, this, node, attr,
                       new_bool);
   };
-  CallIfAttributeValuesChanged(old_data.bool_attributes,
-                               new_data.bool_attributes, false, bool_callback);
+
+  // Intentionally break the abstraction here to use a performance-optimized
+  // diffing algorithm.
+  if (old_data.bool_attributes->IsBitset()) {
+    CallIfAttributeValuesChanged(old_data.bool_attributes->GetBitsetStore(),
+                                 new_data.bool_attributes->GetBitsetStore(),
+                                 false, bool_callback);
+  } else {
+    CallIfAttributeValuesChanged(old_data.bool_attributes->GetVectorStore(),
+                                 new_data.bool_attributes->GetVectorStore(),
+                                 false, bool_callback);
+  }
 
   auto float_callback = [this, node](ax::mojom::FloatAttribute attr,
                                      const float& old_float,

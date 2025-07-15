@@ -29,9 +29,17 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   float_attributes(const ui::AXNodeData& p) {
     return p.float_attributes.container();
   }
-  static const base::flat_map<ax::mojom::BoolAttribute, bool>& bool_attributes(
+  static base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes(
       const ui::AXNodeData& p) {
-    return p.bool_attributes.container();
+    if (p.bool_attributes->IsBitset()) {
+      base::flat_map<ax::mojom::BoolAttribute, bool> result;
+      p.bool_attributes->GetBitsetStore().ForEach(
+          [&result](ax::mojom::BoolAttribute attr, bool value) {
+            result[attr] = value;
+          });
+      return result;
+    }
+    return p.bool_attributes->GetVectorStore().container();
   }
   static const base::flat_map<ax::mojom::IntListAttribute,
                               std::vector<int32_t>>&

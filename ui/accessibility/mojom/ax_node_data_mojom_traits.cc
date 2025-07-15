@@ -39,9 +39,12 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
   if (!data.ReadFloatAttributes(&out->float_attributes.container())) {
     return false;
   }
-  if (!data.ReadBoolAttributes(&out->bool_attributes.container())) {
+
+  base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes_from_mojo;
+  if (!data.ReadBoolAttributes(&bool_attributes_from_mojo)) {
     return false;
   }
+  out->bool_attributes->PopulateFromMap(bool_attributes_from_mojo);
 
   auto& intlist_attributes = out->intlist_attributes.container();
   if (!data.ReadIntlistAttributes(&intlist_attributes)) {

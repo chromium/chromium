@@ -553,11 +553,16 @@ void PopulateAXNode(const ui::AXNodeData& source,
     destination_attribute->set_float_value(attribute.second);
   }
 
-  for (const auto& attribute : source.bool_attributes) {
-    auto* destination_attribute = destination->add_attributes();
-    destination_attribute->set_bool_type(BoolAttributeToProto(attribute.first));
-    destination_attribute->set_bool_value(attribute.second);
-  }
+  // TODO: crbug.com/422234724 - Cleanup once expressed as an int pair in the
+  // protobuff.
+  auto add_bool_attribute = [&destination](ax::mojom::BoolAttribute attr,
+                                           bool value) {
+    auto* dest_attr = destination->add_attributes();
+    dest_attr->set_bool_type(BoolAttributeToProto(attr));
+    dest_attr->set_bool_value(value);
+  };
+
+  source.bool_attributes->ForEach(add_bool_attribute);
 
   for (const auto& attribute : source.intlist_attributes) {
     auto* destination_attribute = destination->add_attributes();
