@@ -147,7 +147,7 @@ if (use_libcxx_modules) {
     }
 
     alias("sysroot_pthread") {
-      actual = [":sysroot"]
+      actual = [ ":sysroot" ]
     }
 
     textual_module("sysroot_stdatomic") {
@@ -223,7 +223,7 @@ if (use_libcxx_modules) {
     }
 
     alias("sysroot_pthread") {
-      actual = [":sysroot"]
+      actual = [ ":sysroot" ]
     }
 
     textual_module("sysroot_stdatomic") {
