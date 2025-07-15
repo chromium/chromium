@@ -80,6 +80,10 @@ static_library("input_method") {
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/input_method" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
