@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -518,7 +519,12 @@ void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
     // unserialize because the data is bad.
     DUMP_WILL_BE_CHECK(tree->root() || update.root_id != ui::kInvalidAXNodeID);
     if (!tree->root() && update.root_id == ui::kInvalidAXNodeID) {
+      VLOG(1) << "Skipping unserialize because the tree has no root and the "
+                 "update has an invalid root";
       return;
+    }
+    if (update.tree_data.tree_id == ui::AXTreeIDUnknown()) {
+      VLOG(1) << "unserializing an update with an unknown tree ID";
     }
     tree->Unserialize(update);
   }

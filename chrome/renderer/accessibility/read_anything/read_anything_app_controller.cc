@@ -519,6 +519,21 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
   }
 }
 
+void ReadAnythingAppController::OnTreeDataChanged(
+    ui::AXTree* tree,
+    const ui::AXTreeData& old_data,
+    const ui::AXTreeData& new_data) {
+  // If we are waiting for the tree id of the active tree to be populated,
+  // distill once we have it.
+  if (waiting_for_tree_id_ && old_data.tree_id == ui::AXTreeIDUnknown() &&
+      new_data.tree_id != ui::AXTreeIDUnknown() &&
+      model_.active_tree_id() == tree->GetAXTreeID()) {
+    VLOG(1) << "OnTreeDataChanged populated the active tree ID: "
+            << new_data.tree_id;
+    Distill();
+  }
+}
+
 void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
@@ -699,6 +714,12 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   model_.set_requires_distillation(false);
 
   ui::AXSerializableTree* tree = model_.GetActiveTree();
+  if (tree->GetAXTreeID() == ui::AXTreeIDUnknown()) {
+    VLOG(1)
+        << "Active tree's ID has not been populated yet, skipping distillation";
+    waiting_for_tree_id_ = true;
+    return;
+  }
   std::unique_ptr<
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
       tree_source(tree->CreateTreeSource());

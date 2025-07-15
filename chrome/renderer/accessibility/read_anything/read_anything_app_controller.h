@@ -157,6 +157,10 @@ class ReadAnythingAppController
 
   void OnNodeDeleted(ui::AXTree* tree, ui::AXNodeID node) override;
 
+  void OnTreeDataChanged(ui::AXTree* tree,
+                         const ui::AXTreeData& old_data,
+                         const ui::AXTreeData& new_data) override;
+
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -414,6 +418,8 @@ class ReadAnythingAppController
   // Set of nodes that will be deleted that are also displayed. A draw will
   // occur when the set becomes empty.
   std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
+
+  bool waiting_for_tree_id_ = false;
 
   // Model that holds Reading mode state for this controller.
   ReadAnythingAppModel model_;
