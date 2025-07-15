@@ -4,6 +4,7 @@
 
 #include "pdf/pdf_ink_module.h"
 
+#include <algorithm>
 #include <array>
 #include <set>
 #include <string>
@@ -22,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "base/values.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_features.h"
@@ -216,7 +218,7 @@ blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
       .Build();
 }
 
-base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
+base::Value::Dict CreateGetAnnotationBrushMessage(
     const std::string& brush_type) {
   auto message = base::Value::Dict()
                      .Set("type", "getAnnotationBrush")
@@ -234,8 +236,8 @@ blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
   constexpr int kNoModifiers = 0;
   blink::WebTouchEvent touch_event(
       type, kNoModifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
-  for (size_t i = 0; i < points.size(); ++i) {
-    touch_event.touches[i].SetPositionInWidget(points[i]);
+  for (auto [touch, point] : base::zip(touch_event.touches, points)) {
+    touch.SetPositionInWidget(point);
   }
   touch_event.touches_length = points.size();
   return touch_event;
@@ -496,8 +498,8 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageEraser) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
       });
 
-  EXPECT_TRUE(ink_module().OnMessage(
-      CreateGetAnnotationBrushMessageForTesting("eraser")));
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessage("eraser")));
 }
 
 // Verify that a get pen message gets the pen brush parameters.
@@ -522,8 +524,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessagePen) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
       });
 
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
+  EXPECT_TRUE(ink_module().OnMessage(CreateGetAnnotationBrushMessage("pen")));
 }
 
 // Verify that a get highlighter message gets the highlighter brush parameters.
@@ -548,8 +549,8 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageHighlighter) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
       });
 
-  EXPECT_TRUE(ink_module().OnMessage(
-      CreateGetAnnotationBrushMessageForTesting("highlighter")));
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessage("highlighter")));
 }
 
 // Verify that a get brush message without a parameter gets the default brush
@@ -575,8 +576,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageDefault) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
       });
 
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
+  EXPECT_TRUE(ink_module().OnMessage(CreateGetAnnotationBrushMessage("")));
 }
 
 // Verify that a get brush message without a parameter gets the current brush
@@ -600,8 +600,7 @@ TEST_P(PdfInkModuleTest, HandleGetAnnotationBrushMessageCurrent) {
         EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
       });
 
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("")));
+  EXPECT_TRUE(ink_module().OnMessage(CreateGetAnnotationBrushMessage("")));
 }
 
 // Verify that a set eraser message sets the annotation brush to an eraser. i.e.
@@ -1157,13 +1156,11 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
     int count = 0;
     for (const auto& stroke_state : it->second) {
-      const ink::StrokeInputBatch& input_batch =
-          stroke_state.stroke.GetInputs();
-      for (ink::StrokeInput input : input_batch) {
-        if (input.tool_type == tool_type) {
-          ++count;
-        }
-      }
+      count +=
+          std::ranges::count_if(stroke_state.stroke.GetInputs(),
+                                [&tool_type](const ink::StrokeInput& input) {
+                                  return input.tool_type == tool_type;
+                                });
     }
     return count;
   }
@@ -2186,8 +2183,7 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringDrawing) {
   InitializeSimpleSinglePageBasicLayout();
 
   // No need to distinguish between pen or highlighter here.
-  EXPECT_TRUE(
-      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
+  EXPECT_TRUE(ink_module().OnMessage(CreateGetAnnotationBrushMessage("pen")));
 
   RunStrokeMissedEndEventThenMouseMoveTest();
 }
