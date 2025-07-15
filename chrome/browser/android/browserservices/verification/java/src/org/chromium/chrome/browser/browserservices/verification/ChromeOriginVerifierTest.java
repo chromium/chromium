@@ -23,7 +23,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -42,7 +43,8 @@ public class ChromeOriginVerifierTest {
     public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final long TIMEOUT_MS = 1000;
 
@@ -86,7 +88,7 @@ public class ChromeOriginVerifierTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         mHttpsOrigin = Origin.create("https://www.example.com");
         mHttpOrigin = Origin.create("http://www.android.com");
