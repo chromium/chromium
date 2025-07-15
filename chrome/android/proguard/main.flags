@@ -26,10 +26,10 @@
     public <init>();
 }
 
-# @IdentifierNameString, but does not exist due to the module not having any
-# Java code in it (this class is generated and then stripped as unused).
--dontwarn org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl
+# Used as an @IdentifierNameString, but the class exists only for internal builds.
+-dontwarn org.chromium.chrome.modules.google3.Google3ModuleEntryImpl
 
-# TODO(crbug.com/430099860): Remove once OnDemandModuleEntryPointsImpl is not
-# removed due to being unused.
--dontwarn org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPointsImpl
+# @IdentifierNameString, but does not exist in APK builds.
+-dontwarn org.chromium.chrome.features.dev_ui.DevUiImpl
+-dontwarn org.chromium.chrome.modules.test_dummy.TestDummyProviderImpl
+-dontwarn org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl
