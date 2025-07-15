@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 @interface BWGMediator ()
@@ -97,6 +99,7 @@
 
 // Open a new tab page given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL {
+  [self FREWillBeBackgrounded];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [HandlerForProtocol(_browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
@@ -138,6 +141,28 @@
                                      std::move(pageContextWrapperResponse));
 
   // TODO(crbug.com/419064727): Dismiss bwg promo/consent.
+}
+
+// Notifies the currently active WebState's BWG tab helper that the FRE will be
+// backgrounded.
+- (void)FREWillBeBackgrounded {
+  BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+  if (!BWGTabHelper) {
+    return;
+  }
+
+  BWGTabHelper->PrepareBwgFreBackgrounding();
+}
+
+// Returns the currently active WebState's BWG tab helper.
+- (BwgTabHelper*)activeWebStateBWGTabHelper {
+  web::WebState* activeWebState =
+      _browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nil;
+  }
+
+  return BwgTabHelper::FromWebState(activeWebState);
 }
 
 @end

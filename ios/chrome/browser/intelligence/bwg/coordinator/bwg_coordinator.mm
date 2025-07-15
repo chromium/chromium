@@ -11,16 +11,19 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_navigation_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/web/public/web_state.h"
 
 @interface BWGCoordinator () <UISheetPresentationControllerDelegate,
                               BWGMediatorDelegate,
@@ -133,9 +136,13 @@
   _navigationController.BWGNavigationDelegate = self;
   _navigationController.mutator = _mediator;
 
+  BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+  BOOL shouldAnimatePresentation =
+      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : NO;
+
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_navigationController
-                                        animated:YES
+                                        animated:shouldAnimatePresentation
                                       completion:^{
                                         BWGCoordinator* strongSelf = weakSelf;
                                         strongSelf->_wasPromoShown = showPromo;
@@ -212,6 +219,17 @@
   raw_ptr<AuthenticationService> authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+}
+
+// Returns the currently active WebState's BWG tab helper.
+- (BwgTabHelper*)activeWebStateBWGTabHelper {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nil;
+  }
+
+  return BwgTabHelper::FromWebState(activeWebState);
 }
 
 @end

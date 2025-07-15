@@ -72,7 +72,7 @@ BwgTabHelper::~BwgTabHelper() {}
 void BwgTabHelper::SetBwgUiShowing(bool showing) {
   is_bwg_ui_showing_ = showing;
 
-  // UI was foregrounded, so can no longer be active in background.
+  // The UI was foregrounded, so it can no longer be active in the background.
   if (is_bwg_ui_showing_) {
     is_bwg_session_active_in_background_ = false;
   }
@@ -80,7 +80,7 @@ void BwgTabHelper::SetBwgUiShowing(bool showing) {
   // UI was hidden but the session is not active, so update the snapshot to
   // remove the overlay from it.
   if (!is_bwg_ui_showing_ && !is_bwg_session_active_in_background_) {
-    UpdateWebStateSnapshotInStorage();
+    cached_snapshot_ = nil;
   }
 }
 
@@ -135,6 +135,12 @@ bool BwgTabHelper::IsBwgAvailableForWebState() {
   return is_profile_eligible && is_web_state_eligible;
 }
 
+void BwgTabHelper::PrepareBwgFreBackgrounding() {
+  cached_snapshot_ =
+      bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
+  is_bwg_session_active_in_background_ = true;
+}
+
 std::string BwgTabHelper::GetClientId() {
   return base::NumberToString(web_state_->GetUniqueIdentifier().identifier());
 }
@@ -167,16 +173,21 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
     [bwg_commands_handler_
         startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
+    is_bwg_session_active_in_background_ = false;
+    cached_snapshot_ = nil;
   }
 }
 
 void BwgTabHelper::WasHidden(web::WebState* web_state) {
   if (is_bwg_ui_showing_) {
+    cached_snapshot_ =
+        bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
+  }
+
+  UpdateWebStateSnapshotInStorage();
+
+  if (is_bwg_ui_showing_) {
     is_bwg_session_active_in_background_ = true;
-
-    // Update the snapshot before backgrounding BWG.
-    UpdateWebStateSnapshotInStorage();
-
     [bwg_commands_handler_ dismissBWGFlowWithCompletion:nil];
   }
 }
@@ -246,12 +257,8 @@ void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
     return;
   }
 
-  if (is_bwg_ui_showing_) {
-    UIImage* snapshot =
-        bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
-    if (snapshot) {
-      snapshot_tab_helper->UpdateSnapshotStorageWithImage(snapshot);
-    }
+  if (cached_snapshot_) {
+    snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
   } else {
     snapshot_tab_helper->UpdateSnapshotWithCallback(nil);
   }
