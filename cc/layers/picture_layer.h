@@ -82,7 +82,7 @@ class CC_EXPORT PictureLayer : public Layer {
 
   // These fields are not protected because they are only modified during
   // LayerTreeHost::PaintContent().
-  raw_ptr<ContentLayerClient, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<ContentLayerClient> client_ = nullptr;
   bool is_backdrop_filter_mask_ = false;
 
   ProtectedSequenceWritable<RecordingSource> recording_source_;
