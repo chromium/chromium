@@ -30,6 +30,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
@@ -234,8 +235,17 @@ ExperimentalActorExecuteActionFunction::Run() {
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(browser_context());
 
+  // BuildToolRequest looks for tab_ids on the individual action structs since
+  // that's where Glic puts them. However, the extension puts the tab_id on the
+  // BrowserAction itself. Use the BrowserAction's tab_id as the fallback tab so
+  // that, if Action doesn't provide a tab_id we'll use the
+  // BrowserAction.tab_id. This path should go away once extension clients are
+  // migrated to PerformActions.
+  tabs::TabInterface* browser_action_tab =
+      action.has_tab_id() ? tabs::TabHandle(action.tab_id()).Get() : nullptr;
+
   actor::BuildToolRequestResult requests =
-      actor::BuildToolRequest(action, /*deprecated_fallback_tab=*/nullptr);
+      actor::BuildToolRequest(action, browser_action_tab);
 
   if (!requests.has_value()) {
     return RespondNow(
