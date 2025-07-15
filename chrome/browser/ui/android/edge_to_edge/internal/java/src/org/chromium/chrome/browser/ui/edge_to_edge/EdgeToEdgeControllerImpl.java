@@ -296,7 +296,8 @@ public class EdgeToEdgeControllerImpl
     static boolean isSupportedByConfiguration(Activity activity, InsetObserver insetObserver) {
         if (shouldMonitorConfigurationChanges()) {
             return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity)
-                    && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insetObserver);
+                    && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(
+                            insetObserver.getLastRawWindowInsets());
         }
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
     }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -148,6 +149,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerCreator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
@@ -198,6 +200,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -329,6 +332,7 @@ public class RootUiCoordinator
     @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
+    protected @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     protected final BottomControlsStacker mBottomControlsStacker;
     protected final TopControlsStacker mTopControlsStacker;
     @NonNull protected final ObservableSupplier<Integer> mOverviewColorSupplier;
@@ -740,6 +744,11 @@ public class RootUiCoordinator
         }
         mEdgeToEdgeControllerSupplier.set(null);
 
+        if (mEdgeToEdgeControllerCreator != null) {
+            mEdgeToEdgeControllerCreator.destroy();
+            mEdgeToEdgeControllerCreator = null;
+        }
+
         if (mEdgeToEdgeBottomChin != null) {
             mEdgeToEdgeBottomChin.destroy();
         }
@@ -884,8 +893,15 @@ public class RootUiCoordinator
         initMessagesInfra();
         initScrollCapture();
 
-        // TODO(crbug.com/350610430) Potentially create the E2EController earlier during startup
-        initializeEdgeToEdgeController();
+        if (mWindowAndroid.getInsetObserver() != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
+            mEdgeToEdgeControllerCreator =
+                    new EdgeToEdgeControllerCreator(
+                            new WeakReference<Activity>(mActivity),
+                            mWindowAndroid.getInsetObserver(),
+                            this::initializeEdgeToEdgeController);
+        }
         initBoardingPassDetector();
 
         if (EphemeralTabCoordinator.isSupported()) {
@@ -1862,6 +1878,15 @@ public class RootUiCoordinator
             assert eligible
                     : "The edge-to-edge controller is being initialized, though it should not be"
                             + " eligible!";
+            if (mEdgeToEdgeControllerCreator != null) {
+                // Clean up the creator before creating the controller to ensure the creator doesn't
+                // receive insets again when the EdgeToEdgeController gets created, as the
+                // controller
+                // re-triggers inset consumption during its initialization.
+                mEdgeToEdgeControllerCreator.destroy();
+                mEdgeToEdgeControllerCreator = null;
+            }
+
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
                             mActivity,

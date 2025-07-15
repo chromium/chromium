@@ -37,7 +37,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.insets.InsetObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -166,15 +165,14 @@ public class EdgeToEdgeUtils {
      * This is a sensitive check for whether all insets indicate or imply that the device is in
      * gesture navigation mode, and not tappable (3-button) navigation mode.
      *
-     * @param insetObserver The InsetObserver in the current activity, used to retrieve the last
-     *     seen root view window insets.
+     * @param insetObserver The window insets to check for signals indicating gesture navigation.
      * @return Whether all insets indicate the device is in gesture navigation mode.
      */
-    public static boolean doAllInsetsIndicateGestureNavigation(InsetObserver insetObserver) {
-        WindowInsetsCompat rootInsets = insetObserver.getLastRawWindowInsets();
-        return rootInsets != null
-                && isInGestureNavigationMode(rootInsets)
-                && !hasTappableBarIgnoringTop(() -> rootInsets);
+    public static boolean doAllInsetsIndicateGestureNavigation(
+            @Nullable WindowInsetsCompat insets) {
+        return insets != null
+                && isInGestureNavigationMode(insets)
+                && !hasTappableBarIgnoringTop(() -> insets);
     }
 
     /** Whether the edge-to-edge feature is enabled on tablet. */

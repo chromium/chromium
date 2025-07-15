@@ -120,6 +120,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.TEST_SOURCE,
             InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
             InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
+            InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
             InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
@@ -136,12 +137,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             // critical to drawing the tab strip in the caption bar area in a desktop window
             // correctly.
             int APP_HEADER_COORDINATOR_CAPTION = 2;
-            int EDGE_TO_EDGE_CONTROLLER_IMPL = 3;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 4;
-            int APP_HEADER_COORDINATOR_BOTTOM = 5;
+            // The EdgeToEdgeControllerCreator exists only to create the EdgeToEdgeControllerImpl
+            // if the current configuration (including window insets) indicate that the current
+            // devices supports the bottom chin feature. This creator will remove itself as an
+            // inset consumer if it creates the EdgeToEdgeControllerImpl.
+            int EDGE_TO_EDGE_CONTROLLER_CREATOR = 3;
+            int EDGE_TO_EDGE_CONTROLLER_IMPL = 4;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 5;
+            int APP_HEADER_COORDINATOR_BOTTOM = 6;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 6;
+            int COUNT = 7;
         }
     }
 
@@ -297,6 +303,11 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             WindowInsetsConsumer insetConsumer, @InsetConsumerSource int source) {
         assert mInsetsConsumers[source] == null : "Inset consumer source has already been added.";
         mInsetsConsumers[source] = insetConsumer;
+    }
+
+    /** Returns whether this InsetObserver currently has an inset consumer from the given source. */
+    public boolean hasInsetsConsumer(@InsetConsumerSource int source) {
+        return mInsetsConsumers[source] != null;
     }
 
     /** Remove a consumer of window insets. */
