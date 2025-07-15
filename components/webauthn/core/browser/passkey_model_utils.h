@@ -50,9 +50,6 @@ struct ExtensionInputData {
   // Returns whether the extension data contains the PRF extension.
   bool hasPRF() const;
 
-  // Generates a CBOR output from the extension input data.
-  std::optional<cbor::Value> ToCBOR() const;
-
   // Generates the extensions output data from the input data and encrypted
   // secrets. See:
   // https://w3c.github.io/webauthn/#sctn-defined-client-extensions
@@ -119,8 +116,7 @@ bool EncryptWebauthnCredentialSpecificsData(
 // attestedCredentialData MUST NOT be included. See
 // https://w3c.github.io/webauthn/#authenticator-data
 std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
-    std::string_view rp_id,
-    const ExtensionInputData& extension_input_data);
+    std::string_view rp_id);
 
 // Returns the WebAuthn attestation object for the GPM authenticator.
 // For attestation signatures, the authenticator MUST set the AT flag and
@@ -129,8 +125,7 @@ std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
 std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
     base::span<const uint8_t> credential_id,
-    base::span<const uint8_t> public_key_spki_der,
-    const ExtensionInputData& extension_input_data);
+    base::span<const uint8_t> public_key_spki_der);
 
 // Performs the signing operation over the signed over data using the private
 // key. The signed over data is the concatenation to the authenticator data and

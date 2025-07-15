@@ -85,13 +85,10 @@ NSMutableArray<NSData*>* PRFOutputsFromExtensionOutputData(
 
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
 // function.
-NSData* MakeAuthenticatorDataForAssertion(
-    NSString* rp_id,
-    const webauthn::passkey_model_utils::ExtensionInputData&
-        extension_input_data) {
+NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
   std::vector<uint8_t> authenticator_data =
       webauthn::passkey_model_utils::MakeAuthenticatorDataForAssertion(
-          SysNSStringToUTF8(rp_id), extension_input_data);
+          SysNSStringToUTF8(rp_id));
   return [NSData dataWithBytes:authenticator_data.data()
                         length:authenticator_data.size()];
 }
@@ -276,7 +273,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
                                          length:cred_id.size()];
   std::vector<uint8_t> attestation_object_for_creation =
       webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id_str, cred_id, public_key_spki_der, extension_input_data);
+          rp_id_str, cred_id, public_key_spki_der);
   NSData* attestation_object =
       [NSData dataWithBytes:attestation_object_for_creation.data()
                      length:attestation_object_for_creation.size()];
@@ -320,7 +317,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
   webauthn::passkey_model_utils::ExtensionInputData extension_input_data =
       ExtensionInputDataFromPRFInputs(prf_inputs);
   NSData* authenticatorData =
-      MakeAuthenticatorDataForAssertion(credential.rpId, extension_input_data);
+      MakeAuthenticatorDataForAssertion(credential.rpId);
   NSData* signature = GenerateSignature(authenticatorData, client_data_hash,
                                         credential_secrets->private_key());
 

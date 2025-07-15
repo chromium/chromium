@@ -144,22 +144,6 @@ bool ExtensionInputData::hasPRF() const {
   return prf_input.has_value();
 }
 
-std::optional<cbor::Value> ExtensionInputData::ToCBOR() const {
-  if (!hasPRF()) {
-    return std::nullopt;
-  }
-
-  cbor::Value::MapValue prf_ext;
-  prf_ext.emplace(device::kExtensionPRFEnabled, true);
-  if (!prf_input->input1.empty()) {
-    prf_ext.emplace(device::kExtensionPRFEval, prf_input->ToCBOR());
-  }
-
-  cbor::Value::MapValue extensions;
-  extensions.emplace(device::kExtensionPRF, std::move(prf_ext));
-  return cbor::Value(std::move(extensions));
-}
-
 ExtensionOutputData ExtensionInputData::ToOutputData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
   if (!hasPRF() || prf_input->input1.empty()) {
@@ -346,29 +330,22 @@ bool EncryptWebauthnCredentialSpecificsData(
   return true;
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
-    std::string_view rp_id,
-    const ExtensionInputData& extension_input_data) {
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
   using Flag = device::AuthenticatorData::Flag;
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
                   base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState);
-  std::optional<cbor::Value> extensions = extension_input_data.ToCBOR();
-  if (extensions.has_value()) {
-    flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
-  }
   return device::AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                                    kSignatureCounter, /*data=*/std::nullopt,
-                                   std::move(extensions))
+                                   /*extensions=*/std::nullopt)
       .SerializeToByteArray();
 }
 
 std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
     base::span<const uint8_t> credential_id,
-    base::span<const uint8_t> public_key_spki_der,
-    const ExtensionInputData& extension_input_data) {
+    base::span<const uint8_t> public_key_spki_der) {
   static constexpr std::array<const uint8_t, 16> kGpmAaguid{
       0xea, 0x9b, 0x8d, 0x66, 0x4d, 0x01, 0x1d, 0x21,
       0x3c, 0xe4, 0xb6, 0xb4, 0x8c, 0xb5, 0x75, 0xd4};
@@ -380,18 +357,14 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
-  std::optional<cbor::Value> extensions = extension_input_data.ToCBOR();
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
                   base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState) |
                   base::strict_cast<uint8_t>(Flag::kAttestation);
-  if (extensions.has_value()) {
-    flags |= base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
-  }
   device::AuthenticatorData authenticator_data(
       crypto::hash::Sha256(rp_id), flags, kSignatureCounter,
-      std::move(attested_credential_data), std::move(extensions));
+      std::move(attested_credential_data), /*extensions=*/std::nullopt);
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());
