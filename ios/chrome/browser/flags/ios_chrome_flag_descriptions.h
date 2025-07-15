@@ -64,6 +64,11 @@ extern const char kAutofillEnableCardBenefitsSyncDescription[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 
+extern const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[];
+extern const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[];
+
 // Title and description for the flag to enable dynamically loading the fields
 // for address input based on the country value.
 extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];

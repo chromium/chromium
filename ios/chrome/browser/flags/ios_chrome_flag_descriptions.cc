@@ -95,6 +95,15 @@ const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
 
+const char kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
+    "Enable CVC storage and filling standalone form enhancement for payments "
+    "autofill";
+const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[] =
+        "When enabled, this will enhance the CVV storage project. The "
+        "enhancement will enable CVV storage suggestions for standalone CVC "
+        "fields.";
+
 const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[] =
     "Enable dynamically loading fields for address input";
 const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =
