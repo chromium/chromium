@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -259,8 +260,9 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     site_access_title_label_->SetData(
         {GetSiteAccessTitle(state.site_access), /*is_filename=*/false});
     site_access_description_label_->SetData(
-        {GetSiteAccessDescription(state.site_access,
-                                  GetCurrentHost(web_contents)),
+        {GetSiteAccessDescription(
+             state.site_access,
+             extensions::ui_util::GetFormattedHostForDisplay(*web_contents)),
          /*is_filename=*/false});
   }
 

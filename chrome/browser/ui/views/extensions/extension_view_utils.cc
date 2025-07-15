@@ -46,12 +46,3 @@ ui::ImageModel GetIcon(ToolbarActionViewController* action,
                          gfx::Size(extension_misc::EXTENSION_ICON_SMALLISH,
                                    extension_misc::EXTENSION_ICON_SMALLISH));
 }
-
-std::u16string GetCurrentHost(content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  auto url = web_contents->GetLastCommittedURL();
-  // Hide the scheme when necessary (e.g hide "https://" but don't
-  // "chrome://").
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      url);
-}

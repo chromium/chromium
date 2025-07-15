@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -747,7 +748,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension_A->id(), extension_B->id()));
 
-  std::u16string current_site = GetCurrentHost(web_contents);
+  std::u16string current_site =
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
   std::u16string expected_tooltip =
       l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,

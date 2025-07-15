@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -587,7 +588,8 @@ void ExtensionsMenuViewController::UpdateMainPage(
         ->IsReloadRequired();
   };
 
-  std::u16string current_site = GetCurrentHost(web_contents);
+  std::u16string current_site =
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
   int site_settings_label_id;
   bool is_site_settings_toggle_visible = false;
   bool is_site_settings_toggle_on = false;
@@ -698,7 +700,8 @@ void ExtensionsMenuViewController::UpdateSitePermissionsPage(
   std::u16string extension_name = action_controller->GetActionName();
   ui::ImageModel extension_icon =
       action_controller->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
-  std::u16string current_site = GetCurrentHost(web_contents);
+  std::u16string current_site =
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
   PermissionsManager::UserSiteAccess user_site_access =
       permissions_manager->GetUserSiteAccess(*extension, url);
   bool is_show_requests_toggle_on =

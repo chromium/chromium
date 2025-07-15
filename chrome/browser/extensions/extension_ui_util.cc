@@ -10,6 +10,8 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/ui_util.h"
@@ -89,6 +91,14 @@ bool HasManageableExtensions(content::BrowserContext* browser_context) {
          has_manageable_extension(registry->disabled_extensions()) ||
          has_manageable_extension(registry->terminated_extensions()) ||
          has_manageable_extension(registry->blocklisted_extensions());
+}
+
+std::u16string GetFormattedHostForDisplay(content::WebContents& web_contents) {
+  auto url = web_contents.GetLastCommittedURL();
+  // Hide the scheme when necessary (e.g hide "https://" but don't
+  // "chrome://").
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      url);
 }
 
 }  // namespace ui_util
