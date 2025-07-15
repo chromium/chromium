@@ -78,14 +78,22 @@ class NET_EXPORT SessionInclusionRules final {
   void SetIncludeSite(bool include_site);
 
   // Adds a specific URL rule that includes/excludes certain URLs based on their
-  // host part matching `host_pattern` and the path matching `path_prefix`. Any
-  // matching rule takes precedence over the basic scope. Does some validity
-  // checks on the inputs first. The `host_pattern` must either be a full domain
-  // (host piece) or a pattern containing a wildcard ('*' character) in the
-  // most-specific (leftmost) label position followed by a dot and a non-eTLD.
-  // The `path_prefix` must begin with '/' and cannot contain wildcards, and
-  // will match paths that start with the same path components. Returns whether
-  // the specified rule was added.
+  // host part matching `host_pattern` and the path matching `path_prefix`. The
+  // basic scope takes precedence over any matching rule. Does some validity
+  // checks on the inputs first.
+  //
+  // The `host_pattern` must either be a full domain (host piece) or a pattern
+  // containing a wildcard ('*' character) in the most-specific (leftmost) label
+  // position followed by a dot and the rest of the domain. The `host_pattern`
+  // must also match at least one host within the scope (the origin itself for
+  // origin-scoped sessions, or some subdomain of the site for site-scoped
+  // sessions). This helps catch the most egregious configuration errors.
+  //
+  // The `path_prefix` must begin with '/' and cannot contain
+  // wildcards, and will match paths that start with the same path
+  // components.
+  //
+  // Returns whether the specified rule was added.
   bool AddUrlRuleIfValid(InclusionResult rule_type,
                          const std::string& host_pattern,
                          const std::string& path_prefix);

@@ -10,11 +10,8 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/scheme_host_port_matcher_result.h"
-#include "net/base/scheme_host_port_matcher_rule.h"
-#include "net/base/url_util.h"
+#include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
 
@@ -28,15 +25,6 @@ bool IsIncludeSiteAllowed(const url::Origin& origin) {
       registry_controlled_domains::GetDomainAndRegistry(
           origin, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return !domain_and_registry.empty() && origin.host() == domain_and_registry;
-}
-
-// Types of characters valid in IPv6 addresses.
-// Derived from logic in url::DoIPv6AddressToNumber() and url::DoParseIPv6().
-bool IsValidIPv6Char(char c) {
-  return c == ':' || base::IsHexDigit(c) || c == '.' ||
-         // 'x' or 'X' is used in IPv4 to denote hex values, and can be used in
-         // parts of IPv6 addresses.
-         c == 'x' || c == 'X';
 }
 
 proto::RuleType GetRuleTypeProto(
@@ -77,30 +65,22 @@ struct SessionInclusionRules::UrlRule {
 
   // Domain or pattern that the URL must match. This must either be a
   // full domain (host piece) or a pattern containing a wildcard in the
-  // most-specific (leftmost) label position followed by a dot and a non-eTLD.
+  // most-specific (leftmost) label position followed by a dot.
   // The matched strings follow SchemeHostPortMatcherRule's logic, but with
   // some extra requirements for validity:
-  // - A leading wildcard * must be followed by a dot, so "*ple.com" is not
-  //   acceptable.
-  // - "*.com" is not accepted because com is an eTLD. Same with "*.co.uk" and
-  //   similar.
+  // - If the pattern has a leading wildcard *, it must be "*" itself or
+  //   the * must be followed by a dot, so "*ple.com" is not acceptable.
   // - Multiple wildcards are not allowed.
   // - Internal wildcards are not allowed, so "sub.*.example.com" does not
   //   work because the wildcard is not the leftmost component.
-  // - IP addresses also work if specified as the exact host, as described in
-  //   SchemeHostPortMatcherRule.
-  std::unique_ptr<SchemeHostPortMatcherRule> host_matcher_rule;
+  // - IP addresses also work. IPv4 addresses can contain wildcards.
+  std::string host_pattern;
 
   // Prefix consisting of path components that the URL must match. Must begin
   // with '/'. Wildcards are not allowed. Simply use "/" to match all paths.
   std::string path_prefix;
 
-  friend bool operator==(const UrlRule& lhs, const UrlRule& rhs) {
-    return lhs.rule_type == rhs.rule_type &&
-           lhs.path_prefix == rhs.path_prefix &&
-           lhs.host_matcher_rule->ToString() ==
-               rhs.host_matcher_rule->ToString();
-  }
+  friend bool operator==(const UrlRule& lhs, const UrlRule& rhs) = default;
 
   // Returns whether the given `url` matches this rule. Note that this
   // function does not check the scheme and port portions of the URL/origin.
@@ -142,98 +122,41 @@ bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
   if (path_prefix.empty() || path_prefix.front() != '/') {
     return false;
   }
-  if (host_pattern.empty()) {
+
+  if (!IsValidHostPattern(host_pattern)) {
     return false;
   }
 
-  // If only the origin is allowed, the host_pattern must be precisely its host.
-  bool host_pattern_is_host = host_pattern == origin_.host();
-  if (!may_include_site_ && !host_pattern_is_host) {
+  // Return early if the rule can't match anything. For origin-scoped
+  // sessions, the origin must match the host pattern.
+  if (!include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
     return false;
   }
 
-  // Don't allow '*' anywhere besides the first character of the pattern.
-  size_t star_pos = host_pattern.rfind('*');
-  if (star_pos != std::string::npos && star_pos != 0) {
-    return false;
-  }
-  // Only allow wildcard if immediately followed by a dot.
-  bool has_initial_wildcard_label = host_pattern.starts_with("*.");
-  if (star_pos != std::string::npos && !has_initial_wildcard_label) {
-    return false;
-  }
-
-  std::string_view hostlike_part{host_pattern};
-  if (has_initial_wildcard_label) {
-    hostlike_part = hostlike_part.substr(2);
-  }
-
-  bool presumed_ipv6 = host_pattern.front() == '[';
-  if (presumed_ipv6 && host_pattern.back() != ']') {
-    return false;
-  }
-
-  // Allow only specific characters into SchemeHostPortMatcherRule parsing.
-  if (presumed_ipv6) {
-    // Leave out the brackets, but everything else must be a valid char.
-    std::string_view ipv6_address{host_pattern.begin() + 1,
-                                  host_pattern.end() - 1};
-    if (std::find_if_not(ipv6_address.begin(), ipv6_address.end(),
-                         &IsValidIPv6Char) != ipv6_address.end()) {
-      return false;
+  // For site-scoped sessions, either the site itself matches the
+  // pattern (e.g. a pattern of "*") or the hostlike part of the pattern
+  // is same-site.
+  if (include_site_ && !MatchesHostPattern(host_pattern, origin_.host())) {
+    std::string_view hostlike_part = host_pattern;
+    if (hostlike_part.starts_with("*.")) {
+      hostlike_part = hostlike_part.substr(2);
     }
-  } else {
-    // Note that this excludes a ':' character specifying a port number, even
-    // though SchemeHostPortMatcherRule supports it. Same for '/' (for the
-    // scheme or an IP block).
-    // TODO(chlily): Consider supporting port numbers.
-    if (!IsCanonicalizedHostCompliant(hostlike_part)) {
+
+    std::string hostlike_part_domain =
+        registry_controlled_domains::GetDomainAndRegistry(
+            hostlike_part,
+            registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    std::string domain_and_registry =
+        registry_controlled_domains::GetDomainAndRegistry(
+            origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    if (hostlike_part_domain != domain_and_registry) {
       return false;
     }
   }
 
-  // Delegate the rest of the parsing to SchemeHostPortMatcherRule.
-  std::unique_ptr<SchemeHostPortMatcherRule> host_matcher_rule =
-      SchemeHostPortMatcherRule::FromUntrimmedRawString(host_pattern);
-  if (!host_matcher_rule) {
-    return false;
-  }
-
-  // Now that we know the host_pattern is at least the right shape, validate the
-  // remaining restrictions.
-
-  // Skip the eTLD lookups if the host pattern is an exact match.
-  if (host_pattern_is_host) {
-    url_rules_.emplace_back(rule_type, std::move(host_matcher_rule),
-                            path_prefix);
-    return true;
-  }
-
-  std::string hostlike_part_domain =
-      registry_controlled_domains::GetDomainAndRegistry(
-          hostlike_part,
-          registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // If there is a wildcard, we require the pattern to be a normal domain and
-  // not an eTLD.
-  if (has_initial_wildcard_label && hostlike_part_domain.empty()) {
-    return false;
-  }
-
-  // Validate that the host pattern is on the right origin/site.
-  // TODO(chlily): Perhaps we should use a cached value, but surely URL rule
-  // parsing only happens a small number of times.
-  std::string domain_and_registry =
-      registry_controlled_domains::GetDomainAndRegistry(
-          origin_, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // The origin_ must have an eTLD+1, because if it didn't, then we'd know that
-  // !may_include_site_, and that would mean we'd have already returned early
-  // and would never get here.
-  CHECK(!domain_and_registry.empty());
-  if (hostlike_part_domain != domain_and_registry) {
-    return false;
-  }
-
-  url_rules_.emplace_back(rule_type, std::move(host_matcher_rule), path_prefix);
+  url_rules_.emplace_back(rule_type, host_pattern, path_prefix);
   return true;
 }
 
@@ -264,8 +187,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
 }
 
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
-  if (host_matcher_rule->Evaluate(url) ==
-      SchemeHostPortMatcherResult::kNoMatch) {
+  if (!MatchesHostPattern(host_pattern, url.host())) {
     return false;
   }
 
@@ -306,7 +228,7 @@ proto::SessionInclusionRules SessionInclusionRules::ToProto() const {
   for (auto& rule : url_rules_) {
     proto::UrlRule rule_proto;
     rule_proto.set_rule_type(GetRuleTypeProto(rule.rule_type));
-    rule_proto.set_host_matcher_rule(rule.host_matcher_rule->ToString());
+    rule_proto.set_host_matcher_rule(rule.host_pattern);
     rule_proto.set_path_prefix(rule.path_prefix);
     proto.mutable_url_rules()->Add(std::move(rule_proto));
   }
@@ -349,7 +271,7 @@ std::string SessionInclusionRules::DebugString() const {
   std::string result;
   for (const UrlRule& rule : url_rules_) {
     base::StrAppend(&result, {"Type=", RuleTypeToString(rule.rule_type),
-                              "; Domain=", rule.host_matcher_rule->ToString(),
+                              "; Domain=", rule.host_pattern,
                               "; Path=", rule.path_prefix, "\n"});
   }
   return result;

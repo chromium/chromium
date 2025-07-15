@@ -139,6 +139,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
 
   std::unique_ptr<Session> session(new Session(
       Id(params.session_id), scope_origin, candidate_refresh_endpoint));
+
+  session->inclusion_rules_.SetIncludeSite(params.scope.include_site);
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
@@ -155,8 +157,6 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   session->inclusion_rules_.AddUrlRuleIfValid(
       SessionInclusionRules::InclusionResult::kExclude,
       candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
-
-  session->inclusion_rules_.SetIncludeSite(params.scope.include_site);
 
   for (const auto& cred : params.credentials) {
     if (!cred.name.empty()) {
