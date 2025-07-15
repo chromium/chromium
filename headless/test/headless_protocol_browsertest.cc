@@ -34,7 +34,6 @@ namespace switches {
 static const char kResetResults[] = "reset-results";
 static const char kDumpConsoleMessages[] = "dump-console-messages";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
-static const char kDumpTestResult[] = "dump-test-result";
 }  // namespace switches
 
 namespace {
@@ -183,11 +182,6 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
 }
 
 void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpTestResult)) {
-    LOG(ERROR) << "Test result:\n" << params.DebugString();
-  }
-
   ProcessTestResult(DictString(params, "result.result.value"));
 
   FinishTest();
