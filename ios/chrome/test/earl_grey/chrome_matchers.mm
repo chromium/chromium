@@ -742,10 +742,6 @@ id<GREYMatcher> TabGridDoneButton() {
   return [ChromeMatchersAppInterface tabGridDoneButton];
 }
 
-id<GREYMatcher> TabGridCloseAllButton() {
-  return [ChromeMatchersAppInterface tabGridCloseAllButton];
-}
-
 id<GREYMatcher> TabGridUndoCloseAllButton() {
   return [ChromeMatchersAppInterface tabGridUndoCloseAllButton];
 }

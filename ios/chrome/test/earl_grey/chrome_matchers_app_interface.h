@@ -574,10 +574,6 @@
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 
-// Returns the GREYMatcher for the button that closes all the tabs in the tab
-// grid.
-+ (id<GREYMatcher>)tabGridCloseAllButton;
-
 // Returns the GREYMatcher for the button that reverts the close all tabs action
 // in the tab grid.
 + (id<GREYMatcher>)tabGridUndoCloseAllButton;

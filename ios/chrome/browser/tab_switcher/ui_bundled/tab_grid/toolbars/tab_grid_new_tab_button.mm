@@ -58,7 +58,18 @@ const CGFloat kLargeSizeIPad = 52;
       symbolSize = kSmallSymbolSize;
       buttonSize = kSmallSize;
     }
+
     _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
+
+    if (@available(iOS 26, *)) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+      self.configuration = [UIButtonConfiguration glassButtonConfiguration];
+#else
+      self.configuration = [UIButtonConfiguration plainButtonConfiguration];
+#endif
+      _symbol = DefaultSymbolWithPointSize(kPlusSymbol, symbolSize);
+      self.tintColor = UIColor.blackColor;
+    }
 
     _imageContainer = [[UIImageView alloc] initWithImage:_symbol];
     _imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -95,17 +106,30 @@ const CGFloat kLargeSizeIPad = 52;
     case TabGridPageIncognitoTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-      _imageContainer.image = SymbolWithPalette(_symbol, @[
-        UIColor.blackColor,
-        self.enabled ? UIColor.whiteColor : UIColor.grayColor
-      ]);
+      if (@available(iOS 26, *)) {
+        UIButtonConfiguration* config = self.configuration;
+        config.background.backgroundColor = UIColor.grayColor;
+        self.configuration = config;
+      } else {
+        _imageContainer.image = SymbolWithPalette(_symbol, @[
+          UIColor.blackColor,
+          self.enabled ? UIColor.whiteColor : UIColor.grayColor
+        ]);
+      }
       break;
     case TabGridPageRegularTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-      _imageContainer.image = SymbolWithPalette(
-          _symbol,
-          @[ UIColor.blackColor, [UIColor colorNamed:kStaticBlue400Color] ]);
+      if (@available(iOS 26, *)) {
+        UIButtonConfiguration* config = self.configuration;
+        config.background.backgroundColor =
+            [UIColor colorNamed:kStaticBlue400Color];
+        self.configuration = config;
+      } else {
+        _imageContainer.image = SymbolWithPalette(
+            _symbol,
+            @[ UIColor.blackColor, [UIColor colorNamed:kStaticBlue400Color] ]);
+      }
       break;
     case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:

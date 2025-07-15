@@ -6692,12 +6692,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_CELL_UPDATED" desc="Accessibility value of the title of a tab grid cell when it has been updated since the last time the user looked at it. Read by VoiceOver">
           <ph name="TAB_TITLE">$1<ex>Google Search</ex></ph>, new activity
       </message>
-      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that closes all the tabs in the grid. [iOS only]">
-        Close all
-      </message>
-      <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS" desc="Title of the button in the action sheet that close all tabs. [iOS only]">
-        Close all
-      </message>
       <message name="IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_ACTION_SHEET_MESSAGE" desc="Message of the action sheet that confirms closing all tabs or non-pinned tabs only. [iOS only]">
         Closing all tabs will close pinned tabs as well.
       </message>

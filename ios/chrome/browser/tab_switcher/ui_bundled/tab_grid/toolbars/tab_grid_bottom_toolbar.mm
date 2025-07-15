@@ -21,31 +21,52 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_scrolling_background.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+// Minimal width for text buttons.
+const CGFloat kButtonMinWidth = 44;
+// Height for text buttons.
+const CGFloat kButtonHeight = 44;
+// Button font size.
+const CGFloat kButtonFontSize = 17;
+// Horizontal padding for buttons in compact mode.
+const CGFloat kCompactButtonHorizontalPadding = 16;
+const CGFloat kCompactButtonHorizontalPaddingPreiOS26 = 12;
+// Minimum spacing between buttons.
+const CGFloat kCompactMinButtonSpacing = 8;
+
+// Returns the padding depending on the OS version.
+CGFloat CompactButtonHorizontalPadding() {
+  if (@available(iOS 26, *)) {
+    return kCompactButtonHorizontalPadding;
+  }
+  return kCompactButtonHorizontalPaddingPreiOS26;
+}
+
+}  // namespace
+
 @implementation TabGridBottomToolbar {
-  UIToolbar* _toolbar;
-  UIBarButtonItem* _newTabButtonItem;
-  UIBarButtonItem* _spaceItem;
-  NSArray<NSLayoutConstraint*>* _compactConstraints;
-  NSArray<NSLayoutConstraint*>* _floatingConstraints;
+  UIToolbar* _containerToolbar;
   TabGridNewTabButton* _smallNewTabButton;
   TabGridNewTabButton* _largeNewTabButton;
-  UIBarButtonItem* _doneButton;
-  UIBarButtonItem* _closeAllOrUndoButton;
-  UIBarButtonItem* _editButton;
-  UIBarButtonItem* _addToButton;
-  UIBarButtonItem* _closeTabsButton;
-  UIBarButtonItem* _shareButton;
+  UIButton* _doneButton;
+  UIButton* _undoButton;
+  UIButton* _editButton;
+  UIButton* _addToButton;
+  UIButton* _closeTabsButton;
+  UIButton* _shareButton;
   BOOL _undoActive;
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
   TabGridToolbarScrollingBackground* _scrollBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
+  NSLayoutConstraint* _viewTopConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -56,12 +77,9 @@
     }
     [self setupViews];
     [self updateLayout];
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
-      ]);
-      [self registerForTraitChanges:traits withAction:@selector(updateLayout)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
+    [self registerForTraitChanges:traits withAction:@selector(updateLayout)];
   }
   return self;
 }
@@ -85,45 +103,15 @@
   [super didMoveToSuperview];
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if ((self.traitCollection.verticalSizeClass !=
-       previousTraitCollection.verticalSizeClass) ||
-      (self.traitCollection.horizontalSizeClass !=
-       previousTraitCollection.horizontalSizeClass)) {
-    [self updateLayout];
-  }
-}
-#endif
-
-// `pointInside` is called as long as this view is on the screen (even if its
-// size is zero). It controls hit testing of the bottom toolbar. When the
-// toolbar is transparent and has the `_largeNewTabButton`, only respond to
-// tapping on that button.
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
-  if ([self isShowingFloatingButton]) {
-    // Only floating new tab button is tappable.
-    return [_largeNewTabButton
-        pointInside:[self convertPoint:point toView:_largeNewTabButton]
-          withEvent:event];
-  }
-  return [super pointInside:point withEvent:event];
-}
-
 // Returns intrinsicContentSize based on the content of the toolbar.
 // When showing the floating Button the contentsize for the toolbar should be
 // zero so that the toolbar isn't accounted for when calculating the bottom
 // insets of the container view.
 - (CGSize)intrinsicContentSize {
-  if ([self isShowingFloatingButton] || self.subviews.count == 0) {
+  if (_largeNewTabButton.enabled) {
     return CGSizeZero;
   }
-  return _toolbar.intrinsicContentSize;
+  return [super intrinsicContentSize];
 }
 
 #pragma mark - Public
@@ -143,8 +131,6 @@
   _page = page;
   _smallNewTabButton.page = page;
   _largeNewTabButton.page = page;
-  // Reset the title of UIBarButtonItem to update the title in a11y modal panel.
-  _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
   [self updateLayout];
 }
 
@@ -173,7 +159,7 @@
 }
 
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
-  _closeAllOrUndoButton.enabled = enabled;
+  _undoButton.enabled = enabled;
 }
 
 - (void)setIncognitoBackgroundHidden:(BOOL)hidden {
@@ -182,28 +168,7 @@
 }
 
 - (void)useUndoCloseAll:(BOOL)useUndo {
-  _closeAllOrUndoButton.enabled = YES;
-  if (useUndo) {
-    _closeAllOrUndoButton.title =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON);
-    // Setting the `accessibilityIdentifier` seems to trigger layout, which
-    // causes an infinite loop.
-    if (_closeAllOrUndoButton.accessibilityIdentifier !=
-        kTabGridUndoCloseAllButtonIdentifier) {
-      _closeAllOrUndoButton.accessibilityIdentifier =
-          kTabGridUndoCloseAllButtonIdentifier;
-    }
-  } else {
-    _closeAllOrUndoButton.title =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON);
-    // Setting the `accessibilityIdentifier` seems to trigger layout, which
-    // causes an infinite loop.
-    if (_closeAllOrUndoButton.accessibilityIdentifier !=
-        kTabGridCloseAllButtonIdentifier) {
-      _closeAllOrUndoButton.accessibilityIdentifier =
-          kTabGridCloseAllButtonIdentifier;
-    }
-  }
+  _undoButton.enabled = YES;
   if (_undoActive != useUndo) {
     _undoActive = useUndo;
     [self updateLayout];
@@ -211,15 +176,11 @@
 }
 
 - (void)hide {
-  // The `_editButton` is hidden to dismiss its context menu if it's still
-  // presented.
-  _editButton.hidden = YES;
   _smallNewTabButton.alpha = 0.0;
   _largeNewTabButton.alpha = 0.0;
 }
 
 - (void)show {
-  _editButton.hidden = NO;
   _smallNewTabButton.alpha = 1.0;
   _largeNewTabButton.alpha = 1.0;
 }
@@ -274,106 +235,115 @@
 
 #pragma mark - Private
 
-- (void)setupViews {
-  // For Regular(V) x Compact(H) layout, display UIToolbar.
-  // In iOS 13, constraints break if the UIToolbar is initialized with a null or
-  // zero rect frame. An arbitrary non-zero frame fixes this issue.
-  _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  [self createScrolledBackgrounds];
-  _toolbar.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  // Remove the border of UIToolbar.
-  [_toolbar setShadowImage:[[UIImage alloc] init]
-        forToolbarPosition:UIBarPositionAny];
-  [_toolbar
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
-                                      forAxis:UILayoutConstraintAxisVertical];
+// Returns a new button to be used.
+- (UIButton*)createButtonWithTitle:(NSString*)title
+                             image:(UIImage*)image
+                    targetSelector:(SEL)targetSelector {
+  UIButton* button;
+  if (@available(iOS 26, *)) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration glassButtonConfiguration];
+#else
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+#endif
+    buttonConfiguration.title = title;
+    buttonConfiguration.image = image;
+    buttonConfiguration.baseForegroundColor =
+        UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                 primaryAction:nil];
+  } else {
+    button = [UIButton systemButtonWithPrimaryAction:nil];
+    button.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setImage:image forState:UIControlStateNormal];
+  }
 
-  _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
-  _closeAllOrUndoButton.target = self;
-  _closeAllOrUndoButton.action = @selector(closeAllButtonTapped:);
-  _closeAllOrUndoButton.tintColor =
-      UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  button.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button.heightAnchor constraintEqualToConstant:kButtonHeight].active = YES;
+  if (@available(iOS 26, *)) {
+    [button.widthAnchor constraintGreaterThanOrEqualToConstant:kButtonMinWidth]
+        .active = YES;
+  }
+  button.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
-  _doneButton = [[UIBarButtonItem alloc] init];
-  _doneButton.target = self;
-  _doneButton.action = @selector(doneButtonTapped:);
-  _doneButton.style = UIBarButtonItemStyleDone;
-  _doneButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _doneButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON);
-  _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
+  if (targetSelector) {
+    [button addTarget:self
+                  action:targetSelector
+        forControlEvents:UIControlEventTouchUpInside];
+  }
 
-  _spaceItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
+  return button;
+}
 
-  _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
-  [_smallNewTabButton addTarget:self
-                         action:@selector(newTabButtonTapped:)
-               forControlEvents:UIControlEventTouchUpInside];
-  _smallNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _smallNewTabButton.page = self.page;
+// Constraints for the selection mode.
+- (NSArray<NSLayoutConstraint*>*)constraintsForSelectionMode {
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        // Vertical layout:
+        [_closeTabsButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
+        [_shareButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
+        [_addToButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
 
-  _newTabButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:_smallNewTabButton];
+        // Horizontal layout:
+        [_closeTabsButton.leadingAnchor
+            constraintEqualToAnchor:_containerToolbar.leadingAnchor
+                           constant:CompactButtonHorizontalPadding()],
+        [_shareButton.centerXAnchor
+            constraintEqualToAnchor:_containerToolbar.centerXAnchor],
+        [_addToButton.trailingAnchor
+            constraintEqualToAnchor:_containerToolbar.trailingAnchor
+                           constant:-CompactButtonHorizontalPadding()],
+        [_shareButton.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:_closeTabsButton.trailingAnchor
+                                        constant:kCompactMinButtonSpacing],
+        [_addToButton.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:_shareButton.trailingAnchor
+                                        constant:kCompactMinButtonSpacing],
+      ]];
+  return constraints;
+}
 
-  // Create selection mode buttons
-  _editButton = [[UIBarButtonItem alloc] init];
-  _editButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
-  _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
+// Constraints for the regular compact mode.
+- (NSArray<NSLayoutConstraint*>*)constraintsForCompactMode {
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        // Vertical layout:
+        [_editButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
+        [_smallNewTabButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
+        [_doneButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
 
-  _addToButton = [[UIBarButtonItem alloc] init];
-  _addToButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _addToButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_ADD_TO_BUTTON);
-  _addToButton.accessibilityIdentifier = kTabGridEditAddToButtonIdentifier;
-  _shareButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                           target:self
-                           action:@selector(shareSelectedTabs:)];
-  _shareButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _shareButton.accessibilityIdentifier = kTabGridEditShareButtonIdentifier;
-  _closeTabsButton = [[UIBarButtonItem alloc] init];
-  _closeTabsButton.target = self;
-  _closeTabsButton.action = @selector(closeSelectedTabs:);
-  _closeTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _closeTabsButton.accessibilityIdentifier =
-      kTabGridEditCloseTabsButtonIdentifier;
-  [self updateCloseTabsButtonTitle];
+        // Horizontal layout:
+        [_editButton.leadingAnchor
+            constraintEqualToAnchor:_containerToolbar.leadingAnchor
+                           constant:CompactButtonHorizontalPadding()],
+        [_doneButton.trailingAnchor
+            constraintEqualToAnchor:_containerToolbar.trailingAnchor
+                           constant:-CompactButtonHorizontalPadding()],
+        [_smallNewTabButton.centerXAnchor
+            constraintEqualToAnchor:_containerToolbar.centerXAnchor],
+        [_smallNewTabButton.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:_editButton.trailingAnchor
+                                        constant:kCompactMinButtonSpacing],
+        [_doneButton.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:_smallNewTabButton
+                                                     .trailingAnchor
+                                        constant:kCompactMinButtonSpacing],
+      ]];
+  return constraints;
+}
 
-  _compactConstraints = @[
-    [_toolbar.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_toolbar.bottomAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
-    [_toolbar.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [_toolbar.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-  ];
-
-  // For other layout, display a floating new tab button.
-  _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
-  [_largeNewTabButton addTarget:self
-                         action:@selector(newTabButtonTapped:)
-               forControlEvents:UIControlEventTouchUpInside];
-  // When a11y font size is used, long press on UIBarButtonItem will show a
-  // built-in a11y modal panel with image and title if set. The size is not
-  // taken into account.
-  _newTabButtonItem.image = CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
-  _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _largeNewTabButton.page = self.page;
-
-  // Try to force the button to be aligned with the safe area. Lower priority to
-  // avoid clashing with the constraints with the actual sides when there is no
-  // safe area.
-  NSLayoutConstraint* largeButtonTrailingSafeAreaConstraint =
-      [_largeNewTabButton.trailingAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor];
-  largeButtonTrailingSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
-  NSLayoutConstraint* largeButtonBottomSafeAreaConstraint =
-      [_largeNewTabButton.bottomAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
-  largeButtonBottomSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
-
+// Constraints for the floating mode.
+- (NSArray<NSLayoutConstraint*>*)constraintsForFloatingMode {
   CGFloat largeButtonHorizontalInset =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
           ? kTabGridFloatingButtonInsetIPad
@@ -383,103 +353,212 @@
           ? kTabGridFloatingButtonInsetIPad
           : kTabGridFloatingButtonInset;
 
-  _floatingConstraints = @[
-    [_largeNewTabButton.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_largeNewTabButton.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.bottomAnchor
-                                 constant:-largeButtonVerticalInset],
-    largeButtonBottomSafeAreaConstraint,
-    [_largeNewTabButton.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.trailingAnchor
-                                 constant:-largeButtonHorizontalInset],
-    largeButtonTrailingSafeAreaConstraint,
-  ];
+  NSLayoutConstraint* largeButtonTrailingSafeAreaConstraint =
+      [_largeNewTabButton.trailingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor];
+  largeButtonTrailingSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* largeButtonBottomSafeAreaConstraint =
+      [_largeNewTabButton.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor];
+  largeButtonBottomSafeAreaConstraint.priority = UILayoutPriorityDefaultHigh;
 
-  _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        // Vertical layout:
+        [_largeNewTabButton.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.bottomAnchor
+                                     constant:-largeButtonVerticalInset],
+        largeButtonBottomSafeAreaConstraint,
+        // Horizontal layout:
+        [_largeNewTabButton.trailingAnchor
+            constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                     constant:-largeButtonHorizontalInset],
+        largeButtonTrailingSafeAreaConstraint,
+      ]];
+  return constraints;
 }
 
+// Setup container toolbar, buttons and constraints.
+- (void)setupViews {
+  // Background.
+  [self createScrolledBackgrounds];
+
+  // Container toolbar.
+  _containerToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+  _containerToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+  [_containerToolbar setBackgroundImage:[[UIImage alloc] init]
+                     forToolbarPosition:UIBarPositionAny
+                             barMetrics:UIBarMetricsDefault];
+
+  [self addSubview:_containerToolbar];
+
+  // Close button.
+  _undoButton =
+      [self createButtonWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON)
+                            image:nil
+                   targetSelector:@selector(closeAllButtonTapped:)];
+  _undoButton.accessibilityIdentifier = kTabGridUndoCloseAllButtonIdentifier;
+  [_containerToolbar addSubview:_undoButton];
+
+  // Done button.
+  _doneButton = [self
+      createButtonWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON)
+                      image:nil
+             targetSelector:@selector(doneButtonTapped:)];
+  _doneButton.role = UIButtonRolePrimary;
+  _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
+  _doneButton.titleLabel.font = [UIFont boldSystemFontOfSize:kButtonFontSize];
+  [_containerToolbar addSubview:_doneButton];
+
+  // Small New Tab button.
+  _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
+  [_smallNewTabButton addTarget:self
+                         action:@selector(newTabButtonTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
+  _smallNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _smallNewTabButton.page = self.page;
+  [_containerToolbar addSubview:_smallNewTabButton];
+
+  // Large New Tab button.
+  _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
+  [_largeNewTabButton addTarget:self
+                         action:@selector(newTabButtonTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
+  _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _largeNewTabButton.page = self.page;
+  [self addSubview:_largeNewTabButton];
+
+  // Edit button.
+  _editButton = [self
+      createButtonWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON)
+                      image:nil
+             targetSelector:nil];
+  _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
+  _editButton.showsMenuAsPrimaryAction = YES;
+  [_containerToolbar addSubview:_editButton];
+
+  // Add To button.
+  _addToButton = [self createButtonWithTitle:l10n_util::GetNSString(
+                                                 IDS_IOS_TAB_GRID_ADD_TO_BUTTON)
+                                       image:nil
+                              targetSelector:nil];
+  _addToButton.accessibilityIdentifier = kTabGridEditAddToButtonIdentifier;
+  _addToButton.showsMenuAsPrimaryAction = YES;
+  [_containerToolbar addSubview:_addToButton];
+
+  // Share button.
+  _shareButton =
+      [self createButtonWithTitle:nil
+                            image:DefaultSymbolWithPointSize(
+                                      kShareSymbol, kSymbolActionPointSize)
+                   targetSelector:@selector(shareSelectedTabs:)];
+  _shareButton.accessibilityIdentifier = kTabGridEditShareButtonIdentifier;
+  [_containerToolbar addSubview:_shareButton];
+
+  // Close Tabs button.
+  _closeTabsButton = [self createButtonWithTitle:nil
+                                           image:nil
+                                  targetSelector:@selector(closeSelectedTabs:)];
+  _closeTabsButton.accessibilityIdentifier =
+      kTabGridEditCloseTabsButtonIdentifier;
+  [self updateCloseTabsButtonTitle];
+  [_containerToolbar addSubview:_closeTabsButton];
+
+  // Apply constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_containerToolbar.bottomAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
+    [_containerToolbar.leadingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
+    [_containerToolbar.trailingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
+    [_containerToolbar.heightAnchor
+        constraintEqualToConstant:kTabGridBottomToolbarHeight],
+  ]];
+  [NSLayoutConstraint activateConstraints:[self constraintsForCompactMode]];
+  [NSLayoutConstraint activateConstraints:[self constraintsForSelectionMode]];
+  [NSLayoutConstraint activateConstraints:[self constraintsForFloatingMode]];
+}
+
+// Updates the `_closeTabsButton` title.
 - (void)updateCloseTabsButtonTitle {
-  _closeTabsButton.title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON, _selectedTabsCount);
+  [_closeTabsButton
+      setTitle:l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON,
+                                             _selectedTabsCount)
+      forState:UIControlStateNormal];
 }
 
+// Updates the bottom toolbar layout.
 - (void)updateLayout {
   if (IsDiamondPrototypeEnabled()) {
     return;
   }
+
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
-  if (self.mode == TabGridMode::kSearch) {
-    [NSLayoutConstraint deactivateConstraints:_compactConstraints];
-    [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
-    [_toolbar removeFromSuperview];
-    [_largeNewTabButton removeFromSuperview];
+  [self hideAllButtons];
+
+  BOOL useCompactLayout = [self shouldUseCompactLayout];
+  BOOL hideToolbar =
+      self.mode == TabGridMode::kSearch ||
+      (!useCompactLayout && (self.page == TabGridPageRemoteTabs ||
+                             self.page == TabGridPageTabGroups));
+  if (hideToolbar) {
     self.hidden = YES;
     [self updateBackgroundVisibility];
     return;
   }
 
+  self.hidden = NO;
+  _viewTopConstraint.active = NO;
+
   if (self.mode == TabGridMode::kSelection) {
-    [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
-    [_largeNewTabButton removeFromSuperview];
-    [_toolbar setItems:@[
-      _closeTabsButton, _spaceItem, _shareButton, _spaceItem, _addToButton
-    ]];
-    [self addSubview:_toolbar];
-    [NSLayoutConstraint activateConstraints:_compactConstraints];
-    self.hidden = NO;
+    _closeTabsButton.hidden = NO;
+    _shareButton.hidden = NO;
+    _addToButton.hidden = NO;
+    _viewTopConstraint =
+        [self.topAnchor constraintEqualToAnchor:_containerToolbar.topAnchor];
+    _viewTopConstraint.active = YES;
+    _containerToolbar.hidden = NO;
     [self updateBackgroundVisibility];
     return;
   }
-  UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
-  if (!_undoActive) {
-    leadingButton = _editButton;
-  }
-  UIBarButtonItem* trailingButton = _doneButton;
 
-  if ([self shouldUseCompactLayout]) {
-    [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
-    [_largeNewTabButton removeFromSuperview];
-
-    // For incognito/regular pages, display all 3 buttons;
-    // For Remote tabs page/TabGroup panel, only display trailing button.
-    // For Tab Group view only display the new tab button
+  if (useCompactLayout) {
     if (self.page == TabGridPageRemoteTabs ||
         self.page == TabGridPageTabGroups) {
-      [_toolbar setItems:@[ _spaceItem, trailingButton ]];
+      _doneButton.hidden = NO;
     } else if (self.isInTabGroupView) {
-      [_toolbar setItems:@[ _spaceItem, _newTabButtonItem, _spaceItem ]];
+      _smallNewTabButton.hidden = NO;
     } else {
-      [_toolbar setItems:@[
-        leadingButton, _spaceItem, _newTabButtonItem, _spaceItem, trailingButton
-      ]];
+      if (_undoActive) {
+        _undoButton.hidden = NO;
+      } else {
+        _editButton.hidden = NO;
+      }
+      _smallNewTabButton.hidden = NO;
+      _doneButton.hidden = NO;
     }
-
-    [self addSubview:_toolbar];
-    [NSLayoutConstraint activateConstraints:_compactConstraints];
-    self.hidden = NO;
-  } else {
-    [NSLayoutConstraint deactivateConstraints:_compactConstraints];
-    [_toolbar removeFromSuperview];
-    // Do not display new tab button for remote tabs page/TabGroup panel.
-    if (self.page == TabGridPageRemoteTabs ||
-        self.page == TabGridPageTabGroups) {
-      [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
-      [_largeNewTabButton removeFromSuperview];
-      self.hidden = YES;
-    } else {
-      [self addSubview:_largeNewTabButton];
-      [NSLayoutConstraint activateConstraints:_floatingConstraints];
-      self.hidden = NO;
-    }
+    _viewTopConstraint =
+        [self.topAnchor constraintEqualToAnchor:_containerToolbar.topAnchor];
+    _viewTopConstraint.active = YES;
+    _containerToolbar.hidden = NO;
+    [self updateBackgroundVisibility];
+    return;
   }
 
+  _largeNewTabButton.hidden = NO;
+  _viewTopConstraint =
+      [self.topAnchor constraintEqualToAnchor:_largeNewTabButton.topAnchor];
+  _viewTopConstraint.active = YES;
+  _containerToolbar.hidden = YES;
   [self updateBackgroundVisibility];
 }
 
 // Returns YES if the `_largeNewTabButton` is showing on the toolbar.
 - (BOOL)isShowingFloatingButton {
-  return _largeNewTabButton.superview;
+  return !_largeNewTabButton.hidden;
 }
 
 // Returns YES if should use compact bottom toolbar layout.
@@ -495,29 +574,23 @@
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
   if (@available(iOS 26, *)) {
+    return;
+  }
+  if (IsIOSSoftLockEnabled()) {
+    _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
+    _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_scrollBackgroundView];
+    AddSameConstraintsToSides(
+        self, _scrollBackgroundView,
+        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
   } else {
-    if (IsIOSSoftLockEnabled()) {
-      _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
-      _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-      [self addSubview:_scrollBackgroundView];
-      AddSameConstraintsToSides(
-          self, _scrollBackgroundView,
-          LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
-    } else {
-      _backgroundView =
-          [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
-      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-      [self addSubview:_backgroundView];
-      AddSameConstraintsToSides(
-          self, _backgroundView,
-          LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
-    }
-
-    // A non-nil UIImage has to be added in the background of the toolbar to
-    // avoid having an additional blur effect.
-    [_toolbar setBackgroundImage:[[UIImage alloc] init]
-              forToolbarPosition:UIBarPositionAny
-                      barMetrics:UIBarMetricsDefault];
+    _backgroundView =
+        [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_backgroundView];
+    AddSameConstraintsToSides(
+        self, _backgroundView,
+        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
   }
 }
 
@@ -541,6 +614,18 @@
   }
 }
 
+// Hides all buttons from superView.
+- (void)hideAllButtons {
+  _undoButton.hidden = YES;
+  _doneButton.hidden = YES;
+  _editButton.hidden = YES;
+  _addToButton.hidden = YES;
+  _closeTabsButton.hidden = YES;
+  _shareButton.hidden = YES;
+  _smallNewTabButton.hidden = YES;
+  _largeNewTabButton.hidden = YES;
+}
+
 #pragma mark - Public
 
 - (void)respondBeforeResponder:(UIResponder*)nextResponder {
@@ -559,7 +644,7 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
-    return !_undoActive && _closeAllOrUndoButton.enabled;
+    return !_undoActive && _undoButton.enabled;
   }
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
@@ -590,7 +675,7 @@
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  if (_closeAllOrUndoButton.enabled) {
+  if (_undoButton.enabled) {
     [self.buttonsDelegate closeAllButtonTapped:sender];
   }
 }
