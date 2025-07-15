@@ -41,6 +41,36 @@ net::RedirectInfo SyntheticRedirect(const GURL& new_url) {
   return redirect_info;
 }
 
+class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
+ public:
+  explicit TestPrefetchContainerObserver(PrefetchContainer& prefetch_container)
+      : prefetch_container_(prefetch_container.GetWeakPtr()) {
+    prefetch_container_->AddObserver(this);
+  }
+  ~TestPrefetchContainerObserver() override {
+    if (prefetch_container_) {
+      prefetch_container_->RemoveObserver(this);
+    }
+  }
+
+  void WaitForComplete() { on_complete_loop_.Run(); }
+
+ private:
+  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override {}
+  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override {}
+  void OnDeterminedHead(PrefetchContainer& prefetch_container) override {}
+  void OnPrefetchCompletedOrFailed(
+      PrefetchContainer& prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code) override {
+    on_complete_loop_.Quit();
+  }
+
+  base::WeakPtr<PrefetchContainer> prefetch_container_;
+  base::RunLoop on_complete_loop_;
+};
+
 }  // namespace
 
 std::tuple<scoped_refptr<PrefetchResponseReader>,
@@ -170,7 +200,7 @@ void MakeServableStreamingURLLoaderForTest(
   request->method = "GET";
 
   base::RunLoop on_response_received_loop;
-  OnPrefetchCompleteTestFuture on_complete;
+  TestPrefetchContainerObserver observer(*prefetch_container);
 
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       prefetch_container->GetResponseReaderForCurrentPrefetch();
@@ -178,7 +208,7 @@ void MakeServableStreamingURLLoaderForTest(
       prefetch_container->GetWeakPtr(), weak_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *request, &on_response_received_loop, &on_complete,
+      *request, &on_response_received_loop, /*on_complete=*/nullptr,
       /*on_receive_redirect=*/NotReachedTagForTests(),
       /*on_head_received=*/nullptr);
 
@@ -187,7 +217,7 @@ void MakeServableStreamingURLLoaderForTest(
       network::TestURLLoaderFactory::Redirects(),
       network::TestURLLoaderFactory::kResponseDefault);
   on_response_received_loop.Run();
-  ASSERT_TRUE(on_complete.Wait());
+  observer.WaitForComplete();
 
   CHECK(weak_streaming_loader);
   CHECK(weak_response_reader);
@@ -234,7 +264,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
 
   OnPrefetchReceiveRedirectTestFuture on_receive_redirect;
   base::RunLoop on_response_received_loop;
-  OnPrefetchCompleteTestFuture on_complete;
+  TestPrefetchContainerObserver observer(*prefetch_container);
 
   auto weak_first_response_reader =
       prefetch_container->GetResponseReaderForCurrentPrefetch();
@@ -243,7 +273,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
       prefetch_container->GetWeakPtr(), weak_first_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *request, &on_response_received_loop, &on_complete, &on_receive_redirect,
+      *request, &on_response_received_loop, /*on_complete=*/nullptr,
+      &on_receive_redirect,
       /*on_head_received=*/nullptr);
 
   network::URLLoaderCompletionStatus status(net::OK);
@@ -273,7 +304,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
   weak_streaming_loader->SetResponseReader(weak_second_response_reader);
 
   on_response_received_loop.Run();
-  ASSERT_TRUE(on_complete.Wait());
+  observer.WaitForComplete();
 
   CHECK(weak_streaming_loader);
   CHECK(weak_first_response_reader);
@@ -334,7 +365,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   redirect_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
-  OnPrefetchCompleteTestFuture on_complete;
+  TestPrefetchContainerObserver observer(*prefetch_container);
 
   // Starts the followup PrefetchStreamingURLLoader.
   // GetResponseReaderForCurrentPrefetch() now points to a new ResponseReader
@@ -345,7 +376,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container->GetWeakPtr(), weak_second_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *redirect_request, &on_response_received_loop, &on_complete,
+      *redirect_request, &on_response_received_loop, /*on_complete=*/nullptr,
       /*on_receive_redirect=*/NotReachedTagForTests(),
       /*on_head_received=*/nullptr);
 
@@ -356,7 +387,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       network::TestURLLoaderFactory::kResponseDefault);
 
   on_response_received_loop.Run();
-  ASSERT_TRUE(on_complete.Wait());
+  observer.WaitForComplete();
 
   // `weak_first_streaming_loader` should be deleted after
   // `HandleRedirect(kSwitchNetworkContext)`.
