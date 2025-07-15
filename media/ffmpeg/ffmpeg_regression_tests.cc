@@ -96,10 +96,7 @@ FFMPEG_TEST_CASE(Cr101458,
                  "security/101458.webm",
                  PIPELINE_ERROR_DECODE,
                  PIPELINE_ERROR_DECODE);
-FFMPEG_TEST_CASE(Cr108416,
-                 "security/108416.webm",
-                 PIPELINE_ERROR_DECODE,
-                 PIPELINE_ERROR_DECODE);
+FFMPEG_TEST_CASE(Cr108416, "security/108416.webm", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr110849,
                  "security/110849.mkv",
                  DEMUXER_ERROR_COULD_NOT_OPEN,
@@ -154,10 +151,7 @@ FFMPEG_TEST_CASE(Cr234630b,
                  "security/234630b.mov",
                  DEMUXER_ERROR_NO_SUPPORTED_STREAMS,
                  DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
-FFMPEG_TEST_CASE(Cr242786,
-                 "security/242786.webm",
-                 PIPELINE_OK,
-                 PIPELINE_ERROR_DECODE);
+FFMPEG_TEST_CASE(Cr242786, "security/242786.webm", PIPELINE_OK, PIPELINE_OK);
 // Test for out-of-bounds access with slightly corrupt file (detection logic
 // thinks it's a MONO file, but actually contains STEREO audio).
 FFMPEG_TEST_CASE(Cr275590,
