@@ -68,6 +68,7 @@ constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeCumulativeSum = "CumSum";
+constexpr base::cstring_view kOpTypeElu = "Elu";
 constexpr base::cstring_view kOpTypeExpand = "Expand";
 constexpr base::cstring_view kOpTypeGather = "Gather";
 constexpr base::cstring_view kOpTypeGatherElements = "GatherElements";
@@ -445,6 +446,36 @@ std::string GraphBuilderOrt::CreateExpandNode(
   return output;
 }
 
+void GraphBuilderOrt::AddReshapeNode(base::cstring_view node_name,
+                                     base::cstring_view input,
+                                     base::cstring_view output,
+                                     base::span<const uint32_t> shape) {
+  // `new_shape` should be the name of an int64 tensor that specifies the
+  // output's shape.
+  const std::string new_shape = CreateInt64InitializerForUint32Array(shape);
+
+  std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeReshape, node_name, inputs, outputs);
+}
+
+std::string GraphBuilderOrt::CreateReshapeNode(
+    base::cstring_view input,
+    base::span<const uint32_t> shape) {
+  const std::string output = GenerateOperandName();
+  InsertReshapeNode(input, output, shape);
+  return output;
+}
+
+void GraphBuilderOrt::InsertReshapeNode(base::cstring_view input,
+                                        base::cstring_view output,
+                                        base::span<const uint32_t> shape) {
+  const std::string node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeReshape}, kUnderscore));
+  AddReshapeNode(node_name, input, output, shape);
+}
+
 void GraphBuilderOrt::AddSliceNode(base::cstring_view node_name,
                                    base::cstring_view input,
                                    base::cstring_view output,
@@ -747,6 +778,45 @@ void GraphBuilderOrt::AddCumulativeSumOperation(
   std::array<const char*, 1> outputs = {output.c_str()};
   model_editor_.AddNode(kOpTypeCumulativeSum, node_name, inputs, outputs,
                         attributes);
+}
+
+void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
+  const std::string node_name = GenerateNodeName(elu.label);
+  std::string input = GetOperandNameById(elu.input_operand_id);
+  const std::string output = GetOperandNameById(elu.output_operand_id);
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(elu.input_operand_id).descriptor;
+  CHECK(context_properties_.data_type_limits.elu_input.Supports(
+      input_descriptor));
+
+  // ONNX elu only supports 1-D input tensor, so we need to create a reshape
+  // node to convert the input tensor to 1-D tensor.
+  // TODO(crbug.com/430960849): Remove the workaround for elu's 1D input tensor
+  // limitation when the ONNX issue is fixed.
+  bool need_reshape = input_descriptor.Rank() != 1;
+  std::vector<uint32_t> input_shape = input_descriptor.shape();
+  std::string elu_output = output;
+  if (need_reshape) {
+    std::array<uint32_t, 1> new_shape = {
+        base::checked_cast<uint32_t>(input_descriptor.NumberOfElements())};
+    input = CreateReshapeNode(input, new_shape);
+    elu_output = GenerateOperandName();
+  }
+
+  constexpr base::cstring_view kAlpha = "alpha";
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAlpha, elu.alpha)};
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {elu_output.c_str()};
+  model_editor_.AddNode(kOpTypeElu, node_name, inputs, outputs, attributes);
+
+  // Insert a reshape node to convert the output tensor back to the original
+  // shape.
+  if (need_reshape) {
+    InsertReshapeNode(elu_output, output, input_shape);
+  }
 }
 
 // TODO(crbug.com/426228071): Eliminate redundant cast ops for bool and uint8
@@ -1487,15 +1557,8 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
 
   const std::vector<uint32_t>& output_shape =
       GetOperand(reshape.output_operand_id).descriptor.shape();
-  // `new_shape` should be the name of an int64 tensor that specifies the
-  // output's shape.
-  const std::string new_shape =
-      CreateInt64InitializerForUint32Array(output_shape);
 
-  std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
-  model_editor_.AddNode(kOpTypeReshape, node_name, inputs, outputs);
+  AddReshapeNode(node_name, input, output, output_shape);
 }
 
 void GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
@@ -1888,6 +1951,10 @@ GraphBuilderOrt::BuildModel() {
         AddCumulativeSumOperation(*operation->get_cumulative_sum());
         break;
       }
+      case mojom::Operation::Tag::kElu: {
+        AddEluOperation(*operation->get_elu());
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
         break;
@@ -2055,7 +2122,6 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kDequantizeLinear:
-      case mojom::Operation::Tag::kElu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kInstanceNormalization:

@@ -146,6 +146,16 @@ class GraphBuilderOrt {
   std::string CreateExpandNode(base::cstring_view input,
                                base::span<const uint32_t> shape);
 
+  void AddReshapeNode(base::cstring_view node_name,
+                      base::cstring_view input,
+                      base::cstring_view output,
+                      base::span<const uint32_t> shape);
+  std::string CreateReshapeNode(base::cstring_view input,
+                                base::span<const uint32_t> shape);
+  void InsertReshapeNode(base::cstring_view input,
+                         base::cstring_view output,
+                         base::span<const uint32_t> shape);
+
   void AddSliceNode(base::cstring_view node_name,
                     base::cstring_view input,
                     base::cstring_view output,
@@ -180,6 +190,7 @@ class GraphBuilderOrt {
   void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddCumulativeSumOperation(const mojom::CumulativeSum& cumulative_sum);
+  void AddEluOperation(const mojom::Elu& elu);
   void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
                                  base::cstring_view op_type);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
