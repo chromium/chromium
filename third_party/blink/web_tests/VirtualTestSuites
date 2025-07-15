@@ -233,9 +233,9 @@
       "--force-color-profile=color-spin-gamma24"
     ],
     "owners": [
-      "fserb@chromium.org"
+      "ccameron@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "composite-clip-path-animation",
@@ -934,7 +934,6 @@
   {
     "prefix": "exotic-color-space",
     "owners": [
-      "masonf@chromium.org",
       "ccameron@chromium.org"
     ],
     "platforms": [
@@ -949,7 +948,7 @@
       "--force-color-profile=srgb",
       "--force-raster-color-profile=color-spin-gamma24"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "expect-no-linked-resources",
@@ -1558,9 +1557,9 @@
       "--force-color-profile=scrgb-linear"
     ],
     "owners": [
-      "fserb@chromium.org"
+      "ccameron@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "hidpi",
