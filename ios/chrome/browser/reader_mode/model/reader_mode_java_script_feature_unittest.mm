@@ -94,11 +94,13 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
   GURL valid_url_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   std::unique_ptr<TestProfileIOS> profile_;
+  // Ensure that `web_state_` is declared after `profile_` so that the correct
+  // shutdown order is enforced.
+  web::FakeWebState web_state_;
 };
 
 // Tests that an empty url is not eligible for Reader Mode heuristics.
