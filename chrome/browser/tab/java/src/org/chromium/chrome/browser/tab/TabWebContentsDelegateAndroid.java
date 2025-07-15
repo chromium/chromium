@@ -108,9 +108,19 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
 
     /**
      * Checks if the associated tab is currently presented in the context of custom tabs.
+     *
      * @return true if this is currently a custom tab.
      */
     protected boolean isCustomTab() {
+        return false;
+    }
+
+    /**
+     * Checks if the associated tab is currently presented as a contextual popup.
+     *
+     * @return true if this is currently a contextual popup.
+     */
+    protected boolean isPopup() {
         return false;
     }
 

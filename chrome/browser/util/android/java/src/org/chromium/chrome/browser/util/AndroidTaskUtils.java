@@ -37,6 +37,8 @@ public class AndroidTaskUtils {
     // that won't cause Chrome to blow up in degenerate cases.
     private static final int MAX_NUM_TASKS = 100;
 
+    @Nullable private static AppTask sAppTaskForTesting;
+
     /**
      * Finishes tasks other than the one with the given ID that were started with the given data in
      * the Intent, removing those tasks from Recents and leaving a unique task with the data.
@@ -198,6 +200,10 @@ public class AndroidTaskUtils {
      * @return The {@link AppTask} for a given taskId if found, {@code null} otherwise.
      */
     public static @Nullable AppTask getAppTaskFromId(Context context, int taskId) {
+        if (sAppTaskForTesting != null) {
+            return sAppTaskForTesting;
+        }
+
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (var appTask : am.getAppTasks()) {
             var taskInfo = appTask.getTaskInfo();
@@ -208,5 +214,9 @@ public class AndroidTaskUtils {
             }
         }
         return null;
+    }
+
+    public static void setAppTaskForTesting(@Nullable AppTask task) {
+        sAppTaskForTesting = task;
     }
 }
