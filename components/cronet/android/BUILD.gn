@@ -742,16 +742,18 @@ android_resource_sizes_test("resource_sizes_cronet_sample_apk") {
 template("collect_proguard_configs") {
   _build_config_target = "${target_name}__build_config"
   _build_config = "$target_gen_dir/${target_name}.build_config.json"
+
+  _deps = [
+    ":cronet_build_config_and_jni_registration_java",
+    ":repackage_api",
+    ":repackage_native_impl",
+  ]
   write_build_config(_build_config_target) {
     type = "dist_jar"
     build_config = _build_config
     requires_android = true
     proguard_enabled = true
-    config_deps = [
-      ":cronet_build_config_and_jni_registration_java",
-      ":repackage_api",
-      ":repackage_native_impl",
-    ]
+    config_deps = _deps
   }
 
   action(target_name) {
@@ -760,7 +762,7 @@ template("collect_proguard_configs") {
     outputs = [ invoker.output ]
     sources = [ _build_config ]
     depfile = "$target_out_dir/$target_name.d"
-    deps = [ ":$_build_config_target" ]
+    deps = _deps + [ ":$_build_config_target" ]
     args = [
       "--output_file",
       rebase_path(invoker.output, root_build_dir),
