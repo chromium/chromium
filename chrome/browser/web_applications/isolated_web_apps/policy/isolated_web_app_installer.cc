@@ -15,13 +15,13 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

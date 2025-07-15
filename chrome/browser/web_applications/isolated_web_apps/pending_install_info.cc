@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 

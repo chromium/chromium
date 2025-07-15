@@ -9,9 +9,9 @@
 
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 
 class Profile;
 

@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -47,6 +46,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 

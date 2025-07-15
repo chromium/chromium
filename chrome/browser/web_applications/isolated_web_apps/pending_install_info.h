@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 
 namespace content {
 class WebContents;

@@ -20,7 +20,6 @@
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -28,6 +27,7 @@
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {

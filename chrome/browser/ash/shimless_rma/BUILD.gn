@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/variations:test_support",
     "//components/webapps/browser",
+    "//components/webapps/isolated_web_apps",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",

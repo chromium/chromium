@@ -9,9 +9,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

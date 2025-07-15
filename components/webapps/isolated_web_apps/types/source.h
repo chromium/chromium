@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_SOURCE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_SOURCE_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_SOURCE_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_SOURCE_H_
 
 #include <iosfwd>
 #include <optional>
@@ -13,8 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -563,4 +563,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_SOURCE_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_SOURCE_H_

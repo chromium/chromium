@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_SOURCE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALL_SOURCE_H_
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 
 namespace base {
 class Value;

@@ -8,11 +8,11 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 
 namespace web_app {
 

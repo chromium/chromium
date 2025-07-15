@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
-
 #include <variant>
 
 #include "base/files/file_path.h"
 #include "base/test/gmock_expected_support.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
