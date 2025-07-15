@@ -172,51 +172,10 @@ void GlicActorController::Act(
     }
   }
 
-  // A task is in the process of being started. This means Act() was called
-  // twice in a row without waiting for the first one to finish.
-  if (starting_task_) {
-    PostTaskForActCallback(
-        std::move(callback),
-        mojom::ActInFocusedTabErrorReason::kFailedToStartTask);
-    return;
-  }
-
-  // Create a new task if one doesn't exist already.
-  if (!GetCurrentTask()) {
-    starting_task_ = true;
-    optimization_guide::proto::BrowserStartTask start_task;
-    start_task.set_tab_id(action.tab_id());
-    // Glic doesn't know about tab IDs yet, so we set it in `start_task` but
-    // it's always 0. This will cause `StartTask` to create a new tab.
-    actor::ActorKeyedService::Get(profile_)->StartTask(
-        std::move(start_task),
-        base::BindOnce(&GlicActorController::OnTaskStartedForAct, GetWeakPtr(),
-                       action, options, std::move(callback)));
-    return;
-  }
-
-  ActImpl(action, options, std::move(callback));
-}
-
-void GlicActorController::OnTaskStartedForAct(
-    optimization_guide::proto::BrowserAction action,
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::ActInFocusedTabCallback callback,
-    optimization_guide::proto::BrowserStartTaskResult result) {
-  starting_task_ = false;
-  if (result.status() !=
-      optimization_guide::proto::BrowserStartTaskResult::SUCCESS) {
-    PostTaskForActCallback(
-        std::move(callback),
-        mojom::ActInFocusedTabErrorReason::kFailedToStartTask);
-    return;
-  }
-
-  CHECK(GetCurrentTask());
-
-  action.set_task_id(GetCurrentTask()->id().value());
-
-  ActImpl(action, options, std::move(callback));
+  actor::ExecutionEngine::ActionResultCallback action_callback =
+      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
+                     task->id(), options, std::move(callback));
+  task->Act(action, std::move(action_callback));
 }
 
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
@@ -290,19 +249,6 @@ void GlicActorController::OnResponseStarted() {
 
 void GlicActorController::OnResponseStopped() {
   current_request_.reset();
-}
-
-void GlicActorController::ActImpl(
-    const optimization_guide::proto::BrowserAction& action,
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
-  actor::ActorTask* task = GetCurrentTask();
-  CHECK(task);
-
-  actor::ExecutionEngine::ActionResultCallback action_callback =
-      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
-                     task->id(), options, std::move(callback));
-  task->Act(action, std::move(action_callback));
 }
 
 void GlicActorController::OnActionFinished(

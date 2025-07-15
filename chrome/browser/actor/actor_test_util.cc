@@ -49,7 +49,10 @@ using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::Coordinate;
+using ::optimization_guide::proto::CreateTabAction;
 using ::optimization_guide::proto::DragAndReleaseAction;
+using ::optimization_guide::proto::HistoryBackAction;
+using ::optimization_guide::proto::HistoryForwardAction;
 using ::optimization_guide::proto::MoveMouseAction;
 using ::optimization_guide::proto::NavigateAction;
 using ::optimization_guide::proto::ScrollAction;
@@ -68,10 +71,15 @@ BrowserAction MakeClick(RenderFrameHost& rfh, int content_node_id) {
           rfh.GetGlobalFrameToken()));
   click->set_click_type(ClickAction::LEFT);
   click->set_click_count(ClickAction::SINGLE);
+
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  click->set_tab_id(tab->GetHandle().raw_value());
+
   return action;
 }
 
-BrowserAction MakeClick(const gfx::Point& click_point) {
+BrowserAction MakeClick(TabHandle tab_handle, const gfx::Point& click_point) {
   BrowserAction action;
   ClickAction* click = action.add_actions()->mutable_click();
   Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
@@ -79,18 +87,21 @@ BrowserAction MakeClick(const gfx::Point& click_point) {
   coordinate->set_y(click_point.y());
   click->set_click_type(ClickAction::LEFT);
   click->set_click_count(ClickAction::SINGLE);
+  click->set_tab_id(tab_handle.raw_value());
   return action;
 }
 
-BrowserAction MakeHistoryBack() {
+BrowserAction MakeHistoryBack(TabHandle tab_handle) {
   BrowserAction action;
-  action.add_actions()->mutable_back();
+  HistoryBackAction* back = action.add_actions()->mutable_back();
+  back->set_tab_id(tab_handle.raw_value());
   return action;
 }
 
-BrowserAction MakeHistoryForward() {
+BrowserAction MakeHistoryForward(TabHandle tab_handle) {
   BrowserAction action;
-  action.add_actions()->mutable_forward();
+  HistoryForwardAction* forward = action.add_actions()->mutable_forward();
+  forward->set_tab_id(tab_handle.raw_value());
   return action;
 }
 
@@ -113,10 +124,20 @@ BrowserAction MakeMouseMove(const gfx::Point& move_point) {
   return action;
 }
 
-BrowserAction MakeNavigate(std::string_view target_url) {
+BrowserAction MakeNavigate(tabs::TabHandle tab_handle,
+                           std::string_view target_url) {
   BrowserAction action;
   NavigateAction* navigate = action.add_actions()->mutable_navigate();
   navigate->mutable_url()->assign(target_url);
+  navigate->set_tab_id(tab_handle.raw_value());
+  return action;
+}
+
+BrowserAction MakeCreateTab(SessionID window_id, bool foreground) {
+  BrowserAction action;
+  CreateTabAction* create_tab = action.add_actions()->mutable_create_tab();
+  create_tab->set_foreground(foreground);
+  create_tab->set_window_id(window_id.id());
   return action;
 }
 
