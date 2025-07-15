@@ -3896,6 +3896,15 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledContextualPageActionOnly",
+                    "params": {
+                        "contextual_only": "true"
+                    },
+                    "enable_features": [
+                        "CCTAdaptiveButton"
+                    ]
+                },
+                {
                     "name": "Disabled",
                     "disable_features": [
                         "CCTAdaptiveButton"
@@ -3905,15 +3914,6 @@
                     "name": "EnabledDefault",
                     "params": {
                         "open_in_browser": "true"
-                    },
-                    "enable_features": [
-                        "CCTAdaptiveButton"
-                    ]
-                },
-                {
-                    "name": "EnabledContextualPageActionOnly",
-                    "params": {
-                        "contextual_only": "true"
                     },
                     "enable_features": [
                         "CCTAdaptiveButton"

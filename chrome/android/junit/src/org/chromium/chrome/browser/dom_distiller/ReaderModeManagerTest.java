@@ -243,6 +243,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
+    @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnCct() {
         when(mTab.isCustomTab()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
