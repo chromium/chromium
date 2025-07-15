@@ -30,10 +30,10 @@
 import enum
 import logging
 import re
-import os
 from typing import List, Mapping, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import Executive, ScriptError
 from blinkpy.common.system.filesystem import FileSystem
 
@@ -108,6 +108,8 @@ class Git:
                 cwd, module_directory)
             if self.in_working_directory(module_directory):
                 self.cwd = module_directory
+            # TODO(b/427299613): Tell the `Git` caller when a Chromium checkout
+            # isn't a git repo, as is the case for cogfs.
             _log.error('Failed to find Git repo for %s or %s', cwd,
                        module_directory)
 
@@ -166,8 +168,8 @@ class Git:
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
-        if os.getcwd().startswith('/google/cog/cloud'):
-            return os.getcwd()
+        if PathFinder(self._filesystem).is_cog():
+            return self._filesystem.getcwd()
         return self.run(['rev-parse', '--show-toplevel'], cwd=path).strip()
 
     @classmethod

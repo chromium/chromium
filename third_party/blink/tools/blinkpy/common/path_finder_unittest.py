@@ -72,3 +72,15 @@ class TestPathFinder(unittest.TestCase):
         self.assertEqual(
             finder.strip_web_tests_path(path_without_web_tests),
             path_without_web_tests)
+
+    def test_is_cog(self):
+        fs = MockFileSystem()
+        fs.maybe_make_directory('/google/cog/cloud')
+        fs.chdir('/google/cog/cloud')
+        self.assertTrue(PathFinder(fs).is_cog())
+
+    def test_is_cog_negative(self):
+        fs = MockFileSystem()
+        fs.maybe_make_directory('/mock-checkout')
+        fs.chdir('/mock-checkout')
+        self.assertFalse(PathFinder(fs).is_cog())

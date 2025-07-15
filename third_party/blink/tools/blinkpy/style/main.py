@@ -22,11 +22,10 @@
 
 import codecs
 import logging
-import os
 import sys
 
 from blinkpy.common.host import Host
-from blinkpy.common.path_finder import get_chromium_src_dir
+from blinkpy.common.path_finder import PathFinder, get_chromium_src_dir
 from blinkpy.style import checker
 from blinkpy.style.checker import StyleProcessor
 from blinkpy.style.filereader import TextFileReader
@@ -149,7 +148,7 @@ class CheckBlinkStyle(object):
             checkout_root=chromium_src_dir,
             paths=paths)
 
-        if os.getcwd().startswith('/google/cog/cloud'):
+        if PathFinder(host.filesystem).is_cog():
             file_reader.process_paths(paths)
         else:
             if paths and not options.diff_files:
