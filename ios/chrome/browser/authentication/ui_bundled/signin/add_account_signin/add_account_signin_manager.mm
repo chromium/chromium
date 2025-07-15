@@ -125,6 +125,9 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
 
   __weak AddAccountSigninManager* weakSelf = self;
   _lastStartAddAccountToDeviceTs = base::TimeTicks::Now();
+  // Note that, up to iOS 18, the view may disappear if the user turn off their
+  // screen, without calling the completion block, due to a bug in UIKit. See
+  // crbug.com/395959814.
   [self.identityInteractionManager
       startAuthActivityWithViewController:self.baseViewController
                                 userEmail:userEmail

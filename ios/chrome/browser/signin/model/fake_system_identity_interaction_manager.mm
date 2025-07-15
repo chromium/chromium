@@ -142,6 +142,10 @@ BOOL gUsingUnknownCapabilities;
   [self simulateDidTapCancel];
 }
 
+- (void)simulateDisappearingView {
+  [self dismissViewAnimated:NO];
+}
+
 #pragma mark - SystemIdentityInteractionManager
 
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
@@ -219,12 +223,7 @@ BOOL gUsingUnknownCapabilities;
     }
   }
 
-  __weak FakeSystemIdentityInteractionManager* weakSelf = self;
-  [_authActivityViewController.presentingViewController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           [weakSelf onActivityViewDismissed];
-                         }];
+  [self dismissViewAnimated:animated];
   if (_signinCompletion) {
     SigninCompletionBlock signinCompletion = nil;
     std::swap(_signinCompletion, signinCompletion);
@@ -240,6 +239,15 @@ BOOL gUsingUnknownCapabilities;
 - (void)onActivityViewDismissed {
   _authActivityViewController = nil;
   _isActivityViewPresented = NO;
+}
+
+- (void)dismissViewAnimated:(BOOL)animated {
+  __weak FakeSystemIdentityInteractionManager* weakSelf = self;
+  [_authActivityViewController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:^{
+                           [weakSelf onActivityViewDismissed];
+                         }];
 }
 
 @end

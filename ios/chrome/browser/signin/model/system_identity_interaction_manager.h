@@ -30,6 +30,10 @@ using SigninCompletionBlock = void (^)(id<SystemIdentity>, NSError*);
 // presented. The `completion` will be invoked on the calling sequence when
 // the starting activity completes.
 // `completion` must not be `nullptr`.
+//
+// Note that, with implementation as of July 2025 and up to iOS18, the view may
+// disappear if the user turn off their screen, without calling the completion
+// block, due to a bug in UIKit. See crbug.com/395959814.
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion;

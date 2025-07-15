@@ -136,6 +136,9 @@ using signin_metrics::PromoAction;
                  identityManager:_identityManager
       identityInteractionManager:identityInteractionManager];
   self.addAccountSigninManager.delegate = self;
+  // Note that, up to iOS 18, the view may disappear if the user turn off their
+  // screen, without informing the delegate, due to a bug in UIKit. See
+  // crbug.com/395959814.
   [self.addAccountSigninManager showSigninWithIntent:self.signinIntent];
 }
 

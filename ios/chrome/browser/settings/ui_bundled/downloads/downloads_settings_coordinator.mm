@@ -164,6 +164,10 @@
 #pragma mark - SaveToPhotosSettingsAccountSelectionViewControllerActionDelegate
 
 - (void)saveToPhotosSettingsAccountSelectionViewControllerAddAccount {
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signin completion. See crbug.com/395959814
+  [_signinCoordinator stop];
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kSaveToPhotosIos;

@@ -19,6 +19,8 @@ enum class AuthenticationOperation {
   // Operation to sign-in again with the previously signed-in account. The user
   // is presented with the SSOAuth dialog. This command can only be used if
   // there is no primary account.
+  // This is the only command whose view may be dismissed without the
+  // signin-completion being called, up to iOS18. See crbug.com/395959814.
   kResignin,
   // Operation to start a sign-in only operation. The user is presented with
   // the consistency web sign-in dialog.

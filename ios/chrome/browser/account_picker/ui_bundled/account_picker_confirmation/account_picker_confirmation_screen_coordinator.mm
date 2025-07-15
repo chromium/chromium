@@ -127,5 +127,4 @@
   [_delegate accountPickerConfirmationScreenCoordinatorSubmit:self];
 }
 
-
 @end

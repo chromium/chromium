@@ -105,6 +105,9 @@ class PrefRegistrySyncable;
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
+// Note that, up to iOS 18, the view may disappear if the user turn off their
+// screen, without calling the completion block, due to a bug in UIKit. See
+// crbug.com/395959814.
 + (SigninCoordinator*)
     addAccountCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -122,6 +125,9 @@ class PrefRegistrySyncable;
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
 // `promoAction` is promo button used to trigger the sign-in.
+// Note that, up to iOS 18, the view may disappear if the user turn off their
+// screen, without calling the completion block, due to a bug in UIKit. See
+// crbug.com/395959814.
 + (SigninCoordinator*)
     primaryAccountReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -144,6 +150,9 @@ class PrefRegistrySyncable;
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
 // `promoAction` is promo button used to trigger the sign-in.
+// Note that, up to iOS 18, the view may disappear if the user turn off their
+// screen, without calling the completion block, due to a bug in UIKit. See
+// crbug.com/395959814.
 + (SigninCoordinator*)
     signinAndSyncReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController

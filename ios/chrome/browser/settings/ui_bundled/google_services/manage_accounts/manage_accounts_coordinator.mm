@@ -233,7 +233,14 @@ using signin_metrics::PromoAction;
 }
 
 - (void)showAddAccountToDevice {
-  [_viewController preventUserInteraction];
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signin completion. See crbug.com/395959814. This also mean that we can not
+  // prevent user interaction, as this would potentially block the view.
+  [_addAccountSigninCoordinator stop];
+  if (@available(iOS 26, *)) {
+    [_viewController preventUserInteraction];
+  }
   __weak __typeof(self) weakSelf = self;
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_viewController
@@ -362,7 +369,9 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountToDeviceCompleted {
   [self stopAddAccountCoordinator];
-  [_viewController allowUserInteraction];
+  if (@available(iOS 26, *)) {
+    [_viewController allowUserInteraction];
+  }
   if (_closeSettingsOnAddAccount) {
     [self closeSettings];
   }

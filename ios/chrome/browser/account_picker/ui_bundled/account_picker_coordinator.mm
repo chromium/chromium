@@ -184,11 +184,9 @@
 
 // Opens an AddAccountSigninCoordinator to add an account to the device.
 - (void)openAddAccountCoordinator {
-  if (self.openAddAccountOperationInProgress) {
-    // According to crbug.com/418774148, it is possible for the user to start
-    // twice an open add account operation. Ignore the second call.
-    return;
-  }
+  // Up to iOS 18, due to crbug.com/395959814, the add account view may
+  // disappear without the signinCompletion being called.
+  [_addAccountSigninCoordinator stop];
   self.openAddAccountOperationInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;

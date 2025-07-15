@@ -301,6 +301,10 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
           &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
           weak_ptr_factory_.GetWeakPtr(), std::move(result)));
       // For a paused sign-in, re-authentication is required.
+      // In case of double-tap, we must stop the first coordinator. This may
+      // occur because, up to iOS 18, the view may have disappeared without
+      // calling the signin completion. See crbug.com/395959814
+      [signin_coordinator_ stop];
       signin_coordinator_ = [SigninCoordinator
           primaryAccountReauthCoordinatorWithBaseViewController:
               base_view_controller_

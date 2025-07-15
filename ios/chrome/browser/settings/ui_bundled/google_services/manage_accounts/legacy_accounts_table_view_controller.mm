@@ -431,12 +431,16 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
 #pragma mark - Authentication operations
 
 - (void)showAddAccount {
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signin completion. See crbug.com/395959814 This also mean we can’t prevent
+  // user interaction as it may simply block the coordinator..
+  [_signinCoordinator stop];
+  if (@available(iOS 26, *)) {
+    [self preventUserInteraction];
+  }
   DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
   _authenticationOperationInProgress = YES;
-
-  // TODO(crbug.com/40229802): Remove the following line when todo bug will be
-  // fixed.
-  [self preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   AccessPoint accessPoint = AccessPoint::kSettings;

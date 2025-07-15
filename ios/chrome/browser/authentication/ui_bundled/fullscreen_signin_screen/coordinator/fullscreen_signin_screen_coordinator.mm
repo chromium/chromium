@@ -190,6 +190,10 @@
 // Starts the coordinator to present the Add Account module.
 - (void)triggerAddAccount {
   [self.mediator userAttemptedToSignin];
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signinCompletion. See crbug.com/395959814
+  [self.addAccountSigninCoordinator stop];
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser

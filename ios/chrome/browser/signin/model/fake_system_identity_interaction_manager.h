@@ -38,6 +38,10 @@ class FakeSystemIdentityManager;
 // Simulates the auth activity being interrupted.
 - (void)simulateDidInterrupt;
 
+// This simulates the UIKit bug listed in crbug.com/395959814 where, up to
+// iOS18, the view may disappear without running its callback.
+- (void)simulateDisappearingView;
+
 // Returns whether the activity view is presented.
 @property(nonatomic, readonly) BOOL isActivityViewPresented;
 

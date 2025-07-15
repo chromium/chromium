@@ -315,6 +315,10 @@ void maybeShowSettingsIPH(Browser* browser) {
 - (void)didTapAddAccount {
   auto style = SigninContextStyle::kDefault;
   auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signin completion. See crbug.com/395959814
+  [_addAccountSigninCoordinator stop];
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_navigationController
                                           browser:self.browser
@@ -457,11 +461,10 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)openPrimaryAccountReauthDialog {
-  if (_addAccountSigninCoordinator) {
-    // The user double-tapped the button. Don’t open the coordinator a second
-    // time.
-    return;
-  }
+  // In case of double-tap, we must stop the first coordinator. This may occur
+  // because, up to iOS 18, the view may have disappeared without calling the
+  // signin completion. See crbug.com/395959814
+  [_addAccountSigninCoordinator stop];
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kAccountMenu;
   signin_metrics::PromoAction promoAction =

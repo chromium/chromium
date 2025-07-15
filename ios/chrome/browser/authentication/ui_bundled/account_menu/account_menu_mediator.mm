@@ -376,7 +376,12 @@
   if (self.userInteractionsBlocked) {
     return;
   }
-  self.userInteractionsBlocked = YES;
+  if (@available(iOS 26, *)) {
+    self.userInteractionsBlocked = YES;
+  }
+  // The interaction should not be blocked, because, up to iOS 18, the Add
+  // Account view may disappear without the signinCompletion to be called. See
+  // crbug.com/395959814.
   [self.delegate didTapAddAccount];
 }
 

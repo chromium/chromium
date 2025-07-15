@@ -17,6 +17,7 @@
 - (void)accountPickerListTableViewController:
             (AccountPickerSelectionScreenTableViewController*)viewController
                  didSelectIdentityWithGaiaID:(NSString*)gaiaID;
+
 // Invoked when the user taps on "Add account".
 - (void)accountPickerListTableViewControllerDidTapOnAddAccount:
     (AccountPickerSelectionScreenTableViewController*)viewController;

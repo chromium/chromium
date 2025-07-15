@@ -644,7 +644,9 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   OCMExpect([delegate_mock_ didTapAddAccount]);
-  OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
+  if (@available(iOS 26, *)) {
+    OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
+  }
   [mediator_ didTapAddAccount];
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
