@@ -9625,7 +9625,6 @@ from previous Chrome versions.
   <int value="-1624966923" label="TopLevelTpcdSupportSettings:enabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
-  <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
   <int value="-1624107722" label="CopyImageFilenameToClipboard:enabled"/>
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
@@ -17590,7 +17589,6 @@ from previous Chrome versions.
   <int value="1309372374" label="AccessibilityUnifiedSnapshots:disabled"/>
   <int value="1309807376" label="IgnoreCSPInWebPaymentAPI:enabled"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
-  <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
   <int value="1311443340" label="DriveFsChromeNetworking:enabled"/>
   <int value="1311506187" label="ClipboardCustomFormats:disabled"/>
   <int value="1311579438" label="FencedFrames:enabled"/>

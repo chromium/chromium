@@ -62,11 +62,6 @@ class TestPredictionModelStore : public PredictionModelStore {
 
 class PredictionModelStoreTest : public testing::Test {
  public:
-  PredictionModelStoreTest() {
-    feature_list_.InitWithFeatures(
-        {features::kOptimizationGuideModelDownloading}, {});
-  }
-
   void SetUp() override {
     ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
     local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();

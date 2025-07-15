@@ -30,8 +30,7 @@ class PreloadingModelKeyedServiceTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kPreloadingHeuristicsMLModel,
          optimization_guide::features::kOptimizationHints,
-         optimization_guide::features::kOptimizationTargetPrediction,
-         optimization_guide::features::kOptimizationGuideModelDownloading},
+         optimization_guide::features::kOptimizationTargetPrediction},
         {});
 
     base::FilePath source_root_dir;

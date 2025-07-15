@@ -435,8 +435,6 @@ class PredictionManagerModelDownloadingBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kOptimizationHints, {}},
         {features::kOptimizationTargetPrediction, {}},
-        {features::kOptimizationGuideModelDownloading,
-         {{"unrestricted_model_downloading", "true"}}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }

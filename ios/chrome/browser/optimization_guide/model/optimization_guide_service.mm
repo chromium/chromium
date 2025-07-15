@@ -241,8 +241,7 @@ void OptimizationGuideService::DoFinalInit(
       "SyntheticOptimizationGuideRemoteFetching",
       optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  if (optimization_guide::features::IsModelDownloadingEnabled() &&
-      background_download_service) {
+  if (background_download_service) {
     prediction_manager_->MaybeInitializeModelDownloads(
         GetApplicationContext()->GetLocalState(), background_download_service);
   }

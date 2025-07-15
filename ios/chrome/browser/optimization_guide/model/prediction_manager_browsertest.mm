@@ -292,7 +292,6 @@ class PredictionManagerTest : public PredictionManagerTestBase {
         {optimization_guide::features::kOptimizationHints, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "2000"}}},
-        {optimization_guide::features::kOptimizationGuideModelDownloading, {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -432,8 +431,6 @@ class PredictionManagerModelDownloadingBrowserTest
         {optimization_guide::features::kOptimizationHints, {}},
         {optimization_guide::features::kOptimizationTargetPrediction,
          {{"fetch_startup_delay_ms", "2000"}}},
-        {optimization_guide::features::kOptimizationGuideModelDownloading,
-         {{"unrestricted_model_downloading", "true"}}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }

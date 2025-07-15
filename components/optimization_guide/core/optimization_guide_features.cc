@@ -57,16 +57,6 @@ BASE_FEATURE(kOptimizationTargetPrediction,
              "OptimizationTargetPrediction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the downloading of models.
-BASE_FEATURE(kOptimizationGuideModelDownloading,
-             "OptimizationGuideModelDownloading",
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else   // BUILD_WITH_TFLITE_LIB
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // !BUILD_WITH_TFLITE_LIB
-);
-
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
              "OptimizationGuidePushNotifications",
@@ -395,16 +385,6 @@ base::TimeDelta ModelExecutionWatchdogDefaultTimeout() {
       2000
 #endif
       ));
-}
-
-bool IsModelDownloadingEnabled() {
-  return base::FeatureList::IsEnabled(kOptimizationGuideModelDownloading);
-}
-
-bool IsUnrestrictedModelDownloadingEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kOptimizationGuideModelDownloading, "unrestricted_model_downloading",
-      true);
 }
 
 bool ShouldMetadataValidationFetchHostKeyed() {

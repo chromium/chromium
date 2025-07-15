@@ -294,79 +294,9 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
       "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded", 0);
 }
 
-TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {
-          {optimization_guide::features::kOptimizationGuideModelDownloading,
-           {{"unrestricted_model_downloading", "false"}}},
-      },
-      /*disabled_features=*/{});
-
-  download::DownloadParams download_params;
-  EXPECT_CALL(*download_service(), StartDownload_(_))
-      .WillOnce(MoveArg<0>(&download_params));
-  download_manager()->StartDownload(
-      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-
-  // Validate parameters - basically that we attach the correct client, just do
-  // a passthrough of the URL, and attach the API key.
-  EXPECT_EQ(download_params.client,
-            download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS);
-  EXPECT_EQ(download_params.request_params.url, GURL("someurl"));
-  EXPECT_EQ(download_params.request_params.method, "GET");
-  EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
-      "X-Goog-Api-Key"));
-  EXPECT_FALSE(download_params.request_params.require_safety_checks);
-  EXPECT_EQ(download_params.scheduling_params.priority,
-            download::SchedulingParams::Priority::NORMAL);
-  EXPECT_EQ(
-      download_params.scheduling_params.battery_requirements,
-      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE);
-  EXPECT_EQ(download_params.scheduling_params.network_requirements,
-            download::SchedulingParams::NetworkRequirements::NONE);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
-      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested,
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
-      "PainfulPageLoad",
-      0);
-
-  // Now invoke start callback.
-  std::move(download_params.callback)
-      .Run("someguid", download::DownloadParams::StartResult::ACCEPTED);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
-      2);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
-      PredictionModelDownloadManager::PredictionModelDownloadState::kStarted,
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
-      "PainfulPageLoad",
-      1);
-
-  // Now cancel all downloads to ensure that callback persisted pending GUID.
-  EXPECT_CALL(*download_service(), CancelDownload(Eq("someguid")));
-  download_manager()->CancelAllPendingDownloads();
-}
-
 TEST_F(PredictionModelDownloadManagerTest,
        StartDownloadUnrestrictedDownloading) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features;
-  features.InitWithFeaturesAndParameters(
-      {
-          {optimization_guide::features::kOptimizationGuideModelDownloading,
-           {{"unrestricted_model_downloading", "true"}}},
-      },
-      /*disabled_features=*/{});
 
   download::DownloadParams download_params;
   EXPECT_CALL(*download_service(), StartDownload_(_))

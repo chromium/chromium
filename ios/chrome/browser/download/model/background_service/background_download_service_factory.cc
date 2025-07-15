@@ -65,14 +65,13 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   DCHECK(!context->IsOffTheRecord());
   auto clients = std::make_unique<download::DownloadClientMap>();
   // Clients should be registered here.
-  if (optimization_guide::features::IsModelDownloadingEnabled()) {
-    auto prediction_model_download_client =
-        std::make_unique<optimization_guide::PredictionModelDownloadClient>(
-            ProfileIOS::FromBrowserState(context));
-    clients->insert(std::make_pair(
-        download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-        std::move(prediction_model_download_client)));
-  }
+  auto prediction_model_download_client =
+      std::make_unique<optimization_guide::PredictionModelDownloadClient>(
+          ProfileIOS::FromBrowserState(context));
+  clients->insert(std::make_pair(
+      download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+      std::move(prediction_model_download_client)));
+
   return BuildServiceWithClients(context, std::move(clients));
 }
 

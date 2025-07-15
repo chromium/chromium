@@ -136,15 +136,8 @@ void PredictionModelDownloadManager::StartDownload(
   download_params.request_params.method = "GET";
   google_apis::AddAPIKeyToRequest(
       download_params.request_params.request_headers, api_key_);
-  if (features::IsUnrestrictedModelDownloadingEnabled()) {
-    // This feature param should really only be used for testing, so it is ok
-    // to have this be a high priority download with no network restrictions.
-    download_params.scheduling_params.priority =
-        download::SchedulingParams::Priority::HIGH;
-  } else {
-    download_params.scheduling_params.priority =
-        download::SchedulingParams::Priority::NORMAL;
-  }
+  download_params.scheduling_params.priority =
+      download::SchedulingParams::Priority::HIGH;
   download_params.scheduling_params.battery_requirements =
       download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
   download_params.scheduling_params.network_requirements =

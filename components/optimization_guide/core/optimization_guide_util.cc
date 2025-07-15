@@ -108,8 +108,7 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_ZERO_STATE_SUGGESTIONS:
       return "ZeroStateSuggestions";
-    case proto::ModelExecutionFeature::
-        MODEL_EXECUTION_FEATURE_PROOFREADER_API:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROOFREADER_API:
       return "ProofreaderApi";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
@@ -174,12 +173,6 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
         optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
         optimization_guide_logger,
         "FEATURE_FLAG remote push notification feature disabled");
-  }
-  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
-        optimization_guide_logger,
-        "FEATURE_FLAG model downloading feature disabled");
   }
 }
 

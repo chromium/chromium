@@ -480,12 +480,6 @@ class PredictionManagerTestBase : public testing::Test {
                                    should_fetch_model);
   }
 
- protected:
-  // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
-  // tsan flakes caused by other tasks running while |feature_list_| is
-  // destroyed.
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
@@ -501,16 +495,6 @@ class PredictionManagerTestBase : public testing::Test {
 
 class PredictionManagerTest : public PredictionManagerTestBase {
  public:
-  PredictionManagerTest() {
-    // This needs to be done before any tasks are run that might check if a
-    // feature is enabled, to avoid tsan errors.
-
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kOptimizationGuideModelDownloading,
-    };
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
-
   proto::PredictionModel CreatePredictionModelForModelStore(
       proto::OptimizationTarget optimization_target) {
     auto base_model_dir = GetBaseModelDir(optimization_target);

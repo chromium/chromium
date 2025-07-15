@@ -179,8 +179,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (optimization_guide::features::IsModelDownloadingEnabled() &&
-      !key->IsOffTheRecord()) {
+  if (!key->IsOffTheRecord()) {
     clients->insert(std::make_pair(
         download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS,
         std::make_unique<download::DeferredClientWrapper>(

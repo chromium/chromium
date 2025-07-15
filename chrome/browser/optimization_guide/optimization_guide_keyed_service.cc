@@ -629,10 +629,6 @@ void OptimizationGuideKeyedService::OnProfileInitializationComplete(
   DCHECK(profile_observation_.IsObservingSource(profile));
   profile_observation_.Reset();
 
-  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
-    return;
-  }
-
   if (profile->IsOffTheRecord()) {
     return;
   }
