@@ -5,7 +5,7 @@ This is a testharness.js-based test.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] upgrade should upgrade a candidate element when called on a shadow root with an association
   Failed to construct 'CustomElementRegistry': Illegal constructor
-[FAIL] upgrade should not upgrade a candidate element not associated with the registry
+[FAIL] upgrade should not upgrade a candidate element not associated with a registry
   Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
 

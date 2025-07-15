@@ -320208,6 +320208,21 @@
      }
     }
    },
+   "visual-viewport": {
+    "viewport-apply-initial-scale-after-navigation.html": [
+     "ec03c380d6d27ed0b486a26203d441dc101fd39f",
+     [
+      null,
+      [
+       [
+        "/visual-viewport/viewport-apply-initial-scale-after-navigation-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
+   },
    "web-animations": {
     "animation-model": {
      "keyframe-effects": {
@@ -385575,6 +385590,10 @@
      []
     ],
     "reactions": {
+     "Document-expected.txt": [
+      "b68f94ced2d69f8f7e65754999337c3417c1e959",
+      []
+     ],
      "WEB_FEATURES.yml": [
       "fe4958dd49c703e6dd71cb9720aa70b36e49427c",
       []
@@ -385610,7 +385629,7 @@
       []
      ],
      "CustomElementRegistry-upgrade-expected.txt": [
-      "2832ed434913cf2ef3997b543f9cf14d9c8c337b",
+      "25e9c7277bca6774c939c3fd0d6d206075d9f7db",
       []
      ],
      "Document-createElement-expected.txt": [
@@ -385723,6 +385742,10 @@
      ]
     },
     "upgrading": {
+     "Document-importNode-expected.txt": [
+      "c494d86fb39fbcbb14221e857ba46c069257cb9e",
+      []
+     ],
      "WEB_FEATURES.yml": [
       "3c5cfdc2ea2d3c8167ecfe99eb5b2c3b005d6e53",
       []
@@ -435852,6 +435875,16 @@
     ],
     "helper-resize-event-on-load-overflowing-page.html": [
      "c036b16ec87bc7e562c4040ad1923c5a8b483cec",
+     []
+    ],
+    "resource": {
+     "viewport-apply-initial-scale-after-navigation-inner.html": [
+      "edbf5dbb70aa916363ff32eab847f2d03562d4f5",
+      []
+     ]
+    },
+    "viewport-apply-initial-scale-after-navigation-ref.html": [
+     "904d370d6b464ef526b79e3974532d3f2c57d13b",
      []
     ],
     "viewport_support.js": [
@@ -544324,7 +544357,7 @@
       ]
      ],
      "Document.html": [
-      "4c5d2eb6e2ee0c580f2490c8a5d7d14f27ca79e0",
+      "da2ea0db4ee937c6ef702c7b08632a1a3b3b452d",
       [
        null,
        {}
@@ -544692,7 +544725,7 @@
       ]
      ],
      "CustomElementRegistry-upgrade.html": [
-      "0f7a7a835bec5010195bc30f92bdb2f078ddf409",
+      "c68bc37df1b04cb451aba83fceb414958149cae3",
       [
        null,
        {}
@@ -544720,7 +544753,7 @@
       ]
      ],
      "Document-importNode.html": [
-      "149a135c41ce80c01ae2d2f1eacbf0eb9365ceb9",
+      "89fc0773b5bda78826ff3cfe8a42606b3f725d2d",
       [
        null,
        {}
@@ -544940,7 +544973,7 @@
       ]
      ],
      "Document-importNode.html": [
-      "3da4ccf46a860fdb62801cbbe4dd9bd00f2026bf",
+      "9f960127eecf7da66885b433508b9998236f83d5",
       [
        null,
        {}
@@ -742708,6 +742741,13 @@
     ],
     "no-require-trusted-types-for.html": [
      "651bf0a7199beab43e4f00d3c72462ffda1905f2",
+     [
+      null,
+      {}
+     ]
+    ],
+    "policy-without-return-value.sub.html": [
+     "43ddc71547885479f3884197f5aaba1e96031321",
      [
       null,
       {}

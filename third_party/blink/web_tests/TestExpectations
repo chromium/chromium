@@ -2815,6 +2815,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Pass Timeout ]
 crbug.com/431828030 [ Mac14 ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html [ Pass Timeout ]
 crbug.com/431828030 [ Win10.20h2 ] external/wpt/bluetooth/bidi/server/getPrimaryService/gen-disconnect-called-during-error.https.window.html [ Pass Timeout ]
 crbug.com/431827600 [ Mac14 ] external/wpt/secure-payment-confirmation/authentication-auth-another-way.https.html [ Crash Timeout ]
