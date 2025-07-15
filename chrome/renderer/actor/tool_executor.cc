@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/renderer/actor/click_tool.h"
@@ -33,13 +32,27 @@ namespace actor {
 ToolExecutor::ToolExecutor(RenderFrame* frame, Journal& journal)
     : frame_(*frame), journal_(journal) {}
 
-ToolExecutor::~ToolExecutor() = default;
+ToolExecutor::~ToolExecutor() {
+  if (completion_callback_) {
+    std::move(completion_callback_)
+        .Run(MakeResult(mojom::ActionResultCode::kExecutorDestroyed,
+                        "The tool executor was destroyed before invocation "
+                        "could complete."));
+  }
+}
 
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
                               ToolExecutorCallback callback) {
+  if (tool_) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kExecutorBusy,
+                   "Another tool invocation is still running."));
+    return;
+  }
+
   CHECK(!completion_callback_);
   completion_callback_ = std::move(callback);
-  journal_entry_ =
+  invoke_journal_entry_ =
       journal_->CreatePendingAsyncEntry(invocation->task_id, "InvokeTool", "");
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
@@ -51,16 +64,15 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   if (!web_frame || !web_frame->FrameWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ToolExecutor::ToolFinished,
+        base::BindOnce(&ToolExecutor::PageStabilized,
                        weak_ptr_factory_.GetWeakPtr(),
                        MakeResult(mojom::ActionResultCode::kFrameWentAway)));
     return;
   }
 
-  std::unique_ptr<ToolBase> tool;
   switch (invocation->action->which()) {
     case actor::mojom::ToolAction::Tag::kClick: {
-      tool = std::make_unique<ClickTool>(
+      tool_ = std::make_unique<ClickTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_click()),
           std::move(invocation->target),
@@ -68,7 +80,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       break;
     }
     case actor::mojom::ToolAction::Tag::kMouseMove: {
-      tool = std::make_unique<MouseMoveTool>(
+      tool_ = std::make_unique<MouseMoveTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_mouse_move()),
           std::move(invocation->target),
@@ -76,7 +88,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       break;
     }
     case actor::mojom::ToolAction::Tag::kType: {
-      tool = std::make_unique<TypeTool>(
+      tool_ = std::make_unique<TypeTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_type()),
           std::move(invocation->target),
@@ -84,7 +96,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       break;
     }
     case actor::mojom::ToolAction::Tag::kScroll: {
-      tool = std::make_unique<ScrollTool>(
+      tool_ = std::make_unique<ScrollTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_scroll()),
           std::move(invocation->target),
@@ -92,7 +104,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       break;
     }
     case actor::mojom::ToolAction::Tag::kSelect: {
-      tool = std::make_unique<SelectTool>(
+      tool_ = std::make_unique<SelectTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_select()),
           std::move(invocation->target),
@@ -100,7 +112,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       break;
     }
     case actor::mojom::ToolAction::Tag::kDragAndRelease: {
-      tool = std::make_unique<DragAndReleaseTool>(
+      tool_ = std::make_unique<DragAndReleaseTool>(
           frame_.get(), invocation->task_id, journal_.get(),
           std::move(invocation->action->get_drag_and_release()),
           std::move(invocation->target),
@@ -113,22 +125,32 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 
   page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(*frame_);
 
-  auto execute_journal = journal_->CreatePendingAsyncEntry(
-      invocation->task_id, "ExecuteTool", tool->DebugString());
-  mojom::ActionResultPtr result = tool->Execute();
-  execute_journal.reset();
+  execute_journal_entry_ = journal_->CreatePendingAsyncEntry(
+      invocation->task_id, "ExecuteTool", tool_->DebugString());
+  tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                invocation->task_id));
+}
 
+void ToolExecutor::ToolFinished(int32_t task_id,
+                                mojom::ActionResultPtr result) {
+  execute_journal_entry_.reset();
   page_stability_monitor_->WaitForStable(
-      *tool, invocation->task_id, *journal_,
-      base::BindOnce(&ToolExecutor::ToolFinished,
+      *tool_, task_id, *journal_,
+      base::BindOnce(&ToolExecutor::PageStabilized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 }
 
-void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
+void ToolExecutor::PageStabilized(mojom::ActionResultPtr result) {
   CHECK(completion_callback_);
   page_stability_monitor_.reset();
+
+  CHECK(tool_);
+  // Release current tool so we can accept a new tool invocation.
+  tool_.reset();
+
+  invoke_journal_entry_.reset();
   std::move(completion_callback_).Run(std::move(result));
-  journal_entry_.reset();
 }
 
 }  // namespace actor

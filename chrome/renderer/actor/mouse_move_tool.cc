@@ -53,10 +53,11 @@ MouseMoveTool::MouseMoveTool(content::RenderFrame& frame,
 
 MouseMoveTool::~MouseMoveTool() = default;
 
-mojom::ActionResultPtr MouseMoveTool::Execute() {
+void MouseMoveTool::Execute(ToolFinishedCallback callback) {
   ValidatedResult validated_result = Validate();
   if (!validated_result.has_value()) {
-    return std::move(validated_result.error());
+    std::move(callback).Run(std::move(validated_result.error()));
+    return;
   }
 
   gfx::PointF move_point = validated_result.value();
@@ -72,10 +73,11 @@ mojom::ActionResultPtr MouseMoveTool::Execute() {
   // Note: KNotHandled probably shouldn't result in an error.
   if (move_result == blink::WebInputEventResult::kNotHandled ||
       move_result == blink::WebInputEventResult::kHandledSuppressed) {
-    return MakeResult(mojom::ActionResultCode::kMouseMoveEventSuppressed);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kMouseMoveEventSuppressed));
+    return;
   }
-
-  return MakeOkResult();
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string MouseMoveTool::DebugString() const {

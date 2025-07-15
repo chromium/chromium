@@ -194,6 +194,9 @@ enum ActionResultCode {
   // The requested tool actions array was empty.
   kEmptyActionSequence = 28,
 
+  // The tool executor was busy with another tool, so could not invoke another.
+  kExecutorBusy = 29,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)

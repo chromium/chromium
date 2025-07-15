@@ -33,7 +33,7 @@ class ScrollTool : public ToolBase {
   ~ScrollTool() override;
 
   // actor::ToolBase
-  mojom::ActionResultPtr Execute() override;
+  void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
   base::TimeDelta ExecutionObservationDelay() const override;
 

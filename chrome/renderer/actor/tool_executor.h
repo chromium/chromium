@@ -39,15 +39,18 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
-  void ToolFinished(mojom::ActionResultPtr result);
+  void ToolFinished(int32_t task_id, mojom::ActionResultPtr result);
+  void PageStabilized(mojom::ActionResultPtr result);
 
   // Raw ref since the executor is owned by the RenderFrameObserver which has
   // the same lifetime as RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
+  std::unique_ptr<ToolBase> tool_;
   base::raw_ref<Journal> journal_;
   std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
   ToolExecutorCallback completion_callback_;
-  std::unique_ptr<Journal::PendingAsyncEntry> journal_entry_;
+  std::unique_ptr<Journal::PendingAsyncEntry> invoke_journal_entry_;
+  std::unique_ptr<Journal::PendingAsyncEntry> execute_journal_entry_;
 
   base::WeakPtrFactory<ToolExecutor> weak_ptr_factory_{this};
 };

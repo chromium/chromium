@@ -30,7 +30,7 @@ class SelectTool : public ToolBase {
   ~SelectTool() override;
 
   // actor::ToolBase
-  mojom::ActionResultPtr Execute() override;
+  void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
 
  private:

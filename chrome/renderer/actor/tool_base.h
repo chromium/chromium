@@ -22,6 +22,7 @@ namespace actor {
 
 class ToolBase {
  public:
+  using ToolFinishedCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   ToolBase(content::RenderFrame& frame,
            Journal::TaskId task_id,
            Journal& journal,
@@ -29,8 +30,8 @@ class ToolBase {
            mojom::ObservedToolTargetPtr observed_target);
   virtual ~ToolBase();
 
-  // Executes the tool and returns the result code.
-  virtual mojom::ActionResultPtr Execute() = 0;
+  // Executes the tool. `callback` is invoked with the tool result.
+  virtual void Execute(ToolFinishedCallback callback) = 0;
 
   // Returns a human readable string representing this tool and its parameters.
   // Used primarily for logging and debugging.

@@ -44,10 +44,11 @@ SelectTool::SelectTool(content::RenderFrame& frame,
 
 SelectTool::~SelectTool() = default;
 
-mojom::ActionResultPtr SelectTool::Execute() {
+void SelectTool::Execute(ToolFinishedCallback callback) {
   ValidatedResult validated_result = Validate();
   if (!validated_result.has_value()) {
-    return std::move(validated_result.error());
+    std::move(callback).Run(std::move(validated_result.error()));
+    return;
   }
 
   WebSelectElement select = validated_result.value().select;
@@ -56,12 +57,13 @@ mojom::ActionResultPtr SelectTool::Execute() {
 
   // Check if the set value is now the current value in the <select>
   if (select.Value() != value) {
-    return MakeResult(
-        mojom::ActionResultCode::kSelectUnexpectedValue,
-        absl::StrFormat("ValueAfter [%s]", select.Value().Utf8()));
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kSelectUnexpectedValue,
+                   absl::StrFormat("ValueAfter [%s]", select.Value().Utf8())));
+    return;
   }
 
-  return MakeOkResult();
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string SelectTool::DebugString() const {
