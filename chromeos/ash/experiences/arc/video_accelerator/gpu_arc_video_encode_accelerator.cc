@@ -208,8 +208,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
           coded_size_, *buffer_format,
-          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-          base::NullCallback());
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
 
   auto frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),

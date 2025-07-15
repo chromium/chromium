@@ -43,10 +43,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandleForTesting(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
-      DestructionCallback callback) {
-    return CreateFromHandle(std::move(handle), size, format,
-                            std::move(callback));
+      gfx::BufferFormat format) {
+    return CreateFromHandle(std::move(handle), size, format);
   }
 
   static base::OnceClosure AllocateForTesting(
@@ -87,7 +85,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
-      DestructionCallback callback,
       CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback =
           CopyNativeBufferToShMemCallback(),
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
@@ -95,7 +92,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   GpuMemoryBufferImplDXGI(
       const gfx::Size& size,
       gfx::BufferFormat format,
-      DestructionCallback callback,
       gfx::DXGIHandle dxgi_handle,
       CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
       scoped_refptr<base::UnsafeSharedMemoryPool> pool);

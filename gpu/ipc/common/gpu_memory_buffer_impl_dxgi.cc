@@ -37,12 +37,11 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    DestructionCallback callback,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
   return base::WrapUnique(new GpuMemoryBufferImplDXGI(
-      size, format, std::move(callback), std::move(handle).dxgi_handle(),
+      size, format, std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
 }
 
@@ -285,11 +284,10 @@ const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    DestructionCallback callback,
     gfx::DXGIHandle dxgi_handle,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool)
-    : GpuMemoryBufferImpl(size, format, std::move(callback)),
+    : GpuMemoryBufferImpl(size, format),
       dxgi_handle_(std::move(dxgi_handle)),
       copy_native_buffer_to_shmem_callback_(
           std::move(copy_native_buffer_to_shmem_callback)),

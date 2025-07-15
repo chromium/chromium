@@ -30,10 +30,8 @@ void FreeNativePixmapForTesting(
 GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    DestructionCallback callback,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
-    : GpuMemoryBufferImpl(size, format, std::move(callback)),
-      pixmap_(std::move(pixmap)) {}
+    : GpuMemoryBufferImpl(size, format), pixmap_(std::move(pixmap)) {}
 
 GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
 
@@ -44,8 +42,7 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    DestructionCallback callback) {
+    gfx::BufferUsage usage) {
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
           std::move(handle).native_pixmap_handle(), size, format, usage);
@@ -53,7 +50,7 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      size, format, std::move(callback), std::move(native_pixmap)));
+      size, format, std::move(native_pixmap)));
 }
 
 // static

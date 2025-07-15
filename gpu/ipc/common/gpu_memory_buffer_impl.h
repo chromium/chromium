@@ -19,7 +19,6 @@ namespace gpu {
 // TODO(reveman): Rename to GpuMemoryBufferBase.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
-  using DestructionCallback = base::OnceCallback<void()>;
   using CopyNativeBufferToShMemCallback =
       base::RepeatingCallback<void(gfx::GpuMemoryBufferHandle,
                                    base::UnsafeSharedMemoryRegion,
@@ -35,15 +34,12 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat GetFormat() const override;
 
  protected:
-  GpuMemoryBufferImpl(const gfx::Size& size,
-                      gfx::BufferFormat format,
-                      DestructionCallback callback);
+  GpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format);
 
   void AssertMapped();
 
   const gfx::Size size_;
   const gfx::BufferFormat format_;
-  DestructionCallback callback_;
 
   // Note: This lock must be held throughout the entirety of the Map() and
   // Unmap() operations to avoid corrupt mutation across multiple threads.

@@ -46,10 +46,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      DestructionCallback callback) {
+      gfx::BufferUsage usage) {
     return CreateFromHandle(client_native_pixmap_factory, std::move(handle),
-                            size, format, usage, std::move(callback));
+                            size, format, usage);
   }
 
   static base::OnceClosure AllocateForTesting(
@@ -79,7 +78,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::BufferFormat format,
       gfx::BufferUsage usage) {
     return CreateFromHandle(client_native_pixmap_factory, std::move(handle),
-                            size, format, usage, base::NullCallback());
+                            size, format, usage);
   }
 
  private:
@@ -93,13 +92,11 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      DestructionCallback callback);
+      gfx::BufferUsage usage);
 
   GpuMemoryBufferImplNativePixmap(
       const gfx::Size& size,
       gfx::BufferFormat format,
-      DestructionCallback callback,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
   const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;

@@ -46,10 +46,9 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
 GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    DestructionCallback callback,
     gfx::GpuMemoryBufferHandle handle,
     uint32_t lock_flags)
-    : GpuMemoryBufferImpl(size, format, std::move(callback)),
+    : GpuMemoryBufferImpl(size, format),
       handle_(std::move(handle)),
       lock_flags_(lock_flags) {}
 
@@ -61,10 +60,9 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    DestructionCallback callback) {
-  return CreateFromHandleImpl(std::move(handle), size, format, LockFlags(usage),
-                              std::move(callback));
+    gfx::BufferUsage usage) {
+  return CreateFromHandleImpl(std::move(handle), size, format,
+                              LockFlags(usage));
 }
 
 // static
@@ -85,11 +83,9 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    bool is_read_only_cpu_usage,
-    DestructionCallback callback) {
+    bool is_read_only_cpu_usage) {
   uint32_t lock_flags = is_read_only_cpu_usage ? kIOSurfaceLockReadOnly : 0;
-  return CreateFromHandleImpl(std::move(handle), size, format, lock_flags,
-                              std::move(callback));
+  return CreateFromHandleImpl(std::move(handle), size, format, lock_flags);
 }
 
 // static
@@ -98,8 +94,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
-    int32_t lock_flags,
-    DestructionCallback callback) {
+    int32_t lock_flags) {
   // The maximum number of times to dump before throttling (to avoid sending
   // thousands of crash dumps).
   constexpr int kMaxCrashDumps = 10;
@@ -132,7 +127,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
 #endif
 
   return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      size, format, std::move(callback), handle.Clone(), lock_flags));
+      size, format, handle.Clone(), lock_flags));
 }
 
 bool GpuMemoryBufferImplIOSurface::Map() {

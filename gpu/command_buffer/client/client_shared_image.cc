@@ -330,15 +330,14 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-          std::move(handle), size, format, usage, base::DoNothing());
+          std::move(handle), size, format, usage);
 #if BUILDFLAG(IS_MAC)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
           si_usage.Has(SHARED_IMAGE_USAGE_CPU_READ) &&
           !si_usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
       return GpuMemoryBufferImplIOSurface::CreateFromHandle(
-          std::move(handle), size, format, is_read_only_cpu_usage,
-          base::DoNothing());
+          std::move(handle), size, format, is_read_only_cpu_usage);
     }
 #endif
 #if BUILDFLAG(IS_OZONE)
@@ -348,13 +347,13 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
           ui::CreateClientNativePixmapFactoryOzone();
       return GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory.get(), std::move(handle), size, format,
-          usage, base::DoNothing());
+          usage);
     }
 #endif
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return GpuMemoryBufferImplDXGI::CreateFromHandle(
-          std::move(handle), size, format, base::DoNothing(),
+          std::move(handle), size, format,
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
