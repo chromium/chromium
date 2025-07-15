@@ -175,12 +175,16 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
     }
   }
 
-  void HidePopoverInternal(Element* invoker,
-                           HidePopoverFocusBehavior focus_behavior,
-                           HidePopoverTransitionBehavior event_firing,
-                           ExceptionState* exception_state) override {
-    HTMLDivElement::HidePopoverInternal(invoker, focus_behavior, event_firing,
-                                        exception_state);
+  PopoverHideResult HidePopoverInternal(
+      Element* invoker,
+      HidePopoverFocusBehavior focus_behavior,
+      HidePopoverTransitionBehavior event_firing,
+      ExceptionState* exception_state) override {
+    if (HTMLDivElement::HidePopoverInternal(invoker, focus_behavior,
+                                            event_firing, exception_state) ==
+        PopoverHideResult::kForcedOpenByInspector) {
+      return PopoverHideResult::kForcedOpenByInspector;
+    }
     if (auto* select = ParentSelect()) {
       // Focus the select when the popover is hidden.
       if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
@@ -192,6 +196,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
         cache->DidHideMenuListPopup(select);
       }
     }
+    return PopoverHideResult::kHidden;
   }
 
   InsertionNotificationRequest InsertedInto(ContainerNode& container) override {

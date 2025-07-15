@@ -239,4 +239,5 @@ interface CoreProbes {
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
   void DidInitializeFrameWidget(LocalFrame* document);
   void UpdateScrollableFlag([Keep] Node* node, std::optional<bool>);
+  void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
 }

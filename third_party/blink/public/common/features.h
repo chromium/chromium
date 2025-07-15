@@ -363,6 +363,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // See http://crbug.com/40788570.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsImprovedNetworkError);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsAllowPopoverForcing);
+
 // Enables input IPC to directly target the renderer's compositor thread without
 // hopping through the IO thread first.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);

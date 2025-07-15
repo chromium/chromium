@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -73,6 +74,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -684,6 +686,7 @@ protocol::Response InspectorDOMAgent::enable(
 protocol::Response InspectorDOMAgent::disable() {
   if (!enabled_.Get())
     return protocol::Response::ServerError("DOM agent hasn't been enabled");
+  ReleaseForcedPopovers();
   include_whitespace_.Clear();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorDOMAgent(this);
@@ -844,6 +847,7 @@ void InspectorDOMAgent::PushChildNodesToFrontend(int node_id,
 }
 
 void InspectorDOMAgent::DiscardFrontendBindings() {
+  ReleaseForcedPopovers();
   if (history_)
     history_->Reset();
   search_results_.clear();
@@ -1976,6 +1980,88 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
   return protocol::Response::Success();
 }
 
+static void HidePopover(Node* node) {
+  if (auto* element = DynamicTo<HTMLElement>(node);
+      element && element->popoverOpen()) {
+    element->HidePopoverInternal(
+        /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+        HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+        /*exception_state=*/nullptr);
+  }
+}
+
+void InspectorDOMAgent::ReleaseForcedPopovers() {
+  HeapHashSet<WeakMember<Node>> forced_popovers;
+  forced_popovers_.swap(forced_popovers);
+  for (auto& popover : forced_popovers) {
+    HidePopover(popover);
+  }
+}
+
+protocol::Response InspectorDOMAgent::forceShowPopover(
+    int node_id,
+    bool enable,
+    std::unique_ptr<protocol::Array<int>>* out_node_ids) {
+  if (!base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing)) {
+    return protocol::Response::ServerError("Feature is not enabled");
+  }
+
+  Node* node = nullptr;
+  protocol::Response response = AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  *out_node_ids = std::make_unique<protocol::Array<int>>();
+  if (!enable) {
+    if (forced_popovers_.Contains(node)) {
+      forced_popovers_.erase(node);
+      popovers_currently_being_hidden_.insert(node);
+      HidePopover(node);
+    }
+  } else {
+    auto* element = DynamicTo<HTMLElement>(node);
+    if (!element || !element->IsPopover()) {
+      return protocol::Response::ServerError("node is not a popover");
+    }
+
+    bool should_open = forced_popovers_.insert(node).is_new_entry;
+    if (should_open && !element->popoverOpen()) {
+      // Insert the current node into the hiding list to signal that we're a
+      // force-open is in progress ...
+      popovers_currently_being_hidden_.insert(node);
+      element->ShowPopoverInternal(/*invoker=*/nullptr,
+                                   /*exception_state=*/nullptr);
+      // ... and remove it after.
+      popovers_currently_being_hidden_.erase(node);
+    }
+  }
+  NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
+  for (Node* closed_node : popovers_currently_being_hidden_) {
+    if (closed_node) {
+      int id = PushNodePathToFrontend(closed_node, nodes_map);
+      (*out_node_ids)->push_back(id);
+    }
+  }
+  popovers_currently_being_hidden_.clear();
+  return protocol::Response::Success();
+}
+
+void InspectorDOMAgent::WillHidePopover(HTMLElement* element,
+                                        bool* force_open) {
+  if (base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing) &&
+      force_open && forced_popovers_.Contains(element)) {
+    if (!popovers_currently_being_hidden_.empty()) {
+      // We are currently in the process of force-hiding a popover, that means
+      // we're getting called during cleanup of the popover stack. Don't keep
+      // this popover open, but record that it's being closed.
+      popovers_currently_being_hidden_.insert(element);
+      forced_popovers_.erase(element);
+    } else {
+      *force_open = true;
+    }
+  }
+}
+
 // static
 const HeapVector<Member<Element>>
 InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
@@ -3100,6 +3186,8 @@ void InspectorDOMAgent::Trace(Visitor* visitor) const {
   visitor->Trace(history_);
   visitor->Trace(dom_editor_);
   visitor->Trace(node_to_creation_source_location_map_);
+  visitor->Trace(forced_popovers_);
+  visitor->Trace(popovers_currently_being_hidden_);
   InspectorBaseAgent::Trace(visitor);
 }
 

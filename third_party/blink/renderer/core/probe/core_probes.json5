@@ -104,6 +104,7 @@
         "PseudoElementCreated",
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",
+        "WillHidePopover",
         "WillModifyDOMAttr",
         "WillPopShadowRoot",
         "WillRemoveDOMNode",

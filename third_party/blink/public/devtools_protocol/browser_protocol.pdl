@@ -3751,6 +3751,19 @@ domain DOM
       # The anchor element of the given anchor query.
       NodeId nodeId
 
+  # When enabling, this API force-opens the popover identified by nodeId
+  # and keeps it open until disabled.
+  experimental command forceShowPopover
+    parameters
+      # Id of the popover HTMLElement
+      NodeId nodeId
+      # If true, opens the popover and keeps it open. If false, closes the
+      # popover if it was previously force-opened.
+      boolean enable
+    returns
+      # List of popovers that were closed in order to respect popover stacking order.
+      array of NodeId nodeIds
+
   # Fired when `Element`'s attribute is modified.
   event attributeModified
     parameters

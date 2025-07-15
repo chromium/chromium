@@ -1,0 +1,190 @@
+Tests the DOM.forceShowPopover method
+First, check interleaving forceShowPopover calls with showPopover()/hidePopover()
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+element.showPopover(): {
+    className : HTMLDivElement
+    description : div#popover
+    objectId : <string>
+    subtype : node
+    type : object
+}
+#popover.hidePopover(): {
+    subtype : null
+    type : object
+    value : null
+}
+force-open:
+closed popovers when force-showing node #popover[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+#popover.hidePopover(): {
+    className : HTMLDivElement
+    description : div#popover
+    objectId : <string>
+    subtype : node
+    type : object
+}
+force-close:
+closed popovers when force-hiding node #popover[
+    [0] : #popover
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+element.showPopover(): {
+    className : HTMLDivElement
+    description : div#popover
+    objectId : <string>
+    subtype : node
+    type : object
+}
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+force-open:
+closed popovers when force-showing node #popover[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+#popover.hidePopover(): {
+    className : HTMLDivElement
+    description : div#popover
+    objectId : <string>
+    subtype : node
+    type : object
+}
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+closed popovers when force-hiding node #popover[
+    [0] : #popover
+]
+
+Second, test forceShowPopover calls for popover stack in different orders
+force-opened in order:
+closed popovers when force-showing node #p1[
+]
+closed popovers when force-showing node #p2[
+]
+closed popovers when force-showing node #p3[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+        [1] : p2
+        [2] : p3
+    ]
+}
+force-closed in order:
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+closed popovers when force-hiding node #p2[
+    [0] : #p2
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+force-opened in order:
+closed popovers when force-showing node #p1[
+]
+closed popovers when force-showing node #p2[
+]
+closed popovers when force-showing node #p3[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+        [1] : p2
+        [2] : p3
+    ]
+}
+force-closed out of order:
+closed popovers when force-hiding node #p2[
+    [0] : #p2
+    [1] : #p3
+]
+closed popovers when force-hiding node #p3[
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+force-opened out of order:
+closed popovers when force-showing node #p3[
+]
+closed popovers when force-showing node #p2[
+    [0] : #p3
+]
+closed popovers when force-showing node #p1[
+    [0] : #p2
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+    ]
+}
+force-closed out of order:
+closed popovers when force-hiding node #p2[
+]
+closed popovers when force-hiding node #p3[
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+hidePopover() out of order:
+element.showPopover(): {
+    className : HTMLDivElement
+    description : div#p1
+    objectId : <string>
+    subtype : node
+    type : object
+}
+closed popovers when force-showing node #p2[
+]
+#p1.hidePopover(): {
+    className : HTMLDivElement
+    description : div#p1
+    objectId : <string>
+    subtype : node
+    type : object
+}
+
