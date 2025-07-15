@@ -220,9 +220,6 @@
 #define BUILDFLAG_INTERNAL_IS_MAC() (0)
 #endif
 
-// TODO(crbug.com/40511454): Remove all uses.
-#define BUILDFLAG_INTERNAL_IS_NACL() (0)
-
 #if defined(OS_NETBSD)
 #define BUILDFLAG_INTERNAL_IS_NETBSD() (1)
 #else
