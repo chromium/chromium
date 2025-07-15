@@ -5,18 +5,30 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
 
-import android.app.Activity;
+import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.SINGLE_THEME_COLLECTION_ITEM;
+import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM;
+
+import android.content.Context;
 import android.util.Pair;
+import android.view.ContextThemeWrapper;
+import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
@@ -24,7 +36,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionViewHolder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionsAdapter}. */
@@ -32,75 +46,169 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class NtpThemeCollectionsAdapterUnitTest {
 
-    private static final List<Pair<String, Integer>> FAKE_THEME_COLLECTIONS = new ArrayList<>();
+    private static final int FAKE_IMAGE_RES_ID =
+            R.drawable.upload_an_image_icon_for_theme_bottom_sheet;
+    private static final String THEME_COLLECTION_TITLE = "Theme Collection 1";
+    private static final String NEW_THEME_COLLECTION_TITLE = "Theme Collection 2";
 
-    static {
-        FAKE_THEME_COLLECTIONS.add(
-                new Pair<>("Collection A", R.drawable.upload_an_image_icon_for_theme_bottom_sheet));
-        FAKE_THEME_COLLECTIONS.add(
-                new Pair<>("Collection B", R.drawable.upload_an_image_icon_for_theme_bottom_sheet));
-    }
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private NtpThemeCollectionsAdapter mAdapter;
-    private Activity mActivity;
+    private Context mContext;
     private FrameLayout mParent;
+    private View.OnClickListener mOnClickListener;
+    private List<Pair<String, Integer>> mCollectionItemsWithTitle;
+    private List<Integer> mCollectionItemsWithoutTitle;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mParent = new FrameLayout(mActivity);
-        mAdapter = new NtpThemeCollectionsAdapter(FAKE_THEME_COLLECTIONS);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        mParent = new FrameLayout(mContext);
+
+        mOnClickListener = view -> {};
+
+        mCollectionItemsWithTitle = new ArrayList<>();
+        mCollectionItemsWithTitle.add(new Pair<>(THEME_COLLECTION_TITLE, FAKE_IMAGE_RES_ID));
+        mCollectionItemsWithTitle.add(new Pair<>(NEW_THEME_COLLECTION_TITLE, FAKE_IMAGE_RES_ID));
+
+        mCollectionItemsWithoutTitle = new ArrayList<>();
+        mCollectionItemsWithoutTitle.add(FAKE_IMAGE_RES_ID);
+        mCollectionItemsWithoutTitle.add(FAKE_IMAGE_RES_ID);
+    }
+
+    @Test
+    public void testGetItemViewType() {
+        NtpThemeCollectionsAdapter adapterWithTitle =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithTitle, THEME_COLLECTIONS_ITEM, mOnClickListener);
+        assertEquals(THEME_COLLECTIONS_ITEM, adapterWithTitle.getItemViewType(0));
+
+        NtpThemeCollectionsAdapter adapterWithoutTitle =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithoutTitle,
+                        SINGLE_THEME_COLLECTION_ITEM,
+                        mOnClickListener);
+        assertEquals(SINGLE_THEME_COLLECTION_ITEM, adapterWithoutTitle.getItemViewType(0));
     }
 
     @Test
     public void testOnCreateViewHolder() {
-        ThemeCollectionViewHolder viewHolder = mAdapter.onCreateViewHolder(mParent, 0);
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithTitle, THEME_COLLECTIONS_ITEM, mOnClickListener);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, THEME_COLLECTIONS_ITEM);
 
         assertNotNull("ViewHolder should not be null.", viewHolder);
+        assertNotNull("ViewHolder's view should not be null.", viewHolder.mView);
         assertNotNull("ViewHolder's image view should not be null.", viewHolder.mImage);
         assertNotNull("ViewHolder's title view should not be null.", viewHolder.mTitle);
     }
 
     @Test
-    public void testOnBindViewHolder() {
-        ThemeCollectionViewHolder viewHolder = mAdapter.onCreateViewHolder(mParent, 0);
+    public void testOnBindViewHolder_withTitle() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithTitle, THEME_COLLECTIONS_ITEM, mOnClickListener);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, THEME_COLLECTIONS_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, THEME_COLLECTIONS_ITEM);
 
-        // Test binding for the first item
-        mAdapter.onBindViewHolder(viewHolder, 0);
+        adapter.onBindViewHolder(viewHolder, 0);
 
-        TextView titleView = viewHolder.mTitle;
+        assertEquals(THEME_COLLECTION_TITLE, viewHolder.mTitle.getText().toString());
+        assertEquals(View.VISIBLE, viewHolder.mTitle.getVisibility());
         assertEquals(
-                "Title should be set from the first item.",
-                FAKE_THEME_COLLECTIONS.get(0).first,
-                titleView.getText().toString());
+                FAKE_IMAGE_RES_ID,
+                Shadows.shadowOf(viewHolder.mImage.getDrawable()).getCreatedFromResId());
+        assertTrue(viewHolder.mView.hasOnClickListeners());
+    }
 
-        ImageView imageView = viewHolder.mImage;
-        int imageResId = Shadows.shadowOf(imageView.getDrawable()).getCreatedFromResId();
+    @Test
+    public void testOnBindViewHolder_withoutTitle() throws Exception {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithoutTitle,
+                        SINGLE_THEME_COLLECTION_ITEM,
+                        mOnClickListener);
+        ThemeCollectionViewHolder viewHolder =
+                (ThemeCollectionViewHolder)
+                        adapter.onCreateViewHolder(mParent, SINGLE_THEME_COLLECTION_ITEM);
+        Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
+        itemViewTypeField.setAccessible(true);
+        itemViewTypeField.set(viewHolder, SINGLE_THEME_COLLECTION_ITEM);
+
+        adapter.onBindViewHolder(viewHolder, 0);
+
+        assertEquals(View.GONE, viewHolder.mTitle.getVisibility());
         assertEquals(
-                "Image resource should be set from the first item.",
-                (int) FAKE_THEME_COLLECTIONS.get(0).second,
-                imageResId);
-
-        // Test binding for the second item
-        mAdapter.onBindViewHolder(viewHolder, 1);
-
-        assertEquals(
-                "Title should be updated from the second item.",
-                FAKE_THEME_COLLECTIONS.get(1).first,
-                titleView.getText().toString());
-
-        imageResId = Shadows.shadowOf(imageView.getDrawable()).getCreatedFromResId();
-        assertEquals(
-                "Image resource should be updated from the second item.",
-                (int) FAKE_THEME_COLLECTIONS.get(1).second,
-                imageResId);
+                FAKE_IMAGE_RES_ID,
+                Shadows.shadowOf(viewHolder.mImage.getDrawable()).getCreatedFromResId());
+        assertTrue(viewHolder.mView.hasOnClickListeners());
     }
 
     @Test
     public void testGetItemCount() {
-        assertEquals(
-                "Item count should match the size of the provided list.",
-                FAKE_THEME_COLLECTIONS.size(),
-                mAdapter.getItemCount());
+        NtpThemeCollectionsAdapter adapterWithTitle =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithTitle, THEME_COLLECTIONS_ITEM, mOnClickListener);
+        assertEquals(mCollectionItemsWithTitle.size(), adapterWithTitle.getItemCount());
+
+        NtpThemeCollectionsAdapter adapterWithoutTitle =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithoutTitle,
+                        SINGLE_THEME_COLLECTION_ITEM,
+                        mOnClickListener);
+        assertEquals(mCollectionItemsWithoutTitle.size(), adapterWithoutTitle.getItemCount());
+    }
+
+    @Test
+    public void testSetItems() {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        Collections.emptyList(), THEME_COLLECTIONS_ITEM, mOnClickListener);
+        NtpThemeCollectionsAdapter spyAdapter = spy(adapter);
+        assertEquals(0, spyAdapter.getItemCount());
+
+        spyAdapter.setItems(mCollectionItemsWithTitle);
+
+        assertEquals(mCollectionItemsWithTitle.size(), spyAdapter.getItemCount());
+    }
+
+    @Test
+    public void testClearOnClickListeners() {
+        RecyclerView recyclerView = new RecyclerView(mContext);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItemsWithTitle, THEME_COLLECTIONS_ITEM, mOnClickListener);
+        recyclerView.setAdapter(adapter);
+
+        // Force layout to create and bind views.
+        recyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
+        recyclerView.layout(0, 0, 480, 800);
+
+        assertTrue(
+                "RecyclerView should have children after layout.",
+                recyclerView.getChildCount() > 0);
+
+        View childView = recyclerView.getChildAt(0);
+        assertTrue(
+                "Child view should have a click listener after binding.",
+                childView.hasOnClickListeners());
+
+        adapter.clearOnClickListeners();
+
+        assertFalse(
+                "Child view's click listener should be cleared.", childView.hasOnClickListeners());
     }
 }

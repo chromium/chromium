@@ -1386,6 +1386,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page appearance theme collections bottom sheet is fully opened.">
         New tab page appearance theme collections bottom sheet opened at full height
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_DAILY_UPDATE" desc="Title of the toggle switch for updating theme collection background daily">
+        Refresh daily
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

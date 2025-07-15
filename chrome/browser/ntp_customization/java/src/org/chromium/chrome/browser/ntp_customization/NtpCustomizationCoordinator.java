@@ -64,7 +64,8 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.FEED,
         BottomSheetType.THEME,
         BottomSheetType.MVT,
-        BottomSheetType.THEME_COLLECTIONS
+        BottomSheetType.THEME_COLLECTIONS,
+        BottomSheetType.SINGLE_THEME_COLLECTION
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
@@ -74,7 +75,8 @@ public class NtpCustomizationCoordinator {
         int THEME = 3;
         int MVT = 4;
         int THEME_COLLECTIONS = 5;
-        int NUM_ENTRIES = 6;
+        int SINGLE_THEME_COLLECTION = 6;
+        int NUM_ENTRIES = 7;
     }
 
     @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})

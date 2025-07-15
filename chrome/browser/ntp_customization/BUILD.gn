@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeProperty.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinator.java",
   ]
@@ -97,6 +98,7 @@ android_resources("java_resources") {
     "java/res/layout/ntp_customization_mvt_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_list_item_layout.xml",
+    "java/res/layout/ntp_customization_single_theme_collection_bottom_sheet_layout.xml",
     "java/res/layout/ntp_customization_theme_bottom_sheet_layout.xml",
     "java/res/layout/ntp_customization_theme_collections_bottom_sheet_layout.xml",
     "java/res/layout/ntp_customization_theme_collections_list_item_icon_layout.xml",
@@ -144,6 +146,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
   ]

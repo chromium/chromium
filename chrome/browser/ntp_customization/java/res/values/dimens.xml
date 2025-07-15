@@ -31,4 +31,5 @@ found in the LICENSE file.
   <dimen name="ntp_customization_theme_collections_icon_placeholder_size">24dp</dimen>
   <dimen name="ntp_customization_theme_collections_icon_placeholder_margin">14dp</dimen>
   <dimen name="ntp_customization_theme_collections_icon_outer_radius">16dp</dimen>
+  <dimen name="ntp_customization_theme_collections_recycle_view_padding_horizontal">16dp</dimen>
 </resources>

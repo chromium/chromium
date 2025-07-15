@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
@@ -104,6 +105,7 @@ public class NtpCustomizationUtils {
             case THEME:
                 return R.string.ntp_customization_theme_bottom_sheet;
             case THEME_COLLECTIONS:
+            case SINGLE_THEME_COLLECTION:
                 return R.string.ntp_customization_theme_collections_bottom_sheet;
             default:
                 assert false : "Bottom sheet type not supported!";
@@ -129,6 +131,7 @@ public class NtpCustomizationUtils {
             case THEME:
                 return R.string.ntp_customization_theme_bottom_sheet_opened_full;
             case THEME_COLLECTIONS:
+            case SINGLE_THEME_COLLECTION:
                 return R.string.ntp_customization_theme_collections_bottom_sheet_opened_full;
             default:
                 assert false : "Bottom sheet type not supported!";
