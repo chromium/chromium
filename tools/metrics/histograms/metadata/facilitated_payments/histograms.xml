@@ -416,12 +416,12 @@ reviewer.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     A Pix specific histogram. Emits true when a likely Pix code is copied to the
-    clipboard on an allowlisted merchant website. A likely Pix code contains
-    substring &quot;0014br.gov.bcb.pix&quot;, but this is logged before the code
-    validation, which could thereafter fail and not trigger a PIX FOP selector
-    UI. [Trigger] User copies a likely Pix code to the clipboard. [Frequency]
-    Logged once per Pix payflow. Pix payflow is triggered at most once per page
-    load.
+    clipboard on any merchant webiste. A likely Pix code contains substring
+    &quot;0014br.gov.bcb.pix&quot;, but this is logged before the merchant
+    allowlist check, which could thereafter fail and not trigger a PIX FOP
+    selector UI. [Trigger] User copies a likely Pix code to the clipboard.
+    [Frequency] Logged once per Pix payflow. Pix payflow is triggered at most
+    once per page load.
   </summary>
 </histogram>
 

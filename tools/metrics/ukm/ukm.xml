@@ -9083,7 +9083,7 @@ be describing additional metrics about the same event.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a likely Pix code is copied to the clipboard
-    on an allowlisted website.
+    on any website.
   </summary>
   <metric name="PixCodeCopied" enum="Boolean">
     <summary>

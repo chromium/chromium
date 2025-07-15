@@ -88,6 +88,9 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTestWithAccountLinkingEnabled,
       CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTestWithAccountLinkingEnabled,
+      CopyTrigger_UrlNotInAllowlist_PayflowExitedHistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            DismissPrompt);
   FRIEND_TEST_ALL_PREFIXES(

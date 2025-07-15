@@ -335,25 +335,11 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled, ResettingPreventsPayment) {
       pix_manager_->initiate_payment_request_details_->IsReadyForPixPayment());
 }
 
-TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, CopyTrigger_LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
-  // Mock allowlist check result.
-  EXPECT_CALL(
-      *optimization_guide_decider_,
-      CanApplyOptimization(
-          testing::Eq(url),
-          testing::Eq(
-              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
-          testing::Matcher<optimization_guide::OptimizationMetadata*>(
-              testing::Eq(nullptr))))
-      .Times(1)
-      .WillOnce(testing::Return(
-          optimization_guide::OptimizationGuideDecision::kTrue));
-
   pix_manager_->OnPixCodeCopiedToClipboard(
       url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
@@ -424,6 +410,38 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   // The DataDecoder (utility process) validates the Pix code string
   // asynchronously.
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_UrlNotInAllowlist_PayflowExitedHistogramLogged) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result.
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  pix_manager_->OnPixCodeCopiedToClipboard(
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      ukm::UkmRecorder::GetNewSourceID());
+  // The DataDecoder (utility process) validates the Pix code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kMerchantNotAllowlisted,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(

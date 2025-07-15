@@ -118,7 +118,9 @@ enum class PixFlowExitedReason {
   kPurchaseActionCouldNotBeInvoked = 13,
   // Autofilling payment FOPs disabled.
   kAutofillPaymentMethodsDisabled = 14,
-  kMaxValue = kAutofillPaymentMethodsDisabled
+  // Pix code was copied on a merchant website that wasn't allowlisted.
+  kMerchantNotAllowlisted = 15,
+  kMaxValue = kMerchantNotAllowlisted
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 

@@ -97,6 +97,7 @@ reviewer.
   <int value="12" label="The FOP selector was closed by the user"/>
   <int value="13" label="The purchase action could not be invoked"/>
   <int value="14" label="Autofilling payment methods disabled"/>
+  <int value="15" label="Merchant is not allowlisted"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
