@@ -494,6 +494,8 @@ target(link_target_type, "gles2_sources") {
 
   if (is_apple) {
     sources += [
+      "metal_context_provider.h",
+      "metal_context_provider.mm",
       "shared_image/iosurface_image_backing.h",
       "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
@@ -506,12 +508,13 @@ target(link_target_type, "gles2_sources") {
     configs -= [ "//build/config/compiler:enable_arc" ]
 
     if (skia_use_metal) {
-      deps += [ "//components/viz/common:metal_context_provider" ]
+      deps += [ "//components/metal_util" ]
     }
 
     # Required by gles2_cmd_decoder.cc on Apple.
     frameworks = [
       "CoreVideo.framework",
+      "Foundation.framework",
       "IOSurface.framework",
       "Metal.framework",
     ]
