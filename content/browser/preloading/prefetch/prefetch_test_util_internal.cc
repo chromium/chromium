@@ -476,6 +476,14 @@ void TestPrefetchService::PrefetchUrl(
   prefetches_.push_back(prefetch_container);
 }
 
+void TestPrefetchService::OnPrefetchCompletedOrFailed(
+    PrefetchContainer& prefetch_container,
+    const network::URLLoaderCompletionStatus& completion_status,
+    const std::optional<int>& response_code) {
+  // Skip `active_prefetch_` check and related prefetch queue processing in
+  // `PrefetchService`, because it's not set/used in `TestPrefetchService`.
+}
+
 void TestPrefetchService::EvictPrefetch(size_t index) {
   ASSERT_LT(index, prefetches_.size());
   ASSERT_TRUE(prefetches_[index]);

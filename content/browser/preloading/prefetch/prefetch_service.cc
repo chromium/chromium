@@ -1690,8 +1690,8 @@ void PrefetchService::SendPrefetchRequest(
       PrefetchTimeoutDuration(),
       base::BindOnce(&PrefetchService::OnPrefetchResponseStarted,
                      base::Unretained(this), prefetch_container),
-      base::BindOnce(&PrefetchService::OnPrefetchResponseCompleted,
-                     base::Unretained(this), prefetch_container),
+      base::BindOnce(&PrefetchContainer::OnPrefetchComplete,
+                     prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
       base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
@@ -1892,34 +1892,18 @@ void PrefetchService::OnDeterminedHead(PrefetchContainer& prefetch_container) {}
 void PrefetchService::OnPrefetchCompletedOrFailed(
     PrefetchContainer& prefetch_container,
     const network::URLLoaderCompletionStatus& completion_status,
-    const std::optional<int>& response_code) {}
-
-void PrefetchService::OnPrefetchResponseCompleted(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status) {
-  TRACE_EVENT2("loading", "PrefetchService::OnPrefetchResponseCompleted",
-               "prefetch_url",
-               prefetch_container ? prefetch_container->GetURL().spec() : "",
+    const std::optional<int>& response_code) {
+  TRACE_EVENT2("loading", "PrefetchService::OnPrefetchCompletedOrFailed",
+               "prefetch_url", prefetch_container.GetURL().spec(),
                "completion_status.error_code", completion_status.error_code);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DVLOG(1) << "PrefetchService::OnPrefetchResponseCompleted";
-  if (!prefetch_container) {
-    return;
-  }
-
-  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
+  CHECK(IsPrefetchContainerInActiveSet(prefetch_container));
 
   if (!UsePrefetchScheduler()) {
     active_prefetch_ = std::nullopt;
-
-    prefetch_container->OnPrefetchComplete(completion_status);
-
     Prefetch();
   } else {
-    prefetch_container->OnPrefetchComplete(completion_status);
-
-    RemoveFromSchedulerAndProgressAsync(*prefetch_container);
+    RemoveFromSchedulerAndProgressAsync(prefetch_container);
   }
 }
 

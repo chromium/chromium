@@ -384,12 +384,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       const network::URLLoaderCompletionStatus& completion_status,
       const std::optional<int>& response_code) override;
 
-  // Called when the response for |prefetch_container| has completed when using
-  // the streaming URL loader.
-  void OnPrefetchResponseCompleted(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status);
-
   // Called when the cookies from |prefetch_conatiner| are read from the
   // isolated network context and are ready to be written to the default network
   // context.

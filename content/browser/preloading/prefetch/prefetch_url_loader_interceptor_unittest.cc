@@ -190,6 +190,15 @@ class TestPrefetchServiceForInterceptor final : public PrefetchService {
     std::move(itr->second).Run();
   }
 
+  void OnPrefetchCompletedOrFailed(
+      PrefetchContainer& prefetch_container,
+      const network::URLLoaderCompletionStatus& completion_status,
+      const std::optional<int>& response_code) override {
+    // Skip `active_prefetch_` check and related prefetch queue processing in
+    // `PrefetchService`, because it's not set/used in
+    // `TestPrefetchServiceForInterceptor`.
+  }
+
   std::unique_ptr<TestPrefetchOriginProber> test_origin_prober_;
 
   std::map<std::pair<GURL, GURL>, base::OnceClosure>
