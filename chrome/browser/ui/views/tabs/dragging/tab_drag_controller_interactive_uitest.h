@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/url_constants.h"
 
@@ -59,6 +60,8 @@ class TabDragControllerTest : public InProcessBrowserTest {
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);
 
   bool HasDragStarted(TabStrip* tab_strip) const;
+
+  void SetTabDragPointResolver(TabDragPointResolver& resolver);
 
   // InProcessBrowserTest:
   void SetUp() override;

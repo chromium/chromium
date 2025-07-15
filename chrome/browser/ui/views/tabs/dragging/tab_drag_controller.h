@@ -8,10 +8,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <variant>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -63,6 +66,69 @@ class WindowFinder;
 class TabStripScrollSession;
 struct DetachedTabCollection;
 
+// `TabDragDelegate` is an interface that may be implemented to facilitate
+// custom behavior beyond the tabstrip.
+// TODO(crbug.com/394370034): The tabstrip currently has logic that is a
+// good candidate for being a `TabDragDelegate`, but is tightly coupled with
+// responsibilities related to `TabDragContext` lifetime management. We should
+// attempt to split out as much of this logic as possible into a new
+// `TabDragDelegate`.
+class TabDragDelegate {
+ public:
+  // An interface exposed to TabDragDelegate, allowing interaction with the
+  // ongoing drag session.
+  class DragController {
+   public:
+    virtual ~DragController() = default;
+
+    // Detaches the tab corresponding to the index within the current
+    // `DragSessionData`. If this is the last tab in the browser, the browser
+    // will close.
+    // This can only be called once dragging stopped and the referenced
+    // tab data must not have been already destroyed.
+    virtual std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
+        int drag_idx) = 0;
+    virtual const DragSessionData& GetSessionData() const = 0;
+  };
+
+  virtual ~TabDragDelegate() = default;
+
+  // Invoked when this becomes the delegate of the drag controller.
+  virtual void OnTabDragEntered() = 0;
+
+  // Invoked on each iteration of the drag loop where this is the delegate of
+  // the drag controller.
+  virtual void OnTabDragUpdated(TabDragDelegate::DragController& controller,
+                                const gfx::Point& point_in_screen) = 0;
+
+  // Invoked when this delegate is no longer targeted by the controller.
+  virtual void OnTabDragExited() = 0;
+
+  // Notification for the end of a drag, for any reason (e.g. drop, cancel,
+  // etc.).
+  virtual void OnTabDragEnded() = 0;
+
+  // Indicates whether this delegate should handle a dropped tab.
+  virtual bool CanDropTab() = 0;
+
+  // Handles a drop that occurred while this delegate is targeted.
+  // This is only invoked if `CanDropTab` returned `true`.
+  virtual void HandleTabDrop(DragController& controller) = 0;
+
+  // Registers a callback that gets invoked when this is being destroyed.
+  virtual base::CallbackListSubscription RegisterWillDestroyCallback(
+      base::OnceClosure callback) = 0;
+};
+
+// An interface for fetching a `TabDragDelegate` from a given browser and
+// point.
+class TabDragPointResolver {
+ public:
+  virtual ~TabDragPointResolver() = default;
+  virtual TabDragDelegate* GetDragTarget(BrowserView& browser_view,
+                                         const gfx::Point& point_in_screen) = 0;
+};
+
 // TabDragController is responsible for managing the tab dragging session. When
 // the user presses the mouse on a tab a new TabDragController is created and
 // Drag() is invoked as the mouse is dragged. If the mouse is dragged far enough
@@ -74,7 +140,8 @@ struct DetachedTabCollection;
 // that the tabs should be moved out of the tab strip a new Browser is created
 // and RunMoveLoop() is invoked on the Widget to drag the browser around. This
 // is the default on aura.
-class TabDragController : public views::WidgetObserver
+class TabDragController : public views::WidgetObserver,
+                          public TabDragDelegate::DragController
 #if defined(USE_AURA)
     ,
                           public aura::client::DragDropClientObserver
@@ -164,9 +231,7 @@ class TabDragController : public views::WidgetObserver
     return drag_data_.group();
   }
 
-  bool IsRemovingLastTabForRevert() const {
-    return is_removing_last_tab_for_revert_;
-  }
+  bool IsMovingLastTab() const { return is_moving_last_tab_; }
 
   // Call when a tab was just added to the attached tabstrip. May end the drag.
   void TabWasAdded();
@@ -270,6 +335,11 @@ class TabDragController : public views::WidgetObserver
                              const gfx::Rect& new_bounds) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  // TabDragDelegate::DragController
+  std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
+      int drag_idx) override;
+  const DragSessionData& GetSessionData() const override;
+
   // Forget the source tabstrip. It doesn't exist any more, so it doesn't
   // make sense to insert dragged tabs back into it if the drag is reverted.
   void OnSourceTabStripEmpty();
@@ -336,8 +406,8 @@ class TabDragController : public views::WidgetObserver
   // (screen coordinates), or nullptr if there is none. May end the drag on
   // some platforms as a result of reentrancy during system calls, hence this
   // also returns a Liveness.
-  [[nodiscard]] std::tuple<Liveness, TabDragContext*> GetTargetTabStripForPoint(
-      gfx::Point point_in_screen);
+  [[nodiscard]] std::tuple<Liveness, TabDragContext*, TabDragDelegate*>
+  GetDragTargetForPoint(gfx::Point point_in_screen);
 
   // Returns true if `context` contains the specified point in screen
   // coordinates.
@@ -519,7 +589,13 @@ class TabDragController : public views::WidgetObserver
   void OnDragDropClientDestroying() override;
 #endif  // defined(USE_AURA)
 
-  DragState current_state_;
+  // Updates the current drag target, and fires relevant handler events.
+  void UpdateDragTarget(TabDragDelegate* new_target);
+  void ResetDragTarget();
+
+  static void SetTabDragPointResolver(TabDragPointResolver& resolver);
+
+  DragState current_state_ = DragState::kNotStarted;
 
   std::unique_ptr<DraggingTabsSession> dragging_tabs_session_;
 
@@ -647,10 +723,10 @@ class TabDragController : public views::WidgetObserver
   // time StartSystemDnDSessionIfNecessary() is called.
   bool system_drag_and_drop_session_running_ = false;
 
-  // Returns true if in the process of reverting the drag and the last tab in
-  // the TabStrip is being removed from `attached_context_` so that it can be
-  // inserted back into `source_context_`.
-  bool is_removing_last_tab_for_revert_ = false;
+  // True if in the process of moving the last tab in
+  // the TabStrip out of `attached_context_` so that it can be
+  // inserted into another TabStrip.
+  bool is_moving_last_tab_ = false;
 
   // Use a base::WeakAutoReset to set this to true when calling methods that
   // theoretically could lead to ending the drag, but should not. For example,
@@ -658,6 +734,10 @@ class TabDragController : public views::WidgetObserver
   // or not they destroy `this` might depend on platform behavior or other
   // external factors. Destruction while this is true will DCHECK.
   bool expect_stay_alive_ = false;
+
+  // The current candidate that may handle a tab drop.
+  raw_ptr<TabDragDelegate> current_drag_delegate_;
+  base::CallbackListSubscription drag_delegate_destroyed_subscription_;
 
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 

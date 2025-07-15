@@ -392,10 +392,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   bool IsTabStripCloseable() const {
     // Allow the close in two scenarios:
     // . The user is not actively dragging the tabstrip.
-    // . In the process of reverting the drag, and the last tab is being
-    //   removed (so that it can be inserted back into the source tabstrip).
-    return !IsDragSessionActive() ||
-           drag_controller_->IsRemovingLastTabForRevert();
+    // . In the process of remove the last tab in a drag (so that it can be
+    //   inserted back into another tabstrip).
+    return !IsDragSessionActive() || drag_controller_->IsMovingLastTab();
   }
 
   // TabDragContext:
