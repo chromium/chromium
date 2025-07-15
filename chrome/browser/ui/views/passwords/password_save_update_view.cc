@@ -173,6 +173,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       extra_view_->SetCallback(
           base::BindOnce(button_clicked, base::Unretained(this),
                          &Controller::OnNeverForThisSiteClicked));
+      extra_view_->SetStyle(
+          GetDialogButtonStyle(ui::mojom::DialogButton::kCancel));
 
       // The third button will usually stretch the bubble beyond its intended
       // width. Permit the bubble to use vertical buttons if this happens.
