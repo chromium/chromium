@@ -472,8 +472,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP,
           base::ASCIIToUTF16(incognito_tracking_protections_learn_more_url),
-          l10n_util::GetStringUTF16(
-              IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP_A11Y_LABEL),
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 }
 
