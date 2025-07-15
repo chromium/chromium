@@ -375,7 +375,6 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     const std::string& reason,
     const std::string& content_transfer_method,
     const int64_t content_size,
-    const ReferrerChain& referrer_chain,
     EventResult event_result) {
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
@@ -402,9 +401,6 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
-  }
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,

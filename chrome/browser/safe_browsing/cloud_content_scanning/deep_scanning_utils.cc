@@ -177,7 +177,7 @@ void MaybeReportDeepScanningVerdict(
     reporting_event_router->OnUnscannedFileEvent(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         mime_type, trigger, unscanned_reason, content_transfer_method,
-        content_size, referrer_chain, event_result);
+        content_size, event_result);
   }
 
   if (result != BinaryUploadService::Result::SUCCESS)
@@ -195,7 +195,7 @@ void MaybeReportDeepScanningVerdict(
       reporting_event_router->OnUnscannedFileEvent(
           url, tab_url, source, destination, file_name, download_digest_sha256,
           mime_type, trigger, std::move(unscanned_reason),
-          content_transfer_method, content_size, referrer_chain, event_result);
+          content_transfer_method, content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       safe_browsing_router->OnAnalysisConnectorResult(
           url, tab_url, source, destination, file_name, download_digest_sha256,

@@ -788,14 +788,11 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       /*expected_content_transfer_method*/
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP");
 
-  ReferrerChain referrer_chain;
-  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_UPLOAD", "FILE_PASSWORD_PROTECTED",
-      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, referrer_chain,
-      EventResult::ALLOWED);
+      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, EventResult::ALLOWED);
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
@@ -825,14 +822,11 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       /*expected_content_transfer_method*/
       "CONTENT_TRANSFER_METHOD_UNKNOWN");
 
-  ReferrerChain referrer_chain;
-  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED",
-      "CONTENT_TRANSFER_METHOD_UNKNOWN", 12345, referrer_chain,
-      EventResult::BLOCKED);
+      "CONTENT_TRANSFER_METHOD_UNKNOWN", 12345, EventResult::BLOCKED);
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
