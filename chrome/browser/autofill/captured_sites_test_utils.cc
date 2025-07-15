@@ -2246,7 +2246,7 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
   } else {
     VLOG(1) << "Failed to focus element through script:"
             << (result.error.empty()
-                    ? (result.is_bool() ? "Not a valid bool" : "Returned false")
+                    ? (result.is_bool() ? "Returned false" : "Not a valid bool")
                     : result.error);
 
     // Failing focusing on an element through script, use the less preferred
