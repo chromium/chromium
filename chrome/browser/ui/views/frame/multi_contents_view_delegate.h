@@ -37,6 +37,8 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
   void ReverseWebContents() override;
   void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
                       const std::vector<GURL>& urls) override;
+  void HandleTabDrop(MultiContentsDropTargetView::DropSide side,
+                     TabDragDelegate::DragController& drag_controller) override;
 
  private:
   // TODO(crbug.com/431000266): Use a browser window feature instead.

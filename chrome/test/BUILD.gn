@@ -8116,6 +8116,8 @@ test("unit_tests") {
       "../browser/ui/views/tab_sharing/tab_sharing_status_message_view_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_test_utils.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_test_utils.h",
+      "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.cc",
+      "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h",
       "../browser/ui/views/webauthn/passkey_deleted_confirmation_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_not_accepted_bubble_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_saved_confirmation_view_unittest.cc",

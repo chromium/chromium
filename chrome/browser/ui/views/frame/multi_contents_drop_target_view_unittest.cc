@@ -26,6 +26,11 @@ class MockDropDelegate : public MultiContentsDropTargetView::DropDelegate {
               HandleLinkDrop,
               (MultiContentsDropTargetView::DropSide, const std::vector<GURL>&),
               (override));
+  MOCK_METHOD(void,
+              HandleTabDrop,
+              (MultiContentsDropTargetView::DropSide,
+               TabDragDelegate::DragController&),
+              (override));
 };
 
 class DropTargetViewTest : public ChromeViewsTestBase {

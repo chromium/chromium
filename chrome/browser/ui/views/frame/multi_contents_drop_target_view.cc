@@ -209,5 +209,14 @@ void MultiContentsDropTargetView::DoDrop(
   drop_delegate_->HandleLinkDrop(side, urls.value());
 }
 
+void MultiContentsDropTargetView::HandleTabDrop(
+    TabDragDelegate::DragController& controller) {
+  CHECK(GetVisible());
+  CHECK(side_.has_value());
+  DropSide side = side_.value();
+  Hide();
+  drop_delegate_->HandleTabDrop(side, controller);
+}
+
 BEGIN_METADATA(MultiContentsDropTargetView)
 END_METADATA

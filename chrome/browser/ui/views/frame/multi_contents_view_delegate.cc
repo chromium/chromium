@@ -84,3 +84,9 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
       {new_tab_idx}, split_data,
       split_tabs::SplitTabCreatedSource::kDragAndDropLink);
 }
+
+void MultiContentsViewDelegateImpl::HandleTabDrop(
+    MultiContentsDropTargetView::DropSide side,
+    TabDragDelegate::DragController& drag_controller) {
+  // TODO(crbug.com/394370034): Implement this.
+}
