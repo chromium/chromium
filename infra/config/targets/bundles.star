@@ -4776,7 +4776,6 @@ targets.bundle(
     per_test_modifications = {
         "webgl_conformance_validating_graphite_tests": [
             targets.mixin(
-                ci_only = True,
                 swarming = targets.swarming(
                     shards = 2,
                 ),
