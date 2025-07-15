@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 
 #include <cstdint>
 #include <memory>

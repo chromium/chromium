@@ -7,7 +7,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {

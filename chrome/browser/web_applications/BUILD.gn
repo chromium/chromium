@@ -176,8 +176,6 @@ source_set("web_applications") {
     "isolated_web_apps/remove_isolated_web_app_data.h",
     "isolated_web_apps/signed_web_bundle_metadata.cc",
     "isolated_web_apps/signed_web_bundle_metadata.h",
-    "isolated_web_apps/signed_web_bundle_reader.cc",
-    "isolated_web_apps/signed_web_bundle_reader.h",
     "isolated_web_apps/update_manifest/update_manifest.cc",
     "isolated_web_apps/update_manifest/update_manifest.h",
     "isolated_web_apps/update_manifest/update_manifest_fetcher.cc",

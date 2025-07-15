@@ -1,4 +1,8 @@
 include_rules = [
   "+components/web_package/signed_web_bundles",
   "+components/web_package/mojom",
+  "+net/base",
+  "+mojo/public/cpp",
+  "+services/data_decoder/public/cpp",
+  "+services/network/public/cpp",
 ]

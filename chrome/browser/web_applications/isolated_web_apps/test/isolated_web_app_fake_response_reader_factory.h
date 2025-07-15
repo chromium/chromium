@@ -10,7 +10,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 
 class Profile;
 
