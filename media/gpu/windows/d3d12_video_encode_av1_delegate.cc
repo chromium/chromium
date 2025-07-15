@@ -433,9 +433,10 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
       << "Currently D3D12VideoEncodeAV1Delegate only support 1 reference "
          "frame.";
 
-  if (config.bitrate.mode() != Bitrate::Mode::kConstant) {
+  if (config.bitrate.mode() != Bitrate::Mode::kConstant &&
+      config.bitrate.mode() != Bitrate::Mode::kVariable) {
     return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-            "D3D12VideoEncoder only support CBR mode."};
+            "D3D12VideoEncoder only support CBR/VBR mode."};
   }
 
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec{
@@ -581,11 +582,15 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(const Bitrate& bitrate,
                                                     uint32_t framerate) {
   DVLOG(3) << base::StringPrintf("%s: bitrate = %s, framerate = %d.", __func__,
                                  bitrate.ToString(), framerate);
-  if (bitrate.mode() != Bitrate::Mode::kConstant) {
+  if (bitrate.mode() != Bitrate::Mode::kConstant &&
+      bitrate.mode() != Bitrate::Mode::kVariable) {
     LOG(ERROR) << "D3D12VideoEncoder only support AV1 "
-                  "Constant bitrate mode ";
+                  "Constant/Variable bitrate mode ";
     return false;
   }
+
+  // Chromium uses the same target/peak bitrate for VBR, so we treat it as CBR
+  // for the purpose of rate control.
   VideoBitrateAllocation bitrate_allocation(Bitrate::Mode::kConstant);
   bitrate_allocation.SetBitrate(0, 0, bitrate.target_bps());
   if (bitrate_allocation != bitrate_allocation_ || framerate != framerate_) {
