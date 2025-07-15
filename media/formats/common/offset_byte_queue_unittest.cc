@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/numerics/safe_conversions.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include "media/formats/common/offset_byte_queue.h"
 
