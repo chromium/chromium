@@ -25,7 +25,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "media/media_buildflags.h"
@@ -81,6 +80,10 @@ enum class ChildBindingState;
 namespace blink {
 class StorageKey;
 }  // namespace blink
+
+namespace IPC {
+class ChannelProxy;
+}  // namespace IPC
 
 namespace network {
 struct CrossOriginEmbedderPolicy;

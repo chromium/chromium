@@ -49,6 +49,7 @@
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
