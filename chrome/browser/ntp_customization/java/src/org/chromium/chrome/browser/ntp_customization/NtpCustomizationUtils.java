@@ -190,12 +190,10 @@ public class NtpCustomizationUtils {
      */
     public static void updateBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
         if (backgroundImageBitmap == null) {
-            NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
             deleteBackgroundImageFile();
             return;
         }
 
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {

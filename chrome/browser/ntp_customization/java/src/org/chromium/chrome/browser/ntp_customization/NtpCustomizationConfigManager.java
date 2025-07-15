@@ -111,6 +111,11 @@ public class NtpCustomizationConfigManager {
      * @param bitmap : The NTP's background image.
      */
     public void onBackgroundChanged(@Nullable Bitmap bitmap) {
+        NtpCustomizationUtils.setNtpBackgroundImageType(
+                bitmap == null
+                        ? NtpBackgroundImageType.DEFAULT
+                        : NtpBackgroundImageType.IMAGE_FROM_DISK);
+
         notifyBackgroundImageChanged(bitmap);
 
         NtpCustomizationUtils.updateBackgroundImageFile(bitmap);
