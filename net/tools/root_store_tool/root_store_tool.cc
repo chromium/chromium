@@ -24,10 +24,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/root_store_proto_full/root_store.pb.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
@@ -76,7 +77,7 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
       return std::nullopt;
     }
     std::string sha256_hex =
-        base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(
+        base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(
             UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(len))))));
     certs[sha256_hex] = std::string(data, UNSAFE_TODO(data + len));
   }
@@ -391,7 +392,8 @@ bool WriteEvCppFile(const RootStore& root_store,
       continue;
     }
 
-    std::string sha256_hash = crypto::SHA256HashString(anchor.der());
+    std::string sha256_hash =
+        std::string(base::as_string_view(crypto::hash::Sha256(anchor.der())));
 
     // Begin struct. Assumed type of EVMetadata:
     //
