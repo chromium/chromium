@@ -30,6 +30,8 @@ class MultiUserWindowManagerStub : public ash::MultiUserWindowManager {
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
   const AccountId& CurrentAccountId() const override;
+  void AddObserver(ash::MultiUserWindowManagerObserver* observer) override;
+  void RemoveObserver(ash::MultiUserWindowManagerObserver* observer) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_STUB_H_

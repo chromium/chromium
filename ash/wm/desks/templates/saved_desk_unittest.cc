@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
@@ -98,8 +97,7 @@
 
 namespace ash {
 
-class SavedDeskTest : public OverviewTestBase,
-                      public MultiUserWindowManagerDelegate {
+class SavedDeskTest : public OverviewTestBase {
  public:
   SavedDeskTest() = default;
   SavedDeskTest(const SavedDeskTest&) = delete;
@@ -421,7 +419,7 @@ class SavedDeskTest : public OverviewTestBase,
     saved_desk_test_helper()->WaitForDeskModels();
     account_id_test_ = AccountId::FromUserEmail("test_user");
     multi_user_window_manager_ =
-        MultiUserWindowManager::Create(this, account_id_test_);
+        MultiUserWindowManager::Create(account_id_test_);
   }
 
   void TearDown() override {
@@ -429,13 +427,6 @@ class SavedDeskTest : public OverviewTestBase,
     multi_user_window_manager_.reset();
     OverviewTestBase::TearDown();
   }
-
-  // MultiUserWindowManagerDelegate:
-  void OnWindowOwnerEntryChanged(aura::Window* window,
-                                 const AccountId& account_id,
-                                 bool was_minimized,
-                                 bool teleported) override {}
-  void OnTransitionUserShelfToNewAccount() override {}
 
  protected:
   std::optional<base::AutoReset<bool>> disable_app_id_check_;

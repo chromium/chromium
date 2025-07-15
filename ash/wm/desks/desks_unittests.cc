@@ -21,7 +21,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "ash/public/cpp/multi_user_window_manager_delegate.h"
+#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -4837,8 +4837,7 @@ TEST_F(FloatAllDesksWithZOrderTest, AllDesksThenFloatThenClose) {
 constexpr char kUser1Email[] = "user1@desks";
 constexpr char kUser2Email[] = "user2@desks";
 
-class DesksMultiUserTest : public NoSessionAshTestBase,
-                           public MultiUserWindowManagerDelegate {
+class DesksMultiUserTest : public NoSessionAshTestBase {
  public:
   DesksMultiUserTest() = default;
 
@@ -4872,18 +4871,10 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     NoSessionAshTestBase::TearDown();
   }
 
-  // MultiUserWindowManagerDelegate:
-  void OnWindowOwnerEntryChanged(aura::Window* window,
-                                 const AccountId& account_id,
-                                 bool was_minimized,
-                                 bool teleported) override {}
-  void OnTransitionUserShelfToNewAccount() override {}
-
   void SimulateUser1Login() {
     auto account_id = SimulateUserLogin({kUser1Email}, std::nullopt,
                                         std::move(owned_user_1_prefs_));
-    multi_user_window_manager_ =
-        MultiUserWindowManager::Create(this, account_id);
+    multi_user_window_manager_ = MultiUserWindowManager::Create(account_id);
     MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
         MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
     GetSessionControllerClient()->SetSessionState(

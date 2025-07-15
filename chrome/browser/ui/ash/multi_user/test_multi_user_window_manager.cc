@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -92,6 +93,16 @@ const AccountId& TestMultiUserWindowManager::GetUserPresentingWindow(
 
 const AccountId& TestMultiUserWindowManager::CurrentAccountId() const {
   return current_account_id_;
+}
+
+void TestMultiUserWindowManager::AddObserver(
+    ash::MultiUserWindowManagerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void TestMultiUserWindowManager::RemoveObserver(
+    ash::MultiUserWindowManagerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 TestMultiUserWindowManager::TestMultiUserWindowManager(

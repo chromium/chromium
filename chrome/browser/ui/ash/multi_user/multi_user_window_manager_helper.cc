@@ -108,8 +108,10 @@ bool MultiUserWindowManagerHelper::IsWindowOnDesktopOfUser(
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
     const AccountId& account_id)
-    : multi_profile_support_(
-          std::make_unique<MultiProfileSupport>(account_id)) {}
+    : multi_user_window_manager_(
+          ash::MultiUserWindowManager::Create(account_id)),
+      multi_profile_support_(std::make_unique<MultiProfileSupport>(
+          multi_user_window_manager_.get())) {}
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
     std::unique_ptr<ash::MultiUserWindowManager> window_manager)
@@ -119,7 +121,5 @@ MultiUserWindowManagerHelper::~MultiUserWindowManagerHelper() = default;
 
 const ash::MultiUserWindowManager*
 MultiUserWindowManagerHelper::GetWindowManagerImpl() const {
-  return multi_user_window_manager_
-             ? multi_user_window_manager_.get()
-             : multi_profile_support_->multi_user_window_manager();
+  return multi_user_window_manager_.get();
 }

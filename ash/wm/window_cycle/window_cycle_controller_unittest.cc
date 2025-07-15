@@ -21,7 +21,6 @@
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -3172,9 +3171,7 @@ constexpr char kUser2Email[] = "user2@alttab";
 
 }  // namespace
 
-class MultiUserWindowCycleControllerTest
-    : public NoSessionAshTestBase,
-      public MultiUserWindowManagerDelegate {
+class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
  public:
   MultiUserWindowCycleControllerTest() = default;
   MultiUserWindowCycleControllerTest(
@@ -3202,13 +3199,6 @@ class MultiUserWindowCycleControllerTest
     multi_user_window_manager_.reset();
     NoSessionAshTestBase::TearDown();
   }
-
-  // MultiUserWindowManagerDelegate:
-  void OnWindowOwnerEntryChanged(aura::Window* window,
-                                 const AccountId& account_id,
-                                 bool was_minimized,
-                                 bool teleported) override {}
-  void OnTransitionUserShelfToNewAccount() override {}
 
   void SwitchPerDeskAltTabModeFromUIAndCheckPrefs(bool per_desk_mode) {
     auto* cycle_controller = Shell::Get()->window_cycle_controller();
@@ -3258,8 +3248,7 @@ class MultiUserWindowCycleControllerTest
 
   void SimulateUserLogin(const AccountId& account_id) {
     if (!multi_user_window_manager_) {
-      multi_user_window_manager_ =
-          MultiUserWindowManager::Create(this, account_id);
+      multi_user_window_manager_ = MultiUserWindowManager::Create(account_id);
       CHECK(MultiUserWindowManagerImpl::Get());
       MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
           MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);

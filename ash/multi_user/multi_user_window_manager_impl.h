@@ -26,7 +26,6 @@ enum class TabletState;
 
 namespace ash {
 
-class MultiUserWindowManagerDelegate;
 class UserSwitchAnimator;
 
 // MultiUserWindowManager associates windows with users and ensures the
@@ -62,8 +61,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
     ANIMATION_SPEED_DISABLED  // Unit tests which do not require animations.
   };
 
-  MultiUserWindowManagerImpl(MultiUserWindowManagerDelegate* delegate,
-                             const AccountId& account_id);
+  explicit MultiUserWindowManagerImpl(const AccountId& account_id);
 
   MultiUserWindowManagerImpl(const MultiUserWindowManagerImpl&) = delete;
   MultiUserWindowManagerImpl& operator=(const MultiUserWindowManagerImpl&) =
@@ -84,6 +82,8 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
   const AccountId& CurrentAccountId() const override;
+  void AddObserver(MultiUserWindowManagerObserver* observer) override;
+  void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -211,8 +211,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   // Returns the time for an animation.
   base::TimeDelta GetAdjustedAnimationTime(base::TimeDelta default_time) const;
 
-  raw_ptr<MultiUserWindowManagerDelegate> delegate_;
-
   // A lookup to see to which user the given window belongs to, where and if it
   // should get shown.
   WindowToEntryMap window_to_entry_;
@@ -233,6 +231,8 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   // The animation between users.
   std::unique_ptr<UserSwitchAnimator> animation_;
+
+  base::ObserverList<MultiUserWindowManagerObserver> observers_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

@@ -65,16 +65,15 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
       app_window_registry_observer_{this};
 };
 
-MultiProfileSupport::MultiProfileSupport(const AccountId& current_account_id) {
-  multi_user_window_manager_ =
-      ash::MultiUserWindowManager::Create(this, current_account_id);
+MultiProfileSupport::MultiProfileSupport(
+    ash::MultiUserWindowManager* multi_user_window_manager)
+    : multi_user_window_manager_(multi_user_window_manager) {
+  CHECK(multi_user_window_manager);
+  multi_user_window_manager_observation_.Observe(multi_user_window_manager);
 }
 
 MultiProfileSupport::~MultiProfileSupport() {
   BrowserList::RemoveObserver(this);
-
-  // This may trigger callbacks to us, delete it early on.
-  multi_user_window_manager_.reset();
 
   // Remove all app observers.
   account_id_to_app_observer_.clear();
