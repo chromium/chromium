@@ -116,4 +116,5 @@ fuzzer_test("unrar_fuzzer") {
     ":unrar",
     "//base",
   ]
+  seed_corpus = "//chrome/test/data/safe_browsing/rar"
 }
