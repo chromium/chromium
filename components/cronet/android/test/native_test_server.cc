@@ -124,6 +124,11 @@ NativeTestServerHandleRequestCallback::operator()(
   return nullptr;
 }
 
+void JNI_NativeTestServer_EnableConnectProxy(JNIEnv* env,
+                                             std::vector<std::string>& urls) {
+  cronet::TestServer::EnableConnectProxy(urls);
+}
+
 jboolean JNI_NativeTestServer_PrepareNativeTestServer(
     JNIEnv* env,
     const JavaParamRef<jstring>& jtest_files_root,

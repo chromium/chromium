@@ -222,6 +222,14 @@ bool TestServer::PrepareServeFilesFromDirectory(
   return true;
 }
 
+void TestServer::EnableConnectProxy(std::vector<std::string>& urls) {
+  std::vector<net::HostPortPair> destinations;
+  for (auto& url : urls) {
+    destinations.push_back(net::HostPortPair::FromURL(GURL(url)));
+  }
+  g_test_server->EnableConnectProxy(destinations);
+}
+
 void TestServer::StartPrepared() {
   CHECK(g_test_server);
   CHECK(g_test_server->Start());

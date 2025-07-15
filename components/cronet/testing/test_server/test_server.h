@@ -44,6 +44,8 @@ class TestServer {
 
   static void StartPrepared();
 
+  static void EnableConnectProxy(std::vector<std::string>& urls);
+
   // Shuts down the server.
   static void Shutdown();
 

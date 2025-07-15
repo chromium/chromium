@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.net.test.ServerCertificate;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,6 +59,10 @@ public final class NativeTestServer {
                         UrlUtils.getIsolatedTestRoot(),
                         true, // useHttps
                         serverCertificate);
+    }
+
+    public static void enableConnectProxy(List<String> urlsToBeProxied) {
+        NativeTestServerJni.get().enableConnectProxy(urlsToBeProxied.toArray(new String[0]));
     }
 
     public static void startPrepared() {
@@ -263,6 +268,8 @@ public final class NativeTestServer {
         void startPrepared();
 
         void shutdownNativeTestServer();
+
+        void enableConnectProxy(@JniType("std::vector<std::string>") String[] urls);
 
         String getEchoBodyURL();
 
