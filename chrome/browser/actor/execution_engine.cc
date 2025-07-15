@@ -82,7 +82,8 @@ void PostTaskForActCallback(ActorTask::ActCallback callback,
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(
+          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
@@ -92,7 +93,8 @@ ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_(tab),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(
+          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());

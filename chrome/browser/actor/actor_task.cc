@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,8 @@ ActorTask::ActorTask(Profile* profile,
                      std::unique_ptr<ExecutionEngine> execution_engine)
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher(profile)) {}
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(
+          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {}
 ActorTask::~ActorTask() = default;
 
 void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {

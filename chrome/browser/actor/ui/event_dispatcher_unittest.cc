@@ -6,8 +6,6 @@
 
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
@@ -16,11 +14,12 @@
 #include "chrome/browser/actor/ui/mock_actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace actor::ui {
+
 namespace {
+
 using base::test::TestFuture;
 using testing::_;
 using testing::AllOf;
@@ -32,72 +31,13 @@ using testing::WithArgs;
 class EventDispatcherTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    profile_ =
-        TestingProfile::Builder()
-            .AddTestingFactory(ActorKeyedServiceFactory::GetInstance(),
-                               base::BindRepeating(
-                                   &EventDispatcherTest::BuildActorKeyedService,
-                                   base::Unretained(this)))
-            .Build();
-    dispatcher_ = NewUiEventDispatcher(profile_.get());
+    mock_state_manager_ = std::make_unique<MockActorUiStateManager>();
+    dispatcher_ = NewUiEventDispatcher(mock_state_manager_.get());
   }
 
-  std::unique_ptr<KeyedService> BuildActorKeyedService(
-      content::BrowserContext* context) {
-    std::unique_ptr<MockActorUiStateManager> mock_state_manager =
-        std::make_unique<MockActorUiStateManager>();
-    mock_state_manager_ = mock_state_manager.get();
-
-    auto actor_keyed_service =
-        std::make_unique<ActorKeyedService>(static_cast<Profile*>(context));
-    actor_keyed_service->SetActorUiStateManagerForTesting(
-        std::move(mock_state_manager));
-    return std::move(actor_keyed_service);
-  }
-
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<MockActorUiStateManager> mock_state_manager_;
   std::unique_ptr<UiEventDispatcher> dispatcher_;
-  raw_ptr<MockActorUiStateManager> mock_state_manager_;
 };
-
-TEST_F(EventDispatcherTest, NoActorKeyedServiceForProfile) {
-  std::unique_ptr<TestingProfile> broken_profile =
-      TestingProfile::Builder()
-          .AddTestingFactory(
-              ActorKeyedServiceFactory::GetInstance(),
-              base::BindOnce(
-                  [](content::BrowserContext*)
-                      -> std::unique_ptr<KeyedService> { return nullptr; }))
-          .Build();
-  MoveMouseToolRequest tr(tabs::TabHandle(123),
-                          PageTarget(gfx::Point(100, 200)));
-  TestFuture<mojom::ActionResultPtr> result;
-  auto dispatcher = NewUiEventDispatcher(broken_profile.get());
-  dispatcher->OnPreTool(tr, result.GetCallback());
-  EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
-}
-
-TEST_F(EventDispatcherTest, NoUiStateManager) {
-  std::unique_ptr<TestingProfile> broken_profile =
-      TestingProfile::Builder()
-          .AddTestingFactory(
-              ActorKeyedServiceFactory::GetInstance(),
-              base::BindOnce([](content::BrowserContext*)
-                                 -> std::unique_ptr<KeyedService> {
-                auto actor_keyed_service = std::make_unique<ActorKeyedService>(
-                    /*profile=*/nullptr);
-                actor_keyed_service->SetActorUiStateManagerForTesting(nullptr);
-                return std::move(actor_keyed_service);
-              }))
-          .Build();
-  MoveMouseToolRequest tr(tabs::TabHandle(123),
-                          PageTarget(gfx::Point(100, 200)));
-  TestFuture<mojom::ActionResultPtr> result;
-  auto dispatcher = NewUiEventDispatcher(broken_profile.get());
-  dispatcher->OnPreTool(tr, result.GetCallback());
-  EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
-}
 
 TEST_F(EventDispatcherTest, NoEventsToDispatch) {
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(_, _)).Times(0);
@@ -198,4 +138,5 @@ TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
 // TODO(crbug.com/425784083): improve unit testing
 
 }  // namespace
+
 }  // namespace actor::ui

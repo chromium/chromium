@@ -168,11 +168,13 @@ class ActorKeyedService : public KeyedService {
           std::unique_ptr<page_content_annotations::FetchPageContextResult>,
           std::string> result);
 
+  // Needs to be declared before the tasks, as they will indirectly have a
+  // reference to it. This ensures the correct destruction order.
+  std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
+
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
   // Stores completed tasks. May want to add cancelled tasks in the future.
   std::map<TaskId, std::unique_ptr<ActorTask>> inactive_tasks_;
-
-  std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
 
   TaskId::Generator next_task_id_;
 

@@ -8,17 +8,16 @@
 #include <type_traits>
 #include <variant>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
 #include "chrome/browser/actor/variant_visitor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/action_result.h"
 #include "content/public/browser/browser_context.h"
 
@@ -185,28 +184,10 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
       };
 };
 
-std::variant<mojom::ActionResultPtr, ActorUiStateManagerInterface*>
-GetUiStateManager(Profile* profile) {
-  ActorKeyedService* actor_service = ActorKeyedService::Get(profile);
-  if (!actor_service) {
-    return MakeResult(mojom::ActionResultCode::kError,
-                      base::StrCat({"No ActorKeyedService found for profile ",
-                                    profile->GetDebugName()}));
-  }
-
-  ActorUiStateManagerInterface* state_manager =
-      actor_service->GetActorUiStateManager();
-  if (!state_manager) {
-    return MakeResult(mojom::ActionResultCode::kError,
-                      base::StrCat({"No ActorUiStateManager found for profile ",
-                                    profile->GetDebugName()}));
-  }
-  return state_manager;
-}
-
 class UiEventDispatcherImpl : public UiEventDispatcher {
  public:
-  explicit UiEventDispatcherImpl(Profile* profile) : profile_(profile) {}
+  explicit UiEventDispatcherImpl(ActorUiStateManagerInterface& ui_state_manager)
+      : ui_state_manager_(ui_state_manager) {}
   ~UiEventDispatcherImpl() override = default;
 
   void OnPreTool(const ToolRequest& tr, UiCompleteCallback callback) override {
@@ -232,15 +213,13 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   }
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ref<ActorUiStateManagerInterface> ui_state_manager_;
   std::variant<std::deque<AsyncUiEvent>, std::deque<SyncUiEvent>> events_;
   UiCompleteCallback overall_callback_;
-  raw_ptr<ActorUiStateManagerInterface> ui_state_manager_;
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
   void ResetAndComplete(mojom::ActionResultPtr result) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    ui_state_manager_ = nullptr;
     std::visit([]<typename T>(std::deque<T>& e) { return e.clear(); }, events_);
     if (!overall_callback_.is_null()) {
       std::move(overall_callback_).Run(std::move(result));
@@ -283,14 +262,6 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     } else {
       static_assert(false, "Unknown type!");
     }
-
-    auto result = GetUiStateManager(profile_);
-    if (std::holds_alternative<mojom::ActionResultPtr>(result)) {
-      auto& result_v = std::get<mojom::ActionResultPtr>(result);
-      ResetAndComplete(std::move(result_v));
-      return;
-    }
-    ui_state_manager_ = std::get<ActorUiStateManagerInterface*>(result);
 
     // Visit converted type to generate UiEvent sequence.
     if constexpr (is_variant<ConvertedInputT>) {
@@ -348,7 +319,8 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
 };
 }  // namespace
 
-std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(Profile* profile) {
-  return std::make_unique<UiEventDispatcherImpl>(profile);
+std::unique_ptr<UiEventDispatcher> NewUiEventDispatcher(
+    ActorUiStateManagerInterface* ui_state_manager) {
+  return std::make_unique<UiEventDispatcherImpl>(CHECK_DEREF(ui_state_manager));
 }
 }  // namespace actor::ui
