@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
