@@ -27,7 +27,9 @@ namespace blink {
 
 class ServiceWorkerRouterCondition;
 
-// TODO(crbug.com/1490445): set this value by discussing in spec proposal.
+// This value is spec-compliant. Do NOT change the value without appropriate
+// spec changes, and please keep this value up-to-date.
+// https://www.w3.org/TR/service-workers/#check-router-registration-limit-algorithm
 static constexpr int kServiceWorkerRouterConditionMaxRecursionDepth = 10;
 // TODO(crbug.com/1503017): set this value by discussing in spec proposal.
 static constexpr size_t kServiceWorkerMaxRouterSize = 256;
