@@ -53,6 +53,15 @@ SendTabPushNotificationClient::SendTabPushNotificationClient()
 
 SendTabPushNotificationClient::~SendTabPushNotificationClient() = default;
 
+std::optional<NotificationType>
+SendTabPushNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  if (CanHandleNotification(notification)) {
+    return NotificationType::kSendTab;
+  }
+  return std::nullopt;
+}
+
 bool SendTabPushNotificationClient::CanHandleNotification(
     UNNotification* notification) {
   NSDictionary* user_info = notification.request.content.userInfo;

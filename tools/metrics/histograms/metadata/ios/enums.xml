@@ -1376,6 +1376,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="CPE [Tip]"/>
   <int value="13" label="Incognito Lock [Tip]"/>
   <int value="14" label="unknown type"/>
+  <int value="15" label="Send Tab"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->
