@@ -231,7 +231,7 @@ async function fetchCandidates() {
 client.getInitialized().then(async () => {
   logMessage('Detected client initialized');
 
-  const pinnedTabs = await getBrowser()!.getPinnedTabs!();
+  const pinnedTabs = await getBrowser()!.getPinnedTabs?.();
   if (!pinnedTabs) {
     logMessage('Feature is disabled, bailing');
     $.multiTabSection.style = 'display:none';
