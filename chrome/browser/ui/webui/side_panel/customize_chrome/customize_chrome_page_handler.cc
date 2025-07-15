@@ -16,6 +16,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -27,9 +28,12 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -37,6 +41,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -102,6 +107,12 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       template_url_service_(TemplateURLServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       module_id_details_(module_id_details),
+      browser_window_changed_subscription_(
+          webui::RegisterBrowserWindowInterfaceChanged(
+              web_contents_,
+              base::BindRepeating(
+                  &CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged,
+                  base::Unretained(this)))),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)),
       open_url_callback_(open_url_callback.has_value()
@@ -112,6 +123,8 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_);
+
+  OnBrowserWindowInterfaceChanged();
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -136,25 +149,6 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kNtpFooterVisible,
-      base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kNTPFooterExtensionAttributionEnabled,
-      base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
-                          base::Unretained(this)));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
-    browser_pref_change_registrar_.Init(local_state);
-    browser_pref_change_registrar_.Add(
-        prefs::kNTPFooterManagementNoticeEnabled,
-        base::BindRepeating(&CustomizeChromePageHandler::UpdateFooterSettings,
-                            base::Unretained(this)));
-  }
-#endif
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -494,16 +488,56 @@ void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   page_->SetMostVisitedSettings(IsCustomLinksEnabled(), IsShortcutsVisible());
 }
 
+void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    return;
+  }
+
+  footer_controller_observation_.Reset();
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    // TODO(crbug.com/378475391): NTP should always load into a WebContents
+    // owned by a TabModel. Remove this once NTP loading has been restricted to
+    // browser tabs only.
+    return;
+  }
+
+  auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
+  CHECK(footer_controller);
+  footer_controller_observation_.Observe(footer_controller);
+}
+
 void CustomizeChromePageHandler::SetFooterVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, visible);
 }
 
 void CustomizeChromePageHandler::UpdateFooterSettings() {
+  auto management_notice_state =
+      side_panel::mojom::ManagementNoticeState::New();
+  management_notice_state->can_be_shown = false;
+  management_notice_state->enabled_by_policy = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (!policy::ManagementServiceFactory::GetForProfile(profile_)
+           ->IsBrowserManaged() ||
+      !g_browser_process->local_state()->GetBoolean(
+          prefs::kNTPFooterManagementNoticeEnabled)) {
+    // Do nothing.
+  } else if (enterprise_util::IsCustomEnterpriseBadgingForNTPFooter()) {
+    management_notice_state->can_be_shown = true;
+    management_notice_state->enabled_by_policy = true;
+  } else if (!base::FeatureList::IsEnabled(
+                 features::kEnterpriseBadgingForNtpFooter)) {
+    // Do nothing.
+  } else {
+    management_notice_state->can_be_shown = true;
+  }
+#endif
+
   page_->SetFooterSettings(
       profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible),
-      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_),
       profile_->GetPrefs()->GetBoolean(
-          prefs::kNTPFooterExtensionAttributionEnabled));
+          prefs::kNTPFooterExtensionAttributionEnabled),
+      std::move(management_notice_state));
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {
@@ -719,6 +753,13 @@ void CustomizeChromePageHandler::OnTemplateURLServiceShuttingDown() {
   CHECK(template_url_service_);
   template_url_service_->RemoveObserver(this);
   template_url_service_ = nullptr;
+}
+
+void CustomizeChromePageHandler::OnFooterVisibilityUpdated(bool visible) {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    return;
+  }
+  UpdateFooterSettings();
 }
 
 void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,

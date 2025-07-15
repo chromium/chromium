@@ -5,7 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/footer.js';
 
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
-import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import type {CustomizeChromePageRemote, ManagementNoticeState} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {FooterElement} from 'chrome://customize-chrome-side-panel.top-chrome/footer.js';
@@ -41,7 +41,8 @@ suite('FooterTest', () => {
 
   async function setChecked(checked: boolean): Promise<void> {
     await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(checked, false, false);
+    callbackRouterRemote.setFooterSettings(
+        checked, false, {canBeShown: false, enabledByPolicy: false});
     await callbackRouterRemote.$.flushForTesting();
   }
 
@@ -52,16 +53,39 @@ suite('FooterTest', () => {
     });
   });
 
-  async function setManaged(managed: boolean): Promise<void> {
+  async function setManaged(managementNoticeState: ManagementNoticeState):
+      Promise<void> {
     await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(true, managed, false);
+    callbackRouterRemote.setFooterSettings(true, false, managementNoticeState);
     await callbackRouterRemote.$.flushForTesting();
   }
 
-  ([true, false]).forEach((managed) => {
-    test(`initial setting managed ${managed}`, async () => {
-      await setManaged(managed);
-      assertEquals(managed, footer.$.showToggle.disabled);
+  ([[true, false]] as Array<[boolean, boolean]>)
+      .forEach(([noticeEnabledByPolicy]) => {
+        const managementNoticeState = {
+          canBeShown: true,
+          enabledByPolicy: noticeEnabledByPolicy,
+        };
+        test(
+            `initial setting managed by policy ${noticeEnabledByPolicy}`,
+            async () => {
+              await setManaged(managementNoticeState);
+              assertEquals(noticeEnabledByPolicy, footer.$.showToggle.disabled);
+              assertTrue(footer.$.showToggle.checked);
+            });
+      });
+
+  async function setVisible(visible: boolean):
+      Promise<void> {
+    await handler.whenCalled('updateFooterSettings');
+    callbackRouterRemote.setFooterSettings(visible, false, {canBeShown: true, enabledByPolicy: false});
+    await callbackRouterRemote.$.flushForTesting();
+  }
+
+  ([true, false]).forEach((visible) => {
+    test(`initial setting visible ${visible}`, async () => {
+      await setVisible(visible);
+      assertEquals(visible, footer.$.showToggle.checked);
     });
   });
 

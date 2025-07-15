@@ -29,7 +29,7 @@ import {getHtml} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
 import {CustomizeChromeImpression, recordCustomizeChromeImpression} from './common.js';
-import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, CustomizeChromePageHandlerInterface, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
@@ -176,9 +176,13 @@ export class AppElement extends AppElementBase {
     this.setFooterSettingsListenerId_ =
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.setFooterSettings.addListener(
-                (_: boolean, showEnterpriseBadging: boolean,
-                 extensionPolicyEnabled: boolean) => {
-                  this.showFooterForManagedBrowser_ = showEnterpriseBadging;
+                (_: boolean, extensionPolicyEnabled: boolean,
+                 managementNoticeState: ManagementNoticeState) => {
+                  // The footer section should be shown for managed browsers if
+                  // the management notice is shown or if it is disabled by
+                  // the user and can be toggled back on.
+                  this.showFooterForManagedBrowser_ =
+                      managementNoticeState.canBeShown;
                   this.extensionPolicyEnabled_ = extensionPolicyEnabled;
                 });
     this.pageHandler_.updateFooterSettings();
@@ -276,8 +280,8 @@ export class AppElement extends AppElementBase {
     this.$.categoriesPage.focusOnBackButton();
   }
 
-  protected async onCollectionSelect_(event:
-                                          CustomEvent<BackgroundCollection>) {
+  protected async onCollectionSelect_(
+      event: CustomEvent<BackgroundCollection>) {
     this.selectedCollection_ = event.detail;
     this.page_ = CustomizeChromePage.THEMES;
     await this.updateComplete;

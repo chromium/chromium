@@ -6,7 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import type {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 import {CustomizeChromeImpression} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
-import type {BackgroundCollection, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, CustomizeChromePageRemote, ManagementNoticeState} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromeSection, NewTabPageType} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CustomizeToolbarClientCallbackRouter, CustomizeToolbarHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_toolbar.mojom-webui.js';
@@ -356,36 +356,42 @@ suite('AppTest', () => {
     ([
       [
         NewTabPageType.kFirstPartyWebUI,
+        {canBeShown: false, enabledByPolicy: false},
         false,
-        false,
-        'hidden when neither notice is showing',
+        'hidden when no notice can be shown (unmanaged browser)',
       ],
       [
         NewTabPageType.kFirstPartyWebUI,
+        {canBeShown: true, enabledByPolicy: false},
         true,
+        'visible when the management notice can be shown',
+      ],
+      [
+        NewTabPageType.kFirstPartyWebUI,
+        {canBeShown: true, enabledByPolicy: true},
         true,
-        'visible when enterprise badge is showing',
+        'visible when enterprise badge is showing and enforced by policy',
       ],
       [
         NewTabPageType.kExtension,
-        false,
+        {canBeShown: false, enabledByPolicy: false},
         true,
         'visible when extension notice is showing',
       ],
       [
         NewTabPageType.kExtension,
-        true,
+        {canBeShown: true, enabledByPolicy: false},
         true,
         'visible when both notices are showing',
       ],
-    ] as Array<[NewTabPageType, boolean, boolean, string]>)
-        .forEach(([tabType, managed, expected, description]) => {
+    ] as Array<[NewTabPageType, ManagementNoticeState, boolean, string]>)
+        .forEach(([tabType, managementState, expected, description]) => {
           test(`toggle should be ${description}`, async () => {
             await Promise.all([
               handler.whenCalled('updateFooterSettings'),
               handler.whenCalled('updateAttachedTabState'),
             ]);
-            callbackRouter.setFooterSettings(true, managed, true);
+            callbackRouter.setFooterSettings(true, true, managementState);
             callbackRouter.attachedTabStateUpdated(tabType);
             await callbackRouter.$.flushForTesting();
             assertEquals(
@@ -413,7 +419,8 @@ suite('AppTest', () => {
               handler.whenCalled('updateAttachedTabState'),
             ]);
             callbackRouter.setFooterSettings(
-                true, true, extensionPolicyEnabled);
+                true, extensionPolicyEnabled,
+                {canBeShown: true, enabledByPolicy: false});
             callbackRouter.attachedTabStateUpdated(NewTabPageType.kExtension);
             await callbackRouter.$.flushForTesting();
             assertEquals(

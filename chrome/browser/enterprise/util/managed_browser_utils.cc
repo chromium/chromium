@@ -357,7 +357,7 @@ bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
           prefs::kNTPFooterManagementNoticeEnabled)) {
     return false;
   }
-  if (IsCustomEnterpriseBadgingForNTPFooter(profile)) {
+  if (IsCustomEnterpriseBadgingForNTPFooter()) {
     return true;
   }
   return base::FeatureList::IsEnabled(
@@ -368,7 +368,7 @@ bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
-bool IsCustomEnterpriseBadgingForNTPFooter(Profile* profile) {
+bool IsCustomEnterpriseBadgingForNTPFooter() {
   if (!base::FeatureList::IsEnabled(features::kNTPFooterBadgingPolicies)) {
     return false;
   }

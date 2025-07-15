@@ -4,15 +4,20 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/search/ntp_features.h"
 #include "components/themes/ntp_background_data.h"
 #include "content/public/test/browser_test.h"
@@ -26,10 +31,11 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 class CustomizeChromeInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  CustomizeChromeInteractiveTest() {
+  void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {ntp_features::kNtpFooter},
         {ntp_features::kNtpBackgroundImageErrorDetection});
+    InteractiveBrowserTest::SetUp();
   }
 
   InteractiveTestApi::MultiStep ClickElement(
@@ -70,6 +76,19 @@ class CustomizeChromeInteractiveTest
                  WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
                  InstrumentNonTabWebView(
                      contents_id, kCustomizeChromeSidePanelWebViewElementId));
+  }
+
+  InteractiveTestApi::MultiStep CheckFooterToggleState(
+      const ui::ElementIdentifier& contents_id,
+      bool enabled) {
+    const DeepQuery kFooterToggle = {"customize-chrome-app", "#footer",
+                                     "customize-chrome-footer", "#showToggle"};
+    const std::string enabled_js_result =
+        enabled ? "el => !el.disabled" : "el => el.disabled";
+    return Steps(
+        WaitForElementToRender(contents_id, kFooterToggle),
+        CheckJsResultAt(contents_id, kFooterToggle, enabled_js_result),
+        CheckJsResultAt(contents_id, kFooterToggle, "el => el.checked"));
   }
 
   // Loads an extensions overriding the NTP. `index` is used to differentiate
@@ -253,3 +272,121 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                                GURL(chrome::kChromeUINewTabURL)),
             WaitForStateChange(kLocalNewTabElementId, ntp_has_background)));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class CustomizeChromeEnterpriseInteractiveTest
+    : public CustomizeChromeInteractiveTest {
+ public:
+  void SetUpOnMainThread() override {
+    scoped_browser_management_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(
+                browser()->profile()),
+            policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+    CustomizeChromeInteractiveTest::SetUpOnMainThread();
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpFooter,
+                              features::kEnterpriseBadgingForNtpFooter},
+        {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override { scoped_browser_management_.reset(); }
+
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_browser_management_;
+};
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
+                       FooterToggle_ManagementNoticePolicyChanges) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer"};
+
+  RunTestSequence(
+      // Open non-extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // Check that the footer toggle is turned on but can't be toggled.
+      CheckFooterToggleState(kLocalCustomizeChromeElementId,
+                             /*enabled=*/true),
+      // Disable the management notice by policy.
+      Do(base::BindLambdaForTesting([=]() {
+        g_browser_process->local_state()->SetBoolean(
+            prefs::kNTPFooterManagementNoticeEnabled, false);
+      })),
+      // Check that the footer section does not exist anymore.
+      EnsureNotPresent(kLocalCustomizeChromeElementId, kFooterSection));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CustomizeChromeEnterpriseInteractiveTest,
+    FooterToggle_ManagementNoticeForceEnabledWithCustomPolicy) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+
+  RunTestSequence(
+      // Set custom label policy for the management notice.
+      Do(base::BindLambdaForTesting([=]() {
+        g_browser_process->local_state()->SetString(
+            prefs::kEnterpriseCustomLabelForBrowser, "Custom Label");
+      })),
+      // Open non-extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // Check that the footer toggle is turned on but can't be toggled.
+      CheckFooterToggleState(kLocalCustomizeChromeElementId,
+                             /*enabled=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
+                       FooterToggle_ExtensionAttributionPolicyChanges) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer"};
+
+  // Load extension that overrides NTP.
+  LoadNtpOverridingExtension();
+  RunTestSequence(
+      // Open extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // Check that the footer toggle is turned on and can be toggled.
+      CheckFooterToggleState(kLocalCustomizeChromeElementId,
+                             /*enabled=*/true),
+      // Disable extension attribution by policy.
+      Do(base::BindLambdaForTesting([=, this]() {
+        browser()->profile()->GetPrefs()->SetBoolean(
+            prefs::kNTPFooterExtensionAttributionEnabled, false);
+      })),
+      // Check that the footer section still exists.
+      Steps(
+          WaitForElementExists(kLocalCustomizeChromeElementId, kFooterSection),
+          WaitForElementToRender(kLocalCustomizeChromeElementId,
+                                 kFooterSection)));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
+                       FooterToggle_AllNoticesDisabledByPolicy) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer"};
+
+  RunTestSequence(
+      // Disable both management notice and extension attribution.
+      Do(base::BindLambdaForTesting([=, this]() {
+        g_browser_process->local_state()->SetBoolean(
+            prefs::kNTPFooterManagementNoticeEnabled, false);
+        browser()->profile()->GetPrefs()->SetBoolean(
+            prefs::kNTPFooterExtensionAttributionEnabled, false);
+      })),
+      // Open non-extension new tab page.
+      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Open customize chrome side panel.
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      // Check that the footer section does not exist.
+      EnsureNotPresent(kLocalCustomizeChromeElementId, kFooterSection));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

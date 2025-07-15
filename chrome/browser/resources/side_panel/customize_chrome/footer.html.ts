@@ -13,11 +13,11 @@ export function getHtml(this: FooterElement) {
     @click="${this.onShowToggleClick_}">
   <div id="showTitle">$i18n{showFooterToggleTitle}</div>
   <cr-policy-indicator indicator-type="devicePolicy"
-      ?hidden="${!this.disable_}">
+      ?hidden="${!this.managedByPolicy_}">
   </cr-policy-indicator>
   <cr-toggle id="showToggle" title="$i18n{showFooterToggleTitle}"
-      ?checked="${this.show_}" @change="${this.onShowToggleChange_}"
-      ?disabled="${this.disable_}">
+      ?checked="${this.checked_}" @change="${this.onShowToggleChange_}"
+      ?disabled="${this.managedByPolicy_}">
   </cr-toggle>
 </div>
 <!--_html_template_end_-->`;

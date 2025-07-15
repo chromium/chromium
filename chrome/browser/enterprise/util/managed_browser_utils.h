@@ -96,7 +96,7 @@ bool CanShowEnterpriseProfileUI(Profile* profile);
 
 bool CanShowEnterpriseBadgingForNTPFooter(Profile* profile);
 
-bool IsCustomEnterpriseBadgingForNTPFooter(Profile* profile);
+bool IsCustomEnterpriseBadgingForNTPFooter();
 
 // Sets the enterprise label if an `EnterpriseCustomLabel` has been set which
 // will replace the profile name where it is used.
