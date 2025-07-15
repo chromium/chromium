@@ -194,6 +194,10 @@ source_set("unit_tests") {
     "//ui/views",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -245,6 +249,10 @@ source_set("browser_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {
@@ -301,5 +309,9 @@ if (!is_chromeos_device) {
       "//ui/views:test_support",
       "//url",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
