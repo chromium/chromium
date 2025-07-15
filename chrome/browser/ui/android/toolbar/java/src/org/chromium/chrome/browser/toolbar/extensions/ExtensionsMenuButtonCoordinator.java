@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.divider.MaterialDivider;
@@ -39,9 +40,11 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
     private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
+    private final Callback<Tab> mTabChangedCallback = this::onTabChanged;
 
     @Nullable private Profile mProfile;
-    @Nullable private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
+    @Nullable private Tab mCurrentTab;
+    @VisibleForTesting @Nullable ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
     public ExtensionsMenuButtonCoordinator(
             Context context,
@@ -65,6 +68,7 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
         mCurrentTabSupplier = currentTabSupplier;
+        mCurrentTabSupplier.addObserver(mTabChangedCallback);
         mTabCreator = tabCreator;
     }
 
@@ -74,6 +78,18 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         }
 
         mProfile = profile;
+
+        // If the current tab belongs to a different profile, onTabChanged will be called soon, so
+        // do not update actions now to avoid duplicated updates.
+        if (mCurrentTab != null && mCurrentTab.getProfile() != mProfile) {
+            return;
+        }
+
+        // TODO(crbug.com/431915409): Provide the ability to keep the menu open.
+        if (mExtensionsMenuCoordinator != null) {
+            mExtensionsMenuCoordinator.destroy();
+            mExtensionsMenuCoordinator = null;
+        }
 
         // TODO(crbug.com/422307625): Remove this check once extensions are ready for
         // dogfooding.
@@ -87,6 +103,34 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
         mExtensionsMenuButton.setVisibility(visibility);
         mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
+    }
+
+    private void onTabChanged(@Nullable Tab tab) {
+        if (tab == mCurrentTab) {
+            return;
+        }
+
+        if (tab == null) {
+            // The current tab can be null when a non-tab UI is shown (e.g. tab switcher). In this
+            // case, we do not bother refreshing actions as they're hidden anyway. We do not set
+            // mCurrentTab to null because we can skip updating actions if the current tab is set
+            // back to the previous tab.
+            return;
+        }
+
+        mCurrentTab = tab;
+
+        // If the tab belongs to a different profile, onProfileUpdated will be called soon, so
+        // do not update actions now to avoid duplicated updates.
+        if (tab.getProfile() != mProfile) {
+            return;
+        }
+
+        // TODO(crbug.com/431915409): Provide the ability to keep the menu open.
+        if (mExtensionsMenuCoordinator != null) {
+            mExtensionsMenuCoordinator.destroy();
+            mExtensionsMenuCoordinator = null;
+        }
     }
 
     void onClick(View view) {
@@ -117,6 +161,7 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
             mExtensionsMenuCoordinator = null;
         }
         mExtensionsMenuButton.setOnClickListener(null);
+        mCurrentTabSupplier.removeObserver(mTabChangedCallback);
         mThemeColorProvider.removeTintObserver(mTintObserver);
         mProfileSupplier.removeObserver(mProfileUpdatedCallback);
         mProfile = null;
