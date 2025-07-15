@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] e.style['object-position'] = "x-start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "x-start 10px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "x-start 10% top 20px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "top 20px x-start 10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "x-end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "x-end 10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "x-end 10px top 20px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "top 20px x-end 10px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "y-start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "10px y-start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "left 10px y-start 20%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "y-start 20px left 10px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "y-end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "10px y-end" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "left 10px y-end 20%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['object-position'] = "y-end 20% left 10px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

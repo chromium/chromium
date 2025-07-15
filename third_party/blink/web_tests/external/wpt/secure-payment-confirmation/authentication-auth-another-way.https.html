@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test for the 'secure-payment-confirmation' payment method authentication - user rejects case</title>
+<title>Test for the 'secure-payment-confirmation' payment method authentication - user wants to auth another way case</title>
 <link rel="help" href="https://w3c.github.io/secure-payment-confirmation/#sctn-transaction-confirmation-outcome">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,13 +11,7 @@
 'use strict';
 
 promise_test(async t => {
-  const authenticator = await window.test_driver.add_virtual_authenticator(
-      AUTHENTICATOR_OPTS);
-  t.add_cleanup(() => {
-    return window.test_driver.remove_virtual_authenticator(authenticator);
-  });
-
-  await window.test_driver.set_spc_transaction_mode("autoReject");
+  await window.test_driver.set_spc_transaction_mode("autoChooseToAuthAnotherWay");
   t.add_cleanup(() => {
     return window.test_driver.set_spc_transaction_mode("none");
   });
@@ -41,8 +35,8 @@ promise_test(async t => {
   }], PAYMENT_DETAILS);
 
   await test_driver.bless('user activation');
-  return promise_rejects_dom(t, "AbortError", request.show());
-}, 'Rejected SPC authentication without matching credential');
+  return promise_rejects_dom(t, "NotAllowedError", request.show());
+}, 'Choose to auth another way without matching credential');
 
 promise_test(async t => {
   const authenticator = await window.test_driver.add_virtual_authenticator(
@@ -51,7 +45,7 @@ promise_test(async t => {
     return window.test_driver.remove_virtual_authenticator(authenticator);
   });
 
-  await window.test_driver.set_spc_transaction_mode("autoReject");
+  await window.test_driver.set_spc_transaction_mode("autoChooseToAuthAnotherWay");
   t.add_cleanup(() => {
     return window.test_driver.set_spc_transaction_mode("none");
   });
@@ -77,6 +71,6 @@ promise_test(async t => {
   }], PAYMENT_DETAILS);
 
   await test_driver.bless('user activation');
-  return promise_rejects_dom(t, "AbortError", request.show());
-}, 'Rejected SPC authentication when credential matched');
+  return promise_rejects_dom(t, "NotAllowedError", request.show());
+}, 'Choose to auth another way when credential matched');
 </script>

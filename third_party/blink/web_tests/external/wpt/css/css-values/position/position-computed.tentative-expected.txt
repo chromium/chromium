@@ -1,0 +1,108 @@
+This is a testharness.js-based test.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property object-position value 'x-start'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start 10px'
+  assert_true: 'x-start 10px' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start 10% top 20px'
+  assert_true: 'x-start 10% top 20px' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end 10%'
+  assert_true: 'x-end 10%' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end 10px top 20px'
+  assert_true: 'x-end 10px top 20px' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value '10px y-start'
+  assert_true: '10px y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'left 10px y-start 20%'
+  assert_true: 'left 10px y-start 20%' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value '10px y-end'
+  assert_true: '10px y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'left 10px y-end 20%'
+  assert_true: 'left 10px y-end 20%' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: horizontal-tb, direction: ltr'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: horizontal-tb, direction: ltr'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: horizontal-tb, direction: ltr'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: horizontal-tb, direction: ltr'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: horizontal-tb, direction: rtl'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: horizontal-tb, direction: rtl'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: horizontal-tb, direction: rtl'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: horizontal-tb, direction: rtl'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: vertical-rl, direction: rtl'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: vertical-rl, direction: rtl'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: vertical-rl, direction: rtl'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: vertical-rl, direction: rtl'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: sideways-rl, direction: rtl'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: sideways-rl, direction: rtl'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: sideways-rl, direction: rtl'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: sideways-rl, direction: rtl'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: vertical-rl, direction: ltr'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: vertical-rl, direction: ltr'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: vertical-rl, direction: ltr'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: vertical-rl, direction: ltr'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: sideways-rl, direction: ltr'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: sideways-rl, direction: ltr'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: sideways-rl, direction: ltr'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: sideways-rl, direction: ltr'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: vertical-lr, direction: rtl'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: vertical-lr, direction: rtl'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: vertical-lr, direction: rtl'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: vertical-lr, direction: rtl'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: sideways-lr, direction: ltr'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: sideways-lr, direction: ltr'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: sideways-lr, direction: ltr'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: sideways-lr, direction: ltr'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: vertical-lr, direction: ltr'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: vertical-lr, direction: ltr'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: vertical-lr, direction: ltr'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: vertical-lr, direction: ltr'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-start' in mode 'writing-mode: sideways-lr, direction: rtl'
+  assert_true: 'x-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'x-end' in mode 'writing-mode: sideways-lr, direction: rtl'
+  assert_true: 'x-end' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-start' in mode 'writing-mode: sideways-lr, direction: rtl'
+  assert_true: 'y-start' is a supported value for object-position. expected true got false
+[FAIL] Property object-position value 'y-end' in mode 'writing-mode: sideways-lr, direction: rtl'
+  assert_true: 'y-end' is a supported value for object-position. expected true got false
+Harness: the test ran to completion.
+
