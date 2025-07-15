@@ -9,9 +9,11 @@
 
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -25,20 +27,23 @@ constexpr char kUncheckedErrorPrefix[] = "Unchecked runtime.lastError: ";
 // property ('message') with the last error. This object is stored on the parent
 // (chrome.runtime in production) as a private property, and is returned via an
 // accessor which marks the error as accessed.
-class LastErrorObject final : public gin::DeprecatedWrappable<LastErrorObject> {
+class LastErrorObject final : public gin::Wrappable<LastErrorObject> {
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kLastErrorObject};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+
   explicit LastErrorObject(const std::string& error) : error_(error) {}
 
   LastErrorObject(const LastErrorObject&) = delete;
   LastErrorObject& operator=(const LastErrorObject&) = delete;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
-
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
+      v8::Isolate* isolate) final {
     DCHECK(isolate);
-    return DeprecatedWrappable<LastErrorObject>::GetObjectTemplateBuilder(
+    return gin::Wrappable<LastErrorObject>::GetObjectTemplateBuilder(
                isolate)
         .SetProperty("message", &LastErrorObject::error);
   }
@@ -56,9 +61,6 @@ class LastErrorObject final : public gin::DeprecatedWrappable<LastErrorObject> {
   std::string error_;
   bool accessed_ = false;
 };
-
-gin::DeprecatedWrapperInfo LastErrorObject::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 // An accessor to retrieve the last error property (curried in through data),
 // and mark it as accessed.
@@ -280,8 +282,10 @@ void APILastError::SetErrorOnPrimaryParent(v8::Local<v8::Context> context,
     }
     last_error->Reset(error);
   } else {
+    auto* last_error_obj = cppgc::MakeGarbageCollected<LastErrorObject>(
+        isolate->GetCppHeap()->GetAllocationHandle(), error);
     v8::Local<v8::Value> last_error =
-        gin::CreateHandle(isolate, new LastErrorObject(error)).ToV8();
+        last_error_obj->GetWrapper(isolate).ToLocalChecked();
     v8::Maybe<bool> set_private = parent->SetPrivate(
         context, v8::Private::ForApi(isolate, key), last_error);
     if (!set_private.IsJust() || !set_private.FromJust()) {

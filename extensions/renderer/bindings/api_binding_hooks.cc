@@ -16,10 +16,12 @@
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/arguments.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/per_context_data.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -27,20 +29,24 @@ namespace {
 
 // An interface to allow for registration of custom hooks from JavaScript.
 // Contains registered hooks for a single API.
-class JSHookInterface final : public gin::DeprecatedWrappable<JSHookInterface> {
+class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kJSHookInterface};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+
   explicit JSHookInterface(const std::string& api_name)
       : api_name_(api_name) {}
 
   JSHookInterface(const JSHookInterface&) = delete;
   JSHookInterface& operator=(const JSHookInterface&) = delete;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
-
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) override {
-    return DeprecatedWrappable<JSHookInterface>::GetObjectTemplateBuilder(
+      v8::Isolate* isolate) final {
+    return gin::Wrappable<JSHookInterface>::GetObjectTemplateBuilder(
                isolate)
         .SetMethod("setHandleRequest", &JSHookInterface::SetHandleRequest)
         .SetMethod("setUpdateArgumentsPreValidate",
@@ -164,9 +170,6 @@ struct APIHooksPerContextData : public base::SupportsUserData::Data {
   std::map<int, ActiveRequest> active_requests;
 };
 
-gin::DeprecatedWrapperInfo JSHookInterface::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 // Gets the v8::Object of the JSHookInterface, optionally creating it if it
 // doesn't exist.
 v8::Local<v8::Object> GetJSHookInterfaceObject(
@@ -196,10 +199,10 @@ v8::Local<v8::Object> GetJSHookInterfaceObject(
     return v8::Local<v8::Object>();
 
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  gin::Handle<JSHookInterface> hooks =
-      gin::CreateHandle(isolate, new JSHookInterface(api_name));
-  CHECK(!hooks.IsEmpty());
-  v8::Local<v8::Object> hooks_object = hooks.ToV8().As<v8::Object>();
+  auto* hooks = cppgc::MakeGarbageCollected<JSHookInterface>(
+      isolate->GetCppHeap()->GetAllocationHandle(), api_name);
+  v8::Local<v8::Object> hooks_object =
+      hooks->GetWrapper(isolate).ToLocalChecked();
   data->hook_interfaces[api_name].Reset(isolate, hooks_object);
 
   return hooks_object;

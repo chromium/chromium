@@ -28,6 +28,8 @@ enum WrappablePointerTag : uint16_t {
   kGamepadControllerBindings,          // content::GameControllerBindings
   kGpuBenchmarking,                    // content::GpuBenchmarking
   kJsBinding,                          // js_injection::JsBinding
+  kJSHookInterface,                    // extensions::JSHookInterface
+  kLastErrorObject,                    // extensions::LastErrorObject
   kMojo,                               // ax::Mojo
   kMojoHandle,                         // ax::MojoHandle
   kNetErrorPageController,             // NetErrorPageController
@@ -43,7 +45,8 @@ enum WrappablePointerTag : uint16_t {
   kTestObject2,                        // gin::MyObject2
   kTextDecoder,                        // ax::TextDecoder
   kTextEncoder,                        // ax::TextEncoder
-  kLastPointerTag = kTextEncoder,
+  kWrappedExceptionHandler,            // extensions::WrappedExceptionHandler
+  kLastPointerTag = kWrappedExceptionHandler,
 };
 
 static_assert(kLastPointerTag <

@@ -11,9 +11,11 @@
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
-#include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -29,14 +31,16 @@ constexpr char ExceptionHandlerPerContextData::kPerContextDataKey[];
 
 // A helper class to wrap an ExceptionHandler WeakPtr in a v8::Value.
 class WrappedExceptionHandler
-    : public gin::DeprecatedWrappable<WrappedExceptionHandler> {
+    : public gin::Wrappable<WrappedExceptionHandler> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kWrappedExceptionHandler};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+
   base::WeakPtr<ExceptionHandler> exception_handler;
 };
-
-gin::DeprecatedWrapperInfo WrappedExceptionHandler::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 }  // namespace
 
@@ -46,9 +50,10 @@ ExceptionHandler::ExceptionHandler(
 ExceptionHandler::~ExceptionHandler() = default;
 
 v8::Local<v8::Value> ExceptionHandler::GetV8Wrapper(v8::Isolate* isolate) {
-  auto handle = gin::CreateHandle(isolate, new WrappedExceptionHandler);
-  handle->exception_handler = weak_factory_.GetWeakPtr();
-  return handle.ToV8();
+  auto* wrapper = cppgc::MakeGarbageCollected<WrappedExceptionHandler>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  wrapper->exception_handler = weak_factory_.GetWeakPtr();
+  return wrapper->GetWrapper(isolate).ToLocalChecked();
 }
 
 ExceptionHandler* ExceptionHandler::FromV8Wrapper(v8::Isolate* isolate,
