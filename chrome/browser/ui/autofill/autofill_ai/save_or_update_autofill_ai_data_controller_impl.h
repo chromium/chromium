@@ -69,8 +69,6 @@ class SaveOrUpdateAutofillAiDataControllerImpl
       SaveOrUpdateAutofillAiDataControllerImpl>;
   friend class SaveOrUpdateAutofillAiDataControllerImplTest;
 
-  void ShowBubble();
-
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;
 
