@@ -1,4 +1,5 @@
 caption: Control Android Google location services
+deprecated: true
 default: 0
 default_for_enterprise_users: 0
 desc: |-
@@ -31,7 +32,7 @@ schema:
   - 2
   type: integer
 supported_on:
-- chrome_os:68-
+- chrome_os:68-127
 tags:
 - google-sharing
 type: int-enum
