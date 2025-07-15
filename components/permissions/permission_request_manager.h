@@ -24,8 +24,8 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_queue.h"
-#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
@@ -41,7 +41,8 @@ class RenderFrameHost;
 
 namespace test {
 class PermissionRequestManagerTestApi;
-}
+class MockPermissionRequestManager;
+}  // namespace test
 
 namespace permissions {
 class PermissionRequest;
@@ -285,6 +286,7 @@ class PermissionRequestManager
 
  private:
   friend class test::PermissionRequestManagerTestApi;
+  friend class test::MockPermissionRequestManager;
   friend class content::WebContentsUserData<PermissionRequestManager>;
   FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest, WeakDuplicateRequests);
   FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest,
