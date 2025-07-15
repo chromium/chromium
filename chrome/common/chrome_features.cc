@@ -614,7 +614,7 @@ BASE_FEATURE(kGlicDisableWarming,
 // Controls the amount of time from the GlicButtonController scheduling
 // preload to the start of preloading (if preloading is possible).
 const base::FeatureParam<int> kGlicWarmingDelayMs{
-    &kGlicWarming, "glic-warming-delay-ms", 30 * 1000};
+    &kGlicWarming, "glic-warming-delay-ms", 20 * 1000};
 
 // Adds noise to the warming delay. The effective delay is increased by a
 // random positive number of milliseconds between 0 and kGlicWarmingJitterMs.
