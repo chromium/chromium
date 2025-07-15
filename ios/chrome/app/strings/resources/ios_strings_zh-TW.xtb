@@ -964,7 +964,7 @@
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
 <translation id="4979397965658815378">只要登入 Google 帳戶，即可在你的所有裝置上使用自己的書籤、密碼、歷史記錄和其他設定。</translation>
-<translation id="4985921635659180565">檔案排定刪除時間後就無法取消。</translation>
+<translation id="4985921635659180565">檔案排定刪除後就無法取消。</translation>
 <translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
 <translation id="4989065233040279145">選擇「<ph name="FILENAME" />」的儲存位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
@@ -1102,7 +1102,7 @@
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
 <translation id="5585019845078534178">資訊卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
-<translation id="559567008082979829">設定內容在下載的一個月後刪除。</translation>
+<translation id="559567008082979829">下載內容會在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>

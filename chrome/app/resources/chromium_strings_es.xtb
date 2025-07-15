@@ -124,7 +124,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
-<translation id="2629740064077610681">Tu organización puede ver y gestionar los datos de navegación, como los marcadores, el historial y las contraseñas. No puede ver los datos de navegación de otros perfiles de Chromium.</translation>
+<translation id="2629740064077610681">Tu organización puede ver y gestionar tus datos de navegación, como tus marcadores, tu historial y tus contraseñas. No puede ver los datos de navegación de otros perfiles de Chromium.</translation>
 <translation id="2635452620547538388">Verifica que eres tú para usar y guardar los datos de Chromium en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="264613044588233783">Chromium se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto (opción recomendada)</translation>
 <translation id="2648074677641340862">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Chromium.</translation>

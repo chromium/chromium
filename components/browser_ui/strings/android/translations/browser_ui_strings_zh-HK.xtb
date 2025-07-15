@@ -421,7 +421,7 @@
 <translation id="6120483543004435978">開咗之後，網站可以要求偵測你有冇主動用緊裝置。閂咗之後，網站唔可以偵測你有冇主動用緊裝置。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6171020522141473435">開咗之後，網站可以要求使用藍牙裝置。閂咗之後，網站唔可以使用藍牙裝置。</translation>
-<translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
+<translation id="6177128806592000436">你與此網站的連線並不安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
 <translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>

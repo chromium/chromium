@@ -964,7 +964,7 @@
 <translation id="496392417432935267">已在别处打开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
-<translation id="4985921635659180565">一旦安排删除文件，便无法取消。</translation>
+<translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="4989065233040279145">选择保存 <ph name="FILENAME" /> 的位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
@@ -1102,7 +1102,7 @@
 <translation id="5579012242779565775">隐藏“阅读清单”</translation>
 <translation id="5585019845078534178">卡片</translation>
 <translation id="5595485650161345191">修改地址</translation>
-<translation id="559567008082979829">设置在一个月后自动删除下载内容。</translation>
+<translation id="559567008082979829">设置为在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5611398002774823980">保存到账号</translation>
@@ -1877,7 +1877,7 @@
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
-<translation id="8620640915598389714">编辑</translation>
+<translation id="8620640915598389714">修改</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>
