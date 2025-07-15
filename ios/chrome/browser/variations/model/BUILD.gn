@@ -146,6 +146,10 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
   frameworks = [ "UIKit.framework" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
