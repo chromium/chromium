@@ -12,7 +12,7 @@ The pipeline module orchestrates the entire signing process, which includes:
 import asyncio
 import os.path
 
-from signing import commands, model, modification, notarize, parts, signing
+from signing import commands, logger, model, modification, notarize, parts, signing
 
 
 def _include_branding_code_in_app(dist):
@@ -49,7 +49,8 @@ def _binary_architectures(binary_path):
     return output
 
 
-def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
+async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
+                                     signed_frameworks):
     """Does channel customization and signing of a Chrome distribution. The
     resulting app bundle is moved into |dest_dir|.
 
@@ -116,13 +117,13 @@ def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
                         actual_framework_change_count,
                         signed_framework_change_count))
 
-        parts.sign_chrome(paths, dist_config, sign_framework=False)
+        await parts.sign_chrome(paths, dist_config, sign_framework=False)
     else:
         unsigned_framework_path = os.path.join(paths.work,
                                                'modified_unsigned_framework')
         commands.copy_dir_overwrite_and_count_changes(
             work_dir_framework_path, unsigned_framework_path, dry_run=False)
-        parts.sign_chrome(paths, dist_config, sign_framework=True)
+        await parts.sign_chrome(paths, dist_config, sign_framework=True)
         actual_framework_change_count = commands.copy_dir_overwrite_and_count_changes(
             work_dir_framework_path, unsigned_framework_path, dry_run=True)
         if signed_frameworks is not None:
@@ -789,27 +790,36 @@ async def _sign_and_maybe_notarize_distributions(config, distributions,
                     continue
                 created_app_bundles.add(dest_dir)
 
-                _customize_and_sign_chrome(paths, dist_config, dest_dir,
-                                           signed_frameworks)
+                await _customize_and_sign_chrome(paths, dist_config, dest_dir,
+                                                 signed_frameworks)
 
                 # If the build products are to be notarized, ZIP the app bundle
                 # and submit it for notarization.
                 if config.notarize.should_notarize():
-                    zip_file = os.path.join(
-                        notary_paths.work,
-                        dist_config.packaging_basename + '.zip')
-                    commands.run_command([
-                        'zip', '--recurse-paths', '--symlinks', '--quiet',
-                        zip_file, dist_config.app_dir
-                    ],
-                                         cwd=dest_dir)
-                    tasks.create_task(notarize.submit(zip_file, dist_config))
+                    tasks.create_task(
+                        _zip_and_notarize(notary_paths, dist_config, dest_dir))
 
             # Yield the event loop to let the notarization subprocesses start
             # before continuing to the next distribution.
             await asyncio.sleep(0)
     return dist_configs
 
+
+async def _zip_and_notarize(notary_paths, dist_config, dest_dir):
+    zip_file = os.path.join(notary_paths.work,
+                            dist_config.packaging_basename + '.zip')
+    command, exit_code, stdout, stderr = await commands.run_command_all_output_async(
+        [
+            'zip', '--recurse-paths', '--symlinks', '--quiet', zip_file,
+            dist_config.app_dir
+        ],
+        cwd=dest_dir)
+    logger.info('Command %s returned %d: (stdout=) %s (stderr=) %s', command,
+                exit_code, stdout, stderr)
+    if exit_code:
+        raise subprocess.CalledProcessError(
+            exit_code, command, output=stdout, stderr=stderr)
+    await notarize.submit(zip_file, dist_config)
 
 async def _package_and_maybe_notarize_distributions(config, distributions,
                                                     notary_paths):
