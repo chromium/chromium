@@ -748,10 +748,9 @@ void WaitForFakeJoinFlowView() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // Cancel.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertItemWithAccessibilityLabelId(
-                     IDS_CANCEL)] performAction:grey_tap()];
+  // Cancel the action.
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Close the tab by using the context menu and check the alert.
@@ -764,10 +763,9 @@ void WaitForFakeJoinFlowView() {
                             nil)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // Cancel.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertItemWithAccessibilityLabelId(
-                     IDS_CANCEL)] performAction:grey_tap()];
+  // Cancel the action.
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the tab and try to close it with the tab grid icon context menu.
@@ -783,10 +781,9 @@ void WaitForFakeJoinFlowView() {
                             nil)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // Cancel.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertItemWithAccessibilityLabelId(
-                     IDS_CANCEL)] performAction:grey_tap()];
+  // Cancel the action.
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
