@@ -25,6 +25,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class GURL;
 class Profile;
 
 namespace mojo_base {
@@ -152,6 +153,11 @@ class ExecutionEngine {
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
 
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
+  const GURL& LastCommittedURLOfCurrentTask();
+
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
   const ToolRequest& GetNextAction() const;
@@ -171,6 +177,9 @@ class ExecutionEngine {
   // Stores the last observed page content for TOCTOU check.
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       last_observed_page_content_;
+
+  raw_ptr<tabs::TabInterface> tab_;
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   // Owns `this`.
   raw_ptr<ActorTask> task_;

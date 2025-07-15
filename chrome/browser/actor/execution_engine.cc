@@ -89,6 +89,21 @@ ExecutionEngine::ExecutionEngine(Profile* profile)
   InitActionBlocklist(profile_.get());
 }
 
+ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
+    : profile_(profile),
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
+      tab_(tab),
+      ui_event_dispatcher_(ui::NewUiEventDispatcher(
+          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
+  CHECK(profile_);
+  // Idempotent. Enables the action blocklist if it isn't already enabled.
+  InitActionBlocklist(profile_.get());
+
+  CHECK(tab_);
+  tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      &ExecutionEngine::OnTabWillDetach, base::Unretained(this)));
+}
+
 ExecutionEngine::ExecutionEngine(
     Profile* profile,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
@@ -178,7 +193,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
   CHECK_EQ(action.task_id(), task_->id().value());
 
   if (task_->IsPaused()) {
-    journal_->Log(GURL(), task_->id(), "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "Unable to perform action: task is paused");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kTaskPaused));
@@ -188,7 +203,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
   // NOTE: Improve this API by queuing the action instead.
   if (!action_sequence_.empty()) {
     journal_->Log(
-        GURL(), task_->id(), "Act Failed",
+        LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
         "Unable to perform action: task already has action in progress");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
@@ -197,7 +212,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
   }
 
   if (action.actions_size() <= 0) {
-    journal_->Log(GURL(), task_->id(), "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "Unable to perform action: proto contains no actions");
     PostTaskForActCallback(
         std::move(callback),
@@ -206,7 +221,7 @@ void ExecutionEngine::Act(const BrowserAction& action,
     return;
   }
 
-  BuildToolRequestResult result = BuildToolRequest(action, nullptr);
+  BuildToolRequestResult result = BuildToolRequest(action, tab_);
   if (!result.has_value()) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   "Failed to convert BrowserAction proto to ToolRequest");
@@ -268,7 +283,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (task_->IsPaused()) {
-    journal_->Log(actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "Unable to perform action: task is paused");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kTaskPaused),
@@ -278,7 +293,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   if (!action_sequence_.empty()) {
     journal_->Log(
-        actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
+        LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
         "Unable to perform action: task already has action in progress");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
@@ -396,7 +411,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    journal_->Log(GetNextAction().GetURLForJournal(), task_id, "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
                   "Acting after cross-origin navigation occurred");
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                                "Acting after cross-origin navigation occurred"),
@@ -405,7 +420,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   if (!may_act) {
-    journal_->Log(GetNextAction().GetURLForJournal(), task_id, "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
                   "URL blocked for actions");
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
                                "URL blocked for actions"),
@@ -488,11 +503,8 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
   SetState(State::kComplete);
 
   if (!IsOk(*result)) {
-    GURL url;
-    if (action_index) {
-      url = action_sequence_[*action_index]->GetURLForJournal();
-    }
-    journal_->Log(url, task_->id(), "Act Failed", ToDebugString(*result));
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
+                  ToDebugString(*result));
   }
 
   // TODO(crbug.com/411462297): Populate observation.
@@ -504,6 +516,26 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
   actions_weak_ptr_factory_.InvalidateWeakPtrs();
   // TODO(crbug.com/409559623): Conceptually this should also reset
   // `last_observed_page_content_`.
+}
+
+void ExecutionEngine::OnTabWillDetach(tabs::TabInterface* tab,
+                                      tabs::TabInterface::DetachReason reason) {
+  if (reason != tabs::TabInterface::DetachReason::kDelete) {
+    return;
+  }
+  if (!tab_) {
+    return;
+  }
+  CHECK_EQ(tab, tab_);
+  tab_ = nullptr;
+
+  if (!action_sequence_.empty()) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
+                  "The tab is no longer present");
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "The tab is no longer present."),
+                    std::nullopt);
+  }
 }
 
 void ExecutionEngine::DidObserveContext(
@@ -518,6 +550,13 @@ const AnnotatedPageContent* ExecutionEngine::GetLastObservedPageContent() {
 
 base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
+}
+
+const GURL& ExecutionEngine::LastCommittedURLOfCurrentTask() {
+  if (!tab_) {
+    return GURL::EmptyGURL();
+  }
+  return tab_->GetContents()->GetLastCommittedURL();
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {

@@ -70,8 +70,8 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
-    auto execution_engine =
-        std::make_unique<ExecutionEngine>(browser()->profile());
+    auto execution_engine = std::make_unique<ExecutionEngine>(
+        browser()->profile(), browser()->GetActiveTabInterface());
     auto actor_task =
         std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
     task_id_ = ActorKeyedService::Get(browser()->profile())

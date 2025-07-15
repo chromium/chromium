@@ -70,8 +70,7 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
 
-    auto execution_engine =
-        std::make_unique<ExecutionEngine>(browser()->profile());
+    auto execution_engine = InitializeExecutionEngine();
     ExecutionEngine* raw_execution_engine = execution_engine.get();
     auto task =
         std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
@@ -86,6 +85,11 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  virtual std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() {
+    return std::make_unique<ExecutionEngine>(
+        browser()->profile(), browser()->GetActiveTabInterface());
+  }
+
   tabs::TabInterface* active_tab() {
     return browser()->tab_strip_model()->GetActiveTab();
   }
@@ -183,7 +187,25 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   EXPECT_EQ("green", EvalJs(web_contents(), "document.body.bgColor"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
+// ActorToolsTest but using the V2 ExecutionEngine API.
+// TODO(crbug.com/411462297): All tests should eventually use the V2 API and the
+// original test harness should be migrated to the new API. New tests should use
+// this harness.
+class ExecutionEngineBrowserTestV2 : public ExecutionEngineBrowserTest {
+ public:
+  ExecutionEngineBrowserTestV2() = default;
+  ~ExecutionEngineBrowserTestV2() override = default;
+  explicit ExecutionEngineBrowserTestV2(const ExecutionEngineBrowserTestV2&) =
+      delete;
+  ExecutionEngineBrowserTestV2& operator=(const ExecutionEngineBrowserTestV2&) =
+      delete;
+
+  std::unique_ptr<ExecutionEngine> InitializeExecutionEngine() override {
+    return std::make_unique<ExecutionEngine>(browser()->profile());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTestV2, TwoClicksInBackgroundTab) {
   const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
