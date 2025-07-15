@@ -140,6 +140,12 @@ class PeopleHandler : public SettingsPageUIHandler,
                            ChromeSigninUserAvailableOnWebSignin);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithCookiesSyncTest,
                            SyncCookiesSupported);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
+                           TestSyncIndividualTypes);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
+                           NonRegisteredType);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
+                           HandleShowAccountSettingsUI);
 #if DCHECK_IS_ON()
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, DeleteProfileCrashes);
 #endif
@@ -220,6 +226,8 @@ class PeopleHandler : public SettingsPageUIHandler,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleShowSyncPassphraseDialog(const base::Value::List& args);
+  void HandleShowAccountSettingsUI(const base::Value::List& args);
+  void HandleSetDatatype(const base::Value::List& args);
 
   // Displays the GAIA login form.
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);

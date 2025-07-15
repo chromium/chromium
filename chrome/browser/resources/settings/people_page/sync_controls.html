@@ -25,7 +25,8 @@
     </div>
 </if>
 
-    <div id="sync-data-radio" class="cr-row first">
+    <div id="sync-data-radio" class="cr-row first"
+        hidden="[[isAccountSettingsPage_()]]">
       <cr-radio-group
           selected="[[selectedSyncDataRadio_(syncPrefs)]]"
           on-selected-changed="onSyncDataRadioSelectionChanged_">
@@ -38,9 +39,19 @@
       </cr-radio-group>
     </div>
 
-    <div class="cr-row first">
+    <div class="cr-row first" hidden="[[isAccountSettingsPage_()]]">
       <h2 class="cr-title-text flex">$i18n{syncData}</h2>
     </div>
+<if expr="not is_chromeos">
+    <div hidden="[[!isAccountSettingsPage_()]]">
+      <div class="cr-row first">
+        <h2 class="cr-title-text flex">$i18n{accountDataTypesHeading}</h2>
+      </div>
+      <div class="cr-row continuation">
+        <div class="cr-secondary-text flex">$i18n{accountDataTypesBody}</div>
+      </div>
+    </div>
+</if>
 
     <div class="list-frame" id="sync-data-types">
       <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
@@ -52,7 +63,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.appsManaged)]]"
-            aria-labelledby="appCheckboxLabel">
+            aria-labelledby="appCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.APPS]]">
         </cr-toggle>
       </div>
 
@@ -67,7 +79,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.bookmarksManaged)]]"
-            aria-labelledby="bookmarksCheckboxLabel">
+            aria-labelledby="bookmarksCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.BOOKMARKS]]">
         </cr-toggle>
       </div>
 
@@ -82,7 +95,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes , syncPrefs.extensionsManaged)]]"
-            aria-labelledby="extensionsCheckboxLabel">
+            aria-labelledby="extensionsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.EXTENSIONS]]">
         </cr-toggle>
       </div>
 
@@ -98,7 +112,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes , syncPrefs.typedUrlsManaged)]]"
-            aria-labelledby="historyCheckboxLabel">
+            aria-labelledby="historyCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.HISTORY]]">
         </cr-toggle>
       </div>
 
@@ -113,7 +128,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.preferencesManaged)]]"
-            aria-labelledby="settingsCheckboxLabel">
+            aria-labelledby="settingsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PREFERENCES]]">
         </cr-toggle>
       </div>
 
@@ -128,7 +144,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes ,syncPrefs.themesManaged)]]"
-            aria-labelledby="themeCheckboxLabel">
+            aria-labelledby="themeCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.THEMES]]">
         </cr-toggle>
       </div>
 
@@ -143,7 +160,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes ,syncPrefs.readingListManaged)]]"
-            aria-labelledby="readingListCheckboxLabel">
+            aria-labelledby="readingListCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.READING_LIST]]">
         </cr-toggle>
       </div>
 
@@ -158,7 +176,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes,syncPrefs.tabsManaged)]]"
-            aria-labelledby="openTabsCheckboxLabel">
+            aria-labelledby="openTabsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.TABS]]">
         </cr-toggle>
       </div>
 
@@ -173,7 +192,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged)]]"
-            aria-labelledby="savedTabGroupsCheckboxLabel">
+            aria-labelledby="savedTabGroupsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.SAVED_TAB_GROUPS]]">
         </cr-toggle>
       </div>
 
@@ -188,7 +208,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes, syncPrefs.passwordsManaged)]]"
-            aria-labelledby="passwordsCheckboxLabel">
+            aria-labelledby="passwordsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PASSWORDS]]">
         </cr-toggle>
       </div>
 
@@ -204,7 +225,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged)]]"
-            aria-labelledby="autofillCheckboxLabel">
+            aria-labelledby="autofillCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.AUTOFILL]]">
         </cr-toggle>
       </div>
 
@@ -221,7 +243,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
                 syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged)]]"
-            aria-label="$i18n{paymentsCheckboxLabel}">
+            aria-label="$i18n{paymentsCheckboxLabel}"
+            data-type$="[[UserSelectableTypeEnum_.PAYMENTS]]">
         </cr-toggle>
       </div>
 
@@ -237,7 +260,8 @@
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged)]]"
-            aria-labelledby="productComparisonsCheckboxLabel">
+            aria-labelledby="productComparisonsCheckboxLabel"
+            data-type$="[[UserSelectableTypeEnum_.PRODUCT_COMPARISON]]">
         </cr-toggle>
       </div>
 

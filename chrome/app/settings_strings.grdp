@@ -3630,6 +3630,12 @@
     <message name="IDS_SETTINGS_ACCOUNT_PAGE_TITLE" desc="Name of the settings page which manages the signed in account.">
       Your account
     </message>
+    <message name="IDS_SETTINGS_ACCOUNT_DATATYPES_HEADING" desc="Heading of the section in the account settings page for managing data types.">
+      In your Google Account
+    </message>
+    <message name="IDS_SETTINGS_ACCOUNT_BODY" desc="Description of the section in the account settings page for managing data types.">
+      When on, data is saved in your Google Account and can be used on all your devices. When off, data is saved only to this device.
+    </message>
   </if>
 
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing for non-managed profiles.">

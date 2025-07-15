@@ -399,7 +399,7 @@ export class SettingsSyncAccountControlElement extends
     if (this.hideButtons || this.prefs === undefined) {
       return this.computeShowSetupButtons_();
     }
-    return !!this.syncStatus.firstSetupInProgress ||
+    return !this.syncStatus || !!this.syncStatus.firstSetupInProgress ||
         !this.getPref('signin.allowed_on_next_startup').value;
   }
 

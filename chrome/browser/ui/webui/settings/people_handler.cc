@@ -66,6 +66,7 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -361,6 +362,13 @@ void PeopleHandler::RegisterMessages() {
       "SyncShowSyncPassphraseDialog",
       base::BindRepeating(&PeopleHandler::HandleShowSyncPassphraseDialog,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "ShowAccountSettingsUI",
+      base::BindRepeating(&PeopleHandler::HandleShowAccountSettingsUI,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SetDatatype", base::BindRepeating(&PeopleHandler::HandleSetDatatype,
+                                         base::Unretained(this)));
 
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -948,6 +956,44 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
                           base::Unretained(SyncServiceFactory::GetForProfile(
                               browser->profile()))));
 }
+
+void PeopleHandler::HandleShowAccountSettingsUI(const base::Value::List& args) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  AllowJavascript();
+
+  GetLoginUIService()->SetLoginUI(this);
+
+  // Observe the web contents for a before unload event.
+  Observe(web_ui()->GetWebContents());
+
+  PushSyncPrefs();
+
+  // Focus the web contents in case the location bar was focused before. This
+  // makes sure that page elements for resolving sync errors can be focused.
+  web_ui()->GetWebContents()->Focus();
+}
+
+void PeopleHandler::HandleSetDatatype(const base::Value::List& args) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  AllowJavascript();
+
+  CHECK_EQ(3U, args.size());
+  const base::Value& callback_id = args[0];
+  CHECK(args[1].is_int());
+  syncer::UserSelectableType type =
+      static_cast<syncer::UserSelectableType>(args[1].GetInt());
+  const bool value = args[2].GetBool();
+
+  syncer::SyncService* service = GetSyncService();
+  if (service && service->IsEngineInitialized() &&
+      service->GetUserSettings()->GetRegisteredSelectableTypes().Has(type)) {
+    service->GetUserSettings()->SetSelectedType(type, value);
+  }
+
+  ResolveJavascriptCallback(callback_id, base::Value(kConfigurePageStatus));
+}
 #endif
 
 void PeopleHandler::HandleGetSyncStatus(const base::Value::List& args) {
@@ -1440,8 +1486,8 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
 }
 
 void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
-    FireWebUIListener("chrome-signin-user-choice-info-change",
-                      GetChromeSigninUserChoiceInfo());
+  FireWebUIListener("chrome-signin-user-choice-info-change",
+                    GetChromeSigninUserChoiceInfo());
 }
 
 void PeopleHandler::HandleSetChromeSigninUserChoiceForTesting(

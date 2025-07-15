@@ -34,10 +34,14 @@ suite('AccountPageTests', function() {
     return element;
   }
 
-  // Tests that the account card is visible.
+  // Tests that all elements are visible.
   test('ShowCorrectRows', function() {
+    assertEquals(routes.ACCOUNT, Router.getInstance().getCurrentRoute());
+
     assertTrue(!!accountSettingsPage.shadowRoot!.querySelector(
         'settings-sync-account-control'));
+    assertTrue(!!accountSettingsPage.shadowRoot!.querySelector(
+        'settings-sync-controls'));
   });
 
   // Tests that we navigate back to the people page if the user is not signed

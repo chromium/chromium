@@ -9,13 +9,18 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// <if expr="not is_chromeos">
+import {routes, UserSelectableType} from 'chrome://settings/settings.js';
+import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+// </if>
 
 // clang-format on
 
@@ -102,7 +107,7 @@ suite('SyncControlsTest', function() {
     assertPrefs(prefs, datatypeControls);
   });
 
-  test('SignedIn', function() {
+  test('Syncing', function() {
     // Controls are available by default.
     assertFalse(syncControls.hidden);
 
@@ -112,8 +117,22 @@ suite('SyncControlsTest', function() {
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
-    // Controls are available when signed in and there is no error.
+    // Controls are available when syncing and there is no error.
     assertFalse(syncControls.hidden);
+  });
+
+  test('SignedIn', function() {
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    // Controls are hidden when signed in, even if there is no error.
+    assertTrue(syncControls.hidden);
   });
 
   test('SyncDisabled', function() {
@@ -256,6 +275,118 @@ suite('SyncControlsSubpageTest', function() {
   });
 });
 
+// <if expr="not is_chromeos">
+suite('SyncControlsAccountSettingsTest', function() {
+  let syncControls: SettingsSyncControlsElement;
+  let browserProxy: TestSyncBrowserProxy;
+
+  setup(async function() {
+    browserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const router = Router.getInstance();
+    router.navigateTo(routes.ACCOUNT);
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await waitBeforeNextRender(syncControls);
+
+    assertEquals(routes.ACCOUNT, router.getCurrentRoute());
+    await browserProxy.whenCalled('didNavigateToAccountSettingsPage');
+  });
+
+  test('SyncEverythingControlsAreHidden', function() {
+    const radioGroup = syncControls.shadowRoot!.querySelector('cr-radio-group');
+    const syncEverything = syncControls.shadowRoot!.querySelector(
+        'cr-radio-button[name="sync-everything"]')!;
+    const customizeSync = syncControls.shadowRoot!.querySelector(
+        'cr-radio-button[name="customize-sync"]')!;
+
+    assertFalse(isVisible(radioGroup));
+    assertFalse(isVisible(syncEverything));
+    assertFalse(isVisible(customizeSync));
+  });
+
+  test('SignedIn', function() {
+    // Controls are shown when signed in and there is no error.
+    assertFalse(syncControls.hidden);
+  });
+
+  test('SignedInError', function() {
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: true,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    // Controls are hidden when signed in and there is an error.
+    assertTrue(syncControls.hidden);
+  });
+
+  test('SignedInPassphraseError', function() {
+    // Controls are available by default.
+    assertFalse(syncControls.hidden);
+
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.ENTER_PASSPHRASE,
+    };
+    // Controls are hidden when signed in and there is a passphrase error.
+    assertTrue(syncControls.hidden);
+  });
+
+  test('ChangeDataTypeToggle', async function() {
+    // Set up the prefs.
+    const initialPrefs = getSyncAllPrefs();
+    initialPrefs.syncAllDataTypes = false;
+    webUIListenerCallback('sync-prefs-changed', initialPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Make sure that the history toggle is present and can be interacted with.
+    const historyToggle =
+        syncControls.shadowRoot!.querySelector<CrToggleElement>(
+            '#historyToggle');
+    assertTrue(!!historyToggle);
+    assertFalse(historyToggle.disabled);
+    assertTrue(historyToggle.checked);
+
+    // Click to disable history sync.
+    historyToggle.click();
+    await historyToggle.updateComplete;
+
+    let [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
+    assertEquals(pref, UserSelectableType.HISTORY);
+    assertFalse(value);
+    assertFalse(historyToggle.checked);
+
+    // Re-enable history sync.
+    browserProxy.resetResolver('setSyncDatatype');
+    historyToggle.click();
+    await historyToggle.updateComplete;
+
+    [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
+    assertEquals(pref, UserSelectableType.HISTORY);
+    assertTrue(value);
+    assertTrue(historyToggle.checked);
+  });
+});
+// </if>
+
 // Test to check that toggles are disabled when sync types are managed by
 // policy.
 suite('SyncControlsManagedTest', function() {
@@ -268,6 +399,8 @@ suite('SyncControlsManagedTest', function() {
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncControls = document.createElement('settings-sync-controls');
@@ -363,6 +496,8 @@ suite('AutofillAndPaymentsToggles', function() {
   setup(async function() {
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const syncControls = document.createElement('settings-sync-controls');

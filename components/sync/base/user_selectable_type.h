@@ -16,7 +16,7 @@ namespace syncer {
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-//
+// LINT.IfChange(UserSelectableType)
 enum class UserSelectableType {
   kBookmarks,
   kFirstType = kBookmarks,
@@ -36,6 +36,7 @@ enum class UserSelectableType {
   kCookies,
   kLastType = kCookies
 };
+// LINT.ThenChange(/chrome/browser/resources/settings_shared/people_page/sync_browser_proxy.ts:UserSelectableType)
 
 using UserSelectableTypeSet = base::EnumSet<UserSelectableType,
                                             UserSelectableType::kFirstType,
