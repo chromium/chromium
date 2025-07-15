@@ -1628,7 +1628,6 @@ void QuicSessionPool::OnJobComplete(
     Job* job,
     std::optional<base::TimeTicks> proxy_connect_start_time,
     int rv) {
-  auto iter = active_jobs_.find(job->key().session_key());
   if (proxy_connect_start_time) {
     HttpProxyConnectJob::EmitConnectLatency(
         NextProto::kProtoQUIC, ProxyServer::Scheme::SCHEME_QUIC,
@@ -1636,8 +1635,10 @@ void QuicSessionPool::OnJobComplete(
                 : HttpProxyConnectJob::HttpConnectResult::kError,
         base::TimeTicks::Now() - *proxy_connect_start_time);
   }
-
+  auto iter = active_jobs_.find(job->key().session_key());
   CHECK(iter != active_jobs_.end());
+  iter->second->set_is_deleting();
+
   if (rv == OK) {
     if (!has_quic_ever_worked_on_current_network_) {
       set_has_quic_ever_worked_on_current_network(true);
