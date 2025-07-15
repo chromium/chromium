@@ -517,6 +517,11 @@ bool ContentBrowserClient::AllowServiceWorkerToControlSrcdocIframe(
   return true;
 }
 
+bool ContentBrowserClient::IsServiceWorkerAutoPreloadAllowed(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
     BrowserContext* context) {
   return true;

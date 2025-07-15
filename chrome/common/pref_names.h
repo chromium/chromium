@@ -4271,6 +4271,10 @@ inline constexpr char kManagedLocalNetworkAccessRestrictionsEnabled[] =
 inline constexpr char kPrefetchWithServiceWorkerEnabled[] =
     "preloading.prefetch_with_service_worker_enabled";
 
+// Boolean that specifies whether ServiceWorkerAutoPreload is enabled.
+inline constexpr char kServiceWorkerAutoPreloadEnabled[] =
+    "worker.service_worker_auto_preload_enabled";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

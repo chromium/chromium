@@ -1378,6 +1378,7 @@ policies:
   1377: DefaultDeviceAttributesSetting
   1378: DeviceAttributesBlockedForOrigins
   1379: FloatingSsoSessionCookiesIncluded
+  1380: ServiceWorkerAutoPreloadEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

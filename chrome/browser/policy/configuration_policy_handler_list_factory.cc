@@ -414,6 +414,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrefetchWithServiceWorkerEnabled,
     prefs::kPrefetchWithServiceWorkerEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kServiceWorkerAutoPreloadEnabled,
+    prefs::kServiceWorkerAutoPreloadEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

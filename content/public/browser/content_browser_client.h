@@ -1236,6 +1236,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsPrefetchWithServiceWorkerAllowed(
       content::BrowserContext* browser_context);
 
+  // Allow ServiceWorkerAutoPreload.
+  // https://github.com/WICG/service-worker-auto-preload
+  virtual bool IsServiceWorkerAutoPreloadAllowed(BrowserContext* context);
+
   // Returns whether the synthetic response with service worker is allowed for
   // the profile in a given context and URL. Not all URLs are actually invoke
   // synthetic response. The opt-in from the server is required to invoke the

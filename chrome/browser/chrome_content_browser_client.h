@@ -446,6 +446,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       net::CookieSettingOverrides overrides) override;
   bool IsPrefetchWithServiceWorkerAllowed(
       content::BrowserContext* browser_context) override;
+  bool IsServiceWorkerAutoPreloadAllowed(
+      content::BrowserContext* browser_context) override;
   bool IsServiceWorkerSyntheticResponseAllowed(
       content::BrowserContext* browser_context,
       const GURL& url) override;

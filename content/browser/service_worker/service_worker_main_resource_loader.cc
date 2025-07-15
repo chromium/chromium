@@ -450,6 +450,11 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  if (!GetContentClient()->browser()->IsServiceWorkerAutoPreloadAllowed(
+          context->browser_context())) {
+    return false;
+  }
+
   // AutoPreload is triggered only in a main frame.
   if (!resource_request_.is_outermost_main_frame) {
     return false;
