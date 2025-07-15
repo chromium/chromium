@@ -72,6 +72,14 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Custom {@link BaseActivityTestRule} for test using {@link ChromeActivity}.
  *
+ * <p>Relevant adaptations:
+ *
+ * <ul>
+ *   <li>Sets up an {@link EmbeddedTestServer}.
+ *   <li>Disables the offline indicator.
+ *   <li>Disables IPH (In-Product Help).
+ * </ul>
+ *
  * @param <T> The {@link Activity} class under test.
  */
 public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivityTestRule<T> {
