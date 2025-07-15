@@ -31,7 +31,7 @@ class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
 class NavigationInterceptOptions;
-class NavigationReloadOptions;
+class NavigationNavigateOptions;
 class ExceptionState;
 class FormData;
 class V8NavigationInterceptHandler;
@@ -78,7 +78,7 @@ class NavigateEvent final : public Event,
   // the navigation or set the appropritate state for a deferred commit.
   void MaybeCommitImmediately(ScriptState*);
 
-  void Redirect(const String& url, NavigationReloadOptions*, ExceptionState&);
+  void Redirect(const String& url, NavigationNavigateOptions*, ExceptionState&);
 
   void React(ScriptState* script_state);
 
@@ -108,7 +108,7 @@ class NavigateEvent final : public Event,
 
   class FulfillReaction;
   class RejectReaction;
-  void ReactDone(ScriptValue, bool did_fulfill);
+  void ReactDone(ScriptState*, ScriptValue, bool did_fulfill);
 
   void DelayedLoadStartTimerFired();
 
