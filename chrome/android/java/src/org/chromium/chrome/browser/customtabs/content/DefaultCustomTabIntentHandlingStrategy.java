@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Default implementation of {@link CustomTabIntentHandlingStrategy}. Navigates the Custom Tab to
  * urls provided in intents.
@@ -28,6 +30,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final Verifier mVerifier;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final Activity mActivity;
+    private final BooleanSupplier mIsLoadingSupplier;
 
     public DefaultCustomTabIntentHandlingStrategy(
             CustomTabActivityTabProvider tabProvider,
@@ -42,6 +45,13 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         mVerifier = verifier;
         mCurrentPageVerifier = currentPageVerifier;
         mActivity = activity;
+        mIsLoadingSupplier =
+                () -> {
+                    if (mTabProvider != null && mTabProvider.getTab() != null) {
+                        return mTabProvider.getTab().isLoading();
+                    }
+                    return false;
+                };
     }
 
     @Override
@@ -70,7 +80,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mNavigationController,
                             mTabProvider.getTab().getWebContents(),
                             mActivity,
-                            () -> mTabProvider.getTab().isLoading());
+                            mIsLoadingSupplier);
             launchHandler.handleInitialIntent(intentDataProvider);
         }
     }
@@ -132,7 +142,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
                             mNavigationController,
                             mTabProvider.getTab().getWebContents(),
                             mActivity,
-                            () -> mTabProvider.getTab().isLoading());
+                            mIsLoadingSupplier);
             launchHandler.handleNewIntent(intentDataProvider);
         } else {
             loadUrl(intentDataProvider);
