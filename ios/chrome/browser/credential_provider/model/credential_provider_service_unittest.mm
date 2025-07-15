@@ -446,32 +446,6 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 }
 
-// Tests that the CredentialProviderService correctly stores the enabled state
-// of the Passkeys M2 feature.
-TEST_F(CredentialProviderServiceTest, PasskeysM2Availability) {
-  {
-    // Enable the `kIOSPasskeysM2` feature.
-    base::test::ScopedFeatureList feature_list(kIOSPasskeysM2);
-
-    CreateCredentialProviderService();
-
-    EXPECT_TRUE([[app_group::GetGroupUserDefaults()
-        objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
-        boolValue]);
-  }
-  {
-    // Disable the `kIOSPasskeysM2` feature.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kIOSPasskeysM2);
-
-    CreateCredentialProviderService();
-
-    EXPECT_FALSE([[app_group::GetGroupUserDefaults()
-        objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
-        boolValue]);
-  }
-}
-
 TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   CreateCredentialProviderService();
 

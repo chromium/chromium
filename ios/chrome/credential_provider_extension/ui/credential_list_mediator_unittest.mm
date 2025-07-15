@@ -107,40 +107,11 @@ id<CredentialListUIHandler> UIHandlerWithCredential(id<Credential> credential) {
   }
 }
 
-// Helper method to get the right user defaults.
-NSUserDefaults* UserDefaults() {
-  return app_group::GetGroupUserDefaults();
-}
-
-// Enables or disables the Passkeys M2 feature in the user defaults depending on
-// `is_enabled`.
-void SetPasskeysM2FeatureEnabled(BOOL is_enabled) {
-  [UserDefaults()
-      setObject:[NSNumber numberWithBool:is_enabled]
-         forKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
-}
-
 }  // namespace
 
 namespace credential_provider_extension {
 
-class CredentialListMediatorTest : public PlatformTest {
- public:
-  void SetUp() override;
-  void TearDown() override;
-};
-
-void CredentialListMediatorTest::SetUp() {
-  [UserDefaults()
-      removeObjectForKey:
-          AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
-}
-
-void CredentialListMediatorTest::TearDown() {
-  [UserDefaults()
-      removeObjectForKey:
-          AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
-}
+class CredentialListMediatorTest : public PlatformTest {};
 
 // Tests that fetching a password credential works properly.
 TEST_F(CredentialListMediatorTest, FetchPasswordCredential) {
@@ -296,26 +267,13 @@ TEST_F(CredentialListMediatorTest, FetchAllCredentialsPasskeysAndPasswords) {
                                           password_credential_1.serviceName)
             credentialResponseHandler:nil];
 
-    {
-      SetPasskeysM2FeatureEnabled(YES);
+    NSArray<id<Credential>>* all_credentials =
+        [credential_list_mediator fetchAllCredentials];
 
-      NSArray<id<Credential>>* all_credentials =
-          [credential_list_mediator fetchAllCredentials];
-
-      ASSERT_EQ(all_credentials.count, 3u);
-      EXPECT_NSEQ(all_credentials[0], password_credential_1);
-      EXPECT_NSEQ(all_credentials[1], password_credential_2);
-      EXPECT_NSEQ(all_credentials[2], passkey_credential);
-    }
-    {
-      SetPasskeysM2FeatureEnabled(NO);
-
-      NSArray<id<Credential>>* all_credentials =
-          [credential_list_mediator fetchAllCredentials];
-
-      ASSERT_EQ(all_credentials.count, 1u);
-      EXPECT_NSEQ(all_credentials[0], passkey_credential);
-    }
+    ASSERT_EQ(all_credentials.count, 3u);
+    EXPECT_NSEQ(all_credentials[0], password_credential_1);
+    EXPECT_NSEQ(all_credentials[1], password_credential_2);
+    EXPECT_NSEQ(all_credentials[2], passkey_credential);
   }
 }
 
@@ -438,31 +396,15 @@ TEST_F(CredentialListMediatorTest, FilterPasskeyAndPasswordCredentials) {
                                           password_credential_1.serviceName)
             credentialResponseHandler:nil];
 
-    {
-      SetPasskeysM2FeatureEnabled(YES);
+    credential_list_mediator.allCredentials =
+        [credential_list_mediator fetchAllCredentials];
 
-      credential_list_mediator.allCredentials =
-          [credential_list_mediator fetchAllCredentials];
+    NSArray<id<Credential>>* filtered_credentials =
+        [credential_list_mediator filterCredentials];
 
-      NSArray<id<Credential>>* filtered_credentials =
-          [credential_list_mediator filterCredentials];
-
-      ASSERT_EQ(filtered_credentials.count, 2u);
-      EXPECT_NSEQ(filtered_credentials[0], password_credential_1);
-      EXPECT_NSEQ(filtered_credentials[1], passkey_credential);
-    }
-    {
-      SetPasskeysM2FeatureEnabled(NO);
-
-      credential_list_mediator.allCredentials =
-          [credential_list_mediator fetchAllCredentials];
-
-      NSArray<id<Credential>>* filtered_credentials =
-          [credential_list_mediator filterCredentials];
-
-      ASSERT_EQ(filtered_credentials.count, 1u);
-      EXPECT_NSEQ(filtered_credentials[0], passkey_credential);
-    }
+    ASSERT_EQ(filtered_credentials.count, 2u);
+    EXPECT_NSEQ(filtered_credentials[0], password_credential_1);
+    EXPECT_NSEQ(filtered_credentials[1], passkey_credential);
   }
 }
 

@@ -152,8 +152,7 @@
   if (relyingPartyIdentifier) {
     // When showing passkeys, only include passwords if there's at least one
     // that matches the service identifiers.
-    includePasswords = IsPasskeysM2Enabled() &&
-                       [self hasPasswordThatMatchesServiceIdentifiers];
+    includePasswords = [self hasPasswordThatMatchesServiceIdentifiers];
     includePasskeys = YES;
   } else {
     includePasswords = YES;
@@ -172,11 +171,10 @@
                (includePasskeys && isValidPasskey);
       }]];
 
-  // Only sort `credentials` if the Passkeys M2 feature is enabled or if there's
-  // no relying party identifier. Otherwise, it means that the `credentials`
-  // list only contains passkeys, and hence there's no need to sort as they all
-  // have the same `rpId`.
-  if (IsPasskeysM2Enabled() || !relyingPartyIdentifier) {
+  // Only sort if there's no relying party identifier. Otherwise, it means that
+  // the `credentials` list only contains passkeys, and hence there's no need to
+  // sort as they all have the same `rpId`.
+  if (!relyingPartyIdentifier) {
     credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
                                    id<Credential> obj1, id<Credential> obj2) {
       NSString* firstIdentifier = obj1.isPasskey ? obj1.rpId : obj1.serviceName;
@@ -197,11 +195,6 @@
   // If the `allowedCredentials` array is empty, then the relying party accepts
   // any passkey credential.
   BOOL isAnyPasskeyAllowed = allowedCredentials.count == 0;
-  if (!IsPasskeysM2Enabled() && [self.UIHandler relyingPartyIdentifier] &&
-      isAnyPasskeyAllowed) {
-    // Return the `allCredentials` array as it only contains passkeys.
-    return self.allCredentials;
-  }
 
   for (id<Credential> credential in self.allCredentials) {
     if (credential.isPasskey) {

@@ -147,9 +147,6 @@ class CredentialProviderService
   // Syncs whether or not PRF is enabled.
   void UpdatePasskeyPRFSetting();
 
-  // Syncs whether or not the Passkeys M2 feature is enabled.
-  void UpdatePasskeysM2Availability();
-
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,

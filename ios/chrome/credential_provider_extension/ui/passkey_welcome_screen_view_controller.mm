@@ -8,7 +8,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 namespace {
 
@@ -47,10 +46,7 @@ NSString* GetTitleString(PasskeyWelcomeScreenPurpose purpose) {
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_TITLE";
       break;
     case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID =
-          IsPasskeysM2Enabled()
-              ? @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE"
-              : @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE_M1";
+      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE";
       break;
   }
   return NSLocalizedString(stringID, @"The title of the welcome screen.");

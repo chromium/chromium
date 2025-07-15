@@ -50,9 +50,3 @@ std::optional<bool> GetPasskeyCreationPolicy() {
   }
   return [passkeyCreationPolicy boolValue];
 }
-
-BOOL IsPasskeysM2Enabled() {
-  return [[app_group::GetGroupUserDefaults()
-      objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
-      boolValue];
-}

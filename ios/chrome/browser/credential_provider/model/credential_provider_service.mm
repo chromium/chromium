@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
@@ -235,7 +234,6 @@ CredentialProviderService::CredentialProviderService(
   UpdatePasswordSyncSetting();
   UpdateAutomaticPasskeyUpgradeSetting();
   UpdatePasskeyPRFSetting();
-  UpdatePasskeysM2Availability();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -611,16 +609,6 @@ void CredentialProviderService::UpdatePasskeyPRFSetting() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
          forKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()];
-}
-
-void CredentialProviderService::UpdatePasskeysM2Availability() {
-  if (!IsLastUsedProfile()) {
-    return;
-  }
-
-  [app_group::GetGroupUserDefaults()
-      setObject:[NSNumber numberWithBool:IOSPasskeysM2Enabled()]
-         forKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(

@@ -314,8 +314,7 @@ enum class PasskeyCreationEligibility {
 }
 
 - (void)prepareInterfaceForExtensionConfiguration {
-  if (HasSavedPasskeys(self.credentialStore.credentials) &&
-      IsPasskeysM2Enabled()) {
+  if (HasSavedPasskeys(self.credentialStore.credentials)) {
     __weak __typeof__(self) weakSelf = self;
     auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
       [weakSelf completeSecurityDomainSecretFetchForExtensionConfiguration];
