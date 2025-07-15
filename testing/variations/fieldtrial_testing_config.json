@@ -13328,6 +13328,29 @@
             ]
         }
     ],
+    "IgnoreDuplicateNavs": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_threshold_3s",
+                    "params": {
+                        "duplicate_nav_threshold": "3s"
+                    },
+                    "enable_features": [
+                        "IgnoreDuplicateNavs"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImageDescriptionsAlternateRouting": [
         {
             "platforms": [
