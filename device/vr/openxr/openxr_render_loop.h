@@ -107,8 +107,7 @@ class OpenXrRenderLoop : public XRThread,
   void RequestSession(base::RepeatingCallback<void(mojom::XRVisibilityState)>
                           on_visibility_state_changed,
                       mojom::XRRuntimeSessionOptionsPtr options,
-                      RequestSessionCallback callback,
-                      base::OnceClosure end_callback);
+                      RequestSessionCallback callback);
 
  private:
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
@@ -124,7 +123,6 @@ class OpenXrRenderLoop : public XRThread,
       base::RepeatingCallback<void(mojom::XRVisibilityState)>
           on_visibility_state_changed,
       mojom::XRRuntimeSessionOptionsPtr options,
-      base::OnceClosure end_callback,
       bool success);
 
   // Will Submit if we have textures submitted from the Overlay (if it is
@@ -201,8 +199,7 @@ class OpenXrRenderLoop : public XRThread,
 
   void StartRuntime(base::RepeatingCallback<void(mojom::XRVisibilityState)>
                         on_visibility_state_changed,
-                    mojom::XRRuntimeSessionOptionsPtr options,
-                    base::OnceClosure end_callback);
+                    mojom::XRRuntimeSessionOptionsPtr options);
   void StopRuntime();
   void OnSessionStart();
   bool HasSessionEnded();
@@ -214,7 +211,6 @@ class OpenXrRenderLoop : public XRThread,
   void OnOpenXrSessionStarted(
       base::RepeatingCallback<void(mojom::XRVisibilityState)>
           on_visibility_state_changed,
-      base::OnceClosure end_callback,
       mojom::XRRuntimeSessionOptionsPtr options,
       XrResult result);
   bool UpdateViews();
@@ -326,7 +322,6 @@ class OpenXrRenderLoop : public XRThread,
       environment_receiver_{this};
 
   RequestSessionCallback request_session_callback_;
-  base::OnceClosure end_callback_;
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};

@@ -210,16 +210,14 @@ void OpenXrRenderLoop::RequestSession(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
     mojom::XRRuntimeSessionOptionsPtr options,
-    RequestSessionCallback callback,
-    base::OnceClosure end_callback) {
+    RequestSessionCallback callback) {
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
   request_session_callback_ =
       base::BindPostTask(main_thread_task_runner_, std::move(callback));
 
-  StartRuntime(std::move(on_visibility_state_changed), std::move(options),
-               std::move(end_callback));
+  StartRuntime(std::move(on_visibility_state_changed), std::move(options));
 }
 
 void OpenXrRenderLoop::SetVisibilityState(
@@ -318,7 +316,6 @@ void OpenXrRenderLoop::StartRuntimeFinish(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
     mojom::XRRuntimeSessionOptionsPtr options,
-    base::OnceClosure end_callback,
     bool success) {
   if (!success) {
     TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
@@ -401,8 +398,6 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   std::move(request_session_callback_)
       .Run(true, std::move(session), std::move(overlay_remote));
   is_presenting_ = true;
-  end_callback_ =
-      base::BindPostTask(main_thread_task_runner_, std::move(end_callback));
 
   graphics_binding_->SetOverlayAndWebXrVisibility(overlay_visible_,
                                                   webxr_visible_);
@@ -747,8 +742,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 void OpenXrRenderLoop::StartRuntime(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
-    mojom::XRRuntimeSessionOptionsPtr options,
-    base::OnceClosure end_callback) {
+    mojom::XRRuntimeSessionOptionsPtr options) {
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
 
@@ -774,7 +768,7 @@ void OpenXrRenderLoop::StartRuntime(
 
   SessionStartedCallback on_session_started_callback = base::BindOnce(
       &OpenXrRenderLoop::OnOpenXrSessionStarted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(on_visibility_state_changed), std::move(end_callback));
+      std::move(on_visibility_state_changed));
   SessionEndedCallback on_session_ended_callback = base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
   VisibilityChangedCallback on_visibility_state_changed_callback =
@@ -804,7 +798,6 @@ void OpenXrRenderLoop::MaybeRejectSessionCallback() {
 void OpenXrRenderLoop::OnOpenXrSessionStarted(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
-    base::OnceClosure end_callback,
     mojom::XRRuntimeSessionOptionsPtr options,
     XrResult result) {
   DVLOG(1) << __func__ << " Result: " << result;
@@ -837,14 +830,10 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
 
   StartContextProviderIfNeeded(base::BindOnce(
       &OpenXrRenderLoop::StartRuntimeFinish, weak_ptr_factory_.GetWeakPtr(),
-      std::move(on_visibility_state_changed), std::move(options),
-      std::move(end_callback)));
+      std::move(on_visibility_state_changed), std::move(options)));
 }
 
 void OpenXrRenderLoop::StopRuntime() {
-  if (end_callback_) {
-    std::move(end_callback_).Run();
-  }
   openxr_ = nullptr;
   // Need to destroy the graphics binding after the OpenXrApiWrapper, which
   // depends on it.
