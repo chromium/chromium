@@ -9,9 +9,10 @@ desc: |-
 owners:
 - haileywang@google.com
 - file://components/collaboration/OWNERS
+supported_on:
+- android:140-
+- chrome.*:140-
 future_on:
-- android
-- chrome.*
 - chrome_os
 - ios
 features:
