@@ -10,6 +10,9 @@
 namespace chrome_pdf {
 
 struct PageCharacterIndex {
+  friend bool operator==(const PageCharacterIndex&,
+                         const PageCharacterIndex&) = default;
+
   // Index of PDF page.
   uint32_t page_index = 0;
   // Index of character within the PDF page.

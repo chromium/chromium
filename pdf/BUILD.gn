@@ -499,6 +499,7 @@ if (enable_pdf) {
       ":pdf",
       ":pdf_test_utils",
       ":pdf_view_web_plugin",
+      ":structs",
       "//base",
       "//base:i18n",
       "//base/test:test_support",

@@ -8,12 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "pdf/page_character_index.h"
 #include "pdf/pdf_caret_client.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
-struct PageCharacterIndex;
 struct RegionData;
 
 // Manages the text caret for text selection and navigation within a PDF. This
@@ -26,7 +26,8 @@ class PdfCaret {
   static constexpr base::TimeDelta kDefaultBlinkInterval =
       base::Milliseconds(500);
 
-  explicit PdfCaret(PdfCaretClient* client);
+  // PdfCaret should only be instantiated on a text page with chars.
+  PdfCaret(PdfCaretClient* client, const PageCharacterIndex& index);
   PdfCaret(const PdfCaret&) = delete;
   PdfCaret& operator=(const PdfCaret&) = delete;
   ~PdfCaret();
@@ -69,11 +70,10 @@ class PdfCaret {
   // Client must outlive `this`.
   const raw_ptr<PdfCaretClient> client_;
 
-  // `page_index_` and `char_index_` represent the current caret position.
-  int page_index_ = -1;
-  // Can be max char count on the page, since the cursor can be to the right of
-  // the last char.
-  int char_index_ = -1;
+  // The current caret position.
+  // The char index can be max char count on the page, since the cursor can be
+  // to the right of the last char.
+  PageCharacterIndex index_;
 
   // Whether the caret is visible.
   bool is_visible_ = false;

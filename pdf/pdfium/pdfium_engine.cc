@@ -604,10 +604,6 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
   IFSDK_PAUSE::version = 1;
   IFSDK_PAUSE::user = nullptr;
   IFSDK_PAUSE::NeedToPauseNow = Pause_NeedToPauseNow;
-
-  if (features::kPdfInk2TextHighlighting.Get() && !client_->IsPrintPreview()) {
-    caret_ = std::make_unique<PdfCaret>(this);
-  }
 }
 
 PDFiumEngine::~PDFiumEngine() {
@@ -949,13 +945,12 @@ uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
 }
 
 std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForChar(
-    int page_index,
-    int char_index) const {
-  CHECK(PageIndexInBounds(page_index));
-  PDFiumPage* page = pages_[page_index].get();
-  CHECK(page->IsCharIndexInBounds(char_index));
+    const PageCharacterIndex& index) const {
+  CHECK(PageIndexInBounds(index.page_index));
+  PDFiumPage* page = pages_[index.page_index].get();
+  CHECK(page->IsCharIndexInBounds(index.char_index));
 
-  PDFiumRange range(page, char_index, 1);
+  PDFiumRange range(page, index.char_index, 1);
   return range.GetScreenRects(GetVisibleRect().origin(), current_zoom_,
                               GetCurrentOrientation());
 }
@@ -1022,7 +1017,11 @@ void PDFiumEngine::FinishLoadingDocument() {
 
   // TODO(crbug.com/427242881): Figure out when to enter caret browsing mode.
   // For now, just enter it after the document loads.
-  if (caret_ && !pages_.empty() && pages_[0]->GetCharCount()) {
+  if (features::kPdfInk2TextHighlighting.Get() && !client_->IsPrintPreview() &&
+      !pages_.empty() && pages_[0]->GetCharCount()) {
+    // TODO(crbug.com/427242881): Determine the starting position of the caret.
+    caret_ = std::make_unique<PdfCaret>(this, PageCharacterIndex(0, 0));
+
     // TODO(crbug.com/427778119): Set caret blink interval.
     caret_->SetVisibility(true);
   }

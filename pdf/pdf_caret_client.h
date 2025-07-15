@@ -13,6 +13,8 @@
 
 namespace chrome_pdf {
 
+struct PageCharacterIndex;
+
 class PdfCaretClient {
  public:
   virtual ~PdfCaretClient() = default;
@@ -21,11 +23,10 @@ class PdfCaretClient {
   // index, otherwise crashes.
   virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
 
-  // Gets the screen rects for the given char. `page_index` must be a valid page
-  // index and `char_index` must be in bounds, otherwise crashes.
+  // Gets the screen rects for the given char. `index` must be a valid char on a
+  // page, otherwise crashes.
   virtual std::vector<gfx::Rect> GetScreenRectsForChar(
-      int page_index,
-      int char_index) const = 0;
+      const PageCharacterIndex& index) const = 0;
 
   // Notifies the client to invalidate `rect` for the caret.
   virtual void InvalidateRect(const gfx::Rect& rect) {}

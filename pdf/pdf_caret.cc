@@ -23,7 +23,10 @@ constexpr int kCaretWidth = 1;
 
 }  // namespace
 
-PdfCaret::PdfCaret(PdfCaretClient* client) : client_(client) {}
+PdfCaret::PdfCaret(PdfCaretClient* client, const PageCharacterIndex& index)
+    : client_(client) {
+  SetChar(index);
+}
 
 PdfCaret::~PdfCaret() = default;
 
@@ -33,10 +36,6 @@ void PdfCaret::SetVisibility(bool is_visible) {
   }
 
   is_visible_ = is_visible;
-  // TODO(crbug.com/427242881): Determine the starting position of the caret.
-  if (is_visible && page_index_ == -1 && char_index_ == -1) {
-    SetChar(PageCharacterIndex(0, 0));
-  }
   RefreshDisplayState();
 }
 
@@ -93,25 +92,18 @@ void PdfCaret::OnBlinkTimerFired() {
 }
 
 void PdfCaret::SetChar(const PageCharacterIndex& next_char) {
-  int page_index = next_char.page_index;
-  int char_index = next_char.char_index;
+  uint32_t char_count = client_->GetCharCount(next_char.page_index);
+  CHECK_GT(char_count, 0u);
+  CHECK_LE(next_char.char_index, char_count);
 
-  int char_count = client_->GetCharCount(page_index);
-  CHECK_GT(char_count, 0);
-
-  CHECK_GE(char_index, 0);
-  CHECK_LE(char_index, char_count);
-
-  page_index_ = page_index;
-  char_index_ = char_index;
+  index_ = next_char;
 
   caret_screen_rect_ = GetScreenRectForCaret();
   RefreshDisplayState();
 }
 
 gfx::Rect PdfCaret::GetScreenRectForCaret() const {
-  std::vector<gfx::Rect> screen_rects =
-      client_->GetScreenRectsForChar(page_index_, char_index_);
+  std::vector<gfx::Rect> screen_rects = client_->GetScreenRectsForChar(index_);
   CHECK(!screen_rects.empty());
 
   gfx::Rect& screen_rect = screen_rects[0];

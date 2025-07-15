@@ -499,8 +499,8 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // PdfCaretClient:
   uint32_t GetCharCount(uint32_t page_index) const override;
-  std::vector<gfx::Rect> GetScreenRectsForChar(int page_index,
-                                               int char_index) const override;
+  std::vector<gfx::Rect> GetScreenRectsForChar(
+      const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
 
 #if defined(PDF_ENABLE_XFA)

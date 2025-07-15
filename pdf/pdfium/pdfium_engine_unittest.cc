@@ -1258,9 +1258,12 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForChar) {
   constexpr gfx::Rect kExpectedRect2{67, 188, 5, 19};
   constexpr gfx::Rect kExpectedRect3{43, 468, 8, 19};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_THAT(engine->GetScreenRectsForChar(0, 0), ElementsAre(kExpectedRect1));
-  EXPECT_THAT(engine->GetScreenRectsForChar(0, 5), ElementsAre(kExpectedRect2));
-  EXPECT_THAT(engine->GetScreenRectsForChar(1, 1), ElementsAre(kExpectedRect3));
+  EXPECT_THAT(engine->GetScreenRectsForChar({0, 0}),
+              ElementsAre(kExpectedRect1));
+  EXPECT_THAT(engine->GetScreenRectsForChar({0, 5}),
+              ElementsAre(kExpectedRect2));
+  EXPECT_THAT(engine->GetScreenRectsForChar({1, 1}),
+              ElementsAre(kExpectedRect3));
 }
 
 TEST_P(PDFiumEngineTest, InvalidateRect) {
