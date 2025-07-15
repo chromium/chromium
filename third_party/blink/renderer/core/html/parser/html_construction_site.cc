@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -900,27 +901,32 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
   if (RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    Attribute* patchfor_attribute =
-        token->GetAttributeItem(html_names::kPatchforAttr);
-    // TODO(nrosenthal): make this actually work when inside declarative shadow
-    // DOM.
-    Element* patch_target =
-        patchfor_attribute ? CurrentElement()->GetTreeScope().getElementById(
-                                 patchfor_attribute->Value())
-                           : nullptr;
-    if (patch_target) {
-      // For now, a template is either targeting a shadow root or a patch.
-      declarative_shadow_root_mode = String();
+    if (Attribute* patchfor_attribute =
+            token->GetAttributeItem(html_names::kPatchforAttr)) {
+      TreeScope* scope = &CurrentElement()->GetTreeScope();
+      if (HTMLTemplateElement* template_parent =
+              DynamicTo<HTMLTemplateElement>(CurrentElement())) {
+        if (ShadowRoot* shadow_root =
+                DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
+          scope = shadow_root;
+        }
+      }
 
-      // Like with shadowrootmode, the template is discarded.
-      should_attach_template = false;
+      if (Element* patch_target =
+              scope->getElementById(patchfor_attribute->Value())) {
+        // For now, a template is either targeting a shadow root or a patch.
+        declarative_shadow_root_mode = String();
 
-      // A patch replaces the existing children of the target.
-      patch_target->RemoveChildren();
+        // Like with shadowrootmode, the template is discarded.
+        should_attach_template = false;
 
-      // From now on, parsed children of the template are inserted directly to
-      // the patch target.
-      template_element->SetOverrideInsertionTarget(*patch_target);
+        // A patch replaces the existing children of the target.
+        patch_target->RemoveChildren();
+
+        // From now on, parsed children of the template are inserted directly to
+        // the patch target.
+        template_element->SetOverrideInsertionTarget(*patch_target);
+      }
     }
   }
 
