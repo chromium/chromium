@@ -219,3 +219,38 @@ function assert_constant_value(array, value, messagePrefix = '') {
     }
   }
 }
+
+/**
+ * Asserts that two arrays are exactly equal, element by element.
+ * @param {!Array<number>} actual The actual array of values.
+ * @param {!Array<number>} expected The expected array of values.
+ * @param {string} message Description used for assertion failures.
+ */
+function assert_array_equals_exact(actual, expected, message) {
+  assert_equals(actual.length, expected.length, 'Buffers must be same length');
+  for (let i = 0; i < actual.length; ++i) {
+    assert_equals(actual[i], expected[i], `${message} (at index ${i})`);
+  }
+}
+
+/**
+ * Asserts that an array is not a constant array (i.e., not all values are equal to the given constant).
+ * @param {!Array<number>} array The array to be checked.
+ * @param {number} constantValue The constant value to compare against.
+ * @param {string} message Description used for assertion failures.
+ */
+function assert_not_constant_value(array, constantValue, message) {
+  const notAllSame = array.some(value => value !== constantValue);
+  assert_true(notAllSame, message);
+}
+
+/**
+ * Asserts that all elements of an array are exactly equal to a constant value.
+ * @param {!Array<number>} array The array to be checked.
+ * @param {number} constantValue The expected constant value.
+ * @param {string} message Description used for assertion failures.
+ */
+function assert_strict_constant_value(array, constantValue, message) {
+  const allSame = array.every(value => value === constantValue);
+  assert_true(allSame, message);
+}
