@@ -2560,15 +2560,15 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    FormStructure& form,
-    AutofillField& trigger_autofill_field,
-    base::span<const AutofillField*> safe_filled_autofill_fields,
+    const FormStructure& form,
+    const AutofillField& trigger_field,
+    base::span<const AutofillField* const> safe_filled_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     std::optional<RefillTriggerReason> refill_trigger_reason) {
   const auto safe_filled_field_ids = base::MakeFlatSet<FieldGlobalId>(
-      safe_filled_autofill_fields, /*comp=*/{}, &FormFieldData::global_id);
+      safe_filled_fields, /*comp=*/{}, &FormFieldData::global_id);
   NotifyObservers(&Observer::OnFillOrPreviewForm, form.global_id(),
                   action_persistence, safe_filled_field_ids, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
@@ -2577,34 +2577,34 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
   autofill_metrics::LogNumberOfFieldsModifiedByAutofill(
-      safe_filled_autofill_fields.size(), filling_payload);
+      safe_filled_fields.size(), filling_payload);
   if (refill_trigger_reason) {
     autofill_metrics::LogNumberOfFieldsModifiedByRefill(
-        *refill_trigger_reason, safe_filled_autofill_fields.size());
+        *refill_trigger_reason, safe_filled_fields.size());
   }
   client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
       absl::Overload{
           [&](const AutofillProfile* profile) {
-            LogAndRecordProfileFill(form, trigger_autofill_field, *profile,
+            LogAndRecordProfileFill(form, trigger_field, *profile,
                                     trigger_source,
                                     refill_trigger_reason.has_value());
             MaybeShowPlusAddressEmailOverrideNotification(
-                safe_filled_autofill_fields, *profile, form.global_id());
+                safe_filled_fields, *profile, form.global_id());
           },
           [&](const CreditCard* credit_card) {
-            LogAndRecordCreditCardFill(form, trigger_autofill_field,
-                                       filled_field_ids, safe_filled_field_ids,
-                                       *credit_card, trigger_source,
+            LogAndRecordCreditCardFill(form, trigger_field, filled_field_ids,
+                                       safe_filled_field_ids, *credit_card,
+                                       trigger_source,
                                        refill_trigger_reason.has_value());
           },
           [&](const EntityInstance* entity) {
             if (AutofillAiManager* ai_manager =
                     client().GetAutofillAiManager()) {
-              ai_manager->OnDidFillSuggestion(
-                  entity->guid(), form, trigger_autofill_field,
-                  safe_filled_autofill_fields, driver().GetPageUkmSourceId());
+              ai_manager->OnDidFillSuggestion(entity->guid(), form,
+                                              trigger_field, safe_filled_fields,
+                                              driver().GetPageUkmSourceId());
             }
           },
           [&](const VerifiedProfile*) {
@@ -2615,8 +2615,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
 }
 
 void BrowserAutofillManager::LogAndRecordCreditCardFill(
-    FormStructure& form_structure,
-    AutofillField& trigger_autofill_field,
+    const FormStructure& form_structure,
+    const AutofillField& trigger_field,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     const CreditCard& card,
@@ -2636,7 +2636,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
       card_copy.SetNumber(card_copy.LastFourDigits());
     }
     metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
-        card_copy, form_structure, trigger_autofill_field, filled_field_ids,
+        card_copy, form_structure, trigger_field, filled_field_ids,
         safe_field_ids, metrics_->signin_state_for_metrics, trigger_source);
 
     client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
@@ -2645,24 +2645,23 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
 }
 
 void BrowserAutofillManager::LogAndRecordProfileFill(
-    FormStructure& form_structure,
-    AutofillField& trigger_autofill_field,
+    const FormStructure& form_structure,
+    const AutofillField& trigger_field,
     const AutofillProfile& filled_profile,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
-  if (!trigger_autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
+  if (!trigger_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
     if (is_refill) {
       metrics_->address_form_event_logger.OnDidRefill(form_structure);
     } else {
       metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-          filled_profile, form_structure, trigger_autofill_field,
-          trigger_source);
+          filled_profile, form_structure, trigger_field, trigger_source);
     }
   }
   if (!is_refill) {
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(
         filled_profile);
-    if (trigger_autofill_field.Type().GetStorableType() ==
+    if (trigger_field.Type().GetStorableType() ==
             EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
         !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
@@ -2690,7 +2689,7 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
 }
 
 void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
-    base::span<const AutofillField*> safe_filled_autofill_fields,
+    base::span<const AutofillField* const> safe_filled_fields,
     const AutofillProfile& filled_profile,
     const FormGlobalId& form_id) {
   // `filled_profile` might have had its email overridden, which is what makes
@@ -2703,11 +2702,11 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
   }
 
   const AutofillField* email_autofill_field = nullptr;
-  if (auto it = std::ranges::find(safe_filled_autofill_fields, EMAIL_ADDRESS,
+  if (auto it = std::ranges::find(safe_filled_fields, EMAIL_ADDRESS,
                                   [](const AutofillField* field) {
                                     return field->Type().GetStorableType();
                                   });
-      it != safe_filled_autofill_fields.end()) {
+      it != safe_filled_fields.end()) {
     email_autofill_field = *it;
   } else {
     return;

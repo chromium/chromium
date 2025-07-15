@@ -202,20 +202,18 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Handles post-filling logic of `form`, like notifying observers and logging
   // form metrics.
-  // `filled_fields` are the fields that were filled by the browser.
+  // `filled_field_ids` are the IDs of fields that were filled by the browser.
   // `safe_filled_fields` are the subset of `filled_fields` that were deemed
   // safe to fill by `AutofillDriverRouter`, according to the iframe security
   // policy.
-  // `safe_filled_autofill_fields` are the AutofillField's corresponding to
-  // `safe_filled_fields`.
   // `skip_reasons` tells us for each field (mapped by their IDs), whether the
   // field was skipped for filling or not and why.
   // TODO(crbug.com/40227071): Remove `filled_field_ids`.
   void OnDidFillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      FormStructure& form,
-      AutofillField& trigger_autofill_field,
-      base::span<const AutofillField*> safe_filled_autofill_fields,
+      const FormStructure& form,
+      const AutofillField& trigger_field,
+      base::span<const AutofillField* const> safe_filled_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
@@ -595,30 +593,29 @@ class BrowserAutofillManager : public AutofillManager {
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
 
-  // Handles the credit card specific logic after a form is filled, including
+  // Handles the credit card specific logic after `form` is filled, including
   // logging the fill operation and recording card usage.
   void LogAndRecordCreditCardFill(
-      FormStructure& form_structure,
-      AutofillField& trigger_autofill_field,
+      const FormStructure& form,
+      const AutofillField& trigger_field,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       const CreditCard& card,
       AutofillTriggerSource trigger_source,
       bool is_refill);
 
-  // Handles the address specific logic after a form is filled, including
+  // Handles the address specific logic after `form` is filled, including
   // logging the fill operation and recording profile usage.
-  void LogAndRecordProfileFill(
-      FormStructure& form_structure,
-      AutofillField& trigger_autofill_field,
-      const AutofillProfile& filled_profile,
-      AutofillTriggerSource trigger_source,
-      bool is_refill);
+  void LogAndRecordProfileFill(const FormStructure& form,
+                               const AutofillField& trigger_field,
+                               const AutofillProfile& filled_profile,
+                               AutofillTriggerSource trigger_source,
+                               bool is_refill);
 
   // Checks if the user filled a form using a plus address email override and,
   // if so, shows a notification to the user.
   void MaybeShowPlusAddressEmailOverrideNotification(
-      base::span<const AutofillField*> safe_filled_autofill_fields,
+      base::span<const AutofillField* const> safe_filled_fields,
       const AutofillProfile& filled_profile,
       const FormGlobalId& form_id);
 
