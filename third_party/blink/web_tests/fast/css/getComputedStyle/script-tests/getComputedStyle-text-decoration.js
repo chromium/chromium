@@ -48,7 +48,7 @@ debug('');
 
 debug("Value 'blink' (valid but ignored):");
 e.style.textDecoration = 'blink';
-testComputedStyle("textDecoration", "none solid rgb(0, 0, 0)");
+testComputedStyle("textDecoration", "blink solid rgb(0, 0, 0)");
 debug('');
 
 debug("Value 'overline overline' (invalid):");

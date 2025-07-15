@@ -35,10 +35,10 @@ debug("Value 'line-through':");
 test("line-through", "line-through", "line-through");
 
 debug("Value 'blink' (valid, but ignored on computed style):");
-test("blink", "blink", "none");
+test("blink", "blink", "blink");
 
 debug("Value 'underline overline line-through blink':");
-test("underline overline line-through blink", "underline overline line-through blink", "underline overline line-through");
+test("underline overline line-through blink", "underline overline line-through blink", "underline overline line-through blink");
 
 debug("Value '':");
 test("", "", "none");

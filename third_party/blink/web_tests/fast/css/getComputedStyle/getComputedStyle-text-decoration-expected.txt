@@ -31,7 +31,7 @@ PASS computedStyle.textDecoration is 'underline overline line-through solid rgb(
 
 
 Value 'blink' (valid but ignored):
-PASS computedStyle.textDecoration is 'none solid rgb(0, 0, 0)'
+PASS computedStyle.textDecoration is 'blink solid rgb(0, 0, 0)'
 
 
 Value 'overline overline' (invalid):

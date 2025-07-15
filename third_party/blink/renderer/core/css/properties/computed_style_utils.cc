@@ -2255,7 +2255,6 @@ CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
       break;
   }
 
-  // Blink value is ignored.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (EnumHasFlags(text_decoration, TextDecorationLine::kUnderline)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnderline));
@@ -2265,6 +2264,11 @@ CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
   }
   if (EnumHasFlags(text_decoration, TextDecorationLine::kLineThrough)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLineThrough));
+  }
+  if (RuntimeEnabledFeatures::
+          CssTextDecorationLineBlinkSerializationEnabled() &&
+      EnumHasFlags(text_decoration, TextDecorationLine::kBlink)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlink));
   }
 
   if (!list->length()) {

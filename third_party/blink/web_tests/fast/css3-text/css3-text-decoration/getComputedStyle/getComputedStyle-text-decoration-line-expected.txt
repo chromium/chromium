@@ -34,12 +34,12 @@ PASS computedStyle.textDecorationLine is "line-through"
 
 Value 'blink' (valid, but ignored on computed style):
 PASS e.style.textDecorationLine is "blink"
-PASS computedStyle.textDecorationLine is "none"
+PASS computedStyle.textDecorationLine is "blink"
 
 
 Value 'underline overline line-through blink':
 PASS e.style.textDecorationLine is "underline overline line-through blink"
-PASS computedStyle.textDecorationLine is "underline overline line-through"
+PASS computedStyle.textDecorationLine is "underline overline line-through blink"
 
 
 Value '':

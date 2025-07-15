@@ -1586,6 +1586,11 @@
       status: "stable",
     },
     {
+      // crbug.com/40767672
+      name: "CssTextDecorationLineBlinkSerialization",
+      status: "stable",
+    },
+    {
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
       name: "CSSTextSpacing",
       depends_on: ["CSSTextAutoSpace"],
