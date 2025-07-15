@@ -55,8 +55,7 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void onConnectionSetup(
-                IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
+        public void onConnectionSetup(IChildProcessArgs args, List<IBinder> clientInterfaces) {
             if (clientInterfaces != null && !clientInterfaces.isEmpty()) {
                 mIChildProcessTest = IChildProcessTest.Stub.asInterface(clientInterfaces.get(0));
             }

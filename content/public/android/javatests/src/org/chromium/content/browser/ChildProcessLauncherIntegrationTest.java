@@ -244,7 +244,6 @@ public class ChildProcessLauncherIntegrationTest {
         // Arguments to setupConnection
         private IChildProcessArgs mChildProcessArgs;
         private List<IBinder> mClientInterfaces;
-        private IBinder mBinderBox;
         private ConnectionCallback mConnectionCallback;
 
         public CrashOnLaunchChildProcessConnection(
@@ -272,14 +271,9 @@ public class ChildProcessLauncherIntegrationTest {
             mCrashServiceCalled = true;
             if (mChildProcessArgs != null) {
                 super.setupConnection(
-                        mChildProcessArgs,
-                        mClientInterfaces,
-                        mBinderBox,
-                        mConnectionCallback,
-                        null);
+                        mChildProcessArgs, mClientInterfaces, mConnectionCallback, null);
                 mChildProcessArgs = null;
                 mClientInterfaces = null;
-                mBinderBox = null;
                 mConnectionCallback = null;
             }
         }
@@ -294,19 +288,16 @@ public class ChildProcessLauncherIntegrationTest {
         public void setupConnection(
                 IChildProcessArgs childProcessArgs,
                 List<IBinder> clientInterfaces,
-                IBinder binderBox,
                 ConnectionCallback connectionCallback,
                 ZygoteInfoCallback zygoteInfoCallback) {
             // Make sure setupConnection is called after crashServiceForTesting so that
             // setupConnection is guaranteed to fail.
             if (mCrashServiceCalled) {
-                super.setupConnection(
-                        childProcessArgs, clientInterfaces, binderBox, connectionCallback, null);
+                super.setupConnection(childProcessArgs, clientInterfaces, connectionCallback, null);
                 return;
             }
             mChildProcessArgs = childProcessArgs;
             mClientInterfaces = clientInterfaces;
-            mBinderBox = binderBox;
             mConnectionCallback = connectionCallback;
         }
 

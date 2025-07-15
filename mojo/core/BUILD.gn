@@ -184,13 +184,6 @@ source_set("impl_for_embedder") {
 
   defines = [ "MOJO_SYSTEM_IMPL_IMPLEMENTATION" ]
   deps = [ "//crypto" ]
-  if (is_android) {
-    sources += [
-      "channel_binder.cc",
-      "channel_binder.h",
-    ]
-    deps += [ "//third_party/ashmem" ]
-  }
 
   if (is_win) {
     sources += [

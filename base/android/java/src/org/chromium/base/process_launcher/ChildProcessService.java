@@ -169,8 +169,7 @@ public class ChildProcessService {
                 public void setupConnection(
                         IChildProcessArgs args,
                         IParentProcess parentProcess,
-                        List<IBinder> callbacks,
-                        IBinder binderBox)
+                        List<IBinder> callbacks)
                         throws RemoteException {
                     assert mServiceBound;
                     synchronized (mBinderLock) {
@@ -201,7 +200,7 @@ public class ChildProcessService {
                     parentProcess.finishSetupConnection(
                             pid, zygotePid, startupTimeMillis, relroInfo);
                     mParentProcess = parentProcess;
-                    processConnectionArgs(args, callbacks, binderBox);
+                    processConnectionArgs(args, callbacks);
                 }
 
                 @Override
@@ -433,11 +432,10 @@ public class ChildProcessService {
         sZygoteStartupTimeMillis = zygoteStartupTimeMillis;
     }
 
-    private void processConnectionArgs(
-            IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
+    private void processConnectionArgs(IChildProcessArgs args, List<IBinder> clientInterfaces) {
         synchronized (mMainThread) {
             mChildProcessArgs = args;
-            mDelegate.onConnectionSetup(args, clientInterfaces, binderBox);
+            mDelegate.onConnectionSetup(args, clientInterfaces);
             mMainThread.notifyAll();
         }
     }

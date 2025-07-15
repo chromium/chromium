@@ -393,8 +393,7 @@ public final class ChildProcessLauncherHelperImpl {
             long nativePointer,
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
-            boolean canUseWarmUpConnection,
-            @Nullable IBinder binderBox) {
+            boolean canUseWarmUpConnection) {
         assert LauncherThread.runningOnLauncherThread();
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
@@ -436,8 +435,7 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback,
-                        binderBox);
+                        binderCallback);
         helper.start();
 
         if (sandboxed && !sCheckedServiceGroupImportance) {
@@ -712,8 +710,7 @@ public final class ChildProcessLauncherHelperImpl {
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
-            @Nullable IBinder binderCallback,
-            @Nullable IBinder binderBox) {
+            @Nullable IBinder binderCallback) {
         assert LauncherThread.runningOnLauncherThread();
 
         mNativeChildProcessLauncherHelper = nativePointer;
@@ -730,8 +727,7 @@ public final class ChildProcessLauncherHelperImpl {
                         commandLine,
                         filesToBeMapped,
                         connectionAllocator,
-                        binderCallback == null ? null : Arrays.asList(binderCallback),
-                        binderBox);
+                        binderCallback == null ? null : Arrays.asList(binderCallback));
         mProcessType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
@@ -1081,8 +1077,7 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback,
-                        null);
+                        binderCallback);
         launcherHelper.mLauncher.start(doSetupConnection, /* queueIfNoFreeConnection= */ true);
         return launcherHelper;
     }

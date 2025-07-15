@@ -871,7 +871,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
-        Flag.baseFeature("MojoUseBinder"),
         Flag.baseFeature(
                 ContentFeatures.WEB_PERMISSIONS_API, "Enables navigator.permissions.query()"),
         Flag.baseFeature(

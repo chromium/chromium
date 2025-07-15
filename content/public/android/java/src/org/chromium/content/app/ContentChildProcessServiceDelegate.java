@@ -47,9 +47,6 @@ import java.util.List;
 public class ContentChildProcessServiceDelegate implements ChildProcessServiceDelegate {
     private static final String TAG = "ContentCPSDelegate";
 
-    // The binder box passed to us by the browser. May be null.
-    private @Nullable IBinder mBinderBox;
-
     private @Nullable IGpuProcessCallback mGpuCallback;
 
     private int mCpuCount;
@@ -76,9 +73,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     }
 
     @Override
-    public void onConnectionSetup(
-            IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
-        mBinderBox = binderBox;
+    public void onConnectionSetup(IChildProcessArgs args, List<IBinder> clientInterfaces) {
         mGpuCallback =
                 clientInterfaces != null && !clientInterfaces.isEmpty()
                         ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
@@ -149,7 +144,6 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void runMain() {
-        ContentMain.setBindersFromParent(mBinderBox);
         ContentMain.start(false);
     }
 

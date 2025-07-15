@@ -39,10 +39,6 @@
 #include "base/posix/file_descriptor_shuffle.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/binder.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/process_requirement.h"
 #endif
@@ -226,13 +222,6 @@ struct BASE_EXPORT LaunchOptions {
   // propagate FDs into the child process.
   FileHandleMappingVector fds_to_remap;
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_ANDROID)
-  // Set of strong IBinder references to be passed to the child process. These
-  // make their way to ChildProcessServiceDelegate.onConnectionSetup (Java)
-  // within the new child process.
-  std::vector<android::BinderRef> binders;
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Set/unset environment variables. These are applied on top of the parent

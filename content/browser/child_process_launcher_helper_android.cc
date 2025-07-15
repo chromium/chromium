@@ -11,8 +11,6 @@
 
 #include "base/android/apk_assets.h"
 #include "base/android/application_status_listener.h"
-#include "base/android/binder.h"
-#include "base/android/binder_box.h"
 #include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/base_switches.h"
@@ -144,14 +142,6 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
 
-  std::vector<base::android::BinderRef> binders;
-  if (mojo_channel_->remote_endpoint().platform_handle().is_valid_binder()) {
-    base::LaunchOptions binder_options;
-    auto endpoint = mojo_channel_->TakeRemoteEndpoint();
-    endpoint.PrepareToPass(binder_options, *command_line());
-    binders = std::move(binder_options.binders);
-  }
-
   // Create the Command line String[]
   ScopedJavaLocalRef<jobjectArray> j_argv =
       ToJavaArrayOfStrings(env, command_line()->argv());
@@ -187,8 +177,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
       env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
-      can_use_warm_up_connection,
-      base::android::PackBinderBox(env, std::move(binders))));
+      can_use_warm_up_connection));
 
   client_task_runner_->PostTask(
       FROM_HERE,

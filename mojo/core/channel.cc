@@ -41,10 +41,6 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "mojo/core/channel_binder.h"
-#endif
-
 namespace mojo::core {
 
 namespace {

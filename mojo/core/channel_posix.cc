@@ -37,10 +37,6 @@
 #include "mojo/core/channel_linux.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "mojo/core/channel_binder.h"
-#endif
-
 namespace mojo::core {
 
 namespace {
@@ -683,13 +679,6 @@ scoped_refptr<Channel> Channel::Create(
     ConnectionParams connection_params,
     HandlePolicy handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-#if BUILDFLAG(IS_ANDROID)
-  if (connection_params.endpoint().platform_handle().is_valid_binder()) {
-    return base::MakeRefCounted<ChannelBinder>(
-        delegate, std::move(connection_params), handle_policy,
-        std::move(io_task_runner));
-  }
-#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return new ChannelLinux(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);

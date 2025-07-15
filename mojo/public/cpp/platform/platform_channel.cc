@@ -47,11 +47,6 @@
 #include <sys/socket.h>
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/binder.h"
-#include "mojo/public/cpp/platform/binder_exchange.h"
-#endif
-
 namespace mojo {
 
 namespace {
@@ -125,15 +120,6 @@ void CreateChannel(PlatformHandle* local_endpoint,
 #elif BUILDFLAG(IS_POSIX)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
-#if BUILDFLAG(IS_ANDROID)
-  if (core::MojoUseBinder() && base::android::IsNativeBinderAvailable()) {
-    auto [exchange0, exchange1] = CreateBinderExchange();
-    *local_endpoint = PlatformHandle(std::move(exchange0));
-    *remote_endpoint = PlatformHandle(std::move(exchange1));
-    return;
-  }
-#endif  // BUILDFLAG_IS_ANDROID
-
   int fds[2];
   PCHECK(socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == 0);
 

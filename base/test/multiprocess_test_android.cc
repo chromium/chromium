@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/android/binder_box.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
@@ -55,7 +54,7 @@ Process SpawnMultiProcessTestChild(const std::string& procname,
       android::ToJavaArrayOfStrings(env, command_line.argv());
 
   jint pid = android::Java_MultiprocessTestClientLauncher_launchClient(
-      env, j_argv, fds, base::android::PackBinderBox(env, options.binders));
+      env, j_argv, fds);
   return Process(pid);
 }
 

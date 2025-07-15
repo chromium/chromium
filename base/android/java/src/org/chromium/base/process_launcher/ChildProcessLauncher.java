@@ -113,9 +113,6 @@ public class ChildProcessLauncher {
     // The IBinder interfaces provided to the created service.
     private final @Nullable List<IBinder> mClientInterfaces;
 
-    // A binder box which can be used by the child to unpack additional binders.
-    private final @Nullable IBinder mBinderBox;
-
     // The actual service connection. Set once we have connected to the service. Volatile as it is
     // accessed from threads other than the Launcher thread.
     private volatile @Nullable ChildProcessConnection mConnection;
@@ -130,7 +127,6 @@ public class ChildProcessLauncher {
      * @param connectionAllocator the allocator used to create connections to the service.
      * @param clientInterfaces the interfaces that should be passed to the started process so it can
      *     communicate with the parent process.
-     * @param binderBox an optional binder box the child can use to unpack additional binders
      */
     public ChildProcessLauncher(
             Handler launcherHandler,
@@ -138,8 +134,7 @@ public class ChildProcessLauncher {
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
             ChildConnectionAllocator connectionAllocator,
-            @Nullable List<IBinder> clientInterfaces,
-            @Nullable IBinder binderBox) {
+            @Nullable List<IBinder> clientInterfaces) {
         assert connectionAllocator != null;
         mLauncherHandler = launcherHandler;
         isRunningOnLauncherThread();
@@ -148,7 +143,6 @@ public class ChildProcessLauncher {
         mDelegate = delegate;
         mFilesToBeMapped = filesToBeMapped;
         mClientInterfaces = clientInterfaces;
-        mBinderBox = binderBox;
     }
 
     /**
@@ -271,11 +265,7 @@ public class ChildProcessLauncher {
         IChildProcessArgs connectionArgs = createConnectionArgs();
         mDelegate.onBeforeConnectionSetup(connectionArgs);
         mConnection.setupConnection(
-                connectionArgs,
-                getClientInterfaces(),
-                getBinderBox(),
-                connectionCallback,
-                zygoteInfoCallback);
+                connectionArgs, getClientInterfaces(), connectionCallback, zygoteInfoCallback);
     }
 
     private void onServiceConnected(@Nullable ChildProcessConnection connection) {
@@ -306,10 +296,6 @@ public class ChildProcessLauncher {
 
     public @Nullable List<IBinder> getClientInterfaces() {
         return mClientInterfaces;
-    }
-
-    public @Nullable IBinder getBinderBox() {
-        return mBinderBox;
     }
 
     private boolean isRunningOnLauncherThread() {

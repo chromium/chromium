@@ -31,8 +31,8 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -272,15 +272,11 @@ public class ChildProcessConnection {
     private static class ConnectionParams {
         final IChildProcessArgs mChildProcessArgs;
         final @Nullable List<IBinder> mClientInterfaces;
-        final @Nullable IBinder mBinderBox;
 
         ConnectionParams(
-                IChildProcessArgs childProcessArgs,
-                @Nullable List<IBinder> clientInterfaces,
-                @Nullable IBinder binderBox) {
+                IChildProcessArgs childProcessArgs, @Nullable List<IBinder> clientInterfaces) {
             mChildProcessArgs = childProcessArgs;
             mClientInterfaces = clientInterfaces;
-            mBinderBox = binderBox;
         }
     }
 
@@ -657,7 +653,6 @@ public class ChildProcessConnection {
      *     process connection.
      * @param clientInterfaces optional client specified interfaces that the child can use to
      *     communicate with the parent process
-     * @param binderBox optional binder box the child can use to unpack additional binders
      * @param connectionCallback will be called exactly once after the connection is set up or the
      *     setup fails
      * @param zygoteInfoCallback will be called exactly once after the connection is set up
@@ -665,7 +660,6 @@ public class ChildProcessConnection {
     public void setupConnection(
             IChildProcessArgs childProcessArgs,
             @Nullable List<IBinder> clientInterfaces,
-            @Nullable IBinder binderBox,
             ConnectionCallback connectionCallback,
             ZygoteInfoCallback zygoteInfoCallback) {
         assert isRunningOnLauncherThread();
@@ -679,7 +673,7 @@ public class ChildProcessConnection {
             mConnectionCallback = connectionCallback;
             mZygoteInfoCallback = zygoteInfoCallback;
             childProcessArgs.bindToCaller = mBindToCaller;
-            mConnectionParams = new ConnectionParams(childProcessArgs, clientInterfaces, binderBox);
+            mConnectionParams = new ConnectionParams(childProcessArgs, clientInterfaces);
             // Run the setup if the service is already connected. If not, doConnectionSetup() will
             // be called from onServiceConnected().
             if (mServiceConnectComplete) {
@@ -963,8 +957,7 @@ public class ChildProcessConnection {
                 mService.setupConnection(
                         mConnectionParams.mChildProcessArgs,
                         parentProcess,
-                        mConnectionParams.mClientInterfaces,
-                        mConnectionParams.mBinderBox);
+                        mConnectionParams.mClientInterfaces);
             } catch (RemoteException re) {
                 Log.e(TAG, "Failed to setup connection.", re);
             }
