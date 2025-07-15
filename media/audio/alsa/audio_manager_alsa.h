@@ -74,13 +74,13 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
 
   // Checks if the specific ALSA device is available.
   static bool IsAlsaDeviceAvailable(StreamType type,
-                                    const char* device_name);
+                                    std::string_view device_name);
 
   // Adds the switch-specified ALSA device if not present in device list.
   static void AddAlsaDeviceFromSwitch(const char* switch_name,
                                       AudioDeviceNames* device_names);
 
-  static const char* UnwantedDeviceTypeWhenEnumerating(
+  static std::string_view UnwantedDeviceTypeWhenEnumerating(
       StreamType wanted_type);
 
   // Returns true if a device is present for the given stream type.

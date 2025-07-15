@@ -11,12 +11,16 @@
 
 #include <alsa/asoundlib.h>
 
+#include "base/containers/heap_array.h"
+#include "base/memory/free_deleter.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
 class MEDIA_EXPORT AlsaWrapper {
  public:
+  using ScopedAlsaString = base::HeapArray<char, base::FreeDeleter>;
+
   AlsaWrapper();
 
   AlsaWrapper(const AlsaWrapper&) = delete;
@@ -25,7 +29,7 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual ~AlsaWrapper();
 
   virtual int DeviceNameHint(int card, const char* iface, void*** hints);
-  virtual char* DeviceNameGetHint(const void* hint, const char* id);
+  virtual ScopedAlsaString DeviceNameGetHint(const void* hint, const char* id);
   virtual int DeviceNameFreeHint(void** hints);
   virtual int CardNext(int* rcard);
 
@@ -120,7 +124,7 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual snd_mixer_elem_t* MixerFirstElem(snd_mixer_t* mixer);
   virtual snd_mixer_elem_t* MixerNextElem(snd_mixer_elem_t* elem);
   virtual int MixerSelemIsActive(snd_mixer_elem_t* elem);
-  virtual const char* MixerSelemName(snd_mixer_elem_t* elem);
+  virtual std::string_view MixerSelemName(snd_mixer_elem_t* elem);
   virtual int MixerSelemSetCaptureVolumeAll(snd_mixer_elem_t* elem, long value);
   virtual int MixerSelemGetCaptureVolume(snd_mixer_elem_t* elem,
                                          snd_mixer_selem_channel_id_t channel,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // THREAD SAFETY
 //
 // AlsaPcmOutputStream object is *not* thread-safe and should only be used
@@ -50,6 +45,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/typed_macros.h"
@@ -93,7 +89,7 @@ constexpr ChannelLayout kDefaultOutputChannelLayout = CHANNEL_LAYOUT_STEREO;
 // TODO(ajwong): The source data should have enough info to tell us if we want
 // surround41 versus surround51, etc., instead of needing us to guess based on
 // channel number.  Fix API to pass that data down.
-static const char* GuessSpecificDeviceName(uint32_t channels) {
+static std::string_view GuessSpecificDeviceName(uint32_t channels) {
   switch (channels) {
     case 8:
       return "surround71";
@@ -111,7 +107,7 @@ static const char* GuessSpecificDeviceName(uint32_t channels) {
       return "surround40";
 
     default:
-      return nullptr;
+      return std::string_view();
   }
 }
 
@@ -567,9 +563,10 @@ std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
   static const char kIoHintName[] = "IOID";
   static const char kNameHintName[] = "NAME";
 
-  const char* wanted_device = GuessSpecificDeviceName(channels);
-  if (!wanted_device)
+  const auto wanted_device = GuessSpecificDeviceName(channels);
+  if (wanted_device.empty()) {
     return std::string();
+  }
 
   std::string guessed_device;
   void** hints = nullptr;
@@ -585,16 +582,15 @@ std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
          UNSAFE_BUFFERS(++hint_iter)) {
       // Only examine devices that are output capable..  Valid values are
       // "Input", "Output", and nullptr which means both input and output.
-      std::unique_ptr<char, base::FreeDeleter> io(
-          wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-      if (io != nullptr && strcmp(io.get(), "Input") == 0)
+      auto io = wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName);
+      if (base::as_string_view(io) == "Input") {
         continue;
+      }
 
       // Attempt to select the closest device for number of channels.
-      std::unique_ptr<char, base::FreeDeleter> name(
-          wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName));
-      if (strncmp(wanted_device, name.get(), strlen(wanted_device)) == 0) {
-        guessed_device = name.get();
+      auto name = wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName);
+      if (base::as_string_view(name).starts_with(wanted_device)) {
+        guessed_device = base::as_string_view(name);
         break;
       }
     }

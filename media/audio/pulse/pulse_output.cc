@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/audio/pulse/pulse_output.h"
 
 #include <pulse/pulseaudio.h>
 #include <stdint.h>
+
+#include <algorithm>
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
@@ -178,7 +175,14 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     CHECK_GE(pa_stream_begin_write(pa_stream_, &pa_buffer, &pa_buffer_size), 0);
 
     if (!source_callback_) {
-      memset(pa_buffer, 0, pa_buffer_size);
+      // SAFETY:
+      // https://freedesktop.org/software/pulseaudio/doxygen/stream_8h.html#a6cf50cfc4ea8897391941184d74d7dfa
+      // The documentation of `pa_stream_begin_write` says that `pa_buffer`
+      // points to the write address. `pa_buffer_size` indicates the number of
+      // valid bytes.
+      UNSAFE_BUFFERS(base::span pa_buffers(
+          reinterpret_cast<uint8_t*>(pa_buffer), pa_buffer_size));
+      std::ranges::fill(pa_buffers, 0);
       pa_stream_write(pa_stream_, pa_buffer, pa_buffer_size, nullptr, 0LL,
                       PA_SEEK_RELATIVE);
       bytes_remaining -= pa_buffer_size;

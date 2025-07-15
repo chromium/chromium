@@ -4,6 +4,9 @@
 
 #include "media/audio/alsa/alsa_wrapper.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+
 namespace media {
 
 AlsaWrapper::AlsaWrapper() = default;
@@ -21,8 +24,19 @@ int AlsaWrapper::DeviceNameHint(int card, const char* iface, void*** hints) {
   return snd_device_name_hint(card, iface, hints);
 }
 
-char* AlsaWrapper::DeviceNameGetHint(const void* hint, const char* id) {
-  return snd_device_name_get_hint(hint, id);
+AlsaWrapper::ScopedAlsaString AlsaWrapper::DeviceNameGetHint(const void* hint,
+                                                             const char* id) {
+  char* ptr = snd_device_name_get_hint(hint, id);
+  if (!ptr) {
+    return {};
+  }
+  // SAFETY:
+  // https://github.com/alsa-project/alsa-lib/blob/07ec2ad34c42dba8656d3f543164f360f481c52e/src/control/namehint.c#L712
+  // `ptr` must end with '\0', so we can use the length measurement method of C
+  // language.
+  return UNSAFE_BUFFERS(
+      base::HeapArray<char, base::FreeDeleter>::FromOwningPointer(
+          ptr, std::char_traits<char>::length(ptr)));
 }
 
 int AlsaWrapper::DeviceNameFreeHint(void** hints) {
@@ -271,8 +285,16 @@ int AlsaWrapper::MixerSelemIsActive(snd_mixer_elem_t* elem) {
   return snd_mixer_selem_is_active(elem);
 }
 
-const char* AlsaWrapper::MixerSelemName(snd_mixer_elem_t* elem) {
-  return snd_mixer_selem_get_name(elem);
+std::string_view AlsaWrapper::MixerSelemName(snd_mixer_elem_t* elem) {
+  // We did not find the official document description of alsa, but according to
+  // the code hint in
+  // https://github.com/alsa-project/alsa-lib/blob/master/src/mixer/simple.c#L170,
+  // the result here is `elem->private_data->id->name`, which is a C array.
+  const char* ptr = snd_mixer_selem_get_name(elem);
+  if (!ptr) {
+    return {};
+  }
+  return std::string_view(ptr);
 }
 
 int AlsaWrapper::MixerSelemSetCaptureVolumeAll(snd_mixer_elem_t* elem,

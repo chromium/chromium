@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/android/opensles_output.h"
+
+#include <algorithm>
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
@@ -80,7 +77,6 @@ OpenSLESOutputStream::~OpenSLESOutputStream() {
   DCHECK(!output_mixer_.Get());
   DCHECK(!player_);
   DCHECK(!simple_buffer_queue_);
-  DCHECK(!audio_data_[0]);
 }
 
 bool OpenSLESOutputStream::Open() {
@@ -116,11 +112,12 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   // Fill audio data with silence to avoid start-up glitches. Don't use
   // FillBufferQueueNoLock() since it can trigger recursive entry if an error
   // occurs while writing into the stream. See http://crbug.com/624877.
-  memset(audio_data_[active_buffer_index_], 0, buffer_size_bytes_);
-  LOG_ON_FAILURE_AND_RETURN((*simple_buffer_queue_)
-                                ->Enqueue(simple_buffer_queue_,
-                                          audio_data_[active_buffer_index_],
-                                          buffer_size_bytes_));
+  std::ranges::fill(audio_data_[active_buffer_index_], 0);
+  LOG_ON_FAILURE_AND_RETURN(
+      (*simple_buffer_queue_)
+          ->Enqueue(simple_buffer_queue_,
+                    audio_data_[active_buffer_index_].data(),
+                    buffer_size_bytes_));
   active_buffer_index_ = (active_buffer_index_ + 1) % kMaxNumOfBuffersInQueue;
 
   // Start streaming data by setting the play state to SL_PLAYSTATE_PLAYING.
@@ -190,7 +187,6 @@ void OpenSLESOutputStream::Close() {
     // Destroy the engine object. We don't store any associated interface for
     // this object.
     engine_object_.Reset();
-    ReleaseAudioBuffer();
   }
 
   audio_manager_->ReleaseOutputStream(this);
@@ -408,16 +404,17 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
   // We skip clipping since that occurs at the shared memory boundary.
   audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
       frames_filled,
-      reinterpret_cast<float*>(audio_data_[active_buffer_index_]));
+      reinterpret_cast<float*>(audio_data_[active_buffer_index_].data()));
 
   delay_calculator_.AddFrames(frames_filled);
   const int num_filled_bytes = frames_filled * bytes_per_frame_;
   DCHECK_LE(static_cast<size_t>(num_filled_bytes), buffer_size_bytes_);
 
   // Enqueue the buffer for playback.
-  err = (*simple_buffer_queue_)
-            ->Enqueue(simple_buffer_queue_, audio_data_[active_buffer_index_],
-                      num_filled_bytes);
+  err =
+      (*simple_buffer_queue_)
+          ->Enqueue(simple_buffer_queue_,
+                    audio_data_[active_buffer_index_].data(), num_filled_bytes);
   if (SL_RESULT_SUCCESS != err)
     HandleError(err);
 
@@ -426,19 +423,11 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
 
 void OpenSLESOutputStream::SetupAudioBuffer() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!audio_data_[0]);
-  for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i)
-    audio_data_[i] = new uint8_t[buffer_size_bytes_];
-}
-
-void OpenSLESOutputStream::ReleaseAudioBuffer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  if (audio_data_[0]) {
-    for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
-      delete[] audio_data_[i];
-      audio_data_[i] = nullptr;
-    }
-  }
+  DCHECK(audio_data_[0].empty());
+  std::ranges::generate(
+      audio_data_, [buffer_size_bytes = buffer_size_bytes_]() {
+        return base::HeapArray<uint8_t>::Uninit(buffer_size_bytes);
+      });
 }
 
 void OpenSLESOutputStream::HandleError(SLresult error) {
