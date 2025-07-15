@@ -223,6 +223,10 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
+  // Sanity check: the generated password is provisionally saved as the primary
+  // one.
+  CHECK_EQ(form_manager_->GetPendingCredentials().password_value,
+           generated_password_);
   form_manager_->UpdateBackupPassword(stored_password_);
   driver->SubmitFormWithEnter(
       field_id,
