@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
+import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
@@ -1142,8 +1142,8 @@ suite('NewTabPageAppTest', () => {
       });
       composeboxHandler = installMock(
           ComposeboxPageHandlerRemote,
-          mock =>
-              ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
+          mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mock, new ComposeboxPageCallbackRouter())));
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
     });

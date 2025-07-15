@@ -718,7 +718,7 @@ void PopulateChromeWebUIFrameBinders(
 
   if (ntp_composebox_fieldtrial::FeatureConfig::Get().enabled) {
     RegisterWebUIControllerInterfaceBinder<
-        composebox::mojom::ComposeboxPageHandler, NewTabPageUI>(map);
+        composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

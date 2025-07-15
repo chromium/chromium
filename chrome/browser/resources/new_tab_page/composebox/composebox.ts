@@ -13,7 +13,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
+import type {PageHandlerRemote} from '../composebox.mojom-webui.js';
 import {recordLoadDuration} from '../metrics_utils.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -77,7 +77,7 @@ export class ComposeboxElement extends CrLitElement {
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
-  private pageHandler_: ComposeboxPageHandlerRemote;
+  private pageHandler_: PageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {

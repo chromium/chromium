@@ -547,6 +547,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       page_factory_receiver_(this),
       customize_buttons_factory_receiver_(this),
       most_visited_page_factory_receiver_(this),
+      composebox_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
@@ -752,20 +753,6 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>
-        pending_receiver) {
-  composebox_handler_ = std::make_unique<ComposeboxHandler>(
-      std::move(pending_receiver),
-      std::make_unique<ComposeboxQueryController>(
-          IdentityManagerFactory::GetForProfile(profile_),
-          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
-          g_browser_process->GetApplicationLocale(),
-          TemplateURLServiceFactory::GetForProfile(profile_),
-          profile_->GetVariationsClient()),
-      web_contents());
-}
-
-void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         pending_page_handler) {
   google_calendar_handler_ = std::make_unique<GoogleCalendarPageHandler>(
@@ -791,6 +778,15 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   microsoft_files_handler_ = std::make_unique<MicrosoftFilesPageHandler>(
       std::move(pending_page_handler), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (composebox_page_factory_receiver_.is_bound()) {
+    composebox_page_factory_receiver_.reset();
+  }
+  composebox_page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void NewTabPageUI::BindInterface(
@@ -884,6 +880,22 @@ void NewTabPageUI::CreatePageHandler(
       navigation_start_time_);
   most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
+}
+
+void NewTabPageUI::CreatePageHandler(
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingReceiver<composebox::mojom::PageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
+  composebox_handler_ = std::make_unique<ComposeboxHandler>(
+      std::move(pending_page_handler), std::move(pending_page),
+      std::make_unique<ComposeboxQueryController>(
+          IdentityManagerFactory::GetForProfile(profile_),
+          g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
+          g_browser_process->GetApplicationLocale(),
+          TemplateURLServiceFactory::GetForProfile(profile_),
+          profile_->GetVariationsClient()),
+      web_contents());
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(

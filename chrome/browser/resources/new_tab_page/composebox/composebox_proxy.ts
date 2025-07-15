@@ -2,23 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
-import {ComposeboxPageHandler} from '../composebox.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../composebox.mojom-webui.js';
 
 export interface ComposeboxProxy {
-  handler: ComposeboxPageHandlerRemote;
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 }
 
 export class ComposeboxProxyImpl implements ComposeboxProxy {
-  handler: ComposeboxPageHandlerRemote;
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 
-  constructor(handler: ComposeboxPageHandlerRemote) {
+  constructor(handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
     this.handler = handler;
+    this.callbackRouter = callbackRouter;
   }
 
   static getInstance(): ComposeboxProxyImpl {
-    return instance ||
-        (instance = new ComposeboxProxyImpl(ComposeboxPageHandler.getRemote()));
+    if (instance) {
+      return instance;
+    }
+    const callbackRouter = new PageCallbackRouter();
+    const handler = new PageHandlerRemote();
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        callbackRouter.$.bindNewPipeAndPassRemote(),
+        handler.$.bindNewPipeAndPassReceiver());
+    instance = new ComposeboxProxyImpl(handler, callbackRouter);
+    return instance;
   }
 
   static setInstance(newInstance: ComposeboxProxy) {

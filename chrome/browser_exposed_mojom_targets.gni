@@ -127,6 +127,7 @@ browser_exposed_mojom_targets = [
   "//components/network_hints/common:mojo_bindings",
   "//components/no_state_prefetch/common:mojo_bindings",
   "//components/omnibox/browser:mojo_bindings",
+  "//components/omnibox/composebox:mojo_bindings",
   "//components/optimization_guide/content/mojom:mojo_interfaces",
   "//components/optimization_guide/core:interfaces",
   "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",

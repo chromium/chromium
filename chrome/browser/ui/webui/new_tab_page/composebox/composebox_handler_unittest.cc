@@ -16,11 +16,13 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/variations/variations_client.h"
@@ -44,6 +46,26 @@ constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kUserPerceivedQuerySubmissionTimeQueryParameter[] = "pqsubts";
+
+class MockPage : public composebox::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<composebox::mojom::Page> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  MOCK_METHOD(void,
+              OnFileUploadStatusChanged,
+              (const base::UnguessableToken&,
+               composebox_query::mojom::FileUploadStatus));
+
+  mojo::Receiver<composebox::mojom::Page> receiver_{this};
+};
 }  // namespace
 
 class MockQueryController : public TestComposeboxQueryController {
@@ -128,8 +150,9 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<ComposeboxHandler>(
-        mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>(),
-        std::move(query_controller_ptr), web_contents());
+        mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+        mock_page_.BindAndGetRemote(), std::move(query_controller_ptr),
+        web_contents());
 
     // Set all the feature params here to keep the test consistent if future
     // default values are changed.
@@ -178,6 +201,9 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
         std::nullopt);
     return result_url;
   }
+
+ protected:
+  testing::NiceMock<MockPage> mock_page_;
 
  private:
   std::unique_ptr<ComposeboxHandler> handler_;
@@ -321,3 +347,39 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {
   EXPECT_EQ("An invalid file token was sent to DeleteFile",
             obs.WaitForBadMessage());
 }
+
+class ComposeboxHandlerFileUploadStatusTest
+    : public ComposeboxHandlerTest,
+      public testing::WithParamInterface<
+          composebox_query::mojom::FileUploadStatus> {};
+
+TEST_P(ComposeboxHandlerFileUploadStatusTest, FileUploadStatusChanged) {
+  composebox_query::mojom::FileUploadStatus status;
+  EXPECT_CALL(mock_page_, OnFileUploadStatusChanged)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&status](
+              const base::UnguessableToken& file_token,
+              composebox_query::mojom::FileUploadStatus file_upload_status) {
+            status = file_upload_status;
+          }));
+
+  const auto expected_status = GetParam();
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  handler().OnFileUploadStatusChanged(token, expected_status, std::nullopt);
+  mock_page_.FlushForTesting();
+
+  EXPECT_EQ(expected_status, status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ComposeboxHandlerFileUploadStatusTest,
+    testing::Values(
+        composebox_query::mojom::FileUploadStatus::kNotUploaded,
+        composebox_query::mojom::FileUploadStatus::kProcessing,
+        composebox_query::mojom::FileUploadStatus::kValidationFailed,
+        composebox_query::mojom::FileUploadStatus::kUploadStarted,
+        composebox_query::mojom::FileUploadStatus::kUploadSuccessful,
+        composebox_query::mojom::FileUploadStatus::kUploadFailed,
+        composebox_query::mojom::FileUploadStatus::kUploadExpired));

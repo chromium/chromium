@@ -16,6 +16,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/search_engines/util.h"
 #include "components/variations/variations_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,22 +49,6 @@ enum class QueryControllerState {
   // The cluster info response was not received, or the cluster info has
   // expired.
   kClusterInfoInvalid = 3,
-};
-
-// Upload status of a file.
-enum class FileUploadStatus {
-  // Not uploaded.
-  kNotUploaded = 0,
-  // File being processed.
-  kProcessing = 1,
-  // Failed validation - Terminal for this file attempt.
-  kValidationFailed = 2,
-  // Request sent to Lens server.
-  kUploadStarted = 3,
-  // Server confirmed successful receipt.
-  kUploadSuccessful = 4,
-  // Server or network error during upload - Terminal for this file attempt.
-  kUploadFailed = 5,
 };
 
 // For upload error metrics.
@@ -113,6 +98,7 @@ using UploadProgressCallback =
 using QueryControllerStateChangedCallback =
     base::RepeatingCallback<void(QueryControllerState state)>;
 // Callback for when the file upload status changes.
+using FileUploadStatus = composebox_query::mojom::FileUploadStatus;
 using FileUploadStatusChangedCallback =
     base::RepeatingCallback<void(std::string file_token,
                                  FileUploadStatus status)>;

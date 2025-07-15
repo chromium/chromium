@@ -10,14 +10,20 @@
 #include "content/public/browser/page_navigator.h"
 
 ComposeboxHandler::ComposeboxHandler(
-    mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler> handler,
+    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
+    mojo::PendingRemote<composebox::mojom::Page> pending_page,
     std::unique_ptr<ComposeboxQueryController> query_controller,
     content::WebContents* web_contents)
-    : handler_(this, std::move(handler)),
-      query_controller_(std::move(query_controller)),
-      web_contents_(web_contents) {}
+    : query_controller_(std::move(query_controller)),
+      web_contents_(web_contents),
+      page_{std::move(pending_page)},
+      handler_(this, std::move(pending_handler)) {
+  query_controller_->AddObserver(this);
+}
 
-ComposeboxHandler::~ComposeboxHandler() = default;
+ComposeboxHandler::~ComposeboxHandler() {
+  query_controller_->RemoveObserver(this);
+}
 
 void ComposeboxHandler::NotifySessionStarted() {
   query_controller_->NotifySessionStarted();
@@ -91,4 +97,11 @@ void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
   if (!query_controller_->DeleteFile(file_token)) {
     handler_.ReportBadMessage("An invalid file token was sent to DeleteFile");
   }
+}
+
+void ComposeboxHandler::OnFileUploadStatusChanged(
+    const base::UnguessableToken& file_token,
+    composebox_query::mojom::FileUploadStatus file_upload_status,
+    const std::optional<FileUploadErrorType>& error_type) {
+  page_->OnFileUploadStatusChanged(file_token, file_upload_status);
 }

@@ -52,6 +52,7 @@ if (optimize_webui) {
   mojo_js_files = [
     "calendar_data.mojom-webui.js",
     "composebox.mojom-webui.js",
+    "composebox_query.mojom-webui.js",
     "ntp_promo.mojom-webui.js",
     "customize_buttons.mojom-webui.js",
     "drive_suggestion.mojom-webui.js",

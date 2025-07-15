@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxPageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -14,13 +14,14 @@ import {installMock} from '../test_support.js';
 
 suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
-  let handler: TestMock<ComposeboxPageHandlerRemote>;
+  let handler: TestMock<PageHandlerRemote>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
-        ComposeboxPageHandlerRemote,
-        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
+        PageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(
+            new ComposeboxProxyImpl(mock, new PageCallbackRouter())));
   });
   function createComposeboxElement() {
     composeboxElement = new ComposeboxElement();

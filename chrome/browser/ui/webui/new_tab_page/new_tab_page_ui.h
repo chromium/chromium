@@ -106,6 +106,7 @@ class NewTabPageUI
       public new_tab_page::mojom::PageHandlerFactory,
       public customize_buttons::mojom::CustomizeButtonsHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
+      public composebox::mojom::PageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
       public ntp_promo::mojom::NtpPromoHandlerFactory,
@@ -200,10 +201,10 @@ class NewTabPageUI
       mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
           pending_receiver);
 
-  // Instantiates the implementor of composebox::mojom::ComposeboxPageHandler
+  // Instantiates the implementor of the composebox::mojom::PageHandlerFactory
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<composebox::mojom::ComposeboxPageHandler>
+      mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
           pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
@@ -261,6 +262,12 @@ class NewTabPageUI
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
 
+  // composebox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<composebox::mojom::Page> pending_page,
+      mojo::PendingReceiver<composebox::mojom::PageHandler>
+          pending_page_handler) override;
+
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
@@ -296,13 +303,15 @@ class NewTabPageUI
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-  std::unique_ptr<composebox::mojom::ComposeboxPageHandler> composebox_handler_;
   std::unique_ptr<CustomizeButtonsHandler> customize_buttons_handler_;
   mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandlerFactory>
       customize_buttons_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
+  std::unique_ptr<composebox::mojom::PageHandler> composebox_handler_;
+  mojo::Receiver<composebox::mojom::PageHandlerFactory>
+      composebox_page_factory_receiver_;
   std::unique_ptr<BrowserCommandHandler> promo_browser_command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
