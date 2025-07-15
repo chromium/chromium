@@ -3146,7 +3146,6 @@ crbug.com/426164366 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed
 crbug.com/426164366 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error-downgraded.tentative.html [ Crash ]
 crbug.com/426648864 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/adapter/cross-origin-iframe-getAvailability.sub.https.window.html [ Crash ]
 crbug.com/426429658 [ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
-crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
 crbug.com/425716853 virtual/threaded/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
@@ -9529,3 +9528,6 @@ crbug.com/431170125 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external
 
 # Gardener 2025-07-14
 crbug.com/431095012 [ Mac ] external/wpt/css/css-conditional/container-queries/font-relative-units-dynamic.html [ Failure Pass ]
+
+# Gardener 2025-07-15
+crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout Failure ]
