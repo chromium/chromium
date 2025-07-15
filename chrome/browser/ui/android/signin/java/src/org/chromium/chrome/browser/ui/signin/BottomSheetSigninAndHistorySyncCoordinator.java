@@ -56,7 +56,7 @@ import java.util.List;
 @NullMarked
 public class BottomSheetSigninAndHistorySyncCoordinator
         implements SigninAndHistorySyncCoordinator,
-                SigninAccountPickerCoordinator.Delegate,
+                SigninBottomSheetCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate {
     private final WindowAndroid mWindowAndroid;
     private final ComponentActivity mActivity;
@@ -69,7 +69,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final BottomSheetSigninAndHistorySyncConfig mConfig;
 
-    private @Nullable SigninAccountPickerCoordinator mAccountPickerCoordinator;
+    private @Nullable SigninBottomSheetCoordinator mSigninBottomSheetCoordinator;
     private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
     private @Nullable PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
@@ -140,9 +140,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator
      */
     @Override
     public void destroy() {
-        if (mAccountPickerCoordinator != null) {
-            mAccountPickerCoordinator.destroy();
-            mAccountPickerCoordinator = null;
+        if (mSigninBottomSheetCoordinator != null) {
+            mSigninBottomSheetCoordinator.destroy();
+            mSigninBottomSheetCoordinator = null;
         }
 
         if (mHistorySyncCoordinator != null) {
@@ -165,7 +165,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             // when there's a saved instance state when finishLoadingAndSelectSigninFlow is called.
             return;
         }
-        final boolean isBottomSheetShown = mAccountPickerCoordinator != null;
+        final boolean isBottomSheetShown = mSigninBottomSheetCoordinator != null;
         if (!isBottomSheetShown && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
             onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
         }
@@ -182,14 +182,14 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         if (!mFlowInitialized) {
             // TODO(crbug.com/41493767): Select added account or sign in once done loading.
         }
-        if (mAccountPickerCoordinator == null
+        if (mSigninBottomSheetCoordinator == null
                 && mConfig.noAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT) {
             // Show the bottom sheet to sign-in & show the sign-in spinner bottom sheet.
             showSigninBottomSheet();
         }
 
-        if (mAccountPickerCoordinator != null) {
-            mAccountPickerCoordinator.onAccountAdded(accountEmail);
+        if (mSigninBottomSheetCoordinator != null) {
+            mSigninBottomSheetCoordinator.onAccountAdded(accountEmail);
         }
     }
 
@@ -217,13 +217,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         return BackPressResult.UNKNOWN;
     }
 
-    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void addAccount() {
         mDelegate.addAccount();
     }
 
-    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void onSignInComplete() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
@@ -234,28 +234,28 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             syncService.setSelectedType(UserSelectableType.READING_LIST, true);
         }
 
-        if (mAccountPickerCoordinator == null) {
+        if (mSigninBottomSheetCoordinator == null) {
             return;
         }
 
-        mAccountPickerCoordinator.destroy();
-        mAccountPickerCoordinator = null;
+        mSigninBottomSheetCoordinator.destroy();
+        mSigninBottomSheetCoordinator = null;
         maybeShowHistoryOptInDialog();
     }
 
-    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void onSignInCancel() {
-        if (mAccountPickerCoordinator == null) {
+        if (mSigninBottomSheetCoordinator == null) {
             return;
         }
 
-        mAccountPickerCoordinator.destroy();
-        mAccountPickerCoordinator = null;
+        mSigninBottomSheetCoordinator.destroy();
+        mSigninBottomSheetCoordinator = null;
         onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
     }
 
-    /** Implements {@link SigninAccountPickerCoordinator.Delegate}. */
+    /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(@ColorInt int color) {
         // INVALID_COLOR is set at the start and end of the bottom sheet scrim fade out animation.
@@ -368,8 +368,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                 accountPickerMode = AccountPickerLaunchMode.CHOOSE_ACCOUNT;
                 break;
         }
-        mAccountPickerCoordinator =
-                new SigninAccountPickerCoordinator(
+        mSigninBottomSheetCoordinator =
+                new SigninBottomSheetCoordinator(
                         mWindowAndroid,
                         mActivity,
                         mContainerView,

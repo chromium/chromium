@@ -47,10 +47,10 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/** Unit tests for {@link SigninAccountPickerCoordinator}. */
+/** Unit tests for {@link SigninBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-public class SigninAccountPickerCoordinatorTest {
+public class SigninBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -64,14 +64,14 @@ public class SigninAccountPickerCoordinatorTest {
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
     @Mock private WindowAndroid mWindowAndroidMock;
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncherMock;
-    @Mock private SigninAccountPickerCoordinator.Delegate mDelegateMock;
+    @Mock private SigninBottomSheetCoordinator.Delegate mDelegateMock;
     @Mock private AccountPickerBottomSheetMediator mMediator;
 
     private static final @SigninAccessPoint int ACCESS_POINT =
             SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     private ComponentActivity mActivity;
     private ViewGroup mContainerView;
-    private SigninAccountPickerCoordinator mCoordinator;
+    private SigninBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
@@ -92,7 +92,7 @@ public class SigninAccountPickerCoordinatorTest {
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
         mCoordinator =
-                new SigninAccountPickerCoordinator(
+                new SigninBottomSheetCoordinator(
                         mWindowAndroidMock,
                         mActivity,
                         mContainerView,

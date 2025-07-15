@@ -47,7 +47,7 @@ import java.lang.ref.WeakReference;
 
 /** Responsible of showing the sign-in bottom sheet. */
 @NullMarked
-public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
+public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private static final int HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS = 100;
 
     private final WindowAndroid mWindowAndroid;
@@ -87,7 +87,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     }
 
     /**
-     * Creates an instance of {@link SigninAccountPickerCoordinator} and show the sign-in bottom
+     * Creates an instance of {@link SigninBottomSheetCoordinator} and show the sign-in bottom
      * sheet.
      *
      * @param windowAndroid The window that hosts the sign-in flow.
@@ -101,7 +101,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
      * @param signinAccessPoint The entry point for the sign-in.
      * @param selectedAccountId the account id to use as default, if present.
      */
-    public SigninAccountPickerCoordinator(
+    public SigninBottomSheetCoordinator(
             WindowAndroid windowAndroid,
             ComponentActivity activity,
             ViewGroup containerView,
