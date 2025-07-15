@@ -29,6 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
@@ -78,7 +79,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
                     // TODO(crbug.com/374683682): Use a fake IdentityManager as ProfileDataCache
                     // will be updated to fetch accounts from IdentityManager
                     mIdentityManager =
-                            IdentityManager.create(
+                            IdentityManagerImpl.create(
                                     NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
                     mContentView = new FrameLayout(sActivity);
                     mImageView = new ChromeImageView(sActivity);

@@ -30,6 +30,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public class AccountsReloadingTest {
 
     private final Observer mObserver = new Observer();
 
-    private IdentityManager mIdentityManager;
+    private IdentityManagerImpl mIdentityManager;
 
     @Before
     public void setUp() {
@@ -76,8 +77,10 @@ public class AccountsReloadingTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIdentityManager =
-                            IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile());
+                            (IdentityManagerImpl)
+                                    IdentityServicesProvider.get()
+                                            .getIdentityManager(
+                                                    ProfileManager.getLastUsedRegularProfile());
                     mIdentityManager.setRefreshTokenUpdateObserverForTests(mObserver);
                 });
     }

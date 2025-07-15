@@ -70,8 +70,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManagerJni;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
+import org.chromium.components.signin.identitymanager.IdentityManagerImplJni;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
@@ -102,7 +102,7 @@ public class SigninManagerImplTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private SigninManagerImpl.Natives mNativeMock;
-    @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
+    @Mock private IdentityManagerImpl.Natives mIdentityManagerNativeMock;
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeNativeMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
     @Mock private UserPrefs.Natives mUserPrefsNativeMock;
@@ -112,14 +112,14 @@ public class SigninManagerImplTest {
     @Mock private Profile mProfile;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
 
-    private final IdentityManager mIdentityManager =
-            IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
+    private final IdentityManagerImpl mIdentityManager =
+            IdentityManagerImpl.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
     private SigninManagerImpl mSigninManager;
 
     @Before
     public void setUp() {
         SigninManagerImplJni.setInstanceForTesting(mNativeMock);
-        IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
+        IdentityManagerImplJni.setInstanceForTesting(mIdentityManagerNativeMock);
         BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeNativeMock);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);

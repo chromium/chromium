@@ -46,8 +46,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManagerJni;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
+import org.chromium.components.signin.identitymanager.IdentityManagerImplJni;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
@@ -95,12 +95,12 @@ public class ProfileDataCacheRenderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
+    @Mock private IdentityManagerImpl.Natives mIdentityManagerNativeMock;
 
     private FrameLayout mContentView;
     private ImageView mImageView;
 
-    private IdentityManager mIdentityManager;
+    private IdentityManagerImpl mIdentityManager;
     private ProfileDataCache mProfileDataCache;
 
     @BeforeClass
@@ -110,12 +110,12 @@ public class ProfileDataCacheRenderTest {
 
     @Before
     public void setUp() {
-        IdentityManagerJni.setInstanceForTesting(mIdentityManagerNativeMock);
+        IdentityManagerImplJni.setInstanceForTesting(mIdentityManagerNativeMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mIdentityManager =
-                            IdentityManager.create(
+                            IdentityManagerImpl.create(
                                     NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
 
                     AccountInfoServiceProvider.init(mIdentityManager);

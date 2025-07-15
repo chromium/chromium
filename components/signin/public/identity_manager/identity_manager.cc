@@ -31,7 +31,7 @@
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#include "components/signin/public/android/jni_headers/IdentityManager_jni.h"
+#include "components/signin/public/android/jni_headers/IdentityManagerImpl_jni.h"
 #include "google_apis/gaia/core_account_id.h"
 #endif
 
@@ -96,7 +96,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
                           base::Unretained(this)));
 
 #if BUILDFLAG(IS_ANDROID)
-  java_identity_manager_ = Java_IdentityManager_create(
+  java_identity_manager_ = Java_IdentityManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       token_service_->GetDelegate()->GetJavaObject());
 #endif
@@ -105,8 +105,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 IdentityManager::~IdentityManager() {
 #if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
-    Java_IdentityManager_destroy(base::android::AttachCurrentThread(),
-                                 java_identity_manager_);
+    Java_IdentityManagerImpl_destroy(base::android::AttachCurrentThread(),
+                                     java_identity_manager_);
   }
 #endif
 }
@@ -397,7 +397,7 @@ IdentityManager* IdentityManager::FromJavaObject(
     return nullptr;
   }
   return reinterpret_cast<IdentityManager*>(
-      Java_IdentityManager_getNativePointer(env, j_identity_manager));
+      Java_IdentityManagerImpl_getNativePointer(env, j_identity_manager));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -543,7 +543,7 @@ void IdentityManager::OnPrimaryAccountChanged(
 #if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onPrimaryAccountChanged(
+    Java_IdentityManagerImpl_onPrimaryAccountChanged(
         env, java_identity_manager_,
         ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
   }
@@ -565,7 +565,7 @@ void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
 #if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onRefreshTokenUpdatedForAccount(
+    Java_IdentityManagerImpl_onRefreshTokenUpdatedForAccount(
         env, java_identity_manager_,
         ConvertToJavaCoreAccountInfo(env, account_info));
   }
@@ -635,7 +635,7 @@ void IdentityManager::OnGaiaCookieDeletedByUserAction() {
   }
 #if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
-    Java_IdentityManager_onAccountsCookieDeletedByUserAction(
+    Java_IdentityManagerImpl_onAccountsCookieDeletedByUserAction(
         base::android::AttachCurrentThread(), java_identity_manager_);
   }
 #endif
@@ -709,7 +709,7 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
       account_info_fetch_start_times_.erase(info.account_id);
     }
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_IdentityManager_onExtendedAccountInfoUpdated(
+    Java_IdentityManagerImpl_onExtendedAccountInfoUpdated(
         env, java_identity_manager_, ConvertToJavaAccountInfo(env, info));
   }
 #endif
