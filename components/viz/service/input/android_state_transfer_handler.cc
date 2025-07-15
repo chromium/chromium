@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_native.h"
 
@@ -101,6 +103,21 @@ bool AndroidStateTransferHandler::OnMotionEvent(
 
   const int action = AMotionEvent_getAction(input_event.a_input_event()) &
                      AMOTION_EVENT_ACTION_MASK;
+
+  static auto* const input_type_crash_key = base::debug::AllocateCrashKeyString(
+      "431139615-InputType", base::debug::CrashKeySize::Size32);
+  if (input_type_crash_key) {
+    base::debug::SetCrashKeyString(input_type_crash_key,
+                                   base::NumberToString(action));
+  }
+
+  static auto* const input_ts_crash_key = base::debug::AllocateCrashKeyString(
+      "431139615-InputTs", base::debug::CrashKeySize::Size64);
+  if (input_ts_crash_key) {
+    base::debug::SetCrashKeyString(
+        input_ts_crash_key,
+        base::NumberToString(base::TimeTicks::Now().ToUptimeMillis()));
+  }
 
   // Viz only handles touch events, actions like button press/release are not
   // supported and should ideally not be arriving.
