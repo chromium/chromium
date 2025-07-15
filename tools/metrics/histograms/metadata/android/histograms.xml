@@ -3134,15 +3134,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Messages.Stacking.ThreeStacked"
-    enum="StackingAnimationThreeStackedType" expires_after="2024-12-08">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/components/messages/OWNERS</owner>
-  <summary>
-    Records the scenario when 3 message stacking could be possible.
-  </summary>
-</histogram>
-
 <histogram name="Android.Messages.Stacking.{Action}" enum="MessageIdentifier"
     expires_after="2025-10-13">
   <owner>lazzzis@chromium.org</owner>

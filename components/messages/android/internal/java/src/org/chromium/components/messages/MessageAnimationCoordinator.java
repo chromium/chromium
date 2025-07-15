@@ -5,7 +5,6 @@
 package org.chromium.components.messages;
 
 import static org.chromium.components.messages.MessagesMetrics.recordStackingAnimationType;
-import static org.chromium.components.messages.MessagesMetrics.recordThreeStackedScenario;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -19,7 +18,6 @@ import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.components.messages.MessagesMetrics.StackingAnimationAction;
 import org.chromium.components.messages.MessagesMetrics.StackingAnimationType;
-import org.chromium.components.messages.MessagesMetrics.ThreeStackedScenario;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -162,9 +160,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                     recordAnimationAction(StackingAnimationAction.PUSH_TO_FRONT, currentBack);
                     recordStackingAnimationType(StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK);
                     mBackAnimator = currentBack.handler.show(Position.BACK, Position.FRONT);
-                    if (nextBack != null) {
-                        recordThreeStackedScenario(ThreeStackedScenario.IN_SEQUENCE);
-                    }
                     // Show nb in the next round.
                     nextBack = null;
                     candidates.set(1, null);
@@ -206,7 +201,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             if (currentBack != null) {
                 recordAnimationAction(StackingAnimationAction.REMOVE_BACK, currentBack);
                 recordStackingAnimationType(StackingAnimationType.REMOVE_BACK_ONLY);
-                recordThreeStackedScenario(ThreeStackedScenario.HIGH_PRIORITY);
                 mBackAnimator = currentBack.handler.hide(Position.BACK, Position.FRONT, animate);
                 // [m1, m2] -> [m1, null] -> [m3, m1]
                 // In this case, we complete this in 2 steps to avoid manipulating 3 handlers

@@ -45,7 +45,6 @@ public class MessagesMetrics {
             "Android.Messages.Stacking.RequestToFullyShow";
     static final String STACKING_TIME_TO_FULLY_SHOW_PREFIX = "Android.Messages.TimeToFullyShow.";
     static final String STACKING_ACTION_HISTOGRAM_PREFIX = "Android.Messages.Stacking.";
-    static final String THREE_STACKED_HISTOGRAM_NAME = "Android.Messages.Stacking.ThreeStacked";
 
     @IntDef({
         StackingAnimationType.SHOW_ALL,
@@ -87,17 +86,6 @@ public class MessagesMetrics {
         int REMOVE_FRONT = 4;
         int REMOVE_BACK = 5;
         int MAX_VALUE = 6;
-    }
-
-    @IntDef({
-        ThreeStackedScenario.HIGH_PRIORITY,
-        ThreeStackedScenario.IN_SEQUENCE,
-        ThreeStackedScenario.MAX_VALUE
-    })
-    public @interface ThreeStackedScenario {
-        int HIGH_PRIORITY = 0;
-        int IN_SEQUENCE = 1;
-        int MAX_VALUE = 2;
     }
 
     /** Records metrics when a message is being enqueued. */
@@ -213,11 +201,6 @@ public class MessagesMetrics {
                 STACKING_ACTION_HISTOGRAM_PREFIX + suffix,
                 messageIdentifier,
                 MessageIdentifier.COUNT);
-    }
-
-    static void recordThreeStackedScenario(@ThreeStackedScenario int scenario) {
-        RecordHistogram.recordEnumeratedHistogram(
-                THREE_STACKED_HISTOGRAM_NAME, scenario, ThreeStackedScenario.MAX_VALUE);
     }
 
     /** Record the message has been fully visible. */

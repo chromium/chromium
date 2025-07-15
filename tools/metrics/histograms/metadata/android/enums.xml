@@ -1663,19 +1663,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Tab Destroyed"/>
 </enum>
 
-<enum name="StackingAnimationThreeStackedType">
-  <summary>
-    The scenarios of stacking animation when it is posisble to have 3 messages
-    on the screen.
-  </summary>
-  <int value="0"
-      label="HIGH_PRIORITY - A high-priority message is inserted to a full
-             container"/>
-  <int value="1"
-      label="IN_SEQUENCE - The front message is dismissed in a full container
-             and a 3rd message is incoming."/>
-</enum>
-
 <enum name="StackingAnimationType">
   <summary>
     The type of stacking animation when it is triggered. The type indicates the
