@@ -1750,6 +1750,21 @@ android_library("chrome_unit_test_java_org.chromium.chrome.browser.share") {
   deps = [ ":common_unit_test_deps_java" ]
 }
 
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.bookmarkswidget") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProviderTest.java",
+    "src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetServiceImplTest.java",
+  ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/bookmarks/android:javatests",
+  ]
+}
+
 android_library("chrome_unit_test_java_various") {
   resources_package = "org.chromium.chrome"
 
