@@ -76,16 +76,15 @@ executable("app_mode_loader") {
   sources = [ "app_mode_loader_mac.mm" ]
 
   if (is_component_build || is_asan || is_ubsan_any) {
-    # Loaders are installed to ~/Applications. In a component build, include
-    # the absolute path to the out dir in their library search path so that
-    # their components are found at launch.
-    # Additionally reserve enough space in the header to be able to add
-    # another path to rpath if the build was moved to a different path
-    # before running tests.
+    # Loaders are installed to ~/Applications. In a component build, reserve
+    # enough space in the header to be able to add the out dir to the library
+    # search path so that components can be found at launch. Note that directly
+    # including the (current) out dir in the library search path doesn't work
+    # since the build might be moved to a different path before running (for
+    # example when running tests on bots).
     ldflags = [
-      "-Wl,-rpath," + rebase_path(root_out_dir),
       "-Wl,-headerpad",
-      "-Wl,100",
+      "-Wl,256",
     ]
   }
 
