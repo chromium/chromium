@@ -1254,7 +1254,8 @@ gfx::Size RenderWidgetHostViewAndroid::GetRequestedRendererSizeDevicePx() {
                      default_bounds_dip_.height() * scale_factor);
   }
 
-  return view_.GetSizeDevicePx();
+  const float scale_factor = GetDeviceScaleFactor() / view_.GetDipScale();
+  return gfx::ScaleToCeiledSize(view_.GetSizeDevicePx(), scale_factor);
 }
 
 gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSize() {

@@ -606,6 +606,70 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Test for scaling.
+class RenderWidgetHostViewAndroidScalingTest
+    : public RenderWidgetHostViewAndroidTest {
+ public:
+  RenderWidgetHostViewAndroidScalingTest() = default;
+  ~RenderWidgetHostViewAndroidScalingTest() override = default;
+
+  void SetScreenInfo(display::ScreenInfo screen_info) {
+    static_cast<CustomScreenInfoRenderWidgetHostViewAndroid*>(
+        render_widget_host_view_android())
+        ->SetScreenInfo(screen_info);
+  }
+
+  void OnPhysicalBackingSizeChanged(const gfx::Size& size) {
+    render_widget_host_view_android()
+        ->GetNativeView()
+        ->OnPhysicalBackingSizeChanged(size);
+  }
+
+  void OnVisibleViewportSizeChanged(int width, int height) {
+    GetParentView()->OnSizeChanged(width, height);
+  }
+
+ protected:
+  RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
+      RenderWidgetHostImpl* widget_host) override {
+    return new CustomScreenInfoRenderWidgetHostViewAndroid(
+        widget_host, GetParentView(), GetParentLayer());
+  }
+};
+
+TEST_F(RenderWidgetHostViewAndroidScalingTest, UpdateOverrideScale) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  ui::ViewAndroid* view = rwhva->GetNativeView();
+
+  const gfx::Size view_size_dip(100, 200);
+  const gfx::Size view_size_px =
+      ScaleToFlooredSize(view_size_dip, view->GetDipScale());
+  OnVisibleViewportSizeChanged(view_size_dip.width(), view_size_dip.height());
+
+  const gfx::Size backing_size_px(200, 400);
+  OnPhysicalBackingSizeChanged(backing_size_px);
+  EXPECT_EQ(backing_size_px, rwhva->GetCompositorViewportPixelSize());
+  EXPECT_EQ(view_size_dip, rwhva->GetRequestedRendererSize());
+  EXPECT_EQ(view_size_px, rwhva->GetRequestedRendererSizeDevicePx());
+  EXPECT_EQ(view_size_dip, rwhva->GetVisibleViewportSize());
+  EXPECT_EQ(view_size_px, rwhva->GetVisibleViewportSizeDevicePx());
+
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 3.0f;
+  SetScreenInfo(screen_info);
+  EXPECT_EQ(3.0f, rwhva->GetDeviceScaleFactor());
+
+  const gfx::Size scaled_view_size_px = ScaleToFlooredSize(
+      view_size_dip, view->GetDipScale() * screen_info.device_scale_factor);
+  const gfx::Size scaled_backing_size_px =
+      ScaleToFlooredSize(backing_size_px, screen_info.device_scale_factor);
+  EXPECT_EQ(scaled_backing_size_px, rwhva->GetCompositorViewportPixelSize());
+  EXPECT_EQ(view_size_dip, rwhva->GetRequestedRendererSize());
+  EXPECT_EQ(scaled_view_size_px, rwhva->GetRequestedRendererSizeDevicePx());
+  EXPECT_EQ(view_size_dip, rwhva->GetVisibleViewportSize());
+  EXPECT_EQ(scaled_view_size_px, rwhva->GetVisibleViewportSizeDevicePx());
+}
+
 // Tests rotation and fullscreen cases that are supported by visual properties
 // analysis. Some of which fail with the fullscreen killswitch legacy path.
 //
