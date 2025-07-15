@@ -617,6 +617,9 @@ void SidePanelCoordinator::PopulateSidePanel(
       action_item->GetImage(), action_item->GetText(),
       entry->GetProperty(kShouldShowTitleInSidePanelHeaderKey),
       (entry->key().id() == SidePanelEntryId::kExtension));
+  action_item_controller_subscription_ = action_item->AddActionChangedCallback(
+      base::BindRepeating(&SidePanelCoordinator::OnActionItemChanged,
+                          base::Unretained(this), unique_key));
 
   auto* content_wrapper =
       browser_view_->unified_side_panel()->GetContentParentView();
@@ -1051,7 +1054,28 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(
     panel_icon_->SetImage(updated_icon);
   }
   panel_icon_->SetVisible(is_extension);
-  panel_title_->SetText(should_show_title_text ? text : std::u16string_view());
+
+  std::u16string_view title_text =
+      should_show_title_text ? text : std::u16string_view();
+  // Update the title if it differs from the current title text.
+  if (title_text != panel_title_->GetText()) {
+    panel_title_->SetText(title_text);
+  }
+}
+
+void SidePanelCoordinator::OnActionItemChanged(const UniqueKey key) {
+  if (key != current_key_) {
+    return;
+  }
+  const SidePanelEntry* entry = GetEntryForUniqueKey(key);
+  if (!entry) {
+    return;
+  }
+  const actions::ActionItem* action_item = GetActionItem(entry->key());
+  UpdatePanelIconAndTitle(
+      action_item->GetImage(), action_item->GetText(),
+      entry->GetProperty(kShouldShowTitleInSidePanelHeaderKey),
+      (entry->key().id() == SidePanelEntryId::kExtension));
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

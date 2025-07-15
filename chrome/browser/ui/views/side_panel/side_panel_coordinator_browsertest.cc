@@ -62,6 +62,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -732,6 +733,37 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ShowOpensSidePanel) {
   // Verify that bookmarks is selected.
   EXPECT_EQ(GetTitleText(),
             l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       ChangesTitleWhenActionItemChanges) {
+  Init();
+  EXPECT_FALSE(coordinator()->IsSidePanelShowing());
+
+  coordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  // Bookmarks is showing and selected.
+  EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
+  EXPECT_EQ(GetTitleText(),
+            l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE));
+
+  SidePanelEntry* entry = global_registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  actions::ActionItem* action_item = coordinator()->GetActionItem(entry->key());
+
+  // Update the action item text.
+  const std::u16string new_title = u"New Bookmarks title";
+  action_item->SetText(new_title);
+
+  // Side panel title is updated.
+  EXPECT_EQ(GetTitleText(), new_title);
+
+  // Set property to hide the title and update again.
+  entry->SetProperty(kShouldShowTitleInSidePanelHeaderKey, false);
+  const std::u16string ignored_title = u"Ignored title";
+  action_item->SetText(ignored_title);
+
+  // Side panel title is empty as it's not shown.
+  EXPECT_EQ(GetTitleText(), u"");
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
