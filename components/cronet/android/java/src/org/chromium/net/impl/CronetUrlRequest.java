@@ -1100,7 +1100,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 failureReason,
                 mMetrics.getSocketReused(),
                 ImplVersion.getCronetVersion(),
-                mRequestContext.getCronetSource());
+                NativeCronetEngineBuilderImpl.getCronetSource());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

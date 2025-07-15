@@ -21,13 +21,20 @@ import java.util.concurrent.atomic.AtomicLong;
 public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
 
+    // The source info is computed once and then shared between all instances of this class. This is
+    // safe because once native Cronet is loaded from a given source, it cannot be loaded again from
+    // any other source (unless it's from a different ClassLoader, but that's fine because that
+    // would be a different class that will run through this code again with its own copy of
+    // `mSource`).
+    private static final CronetSource sCronetSource = computeCronetSource();
+
     /**
      * Builder for Native Cronet Engine. Default config enables SPDY, disables QUIC and HTTP cache.
      *
      * @param context Android {@link Context} for engine to use.
      */
     public NativeCronetEngineBuilderImpl(Context context) {
-        super(context, computeCronetSource());
+        super(context, sCronetSource);
     }
 
     private static CronetSource computeCronetSource() {
@@ -42,6 +49,10 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
         }
 
         return CronetSource.CRONET_SOURCE_STATICALLY_LINKED;
+    }
+
+    static CronetSource getCronetSource() {
+        return sCronetSource;
     }
 
     @Override
