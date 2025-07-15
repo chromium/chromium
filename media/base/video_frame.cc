@@ -45,6 +45,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40263579): Remove.
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "ui/ozone/public/client_native_pixmap_factory_ozone.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -845,11 +846,20 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBufferHandle(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    std::unique_ptr<gpu::GpuMemoryBufferImplNativePixmap> gpu_memory_buffer,
+    gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
+    gfx::GpuMemoryBufferHandle handle,
+    const gfx::Size& coded_size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
     base::TimeDelta timestamp) {
+  CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
+  auto gpu_memory_buffer =
+      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandleForVideoFrame(
+          client_native_pixmap_factory, std::move(handle), coded_size, format,
+          usage);
   return CreateFrameForGpuMemoryBufferInternal(
       visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
 }

@@ -16,7 +16,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
@@ -204,15 +203,13 @@ void GpuArcVideoEncodeAccelerator::Encode(
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
   }
-  auto gpu_memory_buffer =
-      gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
-          coded_size_, *buffer_format,
-          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-
-  auto frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
+  auto frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
+      gfx::Rect(visible_size_), visible_size_,
+      client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
+      coded_size_, *buffer_format,
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       base::Microseconds(timestamp));
+
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";
     client_->NotifyError(Error::kInvalidArgumentError);

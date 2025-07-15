@@ -27,8 +27,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40263579): Remove.
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"  // nogncheck
 #include "ui/ozone/public/ozone_platform.h"                      // nogncheck
 #endif
@@ -390,17 +388,10 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     auto client_native_pixmap_factory =
         ui::CreateClientNativePixmapFactoryOzone();
-    auto gpu_memory_buffer =
-        gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandleForVideoFrame(
-            client_native_pixmap_factory.get(),
-            std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            buffer_usage);
-    if (!gpu_memory_buffer) {
-      return false;
-    }
-
-    frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
+    frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
+        visible_rect, natural_size, client_native_pixmap_factory.get(),
+        std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
+        buffer_usage, timestamp);
 #else
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
