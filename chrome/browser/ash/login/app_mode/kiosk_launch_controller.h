@@ -176,7 +176,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   class ScopedAcceleratorDisabler;
 
   enum AppState {
-    kCreatingProfile = 0,  // Profile is being created.
+    kCreatingProfile = 0,   // Profile is being created.
     kInitLauncher,          // Launcher is initializing
     kInstallingApp,         // App is being installed.
     kInstallingExtensions,  // Force-installed extensions are being installed.
@@ -195,6 +195,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
   void OnAppInstalling() override;
   void OnAppPrepared() override;
+  void OnAppLaunching() override;
   void OnAppLaunched() override;
   void OnAppDataUpdated() override;
   void OnAppWindowCreated(const std::optional<std::string>& app_name) override;

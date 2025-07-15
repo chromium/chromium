@@ -219,10 +219,11 @@ void KioskArcvmAppService::PreconditionsChanged() {
     CHECK(!app_launcher_)
         << "App launcher already exists, not starting Kiosk app";
     VLOG(2) << "Starting kiosk app";
+    observers_.NotifyAppPrepared();
+    observers_.NotifyAppLaunching();
     app_launcher_ = std::make_unique<KioskArcvmAppLauncher>(
         ArcAppListPrefs::Get(profile_), app_id_, this);
     app_launcher_->LaunchApp(profile_);
-    observers_.NotifyAppPrepared();
   } else if (task_id_.has_value()) {
     VLOG(2) << "Kiosk app should be closed";
     arc::CloseTask(task_id_.value());

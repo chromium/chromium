@@ -10,9 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/extension.h"
@@ -21,9 +21,15 @@ namespace chromeos {
 
 class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
  public:
-  using LaunchResult = crosapi::mojom::ChromeKioskLaunchResult;
-  using LaunchCallback =
-      crosapi::mojom::ChromeKioskLaunchController::LaunchKioskAppCallback;
+  using LaunchCallback = base::OnceCallback<void(bool)>;
+
+  enum PreLaunchError {
+    kPrimaryAppMissing,
+    kSecondaryAppsMissing,
+    kChromeAppDeprecated,
+    kPrimaryAppNotKioskEnabled,
+    kNetworkMissing
+  };
 
   ChromeKioskAppLauncher(Profile* profile,
                          const std::string& app_id,
@@ -32,6 +38,7 @@ class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
   ChromeKioskAppLauncher& operator=(const ChromeKioskAppLauncher&) = delete;
   ~ChromeKioskAppLauncher() override;
 
+  base::expected<void, PreLaunchError> PerformPreLaunchChecks();
   void LaunchApp(LaunchCallback callback);
 
  private:
@@ -44,7 +51,7 @@ class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
   void WaitForAppWindow();
 
   void ReportLaunchSuccess();
-  void ReportLaunchFailure(LaunchResult result);
+  void ReportLaunchFailure();
 
   const extensions::Extension* GetPrimaryAppExtension() const;
 

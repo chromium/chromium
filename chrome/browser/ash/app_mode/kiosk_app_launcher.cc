@@ -48,6 +48,10 @@ void KioskAppLauncher::ObserverList::NotifyAppPrepared() {
   }
 }
 
+void KioskAppLauncher::ObserverList::NotifyAppLaunching() {
+  observers_.Notify(&KioskAppLauncher::Observer::OnAppLaunching);
+}
+
 void KioskAppLauncher::ObserverList::NotifyAppLaunched() {
   for (auto& observer : observers_) {
     observer.OnAppLaunched();

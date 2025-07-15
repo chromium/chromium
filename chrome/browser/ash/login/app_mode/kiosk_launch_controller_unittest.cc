@@ -8,10 +8,8 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/login_accelerators.h"
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -24,7 +22,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -57,7 +54,6 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -68,6 +64,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
@@ -723,6 +720,23 @@ TEST_F(KioskLaunchControllerTest,
   EXPECT_EQ(launcher().launch_app_called(), 2);
 }
 
+TEST_F(KioskLaunchControllerTest,
+       SessionStateShouldOnlySwitchWhenAppIsActuallyLaunching) {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  SetOnline(false);
+  RunUntilAppPrepared();
+  FireSplashScreenTimer();
+  EXPECT_EQ(launcher().launch_app_called(), 1);
+
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::LOGIN_PRIMARY);
+
+  launcher().observers().NotifyAppLaunching();
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+}
+
 class KioskLaunchControllerWithExtensionTest
     : public KioskLaunchControllerTest {
  public:
@@ -981,9 +995,14 @@ TEST_F(KioskLaunchControllerTest, TestFullFlow) {
 
 TEST_F(KioskLaunchControllerTest,
        ChromeAppDeprecatedCheckKeepSplashScreenMessage) {
-  controller().Start(kiosk_app(), /*auto_launch=*/false);
-  FinishLoadingProfile();
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  RunUntilAppPrepared();
+  FireSplashScreenTimer();
 
+  EXPECT_EQ(launcher().launch_app_called(), 1);
+
+  // Simulate launch failure because of Chrome App deprecation
   launcher().observers().NotifyLaunchFailed(
       KioskAppLaunchError::Error::kChromeAppDeprecated);
 
@@ -996,7 +1015,8 @@ TEST_F(KioskLaunchControllerTest,
   EXPECT_FALSE(screen().IsThrobberVisible());
 
   task_environment()->FastForwardBy(base::Minutes(2));
-  EXPECT_FALSE(launcher().HasAppLaunched());
+  EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
+            session_manager::SessionState::LOGIN_PRIMARY);
 }
 
 TEST_F(KioskLaunchControllerTest,

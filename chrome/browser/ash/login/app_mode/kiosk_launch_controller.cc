@@ -27,7 +27,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
@@ -60,10 +59,8 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/user.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -684,6 +681,13 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
   }
 }
 
+void KioskLaunchController::OnAppLaunching() {
+  // We need to change the session state so we are able to create browser
+  // windows.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+}
+
 void KioskLaunchController::OnAppLaunched() {
   SYSLOG(INFO) << "Kiosk launch succeeded, wait for app window.";
   app_state_ = AppState::kLaunched;
@@ -776,10 +780,6 @@ void KioskLaunchController::LaunchApp() {
   }
 
   DCHECK(app_state_ == AppState::kInstalled);
-  // We need to change the session state so we are able to create browser
-  // windows.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   splash_wait_timer_.Stop();
   app_launcher_->LaunchApp();
 }

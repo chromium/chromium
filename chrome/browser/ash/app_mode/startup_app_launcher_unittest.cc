@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -23,7 +22,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -48,14 +46,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/sync/model/string_ordinal.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -78,7 +72,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "test_kiosk_extension_builder.h"
@@ -114,6 +107,7 @@ enum class LaunchState {
   kInitializingNetwork,
   kInstallingApp,
   kReadyToLaunch,
+  kLaunching,
   kLaunchSucceeded,
   kLaunchFailed
 };
@@ -155,6 +149,7 @@ class TestAppLaunchDelegate : public KioskAppLauncher::NetworkDelegate,
     SetLaunchState(LaunchState::kInstallingApp);
   }
   void OnAppPrepared() override { SetLaunchState(LaunchState::kReadyToLaunch); }
+  void OnAppLaunching() override { SetLaunchState(LaunchState::kLaunching); }
   void OnAppLaunched() override {
     SetLaunchState(LaunchState::kLaunchSucceeded);
   }
@@ -791,6 +786,8 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
   CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
@@ -826,6 +823,8 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
@@ -850,6 +849,8 @@ TEST_F(StartupAppLauncherTest,
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), *primary_app);
 
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
 
@@ -990,6 +991,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
                   extensions::disable_reason::DISABLE_USER_ACTION));
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
@@ -1027,6 +1030,8 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), *primary_app);
 
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
@@ -1069,6 +1074,8 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
@@ -1097,6 +1104,8 @@ TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), *primary_app);
 
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
 }
@@ -1142,6 +1151,8 @@ TEST_F(StartupAppLauncherTest,
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), *primary_app);
 
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
 }
@@ -1194,6 +1205,8 @@ TEST_F(StartupAppLauncherTest,
   CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
 }
 
@@ -1228,6 +1241,8 @@ TEST_F(StartupAppLauncherTest,
   CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
 }
 
@@ -1260,6 +1275,8 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), *primary_app);
 
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunching);
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());

@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -27,12 +28,13 @@
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/api/app_runtime.h"
 
+using base::test::ErrorIs;
 using base::test::TestFuture;
 using extensions::Manifest;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
-using LaunchResult = chromeos::ChromeKioskAppLauncher::LaunchResult;
+using PreLaunchError = chromeos::ChromeKioskAppLauncher::PreLaunchError;
 using chromeos::ChromeKioskAppLauncher;
 
 namespace ash {
@@ -170,10 +172,8 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
 TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfPrimaryAppNotInstalled) {
   CreateLauncher(/*is_network_ready=*/true);
 
-  TestFuture<LaunchResult> future;
-  launcher_->LaunchApp(future.GetCallback());
-
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kUnableToLaunch));
+  ASSERT_THAT(launcher_->PerformPreLaunchChecks(),
+              ErrorIs(PreLaunchError::kPrimaryAppMissing));
   ASSERT_THAT(app_launch_tracker_->launched_apps(), IsEmpty());
 }
 
@@ -188,10 +188,8 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfSecondaryAppNotInstalled) {
 
   CreateLauncher(/*is_network_ready=*/true);
 
-  TestFuture<LaunchResult> future;
-  launcher_->LaunchApp(future.GetCallback());
-
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kUnableToLaunch));
+  ASSERT_THAT(launcher_->PerformPreLaunchChecks(),
+              ErrorIs(PreLaunchError::kSecondaryAppsMissing));
   ASSERT_THAT(app_launch_tracker_->launched_apps(), IsEmpty());
 }
 
@@ -207,10 +205,8 @@ TEST_F(ChromeKioskAppLauncherTest,
 
   CreateLauncher(/*is_network_ready=*/false);
 
-  TestFuture<LaunchResult> future;
-  launcher_->LaunchApp(future.GetCallback());
-
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kNetworkMissing));
+  ASSERT_THAT(launcher_->PerformPreLaunchChecks(),
+              ErrorIs(PreLaunchError::kNetworkMissing));
   ASSERT_THAT(app_launch_tracker_->launched_apps(), IsEmpty());
 }
 
@@ -224,12 +220,12 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
 
   CreateLauncher(/*is_network_ready=*/true);
 
-  TestFuture<LaunchResult> future;
+  TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
   SimulateAppWindowLaunch(primary_app.get());
 
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
+  ASSERT_TRUE(future.Get());
 
   EXPECT_THAT(app_launch_tracker_->launched_apps(),
               ElementsAre(kTestPrimaryAppId));
@@ -263,12 +259,12 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
 
   CreateLauncher(/*is_network_ready=*/true);
 
-  TestFuture<LaunchResult> future;
+  TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
   SimulateAppWindowLaunch(primary_app.get());
 
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
+  ASSERT_TRUE(future.Get());
 
   EXPECT_THAT(app_launch_tracker_->launched_apps(),
               ElementsAre(kTestPrimaryAppId));
@@ -287,12 +283,12 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithAppService) {
 
   CreateLauncher(/*is_network_ready=*/true);
 
-  TestFuture<LaunchResult> future;
+  TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
   SimulateAppWindowLaunch(primary_app.get());
 
-  ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
+  ASSERT_TRUE(future.Get());
 
   EXPECT_THAT(app_launch_tracker_->launched_apps(),
               ElementsAre(kTestPrimaryAppId));

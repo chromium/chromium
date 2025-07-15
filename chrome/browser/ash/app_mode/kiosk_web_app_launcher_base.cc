@@ -47,6 +47,7 @@ void KioskWebAppLauncherBase::ContinueWithNetworkReady() {
 }
 
 void KioskWebAppLauncherBase::LaunchApp() {
+  observers_.NotifyAppLaunching();
   app_service_launcher().CheckAndMaybeLaunchApp(
       GetInstalledWebAppId(),
       base::BindOnce(&KioskWebAppLauncherBase::OnAppLaunched,

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -217,35 +216,47 @@ void StartupAppLauncher::LaunchApp() {
   launcher_ = std::make_unique<ChromeKioskAppLauncher>(
       profile_, app_id_, delegate_->IsNetworkReady());
 
+  base::expected<void, ChromeKioskAppLauncher::PreLaunchError>
+      pre_launch_result = launcher_->PerformPreLaunchChecks();
+  if (!pre_launch_result.has_value()) {
+    HandlePreLaunchError(pre_launch_result.error());
+    return;
+  }
+  observers_.NotifyAppLaunching();
+
   launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
                                       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StartupAppLauncher::OnLaunchComplete(
-    ChromeKioskAppLauncher::LaunchResult result) {
-  CHECK_EQ(state_, LaunchState::kReadyToLaunch);
-
-  launcher_.reset();
-
-  switch (result) {
-    case ChromeKioskAppLauncher::LaunchResult::kSuccess:
-      OnLaunchSuccess();
-      return;
-    case ChromeKioskAppLauncher::LaunchResult::kUnableToLaunch:
+void StartupAppLauncher::HandlePreLaunchError(
+    ChromeKioskAppLauncher::PreLaunchError error) {
+  switch (error) {
+    case ChromeKioskAppLauncher::PreLaunchError::kPrimaryAppMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kSecondaryAppsMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kPrimaryAppNotKioskEnabled:
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       return;
-    case ChromeKioskAppLauncher::LaunchResult::kNetworkMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kNetworkMissing:
       if (!RetryWhenNetworkIsAvailable()) {
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       }
       return;
-    case ChromeKioskAppLauncher::LaunchResult::kChromeAppDeprecated:
+    case ChromeKioskAppLauncher::PreLaunchError::kChromeAppDeprecated:
       OnLaunchFailure(KioskAppLaunchError::Error::kChromeAppDeprecated);
       return;
-    case ChromeKioskAppLauncher::LaunchResult::kUnknown:
-      SYSLOG(ERROR) << "Received unknown LaunchResult";
-      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-      return;
+  }
+}
+
+void StartupAppLauncher::OnLaunchComplete(bool success) {
+  CHECK_EQ(state_, LaunchState::kReadyToLaunch);
+
+  launcher_.reset();
+
+  if (success) {
+    OnLaunchSuccess();
+  } else {
+    // Other error cases are being handled in `HandlePreLaunchError`
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
   }
 }
 
