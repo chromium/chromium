@@ -9,6 +9,8 @@ source_set("row") {
     "omnibox_popup_row_content_view.h",
     "omnibox_popup_row_content_view.mm",
     "omnibox_popup_row_delegate.h",
+    "omnibox_popup_row_trailing_button.h",
+    "omnibox_popup_row_trailing_button.mm",
     "omnibox_popup_row_util.h",
     "omnibox_popup_row_util.mm",
   ]

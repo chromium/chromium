@@ -20,7 +20,6 @@
 @property(nonatomic, assign, readwrite) BOOL leadingIconHighlighted;
 @property(nonatomic, strong, readwrite) NSAttributedString* primaryText;
 @property(nonatomic, strong, readwrite) NSAttributedString* secondaryText;
-@property(nonatomic, strong, readwrite) UIColor* trailingIconTintColor;
 
 @end
 
@@ -30,7 +29,6 @@
 @synthesize leadingIconHighlighted;
 @synthesize primaryText;
 @synthesize secondaryText;
-@synthesize trailingIconTintColor;
 
 /// Layout this cell with the given data before displaying.
 + (instancetype)cellConfiguration {
@@ -164,8 +162,6 @@
           ? [self.class highlightedAttributedStringWithString:self.suggestion
                                                                   .detailText]
           : self.suggestion.detailText;
-  configuration.trailingIconTintColor =
-      isHighlighted ? UIColor.whiteColor : [UIColor colorNamed:kBlueColor];
   configuration.actions = self.actions;
 
   if (!viewState.highlighted && !viewState.selected) {

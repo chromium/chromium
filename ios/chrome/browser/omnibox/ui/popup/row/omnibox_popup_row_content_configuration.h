@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_trailing_button.h"
+
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
@@ -72,10 +74,7 @@ extern const CGFloat kOmniboxPopupCellMinimumHeight;
 @property(nonatomic, assign, readonly) BOOL secondaryTextDisplayAsURL;
 
 // Trailing Icon.
-@property(nonatomic, strong, readonly) UIImage* trailingIcon;
-@property(nonatomic, strong, readonly) UIColor* trailingIconTintColor;
-@property(nonatomic, strong, readonly)
-    NSString* trailingButtonAccessibilityIdentifier;
+@property(nonatomic, readonly) TrailingIconType trailingIconType;
 
 // Margins.
 @property(nonatomic, assign, readonly)

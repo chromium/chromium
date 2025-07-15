@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_trailing_button.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
@@ -64,7 +65,7 @@ const double kContentSizeMultiplierAccesibility = 2.0;
   FadeTruncatingLabel* _secondaryLabelFading;
   UILabel* _secondaryLabelTruncating;
   OmniboxIconView* _leadingIconView;
-  ExtendedTouchTargetButton* _trailingButton;
+  OmniboxPopupRowTrailingButton* _trailingButton;
   UIStackView* _textStackView;
   UIView* _separator;
   UIView* _selectedBackgroundView;
@@ -147,13 +148,14 @@ const double kContentSizeMultiplierAccesibility = 2.0;
 
     // Trailing Button.
     _trailingButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
+        [[OmniboxPopupRowTrailingButton alloc] initWithFrame:CGRectZero];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingButton.isAccessibilityElement = NO;
+    _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
+
     [_trailingButton addTarget:self
                         action:@selector(trailingButtonTapped)
               forControlEvents:UIControlEventTouchUpInside];
-    _trailingButton.hidden = YES;  // Optional view.
     [self addSubview:_trailingButton];
 
     // Bottom separator.
@@ -399,24 +401,9 @@ const double kContentSizeMultiplierAccesibility = 2.0;
   }
 
   // Trailing Button.
-  if (configuration.trailingIcon) {
-    [_trailingButton setImage:configuration.trailingIcon
-                     forState:UIControlStateNormal];
-    _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
-    _trailingButton.contentHorizontalAlignment =
-        UIControlContentHorizontalAlignmentFill;
-    _trailingButton.contentVerticalAlignment =
-        UIControlContentVerticalAlignmentFill;
-    _trailingButton.hidden = NO;
-    _trailingButton.tintColor = configuration.trailingIconTintColor;
-    _trailingButton.accessibilityIdentifier =
-        configuration.trailingButtonAccessibilityIdentifier;
-    _textTrailingToButtonConstraint.active = YES;
-  } else {
-    _textTrailingToButtonConstraint.active = NO;
-    _trailingButton.hidden = YES;
-    _trailingButton.accessibilityIdentifier = nil;
-  }
+  _trailingButton.trailingIconType = configuration.trailingIconType;
+  _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
+  _textTrailingToButtonConstraint.active = !_trailingButton.hidden;
 
   // Separator.
   _separator.hidden = !configuration.showSeparator;
