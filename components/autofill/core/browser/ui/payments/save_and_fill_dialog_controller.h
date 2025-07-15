@@ -44,6 +44,8 @@ class SaveAndFillDialogController {
       std::u16string_view expiration_date) const = 0;
   virtual bool IsValidNameOnCard(std::u16string_view input_text) const = 0;
 
+  // Dismisses the dialog by destroying its view and associated widget.
+  virtual void Dismiss() = 0;
   // Callbacks for when the user accepts the Save and Fill dialog.
   virtual void OnUserAcceptedDialog(
       const payments::PaymentsAutofillClient::

@@ -30,7 +30,6 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
           create_and_show_view_callback,
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
           card_save_and_fill_dialog_callback);
-  void Dismiss();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::u16string GetWindowTitle() const override;
@@ -56,6 +55,7 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
       std::u16string_view expiration_date) const override;
   bool IsValidNameOnCard(std::u16string_view input_text) const override;
 
+  void Dismiss() override;
   void OnUserAcceptedDialog(
       const payments::PaymentsAutofillClient::
           UserProvidedCardSaveAndFillDetails&

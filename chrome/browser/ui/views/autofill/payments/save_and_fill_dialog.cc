@@ -231,6 +231,8 @@ void SaveAndFillDialog::OnDialogClosed(views::Widget::ClosedReason reason) {
     controller_->OnUserAcceptedDialog(GetUserProvidedDataFromInput());
   } else if (reason == views::Widget::ClosedReason::kCancelButtonClicked) {
     controller_->OnUserCanceledDialog();
+  } else {
+    controller_->Dismiss();
   }
 }
 

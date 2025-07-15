@@ -32,10 +32,6 @@ void SaveAndFillDialogControllerImpl::ShowDialog(
   CHECK(dialog_view_);
 }
 
-void SaveAndFillDialogControllerImpl::Dismiss() {
-  dialog_view_.reset();
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::u16string SaveAndFillDialogControllerImpl::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE);
@@ -207,6 +203,10 @@ bool SaveAndFillDialogControllerImpl::IsValidNameOnCard(
     return false;
   }
   return autofill::IsValidNameOnCard(input_text);
+}
+
+void SaveAndFillDialogControllerImpl::Dismiss() {
+  dialog_view_.reset();
 }
 
 void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
