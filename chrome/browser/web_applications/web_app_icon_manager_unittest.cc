@@ -49,7 +49,6 @@ namespace web_app {
 namespace {
 
 using IconSizeAndPurpose = WebAppIconManager::IconSizeAndPurpose;
-const int kMinimumHomeTabIconSizeInPx = 16;
 
 // Returns a vector of item infos for the shortcuts menu. Each item is empty
 // except `downloaded_icon_sizes` is set to `icon_sizes`.
@@ -710,28 +709,6 @@ TEST_F(WebAppIconManagerTest, ReadAllShortcutMenuIconsWithTimestamp) {
       time_data_map[1][IconPurpose::MONOCHROME][icon_size::k64].is_null());
   ASSERT_FALSE(
       time_data_map[1][IconPurpose::MONOCHROME][icon_size::k128].is_null());
-}
-
-TEST_F(WebAppIconManagerTest, NoHomeTabIcons) {
-  auto web_app = test::CreateWebApp();
-  const webapps::AppId app_id = web_app->app_id();
-  const std::vector<blink::Manifest::ImageResource>& icons{};
-  SkBitmap result;
-
-  AddAppToRegistry(std::move(web_app));
-  {
-    base::RunLoop run_loop;
-
-    icon_manager().ReadBestHomeTabIcon(
-        app_id, icons, kMinimumHomeTabIconSizeInPx,
-        base::BindLambdaForTesting([&](SkBitmap home_tab_icon) {
-          result = std::move(home_tab_icon);
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    EXPECT_TRUE(result.height() == 0 && result.width() == 0);
-  }
 }
 
 TEST_F(WebAppIconManagerTest, ReadAllIcons_AnyAndMaskable) {

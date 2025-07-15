@@ -26,7 +26,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
-#include "web_app_install_info.h"
 
 class Profile;
 
@@ -136,18 +135,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadAllShortcutsMenuIcons(const webapps::AppId& app_id,
                                  ReadShortcutsMenuIconsCallback callback);
 
-  using ReadHomeTabIconsCallback =
-      base::OnceCallback<void(SkBitmap home_tab_icon_bitmap)>;
-
-  // Reads bitmap for the home tab icon. Returns a SkBitmap
-  // in |callback| if the icon exists. Otherwise, if it doesn't
-  // exist, the SkBitmap is empty.
-  void ReadBestHomeTabIcon(
-      const webapps::AppId& app_id,
-      const std::vector<blink::Manifest::ImageResource>& icons,
-      const SquareSizePx min_home_tab_icon_size_px,
-      ReadHomeTabIconsCallback callback);
-
   using ReadIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, SkBitmap)>;
   // For each of |purposes|, in the given order, looks for an icon with size at
@@ -168,9 +155,6 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size_in_px,
       ReadCompressedIconWithPurposeCallback callback);
-
-  using ReadCompressedIconsSizeCallback =
-      base::OnceCallback<void(const webapps::AppId& app_id, uint64_t size)>;
 
   using GetIconsSizeCallback = base::OnceCallback<void(uint64_t)>;
   void GetIconsSizeForApp(const webapps::AppId& app_id,

@@ -49,7 +49,6 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -109,11 +108,6 @@ struct IconId {
   webapps::AppId app_id;
   IconPurpose purpose;
   SquareSizePx size;
-};
-
-struct IconSrcAndSize {
-  GURL src;
-  SquareSizePx size_px = 0;
 };
 
 // This is a private implementation detail of WebAppIconManager, where and how
@@ -223,7 +217,7 @@ base::FilePath GetManifestResourcesShortcutsMenuIconFileName(
 
 // `web_apps_directory` is the path to the directory where all web app data is
 // stored for the relevant profile.
-base::FilePath GetManifestResourcesOtherIconsFileName(
+[[maybe_unused]] base::FilePath GetManifestResourcesOtherIconsFileName(
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
     const GURL& url,
@@ -302,41 +296,6 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
   if (result.value.isNull()) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
-  }
-
-  return result;
-}
-
-// Returns empty SkBitmap if any errors occurred.
-TypedResult<SkBitmap> ReadHomeTabIconFromFileAndResizeBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const webapps::AppId& app_id,
-    const GURL& url,
-    int icon_size_px,
-    const SquareSizePx target_icon_size_px) {
-  TRACE_EVENT0(
-      "ui", "web_app_icon_manager::ReadHomeTabIconFromFileAndResizeBlocking");
-  base::FilePath icon_file = GetManifestResourcesOtherIconsFileName(
-      web_apps_directory, app_id, url, icon_size_px);
-
-  std::string icon_data;
-  if (!utils->ReadFileToString(icon_file, &icon_data)) {
-    return {.error_log = {CreateError(
-                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
-  }
-
-  TypedResult<SkBitmap> result;
-  result.value = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
-  if (result.value.isNull()) {
-    return {.error_log = {CreateError({"Could not decode icon data for file: ",
-                                       icon_file.AsUTF8Unsafe()})}};
-  }
-
-  if (result.value.width() != target_icon_size_px) {
-    result.value = skia::ImageOperations::Resize(
-        result.value, skia::ImageOperations::RESIZE_BEST, target_icon_size_px,
-        target_icon_size_px);
   }
 
   return result;
@@ -474,77 +433,6 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
   }
   CHECK_EQ(shortcuts_menu_item_infos.size(), results.value.size());
   return results;
-}
-
-// Returns an IconSrcAndSize for the smallest icon that is larger than the
-// minimum size specified. If there is no icon larger than the minimum size
-// the IconSrcAndSize of the largest icon available is returned. An icon
-// prioritises matching purpose before size. The purpose of the returned icon is
-// specified by the decreasing order of preference in |purposes|.
-std::optional<IconSrcAndSize> FindBestImageResourceMatch(
-    const std::vector<IconPurpose>& purposes,
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    SquareSizePx min_size) {
-  TRACE_EVENT0("ui", "web_app_icon_manager::FindBestImageResourceMatch");
-  IconSrcAndSize best_match;
-  IconSrcAndSize biggest_icon;
-  best_match.size_px = INT_MAX;
-  biggest_icon.size_px = INT_MIN;
-
-  for (const IconPurpose& purpose : purposes) {
-    for (const blink::Manifest::ImageResource& icon : icons) {
-      // TODO(crbug.com/40245169): Need to add check if icon has been
-      // successfully downloaded.
-      if (!base::Contains(icon.purpose, purpose)) {
-        continue;
-      }
-      for (const gfx::Size& icon_size : icon.sizes) {
-        if (icon_size.width() > biggest_icon.size_px) {
-          biggest_icon.size_px = icon_size.width();
-          biggest_icon.src = icon.src;
-        }
-        if (icon_size.width() < min_size) {
-          continue;
-        }
-        if (icon_size.width() > best_match.size_px) {
-          continue;
-        }
-        best_match.size_px = icon_size.width();
-        best_match.src = icon.src;
-      }
-    }
-    if (!best_match.src.is_empty()) {
-      return best_match;
-    }
-    if (!biggest_icon.src.is_empty()) {
-      return biggest_icon;
-    }
-  }
-
-  return std::nullopt;
-}
-
-TypedResult<SkBitmap> ReadHomeTabIconBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const webapps::AppId& app_id,
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    const SquareSizePx min_home_tab_icon_size_px) {
-  TRACE_EVENT0("ui", "web_app_icon_manager::ReadHomeTabIconBlocking");
-  std::optional<IconSrcAndSize> best_icon = FindBestImageResourceMatch(
-      {IconPurpose::ANY}, icons, min_home_tab_icon_size_px);
-  TypedResult<SkBitmap> result;
-
-  // Returns empty SkBitmap if |best_icon| not found
-  if (!best_icon.has_value()) {
-    result.error_log = {CreateError({"No suitable home tab icon found"})};
-  } else {
-    result = ReadHomeTabIconFromFileAndResizeBlocking(
-        utils, web_apps_directory, app_id, best_icon->src, best_icon->size_px,
-        min_home_tab_icon_size_px);
-  }
-
-  return result;
 }
 
 TypedResult<WebAppIconManager::ShortcutIconDataVector>
@@ -1179,27 +1067,6 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
                      web_app->shortcuts_menu_item_infos()),
       base::BindOnce(&LogErrorsCallCallback<ShortcutsMenuIconBitmaps>,
                      GetWeakPtr(), std::move(callback)));
-}
-
-void WebAppIconManager::ReadBestHomeTabIcon(
-    const webapps::AppId& app_id,
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    const SquareSizePx min_home_tab_icon_size_px,
-    ReadHomeTabIconsCallback callback) {
-  TRACE_EVENT0("ui", "WebAppIconManager::ReadBestHomeTabIcon");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  if (!web_app) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-  icon_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(ReadHomeTabIconBlocking, provider_->file_utils(),
-                     web_apps_directory_, app_id, icons,
-                     min_home_tab_icon_size_px),
-      base::BindOnce(&LogErrorsCallCallback<SkBitmap>, GetWeakPtr(),
-                     std::move(callback)));
 }
 
 void WebAppIconManager::GetIconsSizeForApp(
