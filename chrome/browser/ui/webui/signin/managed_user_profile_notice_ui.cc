@@ -216,6 +216,8 @@ void ManagedUserProfileNoticeUI::Initialize(
       create_param->account_info.capabilities.can_use_edu_features() ==
       signin::Tribool::kTrue;
   base::Value::Dict update_data;
+  std::string domain =
+      enterprise_util::GetDomainFromEmail(create_param->account_info.email);
   if (type ==
       ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     update_data.Set("isModalDialog", true);
@@ -228,8 +230,7 @@ void ManagedUserProfileNoticeUI::Initialize(
           signin_util::IsProfileSeparationEnforcedByProfile(
               profile, create_param->account_info.email)
               ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
-              : enterprise_util::GetDomainFromEmail(
-                    create_param->account_info.email);
+              : domain;
       update_data.Set(
           "valuePropositionTitle",
           manager.empty()
@@ -272,8 +273,7 @@ void ManagedUserProfileNoticeUI::Initialize(
         "profileDisclosureSubtitle",
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
-            base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
-                create_param->account_info.email))));
+            base::UTF8ToUTF16(domain)));
   }
 
   if (create_param->account_info.IsManaged() != signin::Tribool::kTrue) {
@@ -288,36 +288,35 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_TITLE));
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_ALREADY_SIGNED_IN_TITLE));
     update_data.Set(
         "profileDisclosureTitle",
         l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_TITLE));
+            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_TITLE));
     update_data.Set(
         "profileDisclosureSubtitle",
         l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TURN_SYNC_ON_SUBTITLE,
-            base::UTF8ToUTF16(enterprise_util::GetDomainFromEmail(
-                create_param->account_info.email))));
+            create_param->profile_creation_required_by_policy
+                ? IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_ENFORCED_SUBTITLE
+                : IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_ALREADY_SIGNED_IN_SUBTITLE,
+            base::UTF8ToUTF16(domain)));
     update_data.Set(
         "mergeBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_TURN_SYNC_ON_CHOICE));
+            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_ALREADY_SIGNED_IN_CHOICE));
     update_data.Set(
         "separateBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TURN_SYNC_ON_CHOICE));
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_ALREADY_SIGNED_IN_CHOICE));
     update_data.Set(
         "separateBrowsingDataChoiceDetails",
         l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_TURN_SYNC_ON_DETAILS,
-            base::UTF8ToUTF16(create_param->account_info.email)));
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS,
+            base::UTF8ToUTF16(domain)));
     // Canceling when profile separation is enabled forces the user to signout.
-    if (create_param->profile_creation_required_by_policy) {
-      update_data.Set(
-          "cancelLabel",
-          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
-    }
+    update_data.Set(
+        "cancelLabel",
+        l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(
@@ -362,7 +361,7 @@ void ManagedUserProfileNoticeUI::Initialize(
     ProfileStatisticsFactory::GetForProfile(profile)->GatherStatistics(
         base::BindRepeating(
             &ManagedUserProfileNoticeUI::UpdateBrowsingDataStringWithCounts,
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetWeakPtr(), base::UTF8ToUTF16(domain)));
   }
 
   content::WebUIDataSource::Update(
@@ -382,6 +381,7 @@ ManagedUserProfileNoticeUI::GetHandlerForTesting() {
 }
 
 void ManagedUserProfileNoticeUI::UpdateBrowsingDataStringWithCounts(
+    std::u16string domain,
     profiles::ProfileCategoryStats stats) {
   int browsing_history_count = 0;
   int bookmarks_count = 0;
@@ -419,24 +419,25 @@ void ManagedUserProfileNoticeUI::UpdateBrowsingDataStringWithCounts(
   if (string_replacements.empty()) {
     return;
   }
+  string_replacements.push_back(std::move(domain));
 
   base::Value::Dict update_data;
   std::u16string browsing_data_string;
-  if (string_replacements.size() == 1) {
+  if (string_replacements.size() == 2) {
     update_data.Set(
         "mergeBrowsingDataChoiceDetails",
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_ONE_COUNT_CHOICE_DETAILS,
             string_replacements, nullptr));
   }
-  if (string_replacements.size() == 2) {
+  if (string_replacements.size() == 3) {
     update_data.Set(
         "mergeBrowsingDataChoiceDetails",
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WITH_TWO_COUNTS_CHOICE_DETAILS,
             string_replacements, nullptr));
   }
-  if (string_replacements.size() == 3) {
+  if (string_replacements.size() == 4) {
     update_data.Set(
         "mergeBrowsingDataChoiceDetails",
         l10n_util::GetStringFUTF16(

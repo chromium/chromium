@@ -119,7 +119,6 @@ class ManagedProfileCreationController : public ProfileObserver {
   bool policies_received_ = false;
   bool profile_creation_required_by_policy_ = false;
   bool allows_converting_profile_to_managed_ = true;
-  bool converts_profile_to_managed_by_default_ = false;
   base::OneShotTimer policy_fetch_timeout_;
   ManagedProfileCreationControllerCallback callback_;
   std::unique_ptr<DiceSignedInProfileCreator> profile_creator_;
