@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/notification_metrics_recorder.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
@@ -518,6 +519,7 @@ void ProcessIncomingNotification(
 }  // anonymous namespace
 
 @interface PushNotificationDelegate () <AppStateObserver,
+                                        NotificationClassifier,
                                         ProfileStateObserver,
                                         SceneStateObserver>
 
@@ -529,6 +531,9 @@ void ProcessIncomingNotification(
 // profile-scoped).
 @property(nonatomic, readonly)
     PushNotificationClientManager* appWideClientManager;
+
+// The object that records metrics about push notifications.
+@property(nonatomic, readonly) NotificationMetricsRecorder* metricsRecorder;
 
 @end
 
@@ -544,6 +549,10 @@ void ProcessIncomingNotification(
   if ((self = [super init])) {
     _appState = appState;
     [_appState addObserver:self];
+    _metricsRecorder = [[NotificationMetricsRecorder alloc]
+        initWithNotificationCenter:[UNUserNotificationCenter
+                                       currentNotificationCenter]];
+    _metricsRecorder.classifier = self;
   }
   return self;
 }
@@ -560,6 +569,7 @@ void ProcessIncomingNotification(
   __weak __typeof(self) weakSelf = self;
   [self executeWhenForeground:^{
     [weakSelf handleNotificationResponse:response];
+    [weakSelf.metricsRecorder recordInteraction:response.notification];
   }];
   // TODO(crbug.com/401537165): Consider changing when completionHandler is
   // called.
@@ -575,6 +585,7 @@ void ProcessIncomingNotification(
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
+  [self.metricsRecorder recordReceived:notification];
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationForegroundPresentation];
 
@@ -739,6 +750,25 @@ void ProcessIncomingNotification(
   }
 }
 
+#pragma mark - NotificationClassifier
+
+- (NotificationType)classifyNotification:(UNNotification*)notification {
+  // Use an arbitrary profile that is loaded - a specific profile is not needed
+  // to determine the type of notification.
+  std::vector<ProfileIOS*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+  CHECK(!loaded_profiles.empty());
+  ProfileIOS* profile = loaded_profiles.back();
+  PushNotificationClient* client = [self clientForNotification:notification
+                                                       profile:profile];
+  if (!client) {
+    return NotificationType::kUnknown;
+  }
+  std::optional<NotificationType> type =
+      client->GetNotificationType(notification);
+  return type.value_or(NotificationType::kUnknown);
+}
+
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
@@ -889,6 +919,8 @@ void ProcessIncomingNotification(
 - (void)appDidEnterForeground:(SceneState*)sceneState {
   DCHECK(self.appWideClientManager);
   self.appWideClientManager->OnSceneActiveForegroundBrowserReady();
+  [self.metricsRecorder
+      handleDeliveredNotificationsWithClosure:base::DoNothing()];
 
   __weak PushNotificationDelegate* weakSelf = self;
   __weak SceneState* weakSceneState = sceneState;

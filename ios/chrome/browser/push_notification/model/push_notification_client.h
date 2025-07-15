@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "url/gurl.h"
 
-class CommercePushNotificationClientTest;
-
 class Browser;
+class CommercePushNotificationClientTest;
+enum class NotificationType;
 
 // Holds the configuration information for a UNNNotificationRequest.
 struct ScheduledNotificationRequest {
@@ -52,6 +52,11 @@ class PushNotificationClient {
 
   // Returns true if this client can handle the given `notification`.
   virtual bool CanHandleNotification(UNNotification* notification) = 0;
+
+  // Returns the `NotificationType` of the given `notification` if this client
+  // can handle the notification. Otherwise returns `std::nullopt`.
+  virtual std::optional<NotificationType> GetNotificationType(
+      UNNotification* notification);
 
   // When the user interacts with a push notification, this function is called
   // to route the user to the appropriate destination. Returns `true` if the

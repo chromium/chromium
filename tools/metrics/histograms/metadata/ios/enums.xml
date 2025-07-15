@@ -1370,6 +1370,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Lens Overlay [Tip]"/>
   <int value="12" label="CPE [Tip]"/>
   <int value="13" label="Incognito Lock [Tip]"/>
+  <int value="14" label="unknown type"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->

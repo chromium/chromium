@@ -81,6 +81,19 @@ bool TipsNotificationClient::CanHandleNotification(
   return IsTipsNotification(notification.request);
 }
 
+std::optional<NotificationType> TipsNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  if (!CanHandleNotification(notification)) {
+    return std::nullopt;
+  }
+  std::optional<TipsNotificationType> tips_type =
+      ParseTipsNotificationType(notification.request);
+  if (!tips_type) {
+    return std::nullopt;
+  }
+  return NotificationTypeForTipsNotificationType(tips_type.value());
+}
+
 bool TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -419,8 +432,6 @@ void TipsNotificationClient::MaybeLogTriggeredNotification() {
       CanSendReactivation() ? "IOS.Notifications.Tips.Proactive.Triggered"
                             : "IOS.Notifications.Tips.Triggered";
   base::UmaHistogramEnumeration(triggered_histogram, type);
-  base::UmaHistogramEnumeration("IOS.Notification.Received",
-                                NotificationTypeForTipsNotificationType(type));
   local_state_->SetInteger(kTipsNotificationsLastTriggered, int(type));
   local_state_->ClearPref(kTipsNotificationsLastSent);
 }

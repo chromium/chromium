@@ -3163,6 +3163,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Notification.Dismissed" enum="NotificationType"
+    expires_after="2026-01-09">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a notification was dismissed on a user's device. Will be logged
+    when the user opens the app.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notification.Interaction" enum="NotificationType"
+    expires_after="2026-01-09">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a notification was interacted with on a user's device. Will be
+    logged when the user opens the app.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notification.Received" enum="NotificationType"
     expires_after="2026-01-09">
   <owner>thegreenfrog@google.com</owner>

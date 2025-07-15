@@ -168,6 +168,11 @@ PushNotificationClient::PushNotificationClient(
 
 PushNotificationClient::~PushNotificationClient() = default;
 
+std::optional<NotificationType> PushNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  return std::nullopt;
+}
+
 PushNotificationClientId PushNotificationClient::GetClientId() const {
   return client_id_;
 }

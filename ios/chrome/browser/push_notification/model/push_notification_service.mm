@@ -92,6 +92,7 @@ void PushNotificationService::RegisterLocalStatePrefs(
       base::to_underlying(
           push_notification::SettingsAuthorizationStatus::NOTDETERMINED));
   registry->RegisterDictionaryPref(prefs::kAppLevelPushNotificationPermissions);
+  registry->RegisterDictionaryPref(prefs::kHandledDeliveredNotificationIds);
 }
 
 void PushNotificationService::SetPreferences(

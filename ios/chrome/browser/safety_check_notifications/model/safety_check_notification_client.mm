@@ -158,6 +158,17 @@ bool SafetyCheckNotificationClient::CanHandleNotification(
   return ParseSafetyCheckNotificationType(notification.request).has_value();
 }
 
+std::optional<NotificationType>
+SafetyCheckNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  std::optional<SafetyCheckNotificationType> type =
+      ParseSafetyCheckNotificationType(notification.request);
+  if (!type) {
+    return std::nullopt;
+  }
+  return NotificationTypeForSafetyCheckNotificationType(type.value());
+}
+
 bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -664,9 +675,6 @@ void SafetyCheckNotificationClient::LogTriggeredNotifications() {
 
   base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Triggered",
                                 type);
-  base::UmaHistogramEnumeration(
-      "IOS.Notification.Received",
-      NotificationTypeForSafetyCheckNotificationType(type));
 
   local_pref_service->SetInteger(
       prefs::kIosSafetyCheckNotificationsLastTriggered, int(type));

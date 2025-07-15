@@ -123,6 +123,11 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 
+// A list of delivered notification identifiers that have been handled by the
+// metrics recorder.
+inline constexpr char kHandledDeliveredNotificationIds[] =
+    "push_notifications.handled_delivered_notification_ids";
+
 // A boolean indicating if the user has ever switched accounts via an account
 // menu triggered from a web flow.
 inline constexpr char kHasSwitchedAccountsViaWebFlow[] =

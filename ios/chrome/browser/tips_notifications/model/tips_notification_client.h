@@ -28,6 +28,8 @@ class TipsNotificationClient : public PushNotificationClient {
 
   // Override PushNotificationClient::
   bool CanHandleNotification(UNNotification* notification) override;
+  std::optional<NotificationType> GetNotificationType(
+      UNNotification* notification) override;
   bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
