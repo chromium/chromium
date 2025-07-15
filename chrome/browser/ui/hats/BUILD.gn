@@ -171,6 +171,7 @@ if (!is_android) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/views/page_info",
       "//chrome/common",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",

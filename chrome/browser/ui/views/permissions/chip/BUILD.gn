@@ -30,5 +30,6 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/themes:themes",
     "//chrome/browser/ui/page_info:page_info",
+    "//chrome/browser/ui/views/page_info",
   ]
 }

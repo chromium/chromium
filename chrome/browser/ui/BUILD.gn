@@ -4174,10 +4174,6 @@ static_library("ui") {
       "views/page_info/page_info_ad_personalization_content_view.h",
       "views/page_info/page_info_bubble_specification.cc",
       "views/page_info/page_info_bubble_specification.h",
-      "views/page_info/page_info_bubble_view.cc",
-      "views/page_info/page_info_bubble_view.h",
-      "views/page_info/page_info_bubble_view_base.cc",
-      "views/page_info/page_info_bubble_view_base.h",
       "views/page_info/page_info_cookies_content_view.cc",
       "views/page_info/page_info_cookies_content_view.h",
       "views/page_info/page_info_history_controller.cc",
@@ -4190,7 +4186,6 @@ static_library("ui") {
       "views/page_info/page_info_merchant_trust_controller.h",
       "views/page_info/page_info_merchant_trust_coordinator.cc",
       "views/page_info/page_info_merchant_trust_coordinator.h",
-      "views/page_info/page_info_navigation_handler.h",
       "views/page_info/page_info_permission_content_view.cc",
       "views/page_info/page_info_permission_content_view.h",
       "views/page_info/page_info_security_content_view.cc",
@@ -4851,6 +4846,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/views/permissions",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
@@ -4924,6 +4921,7 @@ static_library("ui") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/sharing_hub:impl",
       "//chrome/browser/ui/views/permissions/chip:impl",
+      "//chrome/browser/ui/views/page_info:impl",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
       # chrome_{typography,layout_provider} get modularized.
