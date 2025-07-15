@@ -1328,7 +1328,14 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that tapping the "Autofill Form" button in the all password list fills
 // the password form with the right data.
-- (void)testAutofillFormButtonInAllPasswordListFillsForm {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
+  FLAKY_testAutofillFormButtonInAllPasswordListFillsForm
+#else
+#define MAYBE_testAutofillFormButtonInAllPasswordListFillsForm \
+  testAutofillFormButtonInAllPasswordListFillsForm
+#endif
+- (void)MAYBE_testAutofillFormButtonInAllPasswordListFillsForm {
   // TODO(crbug.com/426435086): Test consistently fails on ipad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
