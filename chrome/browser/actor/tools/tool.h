@@ -82,11 +82,13 @@ class Tool {
   // some plumbing through ToolController to make this possible.
   // Gives the tool an opportunity to update the task's state before being
   // invoked.
-  virtual void UpdateTaskBeforeInvoke(ActorTask& task) const;
+  virtual void UpdateTaskBeforeInvoke(ActorTask& task,
+                                      InvokeCallback callback) const;
 
   // Gives the tool an opportunity to update the task's state after being
   // invoked.
-  virtual void UpdateTaskAfterInvoke(ActorTask& task) const;
+  virtual void UpdateTaskAfterInvoke(ActorTask& task,
+                                     InvokeCallback callback) const;
 
  protected:
   TaskId task_id() const { return task_id_; }

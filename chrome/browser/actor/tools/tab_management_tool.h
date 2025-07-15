@@ -47,7 +47,8 @@ class TabManagementTool : public Tool,
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
-  void UpdateTaskAfterInvoke(ActorTask& task) const override;
+  void UpdateTaskAfterInvoke(ActorTask& task,
+                             InvokeCallback callback) const override;
 
   // TabStripModelObserver
   void OnTabStripModelChanged(TabStripModel* tab_strip_model,

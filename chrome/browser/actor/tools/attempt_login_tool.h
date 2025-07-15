@@ -24,7 +24,8 @@ class AttemptLoginTool : public Tool {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
-  void UpdateTaskBeforeInvoke(ActorTask& task) const override;
+  void UpdateTaskBeforeInvoke(ActorTask& task,
+                              InvokeCallback callback) const override;
 
  private:
   tabs::TabHandle tab_handle_;

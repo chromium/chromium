@@ -23,8 +23,16 @@ GURL Tool::JournalURL() const {
   return GURL::EmptyGURL();
 }
 
-void Tool::UpdateTaskBeforeInvoke(ActorTask& task) const {}
+void Tool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                  InvokeCallback callback) const {
+  // Do nothing by default, just trigger the callback.
+  std::move(callback).Run(MakeOkResult());
+}
 
-void Tool::UpdateTaskAfterInvoke(ActorTask& task) const {}
+void Tool::UpdateTaskAfterInvoke(ActorTask& task,
+                                 InvokeCallback callback) const {
+  // Do nothing by default, just trigger the callback.
+  std::move(callback).Run(MakeOkResult());
+}
 
 }  // namespace actor

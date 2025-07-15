@@ -33,6 +33,16 @@ class ToolRequest;
 class ToolController {
  public:
   using ResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+
+  enum class State {
+    kInit = 0,
+    kReady,
+    kValidating,
+    kPreInvoke,
+    kInvoking,
+    kPostInvoke,
+  };
+
   ToolController(ActorTask& actor_task, AggregatedJournal& journal);
   ~ToolController();
   ToolController(const ToolController&) = delete;
@@ -44,7 +54,11 @@ class ToolController {
       const optimization_guide::proto::AnnotatedPageContent* last_observation,
       ResultCallback result_callback);
 
+  static std::string StateToString(State state);
+
  private:
+  void SetState(State state);
+
   // Called when the tool itself finishes its invocation.
   void DidFinishToolInvoke(mojom::ActionResultPtr result);
 
@@ -53,6 +67,10 @@ class ToolController {
   void CompleteToolRequest(mojom::ActionResultPtr result);
 
   void ValidationComplete(mojom::ActionResultPtr result);
+  void InvokeTool(mojom::ActionResultPtr result);
+  void PostInvokeTool(mojom::ActionResultPtr result);
+
+  State state_ = State::kInit;
 
   // This state is non-null whenever a tool invocation is in progress.
   struct ActiveState {

@@ -105,11 +105,14 @@ TabManagementTool::GetObservationDelayer() const {
   return nullptr;
 }
 
-void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task) const {
-  if (action_ == kCreate) {
-    if (did_create_tab_handle_) {
-      task.AddToTabSet(*did_create_tab_handle_);
-    }
+void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
+                                              InvokeCallback callback) const {
+  if (action_ == kCreate && did_create_tab_handle_) {
+    // TODO(crbug.com/425784083): Pass callback to AddToTabSet
+    task.AddToTabSet(*did_create_tab_handle_);
+    std::move(callback).Run(MakeOkResult());
+  } else {
+    std::move(callback).Run(MakeOkResult());
   }
 }
 

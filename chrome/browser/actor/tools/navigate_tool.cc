@@ -90,8 +90,11 @@ NavigateTool::GetObservationDelayer() const {
       *web_contents()->GetPrimaryMainFrame());
 }
 
-void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task) const {
+void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                          InvokeCallback callback) const {
+  // TODO(crbug.com/425784083): Pass callback to AddToTabSet
   task.AddToTabSet(tab_handle_);
+  std::move(callback).Run(MakeOkResult());
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {

@@ -384,8 +384,11 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
   return std::make_unique<ObservationDelayController>(*frame);
 }
 
-void PageTool::UpdateTaskBeforeInvoke(ActorTask& task) const {
+void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
+                                      InvokeCallback callback) const {
+  // TODO(crbug.com/425784083): Pass callback to AddToTabSet
   task.AddToTabSet(request_->GetTabHandle());
+  std::move(callback).Run(MakeOkResult());
 }
 
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
