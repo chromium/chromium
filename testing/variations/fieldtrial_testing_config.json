@@ -2084,21 +2084,6 @@
             ]
         }
     ],
-    "AutofillEnableCardInfoRuntimeRetrieval": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardInfoRuntimeRetrieval"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableExpirationDateImprovements": [
         {
             "platforms": [
