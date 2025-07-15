@@ -186,9 +186,6 @@ android_apk("net_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
-  # Required on Android Q+ to read from /sdcard when installing certs.
-  target_sdk_version = 28
-
   deps = [
     ":net_java_test_support",
     ":net_test_support_provider_java",
