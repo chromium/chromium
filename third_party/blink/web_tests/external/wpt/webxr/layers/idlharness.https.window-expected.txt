@@ -1,0 +1,140 @@
+This is a testharness.js-based test.
+Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] XRCompositionLayer interface: attribute quality
+  assert_true: The prototype object must have a property "quality" expected true got false
+[FAIL] XRQuadLayer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface object length
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface object name
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: attribute space
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: attribute transform
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: attribute width
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: attribute height
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRQuadLayer interface: attribute onredraw
+  assert_own_property: self does not have own property "XRQuadLayer" expected property "XRQuadLayer" missing
+[FAIL] XRCylinderLayer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface object length
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface object name
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute space
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute transform
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute radius
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute centralAngle
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute aspectRatio
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XRCylinderLayer interface: attribute onredraw
+  assert_own_property: self does not have own property "XRCylinderLayer" expected property "XRCylinderLayer" missing
+[FAIL] XREquirectLayer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface object length
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface object name
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute space
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute transform
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute radius
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute centralHorizontalAngle
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute upperVerticalAngle
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute lowerVerticalAngle
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XREquirectLayer interface: attribute onredraw
+  assert_own_property: self does not have own property "XREquirectLayer" expected property "XREquirectLayer" missing
+[FAIL] XRCubeLayer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface object length
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface object name
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: attribute space
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: attribute orientation
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRCubeLayer interface: attribute onredraw
+  assert_own_property: self does not have own property "XRCubeLayer" expected property "XRCubeLayer" missing
+[FAIL] XRWebGLBinding interface: operation createQuadLayer(optional XRQuadLayerInit)
+  assert_own_property: interface prototype object missing non-static operation expected property "createQuadLayer" missing
+[FAIL] XRWebGLBinding interface: operation createCylinderLayer(optional XRCylinderLayerInit)
+  assert_own_property: interface prototype object missing non-static operation expected property "createCylinderLayer" missing
+[FAIL] XRWebGLBinding interface: operation createEquirectLayer(optional XREquirectLayerInit)
+  assert_own_property: interface prototype object missing non-static operation expected property "createEquirectLayer" missing
+[FAIL] XRWebGLBinding interface: operation createCubeLayer(optional XRCubeLayerInit)
+  assert_own_property: interface prototype object missing non-static operation expected property "createCubeLayer" missing
+[FAIL] XRWebGLBinding interface: operation getSubImage(XRCompositionLayer, XRFrame, optional XREye)
+  assert_own_property: interface prototype object missing non-static operation expected property "getSubImage" missing
+[FAIL] XRWebGLBinding interface: operation foveateBoundTexture(GLenum, float)
+  assert_own_property: interface prototype object missing non-static operation expected property "foveateBoundTexture" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface object length
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface object name
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createQuadLayer(HTMLVideoElement, optional XRMediaQuadLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createCylinderLayer(HTMLVideoElement, optional XRMediaCylinderLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createEquirectLayer(HTMLVideoElement, optional XRMediaEquirectLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRLayerEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface object length
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface object name
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+[FAIL] XRLayerEvent interface: attribute layer
+  assert_own_property: self does not have own property "XRLayerEvent" expected property "XRLayerEvent" missing
+Harness: the test ran to completion.
+
