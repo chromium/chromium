@@ -354,4 +354,19 @@ TEST_F(WidgetAXManagerTest, GetTopLevelNativeWindow) {
   child_widget->CloseNow();
 }
 
+TEST_F(WidgetAXManagerTest, CanFireAccessibilityEvents) {
+  // Null widget should always return false.
+  WidgetAXManager null_mgr(nullptr);
+  EXPECT_FALSE(null_mgr.CanFireAccessibilityEvents());
+
+  // Newly created widget is inactive by default.
+  EXPECT_FALSE(widget()->IsActive());
+  EXPECT_FALSE(manager()->CanFireAccessibilityEvents());
+
+  // Once activated, it should return true.
+  widget()->Activate();
+  EXPECT_TRUE(widget()->IsActive());
+  EXPECT_TRUE(manager()->CanFireAccessibilityEvents());
+}
+
 }  // namespace views::test

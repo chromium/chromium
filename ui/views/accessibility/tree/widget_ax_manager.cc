@@ -209,8 +209,7 @@ gfx::NativeWindow WidgetAXManager::GetTopLevelNativeWindow() {
 }
 
 bool WidgetAXManager::CanFireAccessibilityEvents() const {
-  // TODO(accessibility): Implement.
-  return false;
+  return widget_ ? widget_->IsActive() : false;
 }
 
 bool WidgetAXManager::AccessibilityIsRootFrame() const {
