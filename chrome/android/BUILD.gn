@@ -2007,6 +2007,10 @@ if (_is_default_toolchain) {
       "//url",
       "//url:android_test_helper",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   chrome_public_apk_or_module_tmpl("chrome_public_apk") {
