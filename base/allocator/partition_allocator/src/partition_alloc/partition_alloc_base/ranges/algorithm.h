@@ -14,6 +14,7 @@
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cxx20_identity.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "partition_alloc/partition_alloc_base/ranges/functional.h"
 #include "partition_alloc/partition_alloc_base/ranges/ranges.h"
@@ -51,8 +52,8 @@ constexpr auto ProjectedUnaryPredicate(Pred& pred, Proj& proj) noexcept {
 //
 //   typename =
 //       std::indirect_result_t<Pred&,
-//                              std::projected<iterator_t<Range1>, Proj1>,
-//                              std::projected<iterator_t<Range2>, Proj2>>
+//                              base::projected<iterator_t<Range1>, Proj1>,
+//                              base::projected<iterator_t<Range2>, Proj2>>
 //
 // Ensures that the return type of `invoke(pred, ...)` is convertible to bool.
 template <typename Pred, typename Proj1, typename Proj2, bool kPermute = false>
@@ -167,7 +168,7 @@ namespace ranges {
 // https://wg21.link/alg.adjacent.find#:~:text=ranges::adjacent_find(I
 template <typename ForwardIterator,
           typename Pred = ranges::equal_to,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::iterator_category_t<ForwardIterator>>
 constexpr auto adjacent_find(ForwardIterator first,
                              ForwardIterator last,
@@ -207,7 +208,7 @@ constexpr auto adjacent_find(ForwardIterator first,
 // https://wg21.link/alg.adjacent.find#:~:text=ranges::adjacent_find(R
 template <typename Range,
           typename Pred = ranges::equal_to,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto adjacent_find(Range&& range, Pred pred = {}, Proj proj = {}) {
   return ranges::adjacent_find(ranges::begin(range), ranges::end(range),
@@ -233,15 +234,21 @@ constexpr auto adjacent_find(Range&& range, Pred pred = {}, Proj proj = {}) {
 // Remarks: result may be equal to `first1`.
 //
 // Reference: https://wg21.link/alg.transform#:~:text=ranges::transform(I
-template <
-    typename InputIterator,
-    typename OutputIterator,
-    typename UnaryOperation,
-    typename Proj = std::identity,
-    typename = internal::iterator_category_t<InputIterator>,
-    typename = internal::iterator_category_t<OutputIterator>,
-    typename = std::indirect_result_t<UnaryOperation&,
-                                      std::projected<InputIterator, Proj>>>
+template <typename InputIterator,
+          typename OutputIterator,
+          typename UnaryOperation,
+          typename Proj = base::identity,
+          typename = internal::iterator_category_t<InputIterator>,
+          typename = internal::iterator_category_t<OutputIterator>
+// This constraint ensures that the return type of `invoke(binary_op, ...)`
+// is convertible to the type of `*result`.
+// Unfortunately, we cannot fully express this constraint in C++17.
+#if __cplusplus >= 202002L
+          ,
+          typename = std::indirect_result_t<UnaryOperation&,
+                                            std::projected<InputIterator, Proj>>
+#endif
+          >
 constexpr auto transform(InputIterator first1,
                          InputIterator last1,
                          OutputIterator result,
@@ -273,11 +280,18 @@ template <
     typename Range,
     typename OutputIterator,
     typename UnaryOperation,
-    typename Proj = std::identity,
+    typename Proj = base::identity,
     typename = internal::range_category_t<Range>,
-    typename = internal::iterator_category_t<OutputIterator>,
+    typename = internal::iterator_category_t<OutputIterator>
+// This constraint ensures that the return type of `invoke(binary_op, ...)`
+// is convertible to the type of `*result`.
+// Unfortunately, we cannot fully express this constraint in C++17.
+#if __cplusplus >= 202002L
+    ,
     typename = std::indirect_result_t<UnaryOperation&,
-                                      std::projected<iterator_t<Range>, Proj>>>
+                                      std::projected<iterator_t<Range>, Proj>>
+#endif
+    >
 constexpr auto transform(Range&& range,
                          OutputIterator result,
                          UnaryOperation op,
@@ -310,14 +324,21 @@ template <
     typename ForwardIterator2,
     typename OutputIterator,
     typename BinaryOperation,
-    typename Proj1 = std::identity,
-    typename Proj2 = std::identity,
+    typename Proj1 = base::identity,
+    typename Proj2 = base::identity,
     typename = internal::iterator_category_t<ForwardIterator1>,
     typename = internal::iterator_category_t<ForwardIterator2>,
-    typename = internal::iterator_category_t<OutputIterator>,
+    typename = internal::iterator_category_t<OutputIterator>
+// This constraint ensures that the return type of `invoke(binary_op, ...)`
+// is convertible to the type of `*result`.
+// Unfortunately, we cannot fully express this constraint in C++17.
+#if __cplusplus >= 202002L
+    ,
     typename = std::indirect_result_t<BinaryOperation&,
                                       std::projected<ForwardIterator1, Proj1>,
-                                      std::projected<ForwardIterator2, Proj2>>>
+                                      std::projected<ForwardIterator2, Proj2>>
+#endif
+    >
 constexpr auto transform(ForwardIterator1 first1,
                          ForwardIterator1 last1,
                          ForwardIterator2 first2,
@@ -358,19 +379,26 @@ constexpr auto transform(ForwardIterator1 first1,
 // Remarks: `result` may be equal to `begin(range1)` or `begin(range2)`.
 //
 // Reference: https://wg21.link/alg.transform#:~:text=ranges::transform(R1
-template <typename Range1,
-          typename Range2,
-          typename OutputIterator,
-          typename BinaryOperation,
-          typename Proj1 = std::identity,
-          typename Proj2 = std::identity,
-          typename = internal::range_category_t<Range1>,
-          typename = internal::range_category_t<Range2>,
-          typename = internal::iterator_category_t<OutputIterator>,
-          typename =
-              std::indirect_result_t<BinaryOperation&,
-                                     std::projected<iterator_t<Range1>, Proj1>,
-                                     std::projected<iterator_t<Range2>, Proj2>>>
+template <
+    typename Range1,
+    typename Range2,
+    typename OutputIterator,
+    typename BinaryOperation,
+    typename Proj1 = base::identity,
+    typename Proj2 = base::identity,
+    typename = internal::range_category_t<Range1>,
+    typename = internal::range_category_t<Range2>,
+    typename = internal::iterator_category_t<OutputIterator>
+// This constraint ensures that the return type of `invoke(binary_op, ...)`
+// is convertible to the type of `*result`.
+// Unfortunately, we cannot fully express this constraint in C++17.
+#if __cplusplus >= 202002L
+    ,
+    typename = std::indirect_result_t<BinaryOperation&,
+                                      std::projected<iterator_t<Range1>, Proj1>,
+                                      std::projected<iterator_t<Range2>, Proj2>>
+#endif
+    >
 constexpr auto transform(Range1&& range1,
                          Range2&& range2,
                          OutputIterator result,
@@ -398,7 +426,7 @@ constexpr auto transform(Range1&& range1,
 // Reference: https://wg21.link/alg.remove#:~:text=ranges::remove_if(I
 template <typename ForwardIterator,
           typename Predicate,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::iterator_category_t<ForwardIterator>>
 constexpr auto remove_if(ForwardIterator first,
                          ForwardIterator last,
@@ -422,7 +450,7 @@ constexpr auto remove_if(ForwardIterator first,
 // Reference: https://wg21.link/alg.remove#:~:text=ranges::remove_if(R
 template <typename Range,
           typename Predicate,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto remove_if(Range&& range, Predicate pred, Proj proj = {}) {
   return ranges::remove_if(ranges::begin(range), ranges::end(range),
@@ -448,7 +476,7 @@ constexpr auto remove_if(Range&& range, Predicate pred, Proj proj = {}) {
 template <typename ForwardIterator,
           typename T,
           typename Comp = ranges::less,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::iterator_category_t<ForwardIterator>>
 constexpr auto lower_bound(ForwardIterator first,
                            ForwardIterator last,
@@ -456,8 +484,8 @@ constexpr auto lower_bound(ForwardIterator first,
                            Comp comp = {},
                            Proj proj = {}) {
   // The second arg is guaranteed to be `value`, so we'll simply apply the
-  // std::identity projection.
-  std::identity value_proj;
+  // base::identity projection.
+  base::identity value_proj;
   return std::lower_bound(
       first, last, value,
       internal::ProjectedBinaryPredicate(comp, proj, value_proj));
@@ -476,7 +504,7 @@ constexpr auto lower_bound(ForwardIterator first,
 template <typename Range,
           typename T,
           typename Comp = ranges::less,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto lower_bound(Range&& range,
                            const T& value,
@@ -502,7 +530,7 @@ constexpr auto lower_bound(Range&& range,
 template <typename ForwardIterator,
           typename T,
           typename Comp = ranges::less,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::iterator_category_t<ForwardIterator>>
 constexpr auto upper_bound(ForwardIterator first,
                            ForwardIterator last,
@@ -510,8 +538,8 @@ constexpr auto upper_bound(ForwardIterator first,
                            Comp comp = {},
                            Proj proj = {}) {
   // The first arg is guaranteed to be `value`, so we'll simply apply the
-  // std::identity projection.
-  std::identity value_proj;
+  // base::identity projection.
+  base::identity value_proj;
   return std::upper_bound(
       first, last, value,
       internal::ProjectedBinaryPredicate(comp, value_proj, proj));
@@ -530,7 +558,7 @@ constexpr auto upper_bound(ForwardIterator first,
 template <typename Range,
           typename T,
           typename Comp = ranges::less,
-          typename Proj = std::identity,
+          typename Proj = base::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto upper_bound(Range&& range,
                            const T& value,

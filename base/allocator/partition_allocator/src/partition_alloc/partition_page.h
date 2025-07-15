@@ -86,26 +86,25 @@ struct SlotSpanMetadataBase {
 
   // |num_allocated_slots| is 0 for empty or decommitted slot spans, which can
   // be further differentiated by checking existence of the freelist.
-  MaybeConstT<kind, uint32_t> num_allocated_slots : kMaxSlotsPerSlotSpanBits =
-                                                        0u;
+  MaybeConstT<kind, uint32_t> num_allocated_slots : kMaxSlotsPerSlotSpanBits;
   MaybeConstT<kind, uint32_t> num_unprovisioned_slots
-      : kMaxSlotsPerSlotSpanBits = 0u;
+      : kMaxSlotsPerSlotSpanBits;
 
   // |marked_full| isn't equivalent to being full. Slot span is marked as full
   // iff it isn't on the active slot span list (or any other list).
-  MaybeConstT<kind, uint32_t> marked_full : 1 = 0u;
+  MaybeConstT<kind, uint32_t> marked_full : 1;
 
  protected:
-  const uint32_t can_store_raw_size_ : 1 = 0u;
-  MaybeConstT<kind, uint16_t> freelist_is_sorted_ : 1 = 1u;
+  const uint32_t can_store_raw_size_ : 1;
+  MaybeConstT<kind, uint16_t> freelist_is_sorted_ : 1;
   // If |in_empty_cache_|==1, |empty_cache_index| is undefined and mustn't be
   // used.
-  MaybeConstT<kind, uint16_t> in_empty_cache_ : 1 = 0u;
+  MaybeConstT<kind, uint16_t> in_empty_cache_ : 1;
   // Index of the page in the empty cache. This is in the range
   // [0, `kMaxEmptySlotSpanRingSize - 1`] so it fits in
   // `BitWidth(kMaxEmptySlotSpanRingSize - 1)`.
   MaybeConstT<kind, uint16_t> empty_cache_index_
-      : internal::base::bits::BitWidth(kMaxEmptySlotSpanRingSize - 1) = 0u;
+      : internal::base::bits::BitWidth(kMaxEmptySlotSpanRingSize - 1);
   // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
@@ -134,9 +133,23 @@ struct SlotSpanMetadataBase {
   PA_ALWAYS_INLINE bool in_empty_cache() const { return in_empty_cache_; }
 
  protected:
-  constexpr SlotSpanMetadataBase() noexcept = default;
+  constexpr SlotSpanMetadataBase() noexcept
+      : num_allocated_slots(0u),
+        num_unprovisioned_slots(0u),
+        marked_full(0u),
+        can_store_raw_size_(0u),
+        freelist_is_sorted_(1u),
+        in_empty_cache_(0u),
+        empty_cache_index_(0u) {}
   explicit SlotSpanMetadataBase(PartitionBucket* b)
-      : bucket(b), can_store_raw_size_(b->CanStoreRawSize()) {}
+      : bucket(b),
+        num_allocated_slots(0u),
+        num_unprovisioned_slots(0u),
+        marked_full(0u),
+        can_store_raw_size_(b->CanStoreRawSize()),
+        freelist_is_sorted_(1u),
+        in_empty_cache_(0u),
+        empty_cache_index_(0u) {}
 
   bool is_decommitted_internal() const {
     bool ret = (!num_allocated_slots && !freelist_head);

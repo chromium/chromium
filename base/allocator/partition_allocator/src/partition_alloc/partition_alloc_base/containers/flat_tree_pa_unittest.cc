@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/partition_alloc_base/containers/flat_tree.h"
+#include "partition_alloc/partition_alloc_base/cxx20_identity.h"
 
 // Following tests are ported and extended tests from libcpp for std::set.
 // They can be found here:
@@ -151,28 +152,28 @@ struct LessByFirst {
 // Common test trees.
 template <typename ContainerT>
 using TypedTree = flat_tree<typename ContainerT::value_type,
-                            std::identity,
+                            base::identity,
                             std::less<>,
                             ContainerT>;
 using IntTree = TypedTree<std::vector<int>>;
 using IntPair = std::pair<int, int>;
 using IntPairTree = flat_tree<IntPair,
-                              std::identity,
+                              base::identity,
                               LessByFirst<IntPair>,
                               std::vector<IntPair>>;
 using MoveOnlyTree = flat_tree<MoveOnlyInt,
-                               std::identity,
+                               base::identity,
                                std::less<>,
                                std::vector<MoveOnlyInt>>;
 using EmplaceableTree = flat_tree<Emplaceable,
-                                  std::identity,
+                                  base::identity,
                                   std::less<>,
                                   std::vector<Emplaceable>>;
 using ReversedTree =
-    flat_tree<int, std::identity, std::greater<int>, std::vector<int>>;
+    flat_tree<int, base::identity, std::greater<>, std::vector<int>>;
 
 using TreeWithStrangeCompare = flat_tree<int,
-                                         std::identity,
+                                         base::identity,
                                          NonDefaultConstructibleCompare,
                                          std::vector<int>>;
 
@@ -193,7 +194,7 @@ TEST(PAFlatTree, NoExcept) {
     MoveThrows& operator=(MoveThrows&&) noexcept(false) { return *this; }
   };
 
-  using MoveThrowsTree = flat_tree<MoveThrows, std::identity, std::less<>,
+  using MoveThrowsTree = flat_tree<MoveThrows, base::identity, std::less<>,
                                    std::array<MoveThrows, 1>>;
 
   static_assert(std::is_nothrow_move_constructible_v<IntTree>,
@@ -215,7 +216,7 @@ TEST(PAFlatTree, NoExcept) {
 
 TEST(PAFlatTree, IncompleteType) {
   struct A {
-    using Tree = flat_tree<A, std::identity, std::less<A>, std::vector<A>>;
+    using Tree = flat_tree<A, base::identity, std::less<>, std::vector<A>>;
     int data;
     Tree set_with_incomplete_type;
     Tree::iterator it;
@@ -231,7 +232,7 @@ TEST(PAFlatTree, Stability) {
   using Pair = std::pair<int, int>;
 
   using Tree =
-      flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
+      flat_tree<Pair, base::identity, LessByFirst<Pair>, std::vector<Pair>>;
 
   // Constructors are stable.
   Tree cont({{0, 0}, {1, 0}, {0, 1}, {2, 0}, {0, 2}, {1, 1}});
@@ -379,7 +380,7 @@ TEST(PAFlatTree, ContainerMoveConstructor) {
   storage.push_back(Pair(2, MoveOnlyInt(1)));
 
   using Tree =
-      flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
+      flat_tree<Pair, base::identity, LessByFirst<Pair>, std::vector<Pair>>;
   Tree tree(std::move(storage));
 
   // The list should be two items long, with only the first "2" saved.
@@ -462,7 +463,7 @@ TEST(PAFlatTree, SortedUniqueVectorMoveConstructor) {
   storage.push_back(Pair(2, MoveOnlyInt(0)));
 
   using Tree =
-      flat_tree<Pair, std::identity, LessByFirst<Pair>, std::vector<Pair>>;
+      flat_tree<Pair, base::identity, LessByFirst<Pair>, std::vector<Pair>>;
   Tree tree(sorted_unique, std::move(storage));
 
   ASSERT_EQ(2u, tree.size());
@@ -989,7 +990,7 @@ TYPED_TEST_P(PAFlatTreeTest, ErasePosition) {
   {
     using T = TemplateConstructor;
 
-    flat_tree<T, std::identity, std::less<>, std::vector<T>> cont;
+    flat_tree<T, base::identity, std::less<>, std::vector<T>> cont;
     T v(0);
 
     auto it = cont.find(v);

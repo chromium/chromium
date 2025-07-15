@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <array>
-#include <compare>
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -365,8 +364,24 @@ class flat_tree {
     return lhs.body_ == rhs.body_;
   }
 
-  friend auto operator<=>(const flat_tree& lhs, const flat_tree& rhs) {
-    return lhs.body_ <=> rhs.body_;
+  friend bool operator<(const flat_tree& lhs, const flat_tree& rhs) {
+    return lhs.body_ < rhs.body_;
+  }
+
+  friend bool operator!=(const flat_tree& lhs, const flat_tree& rhs) {
+    return !(lhs == rhs);
+  }
+
+  friend bool operator>(const flat_tree& lhs, const flat_tree& rhs) {
+    return rhs < lhs;
+  }
+
+  friend bool operator<=(const flat_tree& lhs, const flat_tree& rhs) {
+    return !(rhs < lhs);
+  }
+
+  friend bool operator>=(const flat_tree& lhs, const flat_tree& rhs) {
+    return !(lhs < rhs);
   }
 
   friend void swap(flat_tree& lhs, flat_tree& rhs) noexcept { lhs.swap(rhs); }
@@ -766,7 +781,7 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Dispatch to single element insert if the input range contains a single
   // element.
-  if (std::forward_iterator<InputIterator> && std::next(first) == last) {
+  if (is_multipass<InputIterator>::value && std::next(first) == last) {
     insert(end(), *first);
     return;
   }

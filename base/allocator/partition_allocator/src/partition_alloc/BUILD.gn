@@ -586,9 +586,6 @@ if (is_clang_or_gcc) {
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
     if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
-
-      # -fno-stack-protector is incompatible with libc++ modules.
-      use_libcxx_modules = false
     }
   }
 
@@ -616,6 +613,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/containers/flat_tree.h",
       "partition_alloc_base/cpu.cc",
       "partition_alloc_base/cpu.h",
+      "partition_alloc_base/cxx20_identity.h",
       "partition_alloc_base/cxx20_is_constant_evaluated.h",
       "partition_alloc_base/cxx_wrapper/algorithm.h",
       "partition_alloc_base/cxx_wrapper/optional.h",
@@ -1060,9 +1058,6 @@ if (build_with_chromium) {
       # value from the TLS which won't be pkey-tagged, hence disabling it for
       # the test.
       configs += [ ":no_stack_protector" ]
-
-      # -fno-stack-protector is incompatible with libc++ modules.
-      use_libcxx_modules = false
     }
 
     frameworks = []

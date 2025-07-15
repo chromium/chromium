@@ -10,6 +10,7 @@
 
 build_with_chromium = false
 is_asan = false
+is_hwasan = false
 
 # It's best to keep the names and defaults of is_foo flags consistent with:
 # - Chrome

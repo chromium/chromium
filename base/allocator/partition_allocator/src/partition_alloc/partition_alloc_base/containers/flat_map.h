@@ -13,6 +13,7 @@
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/containers/flat_tree.h"
+#include "partition_alloc/partition_alloc_base/cxx20_identity.h"
 #include "partition_alloc/partition_alloc_base/template_util.h"
 
 namespace partition_alloc::internal::base {
@@ -374,7 +375,7 @@ template <class Key,
           class KeyCompare = std::less<>,
           class Container = std::vector<std::pair<Key, Mapped>>,
           class InputContainer,
-          class Projection = std::identity>
+          class Projection = base::identity>
 constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
     const InputContainer& unprojected_elements,
     const KeyCompare& comp = KeyCompare(),
