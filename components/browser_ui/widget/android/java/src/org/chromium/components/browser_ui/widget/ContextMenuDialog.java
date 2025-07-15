@@ -222,10 +222,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                             mPopupWindow.setOutsideTouchable(false);
                             mPopupWindow.setAnimateFromAnchor(true);
                             // Set popup focusable so the screen reader can announce the popup
-                            // properly.
-                            if (AccessibilityState.isKnownScreenReaderEnabled()) {
-                                mPopupWindow.setFocusable(true);
-                            }
+                            // properly. It is also required so that the key press events are
+                            // handdled correctly for context menu keyboard navigation.
+                            mPopupWindow.setFocusable(true);
                             // If the popup is dismissed, dismiss this dialog as well. This is
                             // required when the popup is dismissed through backpress / hardware
                             // accessiries where the #dismiss is not triggered by #onTouchEvent.

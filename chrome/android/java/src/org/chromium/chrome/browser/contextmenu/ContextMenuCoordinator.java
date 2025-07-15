@@ -358,6 +358,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
+        mListView.setItemsCanFocus(true);
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
         // ideally this could be enabled for all forms of context menu.
         if (isDragDropEnabled) {
