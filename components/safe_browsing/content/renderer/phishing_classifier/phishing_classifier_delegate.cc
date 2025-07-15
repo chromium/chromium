@@ -225,9 +225,13 @@ void PhishingClassifierDelegate::CancelPendingClassification(
 void PhishingClassifierDelegate::ClassificationDone(
     const ClientPhishingRequest& verdict,
     PhishingClassifier::Result phishing_classifier_result) {
+  RecordEvent(SBPhishingClassifierEvent::kClassificationComplete);
   is_phishing_detection_running_ = false;
-  if (callback_.is_null())
+  if (callback_.is_null()) {
+    RecordEvent(
+        SBPhishingClassifierEvent::kPhishingClasifierCallbackEmptyOnCompletion);
     return;
+  }
 
   mojom::PhishingDetectorResult result = mojom::PhishingDetectorResult::SUCCESS;
 
@@ -263,6 +267,7 @@ void PhishingClassifierDelegate::ClassificationDone(
     DCHECK_EQ(last_url_sent_to_classifier_.spec(), verdict.url());
   }
   request_type_ = std::nullopt;
+  RecordEvent(SBPhishingClassifierEvent::kPhishingClassifierRequestResponded);
   std::move(callback_).Run(result, mojo_base::ProtoWrapper(verdict));
 }
 
@@ -360,6 +365,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   }
 
   is_classifying_ = true;
+  RecordEvent(SBPhishingClassifierEvent::kClassificationBegin);
   classifier_->BeginClassification(
       classifier_page_text_,
       base::BindOnce(&PhishingClassifierDelegate::ClassificationDone,

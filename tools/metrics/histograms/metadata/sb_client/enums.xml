@@ -343,6 +343,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Phishing classifier was destructed"/>
   <int value="5"
       label="Scorer sent update and classifier is ready within timeout"/>
+  <int value="6" label="Phishing classifier request begins"/>
+  <int value="7" label="Phishing classifier completes"/>
+  <int value="8"
+      label="Phishing classifier callback is empty on classification
+             completion"/>
+  <int value="9" label="Phishing classification request is responded"/>
 </enum>
 
 <enum name="TailoredWarningType">
