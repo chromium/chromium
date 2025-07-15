@@ -488,7 +488,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   // if an accessibility event is received on the same tree after
   // unserialization has begun.
   std::vector<Updates> updates = pending_updates_.extract(tree_id).mapped();
-  for (Updates update : updates) {
+  for (const Updates& update : updates) {
     // Unserialize the updates in batches in the groupings in which they were
     // received by AccessibilityEventReceived.
     DCHECK(update.empty() || tree_id == active_tree_id_);
@@ -496,7 +496,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   }
 }
 
-void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
+void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
                                               const ui::AXTreeID& tree_id) {
   VLOG(1) << "Unserializing updates for " << tree_id;
   if (updates.empty()) {
