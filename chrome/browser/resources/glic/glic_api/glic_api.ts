@@ -132,15 +132,6 @@ export declare interface GlicBrowserHost {
   enableDragResize?(enabled: boolean): Promise<void>;
 
   /**
-   * Returns true if the web client should resize its content to fit the
-   * window.
-   *
-   * @todo This should be the default sizing mode. Remove after the manual
-   * resizing is landed. crbug.com/402795394.
-   */
-  shouldFitWindow?(): Promise<boolean>;
-
-  /**
    * Set the areas of the glic window from which it should be draggable. If
    * `areas` is empty, a default draggable area will be created.
    *

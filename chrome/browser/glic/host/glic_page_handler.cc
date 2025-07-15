@@ -300,12 +300,6 @@ class DebouncerDeduper {
   glic::mojom::FocusedTabDataPtr next_data_candidate_;
 };
 
-mojom::WebClientSizingMode GetWebClientSizingMode() {
-  return base::FeatureList::IsEnabled(features::kGlicSizingFitWindow)
-             ? glic::mojom::WebClientSizingMode::kFitWindow
-             : glic::mojom::WebClientSizingMode::kNatural;
-}
-
 // Class that encapsulates interacting with the actor journal.
 class JournalHandler {
  public:
@@ -535,8 +529,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
       }
     }
-
-    state->sizing_mode = GetWebClientSizingMode();
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
 

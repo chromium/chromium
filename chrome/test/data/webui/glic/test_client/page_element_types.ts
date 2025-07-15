@@ -97,7 +97,6 @@ export interface PageElementTypes {
   growHeight: HTMLButtonElement;
   resetHeight: HTMLButtonElement;
   dump: HTMLElement;
-  fitWindow: HTMLInputElement;
   naturalSizing: HTMLInputElement;
   startMic: HTMLButtonElement;
   successUI: HTMLDivElement;

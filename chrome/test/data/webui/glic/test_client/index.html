@@ -119,33 +119,6 @@ found in the LICENSE file.
     border-color: green;
   }
 
-  .fitWindow html {
-    height: unset;
-  }
-
-  .fitWindow body {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .fitWindow #contentSizingTest {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex-grow: 1;
-  }
-
-  .fitWindow #contentSizingTest .section {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .fitWindow #dump {
-    overflow-y: scroll;
-    flex-grow: 1;
-  }
-
   *:disabled {
     pointer-events: none;
     opacity: 0.6;
@@ -546,29 +519,6 @@ found in the LICENSE file.
 </div>
 <br />
 <div id="status"></div>
-</div>
-<div id="contentSizingTest" hidden>
-<div class="section">
-  <h1>Sizing</h1>
-  <button id="disableTestSizingMode">Exit Test Sizing</button>
-  <br />
-  <form>
-    <fieldset>
-      <legend>Sizing mode:</legend>
-      <div>
-        <input type="radio" id="fitWindow" name="resizeOption" value="fitWindow" checked disabled>
-        <label for="fitWindow">Content fits window</label>
-      </div>
-      <div>
-        <input type="radio" id="naturalSizing" name="resizeOption" value="naturalSizing" disabled>
-        <label for="naturalSize">Content uses natural size</label>
-      </div>
-    </fieldset>
-  </form>
-  <button id="growHeight">Grow height</button>
-  <button id="resetHeight">Reset height</button>
-  <div id="dump"></div>
-</div>
 </div>
 <script src="./test_client.js" type="module">
 </script>

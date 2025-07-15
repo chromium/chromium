@@ -600,11 +600,6 @@ const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId{
 const base::FeatureParam<bool> kGlicScrollToPDF{&kGlicScrollTo,
                                                 "glic-scroll-to-pdf", false};
 
-// Controls whether the web client should resize itself to fit the window.
-BASE_FEATURE(kGlicSizingFitWindow,
-             "GlicSizingFitWindow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDisableWarming,

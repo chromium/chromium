@@ -557,9 +557,6 @@ export type WebClientInitialStatePrivate =
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
       loggingEnabled: boolean,
-      // Whether or not the web client should resize the content to fit the
-      // window size.
-      fitWindow: boolean,
       enableZeroStateSuggestions: boolean,
       hostCapabilities: HostCapability[],
     }>;

@@ -200,7 +200,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
-  private fitWindow = false;
   private journalHost: GlicBrowserHostJournalImpl;
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
@@ -264,7 +263,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
     this.isBrowserOpenValue.assignAndSignal(state.browserIsOpen);
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
-    this.fitWindow = state.fitWindow;
     this.closedCaptioningState.assignAndSignal(
         state.closedCaptioningSettingEnabled);
     for (const capability of state.hostCapabilities) {
@@ -346,10 +344,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getChromeVersion() {
     return Promise.resolve(this.chromeVersion!);
-  }
-
-  shouldFitWindow() {
-    return Promise.resolve(this.fitWindow);
   }
 
   async createTab(url: string, options: CreateTabOptions): Promise<TabData> {
