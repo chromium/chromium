@@ -510,6 +510,52 @@ public class HubToolbarMediatorUnitTest {
         histograms.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testSearchBox_UsesConfigurationParameterNotContext() {
+        // Set up a scenario where context configuration and parameter configuration differ
+        // to verify that the parameter configuration is used
+
+        // Context configuration shows narrow screen (phone)
+        mConfiguration.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
+
+        // Set up mediator with phone configuration
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        HubToolbarMediator mediator =
+                new HubToolbarMediator(
+                        mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
+
+        // Initially should show search box (phone behavior)
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        // Create a configuration parameter with wide screen (tablet)
+        Configuration tabletConfig = new Configuration();
+        tabletConfig.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+        tabletConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        // Simulate configuration change with tablet config parameter
+        // while context still has phone config
+        mediator.triggerConfigurationChangeForTesting(tabletConfig);
+
+        // Should now show loupe (tablet behavior) - proving it uses parameter config
+        assertFalse(mModel.get(SEARCH_BOX_VISIBLE));
+        assertTrue(mModel.get(SEARCH_LOUPE_VISIBLE));
+
+        // Create another configuration parameter with narrow screen (phone)
+        Configuration phoneConfig = new Configuration();
+        phoneConfig.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
+        phoneConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        // Simulate configuration change back to phone config
+        mediator.triggerConfigurationChangeForTesting(phoneConfig);
+
+        // Should now show search box (phone behavior)
+        assertTrue(mModel.get(SEARCH_BOX_VISIBLE));
+        assertFalse(mModel.get(SEARCH_LOUPE_VISIBLE));
+    }
+
     private void mockSearchActivityClient() {
         doReturn(mIntentBuilder).when(mSearchActivityClient).newIntentBuilder();
         doReturn(mIntentBuilder).when(mIntentBuilder).setPageUrl(any());

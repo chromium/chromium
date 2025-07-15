@@ -28,7 +28,7 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
-import org.chromium.chrome.browser.hub.HubToolbarMediator;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -223,7 +223,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     }
 
     private boolean shouldHubSearchBoxBeVisible() {
-        return HubToolbarMediator.isScreenWidthTablet(
+        return HubUtils.isScreenWidthTablet(
                 mActivityElement.get().getResources().getConfiguration().screenWidthDp);
     }
 }

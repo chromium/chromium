@@ -11,6 +11,7 @@ import androidx.annotation.IdRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.XrUtils;
 
 /** Feature related utilities for Hub. */
@@ -44,5 +45,10 @@ public class HubUtils {
 
         return ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()
                 || ThemeModuleUtils.isForceEnableDependencies();
+    }
+
+    /** Utility to determine which UI variants to show based on device width. */
+    public static boolean isScreenWidthTablet(int screenWidthDp) {
+        return screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
     }
 }
