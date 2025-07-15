@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/open_from_clipboard",
-  "-url",
-]
