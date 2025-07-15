@@ -49,13 +49,9 @@ class PermissionPromptChip : public PermissionPromptDesktop {
   }
 
  private:
-  void PreemptivelyResolvePermissionRequest(content::WebContents* web_contents,
-                                            Delegate* delegate);
+  void ModulatePermissionPromiseLifetime();
   // The controller handling the chip view
   raw_ptr<ChipController> chip_controller_;
-
-  // Delegate representing a permission request
-  raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   base::WeakPtrFactory<PermissionPromptChip> weak_factory_{this};
 };

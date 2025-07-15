@@ -28,9 +28,8 @@
 PermissionPromptChip::PermissionPromptChip(Browser* browser,
                                            content::WebContents* web_contents,
                                            Delegate* delegate)
-    : PermissionPromptDesktop(browser, web_contents, delegate),
-      delegate_(delegate) {
-  DCHECK(delegate_);
+    : PermissionPromptDesktop(browser, web_contents, delegate) {
+  DCHECK(delegate);
   LocationBarView* lbv = GetLocationBarView();
 
   // Before showing a chip make sure the LocationBar is in a valid state. That
@@ -38,7 +37,7 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   lbv->InvalidateLayout();
 
   if (delegate->ShouldCurrentRequestUseQuietUI()) {
-    PreemptivelyResolvePermissionRequest(web_contents, delegate);
+    ModulatePermissionPromiseLifetime();
   }
 
   chip_controller_ = lbv->GetChipController();
@@ -69,7 +68,7 @@ bool PermissionPromptChip::UpdateAnchor() {
   if (chip_controller_->IsPermissionPromptChipVisible() &&
       !is_location_bar_drawn) {
     chip_controller_->ResetPermissionPromptChip();
-    if (delegate_) {
+    if (delegate()) {
       return false;
     }
   }
@@ -109,18 +108,22 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
              : nullptr;
 }
 
-void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
-    content::WebContents* web_contents,
-    Delegate* delegate) {
-  DCHECK(delegate->ShouldCurrentRequestUseQuietUI());
+void PermissionPromptChip::ModulatePermissionPromiseLifetime() {
+  DCHECK(delegate()->ShouldCurrentRequestUseQuietUI());
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionPromiseLifetimeModulation)) {
+    delegate()->PreIgnoreQuietPrompt();
+    return;
+  }
 
   bool is_subscribed_to_permission_change_event = true;
   content::PermissionController* permission_controller =
-      web_contents->GetBrowserContext()->GetPermissionController();
+      web_contents()->GetBrowserContext()->GetPermissionController();
 
   // If at least one RFH is not subscribed to the PermissionChange event, we
   // should not preemptively resolve a prompt.
-  for (const auto& request : delegate->Requests()) {
+  for (const auto& request : delegate()->Requests()) {
     content::RenderFrameHost* rfh =
         content::RenderFrameHost::FromID(request->get_requesting_frame_id());
     if (rfh == nullptr) {
@@ -140,11 +143,11 @@ void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
     is_subscribed_to_permission_change_event &=
         permission_controller->IsSubscribedToPermissionChangeEvent(
             permission_type, rfh);
+  }
 
-    if (is_subscribed_to_permission_change_event) {
-      // This will resolve a promise so an origin is not waiting for the user's
-      // decision.
-      delegate->PreIgnoreQuietPrompt();
-    }
+  if (is_subscribed_to_permission_change_event) {
+    // This will resolve a promise so an origin is not waiting for the user's
+    // decision.
+    delegate()->PreIgnoreQuietPrompt();
   }
 }

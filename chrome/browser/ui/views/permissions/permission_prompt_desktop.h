@@ -57,12 +57,14 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   permissions::PermissionPrompt::Delegate* delegate() const {
     return delegate_;
   }
+
   content::WebContents* web_contents() const { return web_contents_; }
 
  private:
   // The web contents whose location bar should show the quiet prompt.
   raw_ptr<content::WebContents> web_contents_;
 
+  // Delegate representing a permission request.
   const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   raw_ptr<Browser> browser_;

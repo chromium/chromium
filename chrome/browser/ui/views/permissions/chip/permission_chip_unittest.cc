@@ -6,6 +6,8 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -14,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,9 +27,12 @@
 #include "ui/views/test/button_test_api.h"
 
 namespace {
-using content::RenderFrameHost;
-using content::WebContents;
-using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+using ::content::RenderFrameHost;
+using ::content::WebContents;
+using QuietUiReason = ::permissions::PermissionUiSelector::QuietUiReason;
+using ::base::test::ScopedFeatureList;
+using ::testing::Combine;
+using ::testing::Values;
 }  // namespace
 
 namespace test {
@@ -72,6 +78,12 @@ class MockPermissionRequestManager
 
     requests_[0]->set_requesting_frame_id(
         web_contents->GetPrimaryMainFrame()->GetGlobalId());
+
+    ON_CALL(*this, Dismiss).WillByDefault([]() { NOTREACHED(); });
+    ON_CALL(*this, Deny).WillByDefault([]() { NOTREACHED(); });
+    ON_CALL(*this, Ignore).WillByDefault([]() { NOTREACHED(); });
+    ON_CALL(*this, Accept).WillByDefault([]() { NOTREACHED(); });
+    ON_CALL(*this, PreIgnoreQuietPrompt).WillByDefault([]() { NOTREACHED(); });
   }
 
  public:
@@ -122,10 +134,10 @@ class MockPermissionRequestManager
   MOCK_METHOD(void, Deny, (), (override));
   MOCK_METHOD(void, Ignore, (), (override));
   MOCK_METHOD(void, Accept, (), (override));
+  MOCK_METHOD(void, PreIgnoreQuietPrompt, (), (override));
 
   void FinalizeCurrentRequests() override { NOTREACHED(); }
   void OpenHelpCenterLink(const ui::Event& event) override {}
-  void PreIgnoreQuietPrompt() override {}
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
@@ -494,4 +506,85 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   ClickOnChip(chip_controller);
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
   EXPECT_FALSE(delegate.IsRequestInProgress());
+}
+
+class PermissionPromiseLifetimeModulationTest : public PermissionChipUnitTest {
+ public:
+  void SetUp() override {
+    feature_list_->InitWithFeatures(
+        {permissions::features::kPermissionPromiseLifetimeModulation},
+        /*disabled_features=*/{});
+    PermissionChipUnitTest::SetUp();
+  }
+
+ private:
+  std::unique_ptr<ScopedFeatureList> feature_list_ =
+      std::make_unique<ScopedFeatureList>();
+};
+
+TEST_F(PermissionPromiseLifetimeModulationTest,
+       NotificationsRequestsNotPreignoredForNonQuietPrompts) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      true,
+      /*quiet_ui_reason=*/std::nullopt, web_contents_);
+
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  EXPECT_TRUE(delegate.IsRequestInProgress());
+  delegate.ClearRequests();
+}
+
+TEST_F(PermissionPromiseLifetimeModulationTest,
+       GeolocationRequestsNotPreignoredForNonQuietPrompts) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kGeolocation},
+      true, /*quiet_ui_reason=*/std::nullopt, web_contents_);
+
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  EXPECT_TRUE(delegate.IsRequestInProgress());
+  delegate.ClearRequests();
+}
+using PermissionPromiseLifetimeModulationQuietUiTestCase =
+    std::tuple<permissions::RequestType, QuietUiReason>;
+
+class PermissionPromiseLifetimeModulationQuietUiTest
+    : public PermissionPromiseLifetimeModulationTest,
+      public testing::WithParamInterface<
+          PermissionPromiseLifetimeModulationQuietUiTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    TestQuietUiReasons,
+    PermissionPromiseLifetimeModulationQuietUiTest,
+    Combine(Values(permissions::RequestType::kGeolocation,
+                   permissions::RequestType::kNotifications),
+            Values(QuietUiReason::kEnabledInPrefs,
+                   QuietUiReason::kTriggeredByCrowdDeny,
+                   QuietUiReason::kTriggeredDueToAbusiveRequests,
+                   QuietUiReason::kTriggeredDueToAbusiveContent,
+                   QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                   QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant,
+                   QuietUiReason::kTriggeredDueToDisruptiveBehavior)),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PermissionPromiseLifetimeModulationQuietUiTest::ParamType>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) == permissions::RequestType::kNotifications
+               ? "Notification"
+               : "Geolocation",
+           "QuietUiReason", base::ToString(std::get<1>(info.param))});
+    });
+
+TEST_P(PermissionPromiseLifetimeModulationQuietUiTest,
+       PermissionRequestsForAllQuietUiReasonsGetPreignored) {
+  auto [request_type, quiet_ui_reason] = GetParam();
+
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {request_type}, true, quiet_ui_reason,
+      web_contents_);
+
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  delegate.ClearRequests();
 }
