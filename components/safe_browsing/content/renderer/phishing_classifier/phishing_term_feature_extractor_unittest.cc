@@ -129,18 +129,18 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
         base::BindOnce(&PhishingTermFeatureExtractorTest::QuitExtraction,
                        base::Unretained(this)));
     active_run_loop_ = std::make_unique<base::RunLoop>();
-    active_run_loop_->RunUntilIdle();
+    active_run_loop_->Run();
   }
 
   // Completion callback for feature extraction.
   void ExtractionDone(bool success) {
     success_ = success;
-    active_run_loop_->QuitWhenIdle();
+    active_run_loop_->Quit();
   }
 
   void QuitExtraction() {
     extractor_->CancelPendingExtraction();
-    active_run_loop_->QuitWhenIdle();
+    active_run_loop_->Quit();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
