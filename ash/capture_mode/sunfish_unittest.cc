@@ -2818,7 +2818,10 @@ class ScannerTest : public AshTestBase {
  public:
   ScannerTest()
       : AshTestBase(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatures({features::kScannerUpdate},
+                                          {features::kSunfishFeature});
+  }
   ScannerTest(const ScannerTest&) = delete;
   ScannerTest& operator=(const ScannerTest&) = delete;
   ~ScannerTest() override = default;
@@ -2865,7 +2868,7 @@ class ScannerTest : public AshTestBase {
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
+  base::test::ScopedFeatureList scoped_feature_list_;
   MockNewWindowDelegate new_window_delegate_;
 };
 

@@ -964,6 +964,9 @@ Shell::~Shell() {
   // is destroyed.
   wm::CaptureController::Get()->PrepareForShutdown();
 
+  // Has to happen before `~CaptureModeController`.
+  sunfish_scanner_feature_watcher_.reset();
+
   // This must be destroyed before deleting all the windows below in
   // `CloseAllRootWindowChildWindows()`, since shutting down the session will
   // need to access those windows and it will be a UAF.

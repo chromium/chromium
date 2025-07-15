@@ -244,7 +244,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   UseFixedPlaceholderTextAndHideCursor(
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", /*revision_number=*/17,
+      "bubble_launcher_basics", /*revision_number=*/18,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -266,7 +266,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", /*revision_number=*/17,
+      "bubble_launcher_gradient_zone", /*revision_number=*/18,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -281,7 +281,7 @@ TEST_P(AppListViewPixelRTLTest, GeminiButton) {
       GetAppListTestHelper()->GetSearchBoxView());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gemini_button", /*revision_number=*/0,
+      "bubble_launcher_gemini_button", /*revision_number=*/1,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -321,7 +321,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics", /*revision_number=*/18,
+      "tablet_launcher_basics", /*revision_number=*/19,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -342,7 +342,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone", /*revision_number=*/16,
+      "tablet_launcher_top_gradient_zone", /*revision_number=*/17,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -363,7 +363,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone", /*revision_number=*/18,
+      "tablet_launcher_bottom_gradient_zone", /*revision_number=*/19,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -382,7 +382,7 @@ TEST_P(AppListViewTabletPixelTest, GeminiButton) {
   GetAppListTestHelper()->model()->SetItemName(app_list_item, "Gemini");
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_gemini_button", /*revision_number=*/0,
+      "tablet_launcher_gemini_button", /*revision_number=*/1,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
