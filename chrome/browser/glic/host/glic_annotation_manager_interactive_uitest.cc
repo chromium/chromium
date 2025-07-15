@@ -174,130 +174,62 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
     }));
   }
 
-  // Calls scrollTo() and waits until the promise resolves and succeeds.
-  using NodeIdCallback = base::OnceCallback<int()>;
   using Selector = base::OnceCallback<base::Value::Dict()>;
+  using DocumentIdGetter = base::OnceCallback<std::string()>;
+  using NodeIdCallback = base::OnceCallback<int()>;
+
+  // Calls scrollTo() and waits until the promise resolves and succeeds.
   auto ScrollTo(Selector selector) {
-    static constexpr char kScrollToJs[] =
-        R"js( () => { return client.browser.scrollTo({selector: $1}); } )js";
-    return Steps(
-        Do([&]() {
-          histogram_tester_ = std::make_unique<base::HistogramTester>();
-        }),
-        CheckJsResult(
-            kGlicContentsElementId,
-            content::JsReplace(kScrollToJs, std::move(selector).Run())),
-        Do([&]() {
-          histogram_tester_->ExpectTotalCount(
-              "Glic.ScrollTo.MatchDuration.Success", 1);
-        }));
+    return ScrollToImpl(std::move(selector), /*document_id=*/std::nullopt);
   }
 
   // Similar to the above method, but also includes documentId in the params.
   // If `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
-  using DocumentIdGetter = base::OnceCallback<std::string()>;
   auto ScrollToWithDocumentId(
       Selector selector,
       std::optional<DocumentIdGetter> document_id = std::nullopt) {
-    return Steps(InAnyContext(WithElement(
-        kGlicContentsElementId, [&, selector = std::move(selector),
-                                 document_id_getter = std::move(document_id)](
-                                    ui::TrackedElement* el) mutable {
-          content::WebContents* glic_contents =
-              AsInstrumentedWebContents(el)->web_contents();
-          std::string document_id = GetDocumentIdFromAnnotatedPageContent();
-          if (document_id_getter.has_value()) {
-            document_id = std::move(document_id_getter.value()).Run();
-          }
-          std::string script = content::JsReplace(
-              R"js(
-                (() => {
-                  return client.browser.scrollTo({
-                    selector: $1,
-                    documentId: $2
-                  });
-                })();
-              )js",
-              std::move(selector).Run(), document_id);
-          ASSERT_TRUE(content::ExecJs(glic_contents, std::move(script)));
-        })));
+    return ScrollToImpl(std::move(selector),
+                        DocumentIdOrDefault(std::move(document_id)));
   }
 
   // Calls scrollTo() and waits until the promise rejects with an error.
   // Note: This will fail the test if the promise succeeds.
   auto ScrollToExpectingError(Selector selector,
                               mojom::ScrollToErrorReason error_reason) {
-    static constexpr char kScrollToJs[] =
-        R"js(
-          async () => {
-            try {
-              await client.browser.scrollTo({selector: $1});
-            } catch (err) {
-              return err.reason;
-            }
-          }
-        )js";
-    return Steps(CheckJsResult(
-                     kGlicContentsElementId,
-                     content::JsReplace(kScrollToJs, std::move(selector).Run()),
-                     ::testing::Eq(static_cast<int>(error_reason))),
-                 ExpectErrorRecorded(error_reason));
+    return ScrollToExpectingErrorImpl(std::move(selector),
+                                      /*document_id=*/std::nullopt,
+                                      error_reason);
   }
 
-  // Similar to the above method, but also includes documentId and domNodeId in
-  // the params. If `document_id` is not set, it uses a value retrieved from
+  // Similar to the above method, but also includes documentId in the params. If
+  // `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToWithDocumentIdExpectingError(
       Selector selector,
       mojom::ScrollToErrorReason error_reason,
       std::optional<DocumentIdGetter> document_id = std::nullopt) {
-    auto step_callback = [&, selector = std::move(selector), error_reason,
-                          document_id_getter = std::move(document_id)](
-                             ui::TrackedElement* el) mutable {
-      content::WebContents* glic_contents =
-          AsInstrumentedWebContents(el)->web_contents();
-      std::string document_id = GetDocumentIdFromAnnotatedPageContent();
-      if (document_id_getter.has_value()) {
-        document_id = std::move(document_id_getter.value()).Run();
-      }
-      std::string script = content::JsReplace(
-          R"js(
-            (async () => {
-              try {
-                await client.browser.scrollTo({
-                  selector: $1,
-                  documentId: $2
-                });
-              } catch (err) {
-                return err.reason;
-              }
-            })();
-          )js",
-          std::move(selector).Run(), document_id);
-      EXPECT_EQ(content::EvalJs(glic_contents, std::move(script)),
-                static_cast<int>(error_reason));
-    };
-    return Steps(InAnyContext(WithElement(kGlicContentsElementId,
-                                          std::move(step_callback))),
-                 ExpectErrorRecorded(error_reason));
+    return ScrollToExpectingErrorImpl(
+        std::move(selector), DocumentIdOrDefault(std::move(document_id)),
+        error_reason);
   }
 
   // Calls scrollTo() and returns immediately.
   auto ScrollToAsync(Selector selector) {
-    static constexpr char kScrollToJs[] =
-        R"js(
-          () => {
-            window.scrollToPromise = client.browser.scrollTo({selector: $1});
-          }
-        )js";
-    return Steps(
-        ExecuteJs(kGlicContentsElementId,
-                  content::JsReplace(kScrollToJs, std::move(selector).Run()),
-                  InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget));
+    return ScrollToAsyncImpl(std::move(selector), /*document_id=*/std::nullopt);
   }
 
-  // Should be used in combination with ScrollToAsync() above.
+  // Similar to the above method, but also includes documentId in the params. If
+  // `document_id` is not set, it uses a value retrieved from
+  // `annotated_page_content_`.
+  auto ScrollToAsyncWithDocumentId(
+      Selector selector,
+      std::optional<DocumentIdGetter> document_id = std::nullopt) {
+    return ScrollToAsyncImpl(std::move(selector),
+                             DocumentIdOrDefault(std::move(document_id)));
+  }
+
+  // Should be used in combination with ScrollToAsync*() above.
   auto WaitForScrollToError(mojom::ScrollToErrorReason error_reason) {
     return Steps(
         CheckJsResult(kGlicContentsElementId, R"js(
@@ -477,6 +409,115 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
   }
 
  private:
+  base::Value::Dict CreateScrollToParams(
+      Selector selector,
+      std::optional<DocumentIdGetter> document_id) {
+    base::Value::Dict scroll_to_params;
+    scroll_to_params.Set("selector", std::move(selector).Run());
+    if (document_id) {
+      scroll_to_params.Set("documentId", std::move(*document_id).Run());
+    }
+    return scroll_to_params;
+  }
+
+  DocumentIdGetter DocumentIdOrDefault(
+      std::optional<DocumentIdGetter> document_id) {
+    return base::BindLambdaForTesting(
+        [&, document_id_getter = std::move(document_id)]() mutable {
+          if (!document_id_getter.has_value()) {
+            return GetDocumentIdFromAnnotatedPageContent();
+          }
+          return std::move(*document_id_getter).Run();
+        });
+  }
+
+  InteractiveGlicTest::MultiStep ScrollToImpl(
+      Selector selector,
+      std::optional<DocumentIdGetter> document_id) {
+    return Steps(
+        Do([&]() {
+          histogram_tester_ = std::make_unique<base::HistogramTester>();
+        }),
+        InAnyContext(WithElement(
+            kGlicContentsElementId,
+            [&, selector = std::move(selector),
+             document_id =
+                 std::move(document_id)](ui::TrackedElement* el) mutable {
+              content::WebContents* glic_contents =
+                  AsInstrumentedWebContents(el)->web_contents();
+              base::Value::Dict scroll_to_params = CreateScrollToParams(
+                  std::move(selector), std::move(document_id));
+              std::string script = content::JsReplace(
+                  R"js(
+                  (() => {
+                    return client.browser.scrollTo($1);
+                  })();
+                )js",
+                  std::move(scroll_to_params));
+              ASSERT_TRUE(content::ExecJs(glic_contents, std::move(script)));
+            })),
+        Do([&]() {
+          histogram_tester_->ExpectTotalCount(
+              "Glic.ScrollTo.MatchDuration.Success", 1);
+        }));
+  }
+
+  InteractiveGlicTest::MultiStep ScrollToExpectingErrorImpl(
+      Selector selector,
+      std::optional<DocumentIdGetter> document_id,
+      mojom::ScrollToErrorReason error_reason) {
+    return Steps(
+        Do([&]() {
+          histogram_tester_ = std::make_unique<base::HistogramTester>();
+        }),
+        InAnyContext(WithElement(
+            kGlicContentsElementId,
+            [&, selector = std::move(selector),
+             document_id = std::move(document_id),
+             error_reason](ui::TrackedElement* el) mutable {
+              content::WebContents* glic_contents =
+                  AsInstrumentedWebContents(el)->web_contents();
+              base::Value::Dict scroll_to_params = CreateScrollToParams(
+                  std::move(selector), std::move(document_id));
+              std::string script = content::JsReplace(
+                  R"js(
+                    (async () => {
+                      try {
+                        await client.browser.scrollTo($1);
+                      } catch (err) {
+                        return err.reason;
+                      }
+                    })();
+                  )js",
+                  std::move(scroll_to_params));
+              EXPECT_EQ(content::EvalJs(glic_contents, std::move(script)),
+                        static_cast<int>(error_reason));
+            })),
+        ExpectErrorRecorded(error_reason));
+  }
+
+  InteractiveGlicTest::MultiStep ScrollToAsyncImpl(
+      Selector selector,
+      std::optional<DocumentIdGetter> document_id) {
+    return Steps(InAnyContext(WithElement(
+        kGlicContentsElementId,
+        [&, selector = std::move(selector),
+         document_id = std::move(document_id)](ui::TrackedElement* el) mutable {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          auto scroll_to_params =
+              CreateScrollToParams(std::move(selector), std::move(document_id));
+          std::string script = content::JsReplace(
+              R"js(
+                (() => {
+                  window.scrollToPromise = client.browser.scrollTo($1);
+                })();
+              )js",
+              std::move(scroll_to_params));
+          ASSERT_TRUE(content::ExecJs(glic_contents, script));
+        })));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeAnnotationAgentContainer> fake_service_;
   base::CallbackListSubscription focused_tab_change_subscription_;
