@@ -605,84 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
-  return web_ui::SerializeJson(Serialize(report));
-}
-
-std::string SerializeHitReport(const HitReport& hit_report) {
-  base::Value::Dict hit_report_dict;
-  hit_report_dict.Set("malicious_url", hit_report.malicious_url.spec());
-  hit_report_dict.Set("page_url", hit_report.page_url.spec());
-  hit_report_dict.Set("referrer_url", hit_report.referrer_url.spec());
-  hit_report_dict.Set("is_subresource", hit_report.is_subresource);
-  std::string threat_type;
-  switch (hit_report.threat_type) {
-    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
-      threat_type = "SB_THREAT_TYPE_URL_PHISHING";
-      break;
-    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
-      threat_type = "SB_THREAT_TYPE_URL_MALWARE";
-      break;
-    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
-      threat_type = "SB_THREAT_TYPE_URL_UNWANTED";
-      break;
-    case SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE:
-      threat_type = "SB_THREAT_TYPE_URL_BINARY_MALWARE";
-      break;
-    default:
-      threat_type = "OTHER";
-  }
-  hit_report_dict.Set("threat_type", std::move(threat_type));
-  std::string threat_source;
-  switch (hit_report.threat_source) {
-    case ThreatSource::LOCAL_PVER4:
-      threat_source = "LOCAL_PVER4";
-      break;
-    case ThreatSource::CLIENT_SIDE_DETECTION:
-      threat_source = "CLIENT_SIDE_DETECTION";
-      break;
-    case ThreatSource::URL_REAL_TIME_CHECK:
-      threat_source = "URL_REAL_TIME_CHECK";
-      break;
-    case ThreatSource::NATIVE_PVER5_REAL_TIME:
-      threat_source = "NATIVE_PVER5_REAL_TIME";
-      break;
-    case ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
-      threat_source = "ANDROID_SAFEBROWSING_REAL_TIME";
-      break;
-    case ThreatSource::ANDROID_SAFEBROWSING:
-      threat_source = "ANDROID_SAFEBROWSING";
-      break;
-    case ThreatSource::UNKNOWN:
-      threat_source = "UNKNOWN";
-      break;
-  }
-  hit_report_dict.Set("threat_source", std::move(threat_source));
-  std::string extended_reporting_level;
-  switch (hit_report.extended_reporting_level) {
-    case ExtendedReportingLevel::SBER_LEVEL_OFF:
-      extended_reporting_level = "SBER_LEVEL_OFF";
-      break;
-    case ExtendedReportingLevel::SBER_LEVEL_LEGACY:
-      extended_reporting_level = "SBER_LEVEL_LEGACY";
-      break;
-    case ExtendedReportingLevel::SBER_LEVEL_SCOUT:
-      extended_reporting_level = "SBER_LEVEL_SCOUT";
-      break;
-    case ExtendedReportingLevel::SBER_LEVEL_ENHANCED_PROTECTION:
-      extended_reporting_level = "SBER_LEVEL_ENHANCED_PROTECTION";
-      break;
-  }
-  hit_report_dict.Set("extended_reporting_level",
-                      std::move(extended_reporting_level));
-  hit_report_dict.Set("is_enhanced_protection",
-                      hit_report.is_enhanced_protection);
-  hit_report_dict.Set("is_metrics_reporting_active",
-                      hit_report.is_metrics_reporting_active);
-  hit_report_dict.Set("post_data", hit_report.post_data);
-  return web_ui::SerializeJson(hit_report_dict);
-}
-
 base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
   base::Value::Dict result;
 
@@ -1170,7 +1092,7 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
   base::Value::List sent_reports;
 
   for (const auto& report : reports) {
-    sent_reports.Append(SerializeCSBRR(*report));
+    sent_reports.Append(web_ui::SerializeCSBRR(*report));
   }
 
   AllowJavascript();
@@ -1186,7 +1108,7 @@ void SafeBrowsingUIHandler::GetSentHitReports(const base::Value::List& args) {
   base::Value::List sent_reports;
 
   for (const auto& report : reports) {
-    sent_reports.Append(SerializeHitReport(*report));
+    sent_reports.Append(web_ui::SerializeHitReport(*report));
   }
 
   AllowJavascript();
@@ -1560,13 +1482,14 @@ void SafeBrowsingUIHandler::NotifyClientPhishingResponseJsListener(
 void SafeBrowsingUIHandler::NotifyCSBRRJsListener(
     ClientSafeBrowsingReportRequest* csbrr) {
   AllowJavascript();
-  FireWebUIListener("sent-csbrr-update", base::Value(SerializeCSBRR(*csbrr)));
+  FireWebUIListener("sent-csbrr-update",
+                    base::Value(web_ui::SerializeCSBRR(*csbrr)));
 }
 
 void SafeBrowsingUIHandler::NotifyHitReportJsListener(HitReport* hit_report) {
   AllowJavascript();
   FireWebUIListener("sent-hit-report-list",
-                    base::Value(SerializeHitReport(*hit_report)));
+                    base::Value(web_ui::SerializeHitReport(*hit_report)));
 }
 
 void SafeBrowsingUIHandler::NotifyPGEventJsListener(
