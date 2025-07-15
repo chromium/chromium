@@ -64,6 +64,9 @@ extern const char kAutofillEnableCardBenefitsSyncDescription[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 
+extern const char kAutofillEnableCvcStorageAndFillingEnhancementName[];
+extern const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[];
+
 extern const char
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[];
 extern const char

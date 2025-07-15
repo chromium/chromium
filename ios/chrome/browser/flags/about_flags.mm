@@ -2773,6 +2773,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-omnibox-aim-shortcut", flag_descriptions::kIOSOmniboxAimShortcutName,
      flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSOmniboxAimShortcut)},
+    {"autofill-enable-cvc-storage-and-filling-enhancement",
+     flag_descriptions::kAutofillEnableCvcStorageAndFillingEnhancementName,
+     flag_descriptions::
+         kAutofillEnableCvcStorageAndFillingEnhancementDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCvcStorageAndFillingEnhancement)},
     {"autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
      flag_descriptions::
          kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName,
