@@ -200,8 +200,8 @@ class BrowserAutofillManager : public AutofillManager {
   // current platform.
   virtual payments::BnplManager* GetPaymentsBnplManager();
 
-  // Handles post-filling logic of `form_structure`, like notifying observers
-  // and logging form metrics.
+  // Handles post-filling logic of `form`, like notifying observers and logging
+  // form metrics.
   // `filled_fields` are the fields that were filled by the browser.
   // `safe_filled_fields` are the subset of `filled_fields` that were deemed
   // safe to fill by `AutofillDriverRouter`, according to the iframe security
@@ -211,17 +211,12 @@ class BrowserAutofillManager : public AutofillManager {
   // `skip_reasons` tells us for each field (mapped by their IDs), whether the
   // field was skipped for filling or not and why.
   // TODO(crbug.com/40227071): Remove `filled_field_ids`.
-  // TODO(crbug.com/40232021): Consider choosing one of `FormData` or
-  // `FormStructure`.
   void OnDidFillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      FormStructure& form_structure,
+      FormStructure& form,
       AutofillField& trigger_autofill_field,
       base::span<const AutofillField*> safe_filled_autofill_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
-      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-          skip_reasons,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason);
@@ -599,18 +594,6 @@ class BrowserAutofillManager : public AutofillManager {
   // the FieldInfo metric is recorded into UKM at form submission or form
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
-
-  // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
-  // fields in the form_structure if there was a filling operation.
-  void AppendFillLogEvents(
-      const FormData& form,
-      FormStructure& form_structure,
-      AutofillField& trigger_autofill_field,
-      const base::flat_set<FieldGlobalId>& safe_field_ids,
-      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-          skip_reasons,
-      const FillingPayload& filling_payload,
-      bool is_refill);
 
   // Handles the credit card specific logic after a form is filled, including
   // logging the fill operation and recording card usage.

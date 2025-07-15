@@ -217,6 +217,18 @@ class FormFiller {
       bool allow_suggestion_swapping,
       std::string* failure_to_fill);
 
+  // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
+  // fields in the `form_structure` if there was a filling operation.
+  void AppendFillLogEvents(
+      const FormData& form,
+      FormStructure& form_structure,
+      AutofillField& trigger_autofill_field,
+      const base::flat_set<FieldGlobalId>& safe_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
+      const FillingPayload& filling_payload,
+      bool is_refill);
+
   LogManager* log_manager();
 
   // Container holding the history of Autofill filling operations. Used to undo

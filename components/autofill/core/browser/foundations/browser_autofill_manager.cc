@@ -184,18 +184,6 @@ using payments::AmountExtractionManager;
 
 namespace {
 
-FillDataType GetFillDataTypeFromFillingPayload(
-    const FillingPayload& filling_payload) {
-  return std::visit(
-      absl::Overload{
-          [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
-          [](const CreditCard*) { return FillDataType::kCreditCard; },
-          [](const EntityInstance*) { return FillDataType::kAutofillAi; },
-          [](const VerifiedProfile*) { return FillDataType::kAutofillProfile; },
-      },
-      filling_payload);
-}
-
 void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
                                ukm::SourceId source_id,
                                const FormStructure& form_structure) {
@@ -2572,19 +2560,16 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    FormStructure& form_structure,
+    FormStructure& form,
     AutofillField& trigger_autofill_field,
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
-    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-        skip_reasons,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     std::optional<RefillTriggerReason> refill_trigger_reason) {
   const auto safe_filled_field_ids = base::MakeFlatSet<FieldGlobalId>(
       safe_filled_autofill_fields, /*comp=*/{}, &FormFieldData::global_id);
-  NotifyObservers(&Observer::OnFillOrPreviewForm, form_structure.global_id(),
+  NotifyObservers(&Observer::OnFillOrPreviewForm, form.global_id(),
                   action_persistence, safe_filled_field_ids, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
@@ -2597,23 +2582,19 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     autofill_metrics::LogNumberOfFieldsModifiedByRefill(
         *refill_trigger_reason, safe_filled_autofill_fields.size());
   }
-  AppendFillLogEvents(form, form_structure, trigger_autofill_field,
-                      safe_filled_field_ids, skip_reasons, filling_payload,
-                      refill_trigger_reason.has_value());
   client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
       absl::Overload{
           [&](const AutofillProfile* profile) {
-            LogAndRecordProfileFill(form_structure, trigger_autofill_field,
-                                    *profile, trigger_source,
+            LogAndRecordProfileFill(form, trigger_autofill_field, *profile,
+                                    trigger_source,
                                     refill_trigger_reason.has_value());
             MaybeShowPlusAddressEmailOverrideNotification(
-                safe_filled_autofill_fields, *profile,
-                form_structure.global_id());
+                safe_filled_autofill_fields, *profile, form.global_id());
           },
           [&](const CreditCard* credit_card) {
-            LogAndRecordCreditCardFill(form_structure, trigger_autofill_field,
+            LogAndRecordCreditCardFill(form, trigger_autofill_field,
                                        filled_field_ids, safe_filled_field_ids,
                                        *credit_card, trigger_source,
                                        refill_trigger_reason.has_value());
@@ -2622,7 +2603,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             if (AutofillAiManager* ai_manager =
                     client().GetAutofillAiManager()) {
               ai_manager->OnDidFillSuggestion(
-                  entity->guid(), form_structure, trigger_autofill_field,
+                  entity->guid(), form, trigger_autofill_field,
                   safe_filled_autofill_fields, driver().GetPageUkmSourceId());
             }
           },
@@ -2631,65 +2612,6 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             // notification to the delegate here.
           }},
       filling_payload);
-}
-
-void BrowserAutofillManager::AppendFillLogEvents(
-    const FormData& form,
-    FormStructure& form_structure,
-    AutofillField& trigger_autofill_field,
-    const base::flat_set<FieldGlobalId>& safe_field_ids,
-    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-        skip_reasons,
-    const FillingPayload& filling_payload,
-    bool is_refill) {
-  std::string country_code;
-  if (const AutofillProfile* const* address =
-          std::get_if<const AutofillProfile*>(&filling_payload)) {
-    country_code =
-        base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
-  }
-  TriggerFillFieldLogEvent trigger_fill_field_log_event =
-      TriggerFillFieldLogEvent{
-          .data_type = GetFillDataTypeFromFillingPayload(filling_payload),
-          .associated_country_code = country_code,
-          .timestamp = base::Time::Now()};
-  trigger_autofill_field.AppendLogEventIfNotRepeated(
-      trigger_fill_field_log_event);
-  FillEventId fill_event_id = trigger_fill_field_log_event.fill_event_id;
-
-  for (auto [form_field, field] :
-       base::zip(form.fields(), form_structure.fields())) {
-    const FieldGlobalId field_id = field->global_id();
-    const bool has_value_before = !form_field.value().empty();
-    const FieldFillingSkipReason skip_reason =
-        skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
-                                          : *skip_reasons.at(field_id).begin();
-    if (!IsCheckable(field->check_status())) {
-      if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
-        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_reason,
-            .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
-            .had_value_after_filling =
-                ToOptionalBoolean(safe_field_ids.contains(field_id)),
-            .filling_prevented_by_iframe_security_policy =
-                safe_field_ids.contains(field_id) ? OptionalBoolean::kFalse
-                                                  : OptionalBoolean::kTrue,
-            .was_refill = ToOptionalBoolean(is_refill),
-        });
-      } else {
-        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_reason,
-            .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
-            .had_value_after_filling = ToOptionalBoolean(has_value_before),
-            .was_refill = ToOptionalBoolean(is_refill),
-        });
-      }
-    }
-  }
 }
 
 void BrowserAutofillManager::LogAndRecordCreditCardFill(
