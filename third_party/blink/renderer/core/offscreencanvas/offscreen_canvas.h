@@ -94,8 +94,6 @@ class CORE_EXPORT OffscreenCanvas final
     disable_reading_from_canvas_ = true;
   }
 
-  CanvasResourceProvider* GetOrCreateResourceProviderForCanvas2D();
-
   void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
     client_id_ = client_id;
     sink_id_ = sink_id;
