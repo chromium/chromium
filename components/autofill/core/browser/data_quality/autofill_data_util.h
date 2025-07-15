@@ -86,6 +86,9 @@ struct PaymentRequestData {
 // the three, at least).
 bool IsCJKName(std::u16string_view name);
 
+// Returns true if `text` contains at least one Katakana character.
+bool HasKatakanaCharacter(std::u16string_view text);
+
 // TODO(crbug.com/41239336): Investigate the use of app_locale to do better name
 // splitting.
 // Returns the different name parts (given, middle and family names) of the full

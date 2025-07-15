@@ -264,6 +264,37 @@ INSTANTIATE_TEST_SUITE_P(
         // Non Ascii is invalid.
         ValidCountryCodeTestCase{"CÄ", false}));
 
+struct HasKatakanaCharacterTestCase {
+  std::string test_name;
+  std::u16string text;
+  bool has_katakana_character;
+};
+
+class HasKatakanaCharacterTest
+    : public ::testing::TestWithParam<HasKatakanaCharacterTestCase> {};
+
+TEST_P(HasKatakanaCharacterTest, HasKatakanaCharacter) {
+  const HasKatakanaCharacterTestCase& test_case = GetParam();
+
+  EXPECT_EQ(HasKatakanaCharacter(test_case.text), test_case.has_katakana_character);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    JpTests,
+    HasKatakanaCharacterTest,
+    testing::ValuesIn<HasKatakanaCharacterTestCase>({
+        {"Empty", u"", false},
+        {"Latin", u"abcd", false},
+        {"Hiragana", u"あいうえお", false},
+        {"HiraganaWithSpaces", u"あ い う え お", false},
+        {"Katakana", u"アイウエオ", true},
+        {"KatakanaWithSpaces", u"ア イ ウ エ オ", true},
+        {"Mixed", u"あアイウエオ", true},
+    }),
+    [](const testing::TestParamInfo<HasKatakanaCharacterTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 }  // namespace
 }  // namespace data_util
 }  // namespace autofill

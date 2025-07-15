@@ -378,6 +378,22 @@ bool IsCJKName(std::u16string_view name) {
   return word_count > 0 && word_count < 3;
 }
 
+bool HasKatakanaCharacter(std::u16string_view text) {
+  UErrorCode error = U_ZERO_ERROR;
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
+    UScriptCode character = uscript_getScript(iter.get(), &error);
+    if (U_FAILURE(error)) {
+      DLOG(ERROR) << "uscript_getScript failed, error code: "
+                  << u_errorName(error);
+      return false;
+    }
+    if (character == USCRIPT_KATAKANA) {
+      return true;
+    }
+  }
+  return false;
+}
+
 NameParts SplitName(std::u16string_view name) {
   // u' ',       // ASCII space.
   // u',',       // ASCII comma.

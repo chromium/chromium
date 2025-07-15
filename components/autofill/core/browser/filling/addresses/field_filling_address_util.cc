@@ -57,18 +57,6 @@ std::u16string GetStreetAddressForInput(
   return base::UTF8ToUTF16(line);
 }
 
-// Returns true if there is at least one Katakana character present in the
-// `label`.
-bool AreKatakanaCharactersPresent(const std::u16string& label) {
-  UErrorCode error = U_ZERO_ERROR;
-  for (base::i18n::UTF16CharIterator iter(label); !iter.end(); iter.Advance()) {
-    if (uscript_getScript(iter.get(), &error) == USCRIPT_KATAKANA) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // If `country_code` is set to "JP" and Katakana characters are present in the
 // field label, the `value` will be transliterated from Hiragana to
 // Katakana. For other countries/characters nothing will change.
@@ -81,7 +69,7 @@ std::u16string GetAlternativeNameForInput(
           features::kAutofillSupportPhoneticNameForJP)) {
     return value;
   }
-  bool requires_conversion = AreKatakanaCharactersPresent(field_data.label());
+  bool requires_conversion = data_util::HasKatakanaCharacter(field_data.label());
   // TODO(crbug.com/359768803): Remove this metric once the feature is launched.
   base::UmaHistogramBoolean(
       "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
