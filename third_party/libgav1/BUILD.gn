@@ -103,5 +103,9 @@ if (use_libgav1_parser) {
     deps = [ ":libgav1_parser" ]
     defines = [ "LIBGAV1_EXAMPLES_ENABLE_LOGGING=0" ]
     additional_configs = [ ":libgav1_config" ]
+
+    # Clang's libcxx recently made this warn on more things by default, and
+    # libgav1 doesn't have the annotations necessary to support its analysis.
+    cflags_cc = [ "-Wno-thread-safety" ]
   }
 }
