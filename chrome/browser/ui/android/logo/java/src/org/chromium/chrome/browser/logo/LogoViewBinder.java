@@ -25,9 +25,11 @@ class LogoViewBinder
         } else if (LogoProperties.LOGO_TOP_MARGIN == propertyKey) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
             marginLayoutParams.topMargin = model.get(LogoProperties.LOGO_TOP_MARGIN);
+            logoView.setLayoutParams(marginLayoutParams);
         } else if (LogoProperties.LOGO_BOTTOM_MARGIN == propertyKey) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
             marginLayoutParams.bottomMargin = model.get(LogoProperties.LOGO_BOTTOM_MARGIN);
+            logoView.setLayoutParams(marginLayoutParams);
         } else if (LogoProperties.SET_END_FADE_ANIMATION == propertyKey) {
             logoView.endFadeAnimation();
         } else if (LogoProperties.VISIBILITY == propertyKey) {
