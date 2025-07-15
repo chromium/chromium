@@ -193,14 +193,15 @@ class AutofillManager
     // be filled: each `FormFieldData::value` contains the filled or previewed
     // value; the corresponding `AutofillField` contains the field type
     // information. The field values come from `filling_payload`.
-    // TODO(crbug.com/40227496): Get rid of FormFieldData.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidFillAutofillFormData(), which is fired by the renderer.
-    virtual void OnFillOrPreviewDataModelForm(
+    // TODO(crbug.com/40227071): Consider removing `action_persistence` as the
+    // preview signal is only used for testing.
+    virtual void OnFillOrPreviewForm(
         AutofillManager& manager,
-        FormGlobalId form,
+        FormGlobalId form_id,
         mojom::ActionPersistence action_persistence,
-        base::span<const FormFieldData* const> filled_fields,
+        const base::flat_set<FieldGlobalId>& filled_field_ids,
         const FillingPayload& filling_payload) {}
 
     // Fired when a form is submitted. A `FormData` is passed instead of a

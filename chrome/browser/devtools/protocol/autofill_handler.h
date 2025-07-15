@@ -11,7 +11,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
 
 using protocol::String;
@@ -57,11 +56,11 @@ class AutofillHandler : public protocol::Autofill::Backend,
       autofill::AutofillManager& manager,
       autofill::AutofillManager::LifecycleState old_state,
       autofill::AutofillManager::LifecycleState new_state) override;
-  void OnFillOrPreviewDataModelForm(
+  void OnFillOrPreviewForm(
       autofill::AutofillManager& manager,
-      autofill::FormGlobalId form,
+      autofill::FormGlobalId form_id,
       autofill::mojom::ActionPersistence action_persistence,
-      base::span<const autofill::FormFieldData* const> filled_fields,
+      const base::flat_set<autofill::FieldGlobalId>& filled_field_ids,
       const autofill::FillingPayload& filling_payload) override;
 
   // ContentAutofillDriverFactory::Observer:

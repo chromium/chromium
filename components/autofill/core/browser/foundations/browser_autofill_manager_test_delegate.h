@@ -39,11 +39,11 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
       AutofillManager::LifecycleState old_state,
       AutofillManager::LifecycleState new_state) override;
 
-  void OnFillOrPreviewDataModelForm(
+  void OnFillOrPreviewForm(
       AutofillManager& manager,
-      FormGlobalId form,
+      FormGlobalId form_id,
       mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData* const> filled_fields,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload) override;
 
   void OnSuggestionsShown(AutofillManager& manager) override;

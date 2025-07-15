@@ -854,7 +854,6 @@ void FormFiller::FillOrPreviewForm(
   // `safe_filled_field_ids`
   struct {
     std::vector<const FormFieldData*> old_values;
-    std::vector<const FormFieldData*> new_values;
     std::vector<const AutofillField*> cached;
   } safe_filled_fields;
 
@@ -866,11 +865,6 @@ void FormFiller::FillOrPreviewForm(
       // condition.
       safe_filled_fields.old_values.push_back(
           form.FindFieldByGlobalId(field_id));
-      safe_filled_fields.new_values.push_back([&] {
-        auto fields_it = std::ranges::find(result_fields, field_id,
-                                           &FormFieldData::global_id);
-        return fields_it != result_fields.end() ? &*fields_it : nullptr;
-      }());
       safe_filled_fields.cached.push_back(
           form_structure.GetFieldById(field_id));
     } else {
@@ -907,7 +901,7 @@ void FormFiller::FillOrPreviewForm(
 
   manager_->OnDidFillOrPreviewForm(
       action_persistence, form, form_structure, autofill_trigger_field,
-      safe_filled_fields.new_values, safe_filled_fields.cached,
+      safe_filled_fields.cached,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
       safe_filled_field_ids, skip_reasons, filling_payload, trigger_source,

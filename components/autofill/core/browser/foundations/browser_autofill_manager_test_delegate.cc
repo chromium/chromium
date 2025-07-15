@@ -32,11 +32,11 @@ void BrowserAutofillManagerTestDelegate::OnAutofillManagerStateChanged(
   }
 }
 
-void BrowserAutofillManagerTestDelegate::OnFillOrPreviewDataModelForm(
+void BrowserAutofillManagerTestDelegate::OnFillOrPreviewForm(
     AutofillManager& manager,
-    FormGlobalId form,
+    FormGlobalId form_id,
     mojom::ActionPersistence action_persistence,
-    base::span<const FormFieldData* const> filled_fields,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
     const FillingPayload& filling_payload) {
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill:

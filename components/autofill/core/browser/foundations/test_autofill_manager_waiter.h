@@ -274,7 +274,7 @@ const FormStructure* WaitForMatchingForm(
 //     ...
 //     TestAutofillManagerSingleEventWaiter waiter(
 //        *autofill_manager,
-//        &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+//        &AutofillManager::Observer::OnFillOrPreviewForm,
 //        _, mojom::ActionPersistence::kPreview, _, _);
 //     ...
 //     EXPECT_TRUE(std::move(waiter).Wait());
@@ -500,14 +500,14 @@ class TestAutofillManagerSingleEventWaiter {
     void OnSuggestionsHidden(AutofillManager& manager) override {
       MaybeQuit(&Observer::OnSuggestionsHidden, manager);
     }
-    void OnFillOrPreviewDataModelForm(
+    void OnFillOrPreviewForm(
         AutofillManager& manager,
-        FormGlobalId form,
+        FormGlobalId form_id,
         mojom::ActionPersistence action_persistence,
-        base::span<const FormFieldData* const> filled_fields,
+        const base::flat_set<FieldGlobalId>& filled_field_ids,
         const FillingPayload& filling_payload) override {
-      MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
-                action_persistence, filled_fields, filling_payload);
+      MaybeQuit(&Observer::OnFillOrPreviewForm, manager, form_id,
+                action_persistence, filled_field_ids, filling_payload);
     }
     void OnFormSubmitted(AutofillManager& manager,
                          const FormData& form) override {
