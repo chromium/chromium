@@ -70,7 +70,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.AddSignInFlowOutcome"
-    enum="ProfileSignedInFlowOutcome" expires_after="2025-07-13">
+    enum="ProfileSignedInFlowOutcome" expires_after="2026-06-13">
+  <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
