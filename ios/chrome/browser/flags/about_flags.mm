@@ -2770,6 +2770,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"aim-prototype-ios", flag_descriptions::kAIMPrototypeName,
      flag_descriptions::kAIMPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAIMPrototype)},
+    {"ios-omnibox-aim-shortcut", flag_descriptions::kIOSOmniboxAimShortcutName,
+     flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSOmniboxAimShortcut)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
