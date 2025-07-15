@@ -277,8 +277,7 @@ HRESULT ToggleVpSuperResolution(UINT gpu_vendor_id,
     return ToggleIntelVpSuperResolution(video_context, video_processor, enable);
   }
 
-  if (gpu_vendor_id == 0x10de &&
-      base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
+  if (gpu_vendor_id == 0x10de) {
     return ToggleNvidiaVpSuperResolution(video_context, video_processor,
                                          enable);
   }
