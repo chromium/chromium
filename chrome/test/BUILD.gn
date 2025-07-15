@@ -778,6 +778,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/ui/profiles:test_support",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/translate",
       "//chrome/browser/ui/views/toolbar",
@@ -865,7 +866,6 @@ static_library("test_support") {
       "../browser/sync_file_system/mock_remote_file_sync_service.h",
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
-      "../browser/ui/profiles/profile_ui_test_utils.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
       "../browser/ui/test/pixel_test_configuration_mixin.h",
       "../browser/ui/test/test_browser_dialog.cc",
@@ -2402,6 +2402,7 @@ if (!is_android) {
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/privacy_sandbox:browser_tests",
+      "//chrome/browser/ui/profiles:browser_tests",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator:browser_tests",
       "//chrome/browser/ui/safety_hub",
@@ -3515,7 +3516,6 @@ if (!is_android) {
       "../browser/ui/passwords/password_change_ui_controller_browsertest.cc",
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
-      "../browser/ui/profiles/profile_error_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/startup/startup_browser_creator_browsertest.cc",
@@ -4373,7 +4373,6 @@ if (!is_android) {
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
-        "../browser/ui/profiles/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
@@ -4389,7 +4388,14 @@ if (!is_android) {
       if (!is_chromeos) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]
       }
-      deps += [ "//chrome/browser/profiles/batch_upload:browser_tests" ]
+      deps += [
+        "//chrome/browser/profiles/batch_upload:browser_tests",
+
+        # TODO(crubug.com/430804948): This dependency is needed because
+        # `signin_intercept_first_run_experience_dialog_browsertest.cc` includes `signin_intercept_first_run_experience_dialog.h`,
+        # temporarily built from profiles:impl, due to a circular dependency.
+        "//chrome/browser/ui/profiles:impl",
+      ]
     } else {
       sources += [ "../browser/signin/mirror_browsertest.cc" ]
     }
@@ -6882,6 +6888,7 @@ test("unit_tests") {
     "//chrome/browser/ui/page_info:unit_tests",
     "//chrome/browser/ui/plus_addresses:unit_tests",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/profiles:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
@@ -8063,7 +8070,6 @@ test("unit_tests") {
       "../browser/ui/passwords/password_generation_popup_controller_impl_unittest.cc",
       "../browser/ui/passwords/password_manager_navigation_throttle_unittest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
-      "../browser/ui/profiles/profile_view_utils_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
       "../browser/ui/sync/profile_signin_confirmation_helper_unittest.cc",
@@ -9656,7 +9662,6 @@ test("unit_tests") {
       "../browser/lifetime/switch_utils_unittest.cc",
       "../browser/profiles/profile_list_desktop_unittest.cc",
       "../browser/profiles/profile_statistics_aggregator_unittest.cc",
-      "../browser/ui/profiles/profile_colors_util_unittest.cc",
     ]
   }
 
@@ -10176,7 +10181,6 @@ test("unit_tests") {
       "../browser/signin/signin_ui_util_unittest.cc",
       "../browser/signin/signin_util_unittest.cc",
       "../browser/themes/theme_color_policy_handler_unittest.cc",
-      "../browser/ui/profiles/profile_customization_synced_theme_waiter_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_contents_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_list_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
@@ -10506,13 +10510,6 @@ test("unit_tests") {
   }
   if (!is_android && use_nss_certs) {
     sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "../browser/ui/profiles/profile_customization_util_unittest.cc",
-      "../browser/ui/profiles/profile_picker_unittest.cc",
-    ]
   }
 
   if (enable_widevine_cdm_component && is_linux) {
@@ -10936,6 +10933,7 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_test_base.h",
       ]
       public_deps += [ "//chrome/browser/ui/profiles" ]
+      deps += [ "//chrome/browser/ui/profiles:test_support" ]
     }
 
     if (is_win || is_mac || is_linux) {

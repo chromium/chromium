@@ -1881,6 +1881,10 @@ static_library("browser") {
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
     # from //chrome/browser/ui/webui, which are not modularized yet.
     "//chrome/browser/ui/webui/about:impl",
+
+    # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
+    # gets componentized.
+    "//chrome/browser/ui/profiles:impl",
   ]
 
   public_deps = [
@@ -2654,6 +2658,10 @@ static_library("browser") {
     "//ui/strings",
     "//ui/surface",
     "//ui/webui",
+
+    # TODO(crbug.com/430804948): Remove this dependency when profiles/profile_manager.h
+    # gets componentized.
+    "//chrome/browser/ui/profiles:impl",
   ]
 
   if (is_win && is_chrome_branded) {
