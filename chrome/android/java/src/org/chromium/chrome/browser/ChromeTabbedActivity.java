@@ -3546,6 +3546,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     new LoadUrlParams(
                             SupervisedUserConstants.DEVICE_FILTERS_HELP_CENTER_URL,
                             PageTransition.AUTO_TOPLEVEL));
+        } else if (id == R.id.pin_tab_menu_id) {
+            TabModel tabModel = mTabModelSelector.getCurrentModel();
+            tabModel.pinTab(currentTab.getId());
+        } else if (id == R.id.unpin_tab_menu_id) {
+            TabModel tabModel = mTabModelSelector.getCurrentModel();
+            tabModel.unpinTab(currentTab.getId());
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, triggeringMotion);
         }

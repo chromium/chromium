@@ -20,6 +20,11 @@ public class RegularNewTabPageAppMenuFacility
         if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
         }
+        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
+            // At most one of these exist.
+            mPinTab = declarePossibleMenuItem(items, PIN_TAB);
+            mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);
+        }
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
 
         declareMenuItem(items, HISTORY_ID);
