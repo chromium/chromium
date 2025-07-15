@@ -10,6 +10,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
+#include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
@@ -55,7 +56,8 @@ SessionParams CreateValidParams() {
                        kRefreshUrlString,
                        std::move(scope),
                        std::move(cookie_credentials),
-                       unexportable_keys::UnexportableKeyId()};
+                       unexportable_keys::UnexportableKeyId(),
+                       /*allowed_refresh_initiators=*/{}};
 }
 
 TEST_F(SessionTest, ValidService) {
@@ -734,6 +736,33 @@ TEST_F(SessionTest, Backoff) {
 
     EXPECT_EQ(session->ShouldBackoff(), test_case.expect_backoff);
   }
+}
+
+TEST_F(SessionTest, RefreshInitiators) {
+  auto params = CreateValidParams();
+  params.allowed_refresh_initiators = {"*.not-example.test"};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+
+  ASSERT_EQ(session->allowed_refresh_initiators().size(), 1);
+
+  const std::string& initiator_rule = session->allowed_refresh_initiators()[0];
+  EXPECT_FALSE(MatchesHostPattern(initiator_rule,
+                                  GURL("https://not-example.test").host()));
+  EXPECT_TRUE(MatchesHostPattern(
+      initiator_rule, GURL("https://subdomain.not-example.test").host()));
+  EXPECT_FALSE(MatchesHostPattern(
+      initiator_rule, GURL("https://some-other-example.test").host()));
+}
+
+TEST_F(SessionTest, InvalidRefreshInitiators) {
+  auto params = CreateValidParams();
+  params.allowed_refresh_initiators = {"star.in.middle.*.of.example.test"};
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kInvalidRefreshInitiators);
 }
 
 }  // namespace

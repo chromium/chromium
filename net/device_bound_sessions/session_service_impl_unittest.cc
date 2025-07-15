@@ -685,7 +685,8 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
     return base::expected<SessionParams, SessionError>(
         SessionParams(kSessionId, GURL(), "", SessionParams::Scope(),
                       std::vector<SessionParams::Credential>(),
-                      unexportable_keys::UnexportableKeyId()));
+                      unexportable_keys::UnexportableKeyId(),
+                      /*allowed_refresh_initiators=*/{}));
   }));
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
@@ -1049,7 +1050,8 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
   scope.origin = "https://example.com";
   auto session_or_error = Session::CreateIfValid(SessionParams(
       "session_id", kTestUrl, "https://example.com/refresh", std::move(scope),
-      /*creds=*/{}, unexportable_keys::UnexportableKeyId()));
+      /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
+      /*allowed_refresh_initiators=*/{}));
   ASSERT_TRUE(session_or_error.has_value());
   std::unique_ptr<Session> session = std::move(*session_or_error);
   ASSERT_TRUE(session);

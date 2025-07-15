@@ -113,7 +113,8 @@ class DBSCSessionStorePerfTest : public testing::Test {
                          refresh_url,
                          std::move(scope),
                          std::move(cookie_credentials),
-                         GenerateNewKey()};
+                         GenerateNewKey(),
+                         /*allowed_refresh_initiators=*/{}};
     auto session_or_error = Session::CreateIfValid(params);
     ASSERT_TRUE(session_or_error.has_value());
     std::unique_ptr<Session> session = std::move(*session_or_error);

@@ -246,6 +246,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Same-site mismatch refresh URL"/>
   <int value="17" label="Invalid scope origin"/>
   <int value="18" label="Mismatched session id"/>
+  <int value="19" label="Invalid refresh initiators"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

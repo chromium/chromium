@@ -78,7 +78,8 @@ std::unique_ptr<Session> CreateSessionHelper(
                        url_string,
                        std::move(scope),
                        std::move(cookie_credentials),
-                       GenerateNewKey(key_service)};
+                       GenerateNewKey(key_service),
+                       /*allowed_refresh_initiators=*/{}};
   return *Session::CreateIfValid(params);
 }
 

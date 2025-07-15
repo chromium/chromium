@@ -107,6 +107,15 @@ class NET_EXPORT Session {
 
   const url::Origin& origin() const { return inclusion_rules_.origin(); }
 
+  const std::vector<std::string>& allowed_refresh_initiators() {
+    return allowed_refresh_initiators_;
+  }
+
+  void set_allowed_refresh_initiators(
+      std::vector<std::string> allowed_refresh_initiators) {
+    allowed_refresh_initiators_ = std::move(allowed_refresh_initiators);
+  }
+
  private:
   Session(Id id, url::Origin origin, GURL refresh);
   Session(Id id,
@@ -115,7 +124,8 @@ class NET_EXPORT Session {
           std::vector<CookieCraving> cookie_cravings,
           bool should_defer_when_expired,
           base::Time creation_date,
-          base::Time expiry_date);
+          base::Time expiry_date,
+          std::vector<std::string> allowed_refresh_initiators);
 
   // The unique server-issued identifier of the session.
   const Id id_;
@@ -156,6 +166,8 @@ class NET_EXPORT Session {
   // preventing Chrome from causing a DoS due to expiring session
   // cookies.
   net::BackoffEntry backoff_;
+  // Host patterns for initiators allowed to trigger a refresh.
+  std::vector<std::string> allowed_refresh_initiators_;
 };
 
 }  // namespace net::device_bound_sessions

@@ -53,7 +53,8 @@ struct NET_EXPORT SessionParams final {
                 std::string refresh_url,
                 Scope scope,
                 std::vector<Credential> creds,
-                unexportable_keys::UnexportableKeyId key_id);
+                unexportable_keys::UnexportableKeyId key_id,
+                std::vector<std::string> allowed_refresh_initiators);
   SessionParams(SessionParams&& other) noexcept;
   SessionParams& operator=(SessionParams&& other) noexcept;
 
@@ -67,6 +68,7 @@ struct NET_EXPORT SessionParams final {
   Scope scope;
   std::vector<Credential> credentials;
   unexportable_keys::UnexportableKeyId key_id;
+  std::vector<std::string> allowed_refresh_initiators;
 };
 
 }  // namespace net::device_bound_sessions

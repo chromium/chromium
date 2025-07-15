@@ -34,7 +34,8 @@ struct NET_EXPORT SessionError {
     kRefreshUrlSameSiteMismatch = 16,
     kInvalidScopeOrigin = 17,
     kMismatchedSessionId = 18,
-    kMaxValue = kMismatchedSessionId
+    kInvalidRefreshInitiators = 19,
+    kMaxValue = kInvalidRefreshInitiators,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

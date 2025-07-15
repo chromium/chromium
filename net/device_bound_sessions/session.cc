@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/cookie_craving.h"
+#include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -69,7 +70,8 @@ Session::Session(Id id,
                  std::vector<CookieCraving> cookie_cravings,
                  bool should_defer_when_expired,
                  base::Time creation_date,
-                 base::Time expiry_date)
+                 base::Time expiry_date,
+                 std::vector<std::string> allowed_refresh_initiators)
     : id_(id),
       refresh_url_(refresh),
       inclusion_rules_(std::move(inclusion_rules)),
@@ -77,7 +79,8 @@ Session::Session(Id id,
       should_defer_when_expired_(should_defer_when_expired),
       creation_date_(creation_date),
       expiry_date_(expiry_date),
-      backoff_(&kBackoffPolicy) {}
+      backoff_(&kBackoffPolicy),
+      allowed_refresh_initiators_(std::move(allowed_refresh_initiators)) {}
 
 Session::~Session() = default;
 
@@ -173,6 +176,15 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   session->set_expiry_date(base::Time::Now() + kSessionTtl);
   session->set_unexportable_key_id(std::move(params.key_id));
 
+  for (const std::string& initiator : params.allowed_refresh_initiators) {
+    if (!IsValidHostPattern(initiator)) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidRefreshInitiators});
+    }
+  }
+  session->set_allowed_refresh_initiators(
+      std::move(params.allowed_refresh_initiators));
+
   return base::ok(std::move(session));
 }
 
@@ -221,10 +233,12 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     return nullptr;
   }
 
+  // TODO(crbug.com/406701307): Restore allowed_refresh_initiator from
+  // disk.
   std::unique_ptr<Session> result(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
       std::move(cravings), proto.should_defer_when_expired(), creation_date,
-      expiry_date));
+      expiry_date, /*allowed_refresh_initiators=*/{}));
 
   return result;
 }
@@ -434,6 +448,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kRefreshUrlSameSiteMismatch:
     case kInvalidScopeOrigin:
     case kMismatchedSessionId:
+    case kInvalidRefreshInitiators:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

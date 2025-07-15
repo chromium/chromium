@@ -1378,6 +1378,52 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kMismatchedSessionId);
 }
 
+TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  constexpr char kNonStringInitiator[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.example.com",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }],
+  "allowed_refresh_initiators": [ 12345 ]
+})";
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kNonStringInitiator));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      server_.base_url(), kSessionIdentifier, kChallenge);
+  CreateKeyAndRunCallback(base::BindOnce(
+      &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
+      std::ref(unexportable_key_service()), context_.get(),
+      std::ref(isolation_info), /*net_log_source=*/std::nullopt,
+      /*original_request_initiator=*/std::nullopt, callback.callback()));
+  callback.WaitForCall();
+
+  const base::expected<SessionParams, SessionError>& out_params =
+      callback.outcome();
+  ASSERT_FALSE(out_params.has_value());
+  const SessionError& session_error = out_params.error();
+  EXPECT_EQ(session_error.type,
+            SessionError::ErrorType::kInvalidRefreshInitiators);
+}
+
 class RegistrationTokenHelperTest : public testing::Test {
  public:
   RegistrationTokenHelperTest() : unexportable_key_service_(task_manager_) {}

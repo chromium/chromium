@@ -129,10 +129,24 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
         SessionError{SessionError::ErrorType::kInvalidCredentials});
   }
 
+  std::vector<std::string> allowed_refresh_initiators;
+  if (base::Value::List* initiator_list =
+          maybe_root->FindList("allowed_refresh_initiators");
+      initiator_list) {
+    for (base::Value& initiator : *initiator_list) {
+      if (!initiator.is_string()) {
+        return base::unexpected(
+            SessionError{SessionError::ErrorType::kInvalidRefreshInitiators});
+      }
+
+      allowed_refresh_initiators.emplace_back(std::move(initiator.GetString()));
+    }
+  }
+
   return SessionParams(
       *session_id, fetcher_url, refresh_url ? *refresh_url : "",
       scope_dict ? ParseScope(*scope_dict) : SessionParams::Scope{},
-      std::move(credentials), key_id);
+      std::move(credentials), key_id, std::move(allowed_refresh_initiators));
 }
 
 }  // namespace net::device_bound_sessions
