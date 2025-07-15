@@ -4330,7 +4330,6 @@ void WebContentsImpl::RenderWidgetCreated(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetCreated",
                         "render_widget_host", render_widget_host);
-  CHECK(!created_widgets_.contains(render_widget_host->GetFrameSinkId()));
   created_widgets_[render_widget_host->GetFrameSinkId()] = render_widget_host;
 }
 
