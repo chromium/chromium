@@ -363,7 +363,6 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Very flaky. See crbug.com/426102039")
     public void testNavigationBarColor() {
         optOutOfToEdge();
 
@@ -454,12 +453,12 @@ public class EdgeToEdgeInstrumentationTest {
     }
 
     private void assertNavigationBarColor(int color) {
-        assertEquals(
-                "Nav bar color is different.",
-                color,
-                mActivity
-                        .getEdgeToEdgeManager()
-                        .getEdgeToEdgeSystemBarColorHelper()
-                        .getNavigationBarColor());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        color
+                                == mActivity
+                                        .getEdgeToEdgeManager()
+                                        .getEdgeToEdgeSystemBarColorHelper()
+                                        .getNavigationBarColor());
     }
 }
