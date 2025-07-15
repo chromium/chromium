@@ -339,7 +339,7 @@
     "owners": [
       "johannhof@chromium.org"
     ],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "cors-non-wildcard-request-headers",
