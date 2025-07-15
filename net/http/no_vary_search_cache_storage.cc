@@ -327,7 +327,8 @@ class NoVarySearchCacheStorage::Loader final {
     kCouldntCreateCacheFile = 11,
     kCouldntCreateJournal = 12,
     kCouldntStartJournal = 13,
-    kMaxValue = kCouldntStartJournal,
+    kOperationsInitFailed = 14,
+    kMaxValue = kOperationsInitFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchCacheStorageLoadResult)
 
@@ -351,6 +352,9 @@ class NoVarySearchCacheStorage::Loader final {
   // value from this object will be posted back to the main thread. Calls into
   // other methods of this object to handle various exceptional conditions.
   [[nodiscard]] ResultType Load() {
+    if (!operations_->Init()) {
+      return GiveUp(Result::kOperationsInitFailed);
+    }
     auto maybe_load_result = operations_->Load(kSnapshotFilename, kMaxFileSize);
     if (!maybe_load_result.has_value()) {
       base::UmaHistogramExactLinear("HttpCache.NoVarySearch.SnapshotLoadError",

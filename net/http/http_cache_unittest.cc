@@ -14452,6 +14452,8 @@ class HttpCacheNoVarySearchMockFileOperationsTest
       InSequence s;
 
       load_expectations_ +=
+          EXPECT_CALL(*file_operations, Init).WillOnce(Return(true));
+      load_expectations_ +=
           EXPECT_CALL(*file_operations, Load)
               .WillOnce(DoAll(
                   Invoke(maybe_block),

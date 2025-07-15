@@ -16,6 +16,7 @@ class MockFileOperations : public NoVarySearchCacheStorageFileOperations {
   MockFileOperations();
   ~MockFileOperations() override;
 
+  MOCK_METHOD(bool, Init, (), (override));
   MOCK_METHOD((base::expected<LoadResult, base::File::Error>),
               Load,
               (std::string_view filename, size_t max_size),
