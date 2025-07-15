@@ -37,7 +37,9 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
 @NullMarked
@@ -438,6 +440,20 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         getTabCreator()
                 .createTabWithWebContents(
                         parentTab, webContents, TabLaunchType.FROM_TAB_LIST_INTERFACE);
+    }
+
+    /**
+     * Selects a given list of tabs, adding them to the current multi-selection set.
+     *
+     * <p>This is an additive operation; it does not clear previously selected tabs.
+     *
+     * @param tabs The list of {@link Tab} objects to select.
+     */
+    @CalledByNative
+    protected void highlightTabs(@JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
+        Set<Integer> tabIds = new HashSet<>();
+        for (Tab tab : tabs) tabIds.add(tab.getId());
+        setTabsMultiSelected(tabIds, true);
     }
 
     @CalledByNative

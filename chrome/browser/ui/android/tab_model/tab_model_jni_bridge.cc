@@ -294,8 +294,10 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
 }
 
 void TabModelJniBridge::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  std::vector<TabAndroid*> tabs_to_highlight = GetAllTabsFromHandles(tabs);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_highlightTabs(env, jobj, tabs_to_highlight);
 }
 
 void TabModelJniBridge::MoveTab(tabs::TabHandle tab, int index) {

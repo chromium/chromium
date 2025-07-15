@@ -647,9 +647,8 @@ bool TabAndroid::IsVisible() const {
 }
 
 bool TabAndroid::IsSelected() const {
-  // TODO(https://crbug.com/404074503): Android does not yet support multi-tab
-  // selection, so for now, the only selected tab is the activated tab.
-  return IsActivated();
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_isMultiSelected(env, weak_java_tab_.get(env));
 }
 
 // TODO(crbug.com/409366905): Finish TabInterface implementation.

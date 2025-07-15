@@ -2710,6 +2710,7 @@ class TabImpl implements Tab {
     }
 
     @Override
+    @CalledByNative
     public boolean isMultiSelected() {
         if (mSelectionStateSupplier == null) return false;
         return mSelectionStateSupplier.isTabMultiSelected(mId);
