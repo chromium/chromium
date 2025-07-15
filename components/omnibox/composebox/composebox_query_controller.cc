@@ -182,6 +182,8 @@ ComposeboxQueryController::~ComposeboxQueryController() {
 }
 
 void ComposeboxQueryController::NotifySessionStarted() {
+  DCHECK_EQ(session_state_, SessionState::kNone);
+  DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   session_state_ = SessionState::kSessionStarted;
   session_start_time_ = base::Time::Now();
   FetchClusterInfo();

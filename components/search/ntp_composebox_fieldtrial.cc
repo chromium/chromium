@@ -41,8 +41,6 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   // Initialize the default config.
   omnibox::NTPComposeboxConfig default_config;
   default_config.mutable_entry_point()->set_num_page_load_animations(3);
-  default_config.mutable_composebox()->set_close_by_escape(true);
-  default_config.mutable_composebox()->set_close_by_click_outside(true);
 
   // Attempt to parse the config proto from the feature parameter if it is set.
   omnibox::NTPComposeboxConfig fieldtrial_config;

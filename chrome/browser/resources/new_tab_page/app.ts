@@ -324,8 +324,6 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
-  private composeboxCloseByClickOutside_: boolean =
-      loadTimeData.getBoolean('composeboxCloseByClickOutside');
 
   constructor() {
     performance.mark('app-creation-start');
@@ -662,9 +660,6 @@ export class AppElement extends AppElementBase {
   }
 
   protected closeComposebox_() {
-    if (!this.composeboxCloseByClickOutside_) {
-      return;
-    }
     const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
     composeboxHandler.notifySessionAbandoned();
     this.toggleComposebox_();

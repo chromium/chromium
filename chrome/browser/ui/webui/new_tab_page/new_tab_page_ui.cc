@@ -512,15 +512,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_composebox_fieldtrial::FeatureConfig::Get().enabled &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
 
-  source->AddBoolean("composeboxCloseByEscape",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get()
-                         .config.composebox()
-                         .close_by_escape());
-  source->AddBoolean("composeboxCloseByClickOutside",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get()
-                         .config.composebox()
-                         .close_by_click_outside());
-
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
       /*enable_voice_search=*/true,
