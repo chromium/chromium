@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image_interface_in_process_base.h"
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
@@ -39,7 +40,7 @@ struct SyncToken;
 // compositor thread. This class also implements the corresponding parts
 // happening on gpu thread.
 class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
-    : public SharedImageInterface {
+    : public SharedImageInterfaceInProcessBase {
  public:
   // Callers must guarantee that the instances passed via pointers are kept
   // alive for as long as the instance of this class is alive. This can be
@@ -63,70 +64,19 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const SharedImageInterfaceInProcess&) = delete;
 
   // SharedImageInterface:
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      const SharedImageInfo& si_info,
-      gpu::SurfaceHandle surface_handle,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      const SharedImageInfo& si_info,
-      base::span<const uint8_t> pixel_data) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      const SharedImageInfo& si_info,
-      SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage,
-      std::optional<SharedImagePoolId> pool_id = std::nullopt) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      const SharedImageInfo& si_info,
-      gpu::SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage,
-      gfx::GpuMemoryBufferHandle buffer_handle) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImage(
-      const SharedImageInfo& si_info,
-      gfx::GpuMemoryBufferHandle buffer_handle) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImageForMLTensor(
-      std::string debug_label,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      gpu::SharedImageUsageSet usage) override;
-  scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
-      const SharedImageInfo& si_info) override;
-  void UpdateSharedImage(const SyncToken& sync_token,
-                         const Mailbox& mailbox) override;
-  void UpdateSharedImage(const SyncToken& sync_token,
-                         std::unique_ptr<gfx::GpuFence> acquire_fence,
-                         const Mailbox& mailbox) override;
-  void DestroySharedImage(const SyncToken& sync_token,
-                          const Mailbox& mailbox) override;
-  void DestroySharedImage(
-      const SyncToken& sync_token,
-      scoped_refptr<ClientSharedImage> client_shared_image) override;
-  scoped_refptr<ClientSharedImage> ImportSharedImage(
-      ExportedSharedImage exported_shared_image) override;
-  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage,
-                                        std::string_view debug_label) override;
-  void PresentSwapChain(const SyncToken& sync_token,
-                        const Mailbox& mailbox) override;
-#if BUILDFLAG(IS_FUCHSIA)
-  void RegisterSysmemBufferCollection(zx::eventpair service_handle,
-                                      zx::channel sysmem_token,
-                                      const viz::SharedImageFormat& format,
-                                      gfx::BufferUsage usage,
-                                      bool register_with_image_pipe) override;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-  SyncToken GenUnverifiedSyncToken() override;
-  SyncToken GenVerifiedSyncToken() override;
-  void VerifySyncToken(SyncToken& sync_token) override;
-  void WaitSyncToken(const SyncToken& sync_token) override;
-
   const SharedImageCapabilities& GetCapabilities() override;
 
  protected:
   ~SharedImageInterfaceInProcess() override;
+
+  // SharedImageInterfaceBase:
+  SharedImageFactory* GetSharedImageFactory() override;
+  bool MakeContextCurrent(bool needs_gl) override;
+  using SharedImageInterfaceInProcessBase::MakeContextCurrent;
+  void MarkContextLost() override;
+  void ScheduleGpuTask(base::OnceClosure task,
+                       std::vector<SyncToken> sync_token_fences,
+                       const SyncToken& release) override;
 
  private:
   // Private to ensure `Initialize()` is always called after construction.
@@ -146,67 +96,17 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
-  SyncToken MakeSyncToken(uint64_t release_id) {
-    return SyncToken(CommandBufferNamespace::IN_PROCESS, command_buffer_id_,
-                     release_id);
-  }
-
-  void ScheduleGpuTask(base::OnceClosure task,
-                       std::vector<SyncToken> sync_token_fences,
-                       const SyncToken& release);
-
-  // Only called on the gpu thread.
-  bool MakeContextCurrent(bool needs_gl = false);
-  bool LazyCreateSharedImageFactory();
-  // The "OnGpuThread" version of the methods accept a std::string for
-  // debug_label so it can be safely passed (copied) between threads without
-  // UAF.
-  void GetGpuMemoryBufferHandleInfoOnGpuThread(
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle* handle,
-      viz::SharedImageFormat* format,
-      gfx::Size* size,
-      gfx::BufferUsage* buffer_usage,
-      base::WaitableEvent* completion);
-
-  void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    SharedImageInfo si_info,
-                                    gpu::SurfaceHandle surface_handle);
-  void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
-                                            SharedImageInfo si_info,
-                                            std::vector<uint8_t> pixel_data);
-  void CreateSharedImageWithBufferUsageOnGpuThread(
-      const Mailbox& mailbox,
-      SharedImageInfo si_info,
-      SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage);
-  void CreateSharedImageWithBufferOnGpuThread(
-      const Mailbox& mailbox,
-      SharedImageInfo si_info,
-      gfx::GpuMemoryBufferHandle buffer_handle);
-  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox);
-  void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
-  void WrapTaskWithGpuUrl(base::OnceClosure task);
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
                             SharedImageCapabilities* out_capabilities);
-
-  GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
-      const Mailbox& mailbox);
 
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
   // SharedImageInterfaceInProcess.
   raw_ptr<SingleTaskSequence> task_sequence_;
-  const CommandBufferId command_buffer_id_;
 
   base::OnceCallback<std::unique_ptr<SharedImageFactory>()> create_factory_;
 
-  // Sequence checker for tasks that run on the gpu "thread".
-  SEQUENCE_CHECKER(gpu_sequence_checker_);
-
   // Accessed on any thread.
-  base::Lock lock_;
-  uint64_t next_fence_sync_release_ GUARDED_BY(lock_) = 1;
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   // Accessed on compositor thread.

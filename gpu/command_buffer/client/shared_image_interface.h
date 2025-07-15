@@ -52,10 +52,9 @@ class ArcSharedImageInterface;
 class ClientSharedImage;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
-class GpuChannelSharedImageInterface;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
-class SharedImageInterfaceInProcess;
+class SharedImageInterfaceInProcessBase;
 class TestSharedImageInterface;
 
 struct SharedImageMetadata {
@@ -390,8 +389,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
  private:
   friend class ArcSharedImageInterface;
   friend class ClientSharedImageInterface;
-  friend class GpuChannelSharedImageInterface;
-  friend class SharedImageInterfaceInProcess;
+  friend class SharedImageInterfaceInProcessBase;
   friend class TestSharedImageInterface;
   friend class media::MockSharedImageInterface;
 

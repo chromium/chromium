@@ -297,6 +297,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/wrapped_sk_image_backing_factory.h",
     "shared_image_interface_in_process.cc",
     "shared_image_interface_in_process.h",
+    "shared_image_interface_in_process_base.cc",
+    "shared_image_interface_in_process_base.h",
     "shared_memory_region_wrapper.cc",
     "shared_memory_region_wrapper.h",
     "single_task_sequence.h",
