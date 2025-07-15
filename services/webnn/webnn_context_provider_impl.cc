@@ -211,7 +211,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
       context_creation_results;
 
-  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime)) {
+  if (ort::ShouldCreateOrtContext(*options)) {
     context_creation_results = ort::CreateContextFromOptions(
         std::move(options), gpu_info_, std::move(receiver), this);
     if (!context_creation_results.has_value()) {

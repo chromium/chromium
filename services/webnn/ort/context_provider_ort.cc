@@ -8,12 +8,15 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/strings/cstring_view.h"
 #include "base/types/expected_macros.h"
+#include "base/win/windows_version.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
@@ -160,6 +163,13 @@ OrtLoggingLevel StringToOrtLoggingLevel(std::string_view logging_level) {
 }
 
 }  // namespace
+
+// Windows ML works on all Windows 11 PCs running version 24H2 (build 26100)
+// or greater.
+bool ShouldCreateOrtContext(const mojom::CreateContextOptions& options) {
+  return base::win::GetVersion() >= base::win::Version::WIN11_24H2 &&
+         base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime);
+}
 
 base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateContextFromOptions(mojom::CreateContextOptionsPtr options,

@@ -17,6 +17,8 @@ class WebNNContextProviderImpl;
 
 namespace ort {
 
+bool ShouldCreateOrtContext(const mojom::CreateContextOptions& options);
+
 // Create a WebNN context that satisfies the requested preferences in a
 // CreateContextOptions. This corresponds to the
 // ML.createContext(MLContextOptions) overload in the WebNN API.
