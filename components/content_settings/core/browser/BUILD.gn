@@ -151,7 +151,6 @@ source_set("unit_tests") {
     "//components/tpcd/metadata/browser",
     "//extensions/buildflags",
     "//net",
-    "//ppapi/buildflags:buildflags",
     "//services/preferences/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

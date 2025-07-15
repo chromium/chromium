@@ -34,7 +34,6 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "net/base/features.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"

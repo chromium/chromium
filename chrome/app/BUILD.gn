@@ -147,7 +147,6 @@ static_library("test_support") {
     "//content/public/app",
     "//content/public/common",
     "//extensions/buildflags",
-    "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/tracing/public/cpp",
     "//ui/base",

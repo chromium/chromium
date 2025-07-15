@@ -25,7 +25,6 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "ppapi/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
