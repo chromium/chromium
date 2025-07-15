@@ -519,8 +519,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
   PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
 
   if (include_device_info) {
-    PopulateDeviceMetadata(reporting_settings.value(), GetClientId(profile),
-                           metadata->mutable_device());
+    PopulateDeviceMetadata(GetClientId(profile), metadata->mutable_device());
   }
 #endif
 

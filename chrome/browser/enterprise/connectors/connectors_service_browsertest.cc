@@ -388,18 +388,11 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     ASSERT_EQ(includes_device_info,
               metadata.has_device() && metadata.device().has_client_id());
     if (includes_device_info) {
-      // The device DM token should only be populated when reporting is set at
-      // the device level, aka not the profile level.
-      if (profile_reporting) {
-        ASSERT_FALSE(metadata.device().has_dm_token());
-      } else {
-        ASSERT_TRUE(metadata.device().has_dm_token());
-        ASSERT_EQ(metadata.device().dm_token(), kFakeBrowserDMToken);
-        ASSERT_TRUE(
-            reporting_metadata.FindStringByDottedPath("device.dmToken"));
-        ASSERT_EQ(metadata.device().dm_token(),
-                  *reporting_metadata.FindStringByDottedPath("device.dmToken"));
-      }
+      ASSERT_TRUE(metadata.device().has_dm_token());
+      ASSERT_EQ(metadata.device().dm_token(), kFakeBrowserDMToken);
+      ASSERT_TRUE(reporting_metadata.FindStringByDottedPath("device.dmToken"));
+      ASSERT_EQ(metadata.device().dm_token(),
+                *reporting_metadata.FindStringByDottedPath("device.dmToken"));
 
 #if !BUILDFLAG(IS_CHROMEOS)
       ASSERT_TRUE(metadata.device().has_client_id());

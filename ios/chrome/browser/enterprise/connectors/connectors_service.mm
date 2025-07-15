@@ -179,7 +179,6 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
 
   if (include_device_info) {
     PopulateDeviceMetadata(
-        reporting_settings.value(),
         policy::BrowserDMTokenStorage::Get()->RetrieveClientId(),
         metadata->mutable_device());
   }
