@@ -184,6 +184,12 @@ class FormDataParser {
     model_predictions_ = std::move(predictions);
   }
 
+  const std::optional<
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>>&
+  model_predictions() const {
+    return model_predictions_;
+  }
+
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
   // Parse DOM information |form_data| into Password Manager's form

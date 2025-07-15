@@ -873,6 +873,10 @@ std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() const {
     result->parser_.set_server_predictions(*parser_.server_predictions());
   }
 
+  if (parser_.model_predictions()) {
+    result->parser_.set_model_predictions(*parser_.model_predictions());
+  }
+
   if (parsed_submitted_form_) {
     result->parsed_submitted_form_ =
         std::make_unique<PasswordForm>(*parsed_submitted_form_);
