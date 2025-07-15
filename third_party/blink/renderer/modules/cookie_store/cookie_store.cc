@@ -230,6 +230,7 @@ KURL CookieUrlForRead(const CookieStoreGetOptions* options,
     return default_cookie_url;
 
   KURL cookie_url = KURL(default_cookie_url, options->url());
+  cookie_url.RemoveFragmentIdentifier();
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     DCHECK_EQ(default_cookie_url, window->document()->CookieURL());
