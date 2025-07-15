@@ -366,6 +366,101 @@ suite('NewTabPageRealboxTest', () => {
     await whenOpenComposeBox;
   });
 
+  test('hovering on composebox button plays the animation.', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    realbox.composeButtonEnabled = true;
+    realbox.composeboxEnabled = true;
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Act.
+    const composeButton =
+        realbox.shadowRoot!.querySelector('cr-searchbox-compose-button');
+    assertTrue(!!composeButton);
+
+    await composeButton.updateComplete;
+
+    const glowAnimationWrapper =
+        composeButton.shadowRoot.querySelector<HTMLElement>(
+            '#glowAnimationWrapper');
+    assertTrue(!!glowAnimationWrapper);
+
+    // Assert.
+    glowAnimationWrapper.classList.remove('play');
+    assertFalse(glowAnimationWrapper.classList.contains('play'));
+
+    // Simulate mouseenter event
+    glowAnimationWrapper.dispatchEvent(new MouseEvent('mouseenter'));
+    await waitAfterNextRender(glowAnimationWrapper);
+
+    assertTrue(glowAnimationWrapper.classList.contains('play'));
+  });
+
+  test('animation plays on page load.', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      searchboxShowComposeAnimation: true,
+    });
+
+    realbox = document.createElement('cr-searchbox');
+    realbox.composeButtonEnabled = true;
+    realbox.composeboxEnabled = true;
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Act.
+    const composeButton =
+        realbox.shadowRoot!.querySelector('cr-searchbox-compose-button');
+    assertTrue(!!composeButton);
+
+    await composeButton.updateComplete;
+
+    const glowAnimationWrapper =
+        composeButton.shadowRoot.querySelector<HTMLElement>(
+            '#glowAnimationWrapper');
+    assertTrue(!!glowAnimationWrapper);
+
+    // Assert.
+    // Animation should play if `searchboxShowComposeAnimation` is true
+    assertTrue(glowAnimationWrapper.classList.contains('play'));
+  });
+
+  test('animation does not play on page load.', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      searchboxShowComposeAnimation: false,
+    });
+
+    realbox = document.createElement('cr-searchbox');
+    realbox.composeButtonEnabled = true;
+    realbox.composeboxEnabled = true;
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Act.
+    const composeButton =
+        realbox.shadowRoot!.querySelector('cr-searchbox-compose-button');
+    assertTrue(!!composeButton);
+
+    await composeButton.updateComplete;
+
+    const glowAnimationWrapper =
+        composeButton.shadowRoot.querySelector<HTMLElement>(
+            '#glowAnimationWrapper');
+    assertTrue(!!glowAnimationWrapper);
+
+    // Assert.
+    // Animation should not play if `searchboxShowComposeAnimation` is false
+    assertFalse(glowAnimationWrapper.classList.contains('play'));
+  });
+
+
   //============================================================================
   // Test Querying Autocomplete
   //============================================================================

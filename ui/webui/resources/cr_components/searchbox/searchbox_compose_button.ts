@@ -73,6 +73,18 @@ export class SearchboxComposeButtonElement extends
       shiftKey: e.shiftKey,
     });
   }
+
+  protected onMouseEnter() {
+    if (this.$.glowAnimationWrapper) {
+      this.$.glowAnimationWrapper.classList.add('play');
+    }
+  }
+
+  protected onMouseLeave() {
+    if (this.$.glowAnimationWrapper) {
+      this.$.glowAnimationWrapper.classList.remove('play');
+    }
+  }
 }
 
 declare global {

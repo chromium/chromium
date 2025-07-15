@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host{
-  --cr-hover-background-color:#DEE1E3;
+  --cr-hover-background-color:#FFFFFF;
   --cr-button-height: 32px;
 }
 
@@ -120,7 +120,8 @@
   z-index: 100;
 }
 
-/* A wrapper class to hold each gradient and its mask. */
+/* A wrapper class to hold each gradient and its mask. Don't show unless on page
+ * load or on hover. */
 .gradient-and-mask-wrapper {
   overflow: hidden;
   position: absolute;
