@@ -249,14 +249,8 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-// Flaky on ChromeOS: crbug.com/1429381
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FirstPartyAllowed DISABLED_FirstPartyAllowed
-#else
-#define MAYBE_FirstPartyAllowed FirstPartyAllowed
-#endif
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
-                       MAYBE_FirstPartyAllowed) {
+                       FirstPartyAllowed) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
@@ -293,14 +287,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
               IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL))));
 }
 
-// Flaky on ChromeOS: crbug.com/1429381
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ThirdPartyBlocked DISABLED_ThirdPartyBlocked
-#else
-#define MAYBE_ThirdPartyBlocked ThirdPartyBlocked
-#endif
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
-                       MAYBE_ThirdPartyBlocked) {
+                       ThirdPartyBlocked) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
@@ -335,16 +323,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
           ExpectActionCount(kCookiesDialogRemoveButtonClickedActionName, 1)));
 }
 
-// Flaky on ChromeOS: crbug.com/1429381
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_OnlyPartitionedBlockedThirdPartyCookies \
-  DISABLED_OnlyPartitionedBlockedThirdPartyCookies
-#else
-#define MAYBE_OnlyPartitionedBlockedThirdPartyCookies \
-  OnlyPartitionedBlockedThirdPartyCookies
-#endif
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
-                       MAYBE_OnlyPartitionedBlockedThirdPartyCookies) {
+                       OnlyPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
@@ -374,16 +354,9 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       CheckRowLabel(kOnlyPartitionedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
 }
-// Flaky on ChromeOS: crbug.com/1429381
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MixedPartitionedBlockedThirdPartyCookies \
-  DISABLED_MixedPartitionedBlockedThirdPartyCookies
-#else
-#define MAYBE_MixedPartitionedBlockedThirdPartyCookies \
-  MixedPartitionedBlockedThirdPartyCookies
-#endif
+
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
-                       MAYBE_MixedPartitionedBlockedThirdPartyCookies) {
+                       MixedPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
