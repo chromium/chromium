@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -90,14 +89,20 @@ sessions::LiveTabContext* GetLiveTabContext(Browser* browser) {
 
 }  // namespace
 
-BrowserLiveTabContext::BrowserLiveTabContext(BrowserWindowInterface* browser)
+BrowserLiveTabContext::BrowserLiveTabContext(BrowserWindowInterface* browser,
+                                             TabStripModel* tab_strip_model,
+                                             Profile* profile,
+                                             ui::BaseWindow* base_window,
+                                             BrowserWindowInterface::Type type,
+                                             const std::string& app_name,
+                                             SessionID session_id)
     : browser_(CHECK_DEREF(browser)),
-      tab_strip_model_(CHECK_DEREF(browser->GetTabStripModel())),
-      profile_(CHECK_DEREF(browser->GetProfile())),
-      base_window_(CHECK_DEREF(browser->GetWindow())),
-      window_type_(WindowTypeForBrowserType(browser->GetType())),
-      app_name_(browser->GetBrowserForMigrationOnly()->app_name()),
-      session_id_(browser->GetSessionID()) {}
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+      profile_(CHECK_DEREF(profile)),
+      base_window_(CHECK_DEREF(base_window)),
+      window_type_(WindowTypeForBrowserType(type)),
+      app_name_(app_name),
+      session_id_(session_id) {}
 
 BrowserLiveTabContext::~BrowserLiveTabContext() {
   sessions::TabRestoreService* tab_restore_service =

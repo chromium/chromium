@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_BUBBLE_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
@@ -18,6 +18,7 @@
 
 class BrowserWindowInterface;
 class Profile;
+class TabStripModel;
 
 // Controller responsible for hosting the data sharing bubble per browser.
 class DataSharingBubbleController : public views::WidgetObserver,
@@ -27,7 +28,9 @@ class DataSharingBubbleController : public views::WidgetObserver,
       std::optional<data_sharing::mojom::GroupAction> action,
       std::optional<data_sharing::mojom::GroupActionProgress> progress)>;
 
-  explicit DataSharingBubbleController(BrowserWindowInterface* browser);
+  DataSharingBubbleController(BrowserWindowInterface* browser,
+                              Profile* profile,
+                              TabStripModel* tab_strip_model);
   DataSharingBubbleController(const DataSharingBubbleController&) = delete;
   DataSharingBubbleController& operator=(const DataSharingBubbleController&) =
       delete;
@@ -85,8 +88,11 @@ class DataSharingBubbleController : public views::WidgetObserver,
  private:
   void MaybeRunJoinCallback(bool on_close);
 
-  const raw_ptr<BrowserWindowInterface> browser_;
-  const raw_ptr<Profile> profile_;
+  Profile* GetProfile();
+
+  const raw_ref<BrowserWindowInterface> browser_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -54,7 +55,7 @@ UpgradeNotificationController::GetCriticalNotificationBubbleViewForTest() {
 
 UpgradeNotificationController::UpgradeNotificationController(
     BrowserWindowInterface* browser)
-    : browser_(browser) {
+    : browser_(CHECK_DEREF(browser)) {
   upgrade_detector_observation_.Observe(UpgradeDetector::GetInstance());
 }
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
 class Profile;
 class SidePanelRegistry;
@@ -26,8 +26,8 @@ class ReadingListSidePanelCoordinator {
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_

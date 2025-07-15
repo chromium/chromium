@@ -232,7 +232,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser->GetAppBrowserController());
 
   tab_group_deletion_dialog_controller_ =
-      std::make_unique<tab_groups::DeletionDialogController>(browser);
+      std::make_unique<tab_groups::DeletionDialogController>(
+          browser, browser->GetProfile(), tab_strip_model_);
 
   user_education_ =
       GetUserDataFactory().CreateInstance<BrowserUserEducationInterfaceImpl>(
@@ -247,7 +248,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<ReadingListSidePanelCoordinator>(
           browser->GetProfile(), browser->GetTabStripModel());
 
-  signin_view_controller_ = std::make_unique<SigninViewController>(browser);
+  signin_view_controller_ = std::make_unique<SigninViewController>(
+      browser, browser->GetProfile(), tab_strip_model_);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
@@ -264,7 +266,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #endif
 
   data_sharing_bubble_controller_ =
-      std::make_unique<DataSharingBubbleController>(browser);
+      std::make_unique<DataSharingBubbleController>(
+          browser, browser->GetProfile(), tab_strip_model_);
 
   content_setting_bubble_model_delegate_ =
       std::make_unique<BrowserContentSettingBubbleModelDelegate>(browser);
@@ -384,13 +387,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     }
   }
 
-  synced_window_delegate_ =
-      std::make_unique<BrowserSyncedWindowDelegate>(browser);
+  synced_window_delegate_ = std::make_unique<BrowserSyncedWindowDelegate>(
+      browser, browser->GetTabStripModel(), browser->GetSessionID(),
+      browser->GetType());
 
   extension_window_controller_ =
       std::make_unique<extensions::BrowserExtensionWindowController>(browser);
 
-  profile_menu_coordinator_ = std::make_unique<ProfileMenuCoordinator>(browser);
+  profile_menu_coordinator_ =
+      std::make_unique<ProfileMenuCoordinator>(browser, browser->GetProfile());
 
   upgrade_notification_controller_ =
       std::make_unique<UpgradeNotificationController>(browser);
@@ -405,7 +410,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             browser->GetTabStripModel(), browser_view->GetWidget());
   }
 
-  live_tab_context_ = std::make_unique<BrowserLiveTabContext>(browser);
+  live_tab_context_ = std::make_unique<BrowserLiveTabContext>(
+      browser, browser->GetTabStripModel(), browser->GetProfile(),
+      browser->GetWindow(), browser->GetType(), browser->app_name(),
+      browser->GetSessionID());
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
@@ -430,7 +438,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 
   history_clusters_side_panel_coordinator_ =
-      std::make_unique<HistoryClustersSidePanelCoordinator>(browser_);
+      std::make_unique<HistoryClustersSidePanelCoordinator>(
+          browser_, browser_->GetProfile(), side_panel_coordinator_.get());
 
   bookmarks_side_panel_coordinator_ =
       std::make_unique<BookmarksSidePanelCoordinator>();

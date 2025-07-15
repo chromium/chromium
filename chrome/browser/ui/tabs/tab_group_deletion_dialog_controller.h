@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -90,8 +91,12 @@ class DeletionDialogController : public TabStripModelObserver {
     std::optional<base::OnceClosure> keep_groups;
   };
 
-  explicit DeletionDialogController(BrowserWindowInterface* browser);
   DeletionDialogController(BrowserWindowInterface* browser,
+                           Profile* profile,
+                           TabStripModel* tab_strip_model);
+  DeletionDialogController(BrowserWindowInterface* browser,
+                           Profile* profile,
+                           TabStripModel* tab_strip_model,
                            ShowDialogModelCallback show_dialog_model);
 
   DeletionDialogController(const DeletionDialogController&) = delete;
@@ -137,9 +142,11 @@ class DeletionDialogController : public TabStripModelObserver {
   void OnDialogOk();
   void OnDialogCancel();
 
+  Profile* GetProfile();
+
   // The profile this controller is created for. Provides prefs and sync
   // settings.
-  const raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
 
   // The state needed for showing the dialog. Only exists if the dialog is
   // currently showing.
@@ -150,7 +157,7 @@ class DeletionDialogController : public TabStripModelObserver {
   ShowDialogModelCallback show_dialog_model_fn_;
 
   raw_ptr<views::Widget> widget_;
-  raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 };
 
 }  // namespace tab_groups

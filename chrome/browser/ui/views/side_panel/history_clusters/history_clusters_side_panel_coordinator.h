@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BrowserWindowInterface;
@@ -26,7 +26,10 @@ class View;
 // the history clusters SidePanelEntry.
 class HistoryClustersSidePanelCoordinator {
  public:
-  explicit HistoryClustersSidePanelCoordinator(BrowserWindowInterface* browser);
+  HistoryClustersSidePanelCoordinator(
+      BrowserWindowInterface* browser,
+      Profile* profile,
+      SidePanelCoordinator* side_panel_coordinator);
   ~HistoryClustersSidePanelCoordinator();
 
   // Returns whether HistoryClustersSidePanelCoordinator is supported for
@@ -52,9 +55,11 @@ class HistoryClustersSidePanelCoordinator {
   std::unique_ptr<views::View> CreateHistoryClustersWebView(
       SidePanelEntryScope& scope);
 
-  const raw_ptr<BrowserWindowInterface> browser_;
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<SidePanelCoordinator> side_panel_coordinator_;
+  Profile* profile() { return &profile_.get(); }
+
+  const raw_ref<BrowserWindowInterface> browser_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<SidePanelCoordinator> side_panel_coordinator_;
 
   // A weak reference to the last-created UI object for this browser.
   base::WeakPtr<HistoryClustersSidePanelUI> history_clusters_ui_;

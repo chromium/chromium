@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -83,11 +84,11 @@ DEFINE_USER_DATA(BrowserExtensionWindowController);
 BrowserExtensionWindowController::BrowserExtensionWindowController(
     BrowserWindowInterface* browser)
     : WindowController(browser->GetWindow(), browser->GetProfile()),
-      browser_(browser),
+      browser_(CHECK_DEREF(browser)),
 #if !BUILDFLAG(IS_ANDROID)
-      window_(browser->GetBrowserForMigrationOnly()->window()),
-      tab_strip_model_(browser->GetTabStripModel()),
-#endif
+      window_(CHECK_DEREF(browser->GetBrowserForMigrationOnly()->window())),
+      tab_strip_model_(CHECK_DEREF(browser->GetTabStripModel())),
+#endif  // !BUILDFLAG(IS_ANDROID)
       session_id_(browser->GetSessionID()),
       window_type_(GetTabsWindowType(browser)),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
@@ -140,7 +141,7 @@ bool BrowserExtensionWindowController::CanClose(Reason* reason) const {
 
 BrowserWindowInterface*
 BrowserExtensionWindowController::GetBrowserWindowInterface() {
-  return browser_.get();
+  return &browser_.get();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -270,7 +271,7 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
     tab_list.Append(
         ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                          extension, tab_strip_model_, i)
+                                          extension, &tab_strip_model_.get(), i)
             .ToValue());
   }
 #endif

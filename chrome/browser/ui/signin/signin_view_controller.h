@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -83,7 +84,9 @@ class SigninViewController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  explicit SigninViewController(BrowserWindowInterface* browser);
+  SigninViewController(BrowserWindowInterface* browser,
+                       Profile* profile,
+                       TabStripModel* tab_strip_model);
 
   SigninViewController(const SigninViewController&) = delete;
   SigninViewController& operator=(const SigninViewController&) = delete;
@@ -282,11 +285,14 @@ class SigninViewController {
   // Helper to create an on close callback for `SigninModalDialog`.
   base::OnceClosure GetOnModalDialogClosedCallback();
 
-  // BrowserWindowInterface owning this controller.
-  const raw_ptr<BrowserWindowInterface> browser_;
+  Profile* GetProfile();
+  TabStripModel* GetTabStripModel();
 
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  // BrowserWindowInterface owning this controller.
+  const raw_ref<BrowserWindowInterface> browser_;
+
+  const raw_ref<Profile> profile_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 
   // Currently displayed modal dialog, or nullptr if none is displayed.
   std::unique_ptr<SigninModalDialog> dialog_;

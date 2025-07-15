@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSER_WINDOW_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSER_WINDOW_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -47,8 +47,8 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
 
   // These pointers come from the associated Browser object and it will ensure
   // they outlive this object.
-  const raw_ptr<chrome::BrowserCommandController> command_controller_;
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ref<chrome::BrowserCommandController> command_controller_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

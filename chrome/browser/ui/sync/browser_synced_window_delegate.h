@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATE_H_
 #define CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/sessions/core/session_id.h"
@@ -21,7 +21,10 @@ class SyncedTabDelegate;
 class BrowserSyncedWindowDelegate : public TabStripModelObserver,
                                     public sync_sessions::SyncedWindowDelegate {
  public:
-  explicit BrowserSyncedWindowDelegate(BrowserWindowInterface* browser);
+  BrowserSyncedWindowDelegate(BrowserWindowInterface* browser,
+                              TabStripModel* tab_strip_model,
+                              SessionID session_id,
+                              BrowserWindowInterface::Type type);
 
   BrowserSyncedWindowDelegate(const BrowserSyncedWindowDelegate&) = delete;
   BrowserSyncedWindowDelegate& operator=(const BrowserSyncedWindowDelegate&) =
@@ -48,8 +51,8 @@ class BrowserSyncedWindowDelegate : public TabStripModelObserver,
   bool ShouldSync() const override;
 
  private:
-  const raw_ptr<BrowserWindowInterface> browser_;
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ref<BrowserWindowInterface> browser_;
+  const raw_ref<TabStripModel> tab_strip_model_;
   const SessionID session_id_;
   const BrowserWindowInterface::Type type_;
 };

@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/views/view_tracker.h"
 
 class BrowserWindowInterface;
@@ -22,7 +22,7 @@ enum class AccessPoint;
 // Owned by the associated browser.
 class ProfileMenuCoordinator {
  public:
-  explicit ProfileMenuCoordinator(BrowserWindowInterface* browser);
+  ProfileMenuCoordinator(BrowserWindowInterface* browser, Profile* profile);
   ProfileMenuCoordinator(const ProfileMenuCoordinator&) = delete;
   ProfileMenuCoordinator& operator=(const ProfileMenuCoordinator&) = delete;
   ~ProfileMenuCoordinator();
@@ -42,11 +42,14 @@ class ProfileMenuCoordinator {
   ProfileMenuViewBase* GetProfileMenuViewBaseForTesting();
 
  private:
+  BrowserWindowInterface* GetBrowser();
+  Profile* GetProfile();
+
   // TODO(crbug.com/425953501): Replace with `ToolbarButtonProvider` once this
   // bug is fixed.
-  const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
   views::ViewTracker bubble_tracker_;
 };
 

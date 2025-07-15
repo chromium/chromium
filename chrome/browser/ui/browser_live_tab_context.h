@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -19,7 +20,6 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
-class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
 
@@ -43,7 +43,13 @@ class BaseWindow;
 // Browser in order to fulfil its duties.
 class BrowserLiveTabContext : public sessions::LiveTabContext {
  public:
-  explicit BrowserLiveTabContext(BrowserWindowInterface* browser);
+  BrowserLiveTabContext(BrowserWindowInterface* browser,
+                        TabStripModel* tab_strip_model,
+                        Profile* profile,
+                        ui::BaseWindow* base_window,
+                        BrowserWindowInterface::Type type,
+                        const std::string& app_name,
+                        SessionID session_id);
 
   BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
   BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;

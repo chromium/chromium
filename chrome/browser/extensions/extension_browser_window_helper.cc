@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -73,8 +74,8 @@ ExtensionBrowserWindowHelper::ExtensionBrowserWindowHelper(
     chrome::BrowserCommandController* command_controller,
     TabStripModel* tab_strip_model,
     Profile* profile)
-    : command_controller_(command_controller),
-      tab_strip_model_(tab_strip_model) {
+    : command_controller_(CHECK_DEREF(command_controller)),
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)) {
   registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 

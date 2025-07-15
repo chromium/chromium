@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 
 class TabStripModel;
@@ -27,7 +27,7 @@ class BrowserLocationBarModelDelegate : public ChromeLocationBarModelDelegate {
   content::WebContents* GetActiveWebContents() const override;
 
  private:
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  const raw_ref<TabStripModel> tab_strip_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_

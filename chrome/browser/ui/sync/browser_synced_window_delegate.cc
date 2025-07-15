@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -15,11 +16,14 @@
 #include "components/sync/base/features.h"
 
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(
-    BrowserWindowInterface* browser)
-    : browser_(browser),
-      tab_strip_model_(browser->GetTabStripModel()),
-      session_id_(browser->GetSessionID()),
-      type_(browser->GetType()) {
+    BrowserWindowInterface* browser,
+    TabStripModel* tab_strip_model,
+    SessionID session_id,
+    BrowserWindowInterface::Type type)
+    : browser_(CHECK_DEREF(browser)),
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+      session_id_(session_id),
+      type_(type) {
   // There should be a window in the browser.
   CHECK(browser->GetBrowserForMigrationOnly()->window());
   tab_strip_model_->AddObserver(this);

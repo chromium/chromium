@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
@@ -43,10 +44,12 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_HistoryClustersSidePanelUI,
 END_METADATA
 
 HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
-    BrowserWindowInterface* browser)
-    : browser_(browser),
-      profile_(browser->GetProfile()),
-      side_panel_coordinator_(browser->GetFeatures().side_panel_coordinator()) {
+    BrowserWindowInterface* browser,
+    Profile* profile,
+    SidePanelCoordinator* side_panel_coordinator)
+    : browser_(CHECK_DEREF(browser)),
+      profile_(CHECK_DEREF(profile)),
+      side_panel_coordinator_(CHECK_DEREF(side_panel_coordinator)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
   base::RepeatingClosure callback(base::BindRepeating(
       &HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged,
@@ -103,11 +106,11 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
       std::make_unique<SidePanelWebUIViewT<HistoryClustersSidePanelUI>>(
           scope, base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<HistoryClustersSidePanelUI>>(
-              url, profile_, IDS_HISTORY_TITLE,
+              url, profile(), IDS_HISTORY_TITLE,
               /*esc_closes_ui=*/false));
   history_clusters_ui_ =
       side_panel_ui->contents_wrapper()->GetWebUIController()->GetWeakPtr();
-  history_clusters_ui_->SetBrowserWindowInterface(browser_);
+  history_clusters_ui_->SetBrowserWindowInterface(&browser_.get());
   history_clusters_ui_->set_metrics_initial_state(
       created_from_omnibox
           ? history_clusters::HistoryClustersInitialState::kSidePanelFromOmnibox
@@ -119,7 +122,7 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
 
 void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
   auto* global_registry = side_panel_coordinator_->GetWindowRegistry();
-  if (IsSupported(profile_)) {
+  if (IsSupported(profile())) {
     CreateAndRegisterEntry(global_registry);
   } else {
     global_registry->Deregister(

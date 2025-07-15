@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -44,7 +44,7 @@ class UpgradeNotificationController : public UpgradeObserver {
  private:
   ui::ElementContext GetBrowserElementContext();
 
-  const raw_ptr<BrowserWindowInterface> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
   base::ScopedObservation<UpgradeDetector, UpgradeObserver>
       upgrade_detector_observation_{this};
 };

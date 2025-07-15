@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -26,7 +27,8 @@ std::unique_ptr<views::View> CreateReadingListWebView(
 ReadingListSidePanelCoordinator::ReadingListSidePanelCoordinator(
     Profile* profile,
     TabStripModel* tab_strip_model)
-    : profile_(profile), tab_strip_model_(tab_strip_model) {}
+    : profile_(CHECK_DEREF(profile)),
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)) {}
 
 ReadingListSidePanelCoordinator::~ReadingListSidePanelCoordinator() = default;
 
@@ -34,7 +36,7 @@ void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
-      base::BindRepeating(&CreateReadingListWebView, profile_.get(),
-                          tab_strip_model_.get()),
+      base::BindRepeating(&CreateReadingListWebView, &profile_.get(),
+                          &tab_strip_model_.get()),
       SidePanelEntry::kSidePanelDefaultContentWidth));
 }
