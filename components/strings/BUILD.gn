@@ -4,9 +4,9 @@
 
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
-import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//tools/grit/grit_rule.gni")

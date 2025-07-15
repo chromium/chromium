@@ -4,8 +4,8 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
-import("//content/public/common/features.gni")
 import("//pdf/features.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -532,6 +532,11 @@ if (enable_pdf) {
     data_deps = [
       ":pdf_unittests_pak",
       "//ui/resources:ui_test_pak_data",
+    ]
+
+    assert_no_deps = [
+      "//ppapi/c/*",
+      "//ppapi/cpp/*",
     ]
 
     if (enable_pdf_ink2) {
