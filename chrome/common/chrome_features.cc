@@ -688,8 +688,6 @@ BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              "GlicWebClientUnresponsiveMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicTabGlow, "GlicTabGlow", base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicParameterizedShader,
              "GlicParameterizedShader",
              base::FEATURE_DISABLED_BY_DEFAULT);
