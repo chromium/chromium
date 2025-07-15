@@ -60,8 +60,8 @@ class PdfCaret {
   // Sets the caret's char position and updates its screen rect.
   void SetChar(const PageCharacterIndex& next_char);
 
-  // Returns the screen rect for the caret at a given char index.
-  gfx::Rect GetScreenRectForChar(int page_index, int char_index) const;
+  // Returns the screen rect for the current caret.
+  gfx::Rect GetScreenRectForCaret() const;
 
   // Draws `rect` as the caret on `region`.
   void Draw(const RegionData& region, const gfx::Rect& rect) const;

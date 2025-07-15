@@ -71,7 +71,7 @@ void PdfCaret::OnGeometryChanged() {
     return;
   }
 
-  caret_screen_rect_ = GetScreenRectForChar(page_index_, char_index_);
+  caret_screen_rect_ = GetScreenRectForCaret();
   client_->InvalidateRect(caret_screen_rect_);
 }
 
@@ -105,13 +105,13 @@ void PdfCaret::SetChar(const PageCharacterIndex& next_char) {
   page_index_ = page_index;
   char_index_ = char_index;
 
-  caret_screen_rect_ = GetScreenRectForChar(page_index_, char_index_);
+  caret_screen_rect_ = GetScreenRectForCaret();
   RefreshDisplayState();
 }
 
-gfx::Rect PdfCaret::GetScreenRectForChar(int page_index, int char_index) const {
+gfx::Rect PdfCaret::GetScreenRectForCaret() const {
   std::vector<gfx::Rect> screen_rects =
-      client_->GetScreenRectsForChar(page_index, char_index);
+      client_->GetScreenRectsForChar(page_index_, char_index_);
   CHECK(!screen_rects.empty());
 
   gfx::Rect& screen_rect = screen_rects[0];
