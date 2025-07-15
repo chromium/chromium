@@ -3986,7 +3986,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CCTEarlyNav"
+                        "CCTEarlyNav",
+                        "CCTFixWarmup"
                     ]
                 }
             ]
@@ -4002,21 +4003,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CCTEphemeralMediaViewerExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CCTFixWarmup": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTFixWarmup"
                     ]
                 }
             ]
