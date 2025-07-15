@@ -253,6 +253,20 @@ void BackForwardCacheBrowserTest::DisableFeature(const base::Feature& feature) {
   disabled_features_.push_back(feature);
 }
 
+void BackForwardCacheBrowserTest::EnableCacheSize(
+    std::optional<int> cache_size,
+    std::optional<int> foreground_cache_size) {
+  if (cache_size) {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
+                              base::NumberToString(cache_size.value()));
+  }
+  if (foreground_cache_size) {
+    EnableFeatureAndSetParams(
+        features::kBackForwardCache, "foreground_cache_size",
+        base::NumberToString(foreground_cache_size.value()));
+  }
+}
+
 void BackForwardCacheBrowserTest::SetUpOnMainThread() {
   // Set up WebSocket handlers, as a number of tests use them.
   net::test_server::InstallDefaultWebSocketHandlers(
@@ -776,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ResponseHeaders) {
 
 void HighCacheSizeBackForwardCacheBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
-                            base::NumberToString(kBackForwardCacheSize));
+  EnableCacheSize(kBackForwardCacheSize, std::nullopt);
   BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
 }
 
@@ -3021,8 +3034,7 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
-                              base::NumberToString(2));
+    EnableCacheSize(2, std::nullopt);
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 

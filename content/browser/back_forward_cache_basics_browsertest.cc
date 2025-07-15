@@ -2376,8 +2376,7 @@ class CacheSizeOneBackForwardCacheBrowserTest
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
-                              base::NumberToString(1));
+    EnableCacheSize(1, std::nullopt);
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

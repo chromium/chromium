@@ -92,6 +92,9 @@ class BackForwardCacheBrowserTest
                                  std::string param_value);
 
   void DisableFeature(const base::Feature& feature);
+  // Convenience method for setting up cache-sizes.
+  void EnableCacheSize(std::optional<int> cache_size,
+                       std::optional<int> foreground_cache_size);
 
   void SetUpOnMainThread() override;
 
