@@ -139,6 +139,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_DISABLE_LEGACY_NONRECORDER_IMAGE_APIS
 
+#define SK_DISABLE_CLIP_DRAW_GEOMETRIC_INTERSECTION
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
