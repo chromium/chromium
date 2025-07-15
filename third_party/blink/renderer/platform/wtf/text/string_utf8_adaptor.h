@@ -74,9 +74,4 @@ class WTF_EXPORT StringUtf8Adaptor final {
 
 }  // namespace blink
 
-// TODO(crbug.com/422768753): Remove the `using` directive.
-namespace WTF {
-using StringUTF8Adaptor = blink::StringUtf8Adaptor;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_
