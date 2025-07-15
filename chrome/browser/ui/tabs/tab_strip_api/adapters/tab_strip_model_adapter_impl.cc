@@ -66,7 +66,6 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
       position.parent_id().value().ToTabCollectionHandle();
   CHECK(collection_handle.has_value());
   const tabs::TabCollection* collection = collection_handle.value().Get();
-
   const bool to_pinned =
       (collection->type() == tabs::TabCollection::Type::PINNED);
   if (to_pinned != tab_strip_model_->IsTabPinned(index)) {
@@ -85,8 +84,7 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
       break;
 
     case tabs::TabCollection::Type::GROUP: {
-      to_group = tab_strip_model_->FindGroupIdFor(
-          *collection_handle, base::PassKey<TabStripModelAdapterImpl>());
+      to_group = FindGroupIdFor(*collection_handle);
       CHECK(to_group.has_value());
       const TabGroup* group =
           tab_strip_model_->group_model()->GetTabGroup(*to_group);
@@ -108,6 +106,37 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
 
   tab_strip_model_->MoveWebContentsAt(index, to_position,
                                       /*select_after_move=*/false, to_group);
+}
+
+void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
+                                              const Position& position) {
+  std::optional<tabs::TabCollectionHandle> collection_handle =
+      id.ToTabCollectionHandle();
+  CHECK(collection_handle.has_value());
+
+  const tabs::TabCollection* collection = collection_handle.value().Get();
+  CHECK(collection);
+
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::GROUP: {
+      std::optional<const tab_groups::TabGroupId> group_id =
+          FindGroupIdFor(collection_handle.value());
+      // TODO(crbug.com/409086859): Invalid group id is a user supplied data and
+      // should result in API failure.
+      CHECK(group_id.has_value());
+      const int to_position =
+          tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
+      tab_strip_model_->MoveGroupTo(group_id.value(), to_position);
+      break;
+    }
+    case tabs::TabCollection::Type::PINNED:
+    case tabs::TabCollection::Type::UNPINNED:
+    case tabs::TabCollection::Type::TABSTRIP:
+    // TODO(412709271). Implement moving a SplitTab collection.
+    case tabs::TabCollection::Type::SPLIT:
+      NOTIMPLEMENTED();
+      return;
+  }
 }
 
 tabs_api::mojom::TabCollectionContainerPtr

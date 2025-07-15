@@ -392,3 +392,48 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   EXPECT_EQ(moved_tab_group.value(), group_id);
   EXPECT_EQ(model->group_model()->GetTabGroup(group_id)->tab_count(), 3);
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveCollection) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  TabStripModel* model = GetTabStripModel();
+  for (int i = 0; i < 3; i++) {
+    base::RunLoop create_loop;
+    remote->CreateTabAt(std::nullopt,
+                        std::make_optional(GURL("http://somwewhere.nowhere")),
+                        base::BindLambdaForTesting(
+                            [&](TabStripService::CreateTabAtResult result) {
+                              ASSERT_TRUE(result.has_value());
+                              create_loop.Quit();
+                            }));
+    create_loop.Run();
+  }
+  ASSERT_EQ(model->count(), 4);
+
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({2, 3});
+  const TabGroup* group = model->group_model()->GetTabGroup(group_id);
+  const tabs_api::NodeId group_node_id(
+      tabs_api::NodeId::Type::kCollection,
+      base::NumberToString(group->GetCollectionHandle().raw_value()));
+
+  // Move the group to the beginning of the unpinned tabs at index 0.
+  base::RunLoop move_loop;
+  remote->MoveTab(
+      group_node_id, tabs_api::Position(0),
+      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+        ASSERT_TRUE(result.has_value());
+        move_loop.Quit();
+      }));
+  move_loop.Run();
+
+  // Expect the tab group to be at the first index: [g(t2, t3), t0, t1].
+  std::optional<tab_groups::TabGroupId> moved_tab_group_id =
+      model->GetTabGroupForTab(0);
+  ASSERT_TRUE(moved_tab_group_id.has_value());
+  EXPECT_EQ(moved_tab_group_id.value(), group_id);
+  const TabGroup* moved_tab_group =
+      model->group_model()->GetTabGroup(moved_tab_group_id.value());
+  EXPECT_EQ(moved_tab_group->tab_count(), 2);
+  EXPECT_EQ(model->count(), 4);
+}

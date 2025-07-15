@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api {
@@ -27,6 +28,7 @@ class TabStripModelAdapter {
   virtual std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) = 0;
   virtual void ActivateTab(size_t index) = 0;
   virtual void MoveTab(tabs::TabHandle handle, const Position& position) = 0;
+  virtual void MoveCollection(const NodeId& id, const Position& position) = 0;
   virtual mojom::TabCollectionContainerPtr GetTabStripTopology() = 0;
   virtual std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) = 0;

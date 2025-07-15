@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace tabs_api::testing {
@@ -41,6 +42,14 @@ void ToyTabStripModelAdapter::ActivateTab(size_t idx) {
 void ToyTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
                                       const Position& position) {
   tab_strip_->MoveTab(handle, position.index());
+}
+
+void ToyTabStripModelAdapter::MoveCollection(const NodeId& id,
+                                             const Position& position) {
+  // TODO(crbug.com/412709271): Integrate with the toy tabstrip to move a
+  // collection.
+  NOTIMPLEMENTED();
+  return;
 }
 
 mojom::TabCollectionContainerPtr

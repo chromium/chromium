@@ -246,25 +246,6 @@ void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
                                   const tabs_api::Position& position,
                                   MoveTabCallback callback) {
   MutationSession recorder_session(recorder_.get());
-
-  // TODO(crbug.com/409086859): this implementation is not complete, because
-  // it will only move the tabs within the unpinned section. We need additional
-  // API support for the tab strip model, which is currently in discussion.
-  if (id.Type() != tabs_api::NodeId::Type::kContent) {
-    std::move(callback).Run(base::unexpected(
-        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kUnimplemented,
-                                     "only tab moves have been implemetned")));
-    return;
-  }
-
-  int32_t handle_id;
-  if (!base::StringToInt(id.Id(), &handle_id)) {
-    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "id is malformed")));
-    return;
-  }
-
-  auto tab_handle = tabs::TabHandle(handle_id);
   if (position.index() >= tab_strip_model_adapter_->GetTabs().size()) {
     std::move(callback).Run(base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
@@ -272,9 +253,28 @@ void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
     return;
   }
 
-  // TODO(crbug.com/409086859): Add error handling for cases where a position's
-  // parent id is impossible to be moved to.
-  tab_strip_model_adapter_->MoveTab(tab_handle, position);
+  switch (id.Type()) {
+    case tabs_api::NodeId::Type::kContent: {
+      std::optional<tabs::TabHandle> tab_handle = id.ToTabHandle();
+      if (!tab_handle.has_value()) {
+        std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument, "id is malformed")));
+        return;
+      }
+      // TODO(crbug.com/409086859): Add error handling for cases where a
+      // position's parent id is impossible to be moved to.
+      tab_strip_model_adapter_->MoveTab(tab_handle.value(), position);
+      break;
+    }
+    case tabs_api::NodeId::Type::kCollection: {
+      tab_strip_model_adapter_->MoveCollection(id, position);
+      break;
+    }
+    default:
+      std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument, "Invalid node type")));
+      return;
+  }
 
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
