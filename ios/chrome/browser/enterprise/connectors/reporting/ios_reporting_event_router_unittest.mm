@@ -411,7 +411,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
   } else {
-    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
   }
 
   safe_browsing::RTLookupResponse response;
@@ -460,7 +460,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
   } else {
-    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
   }
 
   safe_browsing::RTLookupResponse response;
@@ -510,7 +510,7 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
   } else {
-    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
   }
 
   safe_browsing::RTLookupResponse response;
@@ -563,7 +563,7 @@ TEST_P(IOSReportingEventRouterTest,
   if (use_proto_format()) {
     validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
   } else {
-    validator.ExpectURLFilteringInterstitialEvent(expected_event);
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
   }
 
   safe_browsing::RTLookupResponse response;
