@@ -81,7 +81,9 @@ const CGFloat kSliderMargin = 2.0;
 // Vertical margin between the slider and the segment on each side.
 const CGFloat kLegacySliderVerticalMargin =
     std::max((kSegmentHeight - kSliderHeight) / 2.0, 0.0);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kSliderVerticalMargin = -1.5;
+#endif
 
 // Width and height of the separator bars between segments.
 const CGFloat kSeparatorWidth = 1.0;
@@ -638,12 +640,15 @@ TabGridPage ThirdTabGridPage() {
       break;
     }
   }
-
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     iconNotSelected.tintColor = UIColor.whiteColor;
   } else {
+#endif
     iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
   iconSelected.tintColor = UIColor.blackColor;
 
   [self insertSubview:iconNotSelected belowSubview:self.sliderView];
@@ -655,8 +660,10 @@ TabGridPage ThirdTabGridPage() {
 - (void)setupViews {
   self.scrolledToEdge = YES;
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
+#endif
     UIView* backgroundView = [[UIView alloc]
         initWithFrame:CGRectMake(0, 0, kOverallWidth, kSegmentHeight)];
     backgroundView.backgroundColor =
@@ -668,7 +675,9 @@ TabGridPage ThirdTabGridPage() {
     backgroundView.center =
         CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
     self.background = backgroundView;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
 
   // Set up the layout guides for the segments.
   UILayoutGuide* incognitoGuide = [[UILayoutGuide alloc] init];
@@ -718,19 +727,27 @@ TabGridPage ThirdTabGridPage() {
 
   // Add the slider above the section images and labels.
   CGFloat verticalMargin;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     verticalMargin = kSliderVerticalMargin;
   } else {
+#endif
     verticalMargin = kLegacySliderVerticalMargin;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
   CGRect sliderFrame =
       CGRectMake(0, verticalMargin, kSliderWidth, kSliderHeight);
   UIView* slider = [[UIView alloc] initWithFrame:sliderFrame];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     slider.layer.cornerRadius = kSliderHeight / 2.0;
   } else {
+#endif
     slider.layer.cornerRadius = kSliderCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
   slider.layer.masksToBounds = YES;
   slider.backgroundColor = UIColor.whiteColor;
   if (ios::provider::IsRaccoonEnabled()) {

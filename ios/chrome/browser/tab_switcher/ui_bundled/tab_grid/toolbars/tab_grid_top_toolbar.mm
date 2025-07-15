@@ -222,18 +222,26 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)hide {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
+#endif
     self.backgroundColor = UIColor.blackColor;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
   self.pageControl.alpha = 0.0;
 }
 
 - (void)show {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
+#endif
     self.backgroundColor = UIColor.clearColor;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
   self.pageControl.alpha = 1.0;
 }
 
@@ -554,8 +562,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
+#endif
     if (IsIOSSoftLockEnabled()) {
       _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
       _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -578,7 +588,9 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     [self setBackgroundImage:[[UIImage alloc] init]
           forToolbarPosition:UIBarPositionAny
                   barMetrics:UIBarMetricsDefault];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
 }
 
 // Returns YES if should use compact bottom toolbar layout.

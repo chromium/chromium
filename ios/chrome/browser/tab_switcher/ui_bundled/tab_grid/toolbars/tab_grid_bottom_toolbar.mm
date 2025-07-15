@@ -488,8 +488,10 @@
 // middle/scrolled to the top states.
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
   } else {
+#endif
     if (IsIOSSoftLockEnabled()) {
       _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
       _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -512,7 +514,9 @@
     [_toolbar setBackgroundImage:[[UIImage alloc] init]
               forToolbarPosition:UIBarPositionAny
                       barMetrics:UIBarMetricsDefault];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
 }
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.
