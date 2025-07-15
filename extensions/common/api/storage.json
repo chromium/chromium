@@ -175,7 +175,7 @@
           }, {
             "name": "setAccessLevel",
             "type": "function",
-            "description": "Sets the desired access level for the storage area. By default, `session` storage is restricted to trusted contexts (extension pages and service workers), while `local` and `sync` storage allow access from both trusted and untrusted contexts.",
+            "description": "Sets the desired access level for the storage area. By default, `session` storage is restricted to trusted contexts (extension pages and service workers), while `managed`, `local`, and `sync` storage allow access from both trusted and untrusted contexts.",
             "parameters": [
               {
                 "type": "object",
