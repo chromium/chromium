@@ -9,3 +9,23 @@ buildflag_header("page_info_buildflags") {
   header = "page_info_buildflags.h"
   flags = [ "PAGE_INFO_USE_INTERNAL_ANDROID_RESOURCES=$page_info_use_internal_android_resources" ]
 }
+
+source_set("page_info") {
+  public = [ "page_info_features.h" ]
+
+  public_deps = [
+    "//base:base",
+    "//chrome/browser:browser_process",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "page_info_features.cc" ]
+
+  deps = [
+    ":page_info",
+    "//chrome/browser/ui:ui_features",
+    "//components/page_info/core",
+    "//components/variations/service",
+  ]
+}

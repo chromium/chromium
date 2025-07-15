@@ -315,6 +315,7 @@ static_library("ui") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide:optimization_guide",
+    "//chrome/browser/page_info",
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",

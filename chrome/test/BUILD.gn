@@ -5113,6 +5113,7 @@ if (!is_android) {
         ":test_support_ui",
         "//chrome/browser/commerce",
         "//chrome/browser/lens/core/mojom:mojo_bindings",
+        "//chrome/browser/page_info",
         "//chrome/browser/privacy_sandbox:test_support",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/actions:actions_headers",
