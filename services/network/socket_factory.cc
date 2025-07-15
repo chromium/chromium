@@ -154,19 +154,8 @@ void SocketFactory::CreateTCPServerSocketHelper(
     socket->AttachConnectionTracker(std::move(options->connection_tracker));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  std::optional<bool> ipv6_only;
-  switch (options->ipv6_only) {
-    case mojom::OptionalBool::kTrue:
-      ipv6_only = true;
-      break;
-    case mojom::OptionalBool::kFalse:
-      ipv6_only = false;
-      break;
-    case mojom::OptionalBool::kUnset:
-      break;
-  }
   base::expected<net::IPEndPoint, int32_t> result =
-      socket->Listen(local_addr, options->backlog, ipv6_only);
+      socket->Listen(local_addr, options->backlog, options->ipv6_only);
   if (!result.has_value()) {
     std::move(callback).Run(result.error(), std::nullopt);
     return;

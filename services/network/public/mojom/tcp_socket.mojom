@@ -6,7 +6,6 @@ module network.mojom;
 
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
-import "services/network/public/mojom/optional_bool.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tls_socket.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -56,7 +55,7 @@ struct TCPServerSocketOptions {
   // being applied (|true| on Windows, |false| on Posix).
   // TODO(crbug.com/40262165): Investigate the possibility of replacing optional
   // with a platform-agnostic default.
-  OptionalBool ipv6_only;
+  bool? ipv6_only;
 
   [EnableIf=is_chromeos]
   // The caller may choose to supply a |connection_tracker| if they lack access

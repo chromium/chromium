@@ -141,17 +141,8 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
       result = socket_.SetSendBufferSize(
           ClampUDPBufferSize(options->send_buffer_size));
     }
-    if (result == net::OK) {
-      switch (options->ipv6_only) {
-        case mojom::OptionalBool::kTrue:
-          result = socket_.SetIPv6Only(true);
-          break;
-        case mojom::OptionalBool::kFalse:
-          result = socket_.SetIPv6Only(false);
-          break;
-        default:
-          break;
-      }
+    if (result == net::OK && options->ipv6_only.has_value()) {
+      result = socket_.SetIPv6Only(options->ipv6_only.value());
     }
     return result;
   }

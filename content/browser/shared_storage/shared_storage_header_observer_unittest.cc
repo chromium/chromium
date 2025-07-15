@@ -32,7 +32,6 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
-#include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

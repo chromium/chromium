@@ -559,11 +559,7 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   }
 
   auto socket_options = network::mojom::UDPSocketOptions::New();
-  if (options->ipv6_only.has_value()) {
-    socket_options->ipv6_only = *options->ipv6_only
-                                    ? network::mojom::OptionalBool::kTrue
-                                    : network::mojom::OptionalBool::kFalse;
-  }
+  socket_options->ipv6_only = options->ipv6_only;
   if (options->send_buffer_size.has_value()) {
     socket_options->send_buffer_size = *options->send_buffer_size;
   }
@@ -613,12 +609,7 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
   }
 
   auto server_options = network::mojom::TCPServerSocketOptions::New();
-
-  if (options->ipv6_only.has_value()) {
-    server_options->ipv6_only = *options->ipv6_only
-                                    ? network::mojom::OptionalBool::kTrue
-                                    : network::mojom::OptionalBool::kFalse;
-  }
+  server_options->ipv6_only = options->ipv6_only;
   // Substitute |options->backlog| with SOMAXCONN if not specified.
   server_options->backlog =
       std::min<uint32_t>(SOMAXCONN, options->backlog.value_or(SOMAXCONN));
