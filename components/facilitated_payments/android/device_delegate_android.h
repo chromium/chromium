@@ -9,13 +9,14 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments::facilitated {
+
+class DeviceDelegateAndroidTestApi;
 
 // Android implementation of `DeviceDelegate`.
 class DeviceDelegateAndroid : public DeviceDelegate {
@@ -41,21 +42,7 @@ class DeviceDelegateAndroid : public DeviceDelegate {
       const GURL& payment_link_url) override;
 
  private:
-  friend class DeviceDelegateAndroidTest;
-
-  FRIEND_TEST_ALL_PREFIXES(DeviceDelegateAndroidTest,
-                           ChromeGoesToBackgroundThenForeground_CallbackRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      DeviceDelegateAndroidTest,
-      ChromeGoesToForegroundWithoutGoingToBackground_CallbackNotRun);
-  FRIEND_TEST_ALL_PREFIXES(DeviceDelegateAndroidTest,
-                           ChromeGoesToBackground_CallbackNotRun);
-  FRIEND_TEST_ALL_PREFIXES(
-      DeviceDelegateAndroidTest,
-      MultipleBackgroundForegroundCycles_CallbackRunOnlyOnce);
-  FRIEND_TEST_ALL_PREFIXES(
-      DeviceDelegateAndroidTest,
-      CallbackSetAfterChromeAlreadyInBackground_ThenForeground_CallbackNotRun);
+  friend class DeviceDelegateAndroidTestApi;
 
   // Called when the Chrome app's state changes.
   void OnApplicationStateChanged(base::android::ApplicationState state);

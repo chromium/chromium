@@ -36,10 +36,20 @@ source_set("unit_tests") {
   ]
   deps = [
     ":android",
+    ":test_support",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [ "device_delegate_android_test_api.h" ]
+  deps = [
+    ":android",
+    "//base",
   ]
 }
