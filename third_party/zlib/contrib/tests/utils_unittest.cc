@@ -1311,4 +1311,39 @@ TEST(ZlibTest, ZipUnicodePathExtraSizeFilenameOverflow) {
   EXPECT_EQ(unzClose(uzf), UNZ_OK);
 }
 
+TEST(ZlibTest, ZipUnicodePathExtra) {
+  // This is components/test/data/unzip_service/bug953599.zip (added in
+  // https://crrev.com/1004132).
+  base::FilePath zip_file = TestDataDir().AppendASCII("unicode_path_extra.zip");
+  unzFile uzf = unzOpen(zip_file.AsUTF8Unsafe().c_str());
+  ASSERT_NE(uzf, nullptr);
+
+  char long_buf[15], short_buf[3];
+  unz_file_info file_info;
+
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, long_buf, sizeof(long_buf),
+                                  nullptr, 0, nullptr, 0), UNZ_OK);
+  ASSERT_EQ(file_info.size_filename, 14);
+  ASSERT_EQ(std::string(long_buf), "\xec\x83\x88 \xeb\xac\xb8\xec\x84\x9c.txt");
+
+  // Even if the file name buffer is too short to hold the whole filename, the
+  // unicode path extra field should get parsed correctly, size_filename set,
+  // and the file name buffer should receive the first bytes.
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, short_buf, sizeof(short_buf),
+                                  nullptr, 0, nullptr, 0), UNZ_OK);
+  ASSERT_EQ(file_info.size_filename, 14);
+  ASSERT_EQ(std::string(short_buf, sizeof(short_buf)), "\xec\x83\x88");
+
+  // Also with a null filename buffer, the unicode path extra field should get
+  // parsed and size_filename set correctly.
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, nullptr, 0, nullptr, 0,
+                                  nullptr, 0), UNZ_OK);
+  ASSERT_EQ(file_info.size_filename, 14);
+
+  EXPECT_EQ(unzClose(uzf), UNZ_OK);
+}
+
 #endif
