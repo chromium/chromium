@@ -523,6 +523,9 @@ void ReadAnythingAppController::OnTreeDataChanged(
     ui::AXTree* tree,
     const ui::AXTreeData& old_data,
     const ui::AXTreeData& new_data) {
+  VLOG(1) << "Tree data changed for tree ID: " << tree->GetAXTreeID()
+          << "\n---- OLD DATA: " << old_data.ToString()
+          << "\n---- NEW DATA: " << new_data.ToString();
   // If we are waiting for the tree id of the active tree to be populated,
   // distill once we have it.
   if (waiting_for_tree_id_ && old_data.tree_id == ui::AXTreeIDUnknown() &&
