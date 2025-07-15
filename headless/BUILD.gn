@@ -363,6 +363,7 @@ component("headless_non_renderer") {
     "//components/embedder_support/origin_trials",
     "//components/headless/clipboard",
     "//components/headless/command_handler:switches",
+    "//components/headless/console_message_logger",
     "//components/headless/display_util",
     "//components/headless/screen_info",
     "//components/headless/select_file_dialog",
