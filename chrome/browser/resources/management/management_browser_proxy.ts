@@ -144,6 +144,10 @@ export interface ManagementBrowserProxy {
    * @return Whether the promotion banner should be shown.
    */
   shouldShowPromotion(): Promise<boolean>;
+
+  setBannerDismissed(): Promise<void>;
+
+  recordBannerRedirected(): Promise<void>;
 }
 
 export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
@@ -195,6 +199,14 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
 
   shouldShowPromotion() {
     return sendWithPromise('shouldShowPromotion');
+  }
+
+  setBannerDismissed() {
+    return sendWithPromise('setBannerDismissed');
+  }
+
+  recordBannerRedirected() {
+    return sendWithPromise('recordBannerRedirected');
   }
 
   static getInstance(): ManagementBrowserProxy {

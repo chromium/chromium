@@ -246,6 +246,14 @@ void ManagementUIHandler::RegisterMessages() {
       "shouldShowPromotion",
       base::BindRepeating(&ManagementUIHandler::HandleShouldShowPromotion,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setBannerDismissed",
+      base::BindRepeating(&ManagementUIHandler::HandleSetBannerDismissed,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordBannerRedirected",
+      base::BindRepeating(&ManagementUIHandler::HandleRecordBannerRedirected,
+                          base::Unretained(this)));
 }
 
 void ManagementUIHandler::OnJavascriptAllowed() {
@@ -734,10 +742,8 @@ void ManagementUIHandler::HandleShouldShowPromotion(
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string callback_id = args[0].GetString();
 
-  bool dismissed_banner_pref = false;  // TODO: austinzzr - Add pref
-                                       // checking mechanism when
-                                       // implementing UI elements for the
-                                       // promotion banner.
+  bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner);
 
   bool feature_enabled =
       base::FeatureList::IsEnabled(features::kEnableManagementPromotionBanner);
@@ -754,6 +760,22 @@ void ManagementUIHandler::HandleShouldShowPromotion(
       base::BindOnce(&ManagementUIHandler::OnPromotionEligibilityFetched,
                      weak_factory_.GetWeakPtr(), callback_id));
   return;
+}
+
+void ManagementUIHandler::HandleSetBannerDismissed(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.ManagementPromotionBannerAction",
+      policy::ManagementPromotionBannerAction::kManagementBannerDismissed);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner, true);
+}
+
+void ManagementUIHandler::HandleRecordBannerRedirected(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.ManagementPromotionBannerAction",
+      policy::ManagementPromotionBannerAction::kManagementRedirected);
 }
 
 void ManagementUIHandler::OnPromotionEligibilityFetched(

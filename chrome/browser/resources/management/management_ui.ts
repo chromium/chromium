@@ -482,6 +482,18 @@ export class ManagementUiElement extends ManagementUiElementBase {
     }
   }
 
+  protected onDismissPromotion_() {
+    this.shouldShowPromotion_ = false;
+    this.browserProxy_.setBannerDismissed();
+  }
+
+  protected onPromotionRedirect_() {
+    window.open(
+        'https://admin.google.com/ac/chrome/guides/?ref=browser&utm_source=chrome_policy_cec',
+        '_blank');
+    this.browserProxy_.recordBannerRedirected();
+  }
+
   private updateManagedFields_() {
     this.browserProxy_.getContextualManagedData().then(data => {
       this.managed_ = data.managed;

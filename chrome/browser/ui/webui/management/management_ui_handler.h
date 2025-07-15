@@ -128,6 +128,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void HandleInitBrowserReportingInfo(const base::Value::List& args);
   void HandleInitProfileReportingInfo(const base::Value::List& args);
   void HandleShouldShowPromotion(const base::Value::List& args);
+  void HandleSetBannerDismissed(const base::Value::List& args);
+  void HandleRecordBannerRedirected(const base::Value::List& args);
   void OnPromotionEligibilityFetched(
       const std::string& callback_id,
       enterprise_management::GetUserEligiblePromotionsResponse response);

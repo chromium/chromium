@@ -104,6 +104,13 @@ constexpr char kPromotionBannerVisibilityJavaScript[] = R"(
   })();
 )";
 
+constexpr char kPromotionBannerDismissJavaScript[] = R"(
+  const managementUi = document.querySelector('management-ui');
+    if (managementUi) {
+      managementUi.onDismissPromotion_();
+    }
+)";
+
 class PromotionObserver : public ManagementPromotionObserver,
                           public base::test::TestFuture<const std::string&> {
  public:
@@ -286,6 +293,12 @@ class ManagementUIManagedStatusTest
   }
 
  protected:
+  void SetPromotionBannerDismissedPref(bool is_dismissed) {
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(
+        policy::policy_prefs::kHasDismissedManagementPagePromotionBanner,
+        is_dismissed);
+  }
   // Helper method to setup and wait for the promotion listener
   void SetupAndListenForPromotion() {
     auto* handlers = browser()
@@ -297,9 +310,8 @@ class ManagementUIManagedStatusTest
     auto* handler = static_cast<ManagementUIHandler*>(handlers[0][0].get());
 
     // Only wait if the feature is enabled AND locale is en-US AND not dismissed
-    const bool is_dismissed =
-        false;  //  TODO: austinzzr - Add pref checking mechanism when
-                //  implementing UI elements for the promotion banner.
+    const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
+        policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
     if (is_feature_enabled() &&
         g_browser_process->GetApplicationLocale() == kValidLocale &&
@@ -324,6 +336,8 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
                        HandleGetShowPromotionTestShown) {
   ScopedLocaleSetter locale_setter(kValidLocale);
 
+  SetPromotionBannerDismissedPref(false);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIManagementURL)));
   SetupAndListenForPromotion();
@@ -338,8 +352,46 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+                       HandleGetShowPromotionDismisseddHidden) {
+  ScopedLocaleSetter locale_setter(kValidLocale);
+
+  SetPromotionBannerDismissedPref(true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIManagementURL)));
+  SetupAndListenForPromotion();
+
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+
+  EXPECT_EQ(result, kBannerHidden);
+}
+
+IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+                       HandleSetBannerDismissedHidden) {
+  ScopedLocaleSetter locale_setter(kValidLocale);
+
+  SetPromotionBannerDismissedPref(false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIManagementURL)));
+  SetupAndListenForPromotion();
+
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     kPromotionBannerDismissJavaScript));
+
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+  EXPECT_EQ(result, kBannerHidden);
+}
+
+IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
                        HandleLocaleNotEnUSHidden) {
   ScopedLocaleSetter locale_setter(kInvalidLocale);
+
+  SetPromotionBannerDismissedPref(false);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIManagementURL)));
@@ -355,6 +407,8 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
 IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
                        HistogramRecordedWhenBannerDisplayed) {
   ScopedLocaleSetter locale_setter(kValidLocale);
+
+  SetPromotionBannerDismissedPref(false);
 
   base::HistogramTester histogram_tester;
 
