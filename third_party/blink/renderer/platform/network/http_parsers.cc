@@ -327,6 +327,14 @@ blink::SRIMessageSignatureError ConvertToBlink(SRIMessageSignatureError in) {
   return in;
 }
 
+std::optional<::blink::Vector<uint8_t>> ConvertToBlink(
+    const std::optional<std::vector<uint8_t>>& in) {
+  if (!in) {
+    return std::nullopt;
+  }
+  return ConvertToBlink<uint8_t, uint8_t>(*in);
+}
+
 blink::SRIMessageSignatureComponentParameterPtr ConvertToBlink(
     const SRIMessageSignatureComponentParameterPtr& in) {
   CHECK(in);

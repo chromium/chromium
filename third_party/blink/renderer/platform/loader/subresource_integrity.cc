@@ -351,9 +351,8 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   }
 
   for (const IntegrityMetadata& metadata : integrity_list) {
-    String public_key = Base64Encode(base::as_byte_span(metadata.value));
     for (const auto& signature : signatures) {
-      if (signature->keyid == public_key) {
+      if (signature->keyid && signature->keyid.value() == metadata.value) {
         return true;
       }
     }

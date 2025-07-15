@@ -65,8 +65,7 @@ struct SRIMessageSignature {
   // https://wicg.github.io/signature-based-sri/#profile
   int64? created;
   int64? expires;
-  // TODO(407447367): Store the public key as binary data (`array<uint8>`).
-  string? keyid;
+  array<uint8>? keyid;
   string? nonce;
   string? tag;
 

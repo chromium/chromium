@@ -413,7 +413,10 @@ bool MatchExpectedPublicKeys(
   }
   for (const std::string& key : expected_public_keys) {
     for (const auto& signature : message_signatures->signatures) {
-      if (signature->keyid == key) {
+      // TODO(407447367): Store the public keys as binary data (`array<uint8>`)
+      // to avoid this reencoding.
+      if (signature->keyid &&
+          base::Base64Encode(signature->keyid.value()) == key) {
         return true;
       }
     }
@@ -551,7 +554,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
           message_signature.reset();
           break;
         }
-        message_signature->keyid = value;
+        message_signature->keyid = std::move(*decoded);
       } else if (param.first == "nonce" && param.second.is_string()) {
         message_signature->nonce = param.second.GetString();
       } else if (param.first == "tag" && param.second.is_string() &&
@@ -747,9 +750,8 @@ bool ValidateSRIMessageSignaturesOverHeaders(
     // Decode the public key, and validate that both the public key and the
     // message's signature are the correct length for Ed25519 (32 and 64 bits,
     // respectively).
-    std::string encoded_key = message_signature->keyid.value_or("");
-    std::vector<uint8_t> public_key =
-        base::Base64Decode(encoded_key).value_or(std::vector<uint8_t>{});
+    const std::vector<uint8_t>& public_key =
+        message_signature->keyid.value_or(std::vector<uint8_t>{});
     if (public_key.size() != kEd25519KeyLength ||
         message_signature->signature.size() != kEd25519SigLength) {
       AddIssueFromErrorEnum(

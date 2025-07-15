@@ -908,14 +908,16 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
       "Signature-Input: signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
       "tag=\"sri\"\r\n\r\n";
+  Vector<uint8_t> key_bytes;
+  ASSERT_TRUE(Base64Decode(
+      StringView("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="), key_bytes));
 
   auto parsed = ParseSRIMessageSignaturesFromHeaders(raw_header);
   EXPECT_EQ(1u, parsed->signatures.size());
   EXPECT_EQ("signature", parsed->signatures[0]->label);
   EXPECT_FALSE(parsed->signatures[0]->created.has_value());
   EXPECT_FALSE(parsed->signatures[0]->expires.has_value());
-  EXPECT_EQ("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=",
-            parsed->signatures[0]->keyid);
+  EXPECT_EQ(key_bytes, parsed->signatures[0]->keyid);
   EXPECT_TRUE(parsed->signatures[0]->nonce.IsNull());
   EXPECT_EQ("sri", parsed->signatures[0]->tag);
 

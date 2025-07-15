@@ -150,7 +150,7 @@ class SRIMessageSignatureParserTest : public testing::Test {
     EXPECT_EQ("signature", sig->label);
     EXPECT_EQ(std::nullopt, sig->created);
     EXPECT_EQ(std::nullopt, sig->expires);
-    EXPECT_EQ(kPublicKey, sig->keyid);
+    EXPECT_EQ(base::Base64Decode(kPublicKey), sig->keyid);
     EXPECT_EQ(std::nullopt, sig->nonce);
     EXPECT_EQ("ed25519-integrity", sig->tag);
     EXPECT_EQ(kSignature, base::Base64Encode(sig->signature));
