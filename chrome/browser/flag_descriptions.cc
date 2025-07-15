@@ -5106,13 +5106,6 @@ const char kDynamicSafeAreaInsetsOnScrollDescription[] =
     "controls scrolls. "
     "Requires DynamicSafeAreaInsets to also be enabled.";
 
-const char kDynamicSafeAreaInsetsSupportedByCCName[] =
-    "DynamicSafeAreaInsetsSupportedByCC";
-const char kDynamicSafeAreaInsetsSupportedByCCDescription[] =
-    "Dynamically change the safe area insets on the compositor thread as "
-    "browser controls are shown or hidden during scroll. "
-    "Requires DynamicSafeAreaInsets to also be enabled.";
-
 const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
 const char kCSSSafeAreaMaxInsetDescription[] =
     "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
