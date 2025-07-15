@@ -15,6 +15,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/cstring_view.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -707,6 +708,8 @@ class NET_EXPORT NetworkChangeNotifier {
       handles::NetworkHandle network);
   void NotifyObserversOfConnectionCostChangeImpl(ConnectionCost cost);
   void NotifyObserversOfDefaultNetworkActiveImpl();
+
+  const perfetto::NamedTrack track_;
 
   raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
   std::unique_ptr<SystemDnsConfigObserver> system_dns_config_observer_;
