@@ -77,17 +77,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
       bool has_storage_access_handle,
       BlobUrlRegistry::MappingStatus mapping_status);
 
-  void FinishResolveAsURLLoaderFactory(
-      const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      bool has_storage_access_handle);
-
-  void FinishResolveAsBlobURLToken(
-      const GURL& url,
-      mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
-      bool is_top_level_navigation,
-      bool has_storage_access_handle);
-
   const blink::StorageKey storage_key_;
   // The origin used by the worker/document associated with this BlobURLStore on
   // the renderer side. This will almost always be the same as `storage_key_`'s

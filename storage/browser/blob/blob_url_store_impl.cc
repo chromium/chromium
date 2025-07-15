@@ -163,14 +163,9 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
     return;
   }
-  FinishResolveAsURLLoaderFactory(url, std::move(receiver),
-                                  storage_access_check_callback_.Run());
-}
 
-void BlobURLStoreImpl::FinishResolveAsURLLoaderFactory(
-    const GURL& url,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    bool has_storage_access_handle) {
+  bool has_storage_access_handle = storage_access_check_callback_.Run();
+
   // If a top-level blob URL document is fetching itself, then don't enforce
   // partitioning. This is needed to ensure navigations to blob URLs with media
   // mime types (which result in a resource load for the URL as well) don't get
@@ -213,15 +208,9 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
   if (!registry_) {
     return;
   }
-  FinishResolveAsBlobURLToken(url, std::move(token), is_top_level_navigation,
-                              storage_access_check_callback_.Run());
-}
 
-void BlobURLStoreImpl::FinishResolveAsBlobURLToken(
-    const GURL& url,
-    mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
-    bool is_top_level_navigation,
-    bool has_storage_access_handle) {
+  bool has_storage_access_handle = storage_access_check_callback_.Run();
+
   if (!is_top_level_navigation) {
     const BlobUrlRegistry::MappingStatus mapping_status =
         registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
