@@ -264,6 +264,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
           weak_ptr_factory_.GetWeakPtr(), file_token));
 }
 
+bool ComposeboxQueryController::DeleteFile(
+    const base::UnguessableToken& file_token) {
+  return !!active_files_.erase(file_token);
+}
+
 std::unique_ptr<EndpointFetcher>
 ComposeboxQueryController::CreateEndpointFetcher(
     std::string request_string,

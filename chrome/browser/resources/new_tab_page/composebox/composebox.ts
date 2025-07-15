@@ -128,6 +128,7 @@ export class ComposeboxElement extends CrLitElement {
         new Map(this.files_.entries());
     newFileMap.delete(e.detail.uuid);
     this.files_ = newFileMap;
+    this.pageHandler_.deleteFile(e.detail.uuid);
   }
 
   protected async onFileChange_(e: Event) {

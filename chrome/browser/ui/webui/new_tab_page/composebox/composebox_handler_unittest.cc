@@ -30,6 +30,8 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,6 +71,7 @@ class MockQueryController : public TestComposeboxQueryController {
       (std::unique_ptr<ComposeboxQueryController::FileInfo> file_info_mojom,
        scoped_refptr<base::RefCountedBytes> file_data,
        std::optional<composebox::ImageEncodingOptions> image_options));
+  MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&));
 
   void NotifySessionStartedBase() {
     TestComposeboxQueryController::NotifySessionStarted();
@@ -94,7 +97,9 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
 
 class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  ComposeboxHandlerTest() = default;
+  ComposeboxHandlerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ComposeboxHandlerTest() override = default;
 
   void SetUp() override {
@@ -291,4 +296,28 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
             scoped_config().downscale_max_image_width);
   EXPECT_EQ(image_options->compression_quality,
             scoped_config().image_compression_quality);
+}
+
+TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
+  base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
+  base::UnguessableToken token_arg;
+  EXPECT_CALL(query_controller(), DeleteFile)
+      .WillOnce(
+          testing::Invoke([&token_arg](const base::UnguessableToken& token) {
+            token_arg = token;
+            return true;
+          }));
+  handler().DeleteFile(delete_file_token);
+
+  EXPECT_EQ(delete_file_token, token_arg);
+}
+
+TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {
+  mojo::FakeMessageDispatchContext context;
+  mojo::test::BadMessageObserver obs;
+  EXPECT_CALL(query_controller(), DeleteFile).WillOnce(testing::Return(false));
+  handler().DeleteFile(base::UnguessableToken::Create());
+
+  EXPECT_EQ("An invalid file token was sent to DeleteFile",
+            obs.WaitForBadMessage());
 }

@@ -237,6 +237,8 @@ class ComposeboxQueryController {
       std::unique_ptr<FileInfo> file_info,
       scoped_refptr<base::RefCountedBytes> file_data,
       std::optional<composebox::ImageEncodingOptions> image_options);
+  // Removes file from file cache.
+  virtual bool DeleteFile(const base::UnguessableToken& file_token);
 
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to

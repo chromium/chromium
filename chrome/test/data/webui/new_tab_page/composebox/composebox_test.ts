@@ -221,9 +221,10 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(composeboxElement.$.carousel.files.length, 2);
 
     // Act.
+    const deletedId = composeboxElement.$.carousel.files[0]!.uuid;
     composeboxElement.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
       detail: {
-        uuid: composeboxElement.$.carousel.files[0]!.uuid,
+        uuid: deletedId,
       },
       bubbles: true,
       composed: true,
@@ -233,6 +234,9 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert.
     assertEquals(composeboxElement.$.carousel.files.length, 1);
+    assertEquals(handler.getCallCount('deleteFile'), 1);
+    const [idArg] = handler.getArgs('deleteFile');
+    assertEquals(idArg, deletedId);
   });
 
   test('NotifySessionStarted called on composebox created', () => {

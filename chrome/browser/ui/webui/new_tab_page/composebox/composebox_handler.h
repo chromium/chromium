@@ -34,6 +34,7 @@ class ComposeboxHandler : public composebox::mojom::ComposeboxPageHandler {
   void AddFile(composebox::mojom::SelectedFileInfoPtr file_info,
                mojo_base::BigBuffer file_bytes,
                AddFileCallback callback) override;
+  void DeleteFile(const base::UnguessableToken& file_token) override;
 
  private:
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);
