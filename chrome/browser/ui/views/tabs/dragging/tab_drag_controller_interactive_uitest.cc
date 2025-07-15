@@ -85,6 +85,7 @@
 #include "ui/aura/env.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -2240,9 +2241,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             browser()->window()->GetBounds().ToString());
 }
 
-// TODO(crbug.com/40934892): ChromeOS flakes for tests that involve detaching
-// to a new window.
-#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/40934892): ChromeOS and Wayland flakes for tests that involve
+// detaching to a new window.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_OZONE_WAYLAND)
 class TabDragDelegateTest : public DetachToBrowserTabDragControllerTest {
  public:
   TabDragDelegateTest() {
@@ -2259,7 +2260,7 @@ class TabDragDelegateTest : public DetachToBrowserTabDragControllerTest {
   std::unique_ptr<test::FakeTabDragPointResolver> resolver_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE_WAYLAND)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     TabDragDelegateTest,
