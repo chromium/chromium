@@ -9,7 +9,6 @@ import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
-import android.credentials.GetCredentialResponse;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,9 +16,9 @@ import android.os.Looper;
 import android.os.ResultReceiver;
 
 import androidx.annotation.OptIn;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.credentials.GetDigitalCredentialOption;
+import androidx.credentials.provider.PendingIntentHandler;
 
 import com.google.android.gms.identitycredentials.CredentialOption;
 import com.google.android.gms.identitycredentials.GetCredentialException;
@@ -59,14 +58,6 @@ public class DigitalCredentialsPresentationDelegate {
     @VisibleForTesting
     public static final String BUNDLE_KEY_PROVIDER_DATA =
             "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
-
-    @VisibleForTesting
-    public static final String EXTRA_GET_CREDENTIAL_RESPONSE =
-            "android.service.credentials.extra.GET_CREDENTIAL_RESPONSE";
-
-    @VisibleForTesting
-    public static final String EXTRA_CREDENTIAL_DATA =
-            "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_DATA";
 
     @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(Activity window, String origin, String request) {
@@ -190,40 +181,15 @@ public class DigitalCredentialsPresentationDelegate {
         if (intent == null) {
             return null;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            return extractDigitalCredentialIntentAfter34(intent);
-        }
-        return extractDigitalCredentialIntentBefore34(intent);
-    }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private static @Nullable DigitalCredential extractDigitalCredentialIntentAfter34(Intent intent)
-            throws JSONException {
-        GetCredentialResponse response =
-                IntentUtils.safeGetParcelableExtra(intent, EXTRA_GET_CREDENTIAL_RESPONSE);
+        var response = PendingIntentHandler.retrieveGetCredentialResponse(intent);
         if (response == null) {
             return null;
         }
-        return extractDigitalCredentialFromCredentialDataBundle(response.getCredential().getData());
-    }
-
-    private static @Nullable DigitalCredential extractDigitalCredentialIntentBefore34(Intent intent)
-            throws JSONException {
-        Bundle responseBundle =
-                IntentUtils.safeGetBundleExtra(intent, EXTRA_GET_CREDENTIAL_RESPONSE);
-        if (responseBundle == null) {
+        Bundle dataBundle = response.getCredential().getData();
+        if (dataBundle == null) {
             return null;
         }
-        return extractDigitalCredentialFromCredentialDataBundle(
-                IntentUtils.safeGetBundle(responseBundle, EXTRA_CREDENTIAL_DATA));
-    }
-
-    private static @Nullable DigitalCredential extractDigitalCredentialFromCredentialDataBundle(
-            @Nullable Bundle bundle) throws JSONException {
-        if (bundle == null) {
-            return null;
-        }
-        String credentialJson = bundle.getString(BUNDLE_KEY_REQUEST_JSON);
+        String credentialJson = dataBundle.getString(BUNDLE_KEY_REQUEST_JSON);
         if (credentialJson == null) {
             return null;
         }

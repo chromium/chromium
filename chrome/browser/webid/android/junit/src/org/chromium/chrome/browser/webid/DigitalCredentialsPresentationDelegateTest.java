@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_IDENTITY_TOKEN;
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA;
 import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.BUNDLE_KEY_REQUEST_JSON;
-import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_CREDENTIAL_DATA;
-import static org.chromium.chrome.browser.webid.DigitalCredentialsPresentationDelegate.EXTRA_GET_CREDENTIAL_RESPONSE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -44,6 +42,14 @@ public class DigitalCredentialsPresentationDelegateTest {
             "androidx.identitycredentials.EXTRA_CREDENTIAL_TYPE";
     private static final String INTENT_HELPER_EXTRA_CREDENTIAL_DATA =
             "androidx.identitycredentials.EXTRA_CREDENTIAL_DATA";
+    private static final String EXTRA_CREDENTIAL_TYPE =
+            "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_TYPE";
+    private static final String EXTRA_CREDENTIAL_DATA =
+            "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_DATA";
+    private static final String EXTRA_GET_CREDENTIAL_RESPONSE =
+            "android.service.credentials.extra.GET_CREDENTIAL_RESPONSE";
+    private static final String CREDENTIAL_TYPE_DIGITAL_CREDENTIAL =
+            "androidx.credentials.TYPE_DIGITAL_CREDENTIAL";
     private static final String JSON_PROTOCOL = "openid4vp";
     private static final String JSON_DATA = "{\"test_key\":\"test_value\"}";
     private static final String JSON_WITH_PROTOCOL =
@@ -72,6 +78,7 @@ public class DigitalCredentialsPresentationDelegateTest {
         credentialBundle.putString(BUNDLE_KEY_REQUEST_JSON, json);
 
         Bundle dataBundle = new Bundle();
+        dataBundle.putString(EXTRA_CREDENTIAL_TYPE, CREDENTIAL_TYPE_DIGITAL_CREDENTIAL);
         dataBundle.putBundle(EXTRA_CREDENTIAL_DATA, credentialBundle);
 
         intent.putExtra(EXTRA_GET_CREDENTIAL_RESPONSE, dataBundle);
@@ -84,7 +91,7 @@ public class DigitalCredentialsPresentationDelegateTest {
         // Credential and GetCredentialResponse classes don't exist in Robolectric test and hence we
         // mock them.
         Credential credential = mock(Credential.class);
-        when(credential.getType()).thenReturn("androidx.credentials.TYPE_DIGITAL_CREDENTIAL");
+        when(credential.getType()).thenReturn(CREDENTIAL_TYPE_DIGITAL_CREDENTIAL);
         when(credential.getData()).thenReturn(credentialBundle);
 
         GetCredentialResponse getCredentialResponse = mock(GetCredentialResponse.class);
@@ -116,7 +123,7 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     @Test
-    public void testExtractDigitalCredentialFromGetResponse_NewFormat_ProcotolInResponse()
+    public void testExtractDigitalCredentialFromGetResponse_NewFormat_ProtocolInResponse()
             throws JSONException, NullPointerException, GetCredentialException {
         Intent intent = new Intent();
         packageResponseJsonInNewFormat(JSON_WITH_PROTOCOL, intent);
@@ -132,7 +139,7 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     @Test
-    public void testExtractDigitalCredentialFromGetResponse_BothFormats_ProcotolInResponse()
+    public void testExtractDigitalCredentialFromGetResponse_BothFormats_ProtocolInResponse()
             throws JSONException, NullPointerException, GetCredentialException {
         Intent intent = new Intent();
         packageResponseJsonInNewFormat(JSON_WITH_PROTOCOL, intent);
@@ -150,7 +157,7 @@ public class DigitalCredentialsPresentationDelegateTest {
     }
 
     @Test
-    public void testExtractDigitalCredentialFromGetResponse_BothFormats_NoProcotolInResponse()
+    public void testExtractDigitalCredentialFromGetResponse_BothFormats_NoProtocolInResponse()
             throws JSONException, NullPointerException, GetCredentialException {
         Intent intent = new Intent();
         packageResponseJsonInNewFormat(JSON_WITHOUT_PROTOCOL, intent);
