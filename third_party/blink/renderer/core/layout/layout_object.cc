@@ -4322,18 +4322,26 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
             std::move(first_line_style), kPseudoIdFirstLine, g_null_atom);
       }
     }
-  } else if (!IsAnonymous() && IsLayoutInline() &&
-             !GetNode()->IsFirstLetterPseudoElement()) {
+  } else if ((!IsAnonymous() && IsLayoutInline() &&
+              !GetNode()->IsFirstLetterPseudoElement()) ||
+             (RuntimeEnabledFeatures::QuoteFirstLineStyleEnabled() &&
+              IsQuote())) {
     if (const ComputedStyle* cached =
             StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLineInherited))
       return cached;
 
+    // Quote doesn't have an associated Node because it's generated thus always
+    // anonymous. So, we need to access a parent LayoutObject.
+    const auto* layout_object =
+        RuntimeEnabledFeatures::QuoteFirstLineStyleEnabled() && IsQuote()
+            ? Parent()
+            : this;
     if (const ComputedStyle* parent_first_line_style =
-            Parent()->FirstLineStyleWithoutFallback()) {
+            layout_object->Parent()->FirstLineStyleWithoutFallback()) {
       // A first-line style is in effect. Get uncached first line style based on
       // parent_first_line_style and cache the result in this object's style.
       if (const ComputedStyle* first_line_style =
-              GetUncachedPseudoElementStyle(StyleRequest(
+              layout_object->GetUncachedPseudoElementStyle(StyleRequest(
                   kPseudoIdFirstLineInherited, parent_first_line_style))) {
         return StyleRef().AddCachedPseudoElementStyle(
             std::move(first_line_style), kPseudoIdFirstLineInherited,

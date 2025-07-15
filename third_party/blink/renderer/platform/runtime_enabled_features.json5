@@ -3763,6 +3763,10 @@
       status: "stable",
     },
     {
+      name: "QuoteFirstLineStyle",
+      status: "stable",
+    },
+    {
       // crbug.com/427520278
       // Fix looking for next keyboard focusable radio button. This was added
       // in M140 and can be removed after M143.
