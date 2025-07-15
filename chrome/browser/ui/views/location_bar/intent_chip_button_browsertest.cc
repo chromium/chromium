@@ -193,8 +193,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   }));
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
 
 // If a single app is installed, then clicking on the intent chip button
@@ -241,8 +240,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
     }));
 
-    EXPECT_TRUE(
-        WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+    EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
 
     EXPECT_TRUE(intent_chip->GetVisible());
     EXPECT_FALSE(IsIntentChipFullyCollapsed(browser()));
@@ -259,8 +257,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   }));
 
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_chip->GetVisible());
   EXPECT_FALSE(IsIntentChipFullyCollapsed(browser()));
 }
@@ -341,7 +338,7 @@ class IntentChipButtonBrowserUiTest
     }
     const views::Button* intent_chip = GetIntentChip(browser());
 
-    if (!WaitForPageActionButtonVisible(kActionShowIntentPicker, browser())) {
+    if (!WaitForPageActionButtonVisible(browser())) {
       return false;
     }
 

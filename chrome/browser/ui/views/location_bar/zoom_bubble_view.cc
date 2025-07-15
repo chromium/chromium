@@ -187,14 +187,9 @@ void ParentToBrowser(Browser* browser,
                      content::WebContents* web_contents) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
-  views::Button* button;
-  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-    button = browser_view->toolbar_button_provider()->GetPageActionView(
-        kActionZoomNormal);
-  } else {
-    button = browser_view->toolbar_button_provider()->GetPageActionIconView(
-        PageActionIconType::kZoom);
-  }
+  views::Button* button =
+      browser_view->toolbar_button_provider()->GetPageActionView(
+          kActionZoomNormal);
 
   zoom_bubble->SetHighlightedButton(button);
 
@@ -375,12 +370,7 @@ std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   ToolbarButtonProvider* provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
 
-  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-    return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
-  }
-
-  return provider->GetPageActionIconView(PageActionIconType::kZoom)
-      ->GetTextForTooltipAndAccessibleName();
+  return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
 }
 
 void ZoomBubbleView::OnFocus() {

@@ -215,11 +215,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-
-    pwa_install_view_ =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kPwaInstall);
     EXPECT_FALSE(GetPageActionView()->GetVisible());
 
     web_contents_ = GetCurrentTab();
@@ -368,25 +363,24 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
 
  protected:
   IconLabelBubbleView* GetPageActionView() {
-    if (IsMigrationEnabled()) {
-      return BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetPageActionView(kActionInstallPwa);
-
-    } else {
-      return pwa_install_view_;
-    }
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetPageActionView(kActionInstallPwa);
   }
   void ExecuteForTesting() {
     if (IsMigrationEnabled()) {
       web_app::ShowPwaInstallDialog(browser());
       return;
     }
-    pwa_install_view_->ExecuteForTesting();
+    auto* pwa_install_view =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetPageActionIconView(PageActionIconType::kPwaInstall);
+    pwa_install_view->ExecuteForTesting();
   }
-  void FastForwardAnimation(page_actions::PageActionView* view) {
+  void FastForwardAnimation(IconLabelBubbleView* view) {
     auto animation = std::make_unique<gfx::AnimationTestApi>(
-        &view->GetSlideAnimationForTesting());
+        &view->slide_animation_for_testing());
     auto now = base::TimeTicks::Now();
     animation->SetStartTime(now);
     animation->Step(now + base::Minutes(1));
@@ -397,32 +391,26 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
         BrowserView::GetBrowserViewForBrowser(browser()));
   }
   void VerifyLabelVisibility(bool isVisible) {
+    auto* page_action_view = GetPageActionView();
+
     // In the legacy implementation, checking for is_animating_label is
     // equivalent to checking that the label is visible or being animated in.
     // This happens because while AnimateIn is used to show the label,
     // ResetSlideAnimation, which doesn't animate the label out,
     // is used to hide it.
     if (!IsMigrationEnabled()) {
-      EXPECT_EQ(GetPageActionView()->is_animating_label(), isVisible);
+      EXPECT_EQ(page_action_view->is_animating_label(), isVisible);
       return;
     }
 
-    FastForwardAnimation(BrowserView::GetBrowserViewForBrowser(browser())
-                             ->toolbar_button_provider()
-                             ->GetPageActionView(kActionInstallPwa));
-    EXPECT_EQ(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar_button_provider()
-                  ->GetPageActionView(kActionInstallPwa)
-                  ->IsChipVisible(),
-              isVisible);
+    FastForwardAnimation(page_action_view);
+    EXPECT_EQ(page_action_view->ShouldShowLabel(), isVisible);
   }
 
   net::EmbeddedTestServer https_server_;
   std::string intercept_request_path_;
   std::string intercept_request_response_;
 
-  raw_ptr<PageActionIconView, AcrossTasksDanglingUntriaged> pwa_install_view_ =
-      nullptr;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
   raw_ptr<webapps::TestAppBannerManagerDesktop, AcrossTasksDanglingUntriaged>

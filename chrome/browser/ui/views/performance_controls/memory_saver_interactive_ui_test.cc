@@ -334,11 +334,7 @@ class MemorySaverChipInteractiveTest
 
   auto WaitForPageActionButtonVisible() {
     MultiStep steps;
-    if (IsPageActionMigrationEnabled()) {
-      steps += WaitForPageActionButtonVisible(kActionShowMemorySaverChip);
-    } else {
-      steps += WaitForShow(kMemorySaverChipElementId);
-    }
+    steps += WaitForPageActionButtonVisible(kActionShowMemorySaverChip);
     return steps;
   }
 

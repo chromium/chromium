@@ -86,14 +86,8 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   // highlighted button by BubbleDialogDelegate. If not, we set the page action
   // icon as the highlighted button here.
   if (!views::Button::AsButton(anchor_view)) {
-    if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
-      g_manage_passwords_bubble_->SetHighlightedButton(
-          button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage));
-    } else {
-      g_manage_passwords_bubble_->SetHighlightedButton(
-          button_provider->GetPageActionIconView(
-              PageActionIconType::kManagePasswords));
-    }
+    g_manage_passwords_bubble_->SetHighlightedButton(
+        button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage));
   }
 
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);

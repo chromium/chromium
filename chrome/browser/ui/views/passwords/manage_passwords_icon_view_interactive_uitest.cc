@@ -53,20 +53,9 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
   }
 
   IconLabelBubbleView* GetIcon() {
-    IconLabelBubbleView* view = nullptr;
-    if (IsMigrationEnabled()) {
-      view = static_cast<IconLabelBubbleView*>(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar_button_provider()
-              ->GetPageActionView(kActionShowPasswordsBubbleOrPage));
-      DCHECK(views::IsViewClass<page_actions::PageActionView>(view));
-    } else {
-      view = static_cast<IconLabelBubbleView*>(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar_button_provider()
-              ->GetPageActionIconView(PageActionIconType::kManagePasswords));
-      DCHECK(views::IsViewClass<ManagePasswordsIconViews>(view));
-    }
+    auto* view = BrowserView::GetBrowserViewForBrowser(browser())
+                     ->toolbar_button_provider()
+                     ->GetPageActionView(kActionShowPasswordsBubbleOrPage);
     return view;
   }
 

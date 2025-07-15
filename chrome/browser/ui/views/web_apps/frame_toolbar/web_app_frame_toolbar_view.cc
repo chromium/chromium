@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
@@ -216,10 +218,18 @@ PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
   return right_container_->page_action_icon_controller()->GetIconView(type);
 }
 
-page_actions::PageActionView* WebAppFrameToolbarView::GetPageActionView(
+IconLabelBubbleView* WebAppFrameToolbarView::GetPageActionView(
     actions::ActionId action_id) {
-  return right_container_->page_action_container()->GetPageActionView(
-      action_id);
+  page_actions::PageActionPropertiesProvider provider;
+  if (!provider.Contains(action_id)) {
+    return nullptr;
+  }
+  const auto& properties = provider.GetProperties(action_id);
+  if (IsPageActionMigrated(properties.type)) {
+    return right_container_->page_action_container()->GetPageActionView(
+        action_id);
+  }
+  return GetPageActionIconView(properties.type);
 }
 
 AppMenuButton* WebAppFrameToolbarView::GetAppMenuButton() {

@@ -635,12 +635,7 @@ views::View* CommerceUiTabHelper::GetDiscountsIconView() {
     return nullptr;
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-    return toolbar_button_provider->GetPageActionView(kActionCommerceDiscounts);
-  }
-
-  return toolbar_button_provider->GetPageActionIconView(
-      PageActionIconType::kDiscounts);
+  return toolbar_button_provider->GetPageActionView(kActionCommerceDiscounts);
 }
 
 void CommerceUiTabHelper::ComputePageActionToExpand() {

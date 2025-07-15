@@ -9,6 +9,7 @@
 
 namespace views {
 class BubbleDialogDelegate;
+class Button;
 class View;
 }  // namespace views
 
@@ -16,7 +17,6 @@ namespace IOSPromoConstants {
 struct IOSPromoTypeConfigs;
 }  // namespace IOSPromoConstants
 
-class PageActionIconView;
 class Profile;
 
 enum class IOSPromoType;
@@ -45,7 +45,7 @@ class IOSPromoBubble {
   // ShowBubble creates the view and shows the bubble to the user, attached
   // to the feature icon.
   static void ShowPromoBubble(views::View* anchor_view,
-                              PageActionIconView* highlighted_button,
+                              views::Button* highlighted_button,
                               Profile* profile,
                               IOSPromoType promo_type);
 

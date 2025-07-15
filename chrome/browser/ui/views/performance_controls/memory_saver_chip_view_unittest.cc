@@ -87,14 +87,9 @@ class MemorySaverChipViewTest
   bool IsMigrationEnabled() const { return GetParam(); }
 
   IconLabelBubbleView* GetPageActionView() {
-    if (IsMigrationEnabled()) {
-      return BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetPageActionView(kActionShowMemorySaverChip);
-
-    } else {
-      return GetPageActionIconView();
-    }
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetPageActionView(kActionShowMemorySaverChip);
   }
   base::HistogramTester histogram_tester_;
 

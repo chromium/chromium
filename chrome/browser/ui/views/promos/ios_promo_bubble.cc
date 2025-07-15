@@ -294,7 +294,7 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
 
 // static
 void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
-                                     PageActionIconView* highlighted_button,
+                                     views::Button* highlighted_button,
                                      Profile* profile,
                                      IOSPromoType promo_type) {
   IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config =

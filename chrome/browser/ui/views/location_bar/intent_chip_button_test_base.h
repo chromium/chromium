@@ -28,7 +28,6 @@ class IntentChipButtonTestBase {
 
   // Check if the intent picker chip is done animating
   testing::AssertionResult WaitForPageActionButtonVisible(
-      actions::ActionId action_id,
       Browser* browser) const;
 
   // Function to generate test names for IntentChipButton tests.

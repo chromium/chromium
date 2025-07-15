@@ -581,26 +581,19 @@ class WebAppNonClientFrameViewChromeOSTest
     return web_app_frame_toolbar_->paint_as_active_;
   }
 
-  // Returns a PageActionIconView specified by `type` if it hasn't been migrated
-  // yet (or the migration is disabled). Otherwise returns the PageActionView
-  // specified by `action_id`
   IconLabelBubbleView* GetPageActionView(
-      PageActionIconType type,
-      std::optional<actions::ActionId> action_id = std::nullopt) {
-    if (IsPageActionMigrated(type)) {
-      if (!action_id.has_value()) {
-        // The find page action will not exist post-migration.
-        // TODO(https://crbug.com/376283618): Update the comment after
-        // migration.
-        DCHECK_EQ(type, PageActionIconType::kFind);
-        return nullptr;
-      }
-
+      std::variant<actions::ActionId, PageActionIconType> action_type) {
+    if (std::holds_alternative<actions::ActionId>(action_type)) {
       return browser_view_->toolbar_button_provider()->GetPageActionView(
-          action_id.value());
+          std::get<actions::ActionId>(action_type));
+    } else {
+      PageActionIconType type = std::get<PageActionIconType>(action_type);
+      if (!IsPageActionMigrated(type)) {
+        return browser_view_->toolbar_button_provider()->GetPageActionIconView(
+            type);
+      }
+      return nullptr;
     }
-    return browser_view_->toolbar_button_provider()->GetPageActionIconView(
-        type);
   }
 
   ContentSettingImageView* GrantGeolocationPermission() {
@@ -722,8 +715,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
-  IconLabelBubbleView* manage_passwords_icon = GetPageActionView(
-      PageActionIconType::kManagePasswords, kActionShowPasswordsBubbleOrPage);
+  IconLabelBubbleView* manage_passwords_icon =
+      GetPageActionView(kActionShowPasswordsBubbleOrPage);
 
   EXPECT_TRUE(manage_passwords_icon);
   EXPECT_FALSE(manage_passwords_icon->GetVisible());
@@ -745,8 +738,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
       app_browser_->tab_strip_model()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  IconLabelBubbleView* zoom_icon =
-      GetPageActionView(PageActionIconType::kZoom, kActionZoomNormal);
+  IconLabelBubbleView* zoom_icon = GetPageActionView(kActionZoomNormal);
 
   EXPECT_TRUE(zoom_icon);
   EXPECT_FALSE(zoom_icon->GetVisible());
@@ -762,8 +754,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
 
   const bool find_page_action_migrated =
       IsPageActionMigrated(PageActionIconType::kFind);
-
   IconLabelBubbleView* find_icon = GetPageActionView(PageActionIconType::kFind);
+
   if (find_page_action_migrated) {
     EXPECT_FALSE(find_icon);
   } else {
@@ -789,8 +781,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
                        MAYBE_ShowTranslateIcon) {
   SetUpWebApp();
-  IconLabelBubbleView* translate_icon =
-      GetPageActionView(PageActionIconType::kTranslate, kActionShowTranslate);
+  IconLabelBubbleView* translate_icon = GetPageActionView(kActionShowTranslate);
 
   ASSERT_TRUE(translate_icon);
   EXPECT_FALSE(translate_icon->GetVisible());

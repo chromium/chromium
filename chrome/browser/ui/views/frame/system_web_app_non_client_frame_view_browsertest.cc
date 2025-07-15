@@ -18,9 +18,7 @@
 class SystemWebAppNonClientFrameViewBrowserBase
     : public ash::SystemWebAppManagerBrowserTest {
  public:
-  explicit SystemWebAppNonClientFrameViewBrowserBase(
-      bool migration_enabled = false)
-      : migration_enabled_(migration_enabled) {}
+  SystemWebAppNonClientFrameViewBrowserBase() = default;
 
   void HideFileSystemAccessPageAction() {
     WaitForTestSystemAppInstall();
@@ -29,17 +27,10 @@ class SystemWebAppNonClientFrameViewBrowserBase
     WebAppFrameToolbarView* toolbar =
         BrowserView::GetBrowserViewForBrowser(app_browser)
             ->web_app_frame_toolbar_for_testing();
-    if (migration_enabled_) {
-      EXPECT_FALSE(toolbar->GetPageActionView(kActionShowFileSystemAccess));
-    } else {
-      EXPECT_FALSE(toolbar->GetPageActionIconView(
-          PageActionIconType::kFileSystemAccess));
-    }
+    EXPECT_FALSE(toolbar->GetPageActionView(kActionShowFileSystemAccess));
   }
-
- private:
-  bool migration_enabled_;
 };
+
 using SystemWebAppNonClientFrameViewBrowserNoMigrationTest =
     SystemWebAppNonClientFrameViewBrowserBase;
 
@@ -57,8 +48,7 @@ using SystemWebAppNonClientFrameViewBrowserNoMigrationTest =
 class SystemWebAppNonClientFrameViewBrowserMigrationTest
     : public SystemWebAppNonClientFrameViewBrowserBase {
  public:
-  SystemWebAppNonClientFrameViewBrowserMigrationTest()
-      : SystemWebAppNonClientFrameViewBrowserBase(/*migration_enabled=*/true) {
+  SystemWebAppNonClientFrameViewBrowserMigrationTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {::features::kPageActionsMigration,

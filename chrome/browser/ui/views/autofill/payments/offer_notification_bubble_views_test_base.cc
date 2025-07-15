@@ -216,12 +216,8 @@ OfferNotificationBubbleViewsTestBase::GetOfferNotificationBubbleViews() {
 IconLabelBubbleView*
 OfferNotificationBubbleViewsTestBase::GetOfferNotificationPageActionView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  if (IsPageActionMigrated(PageActionIconType::kPaymentsOfferNotification)) {
-    return browser_view->toolbar_button_provider()->GetPageActionView(
-        kActionOffersAndRewardsForPage);
-  }
-  return browser_view->toolbar_button_provider()->GetPageActionIconView(
-      PageActionIconType::kPaymentsOfferNotification);
+  return browser_view->toolbar_button_provider()->GetPageActionView(
+      kActionOffersAndRewardsForPage);
 }
 
 bool OfferNotificationBubbleViewsTestBase::IsIconVisible() {

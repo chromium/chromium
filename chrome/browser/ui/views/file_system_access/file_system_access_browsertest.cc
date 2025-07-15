@@ -134,14 +134,8 @@ class FileSystemAccessBrowserTest : public InProcessBrowserTest,
   bool IsUsageIndicatorVisible(Browser* browser) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* icon_view =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kFileSystemAccess);
-    if (IsMigrationEnabled()) {
-      page_actions::PageActionView* page_action_icon_view =
-          browser_view->toolbar_button_provider()->GetPageActionView(
-              kActionShowFileSystemAccess);
-      return page_action_icon_view && page_action_icon_view->GetVisible();
-    }
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionShowFileSystemAccess);
     return icon_view && icon_view->GetVisible();
   }
 

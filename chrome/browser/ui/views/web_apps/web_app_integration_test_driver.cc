@@ -4724,10 +4724,9 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
 
 views::Button* WebAppIntegrationTestDriver::intent_chip_view() {
   if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-    page_actions::PageActionView* intent_chip_button =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionView(kActionShowIntentPicker);
+    auto* intent_chip_button = BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->toolbar_button_provider()
+                                   ->GetPageActionView(kActionShowIntentPicker);
     CHECK(intent_chip_button);
     return intent_chip_button;
   }

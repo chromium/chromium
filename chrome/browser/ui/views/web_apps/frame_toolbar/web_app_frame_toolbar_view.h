@@ -22,10 +22,6 @@ class WebAppNonClientFrameViewChromeOSTest;
 class LocationBarViewQuietNotificationInteractiveUITest;
 }  // namespace
 
-namespace page_actions {
-class PageActionView;
-}  // namespace page_actions
-
 namespace views {
 class View;
 class ViewTargeterDelegate;
@@ -81,8 +77,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
-  page_actions::PageActionView* GetPageActionView(
-      actions::ActionId action_id) override;
+  IconLabelBubbleView* GetPageActionView(actions::ActionId action_id) override;
   AppMenuButton* GetAppMenuButton() override;
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;

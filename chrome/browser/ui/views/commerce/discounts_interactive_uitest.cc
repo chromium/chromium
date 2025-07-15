@@ -135,11 +135,7 @@ class DiscountsInteractiveTest
 
   auto WaitForPageActionButtonVisible() {
     MultiStep steps;
-    if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-      steps += WaitForPageActionButtonVisible(kActionCommerceDiscounts);
-    } else {
-      steps += WaitForShow(kDiscountsChipElementId);
-    }
+    steps += WaitForPageActionButtonVisible(kActionCommerceDiscounts);
     return steps;
   }
 

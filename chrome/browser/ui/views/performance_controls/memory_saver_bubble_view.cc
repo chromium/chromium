@@ -147,14 +147,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto* bubble = bubble_unique.get();
   auto* const toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
-  views::Button* highlighted_button;
-  if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
-    highlighted_button =
-        toolbar_button_provider->GetPageActionView(kActionShowMemorySaverChip);
-  } else {
-    highlighted_button = toolbar_button_provider->GetPageActionIconView(
-        PageActionIconType::kMemorySaver);
-  }
+  views::Button* highlighted_button =
+      toolbar_button_provider->GetPageActionView(kActionShowMemorySaverChip);
   bubble->SetHighlightedButton(highlighted_button);
 
   views::Widget* const widget =

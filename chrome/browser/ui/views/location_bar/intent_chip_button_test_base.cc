@@ -47,14 +47,13 @@ views::Button* IntentChipButtonTestBase::GetIntentChip(Browser* browser) {
 
 testing::AssertionResult
 IntentChipButtonTestBase::WaitForPageActionButtonVisible(
-    actions::ActionId action_id,
     Browser* browser) const {
   if (!IsMigrationEnabled()) {
     return testing::AssertionSuccess();
   }
   auto* view = BrowserView::GetBrowserViewForBrowser(browser)
                    ->toolbar_button_provider()
-                   ->GetPageActionView(action_id);
+                   ->GetPageActionView(kActionShowIntentPicker);
   if (!view) {
     return testing::AssertionFailure();
   }

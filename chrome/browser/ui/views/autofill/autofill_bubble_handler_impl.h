@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-class PageActionIconView;
 class ToolbarButtonProvider;
 
 namespace content {
@@ -22,6 +21,7 @@ class WebContents;
 
 namespace views {
 class View;
+class Button;
 }
 
 namespace autofill {
@@ -101,7 +101,7 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       views::View* anchor_view,
       content::WebContents* web_contents,
       base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
-      PageActionIconView* icon_view,
+      views::Button* icon_view,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 
   raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;

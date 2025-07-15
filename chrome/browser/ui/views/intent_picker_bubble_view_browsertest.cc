@@ -231,8 +231,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
       ExpectLinkClickNotCapturedIntoAppBrowser(browser(), in_scope_url, rel()));
   run_loop.Run();
 
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
 }
 
@@ -249,15 +248,13 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
   // OpenNewTab opens a new tab and focus on the new tab.
   OpenNewTab(in_scope_url, /*rel=*/rel());
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
   OpenNewTab(out_of_scope_url, /*rel=*/rel());
   EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
 
   chrome::SelectPreviousTab(browser());
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
   chrome::SelectNextTab(browser());
   EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
@@ -287,8 +284,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
   EXPECT_TRUE(
       content::NavigateIframeToURL(initial_tab, "iframe", out_of_scope_url));
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 
@@ -307,8 +303,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   views::Button* intent_picker_icon = GetIntentChip(browser());
 
   OpenNewTab(in_scope_url);
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_icon->GetVisible());
   ASSERT_TRUE(DoAndWaitForIntentPickerIconUpdate(
       [this, redirect_url, out_of_scope_url] {
@@ -333,8 +328,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
   OpenNewTab(in_scope_url);
   ASSERT_TRUE(intent_picker_view);
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
   // Now switch to chrome://version.
@@ -362,8 +356,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
 
   // Go to the test app and wait for the intent picker icon to load.
   OpenNewTab(in_scope_url);
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
   // Now switch to www.google.com, which gives a network error in the test
@@ -395,8 +388,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
   views::Button* intent_picker_view = GetIntentChip(browser());
 
   OpenNewTab(test_url);
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
   content::WebContents* web_contents =
@@ -644,8 +636,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
 
   // After activation, IntentPickerTabHelper should show the
   // intent picker.
-  EXPECT_TRUE(
-      WaitForPageActionButtonVisible(kActionShowIntentPicker, browser()));
+  EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 

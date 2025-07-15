@@ -254,9 +254,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
                             ->app_browser()
                             ->GetAppBrowserController()
                             ->GetTitleBarPageActions()) {
-    auto* page_action_view =
-        helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
-
     const auto& properties = properties_provider.GetProperties(action_id);
 
     // When the page action migration is not enabled, the view should not be
@@ -265,6 +262,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
       continue;
     }
 
+    auto* page_action_view =
+        helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
     ASSERT_NE(nullptr, page_action_view);
     EXPECT_EQ(page_action_view->parent(),
               toolbar_right_container->page_action_container());

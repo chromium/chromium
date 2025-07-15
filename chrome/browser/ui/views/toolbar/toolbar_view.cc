@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
@@ -652,13 +653,8 @@ void ToolbarView::ShowIntentPickerBubble(
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kClickToCall);
-  } else if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+  } else if (highlighted_button = GetIntentChipButton(); !highlighted_button) {
     highlighted_button = GetPageActionView(kActionShowIntentPicker);
-  } else if (apps::features::ShouldShowLinkCapturingUX()) {
-    highlighted_button = GetIntentChipButton();
-  } else {
-    highlighted_button =
-        GetPageActionIconView(PageActionIconType::kIntentPicker);
   }
 
   if (!highlighted_button) {
@@ -673,9 +669,9 @@ void ToolbarView::ShowIntentPickerBubble(
 
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   views::View* const anchor_view = location_bar();
-  PageActionIconView* const bookmark_star_icon =
+  views::Button* const bookmark_star_icon =
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
-
+  CHECK(bookmark_star_icon);
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, browser_, url,
                                  already_bookmarked);
@@ -1105,9 +1101,18 @@ PageActionIconView* ToolbarView::GetPageActionIconView(
   return location_bar()->page_action_icon_controller()->GetIconView(type);
 }
 
-page_actions::PageActionView* ToolbarView::GetPageActionView(
+IconLabelBubbleView* ToolbarView::GetPageActionView(
     actions::ActionId action_id) {
-  return location_bar()->page_action_container()->GetPageActionView(action_id);
+  page_actions::PageActionPropertiesProvider provider;
+  if (!provider.Contains(action_id)) {
+    return nullptr;
+  }
+  const auto& properties = provider.GetProperties(action_id);
+  if (IsPageActionMigrated(properties.type)) {
+    return location_bar()->page_action_container()->GetPageActionView(
+        action_id);
+  }
+  return GetPageActionIconView(properties.type);
 }
 
 AppMenuButton* ToolbarView::GetAppMenuButton() {

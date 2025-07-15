@@ -46,6 +46,8 @@ class PageActionPropertiesProvider
   PageActionPropertiesProvider();
   ~PageActionPropertiesProvider() override;
 
+  bool Contains(actions::ActionId action_id) const;
+
   // PageActionPropertiesProviderInterface
   const PageActionProperties& GetProperties(
       actions::ActionId action_id) const final;

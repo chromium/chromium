@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/actions/actions.h"
@@ -38,6 +39,12 @@ class PageActionInteractiveTestMixin : public T {
   // the view has reached its target state isn't trivial. So, resort to polling
   // the View for when its reached a stable visible state.
   auto WaitForPageActionButtonVisible(actions::ActionId action_id) {
+    const auto& properties =
+        page_actions::PageActionPropertiesProvider().GetProperties(action_id);
+    if (!IsPageActionMigrated(properties.type)) {
+      return T::Steps(T::WaitForShow(properties.element_identifier));
+    }
+
     auto steps = T::Steps(
         T::PollState(kPageActionButtonVisible,
                      [this, action_id]() {

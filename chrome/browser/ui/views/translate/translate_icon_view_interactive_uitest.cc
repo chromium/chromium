@@ -54,10 +54,7 @@ class TranslateIconViewTest : public InProcessBrowserTest,
     ToolbarButtonProvider* provider =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
-    if (IsMigrationEnabled()) {
-      return provider->GetPageActionView(kActionShowTranslate);
-    }
-    return provider->GetPageActionIconView(PageActionIconType::kTranslate);
+    return provider->GetPageActionView(kActionShowTranslate);
   }
 
   views::BubbleDialogDelegate* GetBubble() const {

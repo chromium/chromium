@@ -349,11 +349,7 @@ class PriceInsightsIconViewEngagementTest
 
   auto WaitForPageActionButtonVisible() {
     MultiStep steps;
-    if (GetParam()) {
-      steps += WaitForPageActionButtonVisible(kActionCommercePriceInsights);
-    } else {
-      steps += WaitForShow(kPriceInsightsChipElementId);
-    }
+    steps += WaitForPageActionButtonVisible(kActionCommercePriceInsights);
     return steps;
   }
 

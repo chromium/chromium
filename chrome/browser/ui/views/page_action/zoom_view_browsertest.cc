@@ -20,13 +20,7 @@ namespace {
 views::View* GetZoomView(Browser* browser) {
   auto* toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
-
-  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-    return toolbar_button_provider->GetPageActionView(kActionZoomNormal);
-  }
-
-  return toolbar_button_provider->GetPageActionIconView(
-      PageActionIconType::kZoom);
+  return toolbar_button_provider->GetPageActionView(kActionZoomNormal);
 }
 
 }  // namespace

@@ -3339,14 +3339,8 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
   }
 
-  views::Button* translate_icon;
-  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
-    translate_icon =
-        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
-  } else {
-    translate_icon = toolbar_button_provider()->GetPageActionIconView(
-        PageActionIconType::kTranslate);
-  }
+  views::Button* translate_icon =
+      toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
 
   views::View* anchor_view =
       toolbar_button_provider()->GetAnchorView(kActionShowTranslate);
@@ -3372,14 +3366,8 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
-  views::Button* translate_icon;
-  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
-    translate_icon =
-        toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
-  } else {
-    translate_icon = toolbar_button_provider()->GetPageActionIconView(
-        PageActionIconType::kTranslate);
-  }
+  views::Button* translate_icon =
+      toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
 
   CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
       .StartPartialTranslate(

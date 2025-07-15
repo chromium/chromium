@@ -69,6 +69,7 @@ NewPageActionHighlight(content::WebContents& web_contents) {
   if (!tab) {
     return std::nullopt;
   }
+
   if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
     tabs::TabFeatures* tab_features = tab->GetTabFeatures();
     CHECK(tab_features);
@@ -159,11 +160,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
   CHECK(prefs_);
 }
 
-WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
-  if (!web_contents()) {
-    return;
-  }
-}
+WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() = default;
 
 void WebAppInstallDialogDelegate::OnAccept() {
   MeasureAcceptUserActionsForInstallDialog();
