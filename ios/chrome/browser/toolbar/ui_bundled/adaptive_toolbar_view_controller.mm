@@ -534,6 +534,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   } else if (sender == self.view.openNewTabButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
     base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
+  } else if (sender == self.view.diamondPrototypeButton) {
+    CHECK(IsDiamondPrototypeEnabled());
   } else {
     NOTREACHED();
   }
