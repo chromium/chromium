@@ -131,6 +131,7 @@ public class StripLayoutTab extends StripLayoutView {
     private static final float FAVICON_WIDTH = 16.f;
     private static final float FAVICON_PADDING = 26.f;
     protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
+    private static final float WIDTH_TO_HIDE_FAVICON = 86.f;
 
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
@@ -840,6 +841,10 @@ public class StripLayoutTab extends StripLayoutView {
 
     public int getCloseButtonOffsetX() {
         return CLOSE_BUTTON_OFFSET_X;
+    }
+
+    public boolean shouldHideFavicon() {
+        return mIsSelected && getWidth() <= WIDTH_TO_HIDE_FAVICON;
     }
 
     @Override

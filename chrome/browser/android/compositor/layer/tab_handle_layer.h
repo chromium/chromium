@@ -42,6 +42,7 @@ class TabHandleLayer : public Layer {
                      bool foreground,
                      bool shouldShowTabOutline,
                      bool close_pressed,
+                     bool should_hide_favicon,
                      float toolbar_width,
                      float x,
                      float y,

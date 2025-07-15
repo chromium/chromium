@@ -42,6 +42,7 @@ class DecorationTabTitle : public DecorationIconTitle {
   void SetIsLoading(bool is_loading);
   void SetSpinnerRotation(float rotation);
   void SetShouldHideTitleText(bool should_hide_title_text);
+  void SetShouldHideIcon(bool should_hide_icon);
   void setBounds(const gfx::Size& bounds) override;
   void Update(int title_resource_id,
               int icon_resource_id,

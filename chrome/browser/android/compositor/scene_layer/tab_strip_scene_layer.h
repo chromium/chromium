@@ -143,6 +143,7 @@ class TabStripSceneLayer : public SceneLayer {
                         jboolean foreground,
                         jboolean shouldShowTabOutline,
                         jboolean close_pressed,
+                        jboolean should_hide_favicon,
                         jfloat toolbar_width,
                         jfloat x,
                         jfloat y,

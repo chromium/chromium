@@ -101,12 +101,22 @@ void DecorationIconTitle::SetShouldHideTitleText(bool should_hide_title_text) {
   DecorationTitle::SetShouldHideTitleText(should_hide_title_text);
 }
 
+void DecorationIconTitle::SetShouldHideIcon(bool should_hide_icon) {
+  should_hide_icon_ = should_hide_icon;
+}
+
 void DecorationIconTitle::setBounds(const gfx::Size& bounds) {
   // Place icon.
-  int icon_space = icon_size_.width() + icon_start_padding_ + icon_end_padding_;
+  int icon_space =
+      should_hide_icon_
+          ? 0.f
+          : icon_size_.width() + icon_start_padding_ + icon_end_padding_;
   float icon_offset_y = (size_.height() - icon_size_.height()) / 2.f;
   bool sys_rtl = l10n_util::IsLayoutRtl();
-  if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
+
+  if (should_hide_icon_) {
+    layer_icon_->SetIsDrawable(false);
+  } else if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
     int icon_x = icon_start_padding_;
     if (sys_rtl) {
       icon_x = bounds.width() - icon_size_.width() - icon_start_padding_;

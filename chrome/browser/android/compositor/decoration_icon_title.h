@@ -40,6 +40,7 @@ class DecorationIconTitle : public DecorationTitle {
   void SetIconResourceId(int icon_resource_id);
   void SetUIResourceIds() override;
   void SetShouldHideTitleText(bool should_hide_title_text);
+  void SetShouldHideIcon(bool should_hide_icon);
   void setBounds(const gfx::Size& bounds) override;
   void setOpacity(float opacity) override;
   const gfx::Size& size() { return size_; }
@@ -59,6 +60,7 @@ class DecorationIconTitle : public DecorationTitle {
   std::unique_ptr<gfx::Transform> transform_;
   gfx::PointF icon_position_;
   bool icon_needs_refresh_ = true;
+  bool should_hide_icon_;
 };
 
 }  // namespace android

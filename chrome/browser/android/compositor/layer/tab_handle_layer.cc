@@ -35,6 +35,7 @@ void TabHandleLayer::SetProperties(
     bool foreground,
     bool shouldShowTabOutline,
     bool close_pressed,
+    bool should_hide_favicon,
     float toolbar_width,
     float x,
     float y,
@@ -192,6 +193,9 @@ void TabHandleLayer::SetProperties(
 
     // Hide tab title text when it reached threshold.
     title_layer->SetShouldHideTitleText(width <= width_to_hide_tab_title);
+
+    // Hide tab favicon if necessary.
+    title_layer->SetShouldHideIcon(should_hide_favicon);
 
     int title_x = is_rtl ? padding_left + close_width : padding_left;
     int title_width = width - padding_left - padding_right - close_width;
