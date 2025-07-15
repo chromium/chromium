@@ -3759,10 +3759,16 @@ bool Browser::SupportsWindowFeatureImpl(WindowFeature feature,
 
 
 bool Browser::IsBrowserClosing() const {
-  const BrowserList::BrowserSet& closing_browsers =
-      BrowserList::GetInstance()->currently_closing_browsers();
+  BrowserList* browser_list = BrowserList::GetInstance();
+  const bool removed_from_browserlist =
+      std::ranges::find_if(*browser_list, [this](Browser* browser) {
+        return browser == this;
+      }) == browser_list->end();
 
-  return base::Contains(closing_browsers, this);
+  const BrowserList::BrowserSet& closing_browsers =
+      browser_list->currently_closing_browsers();
+
+  return base::Contains(closing_browsers, this) || removed_from_browserlist;
 }
 
 bool Browser::ShouldStartShutdown() const {
