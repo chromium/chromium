@@ -57,6 +57,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
     // Success path setup. The Pix account linking user pref is default enabled.
     ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
         .WillByDefault(testing::Return(true));
+    ON_CALL(client(), IsWebContentsVisibleOrOccluded)
+        .WillByDefault(testing::Return(true));
     // Simulate the payments server returns that the user is eligible for Pix
     // account linking.
     ON_CALL(*multiple_request_payments_network_interface(),
@@ -176,6 +178,15 @@ TEST_F(PixAccountLinkingManagerTest,
         return base::StrongAlias<autofill::payments::RequestIdTag,
                                  std::string>();
       }));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
+TEST_F(PixAccountLinkingManagerTest, TabNotActive_PromptNotShown) {
+  ON_CALL(client(), IsWebContentsVisibleOrOccluded)
+      .WillByDefault(testing::Return(false));
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 

@@ -80,6 +80,7 @@ class ChromeFacilitatedPaymentsClient
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       final;
   payments::facilitated::DeviceDelegate* GetDeviceDelegate() final;
+  bool IsWebContentsVisibleOrOccluded() final;
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;

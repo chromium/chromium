@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
@@ -128,6 +129,10 @@ ChromeFacilitatedPaymentsClient::GetOptimizationGuideDecider() {
 payments::facilitated::DeviceDelegate*
 ChromeFacilitatedPaymentsClient::GetDeviceDelegate() {
   return &device_delegate_;
+}
+
+bool ChromeFacilitatedPaymentsClient::IsWebContentsVisibleOrOccluded() {
+  return GetWebContents().GetVisibility() != content::Visibility::HIDDEN;
 }
 
 void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(

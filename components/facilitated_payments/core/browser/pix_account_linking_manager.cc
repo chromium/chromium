@@ -86,6 +86,13 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
     return;
   }
 
+  // If the user has switched to a different tab, don't show the prompt.
+  if (!client_->IsWebContentsVisibleOrOccluded()) {
+    // TODO(crbug.com/419108993): Add metrics for when the prompt is not shown
+    // because the tab is not active.
+    return;
+  }
+
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));

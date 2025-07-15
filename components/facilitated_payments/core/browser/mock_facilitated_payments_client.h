@@ -60,6 +60,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (),
               (override));
   MOCK_METHOD(DeviceDelegate*, GetDeviceDelegate, (), (override));
+  MOCK_METHOD(bool, IsWebContentsVisibleOrOccluded, (), (override));
   MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,

@@ -83,6 +83,12 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Returns the `DeviceDelegate` instance owned by the implementation class.
   virtual DeviceDelegate* GetDeviceDelegate() = 0;
 
+  // Returns true if the WebContents associated with this instance is either
+  // visible or occluded, but not hidden. When a tab is occluded, it is still
+  // open, but not visible either because it is covered by other windows or
+  // because it's outside the screen bounds.
+  virtual bool IsWebContentsVisibleOrOccluded() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // `bank_account_suggestions` is the list of PIX accounts to be shown to the
   // user for payment. `on_payment_account_selected` is the callback called with

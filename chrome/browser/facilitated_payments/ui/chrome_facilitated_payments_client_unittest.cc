@@ -202,6 +202,18 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, IsInLandscapeMode) {
   base_client().IsInLandscapeMode();
 }
 
+// Test the client correctly returns whether or not the tab is active.
+TEST_F(ChromeFacilitatedPaymentsClientTest, IsWebContentsVisibleOrOccluded) {
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(base_client().IsWebContentsVisibleOrOccluded());
+
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::OCCLUDED);
+  EXPECT_TRUE(base_client().IsWebContentsVisibleOrOccluded());
+
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  EXPECT_FALSE(base_client().IsWebContentsVisibleOrOccluded());
+}
+
 // Test that the client forwards call to show payment link FOP selector to the
 // controller.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
