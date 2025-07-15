@@ -153,6 +153,7 @@ source_set("unit_tests") {
   sources = [
     "chrome_hints_manager_unittest.cc",
     "chrome_model_quality_logs_uploader_service_unittest.cc",
+    "prediction/chrome_profile_download_service_tracker_unittest.cc",
   ]
   deps = [
     ":optimization_guide",

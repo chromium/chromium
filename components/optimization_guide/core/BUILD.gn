@@ -371,6 +371,7 @@ static_library("prediction") {
     "delivery/prediction_model_override.h",
     "delivery/prediction_model_store.cc",
     "delivery/prediction_model_store.h",
+    "delivery/profile_download_service_tracker.h",
   ]
   deps = [
     ":core_util",
