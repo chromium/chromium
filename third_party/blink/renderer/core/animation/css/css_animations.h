@@ -465,12 +465,14 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState& state,
       const PropertyHandle& transitioning_property);
 
-  static AnimationTrigger* ComputeTrigger(Element* element,
-                                          const CSSAnimationData* data,
-                                          wtf_size_t animation_index,
-                                          const CSSAnimationUpdate& update,
-                                          AnimationTrigger* existing_trigger,
-                                          float zoom);
+  // TODO(crbug.com/429392773): Uncomment and use this function.
+  // static AnimationTrigger* ComputeTimelineTrigger(
+  //     Element* element,
+  //     const CSSAnimationData* data,
+  //     wtf_size_t animation_index,
+  //     const CSSAnimationUpdate& update,
+  //     AnimationTrigger* existing_trigger,
+  //     float zoom);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:

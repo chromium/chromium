@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class AnimationTrigger;
-
 class CORE_EXPORT CSSAnimation : public Animation {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -92,8 +90,12 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // depends on computed values.
   void FlushPendingUpdates() const override { FlushStyles(); }
 
-  AnimationTrigger* GetTrigger() const { return css_trigger_.Get(); }
-  void SetTrigger(AnimationTrigger* trigger) { css_trigger_ = trigger; }
+  const std::optional<Vector<AtomicString>>& GetTriggerNames() {
+    return trigger_names_;
+  }
+  void SetTriggerNames(const std::optional<Vector<AtomicString>>& names) {
+    trigger_names_ = names;
+  }
 
  protected:
   AnimationEffect::EventDelegate* CreateEventDelegate(
@@ -130,12 +132,13 @@ class CORE_EXPORT CSSAnimation : public Animation {
   bool ignore_css_range_start_ = false;
   bool ignore_css_range_end_ = false;
 
-  // The trigger corresponding to the animation-trigger property.
-  Member<AnimationTrigger> css_trigger_;
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation
   // The spec: https://drafts.csswg.org/css-animations-2/#owning-element-section
   Member<Element> owning_element_;
+
+  // Names of Triggers corresponding to the animation-trigger property.
+  std::optional<Vector<AtomicString>> trigger_names_;
 };
 
 template <>

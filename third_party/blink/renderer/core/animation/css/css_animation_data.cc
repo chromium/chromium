@@ -18,12 +18,17 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   range_start_list_.push_back(InitialRangeStart());
   range_end_list_.push_back(InitialRangeEnd());
   composition_list_.push_back(InitialComposition());
-  trigger_behavior_list_.push_back(InitialTriggerBehavior());
-  trigger_timeline_list_.push_back(InitialTriggerTimeline());
-  trigger_range_start_list_.push_back(InitialTriggerRangeStart());
-  trigger_range_end_list_.push_back(InitialTriggerRangeEnd());
-  trigger_exit_range_start_list_.push_back(InitialTriggerExitRangeStart());
-  trigger_exit_range_end_list_.push_back(InitialTriggerExitRangeEnd());
+  timeline_trigger_name_list_.push_back(InitialTimelineTriggerName());
+  timeline_trigger_behavior_list_.push_back(InitialTimelineTriggerBehavior());
+  timeline_trigger_timeline_list_.push_back(InitialTimelineTriggerTimeline());
+  timeline_trigger_range_start_list_.push_back(
+      InitialTimelineTriggerRangeStart());
+  timeline_trigger_range_end_list_.push_back(InitialTimelineTriggerRangeEnd());
+  timeline_trigger_exit_range_start_list_.push_back(
+      InitialTimelineTriggerExitRangeStart());
+  timeline_trigger_exit_range_end_list_.push_back(
+      InitialTimelineTriggerExitRangeEnd());
+  trigger_names_list_.push_back(InitialTriggerNames());
 }
 
 CSSAnimationData::CSSAnimationData(const CSSAnimationData& other) = default;
@@ -40,12 +45,6 @@ const AtomicString& CSSAnimationData::InitialName() {
 const StyleTimeline& CSSAnimationData::InitialTimeline() {
   DEFINE_STATIC_LOCAL(const StyleTimeline, timeline, (CSSValueID::kAuto));
   return timeline;
-}
-
-const StyleTimeline& CSSAnimationData::InitialTriggerTimeline() {
-  DEFINE_STATIC_LOCAL(const StyleTimeline, trigger_timeline,
-                      (CSSValueID::kAuto));
-  return trigger_timeline;
 }
 
 const StyleTimeline& CSSAnimationData::InitialTimelineTriggerTimeline() {
@@ -82,9 +81,10 @@ const StyleTimeline& CSSAnimationData::GetTimeline(size_t index) const {
   return GetRepeated(timeline_list_, index);
 }
 
-const StyleTimeline& CSSAnimationData::GetTriggerTimeline(size_t index) const {
-  DCHECK_LT(index, name_list_.size());
-  return GetRepeated(trigger_timeline_list_, index);
+const StyleTimeline& CSSAnimationData::GetTimelineTriggerTimeline(
+    size_t index) const {
+  DCHECK_LT(index, timeline_trigger_timeline_list_.size());
+  return GetRepeated(timeline_trigger_timeline_list_, index);
 }
 
 }  // namespace blink

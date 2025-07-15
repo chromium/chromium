@@ -110,6 +110,16 @@ CSSCustomIdentValue* ConsumeCustomIdentExcludingNone(
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
 
+CSSValue* ConsumeSingleAnimationTrigger(CSSParserTokenStream& stream,
+                                        const CSSParserContext& context) {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeSpaceSeparatedList(
+      css_parsing_utils::ConsumeDashedIdent, stream, context);
+}
+
 }  // namespace
 
 namespace css_longhand {
@@ -633,139 +643,44 @@ const CSSValue* AnimationTimingFunction::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kEase);
 }
 
-const CSSValue* AnimationTriggerRangeStart::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, stream, context,
-      /* default_offset_percent */ 0.0, /*allow_auto=*/false);
-}
-
-const CSSValue* AnimationTriggerRangeStart::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerRangeStartList(
-      style.Animations(), style);
-}
-
-const CSSValue* AnimationTriggerRangeStart::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kNormal);
-}
-
-const CSSValue* AnimationTriggerRangeEnd::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, stream, context,
-      /* default_offset_percent */ 100.0, /*allow_auto=*/false);
-}
-
-const CSSValue* AnimationTriggerRangeEnd::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerRangeEndList(
-      style.Animations(), style);
-}
-
-const CSSValue* AnimationTriggerRangeEnd::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kNormal);
-}
-
-const CSSValue* AnimationTriggerExitRangeStart::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, stream, context,
-      /* default_offset_percent */ 0.0, /*allow_auto=*/true);
-}
-
-const CSSValue*
-AnimationTriggerExitRangeStart::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerExitRangeStartList(
-      style.Animations(), style);
-}
-
-const CSSValue* AnimationTriggerExitRangeStart::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kAuto);
-}
-
-const CSSValue* AnimationTriggerExitRangeEnd::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationRange, stream, context,
-      /* default_offset_percent */ 100.0, /*allow_auto=*/true);
-}
-
-const CSSValue* AnimationTriggerExitRangeEnd::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerExitRangeEndList(
-      style.Animations(), style);
-}
-
-const CSSValue* AnimationTriggerExitRangeEnd::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kAuto);
-}
-
-const CSSValue* AnimationTriggerBehavior::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kOnce);
-}
-
-const CSSValue* AnimationTriggerBehavior::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
-      style.Animations());
-}
-
-const CSSValue* AnimationTriggerBehavior::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext&,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
-      CSSParserTokenStream&)>(
-      css_parsing_utils::ConsumeIdent<CSSValueID::kOnce, CSSValueID::kRepeat,
-                                      CSSValueID::kAlternate,
-                                      CSSValueID::kState>,
-      stream);
-}
-
-const CSSValue* AnimationTriggerTimeline::ParseSingleValue(
+const CSSValue* AnimationTrigger::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeAnimationTimeline, stream, context);
+      ConsumeSingleAnimationTrigger, stream, context);
 }
 
-const CSSValue* AnimationTriggerTimeline::CSSValueFromComputedStyleInternal(
+const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationTriggerTimelineList(
-      style.Animations(), style);
+  if (const CSSAnimationData* data = style.Animations()) {
+    CSSValueList* names_list = CSSValueList::CreateCommaSeparated();
+
+    for (const std::optional<Vector<AtomicString>>& trigger_names_list :
+         data->TriggerNamesList()) {
+      CSSValueList* names = CSSValueList::CreateSpaceSeparated();
+      if (trigger_names_list.has_value()) {
+        for (const AtomicString& name : *trigger_names_list) {
+          names->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name));
+        }
+      } else {
+        names->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+      }
+
+      names_list->Append(*names);
+    }
+
+    return names_list;
+  }
+
+  return InitialValue();
 }
 
-const CSSValue* AnimationTriggerTimeline::InitialValue() const {
-  return CSSIdentifierValue::Create(CSSValueID::kAuto);
+const CSSValue* AnimationTrigger::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 const CSSValue* TimelineTriggerBehavior::InitialValue() const {
@@ -777,8 +692,11 @@ const CSSValue* TimelineTriggerBehavior::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForTimelineTriggerBehaviorList(
-      style.Animations());
+  return ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
+      style.Animations()
+          ? style.Animations()->TimelineTriggerBehaviorList()
+          : Vector<EAnimationTriggerBehavior>{
+                CSSAnimationData::InitialTimelineTriggerBehavior()});
 }
 
 const CSSValue* TimelineTriggerBehavior::ParseSingleValue(

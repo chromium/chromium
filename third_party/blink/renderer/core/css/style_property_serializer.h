@@ -86,8 +86,6 @@ class CORE_EXPORT StylePropertySerializer {
   String ScrollTimelineValue() const;
   String ViewTimelineValue() const;
   String AnimationRangeShorthandValue() const;
-  String AnimationTriggerRangeShorthandValue() const;
-  String AnimationTriggerExitRangeShorthandValue() const;
   String FontValue() const;
   String FontSynthesisValue() const;
   String FontVariantValue() const;

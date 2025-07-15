@@ -48,7 +48,7 @@ class NewCSSAnimation {
                   const Vector<EAnimPlayState>& play_state_list,
                   const std::optional<TimelineOffset>& range_start,
                   const std::optional<TimelineOffset>& range_end,
-                  AnimationTrigger* trigger)
+                  const std::optional<Vector<AtomicString>>& trigger_names)
       : name(name),
         name_index(name_index),
         position_index(position_index),
@@ -60,13 +60,12 @@ class NewCSSAnimation {
         play_state_list(play_state_list),
         range_start(range_start),
         range_end(range_end),
-        trigger(trigger) {}
+        trigger_names(trigger_names) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(effect);
     visitor->Trace(style_rule);
     visitor->Trace(timeline);
-    visitor->Trace(trigger);
   }
 
   AtomicString name;
@@ -80,7 +79,7 @@ class NewCSSAnimation {
   Vector<EAnimPlayState> play_state_list;
   std::optional<TimelineOffset> range_start;
   std::optional<TimelineOffset> range_end;
-  Member<AnimationTrigger> trigger;
+  std::optional<Vector<AtomicString>> trigger_names;
 };
 
 class UpdatedCSSAnimation {
@@ -96,7 +95,7 @@ class UpdatedCSSAnimation {
                       const Vector<EAnimPlayState>& play_state_list,
                       const std::optional<TimelineOffset>& range_start,
                       const std::optional<TimelineOffset>& range_end,
-                      AnimationTrigger* trigger)
+                      const std::optional<Vector<AtomicString>>& trigger_names)
       : specified_timing(specified_timing),
         index(index),
         animation(animation),
@@ -107,14 +106,13 @@ class UpdatedCSSAnimation {
         play_state_list(play_state_list),
         range_start(range_start),
         range_end(range_end),
-        trigger(trigger) {}
+        trigger_names(trigger_names) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(animation);
     visitor->Trace(effect);
     visitor->Trace(style_rule);
     visitor->Trace(timeline);
-    visitor->Trace(trigger);
   }
 
   Timing specified_timing;
@@ -127,7 +125,7 @@ class UpdatedCSSAnimation {
   Vector<EAnimPlayState> play_state_list;
   std::optional<TimelineOffset> range_start;
   std::optional<TimelineOffset> range_end;
-  Member<AnimationTrigger> trigger;
+  std::optional<Vector<AtomicString>> trigger_names;
 };
 
 }  // namespace blink
@@ -152,20 +150,21 @@ class CORE_EXPORT CSSAnimationUpdate final {
   void Copy(const CSSAnimationUpdate&);
   void Clear();
 
-  void StartAnimation(const AtomicString& animation_name,
-                      size_t name_index,
-                      wtf_size_t position_index,
-                      const InertEffect& effect,
-                      const Timing& timing,
-                      StyleRuleKeyframes* style_rule,
-                      AnimationTimeline* timeline,
-                      const Vector<EAnimPlayState>& play_state_list,
-                      const std::optional<TimelineOffset>& range_start,
-                      const std::optional<TimelineOffset>& range_end,
-                      AnimationTrigger* trigger) {
+  void StartAnimation(
+      const AtomicString& animation_name,
+      size_t name_index,
+      wtf_size_t position_index,
+      const InertEffect& effect,
+      const Timing& timing,
+      StyleRuleKeyframes* style_rule,
+      AnimationTimeline* timeline,
+      const Vector<EAnimPlayState>& play_state_list,
+      const std::optional<TimelineOffset>& range_start,
+      const std::optional<TimelineOffset>& range_end,
+      const std::optional<Vector<AtomicString>>& trigger_names) {
     new_animations_.push_back(NewCSSAnimation(
         animation_name, name_index, position_index, effect, timing, style_rule,
-        timeline, play_state_list, range_start, range_end, trigger));
+        timeline, play_state_list, range_start, range_end, trigger_names));
   }
   void CancelAnimation(wtf_size_t index, const Animation& animation) {
     cancelled_animation_indices_.push_back(index);
@@ -174,19 +173,20 @@ class CORE_EXPORT CSSAnimationUpdate final {
   void ToggleAnimationIndexPaused(wtf_size_t index) {
     animation_indices_with_pause_toggled_.push_back(index);
   }
-  void UpdateAnimation(wtf_size_t index,
-                       Animation* animation,
-                       const InertEffect& effect,
-                       const Timing& specified_timing,
-                       StyleRuleKeyframes* style_rule,
-                       AnimationTimeline* timeline,
-                       const Vector<EAnimPlayState>& play_state_list,
-                       const std::optional<TimelineOffset>& range_start,
-                       const std::optional<TimelineOffset>& range_end,
-                       AnimationTrigger* trigger) {
+  void UpdateAnimation(
+      wtf_size_t index,
+      Animation* animation,
+      const InertEffect& effect,
+      const Timing& specified_timing,
+      StyleRuleKeyframes* style_rule,
+      AnimationTimeline* timeline,
+      const Vector<EAnimPlayState>& play_state_list,
+      const std::optional<TimelineOffset>& range_start,
+      const std::optional<TimelineOffset>& range_end,
+      const std::optional<Vector<AtomicString>>& trigger_names) {
     animations_with_updates_.push_back(UpdatedCSSAnimation(
         index, animation, effect, specified_timing, style_rule, timeline,
-        play_state_list, range_start, range_end, trigger));
+        play_state_list, range_start, range_end, trigger_names));
     suppressed_animations_.insert(animation);
   }
   void UpdateCompositorKeyframes(Animation* animation) {

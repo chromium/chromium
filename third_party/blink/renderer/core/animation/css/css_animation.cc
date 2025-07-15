@@ -126,7 +126,6 @@ CSSAnimation::PlayStateTransitionScope::~PlayStateTransitionScope() {
 void CSSAnimation::Trace(blink::Visitor* visitor) const {
   Animation::Trace(visitor);
   visitor->Trace(owning_element_);
-  visitor->Trace(css_trigger_);
 }
 
 }  // namespace blink

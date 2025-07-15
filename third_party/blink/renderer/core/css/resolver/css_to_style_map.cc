@@ -801,44 +801,6 @@ EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTriggerBehavior(
   return To<CSSIdentifierValue>(value).ConvertTo<EAnimationTriggerBehavior>();
 }
 
-StyleTimeline CSSToStyleMap::MapAnimationTriggerTimeline(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return MapAnimationTimeline(state, value);
-}
-
-std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerRangeStart(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return MapAnimationRange(state, value, 0);
-}
-
-std::optional<TimelineOffset> CSSToStyleMap::MapAnimationTriggerRangeEnd(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return MapAnimationRange(state, value, 100);
-}
-
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTriggerExitRangeStart(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
-      ident && ident->GetValueID() == CSSValueID::kAuto) {
-    return TimelineOffsetOrAuto();
-  }
-  return TimelineOffsetOrAuto(MapAnimationRange(state, value, 0));
-}
-
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTriggerExitRangeEnd(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
-      ident && ident->GetValueID() == CSSValueID::kAuto) {
-    return TimelineOffsetOrAuto();
-  }
-  return TimelineOffsetOrAuto(MapAnimationRange(state, value, 100));
-}
-
 Persistent<const ScopedCSSName> CSSToStyleMap::MapAnimationTimelineTriggerName(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -897,6 +859,27 @@ StyleTimeline CSSToStyleMap::MapAnimationTimelineTriggerTimeline(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationTimeline(state, value);
+}
+
+std::optional<Vector<AtomicString>> CSSToStyleMap::MapAnimationTriggerNames(
+    StyleResolverState&,
+    const CSSValue& animation_trigger_value) {
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(animation_trigger_value);
+      ident && ident->GetValueID() == CSSValueID::kNone) {
+    return std::nullopt;
+  }
+
+  if (const CSSValueList* value_list =
+          DynamicTo<CSSValueList>(animation_trigger_value)) {
+    Vector<AtomicString> names_list;
+    for (const CSSValue* value : *value_list) {
+      const CSSCustomIdentValue* custom_ident = To<CSSCustomIdentValue>(value);
+      names_list.push_back(custom_ident->CustomCSSText());
+    }
+    return names_list;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace blink

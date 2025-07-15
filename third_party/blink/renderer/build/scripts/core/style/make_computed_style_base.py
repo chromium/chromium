@@ -47,6 +47,7 @@ ALIGNMENT_ORDER = [
     'Vector<TimelineAttachment>',
     'Vector<TimelineAxis>',
     'Vector<TimelineInset>',
+    'Vector<std::optional<Vector<AtomicString>>>',
     'GridPosition',
     'ScrollStartData',
     'AtomicString',
