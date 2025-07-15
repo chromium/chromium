@@ -2433,15 +2433,8 @@ if (_is_default_toolchain) {
 
       deps = [
         ":chrome_test_vr_java",
-        ":vr_test_module_desc_java",
         "//third_party/android_sdk:android_test_mock_java",
       ]
-    }
-
-    # This is necessary since vr tests simulate a bundle build.
-    module_desc_java("vr_test_module_desc_java") {
-      module_name = "vr"
-      load_native_on_get_impl = false
     }
   }
 
