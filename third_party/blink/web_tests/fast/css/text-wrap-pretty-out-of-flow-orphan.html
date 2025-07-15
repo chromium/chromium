@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+<style>
+.container {
+  font-family: monospace;
+  font-size: 20px;
+  width: 10ch;
+  border: 1px solid blue;
+  text-wrap: pretty;
+}
+</style>
+</head>
+<body>
+Test passes if the last line is not an orphan.
+<div class="container">
+  012 456 89
+  012 456 89
+  012 456 89
+  012 456 89
+  012 456 89
+  01
+  <span style="position: absolute"></span>
+</div>
+</body>

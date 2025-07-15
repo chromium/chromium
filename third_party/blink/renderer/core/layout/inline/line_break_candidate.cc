@@ -8,8 +8,23 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+const InlineItemResult* LastNonOutOfFlowPositionedItemResult(
+    const LineInfo& line_info) {
+  for (const auto& item_result : base::Reversed(line_info.Results())) {
+    if (item_result.item->Type() != InlineItem::kOutOfFlowPositioned) {
+      return &item_result;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 void LineBreakCandidateContext::Append(State new_state,
                                        InlineItemTextIndex offset,
@@ -79,13 +94,16 @@ void LineBreakCandidateContext::AppendTrailingSpaces(
 
 bool LineBreakCandidateContext::AppendLine(const LineInfo& line_info,
                                            LineBreaker& line_breaker) {
-  const InlineItemResult& last_item_result = line_info.Results().back();
-  if (!last_item_result.can_break_after) {
+  const InlineItemResult* last_item_result =
+      RuntimeEnabledFeatures::SkipOofItemForBreakCandidateEnabled()
+          ? LastNonOutOfFlowPositionedItemResult(line_info)
+          : &line_info.Results().back();
+  if (last_item_result && !last_item_result->can_break_after) {
     // TODO(kojii): `last_item_result.can_break_after` should be true, but there
     // are cases where it is not set. The line breaker never uses it because
     // `can_break_after` is used for rewinding, but it helps simplifying this
     // logic.
-    const_cast<InlineItemResult&>(last_item_result).can_break_after = true;
+    const_cast<InlineItemResult*>(last_item_result)->can_break_after = true;
   }
 
   for (const InlineItemResult& item_result : line_info.Results()) {
@@ -106,6 +124,11 @@ bool LineBreakCandidateContext::AppendLine(const LineInfo& line_info,
                              SnappedPosition() + item_result.inline_size);
         SetLast(&item, item_result.EndOffset());
         break;
+      case InlineItem::kOutOfFlowPositioned:
+        if (RuntimeEnabledFeatures::SkipOofItemForBreakCandidateEnabled()) {
+          break;
+        }
+        [[fallthrough]];
       default: {
         State new_state;
         if (item_result.can_break_after) {
@@ -137,10 +160,13 @@ bool LineBreakCandidateContext::AppendLine(const LineInfo& line_info,
   CheckConsistency();
   DCHECK_EQ(state_, kBreak);
   const LineBreakCandidate& last_candidate = candidates_.back();
-  DCHECK_GE(last_candidate.offset.item_index, last_item_result.item_index);
-  DCHECK_LE(last_candidate.offset.item_index, last_item_result.item_index + 1);
-  DCHECK_GE(last_candidate.offset.text_offset, last_item_result.EndOffset());
-  DCHECK_LE(last_candidate.offset.text_offset, line_info.EndTextOffset());
+  if (last_item_result) {
+    DCHECK_GE(last_candidate.offset.item_index, last_item_result->item_index);
+    DCHECK_LE(last_candidate.offset.item_index,
+              last_item_result->item_index + 1);
+    DCHECK_GE(last_candidate.offset.text_offset, last_item_result->EndOffset());
+    DCHECK_LE(last_candidate.offset.text_offset, line_info.EndTextOffset());
+  }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   return true;
 }
@@ -158,14 +184,19 @@ void LineBreakCandidateContext::EnsureFirstSentinel(
 void LineBreakCandidateContext::EnsureLastSentinel(
     const LineInfo& last_line_info) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  const InlineItemResult& last_item_result = last_line_info.Results().back();
-  DCHECK(last_item_result.can_break_after);
+  const InlineItemResult* last_item_result =
+      RuntimeEnabledFeatures::SkipOofItemForBreakCandidateEnabled()
+          ? LastNonOutOfFlowPositionedItemResult(last_line_info)
+          : &last_line_info.Results().back();
+  if (last_item_result) {
+    DCHECK(last_item_result->can_break_after);
+    DCHECK(candidates_.back().offset == last_item_result->End() ||
+           candidates_.back().offset == last_line_info.End());
+  }
   DCHECK_EQ(state_, LineBreakCandidateContext::kBreak);
   CheckConsistency();
   DCHECK_GE(candidates_.size(), 2u);
   DCHECK_EQ(candidates_.front().offset, first_offset_);
-  DCHECK(candidates_.back().offset == last_item_result.End() ||
-         candidates_.back().offset == last_line_info.End());
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
