@@ -273,7 +273,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
 
     // And finally decode the metadata's digest for comparison.
     DigestValue expected_value;
-    expected_value.AppendSpan(base::as_byte_span(metadata.digest));
+    expected_value.AppendSpan(base::as_byte_span(metadata.value));
 
     // 5.4. If actualValue is a case-sensitive match for expectedValue, return
     // true set hash-match to true and break.
@@ -351,7 +351,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   }
 
   for (const IntegrityMetadata& metadata : integrity_list) {
-    String public_key = Base64Encode(base::as_byte_span(metadata.digest));
+    String public_key = Base64Encode(base::as_byte_span(metadata.value));
     for (const auto& signature : signatures) {
       if (signature->keyid == public_key) {
         return true;
@@ -527,7 +527,9 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       }
     }
 
-    IntegrityMetadata integrity_metadata(std::move(digest), algorithm);
+    IntegrityMetadata integrity_metadata;
+    Base64Decode(digest, integrity_metadata.value);
+    integrity_metadata.algorithm = algorithm;
     if (integrity_report) {
       if (IsHashingAlgorithm(algorithm)) {
         integrity_report->AddUseCount(WebFeature::kSRIHashAssertion);
@@ -585,14 +587,14 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
     semantically_valid_signatures++;
 
     for (const auto& key : integrity_metadata.public_keys) {
-      if (key.digest.size() != 32u) {
+      if (key.value.size() != 32u) {
         // TODO(391907163): Log an error for invalid public key digests.
         continue;
       }
       if (ED25519_verify(
               reinterpret_cast<const uint8_t*>(source_adaptor.data()),
               source_adaptor.size(), decoded_signature.data(),
-              key.digest.data())) {
+              key.value.data())) {
         return true;
       }
     }

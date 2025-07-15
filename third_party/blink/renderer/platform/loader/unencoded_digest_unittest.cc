@@ -175,7 +175,7 @@ TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
 
     IntegrityMetadata expected;
     expected.algorithm = test.alg;
-    ASSERT_TRUE(Base64Decode(kHelloWorlds.at(test.alg), expected.digest));
+    ASSERT_TRUE(Base64Decode(kHelloWorlds.at(test.alg), expected.value));
 
     auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
@@ -222,7 +222,7 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
     for (const auto& algorithm : test.alg) {
       IntegrityMetadata expected;
       expected.algorithm = algorithm;
-      ASSERT_TRUE(Base64Decode(kHelloWorlds.at(algorithm), expected.digest));
+      ASSERT_TRUE(Base64Decode(kHelloWorlds.at(algorithm), expected.value));
       EXPECT_TRUE(result->digests().Contains(expected));
     }
   }

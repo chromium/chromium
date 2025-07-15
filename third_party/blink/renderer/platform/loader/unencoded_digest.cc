@@ -94,9 +94,9 @@ std::optional<UnencodedDigest> UnencodedDigest::Create(
     }
 
     // Store the byte sequence as an array<uint8_t>.
-    parsed_digest.digest.reserve(digest.size());
-    parsed_digest.digest.Append(reinterpret_cast<const uint8_t*>(digest.data()),
-                                digest.size());
+    parsed_digest.value.reserve(digest.size());
+    parsed_digest.value.Append(reinterpret_cast<const uint8_t*>(digest.data()),
+                               digest.size());
     integrity_metadata.Insert(std::move(parsed_digest));
   }
 
@@ -117,7 +117,7 @@ bool UnencodedDigest::DoesMatch(WTF::SegmentedBuffer* data) {
 
     // If any specified digest doesn't match the digest computed over |data|,
     // matching fails.
-    DigestValue expected_digest(base::as_byte_span(digest.digest));
+    DigestValue expected_digest(base::as_byte_span(digest.value));
     if (computed_digest != expected_digest) {
       // TODO(https://crbug.com/381044049): Emit errors.
       return false;

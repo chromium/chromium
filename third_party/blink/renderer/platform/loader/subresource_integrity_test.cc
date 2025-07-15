@@ -79,7 +79,7 @@ auto CompareIntegrityMetadata = [](const IntegrityMetadata& a,
   if (a.algorithm != b.algorithm) {
     return a.algorithm < b.algorithm;
   }
-  return std::ranges::equal(a.digest, b.digest);
+  return std::ranges::equal(a.value, b.value);
 };
 
 }  // namespace
@@ -92,6 +92,14 @@ class SubresourceIntegrityTest : public testing::Test {
         context(MakeGarbageCollected<MockFetchContext>()) {}
 
  protected:
+  IntegrityMetadata CreateIntegrityMetadata(const String& digest,
+                                            IntegrityAlgorithm algorithm) {
+    IntegrityMetadata metadata;
+    metadata.algorithm = algorithm;
+    CHECK(Base64Decode(digest, metadata.value));
+    return metadata;
+  }
+
   String AlgorithmToPrefix(IntegrityAlgorithm alg) {
     switch (alg) {
       case IntegrityAlgorithm::kSha256:
@@ -160,7 +168,7 @@ class SubresourceIntegrityTest : public testing::Test {
       ASSERT_TRUE(Base64Decode(expected_digest, expected_binary_digest));
 
       IntegrityMetadata metadata = *metadata_set.hashes.begin();
-      EXPECT_EQ(expected_binary_digest, metadata.digest);
+      EXPECT_EQ(expected_binary_digest, metadata.value);
       EXPECT_EQ(expected_algorithm, metadata.algorithm);
     }
   }
@@ -406,12 +414,13 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   ExpectParseMultipleHashes("    ", {});
 
   const IntegrityMetadata valid_sha384_and_sha512[] = {
-      IntegrityMetadata(
+      CreateIntegrityMetadata(
           "XVVXBGoYw6AJOh9J+Z8pBDMVVPfkBpngexkA7JqZu8d5GENND6TEIup/tA1v5GPr",
           IntegrityAlgorithm::kSha384),
-      IntegrityMetadata("tbUPioKbVBplr0b1ucnWB57SJWt4x9dOE0Vy2mzCXvH3FepqDZ+"
-                        "07yMK81ytlg0MPaIrPAjcHqba5csorDWtKg==",
-                        IntegrityAlgorithm::kSha512),
+      CreateIntegrityMetadata(
+          "tbUPioKbVBplr0b1ucnWB57SJWt4x9dOE0Vy2mzCXvH3FepqDZ+"
+          "07yMK81ytlg0MPaIrPAjcHqba5csorDWtKg==",
+          IntegrityAlgorithm::kSha512),
   };
   ExpectParseMultipleHashes(
       "sha384-XVVXBGoYw6AJOh9J+Z8pBDMVVPfkBpngexkA7JqZu8d5GENND6TEIup/tA1v5GPr "
@@ -420,25 +429,25 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
       valid_sha384_and_sha512);
 
   const IntegrityMetadata valid_sha256_and_sha256[] = {
-      IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
-                        IntegrityAlgorithm::kSha256),
-      IntegrityMetadata("deadbeef", IntegrityAlgorithm::kSha256),
+      CreateIntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
+                              IntegrityAlgorithm::kSha256),
+      CreateIntegrityMetadata("deadbeef", IntegrityAlgorithm::kSha256),
   };
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-deadbeef",
       valid_sha256_and_sha256);
 
   const IntegrityMetadata valid_sha256_and_invalid_sha256[] = {
-      IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
-                        IntegrityAlgorithm::kSha256),
+      CreateIntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
+                              IntegrityAlgorithm::kSha256),
   };
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-!!!!",
       valid_sha256_and_invalid_sha256);
 
   const IntegrityMetadata invalid_sha256_and_valid_sha256[] = {
-      IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
-                        IntegrityAlgorithm::kSha256),
+      CreateIntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
+                              IntegrityAlgorithm::kSha256),
   };
   ExpectParseMultipleHashes(
       "sha256-!!! sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -590,11 +599,12 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
     SCOPED_TRACE(alg);
 
     // Check that each algorithm is the strongest in a single-item list.
-    EXPECT_EQ(alg, SubresourceIntegrity::FindBestAlgorithm({{"", alg}}));
+    EXPECT_EQ(alg, SubresourceIntegrity::FindBestAlgorithm(
+                       {CreateIntegrityMetadata("", alg)}));
 
     // Check that each algorithm in the test cases is stronger than the
     // previously-tested algorithms.
-    alg_set.push_back(IntegrityMetadata("", alg));
+    alg_set.push_back(CreateIntegrityMetadata("", alg));
     EXPECT_EQ(alg, SubresourceIntegrity::FindBestAlgorithm(alg_set));
   }
 }
@@ -647,7 +657,7 @@ class SubresourceIntegritySignatureTest
       ASSERT_TRUE(Base64Decode(digest, binary_digest));
 
       IntegrityMetadata metadata = *metadata_set.public_keys.begin();
-      EXPECT_EQ(binary_digest, metadata.digest);
+      EXPECT_EQ(binary_digest, metadata.value);
       EXPECT_EQ(IntegrityAlgorithm::kEd25519, metadata.algorithm);
     } else {
       ASSERT_EQ(0u, metadata_set.public_keys.size());
@@ -738,19 +748,19 @@ TEST_P(SubresourceIntegritySignatureTest, ParseSingleSignature) {
 
 TEST_P(SubresourceIntegritySignatureTest, ParseMultipleSignatures) {
   Vector<IntegrityMetadata> signature_pairs = {
-      IntegrityMetadata("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                        IntegrityAlgorithm::kEd25519),
-      IntegrityMetadata("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-                        IntegrityAlgorithm::kEd25519),
-      IntegrityMetadata("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
-                        IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                              IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+                              IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
+                              IntegrityAlgorithm::kEd25519),
   };
 
   do {
     StringBuilder attribute;
     for (const auto& pair : signature_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(Base64Encode(pair.digest));
+      attribute.Append(Base64Encode(pair.value));
       attribute.Append(' ');
     }
     SCOPED_TRACE(attribute.ToString());
@@ -771,35 +781,35 @@ TEST_P(SubresourceIntegritySignatureTest, ParseMultipleSignatures) {
 TEST_P(SubresourceIntegritySignatureTest, ParseBoth) {
   Vector<IntegrityMetadata> hash_pairs = {
       // "Hello, world."
-      IntegrityMetadata("+MO/YqmqPm/BYZwlDkir51GTc9Pt9BvmLrXcRRma8u8=",
-                        IntegrityAlgorithm::kSha256),
-      IntegrityMetadata(
+      CreateIntegrityMetadata("+MO/YqmqPm/BYZwlDkir51GTc9Pt9BvmLrXcRRma8u8=",
+                              IntegrityAlgorithm::kSha256),
+      CreateIntegrityMetadata(
           "S7LmUoguRQsq3IHIZ0Xhm5jjCDqH6uUQbumuj5CnrIFDk+RyBW/dWuqzEiV4mPaB",
           IntegrityAlgorithm::kSha384),
-      IntegrityMetadata(
+      CreateIntegrityMetadata(
           "rQw3wx1psxXzqB8TyM3nAQlK2RcluhsNwxmcqXE2YbgoDW735o8TPmIR4"
           "uWpoxUERddvFwjgRSGw7gNPCwuvJg==",
           IntegrityAlgorithm::kSha512),
   };
   Vector<IntegrityMetadata> signature_pairs = {
-      IntegrityMetadata("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                        IntegrityAlgorithm::kEd25519),
-      IntegrityMetadata("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-                        IntegrityAlgorithm::kEd25519),
-      IntegrityMetadata("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
-                        IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                              IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+                              IntegrityAlgorithm::kEd25519),
+      CreateIntegrityMetadata("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
+                              IntegrityAlgorithm::kEd25519),
   };
 
   do {
     StringBuilder attribute;
     for (const auto& pair : signature_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(Base64Encode(pair.digest));
+      attribute.Append(Base64Encode(pair.value));
       attribute.Append(' ');
     }
     for (const auto& pair : hash_pairs) {
       attribute.Append(AlgorithmToPrefix(pair.algorithm));
-      attribute.Append(Base64Encode(pair.digest));
+      attribute.Append(Base64Encode(pair.value));
       attribute.Append(' ');
     }
     SCOPED_TRACE(attribute.ToString());
@@ -839,7 +849,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
 TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
   IntegrityReport integrity_report;
   IntegrityMetadataSet metadata_set;
-  metadata_set.Insert(IntegrityMetadata("", IntegrityAlgorithm::kEd25519));
+  metadata_set.Insert(
+      CreateIntegrityMetadata("", IntegrityAlgorithm::kEd25519));
   String raw_headers = "";
 
   // If the flag is set, the lack of a signature will fail any signature
@@ -885,7 +896,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   IntegrityReport integrity_report;
   IntegrityMetadataSet metadata_set;
   metadata_set.public_keys = {
-      IntegrityMetadata(kPublicKey, IntegrityAlgorithm::kEd25519)};
+      CreateIntegrityMetadata(kPublicKey, IntegrityAlgorithm::kEd25519)};
 
   // Valid signature matching the integrity requirement should always pass.
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(

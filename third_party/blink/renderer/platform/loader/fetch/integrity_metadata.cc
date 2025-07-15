@@ -26,10 +26,4 @@ void IntegrityMetadataSet::Insert(IntegrityMetadata item) {
   }
 }
 
-IntegrityMetadata::IntegrityMetadata(const String& base64_encoded_digest,
-                                     IntegrityAlgorithm algorithm)
-    : algorithm(algorithm) {
-  Base64Decode(base64_encoded_digest, digest);
-}
-
 }  // namespace blink

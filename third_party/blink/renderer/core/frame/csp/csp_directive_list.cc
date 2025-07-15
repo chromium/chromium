@@ -340,32 +340,17 @@ bool AreAllMatchingIntegrityChecksPresent(
   // Check that all hashes present in the integrity metadata are allowed
   // by the relevant policy:
   for (const IntegrityMetadata& hash : integrity_metadata.hashes) {
-    // Convert the hash from integrity metadata format to CSP format.
-    //
-    // TODO(mkwst): Merge these types.
-    network::mojom::blink::IntegrityMetadataPtr csp_hash =
-        network::mojom::blink::IntegrityMetadata::New();
-    csp_hash->algorithm = hash.algorithm;
-    csp_hash->value = hash.digest;
-
     // All integrity hashes must be listed in the CSP.
-    if (!CSPSourceListAllowHash(*directive, *csp_hash))
+    if (!CSPSourceListAllowHash(*directive, hash)) {
       return false;
+    }
   }
 
   // Now check that all public keys present in the integrity metadata are
   // allowed by the relevant policy:
   for (const IntegrityMetadata& key : integrity_metadata.public_keys) {
-    // Convert the hash from integrity metadata format to CSP format.
-    //
-    // TODO(mkwst): Merge these types.
-    network::mojom::blink::IntegrityMetadataPtr csp_hash =
-        network::mojom::blink::IntegrityMetadata::New();
-    csp_hash->algorithm = key.algorithm;
-    csp_hash->value = key.digest;
-
     // All integrity hashes must be listed in the CSP.
-    if (!CSPSourceListAllowHash(*directive, *csp_hash)) {
+    if (!CSPSourceListAllowHash(*directive, key)) {
       return false;
     }
   }
