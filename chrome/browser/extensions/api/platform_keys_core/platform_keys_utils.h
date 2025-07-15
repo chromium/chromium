@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 
 class Extension;
 class Profile;

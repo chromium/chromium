@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/x509_certificate.h"
 

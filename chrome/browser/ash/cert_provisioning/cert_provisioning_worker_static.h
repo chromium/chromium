@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/backoff_entry.h"
 

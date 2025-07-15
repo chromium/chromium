@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;

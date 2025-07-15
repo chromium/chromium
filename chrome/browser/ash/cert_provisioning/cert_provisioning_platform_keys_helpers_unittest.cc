@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#define CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_PLATFORM_KEYS_H_
 
 #include <stdint.h>
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
@@ -76,35 +77,42 @@ enum class Status {
 // purposes.
 // Note: Do not change already existing status-to-string translations, since
 // extensions may hardcode specific messages.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 std::string StatusToString(Status status);
 
 // Convert platform_keys::Status into a KeystoreError. Status::kSuccess should
 // not be passed in the function.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 crosapi::mojom::KeystoreError StatusToKeystoreError(Status status);
 
 // Creates platform_keys::Status into a KeystoreError. Keystore specific errors
 // are not supported and should be processed separately.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error);
 
 // Converts KeystoreError code into an error message.
 // Note: Do not change already existing error-to-string translations, since
 // extensions may hardcode specific messages.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error);
 
 // Returns the DER encoding of the X.509 Subject Public Key Info of the public
 // key in |certificate|.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 std::vector<uint8_t> GetSubjectPublicKeyInfo(
     const scoped_refptr<net::X509Certificate>& certificate);
 
 // Intersects the two certificate lists |certs1| and |certs2| and passes the
 // intersection to |callback|. The intersection preserves the order of |certs1|.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 void IntersectCertificates(
     const net::CertificateList& certs1,
     const net::CertificateList& certs2,
     base::OnceCallback<void(std::unique_ptr<net::CertificateList>)> callback);
 
 // The output for GetPublicKeyAndAlgorithm.
-struct GetPublicKeyAndAlgorithmOutput {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
+    GetPublicKeyAndAlgorithmOutput {
   GetPublicKeyAndAlgorithmOutput();
   GetPublicKeyAndAlgorithmOutput(GetPublicKeyAndAlgorithmOutput&&);
   ~GetPublicKeyAndAlgorithmOutput();
@@ -116,11 +124,12 @@ struct GetPublicKeyAndAlgorithmOutput {
 
 // This is a convenient wrapper around GetPublicKey which also builds a
 // WebCrypto algorithm dictionary and performs error checking.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
     const std::vector<uint8_t>& possibly_invalid_cert_der,
     const std::string& algorithm_name);
 
-struct PublicKeyInfo {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS) PublicKeyInfo {
   PublicKeyInfo();
   ~PublicKeyInfo();
 
@@ -141,11 +150,13 @@ struct PublicKeyInfo {
 //    - compatible
 // Returns Status::kSuccess if they are, or the correct error reason if they
 // are not.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 Status CheckKeyTypeAndAlgorithm(net::X509Certificate::PublicKeyType key_type,
                                 const std::string& algorithm_name);
 
 // Returns the certificate key type that supports the given algorithm,
 // or |kPublicKeyTypeUnknown| if the algorithm is unknown or unsupported.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
     const std::string& algorithm_name);
 
@@ -153,6 +164,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
 // |key_info|. This supports both RSA and EC keys.
 // Returns std::nullopt if the key is of an unsupported type (so not RSA or
 // EC).
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
     const PublicKeyInfo& key_info);
 
@@ -160,6 +172,7 @@ std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
 // |key_info|, which must be the info of an RSA key. This doesn't include
 // sign/hash parameters and thus isn't complete. platform_keys::GetPublicKey()
 // enforced the public exponent 65537.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
                                           base::Value::Dict* algorithm);
 
@@ -167,6 +180,7 @@ void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
 // |key_info|, which must be the info of an EC key. For more information about
 // EcKeyAlgorithm dictionary, please refer to:
 // https://www.w3.org/TR/WebCryptoAPI/#EcKeyAlgorithm-dictionary
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
                                             base::Value::Dict* algorithm);
 
@@ -177,6 +191,7 @@ void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
 // the RSA key in |certificate| is not F4, returns false and does not update any
 // of the output parameters.
 // All pointer arguments must not be null.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 bool GetPublicKey(const scoped_refptr<net::X509Certificate>& certificate,
                   net::X509Certificate::PublicKeyType* key_type,
                   size_t* key_size_bits);
@@ -187,11 +202,13 @@ bool GetPublicKey(const scoped_refptr<net::X509Certificate>& certificate,
 // If |spki| is any other key type, returns false and does not update any
 // of the output parameters.
 // All pointer arguments must not be null.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 bool GetPublicKeyBySpki(base::span<const uint8_t> spki,
                         net::X509Certificate::PublicKeyType* key_type,
                         size_t* key_size_bits);
 
-struct ClientCertificateRequest {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
+    ClientCertificateRequest {
   ClientCertificateRequest();
   ClientCertificateRequest(const ClientCertificateRequest& other);
   ~ClientCertificateRequest();
@@ -207,4 +224,4 @@ struct ClientCertificateRequest {
 
 }  // namespace chromeos::platform_keys
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_PLATFORM_KEYS_H_

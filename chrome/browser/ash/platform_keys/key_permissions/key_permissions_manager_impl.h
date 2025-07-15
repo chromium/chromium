@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 
 class PrefRegistrySimple;
 class PrefService;

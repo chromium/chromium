@@ -29,6 +29,7 @@ source_set("enterprise_platform_keys") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/platform_keys",
   ]
 }
 

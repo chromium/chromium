@@ -16,11 +16,11 @@
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 

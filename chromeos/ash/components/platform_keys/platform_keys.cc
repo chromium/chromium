@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 
 #include <stdint.h>
 
@@ -55,8 +55,9 @@ void IntersectOnWorkerThread(const net::CertificateList& certs1,
     const net::SHA256HashValue fingerprint1 =
         net::X509Certificate::CalculateFingerprint256(cert1->cert_buffer());
     const auto it = fingerprints2.find(fingerprint1);
-    if (it == fingerprints2.end())
+    if (it == fingerprints2.end()) {
       continue;
+    }
     const auto& cert2 = it->second;
     DCHECK(cert1->EqualsExcludingChain(cert2.get()));
     intersection->push_back(cert1);
@@ -221,8 +222,9 @@ std::vector<uint8_t> GetSubjectPublicKeyInfo(
   std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
-          &spki_bytes))
+          &spki_bytes)) {
     return {};
+  }
   return std::vector<uint8_t>(spki_bytes.begin(), spki_bytes.end());
 }
 
@@ -455,10 +457,12 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
   // with the RSASSA-PKCS1-v1.5 algorithm.
   // 2- A certificate declaring id-ecPublicKey in the SubjectPublicKeyInfo used
   // with the ECDSA algorithm.
-  if (algorithm_name == kWebCryptoRsassaPkcs1v15)
+  if (algorithm_name == kWebCryptoRsassaPkcs1v15) {
     return net::X509Certificate::kPublicKeyTypeRSA;
-  if (algorithm_name == kWebCryptoEcdsa)
+  }
+  if (algorithm_name == kWebCryptoEcdsa) {
     return net::X509Certificate::kPublicKeyTypeECDSA;
+  }
   return net::X509Certificate::kPublicKeyTypeUnknown;
 }
 

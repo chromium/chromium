@@ -4791,6 +4791,7 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/vpn_provider",
           "//chrome/browser/chromeos/extensions/wm",
           "//chrome/browser/policy:system_features_disable_list",
+          "//chromeos/ash/components/platform_keys",
           "//chromeos/ash/components/policy/device_policy:test_support",
           "//chromeos/ash/components/settings:test_support",
           "//chromeos/constants",

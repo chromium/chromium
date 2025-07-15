@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash::platform_keys {

@@ -26,7 +26,6 @@ source_set("platform_keys") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/extensions",
     "//chrome/common/extensions/api",
     "//chromeos/crosapi/mojom",
@@ -36,7 +35,9 @@ source_set("platform_keys") {
 
   deps = [
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/platform_keys",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom:mojom_shared",
     "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
