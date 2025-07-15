@@ -26,6 +26,7 @@ fuzzable_proto_library("proto") {
     "layer.proto",
     "study.proto",
     "variations_seed.proto",
+    "stored_seed_info.proto",
   ]
 
   # The generated JavaScript bindings are used to build a small, self-contained
