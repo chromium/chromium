@@ -29,7 +29,7 @@ std::string RefillTriggerReasonToString(
 }  // namespace
 
 void LogNumberOfFieldsModifiedByAutofill(
-    base::span<const FormFieldData*> safe_filled_fields,
+    size_t modified_fields_count,
     const FillingPayload& filling_payload) {
   constexpr const char prefix[] = "Autofill.NumberOfFieldsPerAutofill";
   std::string_view suffix = std::visit(
@@ -39,9 +39,9 @@ void LogNumberOfFieldsModifiedByAutofill(
           [&](const EntityInstance* entity) { return "EntityInstance"; },
           [&](const VerifiedProfile*) { return "VerifiedProfile"; }},
       filling_payload);
-  base::UmaHistogramCounts1000(prefix, safe_filled_fields.size());
+  base::UmaHistogramCounts1000(prefix, modified_fields_count);
   base::UmaHistogramCounts1000(base::StrCat({prefix, ".", suffix}),
-                               safe_filled_fields.size());
+                               modified_fields_count);
 }
 
 void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason) {

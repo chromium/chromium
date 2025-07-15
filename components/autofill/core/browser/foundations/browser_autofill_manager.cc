@@ -2592,11 +2592,11 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   }
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
-  autofill_metrics::LogNumberOfFieldsModifiedByAutofill(safe_filled_fields,
-                                                        filling_payload);
+  autofill_metrics::LogNumberOfFieldsModifiedByAutofill(
+      safe_filled_autofill_fields.size(), filling_payload);
   if (refill_trigger_reason) {
     autofill_metrics::LogNumberOfFieldsModifiedByRefill(
-        *refill_trigger_reason, safe_filled_fields.size());
+        *refill_trigger_reason, safe_filled_autofill_fields.size());
   }
   AppendFillLogEvents(form, form_structure, trigger_autofill_field,
                       safe_field_ids, skip_reasons, filling_payload,

@@ -11,12 +11,12 @@ namespace autofill::autofill_metrics {
 
 // Logs Autofill.NumberOfFieldsPerAutofill*.
 //
-// The `safe_filled_fields` are fields for which the browser process sends fill
-// values to the renderer process (i.e., it takes into account the same-origin
-// policy in case of a form with fields from different origins).
-void LogNumberOfFieldsModifiedByAutofill(
-    base::span<const FormFieldData*> safe_filled_fields,
-    const FillingPayload& filling_payload);
+// The `modified_fields_count` is the number of fields for which the browser
+// process sends fill values to the renderer process (i.e., it takes into
+// account the same-origin policy in case of a form with fields from different
+// origins).
+void LogNumberOfFieldsModifiedByAutofill(size_t modified_fields_count,
+                                         const FillingPayload& filling_payload);
 
 void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason);
 
