@@ -1572,6 +1572,10 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
     return false;
   }
 
+  if (object_.StyleRef().Preserves3D()) {
+    return false;
+  }
+
   return true;
 }
 
