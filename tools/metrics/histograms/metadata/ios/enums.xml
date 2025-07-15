@@ -572,6 +572,15 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Drive"/>
 </enum>
 
+<!-- LINT.IfChange(IOSGeminiFREPromoAction) -->
+
+<enum name="IOSGeminiFREPromoAction">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Dismiss"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFREPromoAction) -->
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>

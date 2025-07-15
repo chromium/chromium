@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 
+#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
@@ -403,11 +404,13 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
 // Did tap Primary Button.
 - (void)didTapPrimaryButton:(UIButton*)sender {
+  RecordFREPromoAction(IOSGeminiFREPromoAction::kAccept);
   [self.BWGPromoDelegate didAcceptPromo];
 }
 
 // Did tap Secondary Button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
+  RecordFREPromoAction(IOSGeminiFREPromoAction::kDismiss);
   [self.mutator didCloseBWGPromo];
 }
 

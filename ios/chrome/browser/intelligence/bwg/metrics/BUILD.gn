@@ -7,4 +7,5 @@ source_set("metrics") {
     "bwg_metrics.h",
     "bwg_metrics.mm",
   ]
+  deps = [ "//base" ]
 }

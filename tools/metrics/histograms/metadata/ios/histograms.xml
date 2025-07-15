@@ -2053,6 +2053,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Gemini.FRE.PromoAction" enum="IOSGeminiFREPromoAction"
+    expires_after="2026-06-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the user's selection on the Gemini FRE promo screen.
+  </summary>
+</histogram>
+
 <histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
     expires_after="2026-03-12">
   <owner>olivierrobin@chromium.org</owner>
