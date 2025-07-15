@@ -96,11 +96,7 @@ class PaymentHandlerWebFlowViewController
   void TitleWasSet(content::NavigationEntry* entry) override;
 
   void AbortPayment();
-
-  // Calculates the header background based on the web contents theme, if any,
-  // otherwise the Chrome theme.
-  std::unique_ptr<views::Background> GetHeaderBackground(
-      views::View* header_view);
+  void SetHeaderColorsAndOriginLabelText();
 
   DeveloperConsoleLogger log_;
   raw_ptr<Profile> profile_;

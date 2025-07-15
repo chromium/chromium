@@ -201,6 +201,9 @@ class PaymentRequestSheetController {
   // issues.
   virtual base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() = 0;
 
+ protected:
+  views::View* header_view() { return header_view_; }
+
  private:
   // Add the primary/secondary buttons to |container|.
   void AddPrimaryButton(views::View* container);

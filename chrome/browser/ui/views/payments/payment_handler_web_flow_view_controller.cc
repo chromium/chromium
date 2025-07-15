@@ -364,7 +364,6 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   // +-----------------------------------------+
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
-  container->SetBackground(GetHeaderBackground(container));
   constexpr int kVerticalInset = 8;
   constexpr int kHeaderHorizontalInset = 16;
   container->SetBorder(views::CreateEmptyBorder(
@@ -430,26 +429,6 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
   origin_label_ =
       container->AddChildView(std::make_unique<PaymentHandlerOriginLabel>())
           ->GetWeakPtr();
-  origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
-      web_contents()
-          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
-          : url::Origin::Create(target_),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-
-  // Turn off auto-readability because the computed foreground color takes
-  // contrast into account.
-  SkColor background_color = gfx::kPlaceholderColor;
-  if (container->GetWidget()) {
-    const auto* background = container->background();
-    background_color =
-        background->color().ResolveToSkColor(container->GetColorProvider());
-  }
-
-  origin_label_->SetColorBasedOnBackground(background_color);
-
-  if (progress_bar_) {
-    progress_bar_->SetColorBasedOnBackground(background_color);
-  }
 
   // Finally, add the close button.
   close_button_ =
@@ -460,7 +439,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
                   GetWeakPtr())))
           ->GetWeakPtr();
 
-  close_button_->SetColorBasedOnBackground(background_color);
+  SetHeaderColorsAndOriginLabelText();
 }
 
 views::View* PaymentHandlerWebFlowViewController::GetFirstFocusedView() {
@@ -496,7 +475,7 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
   if (!SslValidityChecker::IsValidPageInPaymentHandlerWindow(source)) {
     AbortPayment();
   } else {
-    UpdateHeaderView();
+    SetHeaderColorsAndOriginLabelText();
   }
 }
 
@@ -563,7 +542,7 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
              web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 
-  UpdateHeaderView();
+  SetHeaderColorsAndOriginLabelText();
 }
 
 void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
@@ -583,7 +562,7 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
 
 void PaymentHandlerWebFlowViewController::TitleWasSet(
     content::NavigationEntry* entry) {
-  UpdateHeaderView();
+  SetHeaderColorsAndOriginLabelText();
 
   std::u16string title = GetPaymentHandlerDialogTitle(web_contents());
   if (!title.empty()) {
@@ -599,19 +578,40 @@ void PaymentHandlerWebFlowViewController::AbortPayment() {
   state()->OnPaymentResponseError(errors::kPaymentHandlerInsecureNavigation);
 }
 
-std::unique_ptr<views::Background>
-PaymentHandlerWebFlowViewController::GetHeaderBackground(
-    views::View* header_view) {
-  DCHECK(header_view);
-  auto default_header_background =
-      views::CreateSolidBackground(ui::kColorDialogBackground);
-  if (web_contents() && header_view->GetWidget()) {
-    auto* color_provider = header_view->GetColorProvider();
-    return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
-        web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
-        color_provider->GetColor(ui::kColorDialogBackground)));
+void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
+  // Calculates the header background based on the web contents theme, if any,
+  // otherwise the Chrome theme.
+  header_view()->SetBackground(
+      web_contents() && header_view()->GetWidget()
+          ? views::CreateSolidBackground(color_utils::GetResultingPaintColor(
+                web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
+                header_view()->GetColorProvider()->GetColor(
+                    ui::kColorDialogBackground)))
+          : views::CreateSolidBackground(ui::kColorDialogBackground));
+
+  SkColor background_color =
+      header_view()->GetWidget()
+          ? header_view()->background()->color().ResolveToSkColor(
+                header_view()->GetColorProvider())
+          : gfx::kPlaceholderColor;
+
+  if (origin_label_) {
+    origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
+        web_contents()
+            ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+            : url::Origin::Create(target_),
+        url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+
+    origin_label_->SetColorBasedOnBackground(background_color);
   }
-  return default_header_background;
+
+  if (progress_bar_) {
+    progress_bar_->SetColorBasedOnBackground(background_color);
+  }
+
+  if (close_button_) {
+    close_button_->SetColorBasedOnBackground(background_color);
+  }
 }
 
 }  // namespace payments
