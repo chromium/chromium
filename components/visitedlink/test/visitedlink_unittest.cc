@@ -1322,12 +1322,14 @@ class VisitedLinkRenderProcessHostFactory
     listener_ = listener;
   }
 
+  void ClearVisitedLinkEventListener() { listener_ = nullptr; }
+
   VisitCountingContext* context() { return context_.get(); }
 
   void DeleteRenderProcessHosts() { processes_.clear(); }
 
  private:
-  raw_ptr<VisitedLinkEventListener, DanglingUntriaged> listener_ = nullptr;
+  raw_ptr<VisitedLinkEventListener> listener_ = nullptr;
 
   std::list<std::unique_ptr<VisitRelayingRenderProcessHost>> processes_;
   std::unique_ptr<VisitCountingContext> context_;
@@ -1342,6 +1344,10 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    // Clear the listener reference before destroying the writer to avoid
+    // dangling pointer issues.
+    vc_rph_factory_.ClearVisitedLinkEventListener();
+
     // Explicitly destroy the writer before proceeding with the rest
     // of teardown because it posts a task to close a file handle, and
     // we need to make sure we've finished all file related work
@@ -1562,6 +1568,10 @@ class PartitionedVisitedLinkEventsTest
   }
 
   void TearDown() override {
+    // Clear the listener reference before destroying the writer to avoid
+    // dangling pointer issues.
+    vc_rph_factory_.ClearVisitedLinkEventListener();
+
     partitioned_writer_.reset();
     DeleteContents();
     vc_rph_factory_.DeleteRenderProcessHosts();
