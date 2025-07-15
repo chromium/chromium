@@ -220,6 +220,30 @@ void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
   group->SetVisualData(new_visual_data);
 }
 
+std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
+    JNIEnv* env,
+    const base::Token& tab_group_id) {
+  const TabGroupVisualData* visual_data =
+      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  return visual_data->title();
+}
+
+jint TabCollectionTabModelImpl::GetTabGroupColor(
+    JNIEnv* env,
+    const base::Token& tab_group_id) {
+  const TabGroupVisualData* visual_data =
+      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  return static_cast<jint>(visual_data->color());
+}
+
+bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
+    JNIEnv* env,
+    const base::Token& tab_group_id) {
+  const TabGroupVisualData* visual_data =
+      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  return visual_data->is_collapsed();
+}
+
 void TabCollectionTabModelImpl::CloseDetachedTabGroup(
     JNIEnv* env,
     const base::Token& tab_group_id) {
@@ -284,6 +308,23 @@ std::optional<TabGroupId> TabCollectionTabModelImpl::GetGroupIdAt(
   } else {
     return std::nullopt;
   }
+}
+
+const TabGroupVisualData* TabCollectionTabModelImpl::GetTabGroupVisualData(
+    const base::Token& token_id,
+    bool allow_detached) const {
+  TabGroupId tab_group_id = TabGroupId::FromRawToken(token_id);
+  TabGroupTabCollection* group_collection =
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
+  if (!group_collection && allow_detached) {
+    group_collection = tab_strip_collection_->GetDetachedTabGroup(tab_group_id);
+  }
+  CHECK(group_collection);
+  TabGroup* group = group_collection->GetTabGroup();
+  CHECK(group);
+  const TabGroupVisualData* visual_data = group->visual_data();
+  CHECK(visual_data);
+  return visual_data;
 }
 
 std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {

@@ -342,6 +342,19 @@ void TabStripCollection::CloseDetachedTabGroup(
   PopDetachedGroupCollection(group_id).reset();
 }
 
+TabGroupTabCollection* TabStripCollection::GetDetachedTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  auto it = std::find_if(
+      detached_group_collections_.begin(), detached_group_collections_.end(),
+      [group_id](const std::unique_ptr<TabGroupTabCollection>& collection) {
+        return collection->GetTabGroupId() == group_id;
+      });
+  if (it == detached_group_collections_.end()) {
+    return nullptr;
+  }
+  return it->get();
+}
+
 SplitTabCollection* TabStripCollection::GetSplitTabCollection(
     split_tabs::SplitTabId split_id) {
   if (!split_mapping_.contains(split_id)) {

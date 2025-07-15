@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class is a work-in progress drop-in replacement for {@link TabModelImpl} and {@link
+ * This class is a work-in-progress drop-in replacement for {@link TabModelImpl} and {@link
  * TabGroupModelFilterImpl}. Rather than being backed with an array of tabs it is backed with a tab
  * collection which represents tabs in logical groupings in an n-ary tree structure.
  */
@@ -782,12 +782,17 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable String getTabGroupTitle(Token tabGroupId) {
-        return null;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return null;
+        return TabCollectionTabModelImplJni.get()
+                .getTabGroupTitle(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
     public @Nullable String getTabGroupTitle(Tab groupedTab) {
-        return null;
+        Token tabGroupId = groupedTab.getTabGroupId();
+        assert tabGroupId != null;
+        return getTabGroupTitle(tabGroupId);
     }
 
     @Override
@@ -796,20 +801,39 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {}
+    public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return;
+        TabCollectionTabModelImplJni.get()
+                .updateTabGroupVisualData(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tabGroupId,
+                        title,
+                        /* colorId= */ null,
+                        /* isCollapsed= */ null);
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didChangeTabGroupTitle(tabGroupId, title);
+        }
+    }
 
     @Override
     public void setTabGroupTitle(@TabId int rootId, @Nullable String title) {}
 
     @Override
-    public void deleteTabGroupTitle(Token tabGroupId) {}
+    public void deleteTabGroupTitle(Token tabGroupId) {
+        if (!tabGroupExists(tabGroupId)) return;
+        setTabGroupTitle(tabGroupId, "");
+    }
 
     @Override
     public void deleteTabGroupTitle(@TabId int rootId) {}
 
     @Override
     public int getTabGroupColor(Token tabGroupId) {
-        return TabGroupColorUtils.INVALID_COLOR_ID;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return TabGroupColorUtils.INVALID_COLOR_ID;
+        return TabCollectionTabModelImplJni.get()
+                .getTabGroupColor(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
@@ -819,12 +843,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
-        return TabGroupColorId.GREY;
+        int color = getTabGroupColor(tabGroupId);
+        return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
     }
 
     @Override
     public @TabGroupColorId int getTabGroupColorWithFallback(Tab groupedTab) {
-        return TabGroupColorId.GREY;
+        Token tabGroupId = groupedTab.getTabGroupId();
+        assert tabGroupId != null;
+        return getTabGroupColorWithFallback(tabGroupId);
     }
 
     @Override
@@ -833,20 +860,39 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {}
+    public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return;
+        TabCollectionTabModelImplJni.get()
+                .updateTabGroupVisualData(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tabGroupId,
+                        /* title= */ null,
+                        color,
+                        /* isCollapsed= */ null);
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didChangeTabGroupColor(tabGroupId, color);
+        }
+    }
 
     @Override
     public void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color) {}
 
     @Override
-    public void deleteTabGroupColor(Token tabGroupId) {}
+    public void deleteTabGroupColor(Token tabGroupId) {
+        if (!tabGroupExists(tabGroupId)) return;
+        setTabGroupColor(tabGroupId, TabGroupColorId.GREY);
+    }
 
     @Override
     public void deleteTabGroupColor(@TabId int rootId) {}
 
     @Override
     public boolean getTabGroupCollapsed(Token tabGroupId) {
-        return false;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return false;
+        return TabCollectionTabModelImplJni.get()
+                .getTabGroupCollapsed(mNativeTabCollectionTabModelImplPtr, tabGroupId);
     }
 
     @Override
@@ -855,19 +901,40 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {}
+    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return;
+        TabCollectionTabModelImplJni.get()
+                .updateTabGroupVisualData(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tabGroupId,
+                        /* title= */ null,
+                        /* colorId= */ null,
+                        isCollapsed);
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didChangeTabGroupCollapsed(tabGroupId, isCollapsed, animate);
+        }
+    }
 
     @Override
     public void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate) {}
 
     @Override
-    public void deleteTabGroupCollapsed(Token tabGroupId) {}
+    public void deleteTabGroupCollapsed(Token tabGroupId) {
+        if (!tabGroupExists(tabGroupId)) return;
+        setTabGroupCollapsed(tabGroupId, false, false);
+    }
 
     @Override
     public void deleteTabGroupCollapsed(@TabId int rootId) {}
 
     @Override
-    public void deleteTabGroupVisualData(Token tabGroupId) {}
+    public void deleteTabGroupVisualData(Token tabGroupId) {
+        if (!tabGroupExists(tabGroupId)) return;
+        deleteTabGroupTitle(tabGroupId);
+        deleteTabGroupColor(tabGroupId);
+        deleteTabGroupCollapsed(tabGroupId);
+    }
 
     @Override
     public void deleteTabGroupVisualData(@TabId int rootId) {}
@@ -1131,6 +1198,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 @JniType("std::optional<std::u16string>") @Nullable String title,
                 @JniType("std::optional<int>") @Nullable @TabGroupColorId Integer colorId,
                 @JniType("std::optional<bool>") @Nullable Boolean isCollapsed);
+
+        @JniType("std::u16string")
+        String getTabGroupTitle(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        int getTabGroupColor(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
+
+        boolean getTabGroupCollapsed(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
 
         void closeDetachedTabGroup(
                 long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);

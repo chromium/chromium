@@ -21,6 +21,7 @@ class Token;
 
 namespace tab_groups {
 class TabGroupId;
+class TabGroupVisualData;
 }  // namespace tab_groups
 
 namespace tabs {
@@ -95,6 +96,11 @@ class TabCollectionTabModelImpl {
       const std::optional<jint>& j_color_id,
       const std::optional<bool>& is_collapsed);
 
+  // Getters for tab group visual data.
+  std::u16string GetTabGroupTitle(JNIEnv* env, const base::Token& tab_group_id);
+  jint GetTabGroupColor(JNIEnv* env, const base::Token& tab_group_id);
+  bool GetTabGroupCollapsed(JNIEnv* env, const base::Token& tab_group_id);
+
   // Closes a detached tab group.
   void CloseDetachedTabGroup(JNIEnv* env, const base::Token& tab_group_id);
 
@@ -109,6 +115,9 @@ class TabCollectionTabModelImpl {
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;
+  const tab_groups::TabGroupVisualData* GetTabGroupVisualData(
+      const base::Token& token_id,
+      bool allow_detached) const;
 
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;

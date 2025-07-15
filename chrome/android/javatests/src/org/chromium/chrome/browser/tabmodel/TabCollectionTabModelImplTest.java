@@ -36,6 +36,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -688,6 +689,188 @@ public class TabCollectionTabModelImplTest {
         didRemoveTabGroupHelper.waitForOnly();
 
         assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testTabGroupVisualData() throws Exception {
+        Tab tab0 = getTabAt(0);
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab0));
+        Token tabGroupId = tab0.getTabGroupId();
+        assertNotNull(tabGroupId);
+
+        final String testTitle = "Test Title";
+        CallbackHelper titleChangedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver titleObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupTitle(Token id, String newTitle) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals(testTitle, newTitle);
+                        titleChangedHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(titleObserver);
+                    mCollectionModel.setTabGroupTitle(tabGroupId, testTitle);
+                    assertEquals(testTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(testTitle, mCollectionModel.getTabGroupTitle(tab0));
+                    mCollectionModel.removeTabGroupObserver(titleObserver);
+                });
+        titleChangedHelper.waitForOnly("setTabGroupTitle failed");
+
+        CallbackHelper titleDeletedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver titleDeleteObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupTitle(Token id, String newTitle) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals("", newTitle);
+                        titleDeletedHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(titleDeleteObserver);
+                    mCollectionModel.deleteTabGroupTitle(tabGroupId);
+                    assertEquals("", mCollectionModel.getTabGroupTitle(tabGroupId));
+                    mCollectionModel.removeTabGroupObserver(titleDeleteObserver);
+                });
+        titleDeletedHelper.waitForOnly("deleteTabGroupTitle failed");
+
+        final int testColor = TabGroupColorId.BLUE;
+        CallbackHelper colorChangedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver colorObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupColor(Token id, int newColor) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals(testColor, newColor);
+                        colorChangedHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(colorObserver);
+                    mCollectionModel.setTabGroupColor(tabGroupId, testColor);
+                    assertEquals(testColor, mCollectionModel.getTabGroupColor(tabGroupId));
+                    assertEquals(
+                            testColor, mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
+                    assertEquals(testColor, mCollectionModel.getTabGroupColorWithFallback(tab0));
+                    mCollectionModel.removeTabGroupObserver(colorObserver);
+                });
+        colorChangedHelper.waitForOnly("setTabGroupColor failed");
+
+        CallbackHelper colorDeletedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver colorDeleteObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupColor(Token id, int newColor) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals(TabGroupColorId.GREY, newColor);
+                        colorDeletedHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(colorDeleteObserver);
+                    mCollectionModel.deleteTabGroupColor(tabGroupId);
+                    assertEquals(
+                            TabGroupColorId.GREY,
+                            mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
+                    mCollectionModel.removeTabGroupObserver(colorDeleteObserver);
+                });
+        colorDeletedHelper.waitForOnly("deleteTabGroupColor failed");
+
+        CallbackHelper collapsedChangedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver collapsedObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupCollapsed(
+                            Token id, boolean isCollapsed, boolean animate) {
+                        assertEquals(tabGroupId, id);
+                        assertTrue(isCollapsed);
+                        assertFalse(animate);
+                        collapsedChangedHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(collapsedObserver);
+                    mCollectionModel.setTabGroupCollapsed(tabGroupId, true, false);
+                    assertTrue(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    mCollectionModel.removeTabGroupObserver(collapsedObserver);
+                });
+        collapsedChangedHelper.waitForOnly("setTabGroupCollapsed true failed");
+
+        CallbackHelper collapsedDeletedHelper = new CallbackHelper();
+        TabGroupModelFilterObserver collapsedDeleteObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupCollapsed(
+                            Token id, boolean isCollapsed, boolean animate) {
+                        assertEquals(tabGroupId, id);
+                        assertFalse(isCollapsed);
+                        assertFalse(animate);
+                        collapsedDeletedHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(collapsedDeleteObserver);
+                    mCollectionModel.deleteTabGroupCollapsed(tabGroupId);
+                    assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    mCollectionModel.removeTabGroupObserver(collapsedDeleteObserver);
+                });
+        collapsedDeletedHelper.waitForOnly("deleteTabGroupCollapsed failed");
+
+        CallbackHelper deleteAllTitleHelper = new CallbackHelper();
+        CallbackHelper deleteAllColorHelper = new CallbackHelper();
+        CallbackHelper deleteAllCollapsedHelper = new CallbackHelper();
+
+        TabGroupModelFilterObserver deleteAllObserver =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didChangeTabGroupTitle(Token id, String newTitle) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals("", newTitle);
+                        deleteAllTitleHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didChangeTabGroupColor(Token id, int newColor) {
+                        assertEquals(tabGroupId, id);
+                        assertEquals(TabGroupColorId.GREY, newColor);
+                        deleteAllColorHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didChangeTabGroupCollapsed(
+                            Token id, boolean isCollapsed, boolean animate) {
+                        assertEquals(tabGroupId, id);
+                        assertFalse(isCollapsed);
+                        assertFalse(animate);
+                        deleteAllCollapsedHelper.notifyCalled();
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.addTabGroupObserver(deleteAllObserver);
+                    mCollectionModel.deleteTabGroupVisualData(tabGroupId);
+                    assertEquals("", mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(
+                            TabGroupColorId.GREY,
+                            mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
+                    assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                });
+        deleteAllTitleHelper.waitForOnly("deleteTabGroupTitle failed");
+        deleteAllColorHelper.waitForOnly("deleteTabGroupColor failed");
+        deleteAllCollapsedHelper.waitForOnly("deleteTabGroupCollapsed failed");
     }
 
     private void assertTabsInOrderAre(List<Tab> tabs) {

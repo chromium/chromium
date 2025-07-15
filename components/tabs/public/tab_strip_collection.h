@@ -105,6 +105,10 @@ class TabStripCollection : public TabCollection {
   // Clears the detached group with `group_id` in `detached_group_collections_`.
   // Crashes if the group is not found in the detached tab groups list.
   void CloseDetachedTabGroup(const tab_groups::TabGroupId& group_id);
+  // Returns the detached tab group with `group_id` if it exists, returns
+  // nullptr otherwise.
+  TabGroupTabCollection* GetDetachedTabGroup(
+      const tab_groups::TabGroupId& group_id);
 
   // Split tab operations.
   SplitTabCollection* GetSplitTabCollection(split_tabs::SplitTabId split_id);
