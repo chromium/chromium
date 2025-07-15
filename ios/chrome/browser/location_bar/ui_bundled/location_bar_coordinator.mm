@@ -283,7 +283,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     PlaceholderService* placeholderService =
         ios::PlaceholderServiceFactory::GetForProfile(self.profile);
     self.mediator.placeholderService = placeholderService;

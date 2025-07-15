@@ -220,7 +220,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (id<BadgeItem>)offTheRecordBadge {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     return _offTheRecordBadge;
   }
 

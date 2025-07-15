@@ -271,7 +271,8 @@ const CGFloat kIconPointSize = 18.0;
   _backgroundCustomizationServiceObserverBridge = nullptr;
   _backgroundCustomizationService = nullptr;
   _imageFetcherService = nullptr;
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     self.placeholderService = nullptr;
   }
 }
@@ -304,7 +305,8 @@ const CGFloat kIconPointSize = 18.0;
 }
 
 - (void)setPlaceholderService:(PlaceholderService*)placeholderService {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate) ||
+        base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2));
 
   _placeholderService = placeholderService;
 
@@ -373,6 +375,10 @@ const CGFloat kIconPointSize = 18.0;
 #pragma mark - PlaceholderServiceObserving
 
 - (void)placeholderImageUpdated {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+    return;
+  }
+
   // Show Default Search Engine favicon.
   // Remember what is the Default Search Engine provider that the icon is
   // for, in case the user changes Default Search Engine while this is being

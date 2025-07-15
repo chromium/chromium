@@ -460,7 +460,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (void)addSearchEngineLogoIfNeededToSearchField:(UIView*)searchField {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     return;
   }
 
@@ -1255,7 +1255,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     return kHintLabelFakeboxLeadingSpaceWithIcon;
   } else {
     return kHintLabelFakeboxLeadingSpace;
@@ -1263,7 +1263,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (CGFloat)hintLabelOmniboxLeadingSpace {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     return kHintLabelOmniboxLeadingSpaceWithIcon;
   } else {
     return kHintLabelOmniboxLeadingSpace;

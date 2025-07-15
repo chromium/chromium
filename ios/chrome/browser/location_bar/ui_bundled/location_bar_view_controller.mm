@@ -310,7 +310,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                        withAction:@selector(sizeClassDidChange)];
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     _defaultSearchEngineIconView = [[UIImageView alloc] init];
     _defaultSearchEngineIconView.translatesAutoresizingMaskIntoConstraints = NO;
     _defaultSearchEngineIconView.contentMode = UIViewContentModeCenter;
