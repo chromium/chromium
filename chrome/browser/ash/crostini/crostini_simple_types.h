@@ -188,6 +188,9 @@ enum class ContainerVersion {
 struct VmInfo {
   VmState state;
   vm_tools::concierge::VmInfo info;
+  // Record if a container started signal has been received in current run of
+  // a vm. VMs without a container can also emit such as signal, e.g. Baguette.
+  bool container_started;
 };
 
 struct StreamingExportStatus {

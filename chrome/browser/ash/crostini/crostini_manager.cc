@@ -96,6 +96,8 @@ namespace crostini {
 
 namespace {
 const auto kStartVmTimeout = base::Seconds(300);
+const auto kBaguetteVmReadyWaitTimeout = base::Seconds(40);
+const auto kBaguetteVmReadyPollInterval = base::Seconds(4);
 
 ash::CiceroneClient* GetCiceroneClient() {
   return ash::CiceroneClient::Get();
@@ -320,6 +322,8 @@ class CrostiniManager::CrostiniRestarter
   void SharePathsFinished(bool success, const std::string& failure_reason);
   void StartLxdFinished(CrostiniResult result);
   void SetUpBaguetteUserFinished(CrostiniResult result);
+  void WaitUntilBaguetteReady(CrostiniResult result,
+                              base::TimeDelta remaining_wait_time);
   void CreateLxdContainerFinished(CrostiniResult result);
   void SetUpLxdContainerUserFinished(bool success);
   // Public function - StartLxdContainerFinished(CrostiniResult result);
@@ -900,6 +904,8 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
   if (!success) {
     LOG(WARNING) << "Failed to share paths: " << failure_reason;
   }
+
+  // TODO: crbug.com/425735422 - use VM type instead of feature to decide branch
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
     StartStage(mojom::InstallerState::kConfigureContainer);
     crostini_manager_->SetUpBaguetteUser(
@@ -950,7 +956,49 @@ void CrostiniManager::CrostiniRestarter::SetUpBaguetteUserFinished(
     return;
   }
 
-  FinishRestart(result);
+  // Wait for Baguette's 'services are ready' signals
+  WaitUntilBaguetteReady(result, kBaguetteVmReadyWaitTimeout);
+}
+
+void CrostiniManager::CrostiniRestarter::WaitUntilBaguetteReady(
+    CrostiniResult result,
+    base::TimeDelta remaining_wait_time) {
+  // We check baguette readiness every few seconds
+  auto vm_info = crostini_manager_->GetVmInfo(kCrostiniDefaultVmName);
+  if (!vm_info.has_value()) {
+    // For some reason crostini manager lost track of the vm
+    FinishRestart(result);
+    return;
+  }
+  if (vm_info->container_started) {
+    // vm has finished booting
+    base::UmaHistogramMediumTimes(
+        "Crostini.BaguetteReadyWait",
+        kBaguetteVmReadyWaitTimeout - remaining_wait_time);
+    FinishRestart(result);
+    return;
+  }
+  if (remaining_wait_time <= base::Seconds(0)) {
+    // No more wait time
+    base::UmaHistogramMediumTimes("Crostini.BaguetteReadyWait",
+                                  kBaguetteVmReadyWaitTimeout);
+    FinishRestart(result);
+    return;
+  }
+  base::TimeDelta next_wait = remaining_wait_time - base::Seconds(4);
+  if (next_wait < base::Seconds(0)) {
+    next_wait = base::Seconds(0);
+  }
+  if (stage_timeout_timer_.IsRunning()) {
+    // We got a progress message, reset the timeout duration back to full.
+    stage_timeout_timer_.Reset();
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CrostiniManager::CrostiniRestarter::WaitUntilBaguetteReady,
+          weak_ptr_factory_.GetWeakPtr(), result, next_wait),
+      std::min(kBaguetteVmReadyPollInterval, remaining_wait_time));
 }
 
 void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
@@ -2882,8 +2930,13 @@ void CrostiniManager::OnStartTerminaVm(
 
   // If the vm is already marked "running" run the callback.
   if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING) {
-    running_vms_[vm_name] =
-        VmInfo{VmState::STARTED, std::move(response->vm_info())};
+    if (running_vms_.contains(vm_name)) {
+      running_vms_[vm_name] =
+          VmInfo{VmState::STARTED, std::move(response->vm_info()), true};
+    } else {
+      running_vms_[vm_name] =
+          VmInfo{VmState::STARTED, std::move(response->vm_info()), false};
+    }
     std::move(callback).Run(/*success=*/true);
     return;
   }
@@ -2918,7 +2971,7 @@ void CrostiniManager::OnStartTerminaVm(
   uint32_t seneschal_server_handle =
       response->vm_info().seneschal_server_handle();
   running_vms_[vm_name] =
-      VmInfo{VmState::STARTING, std::move(response->vm_info())};
+      VmInfo{VmState::STARTING, std::move(response->vm_info()), false};
   // If we thought a container was running for this VM, we're wrong. This can
   // happen if the vm was formerly running, then stopped via crosh.
 
@@ -3090,6 +3143,10 @@ void CrostiniManager::OnContainerStarted(
             weak_ptr_factory_.GetWeakPtr(),
             guest_os::GuestId(kCrostiniDefaultVmType, signal.vm_name(),
                               signal.container_name())));
+  }
+  auto vm_info_entry = running_vms_.find(signal.vm_name());
+  if (vm_info_entry != running_vms_.end()) {
+    vm_info_entry->second.container_started = true;
   }
 }
 
@@ -3625,7 +3682,7 @@ void CrostiniManager::OnTremplinStarted(
   // finish its other startup work.
   if (running_vms_.find(signal.vm_name()) == running_vms_.end()) {
     running_vms_[signal.vm_name()] =
-        VmInfo{VmState::STARTING, vm_tools::concierge::VmInfo{}};
+        VmInfo{VmState::STARTING, vm_tools::concierge::VmInfo{}, false};
   }
   // Find the callbacks to call, then erase them from the map.
   auto range = tremplin_started_callbacks_.equal_range(signal.vm_name());

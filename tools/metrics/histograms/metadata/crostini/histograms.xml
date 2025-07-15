@@ -161,6 +161,13 @@ chromium-metrics-reviews@google.com.
   <summary>Time taken for successful backup.</summary>
 </histogram>
 
+<histogram name="Crostini.BaguetteReadyWait" units="ms"
+    expires_after="2026-07-25">
+  <owner>zihanchen@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Time taken to wait for Baguette to become ready.</summary>
+</histogram>
+
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
     expires_after="2026-07-01">
   <owner>denniskempin@google.com</owner>
