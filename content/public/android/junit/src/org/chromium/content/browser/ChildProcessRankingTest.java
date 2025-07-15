@@ -18,6 +18,7 @@ import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
 
@@ -426,7 +427,7 @@ public class ChildProcessRankingTest {
     }
 
     @Test
-    @DisableFeatures({ContentFeatureList.STRICT_HIGH_RANK_PROCESS_LRU})
+    @DisableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnection() {
         ChildProcessRanking ranking = new ChildProcessRanking();
         ranking.enableServiceGroupImportance();
@@ -477,7 +478,7 @@ public class ChildProcessRankingTest {
     }
 
     @Test
-    @EnableFeatures({ContentFeatureList.STRICT_HIGH_RANK_PROCESS_LRU})
+    @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithoutConflict() {
         ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
@@ -647,7 +648,7 @@ public class ChildProcessRankingTest {
     }
 
     @Test
-    @EnableFeatures({ContentFeatureList.STRICT_HIGH_RANK_PROCESS_LRU})
+    @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithConflict() {
         ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
