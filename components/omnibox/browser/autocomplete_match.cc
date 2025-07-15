@@ -695,9 +695,9 @@ bool AutocompleteMatch::MoreRelevant(const AutocompleteMatch& match1,
   // For equal-relevance matches, we sort alphabetically, so that providers
   // who return multiple elements at the same priority get a "stable" sort
   // across multiple updates.
-  return (match1.relevance == match2.relevance)
-             ? (match1.contents < match2.contents)
-             : (match1.relevance > match2.relevance);
+  return match1.relevance == match2.relevance
+             ? match1.contents < match2.contents
+             : match1.relevance > match2.relevance;
 }
 
 // static
