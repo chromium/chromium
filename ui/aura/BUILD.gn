@@ -260,6 +260,10 @@ static_library("test_support") {
   if (is_linux || is_chromeos) {
     deps += [ "//ui/platform_window/common" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 executable("aura_demo") {

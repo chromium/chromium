@@ -306,6 +306,10 @@ static_library("test_support") {
     "//base/test:test_support",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("accessibility_unittests") {
@@ -462,6 +466,10 @@ test("accessibility_unittests") {
       configs += [ "//build/config/linux/atk" ]
     }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("ax_tree_fuzzer") {

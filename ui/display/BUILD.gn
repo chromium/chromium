@@ -228,6 +228,10 @@ static_library("test_support") {
       "mac/test/virtual_display_util_mac.h",
       "mac/test/virtual_display_util_mac.mm",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   if (is_linux && ozone_platform_x11 && enable_remoting) {
@@ -362,4 +366,8 @@ test("display_unittests") {
   } else {
     deps += [ "//mojo/core/test:run_all_unittests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
