@@ -166,6 +166,10 @@ source_set("unit_tests") {
     "//ui/gfx/codec",
     "//ui/message_center/public/cpp",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_chromeos_device) {
