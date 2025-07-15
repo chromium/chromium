@@ -64,6 +64,21 @@ struct SourceOptions {
   bool is_read_only;
 };
 
+// Representation of the amount of files for a source of type
+// SOURCE_HISTOGRAMS_ATOMIC_DIR. Used for fre_source_trial.
+enum FRELimitResult {
+  // There's only one file (from the current run).
+  kFirstFile = 0,
+
+  // Contains multiple files from different sessions.
+  kMultipleFiles = 1,
+
+  // The amount of files exceeds the limit.
+  kExceedsLimit = 2,
+
+  kMaxValue = kExceedsLimit,
+};
+
 // Opening a file typically requires at least these flags.
 constexpr int STD_OPEN = base::File::FLAG_OPEN | base::File::FLAG_READ;
 
@@ -102,21 +117,90 @@ void DeleteFileWhenPossible(const base::FilePath& path) {
                             base::File::FLAG_DELETE_ON_CLOSE);
 }
 
-bool ShouldDeleteSource(const FileMetricsProvider::Params& params,
-                        bool is_fre) {
-  if (!fre_source_trial::IsEnabled()) {
-    return (params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR ||
-            params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE);
+// Checks whether a given path is a PMA (Persistent Memory Allocator) file.
+// TODO(crbug.com/429516571): Avoid IsDirectory() and Extension() checks by
+// using the parameters in base::FileEnumerator().
+bool IsPMAFile(const base::FilePath& file_path,
+               const base::FileEnumerator::FileInfo& file_info) {
+  if (file_info.IsDirectory()) {
+    return false;
   }
-  if (params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE) {
-    return true;
+
+  // Check if it's temporary file
+  base::FilePath::CharType first_character =
+      file_path.BaseName().value().front();
+  if (first_character == FILE_PATH_LITERAL('.') ||
+      first_character == FILE_PATH_LITERAL('_')) {
+    return false;
   }
-  // Only delete sources for non-first run. This is to avoid deleting the
-  // sources that were created during the FRE when metrics reporting is
-  // disabled. After FRE, the sources will be deleted when metrics reporting
-  // is disabled.
-  return !is_fre &&
-         params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR;
+
+  // Check non-PMA extension.
+  if (file_path.Extension() !=
+      base::PersistentMemoryAllocator::kFileExtension) {
+    return false;
+  }
+
+  return true;
+}
+
+// Clients should not delete the sources of type
+// FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR if it's FRE, since the user
+// may not have opted in to metrics reporting yet. If the client is not FRE, the
+// user has already opted in to metrics reporting, so it's safe to delete the
+// source.
+// For now, only clients with trial enabled may return true. The rest of the
+// clients will always return false.
+bool ShouldKeepSourceWhenMetricsDisabled(
+    const FileMetricsProvider::Params& params,
+    bool is_fre) {
+  return params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR &&
+         is_fre && fre_source_trial::IsEnabled();
+}
+
+// Ensures that a given directory path has at most max_source_files amount
+// of files. If the number of files exceeds the limit, the older files will be
+// deleted first.
+void LimitAmountOfFiles(const base::FilePath& path) {
+  if (!base::DirectoryExists(path)) {
+    return;
+  }
+  base::flat_map<base::Time, base::FilePath> found_files;
+
+  // Find all files under the directory.
+  base::FileEnumerator file_iter(path, /*recursive=*/false,
+                                 base::FileEnumerator::FILES);
+  for (base::FilePath file_path = file_iter.Next(); !file_path.empty();
+       file_path = file_iter.Next()) {
+    base::FileEnumerator::FileInfo file_info = file_iter.GetInfo();
+    if (!IsPMAFile(file_path, file_info)) {
+      continue;
+    }
+
+    base::Time modified_time = file_info.GetLastModifiedTime();
+    found_files.emplace(modified_time, file_path);
+  }
+
+  size_t file_count = found_files.size();
+
+  // Record the number of files found.
+  FRELimitResult fre_limit_files_amount = FRELimitResult::kFirstFile;
+  if (file_count > FileMetricsProvider::kMaxSourceFilesInFRE) {
+    fre_limit_files_amount = FRELimitResult::kExceedsLimit;
+  } else if (file_count > 1) {
+    fre_limit_files_amount = FRELimitResult::kMultipleFiles;
+  }
+  base::UmaHistogramEnumeration("UMA.FileMetricsProvider.FRELimitResult",
+                                fre_limit_files_amount);
+
+  // Delete the older files to have at most
+  // FileMetricsProvider::kMaxSourceFilesInFRE.
+  for (const auto& file : found_files) {
+    if (file_count <= FileMetricsProvider::kMaxSourceFilesInFRE) {
+      break;
+    }
+    base::DeleteFile(file.second);
+    --file_count;
+  }
 }
 
 }  // namespace
@@ -223,9 +307,20 @@ void FileMetricsProvider::RegisterSource(const Params& params,
   DCHECK_GT(std::size(kSourceOptions), static_cast<size_t>(params.type));
 
   if (!metrics_reporting_enabled) {
+    if (ShouldKeepSourceWhenMetricsDisabled(params, is_fre_)) {
+      // Keep the SOURCE_HISTOGRAMS_ATOMIC_DIR sources on the FRE. Limit the
+      // amount of files there are in the dir.
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(LimitAmountOfFiles, params.path));
+      return;
+    }
     // When metrics reporting is not enabled, existing files should be deleted,
     // since they won't be getting deleted as part of the upload flow.
-    if (ShouldDeleteSource(params, is_fre_)) {
+    if (params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR ||
+        params.type == SOURCE_HISTOGRAMS_ATOMIC_FILE) {
       base::ThreadPool::PostTask(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -303,22 +398,7 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
          found_file.path = file_iter.Next()) {
       found_file.info = file_iter.GetInfo();
 
-      // Ignore directories.
-      if (found_file.info.IsDirectory()) {
-        continue;
-      }
-
-      // Ignore temporary files.
-      base::FilePath::CharType first_character =
-          found_file.path.BaseName().value().front();
-      if (first_character == FILE_PATH_LITERAL('.') ||
-          first_character == FILE_PATH_LITERAL('_')) {
-        continue;
-      }
-
-      // Ignore non-PMA (Persistent Memory Allocator) files.
-      if (found_file.path.Extension() !=
-          base::PersistentMemoryAllocator::kFileExtension) {
+      if (!IsPMAFile(found_file.path, found_file.info)) {
         continue;
       }
 
