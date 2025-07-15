@@ -4431,7 +4431,8 @@
   {
     "name": "enable-vulkan",
     "owners": [ "vasilyt@chromium.org", "kylechar@chromium.org" ],
-    "expiry_milestone": 140
+    // Used to switch between the Vulkan or GL Skia backends by developers.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-waitable-swap-chain",

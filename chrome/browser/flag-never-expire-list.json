@@ -75,6 +75,7 @@
   "enable-touchscreen-calibration",
   "enable-ui-devtools",
   "enable-virtual-keyboard",
+  "enable-vulkan",
   "enable-web-authentication-testing-api",
   "enable-web-payments-experimental-features",
   "enable-webassembly-baseline",
