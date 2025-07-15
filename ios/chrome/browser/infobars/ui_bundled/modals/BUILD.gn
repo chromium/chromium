@@ -5,8 +5,6 @@
 source_set("modals") {
   sources = [
     "infobar_modal_delegate.h",
-    "infobar_modal_view_controller.h",
-    "infobar_modal_view_controller.mm",
     "infobar_password_modal_consumer.h",
     "infobar_password_modal_delegate.h",
     "infobar_password_table_view_controller.h",
