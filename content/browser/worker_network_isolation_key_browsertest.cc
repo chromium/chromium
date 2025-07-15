@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,18 +22,14 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 namespace {
 
 bool SupportsSharedWorker() {
-#if BUILDFLAG(IS_ANDROID)
-  // SharedWorkers are not enabled on Android. https://crbug.com/154571
-  return false;
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
 
 }  // namespace

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
@@ -56,6 +57,7 @@
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -71,15 +73,7 @@ const char kSameSiteCookie[] = "same-site-cookie=same-site-cookie-value";
 const char kNoCookie[] = "None";
 
 bool SupportsSharedWorker() {
-#if BUILDFLAG(IS_ANDROID)
-  // SharedWorkers are not enabled on Android. https://crbug.com/154571
-  //
-  // TODO(davidben): Move other SharedWorker exclusions from
-  // build/android/pylib/gtest/filter/ inline.
-  return false;
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
 
 std::string ParamToTestSuffix(const testing::TestParamInfo<bool>& info) {

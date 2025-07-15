@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -37,12 +38,7 @@ namespace content {
 namespace {
 
 bool SupportsSharedWorker() {
-#if BUILDFLAG(IS_ANDROID)
-  // SharedWorkers are not enabled on Android. https://crbug.com/154571
-  return false;
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
 
 }  // namespace

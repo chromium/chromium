@@ -4415,7 +4415,6 @@
       public: true,
       // Android does not yet support SharedWorker. crbug.com/154571
       status: {"Android": "", "default": "stable"},
-      base_feature: "none",
 
       // Allow Android to run the origin trial.
       origin_trial_feature_name: "SharedWorkerOnAndroid",
