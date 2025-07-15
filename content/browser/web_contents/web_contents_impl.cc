@@ -12202,6 +12202,10 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
   if (GetBrowserContext()->ShutdownStarted()) {
     return;
   }
+  if (!GetLastCommittedURL().SchemeIsHTTPOrHTTPS() &&
+      features::kAndroidSpareRendererOnlyWarmupAfterWebPageLoaded.Get()) {
+    return;
+  }
   int renderer_timeout_seconds =
       features::kAndroidSpareRendererTimeoutSeconds.Get();
   if (renderer_timeout_seconds < 0) {
