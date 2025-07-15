@@ -76,8 +76,8 @@ public class ScreenCaptureTest {
     private static final int TEST_WIDTH_DP = 100;
     private static final int TEST_HEIGHT_DP = 200;
     private static final int TEST_DPI = 300;
-    private static final int NEW_WIDTH_DP = 400;
-    private static final int NEW_HEIGHT_DP = 500;
+    private static final int NEW_WIDTH_PX = 400;
+    private static final int NEW_HEIGHT_PX = 500;
     private static final long NATIVE_POINTER = 1L;
 
     @Mock private WebContents mWebContents;
@@ -87,11 +87,12 @@ public class ScreenCaptureTest {
     @Mock private ScreenCapture.Natives mNativeMock;
 
     private static class ImageHandlerState {
-        public final ImageReader imageReader = mock(ImageReader.class);
-        public final Surface surface = mock(Surface.class);
+        public final ImageHandler imageHandler;
+        public final ImageReader imageReader;
 
-        ImageHandlerState() {
-            when(imageReader.getSurface()).thenReturn(surface);
+        ImageHandlerState(ImageHandler imageHandler, ImageReader imageReader) {
+            this.imageHandler = imageHandler;
+            this.imageReader = imageReader;
         }
     }
 
@@ -190,9 +191,15 @@ public class ScreenCaptureTest {
             ScreenCapture.CaptureState captureState,
             ImageHandler.Delegate delegate,
             Handler handler) {
-        final var state = new ImageHandlerState();
+        final var imageReader = mock(ImageReader.class);
+        final var surface = mock(Surface.class);
+        when(imageReader.getSurface()).thenReturn(surface);
+
+        final var imageHandler = new ImageHandler(captureState, delegate, handler, imageReader);
+        final var state = new ImageHandlerState(imageHandler, imageReader);
         mImageHandlerStates.add(state);
-        return new ImageHandler(captureState, delegate, handler, state.imageReader);
+
+        return imageHandler;
     }
 
     private MediaProjection.Callback getMediaProjectionCallback() {
@@ -213,6 +220,7 @@ public class ScreenCaptureTest {
         assertTrue(mScreenCapture.startCapture());
         assertEquals(1, mImageHandlerStates.size());
 
+        final Surface surface = mImageHandlerStates.get(0).imageHandler.getSurface();
         verify(mMediaProjection)
                 .createVirtualDisplay(
                         eq("ScreenCapture"),
@@ -220,7 +228,7 @@ public class ScreenCaptureTest {
                         eq(TEST_HEIGHT_DP * TEST_DPI / DisplayMetrics.DENSITY_DEFAULT),
                         eq(TEST_DPI),
                         eq(DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR),
-                        eq(mImageHandlerStates.get(0).surface),
+                        eq(surface),
                         eq(null),
                         eq(null));
     }
@@ -320,6 +328,23 @@ public class ScreenCaptureTest {
     }
 
     @Test
+    public void destroyClosesAllImageHandlers() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+        assertEquals(2, mImageHandlerStates.size());
+
+        mScreenCapture.destroy();
+
+        verify(mImageHandlerStates.get(0).imageReader).close();
+        verify(mImageHandlerStates.get(1).imageReader).close();
+    }
+
+    @Test
     public void testOnCapturedContentResizeDoesNothingAfterDestroy() {
         final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
         ScreenCapture.onPick(mWebContents, activityResult);
@@ -328,26 +353,65 @@ public class ScreenCaptureTest {
 
         MediaProjection.Callback callback = getMediaProjectionCallback();
         mScreenCapture.destroy();
-        callback.onCapturedContentResize(NEW_WIDTH_DP, NEW_HEIGHT_DP);
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
 
         verify(mVirtualDisplay, never()).resize(anyInt(), anyInt(), anyInt());
         verify(mVirtualDisplay, never()).setSurface(any());
     }
 
     @Test
-    public void destroyClosesAllImageHandlers() {
+    public void testOnCapturedContentResizeRecreatesHandlerAndUpdatesVirtualDisplay() {
         final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
         ScreenCapture.onPick(mWebContents, activityResult);
         ScreenCapture.onForegroundServiceRunning(true);
         assertTrue(mScreenCapture.startCapture());
 
-        MediaProjection.Callback callback = getMediaProjectionCallback();
-        callback.onCapturedContentResize(NEW_WIDTH_DP, NEW_HEIGHT_DP);
+        assertEquals(1, mImageHandlerStates.size());
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+
         assertEquals(2, mImageHandlerStates.size());
+        final var handler = mImageHandlerStates.get(1).imageHandler;
+        assertEquals(NEW_WIDTH_PX, handler.getCaptureState().width);
+        assertEquals(NEW_HEIGHT_PX, handler.getCaptureState().height);
 
-        mScreenCapture.destroy();
+        verify(mVirtualDisplay).resize(NEW_WIDTH_PX, NEW_HEIGHT_PX, TEST_DPI);
+        verify(mVirtualDisplay).setSurface(handler.getSurface());
+    }
 
-        verify(mImageHandlerStates.get(0).imageReader).close();
-        verify(mImageHandlerStates.get(1).imageReader).close();
+    @Test
+    public void testOnCapturedContentResizeDoesNothingIfSizeIsUnchanged() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        assertEquals(1, mImageHandlerStates.size());
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+
+        final int widthPx = TEST_WIDTH_DP * TEST_DPI / DisplayMetrics.DENSITY_DEFAULT;
+        final int heightPx = TEST_HEIGHT_DP * TEST_DPI / DisplayMetrics.DENSITY_DEFAULT;
+        callback.onCapturedContentResize(widthPx, heightPx);
+
+        assertEquals(1, mImageHandlerStates.size());
+        verify(mVirtualDisplay, never()).resize(anyInt(), anyInt(), anyInt());
+        verify(mVirtualDisplay, never()).setSurface(any());
+    }
+
+    @Test
+    public void testOnCapturedContentResizeDoesNothingIfContextIsMissing() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+
+        assertEquals(1, mImageHandlerStates.size());
+        verify(mVirtualDisplay, never()).resize(anyInt(), anyInt(), anyInt());
+        verify(mVirtualDisplay, never()).setSurface(any());
     }
 }
