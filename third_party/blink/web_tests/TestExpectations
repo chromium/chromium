@@ -3121,7 +3121,7 @@ crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/statef
 crbug.com/426164367 [ Win11-arm64 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Crash ]
-crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash ]
+crbug.com/426164366 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Crash Failure ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Timeout ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error.tentative.html [ Crash ]
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_verification_error.tentative.html [ Crash ]
@@ -9531,3 +9531,6 @@ crbug.com/431095012 [ Mac ] external/wpt/css/css-conditional/container-queries/f
 
 # Gardener 2025-07-15
 crbug.com/426429658 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout Failure ]
+crbug.com/431938385 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/include-site.https.html [ Crash Failure ]
+crbug.com/431938385 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
+crbug.com/431938385 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Failure ]
