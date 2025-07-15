@@ -755,6 +755,12 @@ BASE_FEATURE(kSpecCompliantCanPlayThrough,
              "SpecCompliantCanPlayThrough",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Suspends WebMediaPlayerImpl instances when the containing RenderFrame is
+// frozen. TODO(crbug.com/41161335): Remove in M143 after it goes stable.
+BASE_FEATURE(kSuspendMediaForFrozenFrames,
+             "SuspendMediaForFrozenFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Disables the real audio output stream after silent audio has been delivered
 // for too long. Should save quite a bit of power in the muted video case.
 BASE_FEATURE(kSuspendMutedAudio,

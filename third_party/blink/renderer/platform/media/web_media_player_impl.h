@@ -1120,7 +1120,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   const bool should_pause_background_muted_audio_;
 
-  bool was_suspended_for_frame_closed_ = false;
+  bool was_suspended_for_frame_closed_or_frozen_ = false;
 
   // Request pipeline to suspend. It should not block other signals after
   // suspended.

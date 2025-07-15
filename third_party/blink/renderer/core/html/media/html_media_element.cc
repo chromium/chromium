@@ -334,6 +334,8 @@ HTMLMediaElement::PlayPromiseError PauseReasonToPlayPromiseError(
           kPaused_SuspendedPlayerIdleTimeout;
     case WebMediaPlayer::PauseReason::kRemotePlayStateChange:
       return HTMLMediaElement::PlayPromiseError::kPaused_RemotePlayStateChange;
+    case WebMediaPlayer::PauseReason::kFrameFrozen:
+      return HTMLMediaElement::PlayPromiseError::kPaused_FrameFrozen;
     case WebMediaPlayer::PauseReason::kFrameHidden:
       return HTMLMediaElement::PlayPromiseError::kPaused_FrameHidden;
     case WebMediaPlayer::PauseReason::kEndOfPlayback:
@@ -4087,8 +4089,10 @@ void HTMLMediaElement::ClearMediaPlayer() {
 
 void HTMLMediaElement::ContextLifecycleStateChanged(
     mojom::blink::FrameLifecycleState state) {
-  if (state == mojom::blink::FrameLifecycleState::kFrozen && playing_) {
-    pause();
+  if (state == mojom::blink::FrameLifecycleState::kFrozen) {
+    if (playing_) {
+      PausePlayback(WebMediaPlayer::PauseReason::kFrameFrozen);
+    }
     if (web_media_player_) {
       web_media_player_->OnFrozen();
     }
@@ -4688,6 +4692,9 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
       break;
     case PlayPromiseError::kPaused_PauseRequestedInternally:
       reason = " because a pause was requested by the browser";
+      break;
+    case PlayPromiseError::kPaused_FrameFrozen:
+      reason = " because the containing page was frozen";
       break;
     case PlayPromiseError::kPaused_FrameHidden:
       reason =

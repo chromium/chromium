@@ -508,7 +508,7 @@ class WebMediaPlayerImplTest
     wmpi_->SetTickClockForTest(clock);
   }
   void SetWasSuspendedForFrameClosed(bool is_suspended) {
-    wmpi_->was_suspended_for_frame_closed_ = is_suspended;
+    wmpi_->was_suspended_for_frame_closed_or_frozen_ = is_suspended;
   }
 
   void SetFullscreen(bool is_fullscreen) {
@@ -2450,6 +2450,15 @@ TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
   InitializeWebMediaPlayerImpl();
   EXPECT_CALL(mock_observer_, OnFrozen());
   wmpi_->OnFrozen();
+}
+
+TEST_F(WebMediaPlayerImplTest, OnFrozenSuspendsPlayback) {
+  base::test::ScopedFeatureList feature_list(
+      media::kSuspendMediaForFrozenFrames);
+  InitializeWebMediaPlayerImpl();
+  ASSERT_FALSE(IsSuspended());
+  wmpi_->OnFrozen();
+  ASSERT_TRUE(IsSuspended());
 }
 
 TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {

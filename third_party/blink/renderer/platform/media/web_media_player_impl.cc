@@ -1101,8 +1101,21 @@ void WebMediaPlayerImpl::OnFrozen() {
   // We should already be paused before we are frozen.
   DCHECK(paused_);
 
-  if (observer_)
+  if (observer_) {
     observer_->OnFrozen();
+  }
+
+  // This may be the last chance `main_task_runner_` gets to execute, so we
+  // should kick off release of all media resources.
+  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
+    if (demuxer_manager_->HasDataSource()) {
+      demuxer_manager_->StopPreloading();
+    }
+
+    was_suspended_for_frame_closed_or_frozen_ = true;
+    UpdateBackgroundVideoOptimizationState();
+    UpdatePlayState();
+  }
 }
 
 void WebMediaPlayerImpl::Seek(double seconds) {
@@ -2601,7 +2614,7 @@ void WebMediaPlayerImpl::OnPageHidden() {
 void WebMediaPlayerImpl::SuspendForFrameClosed() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  was_suspended_for_frame_closed_ = true;
+  was_suspended_for_frame_closed_or_frozen_ = true;
   UpdateBackgroundVideoOptimizationState();
   UpdatePlayState();
 }
@@ -2613,7 +2626,7 @@ void WebMediaPlayerImpl::OnPageShown() {
   // Foreground videos don't require user gesture to continue playback.
   video_locked_when_paused_when_hidden_ = false;
 
-  was_suspended_for_frame_closed_ = false;
+  was_suspended_for_frame_closed_or_frozen_ = false;
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnShown();
@@ -2673,7 +2686,7 @@ void WebMediaPlayerImpl::OnFrameShown() {
   // Foreground videos don't require user gesture to continue playback.
   video_locked_when_paused_when_hidden_ = false;
 
-  was_suspended_for_frame_closed_ = false;
+  was_suspended_for_frame_closed_or_frozen_ = false;
 
   if (watch_time_reporter_) {
     watch_time_reporter_->OnShown();
@@ -3246,7 +3259,7 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(
   PlayState result;
 
   bool must_suspend =
-      was_suspended_for_frame_closed_ || pending_oneshot_suspend_;
+      was_suspended_for_frame_closed_or_frozen_ || pending_oneshot_suspend_;
   bool is_stale = delegate_->IsStale(delegate_id_);
 
   if (stale_state_override_for_testing_.has_value() &&
@@ -3572,14 +3585,20 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
 
 bool WebMediaPlayerImpl::IsPageHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  return delegate_->IsPageHidden() && !was_suspended_for_frame_closed_;
+  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
+    return delegate_->IsPageHidden();
+  }
+  return delegate_->IsPageHidden() &&
+         !was_suspended_for_frame_closed_or_frozen_;
 }
 
 bool WebMediaPlayerImpl::IsFrameHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  return delegate_->IsFrameHidden() && !was_suspended_for_frame_closed_;
+  if (base::FeatureList::IsEnabled(media::kSuspendMediaForFrozenFrames)) {
+    return delegate_->IsFrameHidden();
+  }
+  return delegate_->IsFrameHidden() &&
+         !was_suspended_for_frame_closed_or_frozen_;
 }
 
 bool WebMediaPlayerImpl::IsPausedBecausePageHidden() const {

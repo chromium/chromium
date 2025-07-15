@@ -130,6 +130,7 @@ class CORE_EXPORT HTMLMediaElement
     kPaused_RemotePlayStateChange,
     kPaused_PauseRequestedByUser,
     kPaused_PauseRequestedInternally,
+    kPaused_FrameFrozen,
     kPaused_FrameHidden,
     kPaused_LetAudioDescriptionFinish
   };

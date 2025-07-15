@@ -145,6 +145,8 @@ class WebMediaPlayer {
   enum class PauseReason {
     // The player's tab is in the background.
     kPageHidden,
+    // The player's frame is frozen.
+    kFrameFrozen,
     // The player's frame is not rendered.
     kFrameHidden,
     // The player has been backgrounded for too long and will be paused to save
