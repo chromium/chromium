@@ -145,8 +145,8 @@ public interface TabModelObserver {
     default void tabClosureCommitted(Tab tab) {}
 
     /**
-     * Called when an "all tabs" closure will happen. If multiple tabs are closed, @{@link
-     * TabModelObserver#willCloseMultipleTabs(boolean, List)} is invoked
+     * Called when an "all tabs" closure will happen. If multiple tabs are closed, {@link
+     * #willCloseMultipleTabs(boolean, List)} is invoked
      */
     default void willCloseAllTabs(boolean incognito) {}
 

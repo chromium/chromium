@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -342,16 +343,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // cast in C++ otherwise results in the tab going to the end of the list which is not
         // intended.
         newIndex = Math.max(0, newIndex);
-        newIndex =
-                TabCollectionTabModelImplJni.get()
-                        .moveTabRecursive(
-                                mNativeTabCollectionTabModelImplPtr,
-                                currentIndex,
-                                newIndex,
-                                tab.getTabGroupId(),
-                                tab.getIsPinned());
-
-        for (TabModelObserver obs : mTabModelObservers) obs.didMoveTab(tab, newIndex, currentIndex);
+        moveTabInternal(tab, currentIndex, newIndex, tab.getTabGroupId(), tab.getIsPinned());
     }
 
     @Override
@@ -389,6 +381,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             assert false : "Trying to add a tab to a destroyed TabCollectionTabModelImpl.";
             return;
         }
+
+        // TODO(crbug.com/429145597): Handle auto grouping for certain launch types and on restore.
 
         for (TabModelObserver obs : mTabModelObservers) obs.willAddTab(tab, type);
 
@@ -521,6 +515,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (Tab tab : tabsToClose) {
             finalizeTabClosure(tab, params.tabClosingSource);
         }
+        // TODO(crbug.com/429145597): Close any detached tab group if this is not an undoable
+        // closure.
 
         return true;
     }
@@ -718,7 +714,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void createSingleTabGroup(Tab tab) {}
+    public void createSingleTabGroup(Tab tab) {
+        assertOnUiThread();
+        assert tab.getTabGroupId() == null;
+
+        // TODO(crbug.com/429145597): Investigate using mergeTabsToGroup instead.
+        Token tabGroupId = createDetachedTabGroup();
+        int index = indexOf(tab);
+        updateGroupForTab(tab, index, index, tabGroupId);
+
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didCreateNewGroup(tab, this);
+        }
+    }
 
     @Override
     public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {}
@@ -872,7 +880,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}
+    public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
+        assertOnUiThread();
+        Tab sourceTab = getTabById(sourceTabId);
+        if (sourceTab == null) return;
+
+        Token oldTabGroupId = sourceTab.getTabGroupId();
+        if (oldTabGroupId == null) return;
+
+        List<Tab> tabsInGroup = getTabsInGroup(oldTabGroupId);
+        assert tabsInGroup.size() > 0;
+        final int approximateIndex;
+        if (trailing) {
+            approximateIndex = indexOf(tabsInGroup.get(tabsInGroup.size() - 1));
+        } else {
+            approximateIndex = indexOf(tabsInGroup.get(0));
+        }
+        updateGroupForTab(
+                sourceTab, indexOf(sourceTab), approximateIndex, /* newTabGroupId= */ null);
+    }
 
     // Internal methods.
 
@@ -950,6 +976,106 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 tab.freeze();
             }
         }
+    }
+
+    private int moveTabInternal(
+            Tab tab, int currentIndex, int newIndex, @Nullable Token tabGroupId, boolean isPinned) {
+        int finalIndex =
+                TabCollectionTabModelImplJni.get()
+                        .moveTabRecursive(
+                                mNativeTabCollectionTabModelImplPtr,
+                                currentIndex,
+                                newIndex,
+                                tabGroupId,
+                                isPinned);
+
+        if (currentIndex != finalIndex) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didMoveTab(tab, finalIndex, currentIndex);
+            }
+        }
+        return finalIndex;
+    }
+
+    private Token createDetachedTabGroup() {
+        Token tabGroupId = Token.createRandom();
+        @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+
+        TabCollectionTabModelImplJni.get()
+                .createTabGroup(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tabGroupId,
+                        /* title= */ "",
+                        colorId,
+                        /* isCollapsed= */ false);
+        return tabGroupId;
+    }
+
+    private int updateGroupForTab(
+            Tab tab, int index, int approximateIndex, @Nullable Token newTabGroupId) {
+        Token oldTabGroupId = tab.getTabGroupId();
+        boolean isMovingOutOfGroup = oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId);
+        boolean isMergingIntoGroup = newTabGroupId != null;
+        if (isMovingOutOfGroup) {
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.willMoveTabOutOfGroup(tab, newTabGroupId);
+            }
+        }
+
+        if (isMergingIntoGroup) {
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, newTabGroupId);
+            }
+        }
+
+        int finalIndex =
+                moveTabInternal(tab, index, approximateIndex, newTabGroupId, /* isPinned= */ false);
+
+        if (isMovingOutOfGroup) {
+            assumeNonNull(oldTabGroupId);
+            boolean wasLastTabInGroup =
+                    wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(tab, oldTabGroupId, finalIndex);
+            // TODO(crbug.com/429145597): Also close the detached tab group if this is not an
+            // undoable merge.
+            if (wasLastTabInGroup && newTabGroupId == null) {
+                for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                    observer.didRemoveTabGroup(
+                            Tab.INVALID_TAB_ID, oldTabGroupId, DidRemoveTabGroupReason.UNGROUP);
+                }
+            }
+        }
+
+        if (isMergingIntoGroup) {
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.didMergeTabToGroup(tab);
+            }
+        }
+
+        return finalIndex;
+    }
+
+    /**
+     * Notifies observers that a tab has moved out of a group. Returns true if the tab was the last
+     * tab in the group.
+     */
+    private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(
+            Tab tab, Token oldTabGroupId, int finalIndex) {
+        int prevFilterIndex = getFirstTabIndexInGroup(oldTabGroupId);
+        boolean isLastTabInGroup = prevFilterIndex == TabList.INVALID_TAB_INDEX;
+        if (isLastTabInGroup) {
+            prevFilterIndex = finalIndex;
+        }
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didMoveTabOutOfGroup(tab, prevFilterIndex);
+        }
+        return isLastTabInGroup;
+    }
+
+    private int getFirstTabIndexInGroup(Token tabGroupId) {
+        // TODO(crbug.com/428692223): Optimize this by requesting it from the collection.
+        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) return TabList.INVALID_TAB_INDEX;
+        return indexOf(tabsInGroup.get(0));
     }
 
     @NativeMethods
