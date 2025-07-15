@@ -369,4 +369,8 @@ public class Features {
     // Profile.clearExtraHeaderForOrigins
     // Profile.clearAllExtraHeadersForOrigins
     public static final String EXTRA_HEADER_FOR_ORIGINS = "EXTRA_HEADER_FOR_ORIGINS";
+
+    // WebSettingsCompat.setBackForwardCacheSettings
+    // WebSettingsCompat.getBackForwardCacheSettings
+    public static final String BACK_FORWARD_CACHE_SETTINGS = "BACK_FORWARD_CACHE_SETTINGS";
 }

@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_SETTINGS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_SETTINGS_H_
 
+#include "android_webview/browser/aw_back_forward_cache_settings.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -141,6 +142,9 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateBackForwardCacheEnabledLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void UpdateBackForwardCacheSettingsLocked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   void UpdateGeolocationEnabledLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
@@ -195,6 +199,7 @@ class AwSettings : public content::WebContentsObserver {
   SpeculativeLoadingAllowedFlags speculative_loading_allowed_flags_{
       SpeculativeLoadingAllowedFlags::SPECULATIVE_LOADING_DISABLED};
   bool bfcache_enabled_in_java_settings_{false};
+  std::optional<AwBackForwardCacheSettings> aw_back_forward_cache_settings_;
   bool geolocation_enabled_{false};
 
   // Whether the settings that would affect the initial page scale is set to a

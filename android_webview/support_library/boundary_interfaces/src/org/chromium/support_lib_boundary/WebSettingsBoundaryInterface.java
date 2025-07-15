@@ -5,11 +5,13 @@
 package org.chromium.support_lib_boundary;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.InvocationHandler;
 import java.util.Map;
 import java.util.Set;
 
@@ -125,6 +127,11 @@ public interface WebSettingsBoundaryInterface {
     void setBackForwardCacheEnabled(boolean backForwardCacheEnabled);
 
     boolean getBackForwardCacheEnabled();
+
+    void setBackForwardCacheSettings(
+            /* BackForwardCacheSettings */ InvocationHandler backForwardCacheSettings);
+
+    @Nullable /* BackForwardCacheSettings */ InvocationHandler getBackForwardCacheSettings();
 
     void setPaymentRequestEnabled(boolean enabled);
 

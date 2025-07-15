@@ -664,6 +664,10 @@ chromium-metrics-reviews@google.com.
   <int value="152" label="Profile.hasOriginMatchedHeader"/>
   <int value="153" label="Profile.clearOriginMatchedHeader"/>
   <int value="154" label="Profile.clearAllOriginMatchedHeaders"/>
+  <int value="155" label="WebSettingsCompat.setBackForwardCacheSettings"/>
+  <int value="156" label="WebSettingsCompat.getBackForwardCacheSettings"/>
+  <int value="157" label="BackForwardCacheSettings.getTimeoutInSeconds"/>
+  <int value="158" label="BackForwardCacheSettings.getMaxPagesInCache"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

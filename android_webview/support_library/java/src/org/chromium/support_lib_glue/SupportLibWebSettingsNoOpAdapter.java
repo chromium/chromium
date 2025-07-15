@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
+import java.lang.reflect.InvocationHandler;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -198,6 +199,18 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     public boolean getBackForwardCacheEnabled() {
         recordApiCall(ApiCall.GET_BACK_FORWARD_CACHE_ENABLED);
         return false;
+    }
+
+    @Override
+    public void setBackForwardCacheSettings(
+            /* BackForwardCacheSettings */ InvocationHandler backForwardCacheSettings) {
+        recordApiCall(ApiCall.SET_BACK_FORWARD_CACHE_SETTINGS);
+    }
+
+    @Override
+    public /* BackForwardCacheSettings */ InvocationHandler getBackForwardCacheSettings() {
+        recordApiCall(ApiCall.GET_BACK_FORWARD_CACHE_SETTINGS);
+        return null;
     }
 
     @Override

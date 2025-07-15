@@ -51,6 +51,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -188,6 +189,8 @@ public class AwSettings {
     // in WebView.
     private boolean mBackForwardCacheEnabled;
     private boolean mHasCalledSetBackForwardCacheEnabledBefore;
+
+    private @Nullable AwBackForwardCacheSettings mAwBackForwardCacheSettings;
 
     private boolean mCssHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
@@ -332,6 +335,11 @@ public class AwSettings {
         void updateBackForwardCacheEnabled() {
             runOnUiThreadBlockingAndLocked(
                     AwSettings.this::updateBackForwardCacheEnabledOnUiThreadLocked);
+        }
+
+        void updateBackForwardCacheSettings() {
+            runOnUiThreadBlockingAndLocked(
+                    AwSettings.this::updateBackForwardCacheSettingsOnUiThreadLocked);
         }
 
         void updateGeolocationEnabled() {
@@ -1854,6 +1862,29 @@ public class AwSettings {
         }
     }
 
+    public void setBackForwardCacheSettings(AwBackForwardCacheSettings backForwardCacheSettings) {
+        if (TRACE) Log.i(TAG, "setBackForwardCacheSettings=" + backForwardCacheSettings);
+        assert backForwardCacheSettings != null;
+        // Setting BackForwardCacheSettings implicitly enables BFCache as well.
+        setBackForwardCacheEnabled(true);
+        synchronized (mAwSettingsLock) {
+            if (Objects.equals(mAwBackForwardCacheSettings, backForwardCacheSettings)) {
+                return;
+            }
+            mAwBackForwardCacheSettings = backForwardCacheSettings;
+            mEventHandler.updateBackForwardCacheSettings();
+        }
+    }
+
+    @CalledByNative
+    @Nullable
+    public AwBackForwardCacheSettings getBackForwardCacheSettings() {
+        synchronized (mAwSettingsLock) {
+            assert Thread.holdsLock(mAwSettingsLock);
+            return mAwBackForwardCacheSettings;
+        }
+    }
+
     @ForceDarkMode
     public int getForceDarkMode() {
         synchronized (mAwSettingsLock) {
@@ -2164,6 +2195,15 @@ public class AwSettings {
         }
     }
 
+    private void updateBackForwardCacheSettingsOnUiThreadLocked() {
+        assert mEventHandler.mHandler != null;
+        ThreadUtils.assertOnUiThread();
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get()
+                    .updateBackForwardCacheSettingsLocked(mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     private void updateGeolocationEnabledOnUiThreadLocked() {
         assert mEventHandler.mHandler != null;
         ThreadUtils.assertOnUiThread();
@@ -2301,6 +2341,8 @@ public class AwSettings {
         void updateSpeculativeLoadingAllowedLocked(long nativeAwSettings, AwSettings caller);
 
         void updateBackForwardCacheEnabledLocked(long nativeAwSettings, AwSettings caller);
+
+        void updateBackForwardCacheSettingsLocked(long nativeAwSettings, AwSettings caller);
 
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
 
