@@ -620,7 +620,13 @@ IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MaxIdsInTopLevelDocument) {
             base::StringPrintf("top-level-produce-%s-error", ToString(type_)));
 }
 
-IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MaxIdsInEmbeddedFrame) {
+// TODO(crbug.com/431852186): Re-enable after flakes are resolved.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MaxIdsInEmbeddedFrame DISABLED_MaxIdsInEmbeddedFrame
+#else
+#define MAYBE_MaxIdsInEmbeddedFrame MaxIdsInEmbeddedFrame
+#endif
+IN_PROC_BROWSER_TEST_P(SubCaptureBrowserTest, MAYBE_MaxIdsInEmbeddedFrame) {
   SetUpTest(Frame::kNone, /*self_capture=*/false);
   TabInfo& tab = tabs_[kMainTab];
 
