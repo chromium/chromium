@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -4571,22 +4572,18 @@ void BrowserView::CloseTabSearchBubble() {
 
 void BrowserView::SetForceShowBookmarkBarFlag(
     BookmarkBarController::ForceShowFlag flag) {
-  browser_->browser_window_features()
-      ->bookmark_bar_controller()
+  BookmarkBarController::From(browser_.get())
       ->SetForceShowBookmarkBarFlag(flag);
 }
 
 void BrowserView::ClearForceShowBookmarkBarFlag(
     BookmarkBarController::ForceShowFlag flag) {
-  browser_->browser_window_features()
-      ->bookmark_bar_controller()
+  BookmarkBarController::From(browser_.get())
       ->ClearForceShowBookmarkBarFlag(flag);
 }
 
 BookmarkBar::State BrowserView::bookmark_bar_state() const {
-  return browser_->browser_window_features()
-      ->bookmark_bar_controller()
-      ->bookmark_bar_state();
+  return BookmarkBarController::From(browser_.get())->bookmark_bar_state();
 }
 
 void BrowserView::ShowSplitView(bool focus_active_view) {

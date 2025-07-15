@@ -187,10 +187,6 @@ class BrowserWindowFeatures {
     return bookmarks_side_panel_coordinator_.get();
   }
 
-  BookmarkBarController* bookmark_bar_controller() {
-    return bookmark_bar_controller_.get();
-  }
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   pdf::infobar::PdfInfoBarController* pdf_infobar_controller() {
     return pdf_infobar_controller_.get();

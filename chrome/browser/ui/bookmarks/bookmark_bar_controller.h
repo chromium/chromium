@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class TabStripModel;
@@ -23,6 +24,8 @@ class NavigationHandle;
 class BookmarkBarController : public TabStripModelObserver,
                               public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(BookmarkBarController);
+
   // Describes where the bookmark bar state change originated from.
   enum class StateChangeReason {
     // From the constructor.
@@ -38,7 +41,7 @@ class BookmarkBarController : public TabStripModelObserver,
     // Change is the result of switching the option of showing toolbar in full
     // screen. Only used on Mac.
     kToolbarOptionChange,
-    // Change is the result of a force show reason
+    // Change is the result of a force show reason.
     kForceShow,
     // Change is the result of a split tab being created or removed.
     kSplitTabChange,
@@ -57,6 +60,9 @@ class BookmarkBarController : public TabStripModelObserver,
 
   BookmarkBarController(const BookmarkBarController&) = delete;
   BookmarkBarController& operator=(const BookmarkBarController&) = delete;
+
+  static BookmarkBarController* From(
+      BrowserWindowInterface* browser_window_interface);
 
   // Returns the current state of the bookmark bar.
   BookmarkBar::State bookmark_bar_state() const { return bookmark_bar_state_; }
@@ -91,6 +97,8 @@ class BookmarkBarController : public TabStripModelObserver,
   int force_show_bookmark_bar_flags_ = ForceShowFlag::kNone;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  ui::ScopedUnownedUserData<BookmarkBarController> scoped_data_holder_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BAR_CONTROLLER_H_

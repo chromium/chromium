@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -34,10 +35,8 @@ TEST_F(BookmarkTest, NonEmptyBookmarkBarShownOnNTP) {
                                 std::u16string());
 
   AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
-  EXPECT_EQ(BookmarkBar::SHOW, browser()
-                                   ->browser_window_features()
-                                   ->bookmark_bar_controller()
-                                   ->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
 }
 
 TEST_F(BookmarkTest, EmptyBookmarkBarNotShownOnNTP) {
@@ -46,10 +45,8 @@ TEST_F(BookmarkTest, EmptyBookmarkBarNotShownOnNTP) {
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
   AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
-  EXPECT_EQ(BookmarkBar::HIDDEN, browser()
-                                     ->browser_window_features()
-                                     ->bookmark_bar_controller()
-                                     ->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
 }
 
 // Verify that the bookmark bar is hidden on custom NTP pages.
@@ -68,16 +65,12 @@ TEST_F(BookmarkTest, BookmarkBarOnCustomNTP) {
   entry->SetVirtualURL(GURL(chrome::kChromeUINewTabURL));
 
   // Verify that the bookmark bar is hidden.
-  EXPECT_EQ(BookmarkBar::HIDDEN, browser()
-                                     ->browser_window_features()
-                                     ->bookmark_bar_controller()
-                                     ->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
   browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                   true);
-  EXPECT_EQ(BookmarkBar::HIDDEN, browser()
-                                     ->browser_window_features()
-                                     ->bookmark_bar_controller()
-                                     ->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
 }
 
 TEST_F(BookmarkTest, BookmarkReaderModePageActuallyBookmarksOriginal) {

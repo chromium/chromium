@@ -57,9 +57,13 @@ bool IsShowingNTP(content::WebContents* web_contents) {
 
 }  // namespace
 
+DEFINE_USER_DATA(BookmarkBarController);
+
 BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
                                              TabStripModel& tab_strip_model)
-    : browser_(browser), tab_strip_model_(tab_strip_model) {
+    : browser_(browser),
+      tab_strip_model_(tab_strip_model),
+      scoped_data_holder_(browser.GetUnownedUserDataHost(), *this) {
   tab_strip_model_->AddObserver(this);
 
   // Set up preference observer for bookmark bar visibility.
@@ -76,6 +80,12 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
 }
 
 BookmarkBarController::~BookmarkBarController() = default;
+
+BookmarkBarController* BookmarkBarController::From(
+    BrowserWindowInterface* browser_window_interface) {
+  return ui::ScopedUnownedUserData<BookmarkBarController>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
+}
 
 void BookmarkBarController::SetForceShowBookmarkBarFlag(ForceShowFlag flag) {
   force_show_bookmark_bar_flags_ |= flag;

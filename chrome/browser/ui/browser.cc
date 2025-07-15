@@ -1426,13 +1426,13 @@ void Browser::WindowFullscreenStateChanged() {
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
   command_controller_->FullscreenStateChanged();
-  features_->bookmark_bar_controller()->UpdateBookmarkBarState(
+  BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToggleFullscreen);
 }
 
 void Browser::FullscreenTopUIStateChanged() {
   command_controller_->FullscreenStateChanged();
-  features_->bookmark_bar_controller()->UpdateBookmarkBarState(
+  BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToolbarOptionChange);
 }
 
@@ -3139,7 +3139,7 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
 
   // Update the bookmark state, since the BrowserWindow may query it during
   // OnActiveTabChanged() below.
-  features_->bookmark_bar_controller()->UpdateBookmarkBarState(
+  BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kTabSwitch);
 
   bool is_blocked = tab_strip_model_->IsTabBlocked(index);
@@ -3393,7 +3393,7 @@ void Browser::ProcessPendingUIUpdates() {
       // Update bookmark bar state with kTabState to handle tab state changes
       // (like crashes). This is different from kTabSwitch which is already
       // handled in Browser::OnActiveTabChanged().
-      features_->bookmark_bar_controller()->UpdateBookmarkBarState(
+      BookmarkBarController::From(this)->UpdateBookmarkBarState(
           BookmarkBarController::StateChangeReason::kTabState);
 
       // TODO(crbug.com/40122780): Ideally, we should simply ask the state to

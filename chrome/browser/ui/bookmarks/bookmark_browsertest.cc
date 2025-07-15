@@ -19,6 +19,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -105,10 +106,8 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   BookmarkBrowsertest& operator=(const BookmarkBrowsertest&) = delete;
 
   bool IsVisible() {
-    return browser()
-               ->browser_window_features()
-               ->bookmark_bar_controller()
-               ->bookmark_bar_state() == BookmarkBar::SHOW;
+    return BookmarkBarController::From(browser())->bookmark_bar_state() ==
+           BookmarkBar::SHOW;
   }
 
   static void CheckAnimation(Browser* browser, base::RunLoop* loop) {

@@ -10,6 +10,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -144,10 +145,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest,
 
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowBookmarkBar));
-  EXPECT_EQ(BookmarkBar::SHOW, browser()
-                                   ->browser_window_features()
-                                   ->bookmark_bar_controller()
-                                   ->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
 }
 
 // Verify images are not blocked in incognito mode.
