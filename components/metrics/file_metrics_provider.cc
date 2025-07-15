@@ -36,6 +36,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/metrics/fre_source_trial.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -99,6 +100,23 @@ void DeleteFileWhenPossible(const base::FilePath& path) {
   // of the delete task.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_DELETE_ON_CLOSE);
+}
+
+bool ShouldDeleteSource(const FileMetricsProvider::Params& params,
+                        bool is_fre) {
+  if (!fre_source_trial::IsEnabled()) {
+    return (params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR ||
+            params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE);
+  }
+  if (params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE) {
+    return true;
+  }
+  // Only delete sources for non-first run. This is to avoid deleting the
+  // sources that were created during the FRE when metrics reporting is
+  // disabled. After FRE, the sources will be deleted when metrics reporting
+  // is disabled.
+  return !is_fre &&
+         params.type == FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR;
 }
 
 }  // namespace
@@ -189,8 +207,8 @@ FileMetricsProvider::Params::Params(const base::FilePath& path,
 
 FileMetricsProvider::Params::~Params() = default;
 
-FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
-    : pref_service_(local_state) {
+FileMetricsProvider::FileMetricsProvider(PrefService* local_state, bool is_fre)
+    : pref_service_(local_state), is_fre_(is_fre) {
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_factory_.GetWeakPtr());
 }
@@ -207,8 +225,7 @@ void FileMetricsProvider::RegisterSource(const Params& params,
   if (!metrics_reporting_enabled) {
     // When metrics reporting is not enabled, existing files should be deleted,
     // since they won't be getting deleted as part of the upload flow.
-    if (params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR ||
-        params.type == SOURCE_HISTOGRAMS_ATOMIC_FILE) {
+    if (ShouldDeleteSource(params, is_fre_)) {
       base::ThreadPool::PostTask(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

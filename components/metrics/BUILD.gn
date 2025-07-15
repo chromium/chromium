@@ -184,6 +184,8 @@ if (!is_cronet_build || is_ios) {
       "field_trials_provider.h",
       "file_metrics_provider.cc",
       "file_metrics_provider.h",
+      "fre_source_trial.cc",
+      "fre_source_trial.h",
       "install_date_provider.cc",
       "install_date_provider.h",
       "log_decoder.cc",
