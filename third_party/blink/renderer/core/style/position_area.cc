@@ -231,12 +231,14 @@ PositionArea::AlignJustifySelfFromPhysical(
   StyleSelfAlignmentData justify(ItemPosition::kStart, overflow);
   StyleSelfAlignmentData justify_reverse(ItemPosition::kEnd, overflow);
 
-  if ((FirstStart() == PositionAreaRegion::kTop &&
-       FirstEnd() == PositionAreaRegion::kBottom) ||
-      (FirstStart() == PositionAreaRegion::kCenter &&
-       FirstEnd() == PositionAreaRegion::kCenter)) {
-    // 'center' or 'all' should align with anchor center.
+  if (FirstStart() == PositionAreaRegion::kTop &&
+      FirstEnd() == PositionAreaRegion::kBottom) {
+    // 'all' should align with anchor center.
     align = align_reverse = {ItemPosition::kAnchorCenter, overflow};
+  } else if (FirstStart() == PositionAreaRegion::kCenter &&
+             FirstEnd() == PositionAreaRegion::kCenter) {
+    // 'center' should align with center.
+    align = align_reverse = {ItemPosition::kCenter, overflow};
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
@@ -244,12 +246,15 @@ PositionArea::AlignJustifySelfFromPhysical(
       std::swap(align, align_reverse);
     }
   }
-  if ((SecondStart() == PositionAreaRegion::kLeft &&
-       SecondEnd() == PositionAreaRegion::kRight) ||
-      (SecondStart() == PositionAreaRegion::kCenter &&
-       SecondEnd() == PositionAreaRegion::kCenter)) {
-    // 'center' or 'all' should align with anchor center.
+
+  if (SecondStart() == PositionAreaRegion::kLeft &&
+      SecondEnd() == PositionAreaRegion::kRight) {
+    // 'all' should align with anchor center.
     justify = justify_reverse = {ItemPosition::kAnchorCenter, overflow};
+  } else if (SecondStart() == PositionAreaRegion::kCenter &&
+             SecondEnd() == PositionAreaRegion::kCenter) {
+    // 'center' should align with center.
+    justify = justify_reverse = {ItemPosition::kCenter, overflow};
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
