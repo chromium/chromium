@@ -61,7 +61,7 @@ const base::FeatureParam<bool> kDevToolsFreestylerMultimodal{
 const base::FeatureParam<bool> kDevToolsFreestylerMultimodalUploadInput{
     &kDevToolsFreestyler, "multimodal_upload_input", /*default_value=*/true};
 const base::FeatureParam<bool> kDevToolsFreestylerFunctionCalling{
-    &kDevToolsFreestyler, "function_calling", /*default_value=*/false};
+    &kDevToolsFreestyler, "function_calling", /*default_value=*/true};
 
 // Whether the DevTools AI Assistance Network Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceNetworkAgent,
