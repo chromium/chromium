@@ -1659,6 +1659,7 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
+    @DisabledTest(message = "Flaky, see crbug.com/431949515")
     public void testReportUnwarnedNotificationAsSpam() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
