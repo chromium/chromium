@@ -904,8 +904,7 @@ void FormFiller::FillOrPreviewForm(
       safe_filled_fields.cached,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
-      safe_filled_field_ids, skip_reasons, filling_payload, trigger_source,
-      refill_trigger_reason);
+      skip_reasons, filling_payload, trigger_source, refill_trigger_reason);
 }
 
 void FormFiller::MaybeTriggerRefill(

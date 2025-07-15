@@ -2577,18 +2577,15 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     AutofillField& trigger_autofill_field,
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
-    const base::flat_set<FieldGlobalId>& safe_field_ids,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     std::optional<RefillTriggerReason> refill_trigger_reason) {
-  NotifyObservers(
-      &Observer::OnFillOrPreviewForm, form_structure.global_id(),
-      action_persistence,
-      base::MakeFlatSet<FieldGlobalId>(safe_filled_autofill_fields, /*comp=*/{},
-                                       &FormFieldData::global_id),
-      filling_payload);
+  const auto safe_filled_field_ids = base::MakeFlatSet<FieldGlobalId>(
+      safe_filled_autofill_fields, /*comp=*/{}, &FormFieldData::global_id);
+  NotifyObservers(&Observer::OnFillOrPreviewForm, form_structure.global_id(),
+                  action_persistence, safe_filled_field_ids, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
   }
@@ -2601,7 +2598,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         *refill_trigger_reason, safe_filled_autofill_fields.size());
   }
   AppendFillLogEvents(form, form_structure, trigger_autofill_field,
-                      safe_field_ids, skip_reasons, filling_payload,
+                      safe_filled_field_ids, skip_reasons, filling_payload,
                       refill_trigger_reason.has_value());
   client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
@@ -2617,7 +2614,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           },
           [&](const CreditCard* credit_card) {
             LogAndRecordCreditCardFill(form_structure, trigger_autofill_field,
-                                       filled_field_ids, safe_field_ids,
+                                       filled_field_ids, safe_filled_field_ids,
                                        *credit_card, trigger_source,
                                        refill_trigger_reason.has_value());
           },
