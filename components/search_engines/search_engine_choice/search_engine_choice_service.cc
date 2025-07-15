@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -409,6 +410,20 @@ void SearchEngineChoiceService::RecordDynamicEligibility(
     SearchEngineChoiceScreenConditions condition) {
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
+}
+
+void SearchEngineChoiceService::RecordChoiceScreenEvent(
+    SearchEngineChoiceScreenEvents event) {
+  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
+                                event);
+
+  if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
+      event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||
+      event == SearchEngineChoiceScreenEvents::
+                   kProfileCreationChoiceScreenWasDisplayed) {
+    base::RecordAction(
+        base::UserMetricsAction("SearchEngineChoiceScreenShown"));
+  }
 }
 
 std::unique_ptr<search_engines::ChoiceScreenData>

@@ -246,9 +246,6 @@ class ChoiceScreenData {
   const ChoiceScreenDisplayState display_state_;
 };
 
-// Records the specified choice screen event.
-void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
-
 // Records the type of the default search engine that was chosen by the user
 // in the search engine choice screen or in the settings page.
 void RecordChoiceScreenDefaultSearchProviderType(

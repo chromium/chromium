@@ -89,6 +89,10 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // record histograms. `entry_point` is the view in which the UI is rendered.
   void NotifyMoreButtonClicked(EntryPoint entry_point);
 
+  // Helper, forwards to `SearchEngineChoiceService::RecordChoiceScreenEvent`.
+  void RecordChoiceScreenEvent(
+      search_engines::SearchEngineChoiceScreenEvents event);
+
   // Returns the eligibility status for newly triggering a choice screen dialog.
   //
   // If calling this ahead of requesting to show the dialog, prefer to call

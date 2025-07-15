@@ -44,6 +44,8 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
+using search_engines::SearchEngineChoiceScreenEvents;
+
 bool g_dialog_disabled_for_testing = false;
 
 bool IsBrowserTypeSupported(const Browser& browser) {
@@ -90,9 +92,8 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
 
   if (registered_browsers_.empty()) {
     // We only need to record that the choice screen was shown once.
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::
-            kChoiceScreenWasDisplayed);
+    search_engine_choice_dialog_service_->RecordChoiceScreenEvent(
+        SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed);
   }
 
   registered_browsers_.emplace(browser, std::move(close_dialog_callback));
@@ -229,18 +230,17 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
   browser_registry_.CloseAllDialogs();
 
   // Log the view entry point in which the choice was made.
-  search_engines::SearchEngineChoiceScreenEvents event;
+  SearchEngineChoiceScreenEvents event;
   switch (entry_point) {
     case EntryPoint::kDialog:
-      event = search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet;
+      event = SearchEngineChoiceScreenEvents::kDefaultWasSet;
       break;
     case EntryPoint::kFirstRunExperience:
-      event = search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet;
+      event = SearchEngineChoiceScreenEvents::kFreDefaultWasSet;
       choice_made_in_profile_picker_ = true;
       break;
     case EntryPoint::kProfileCreation:
-      event = search_engines::SearchEngineChoiceScreenEvents::
-          kProfileCreationDefaultWasSet;
+      event = SearchEngineChoiceScreenEvents::kProfileCreationDefaultWasSet;
       choice_made_in_profile_picker_ = true;
       break;
   }
@@ -249,7 +249,7 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
       choice_screen_data_->display_state();
   display_state.selected_engine_index = selected_engine_index;
 
-  search_engines::RecordChoiceScreenEvent(event);
+  search_engine_choice_service_->RecordChoiceScreenEvent(event);
   search_engine_choice_service_->MaybeRecordChoiceScreenDisplayState(
       display_state);
 }
@@ -431,20 +431,18 @@ bool SearchEngineChoiceDialogService::IsUrlSuitableForDialog(GURL url) {
 
 void SearchEngineChoiceDialogService::NotifyLearnMoreLinkClicked(
     EntryPoint entry_point) {
-  search_engines::SearchEngineChoiceScreenEvents event;
+  SearchEngineChoiceScreenEvents event;
 
   switch (entry_point) {
     case EntryPoint::kDialog:
-      event = search_engines::SearchEngineChoiceScreenEvents::
-          kLearnMoreWasDisplayed;
+      event = SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed;
       break;
     case EntryPoint::kFirstRunExperience:
-      event = search_engines::SearchEngineChoiceScreenEvents::
-          kFreLearnMoreWasDisplayed;
+      event = SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed;
       break;
     case EntryPoint::kProfileCreation:
-      event = search_engines::SearchEngineChoiceScreenEvents::
-          kProfileCreationLearnMoreDisplayed;
+      event =
+          SearchEngineChoiceScreenEvents::kProfileCreationLearnMoreDisplayed;
       break;
   }
   RecordChoiceScreenEvent(event);
@@ -452,21 +450,23 @@ void SearchEngineChoiceDialogService::NotifyLearnMoreLinkClicked(
 
 void SearchEngineChoiceDialogService::NotifyMoreButtonClicked(
     EntryPoint entry_point) {
-  search_engines::SearchEngineChoiceScreenEvents event;
+  SearchEngineChoiceScreenEvents event;
 
   switch (entry_point) {
     case EntryPoint::kDialog:
-      event =
-          search_engines::SearchEngineChoiceScreenEvents::kMoreButtonClicked;
+      event = SearchEngineChoiceScreenEvents::kMoreButtonClicked;
       break;
     case EntryPoint::kFirstRunExperience:
-      event =
-          search_engines::SearchEngineChoiceScreenEvents::kFreMoreButtonClicked;
+      event = SearchEngineChoiceScreenEvents::kFreMoreButtonClicked;
       break;
     case EntryPoint::kProfileCreation:
-      event = search_engines::SearchEngineChoiceScreenEvents::
-          kProfileCreationMoreButtonClicked;
+      event = SearchEngineChoiceScreenEvents::kProfileCreationMoreButtonClicked;
       break;
   }
   RecordChoiceScreenEvent(event);
+}
+
+void SearchEngineChoiceDialogService::RecordChoiceScreenEvent(
+    SearchEngineChoiceScreenEvents event) {
+  search_engine_choice_service_->RecordChoiceScreenEvent(event);
 }

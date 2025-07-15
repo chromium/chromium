@@ -141,19 +141,6 @@ ChoiceScreenData::ChoiceScreenData(
 
 ChoiceScreenData::~ChoiceScreenData() = default;
 
-void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
-  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
-                                event);
-
-  if (event == SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed ||
-      event == SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed ||
-      event == SearchEngineChoiceScreenEvents::
-                   kProfileCreationChoiceScreenWasDisplayed) {
-    base::RecordAction(
-        base::UserMetricsAction("SearchEngineChoiceScreenShown"));
-  }
-}
-
 void RecordChoiceScreenDefaultSearchProviderType(
     SearchEngineType engine_type,
     ChoiceMadeLocation choice_location) {

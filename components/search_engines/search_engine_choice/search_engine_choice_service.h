@@ -113,6 +113,9 @@ class SearchEngineChoiceService : public KeyedService {
   // Records the specified choice screen condition for relevant navigations.
   void RecordDynamicEligibility(SearchEngineChoiceScreenConditions condition);
 
+  // Records the specified choice screen event.
+  void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
+
   // Returns key information needed to show a search engine choice screen, like
   // the template URLs for the engines to show. See
   // `search_engines::ChoiceScreenData` for more details.

@@ -331,7 +331,8 @@ class SearchEngineChoiceStepController
       choice_screen_event = search_engines::SearchEngineChoiceScreenEvents::
           kFreChoiceScreenWasDisplayed;
     }
-    search_engines::RecordChoiceScreenEvent(choice_screen_event);
+    search_engine_choice_dialog_service_->RecordChoiceScreenEvent(
+        choice_screen_event);
 
     host()->ShowScreen(web_contents_,
                        GURL(chrome::kChromeUISearchEngineChoiceURL),

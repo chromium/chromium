@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -27,6 +28,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using search_engines::SearchEngineChoiceScreenEvents;
 
 @interface SearchEngineChoiceCoordinator () <
     SearchEngineChoiceActionDelegate,
@@ -107,9 +110,8 @@
     BOOL animated = self.baseNavigationController.topViewController != nil;
     [self.baseNavigationController setViewControllers:@[ _viewController ]
                                              animated:animated];
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::
-            kFreChoiceScreenWasDisplayed);
+    [self recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::
+                                      kFreChoiceScreenWasDisplayed];
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kSearchEngineChoiceScreenStart);
   } else {
@@ -122,9 +124,8 @@
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
                                         completion:nil];
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::
-            kChoiceScreenWasDisplayed);
+    [self recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::
+                                      kChoiceScreenWasDisplayed];
   }
 }
 
@@ -157,13 +158,13 @@
       _firstRun;
   _searchEngineChoiceLearnMoreCoordinator.delegate = self;
   [_searchEngineChoiceLearnMoreCoordinator start];
+
   if (_firstRun) {
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::
-            kFreLearnMoreWasDisplayed);
+    [self recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::
+                                      kFreLearnMoreWasDisplayed];
   } else {
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed);
+    [self recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::
+                                      kLearnMoreWasDisplayed];
   }
 }
 
@@ -179,14 +180,14 @@
   _didTapPrimaryButton = YES;
   _lastCallToDidTapPrimaryButtonTimestamp = base::Time::Now();
   if (_firstRun) {
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet);
+    [self recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::
+                                      kFreDefaultWasSet];
     base::UmaHistogramEnumeration(
         first_run::kFirstRunStageHistogram,
         first_run::kSearchEngineChoiceScreenCompletionWithSelection);
   } else {
-    search_engines::RecordChoiceScreenEvent(
-        search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
+    [self
+        recordChoiceScreenEvent:SearchEngineChoiceScreenEvents::kDefaultWasSet];
   }
   [_mediator saveDefaultSearchEngine];
   [self dismissChoiceScreen];
@@ -208,6 +209,13 @@
   } else {
     [self.delegate choiceScreenWillBeDismissed:self];
   }
+}
+
+- (void)recordChoiceScreenEvent:(SearchEngineChoiceScreenEvents)event {
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
+  search_engines::SearchEngineChoiceService* searchEngineChoiceService =
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  searchEngineChoiceService->RecordChoiceScreenEvent(event);
 }
 
 @end
