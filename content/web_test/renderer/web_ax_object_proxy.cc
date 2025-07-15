@@ -16,12 +16,14 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
-#include "gin/handle.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
+#include "v8/include/v8.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -255,9 +257,6 @@ class AttributesCollector {
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo WebAXObjectProxy::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 WebAXObjectProxy::WebAXObjectProxy(const blink::WebAXObject& object,
                                    WebAXObjectProxy::Factory* factory)
     : accessibility_object_(object), factory_(factory) {}
@@ -280,9 +279,13 @@ ui::AXNodeData WebAXObjectProxy::GetAXNodeData() const {
   return node_data;
 }
 
+const gin::WrapperInfo* WebAXObjectProxy::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<WebAXObjectProxy>::GetObjectTemplateBuilder(
+  return gin::Wrappable<WebAXObjectProxy>::GetObjectTemplateBuilder(
              isolate)
       .SetProperty("role", &WebAXObjectProxy::Role)
       .SetProperty("stringValue", &WebAXObjectProxy::StringValue)
@@ -2103,11 +2106,10 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
   }
 
   // Create a new object.
-  v8::Local<v8::Value> value_handle =
-      gin::CreateHandle(isolate_, new WebAXObjectProxy(object, this)).ToV8();
+  auto* proxy = cppgc::MakeGarbageCollected<WebAXObjectProxy>(
+      isolate_->GetCppHeap()->GetAllocationHandle(), object, this);
   v8::Local<v8::Object> handle;
-  if (value_handle.IsEmpty() ||
-      !value_handle->ToObject(isolate_->GetCurrentContext()).ToLocal(&handle)) {
+  if (!proxy->GetWrapper(isolate_).ToLocal(&handle)) {
     if (found) {
       // Remove old detached object.
       ax_objects_.erase(object.AxID());

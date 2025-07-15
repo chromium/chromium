@@ -5,9 +5,9 @@
 #include "content/web_test/renderer/accessibility_controller.h"
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -17,28 +17,32 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_mode.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace content {
 
 class AccessibilityControllerBindings
-    : public gin::DeprecatedWrappable<AccessibilityControllerBindings> {
+    : public gin::Wrappable<AccessibilityControllerBindings> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kAccessibilityControllerBindings};
+
+  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
 
   AccessibilityControllerBindings(const AccessibilityControllerBindings&) =
       delete;
   AccessibilityControllerBindings& operator=(
       const AccessibilityControllerBindings&) = delete;
 
+  explicit AccessibilityControllerBindings(
+      base::WeakPtr<AccessibilityController> controller);
   static void Install(base::WeakPtr<AccessibilityController> controller,
                       blink::WebLocalFrame* frame);
 
  private:
-  explicit AccessibilityControllerBindings(
-      base::WeakPtr<AccessibilityController> controller);
-  ~AccessibilityControllerBindings() override;
-
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -53,9 +57,6 @@ class AccessibilityControllerBindings
   base::WeakPtr<AccessibilityController> controller_;
 };
 
-gin::DeprecatedWrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 // static
 void AccessibilityControllerBindings::Install(
     base::WeakPtr<AccessibilityController> controller,
@@ -68,14 +69,15 @@ void AccessibilityControllerBindings::Install(
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<AccessibilityControllerBindings> bindings = gin::CreateHandle(
-      isolate, new AccessibilityControllerBindings(controller));
-  if (bindings.IsEmpty())
+  auto* bindings = cppgc::MakeGarbageCollected<AccessibilityControllerBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle(), controller);
+  v8::Local<v8::Object> wrapper;
+  if (!bindings->GetWrapper(isolate).ToLocal(&wrapper))
     return;
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "accessibilityController"),
-            bindings.ToV8())
+            wrapper)
       .Check();
 }
 
@@ -83,13 +85,11 @@ AccessibilityControllerBindings::AccessibilityControllerBindings(
     base::WeakPtr<AccessibilityController> controller)
     : controller_(controller) {}
 
-AccessibilityControllerBindings::~AccessibilityControllerBindings() {}
-
 gin::ObjectTemplateBuilder
 AccessibilityControllerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<
-             AccessibilityControllerBindings>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<AccessibilityControllerBindings>::GetObjectTemplateBuilder(
+             isolate)
       .SetMethod("logAccessibilityEvents",
                  &AccessibilityControllerBindings::LogAccessibilityEvents)
       .SetMethod("setNotificationListener",
