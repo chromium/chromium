@@ -5,6 +5,8 @@
 #ifndef PDF_PDF_CARET_CLIENT_H_
 #define PDF_PDF_CARET_CLIENT_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "ui/gfx/geometry/rect.h"
@@ -17,7 +19,7 @@ class PdfCaretClient {
 
   // Returns the char count of the given page. `page_index` must be a valid page
   // index, otherwise crashes.
-  virtual int GetCharCount(int page_index) const = 0;
+  virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
 
   // Gets the screen rects for the given char. `page_index` must be a valid page
   // index and `char_index` must be in bounds, otherwise crashes.

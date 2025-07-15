@@ -943,9 +943,9 @@ void PDFiumEngine::OnDocumentCanceled() {
     OnDocumentComplete();
 }
 
-int PDFiumEngine::GetCharCount(int page_index) const {
+uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
   CHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetCharCount();
+  return base::checked_cast<uint32_t>(pages_[page_index]->GetCharCount());
 }
 
 std::vector<gfx::Rect> PDFiumEngine::GetScreenRectsForChar(

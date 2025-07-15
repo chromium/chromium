@@ -43,7 +43,7 @@ class MockTestClient : public PdfCaretClient {
   const gfx::Rect& invalidated_rect() const { return invalidated_rect_; }
 
   // PdfCaretClient:
-  MOCK_METHOD(int, GetCharCount, (int page_index), (const override));
+  MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
 
   MOCK_METHOD(std::vector<gfx::Rect>,
               GetScreenRectsForChar,
