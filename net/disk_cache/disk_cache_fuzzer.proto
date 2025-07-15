@@ -20,6 +20,7 @@ message FuzzCommands {
     SIMPLE = 0;
     IN_MEMORY = 1;
     BLOCK = 2;
+    SQL = 3;
   }
   required CacheBackend cache_backend = 5;
 
