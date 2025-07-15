@@ -67,10 +67,6 @@ ContextResult RasterInProcessContext::Initialize(
     return result;
   }
 
-  // Check for consistency.
-  DCHECK(!attribs.bind_generates_resource);
-  constexpr bool bind_generates_resource = false;
-
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =
       std::make_unique<raster::RasterCmdHelper>(command_buffer_.get());
@@ -82,7 +78,7 @@ ContextResult RasterInProcessContext::Initialize(
   transfer_buffer_ = std::make_unique<TransferBuffer>(raster_helper.get());
 
   raster_implementation_ = std::make_unique<raster::RasterImplementation>(
-      raster_helper.get(), transfer_buffer_.get(), bind_generates_resource,
+      raster_helper.get(), transfer_buffer_.get(),
       attribs.lose_context_when_out_of_memory, command_buffer_.get(),
       nullptr /* image_decode_accelerator */);
   result = raster_implementation_->Initialize(memory_limits);

@@ -96,8 +96,7 @@ class RasterImplementationTest : public testing::Test {
    public:
     TestContext() : commands_(nullptr), token_(0) {}
 
-    bool Initialize(bool bind_generates_resource_client,
-                    bool lose_context_when_out_of_memory,
+    bool Initialize(bool lose_context_when_out_of_memory,
                     bool transfer_buffer_initialize_fail,
                     bool sync_query) {
       SharedMemoryLimits limits = SharedMemoryLimitsForTesting();
@@ -122,8 +121,8 @@ class RasterImplementationTest : public testing::Test {
 
         gl_ = std::make_unique<RasterImplementation>(
             helper_.get(), transfer_buffer_.get(),
-            bind_generates_resource_client, lose_context_when_out_of_memory,
-            gpu_control_.get(), nullptr /* image_decode_accelerator */);
+            lose_context_when_out_of_memory, gpu_control_.get(),
+            nullptr /* image_decode_accelerator */);
       }
 
       // The client should be set to something non-null.
@@ -202,21 +201,14 @@ class RasterImplementationTest : public testing::Test {
   QueryTracker* GetQueryTracker() { return gl_->query_tracker_.get(); }
 
   struct ContextInitOptions {
-    ContextInitOptions()
-        : bind_generates_resource_client(true),
-          lose_context_when_out_of_memory(false),
-          transfer_buffer_initialize_fail(false),
-          sync_query(true) {}
-    bool bind_generates_resource_client;
-    bool lose_context_when_out_of_memory;
-    bool transfer_buffer_initialize_fail;
-    bool sync_query;
+    bool lose_context_when_out_of_memory = false;
+    bool transfer_buffer_initialize_fail = false;
+    bool sync_query = true;
   };
 
   bool Initialize(const ContextInitOptions& init_options) {
     bool success = true;
-    if (!test_context_.Initialize(init_options.bind_generates_resource_client,
-                                  init_options.lose_context_when_out_of_memory,
+    if (!test_context_.Initialize(init_options.lose_context_when_out_of_memory,
                                   init_options.transfer_buffer_initialize_fail,
                                   init_options.sync_query)) {
       success = false;

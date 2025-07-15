@@ -59,7 +59,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   RasterImplementation(
       RasterCmdHelper* helper,
       TransferBufferInterface* transfer_buffer,
-      bool bind_generates_resource,
       bool lose_context_when_out_of_memory,
       GpuControl* gpu_control,
       ImageDecodeAcceleratorInterface* image_decode_accelerator);
