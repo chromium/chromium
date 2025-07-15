@@ -13,7 +13,6 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/infobar_translate_compact.png",
     "java/res/drawable-xxhdpi/infobar_translate_compact.png",
     "java/res/drawable-xxxhdpi/infobar_translate_compact.png",
-    "java/res/layout/infobar_translate_tab_content.xml",
     "java/res/layout/translate_menu_extended_item.xml",
     "java/res/layout/translate_menu_item.xml",
     "java/res/layout/translate_menu_item_checked.xml",
@@ -29,13 +28,10 @@ android_resources("java_resources") {
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenu.java",
     "java/src/org/chromium/components/translate/TranslateMessageSecondaryMenuAdapter.java",
     "java/src/org/chromium/components/translate/TranslateOptions.java",
-    "java/src/org/chromium/components/translate/TranslateTabContent.java",
-    "java/src/org/chromium/components/translate/TranslateTabLayout.java",
   ]
   resources_package = "org.chromium.components.translate"
   deps = [
@@ -56,7 +52,6 @@ android_library("java") {
 
 static_library("android") {
   sources = [
-    "translate_feature_map.cc",
     "translate_message.cc",
     "translate_message.h",
   ]
@@ -77,10 +72,8 @@ static_library("android") {
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
-    "java/src/org/chromium/components/translate/TranslateMessage.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/components/translate/TranslateMessage.java" ]
 }
 
 robolectric_library("junit") {

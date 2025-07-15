@@ -44,30 +44,21 @@ TranslateUIDelegate::TranslateUIDelegate(
       std::make_unique<TranslateUILanguagesManager>(
           language_codes, source_language, target_language);
 
-  if (base::FeatureList::IsEnabled(
-          language::kContentLanguagesInLanguagePicker)) {
-    MaybeSetContentLanguages();
+  MaybeSetContentLanguages();
 
-    if (!base::GetFieldTrialParamByFeatureAsBool(
-            language::kContentLanguagesInLanguagePicker,
-            language::kContentLanguagesDisableObserversParam,
-            false /* default */)) {
+  // Also start listening for changes in the accept languages.
 #if BUILDFLAG(IS_CHROMEOS)
-      const std::string& pref_name = language::prefs::kPreferredLanguages;
+  const std::string& pref_name = language::prefs::kPreferredLanguages;
 #else
-      const std::string& pref_name = language::prefs::kAcceptLanguages;
+  const std::string& pref_name = language::prefs::kAcceptLanguages;
 #endif
 
-      // Also start listening for changes in the accept languages.
-      PrefService* pref_service =
-          translate_manager->translate_client()->GetPrefs();
-      pref_change_registrar_.Init(pref_service);
-      pref_change_registrar_.Add(
-          pref_name,
-          base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
-                              base::Unretained(this)));
-    }
-  }
+  PrefService* pref_service = translate_manager->translate_client()->GetPrefs();
+  pref_change_registrar_.Init(pref_service);
+  pref_change_registrar_.Add(
+      pref_name,
+      base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
+                          base::Unretained(this)));
 }
 
 TranslateUIDelegate::~TranslateUIDelegate() = default;

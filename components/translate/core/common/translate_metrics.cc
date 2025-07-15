@@ -28,7 +28,6 @@ const char kTranslateLanguageDeterminedDuration[] =
 const char kTranslatedLanguageDetectionContentLength[] =
     "Translate.Translation.LanguageDetection.ContentLength";
 
-// Note: These string constants are repeated in TranslateCompactInfoBar.java.
 const char kTranslateCompactInfobarEvent[] = "Translate.CompactInfobar.Event";
 
 }  // namespace metrics_internal

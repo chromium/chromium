@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -855,99 +854,8 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
 }
 
 TEST_F(TranslateMessageTest,
-       OverflowMenuChangeTargetLanguageNoContentLanguages) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      language::kContentLanguagesInLanguagePicker);
-
-  translate_prefs_->AddToLanguageList("en", true);
-  translate_prefs_->AddToLanguageList("es", true);
-  translate_prefs_->AddToLanguageList("de", true);
-
-  EXPECT_CALL(*bridge_, CreateTranslateMessage(
-                            env, _, _, kDefaultDismissalDurationSeconds))
-      .WillOnce(Return(true));
-  ON_CALL(*client_, IsTranslatableURL(_)).WillByDefault(Return(true));
-  ShowBeforeTranslationMessage(env, "fr", "en");
-
-  ExpectConstructMenuItemArray(
-      env,
-      std::vector<SecondaryMenuItem>(
-          {{TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
-            std::string()},
-           {TranslateMessage::OverflowMenuItemId::kInvalid, false,
-            std::string()},
-           {TranslateMessage::OverflowMenuItemId::
-                kToggleAlwaysTranslateLanguage,
-            false, std::string()},
-           {TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateLanguage,
-            false, std::string()},
-           {TranslateMessage::OverflowMenuItemId::kToggleNeverTranslateSite,
-            false, std::string()},
-           {TranslateMessage::OverflowMenuItemId::kChangeSourceLanguage, false,
-            std::string()}}),
-      CreateTestJobjectArray(env));
-
-  EXPECT_TRUE(translate_message_->BuildOverflowMenu(env));
-
-  std::vector<SecondaryMenuItem> menu_items;
-  TranslateUIDelegate ui_delegate(manager_->GetWeakPtr(), "fr", "en");
-  for (size_t i = 0U;
-       i < ui_delegate.translate_ui_languages_manager()->GetNumberOfLanguages();
-       ++i) {
-    std::string language_code =
-        ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
-    if (language_code == "en" ||
-        language_code == language_detection::kUnknownLanguageCode) {
-      continue;
-    }
-    menu_items.emplace_back(SecondaryMenuItem{
-        TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage, false,
-        std::move(language_code)});
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    // Click the kChangeTargetLanguage option in the overflow menu, which should
-    // return a list of language picker menu items.
-    ExpectConstructMenuItemArray(env, menu_items, CreateTestJobjectArray(env));
-    EXPECT_TRUE(translate_message_->HandleSecondaryMenuItemClicked(
-        env,
-        static_cast<int>(
-            TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
-        base::android::ConvertUTF8ToJavaString(env, std::string()),
-        static_cast<jboolean>(false)));
-    histogram_tester.ExpectUniqueSample(
-        kInfobarEventHistogram, InfobarEvent::INFOBAR_MORE_LANGUAGES, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    // Clicking a language should kick off a translation.
-    ExpectTranslationInProgress(env, "fr", "de");
-    EXPECT_FALSE(translate_message_->HandleSecondaryMenuItemClicked(
-        env,
-        static_cast<int>(
-            TranslateMessage::OverflowMenuItemId::kChangeTargetLanguage),
-        base::android::ConvertUTF8ToJavaString(env, "de"),
-        static_cast<jboolean>(false)));
-    histogram_tester.ExpectUniqueSample(
-        kInfobarEventHistogram, InfobarEvent::INFOBAR_MORE_LANGUAGES_TRANSLATE,
-        1);
-  }
-
-  FinishTranslation(env, "fr", "de");
-}
-
-TEST_F(TranslateMessageTest,
        OverflowMenuChangeTargetLanguageWithContentLanguages) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      language::kContentLanguagesInLanguagePicker);
 
   translate_prefs_->AddToLanguageList("en", true);
   translate_prefs_->AddToLanguageList("es", true);
