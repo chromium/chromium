@@ -104,7 +104,8 @@ export class ObservableValue<T> {
 
   /** Receive updates for value changes. */
   subscribe(change: (newValue: T) => void): Subscriber {
-    const newSub = new ObservableSubscription(change, this.onUnsubscribe);
+    const newSub =
+        new ObservableSubscription(change, this.onUnsubscribe.bind(this));
     if (this.hasActiveSubscriptionCallback && this.subscribers.size === 0) {
       this.hasActiveSubscriptionCallback(true);
     }
