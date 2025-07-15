@@ -608,6 +608,21 @@
             ]
         }
     ],
+    "AndroidBookmarkHistoryPane": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithHistoryPane",
+                    "enable_features": [
+                        "HistoryPaneAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBottomToolbar": [
         {
             "platforms": [

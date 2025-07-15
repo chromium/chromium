@@ -897,7 +897,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
             newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
-    public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
+    public static final CachedFlag sHistoryPaneAndroid =
+            newCachedFlag(
+                    HISTORY_PANE_ANDROID,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
             newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
     public static final CachedFlag sHubSlideAnimation = newCachedFlag(HUB_SLIDE_ANIMATION, false);

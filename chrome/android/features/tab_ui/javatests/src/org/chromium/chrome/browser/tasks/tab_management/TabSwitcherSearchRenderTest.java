@@ -60,7 +60,8 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE
+    ChromeFeatureList.ANDROID_THEME_MODULE,
+    ChromeFeatureList.HISTORY_PANE_ANDROID
 })
 public class TabSwitcherSearchRenderTest {
     private static final int SERVER_PORT = 13245;
