@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -17,27 +16,25 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace gpu {
-namespace {
-
-void FreeNativePixmapForTesting(
-    scoped_refptr<gfx::NativePixmap> native_pixmap) {
-  // Nothing to do here. |native_pixmap| will be freed when this function
-  // returns and reference count drops to 0.
-}
-
-}  // namespace
 
 LegacyGpuMemoryBufferForVideo::LegacyGpuMemoryBufferForVideo(
     const gfx::Size& size,
     gfx::BufferFormat format,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
-    : GpuMemoryBufferImpl(size, format), pixmap_(std::move(pixmap)) {}
+    : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
-LegacyGpuMemoryBufferForVideo::~LegacyGpuMemoryBufferForVideo() = default;
+LegacyGpuMemoryBufferForVideo::~LegacyGpuMemoryBufferForVideo() {
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock auto_lock(map_lock_);
+    DCHECK_EQ(map_count_, 0u);
+  }
+#endif
+}
 
 // static
 std::unique_ptr<LegacyGpuMemoryBufferForVideo>
-LegacyGpuMemoryBufferForVideo::CreateFromHandle(
+LegacyGpuMemoryBufferForVideo::CreateFromHandleForVideoFrame(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
@@ -52,34 +49,6 @@ LegacyGpuMemoryBufferForVideo::CreateFromHandle(
 
   return base::WrapUnique(new LegacyGpuMemoryBufferForVideo(
       size, format, std::move(native_pixmap)));
-}
-
-// static
-base::OnceClosure LegacyGpuMemoryBufferForVideo::AllocateForTesting(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gfx::GpuMemoryBufferHandle* handle) {
-  scoped_refptr<gfx::NativePixmap> pixmap;
-  pixmap = ui::OzonePlatform::GetInstance()
-               ->GetSurfaceFactoryOzone()
-               ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
-                                    format, usage);
-  if (!pixmap) {
-    // https://crrev.com/c/5348599
-    // In some format + usage combination the pixmap may be null. For example,
-    // YUV_420_BIPLANAR + SCANOUT_CAMERA_READ_WRITE may fail to allocate because
-    // only some of platform supports that.
-    LOG(WARNING) << "Failed to allocate pixmap "
-                 << gfx::BufferFormatToString(format) << " + "
-                 << gfx::BufferUsageToString(usage);
-  } else {
-    *handle = gfx::GpuMemoryBufferHandle(pixmap->ExportHandle());
-  }
-  // It's safe to bind FreeNativePixmapForTesting even if pixmap is not created
-  // as it does nothing with the pixmap. See the comment in
-  // FreeNativePixmapForTesting for more details.
-  return base::BindOnce(&FreeNativePixmapForTesting, pixmap);
 }
 
 bool LegacyGpuMemoryBufferForVideo::Map() {
@@ -106,8 +75,24 @@ bool LegacyGpuMemoryBufferForVideo::Map() {
 }
 
 void* LegacyGpuMemoryBufferForVideo::memory(size_t plane) {
-  AssertMapped();
+#if DCHECK_IS_ON()
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+#endif
   return pixmap_->GetMemoryAddress(plane);
+}
+
+base::span<uint8_t> LegacyGpuMemoryBufferForVideo::memory_span(size_t plane) {
+  uint8_t* data = static_cast<uint8_t*>(memory(plane));
+  if (!data) {
+    return {};
+  }
+  size_t size = 0;
+  if (!PlaneSizeForBufferFormatChecked(GetSize(), GetFormat(), plane, &size)) {
+    return {};
+  }
+
+  return UNSAFE_BUFFERS(base::span<uint8_t>(data, size));
 }
 
 void LegacyGpuMemoryBufferForVideo::Unmap() {
