@@ -67,7 +67,7 @@ public class MenuModelBridge {
     @CalledByNative
     private void addCommand(
             @JniType("std::u16string") final String label,
-            @JniType("SkBitmap") final @Nullable Bitmap bitmap,
+            @JniType("std::optional<SkBitmap>") final @Nullable Bitmap bitmap,
             final boolean isEnabled,
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
@@ -132,11 +132,13 @@ public class MenuModelBridge {
     @CalledByNative
     private void addSubmenu(
             @JniType("std::u16string") final String label,
+            @JniType("std::optional<SkBitmap>") final @Nullable Bitmap bitmap,
             final boolean isEnabled,
             MenuModelBridge submenuItems) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                         .with(ContextMenuSubmenuItemProperties.TITLE, label)
+                        .with(ListMenuItemProperties.START_ICON_BITMAP, bitmap)
                         .with(ListMenuItemProperties.ENABLED, isEnabled)
                         .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
         mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));

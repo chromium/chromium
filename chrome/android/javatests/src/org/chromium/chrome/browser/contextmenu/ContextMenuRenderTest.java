@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.createAdapter;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,9 +38,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
+import org.chromium.ui.listmenu.ContextMenuSubmenuHeaderItemProperties;
+import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -93,7 +96,7 @@ public class ContextMenuRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mListItems = new ModelList();
-                    mAdapter = new ModelListAdapter(mListItems);
+                    mAdapter = createAdapter(mListItems);
 
                     sActivity.setContentView(R.layout.context_menu_fullscreen_container);
                     mView = sActivity.findViewById(android.R.id.content);
@@ -101,23 +104,6 @@ public class ContextMenuRenderTest {
                     mFrame = mView.findViewById(R.id.context_menu_frame);
                     ContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
                     listView.setAdapter(mAdapter);
-
-                    mAdapter.registerType(
-                            ListItemType.HEADER,
-                            new LayoutViewBuilder(R.layout.context_menu_header),
-                            ContextMenuHeaderViewBinder::bind);
-                    mAdapter.registerType(
-                            ListItemType.DIVIDER,
-                            new LayoutViewBuilder(R.layout.list_section_divider),
-                            (m, v, p) -> {});
-                    mAdapter.registerType(
-                            ListItemType.CONTEXT_MENU_ITEM,
-                            new LayoutViewBuilder(R.layout.context_menu_row),
-                            ContextMenuItemViewBinder::bind);
-                    mAdapter.registerType(
-                            ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-                            new LayoutViewBuilder(R.layout.context_menu_row),
-                            ContextMenuItemViewBinder::bind);
                 });
     }
 
@@ -171,6 +157,18 @@ public class ContextMenuRenderTest {
         Bitmap testBitmap = drawableToBitmap(sActivity.getDrawable(R.drawable.lens_icon));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Submenu back header
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_SUBMENU_HEADER,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuSubmenuHeaderItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .build()));
+                    // Command type items
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
@@ -189,6 +187,30 @@ public class ContextMenuRenderTest {
                                             .with(
                                                     ListMenuItemProperties.START_ICON_BITMAP,
                                                     testBitmap)
+                                            .with(ListMenuItemProperties.ENABLED, false)
+                                            .build()));
+                    // Submenu parent items
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuSubmenuItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuSubmenuItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(
+                                                    ListMenuItemProperties.START_ICON_BITMAP,
+                                                    testBitmap)
+                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .build()));
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuSubmenuItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuSubmenuItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
                                             .with(ListMenuItemProperties.ENABLED, false)
                                             .build()));
                 });

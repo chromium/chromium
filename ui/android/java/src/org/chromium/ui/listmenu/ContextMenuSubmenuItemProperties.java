@@ -7,6 +7,7 @@ package org.chromium.ui.listmenu;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -26,6 +27,6 @@ public class ContextMenuSubmenuItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        TITLE, MENU_ITEM_ID, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
+        TITLE, MENU_ITEM_ID, START_ICON_BITMAP, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
     };
 }
