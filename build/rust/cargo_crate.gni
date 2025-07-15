@@ -307,7 +307,11 @@ template("cargo_crate") {
       if (defined(invoker.allow_unsafe)) {
         allow_unsafe = invoker.allow_unsafe
       }
-      configs += [ "//build/rust/cargo_crate:allow_all_warnings" ]
+      rustflags +=
+          [ "-Awarnings" ]  # Suppress other warnings in 3rd-party crates.
+
+      # TODO(crbug.com/424424323): Clean up and enable.
+      rustflags += [ "-Amismatched_lifetime_syntaxes" ]
 
       if (!defined(build_native_rust_unit_tests)) {
         build_native_rust_unit_tests = _crate_type != "proc-macro"
