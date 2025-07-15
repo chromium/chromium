@@ -16,6 +16,8 @@
 #include "base/strings/string_util.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 #include "url/gurl.h"
 
 namespace storage {

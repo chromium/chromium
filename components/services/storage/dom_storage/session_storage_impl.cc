@@ -738,8 +738,9 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
       !partition_directory_.empty()) {
     // We were given a subdirectory to write to, so use a disk backed database.
     if (backing_mode_ == BackingMode::kClearDiskStateOnOpen) {
-      DomStorageDatabase::Destroy(partition_directory_, database_name_,
-                                  database_task_runner_, base::DoNothing());
+      DomStorageDatabaseFactory::Destroy(partition_directory_, database_name_,
+                                         database_task_runner_,
+                                         base::DoNothing());
     }
 
     in_memory_ = false;
@@ -995,7 +996,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 
   // Destroy database, and try again.
   if (!in_memory_) {
-    DomStorageDatabase::Destroy(
+    DomStorageDatabaseFactory::Destroy(
         partition_directory_, database_name_, database_task_runner_,
         base::BindOnce(&SessionStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));

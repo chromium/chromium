@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
@@ -33,6 +34,7 @@
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 

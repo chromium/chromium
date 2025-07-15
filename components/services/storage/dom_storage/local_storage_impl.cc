@@ -46,6 +46,8 @@
 #include "storage/common/database/db_status.h"
 #include "storage/common/database/leveldb_status_helper.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 
@@ -780,7 +782,7 @@ void LocalStorageImpl::DeleteAndRecreateDatabase() {
 
   // Destroy database, and try again.
   if (!in_memory_) {
-    DomStorageDatabase::Destroy(
+    DomStorageDatabaseFactory::Destroy(
         directory_, kLocalStorageLeveldbName, database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));

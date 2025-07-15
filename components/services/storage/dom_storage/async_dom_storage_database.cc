@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
@@ -23,7 +24,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabase::OpenDirectory(
+  DomStorageDatabaseFactory::OpenDirectory(
       directory, dbname, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -38,7 +39,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenInMemory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabase::OpenInMemory(
+  DomStorageDatabaseFactory::OpenInMemory(
       tracking_name, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

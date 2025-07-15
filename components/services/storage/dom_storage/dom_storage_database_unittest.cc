@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,7 +75,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
       const std::string& db_name) {
     base::SequenceBound<DomStorageDatabase> result;
     base::RunLoop loop;
-    DomStorageDatabase::OpenInMemory(
+    DomStorageDatabaseFactory::OpenInMemory(
         db_name, /*memory_dump_id=*/std::nullopt, blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
@@ -92,7 +93,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
       const std::string& db_name) {
     base::SequenceBound<DomStorageDatabase> result;
     base::RunLoop loop;
-    DomStorageDatabase::OpenDirectory(
+    DomStorageDatabaseFactory::OpenDirectory(
         directory, db_name, /*memory_dump_id=*/std::nullopt,
         blocking_task_runner_,
         base::BindLambdaForTesting(
@@ -110,7 +111,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
                        const std::string& db_name) {
     DbStatus result;
     base::RunLoop loop;
-    DomStorageDatabase::Destroy(
+    DomStorageDatabaseFactory::Destroy(
         directory, db_name, blocking_task_runner_,
         base::BindLambdaForTesting([&](DbStatus status) {
           result = status;

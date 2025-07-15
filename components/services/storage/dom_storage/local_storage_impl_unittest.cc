@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 #include "url/gurl.h"
 
 namespace storage {

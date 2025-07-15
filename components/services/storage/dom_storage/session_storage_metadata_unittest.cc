@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
@@ -29,6 +30,7 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
+#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace storage {
 namespace {
