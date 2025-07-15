@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -299,7 +300,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               fedcm_metadata.set_likely_to_signin(kLikelyToSignin);
               fedcm_metadata.set_likely_insufficient_data(
                   kLikelyInsufficientData);
-              metadata->SetAnyMetadataForTesting(fedcm_metadata);
+              metadata->set_any_metadata(
+                  optimization_guide::AnyWrapProto(fedcm_metadata));
               return optimization_guide::OptimizationGuideDecision::kTrue;
             });
     return optimization_guide_decider_.get();
