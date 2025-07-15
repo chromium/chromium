@@ -2536,7 +2536,9 @@ BASE_FEATURE(kScannerFeedbackToast,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the scanner update.
-BASE_FEATURE(kScannerUpdate, "ScannerUpdate", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScannerUpdate,
+             "ScannerUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables / Disables the scanner feature from the feature management module.
 BASE_FEATURE(kFeatureManagementScanner,
@@ -2717,7 +2719,7 @@ BASE_FEATURE(kSingleCaCertVerificationPhase2,
 // Controls enabling/disabling the Sunfish feature.
 BASE_FEATURE(kSunfishFeature,
              "SunfishFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables custom Demo Mode behavior on feature-aware devices, as controlled by
 // the feature management module.

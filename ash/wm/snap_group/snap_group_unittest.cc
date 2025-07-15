@@ -1704,14 +1704,14 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
                       SplitViewSetupView::kDismissButtonIDForTest),
                   focus_cycler->GetOverviewFocusedView());
 
-        // Space activates the dismiss button.
-        PressAndReleaseKey(ui::VKEY_SPACE);
+        // Search + Space activates the dismiss button.
+        PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
         EXPECT_FALSE(IsInOverviewSession());
         break;
       }
       case TestCase::kSettingsButton: {
-        // Space activates the settings button.
-        PressAndReleaseKey(ui::VKEY_SPACE);
+        // Search + Space activates the settings button.
+        PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
         EXPECT_FALSE(IsInOverviewSession());
         break;
       }
