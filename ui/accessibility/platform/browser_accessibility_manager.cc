@@ -23,6 +23,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -338,15 +339,21 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
                             "already have a parent AXNode.";
 
   // There is a chance that the parent manager is not a
-  // `BrowserAccessibilityManager` since the parent of the
-  // manager that is on the root frame will be a
-  // `ViewsAXTreeManager`. The manager could also own an `AXTree` with
-  // generated content, which is currently not a platform tree manager. In those
-  // cases, we should return nullptr since doing the cast will fail and result
-  // in undefined behavior.
-  if (IsRootFrameManager() || !is_platform_tree_manager()) {
+  // `BrowserAccessibilityManager`, like when the manager owns an
+  // `AXTree` with generated content, which is currently not a platform
+  // tree manager.
+  if (!is_platform_tree_manager()) {
     return nullptr;
   }
+
+  // Return early when on the root frame if we're not yet supporting
+  // accessibility tree for views (from the ViewsAX project). When the flag is
+  // enabled, the manager on the root frame will be a
+  // `BrowserAccessibilityManager` for the Views tree.
+  if (!features::IsAccessibilityTreeForViewsEnabled() && IsRootFrameManager()) {
+    return nullptr;
+  }
+
   BrowserAccessibilityManager* parent_manager_wrapper =
       static_cast<BrowserAccessibilityManager*>(parent_manager);
   BrowserAccessibility* parent_node =
@@ -377,13 +384,24 @@ BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
 }
 
 void BrowserAccessibilityManager::OnWindowFocused() {
-  if (IsRootFrameManager())
+  if (delegate_ && delegate_->AccessibilityIsWebContentSource() &&
+      IsRootFrameManager()) {
+    // Only generate focus events on the root frame manager of the web content.
+    // TODO(crbug.com/40672441): Consider generating focus events on
+    // views-sourced managers as well.
     FireFocusEventsIfNeeded();
+  }
 }
 
 void BrowserAccessibilityManager::OnWindowBlurred() {
-  if (IsRootFrameManager())
+  if (delegate_ && delegate_->AccessibilityIsWebContentSource() &&
+      IsRootFrameManager()) {
+    // Only keep track of the last focused node on the root frame manager of the
+    // web content.
+    // TODO(crbug.com/40672441): Consider doing this for views-sourced managers
+    // as well.
     SetLastFocusedNode(nullptr);
+  }
 }
 
 void BrowserAccessibilityManager::UserIsNavigatingAway() {
@@ -492,32 +510,43 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     return true;
   }
 
-  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
-  DCHECK(root_manager) << "Cannot have detached document here, as "
-                          "CanFireEvents() must return false in that case.";
+  // The root frame manager may be null when we're in a views-sourced
+  // BrowserAccessibilityManager. It should never be when in web content,
+  // though.
+  BrowserAccessibilityManager* root_frame_manager = GetManagerForRootFrame();
+  if (delegate_ && delegate_->AccessibilityIsWebContentSource()) {
+    DCHECK(root_frame_manager)
+        << "Cannot have detached document here, as "
+           "CanFireEvents() must return false in that case.";
+  }
 
 #if AX_FAIL_FAST_BUILD()
-  AXTreeID parent_id = GetParentTreeID();
-  bool has_parent_id = parent_id != AXTreeIDUnknown();
-  BrowserAccessibilityManager* parent_manager =
-      has_parent_id ? BrowserAccessibilityManager::FromID(parent_id) : nullptr;
-  if (IsRootFrameManager()) {
-    CHECK(!has_parent_id) << "The root frame must be parentless, root url = "
-                          << GetTreeData().url << "\nSupposed parent = "
-                          << (parent_manager
-                                  ? parent_manager->GetTreeData().url
-                                  : "[not in map for parent_tree_id]");
-    CHECK(!connected_to_parent_tree_node_)
-        << "Root manager must not be connected to a parent tree node.";
-  } else {
-    CHECK(parent_manager) << "Non-root trees must have a parent manager to "
-                             "reach this code, otherwise CanFireEvents() "
-                             "should have returned false, has_parent_id = "
-                          << has_parent_id
-                          << "\nCurrent url = " << GetTreeData().url;
-    CHECK(connected_to_parent_tree_node_)
-        << "Must be connected to parent tree node, otherwise could not reach "
-           "here, due to CanFireEvents() check above.";
+  // Web content only: Check that we only reach this code if we're fully
+  // connected to the root frame tree.
+  if (delegate_ && delegate_->AccessibilityIsWebContentSource()) {
+    AXTreeID parent_id = GetParentTreeID();
+    bool has_parent_id = parent_id != AXTreeIDUnknown();
+    BrowserAccessibilityManager* parent_manager =
+        has_parent_id ? BrowserAccessibilityManager::FromID(parent_id)
+                      : nullptr;
+    if (IsRootFrameManager()) {
+      CHECK(!has_parent_id)
+          << "The root frame must be parentless, root url = "
+          << GetTreeData().url << "\nSupposed parent = "
+          << (parent_manager ? parent_manager->GetTreeData().url
+                             : "[not in map for parent_tree_id]");
+      CHECK(!connected_to_parent_tree_node_)
+          << "Root manager must not be connected to a parent tree node.";
+    } else {
+      CHECK(parent_manager)
+          << "Non-root trees must have a parent manager to "
+             "reach this code, otherwise CanFireEvents() "
+             "should have returned false, has_parent_id = "
+          << has_parent_id << "\nCurrent url = " << GetTreeData().url;
+      CHECK(connected_to_parent_tree_node_)
+          << "Must be connected to parent tree node, otherwise could not reach "
+             "here, due to CanFireEvents() check above.";
+    }
   }
 #endif
 
@@ -566,12 +595,16 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // before firing any other events on that node. No focus event will be fired
   // if the window itself isn't focused or if focus hasn't changed.
   //
-  // We need to fire focus events specifically from the root manager, since we
-  // need the top document's delegate to check if its view has focus.
+  // We need to fire focus events specifically from the root frame manager,
+  // since we need the top document's delegate to check if its view has focus.
   //
-  // If this manager is disconnected from the top document, then root_manager
-  // will be a null pointer and this code will not be reached.
-  root_manager->FireFocusEventsIfNeeded();
+  // If this manager is disconnected from the top document, then
+  // root_frame_manager will be a null pointer and this code will not be
+  // reached. It's also possible for this manager to be null if it is not
+  // sourced from web content.
+  if (root_frame_manager) {
+    root_frame_manager->FireFocusEventsIfNeeded();
+  }
 
   // Now fire all of the rest of the generated events we previously deferred.
   for (const auto& targeted_event : deferred_events) {
@@ -607,8 +640,11 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (!retargeted->CanFireEvents())
       continue;
 
-    if (event.event_type == ax::mojom::Event::kHover)
-      root_manager->CacheHitTestResult(event_target);
+    if (event.event_type == ax::mojom::Event::kHover && root_frame_manager) {
+      // TODO(crbug.com/40672441): Investigate whether we must cache the hit
+      // test result for views-sourced managers as well.
+      root_frame_manager->CacheHitTestResult(event_target);
+    }
 
     if (event.event_type == ax::mojom::Event::kLoadComplete) {
       DCHECK_EQ(event_target, GetBrowserAccessibilityRoot());
@@ -854,6 +890,8 @@ bool BrowserAccessibilityManager::NativeViewHasFocus() {
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFocus() const {
+  // TODO(crbug.com/40672441): Adjust to make it work with views-sourced
+  // managers as well.
   BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (!root_manager) {
     // We can't retrieved the globally focused object since we don't have access
@@ -1732,17 +1770,21 @@ BrowserAccessibilityManager::GetManagerForRootFrame() const {
 }
 
 AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
-  // `AXTreeManager::GetParentManager` can still return null if the parent frame
-  // has not yet been serialized. We can't prevent a child frame from
-  // serializing before the parent frame does, because the child frame does not
-  // have access to the parent in the case of remote frames, aka Out-Of-Process
-  // Iframes, aka OOPIFs.
+  // `AXTreeManager::GetParentManager` can still return null for managers
+  // sourced from web content if the parent frame has not yet been serialized.
+  // We can't prevent a child frame from serializing before the parent frame
+  // does, because the child frame does not have access to the parent in the
+  // case of remote frames, aka Out-Of-Process Iframes, aka OOPIFs.
   AXTreeManager* parent = AXTreeManager::GetParentManager();
   if (!parent)
     return nullptr;
 
-  DCHECK(!IsRootFrameManager());
+  if (delegate_ && delegate_->AccessibilityIsWebContentSource()) {
+    DCHECK(!IsRootFrameManager());
+  }
 
+  // TODO(crbug.com/40672441): Investigate whether a child WidgetAXManager can
+  // be serialized before its parent, like it is possible for frames.
   return parent;
 }
 
@@ -1980,8 +2022,15 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
     BrowserAccessibility* node) const {
   node = RetargetBrowserAccessibilityForEvents(
       node, RetargetEventType::RetargetEventTypeGenerated);
-  if (!node || !node->CanFireEvents())
+  if (!node || !node->CanFireEvents() || !delegate_) {
     return false;
+  }
+
+  if (!delegate_->AccessibilityIsWebContentSource()) {
+    // What follows is only applicable to web content sourced managers, so
+    // return true.
+    return true;
+  }
 
   // If the root delegate isn't the main-frame, this may be a new frame that
   // hasn't yet been swapped in or added to the frame tree. Suppress firing

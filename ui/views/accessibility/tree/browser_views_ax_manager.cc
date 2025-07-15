@@ -168,7 +168,7 @@ bool BrowserViewsAXManager::CanFireAccessibilityEvents() const {
 }
 
 bool BrowserViewsAXManager::AccessibilityIsRootFrame() const {
-  return true;
+  return false;
 }
 
 bool BrowserViewsAXManager::ShouldSuppressAXLoadComplete() {

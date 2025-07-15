@@ -687,6 +687,9 @@ bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
     return false;
   }
 
+  CHECK(delegate()->AccessibilityIsWebContentSource())
+      << "We should never get here in non-web content sourced managers.";
+
   // We also check that the window is focused because VoiceOver responds
   // to this notification by changing focus and possibly reading the entire
   // page contents, sometimes even when the window is minimized or another

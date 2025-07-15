@@ -213,7 +213,8 @@ bool WidgetAXManager::CanFireAccessibilityEvents() const {
 }
 
 bool WidgetAXManager::AccessibilityIsRootFrame() const {
-  // TODO(accessibility): Implement.
+  // This always returns false for WidgetAXManager, since the "frame" concept is
+  // unique to web content.
   return false;
 }
 

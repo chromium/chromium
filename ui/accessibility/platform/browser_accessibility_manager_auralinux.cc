@@ -49,15 +49,20 @@ BrowserAccessibilityManagerAuraLinux::BrowserAccessibilityManagerAuraLinux(
 }
 
 BrowserAccessibilityManagerAuraLinux::~BrowserAccessibilityManagerAuraLinux() {
-  if (IsRootFrameManager()) {
-    DCHECK(GetBrowserAccessibilityRoot());
-    gfx::NativeViewAccessible obj =
-        GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
-    // We don't fire state:changed:defunct on every object in order to reduce
-    // event noise, but it is useful for the root node of a document.
-    if (ATK_IS_OBJECT(obj)) {
-      atk_object_notify_state_change(obj, ATK_STATE_DEFUNCT, TRUE);
-    }
+  if (!IsRootFrameManager()) {
+    return;
+  }
+
+  CHECK(!delegate() || delegate()->AccessibilityIsWebContentSource())
+      << "We should never get here in non-web content sourced managers.";
+
+  DCHECK(GetBrowserAccessibilityRoot());
+  gfx::NativeViewAccessible obj =
+      GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  // We don't fire state:changed:defunct on every object in order to reduce
+  // event noise, but it is useful for the root node of a document.
+  if (ATK_IS_OBJECT(obj)) {
+    atk_object_notify_state_change(obj, ATK_STATE_DEFUNCT, TRUE);
   }
 }
 
