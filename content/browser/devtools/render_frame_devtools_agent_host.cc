@@ -142,6 +142,18 @@ DevToolsAgentHostImpl* RenderFrameDevToolsAgentHost::GetFor(
 }
 
 // static
+DevToolsAgentHostImpl* RenderFrameDevToolsAgentHost::GetForWithAncestorFallback(
+    FrameTreeNode* frame_tree_node) {
+  frame_tree_node = GetFrameTreeNodeAncestor(frame_tree_node);
+  DevToolsAgentHostImpl* agent_host = FindAgentHost(frame_tree_node);
+  if (agent_host || !frame_tree_node->parent()) {
+    return agent_host;
+  }
+  return FindAgentHost(
+      GetFrameTreeNodeAncestor(FrameTreeNode::From(frame_tree_node->parent())));
+}
+
+// static
 DevToolsAgentHostImpl* RenderFrameDevToolsAgentHost::GetFor(
     RenderFrameHostImpl* rfh) {
   return ShouldCreateDevToolsForHost(rfh)

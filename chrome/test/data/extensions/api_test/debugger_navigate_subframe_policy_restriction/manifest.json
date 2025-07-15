@@ -1,0 +1,11 @@
+{
+  "name": "Debugger API test for navigation of subframe to policy-restricted URL",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "debugger"
+  ]
+}

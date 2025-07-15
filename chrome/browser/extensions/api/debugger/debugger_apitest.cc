@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
-                       DebuggerNotAllowedOnSecirutyInterstitials) {
+                       DebuggerNotAllowedOnSecurityInterstitials) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
@@ -1015,6 +1015,24 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
   GURL url(embedded_test_server()->GetURL(
       "a.com",
       "/extensions/api_test/debugger_navigate_subframe/inspected_page.html"));
+  ASSERT_TRUE(RunExtensionTest("debugger_navigate_subframe",
+                               {.custom_arg = url.spec().c_str()}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       NavigateSubframePolicyRestriction) {
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_HTTP, "http://c.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_navigate_subframe_policy_restriction/"
+      "inspected_page.html"));
   ASSERT_TRUE(RunExtensionTest("debugger_navigate_subframe",
                                {.custom_arg = url.spec().c_str()}))
       << message_;

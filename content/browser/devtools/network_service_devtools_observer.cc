@@ -58,7 +58,8 @@ DevToolsAgentHostImpl* NetworkServiceDevToolsObserver::GetDevToolsAgentHost() {
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
     if (!frame_tree_node)
       return nullptr;
-    return RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+    return RenderFrameDevToolsAgentHost::GetForWithAncestorFallback(
+        frame_tree_node);
   }
   auto host = DevToolsAgentHostImpl::GetForId(devtools_agent_id_);
   if (!host)
