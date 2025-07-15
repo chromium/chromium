@@ -1526,6 +1526,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cct-reset-timeout-enabled",
+    "owners": ["kostyukovp@google.com", "edmundw@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "cct-resizable-90-maximum-height",
     "owners": ["jinsukkim@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 110

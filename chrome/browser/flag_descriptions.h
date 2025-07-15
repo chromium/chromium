@@ -654,6 +654,8 @@ extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kCCTResetTimeoutEnabledName[];
+extern const char kCCTResetTimeoutEnabledDescription[];
 extern const char kSearchInCCTName[];
 extern const char kSearchInCCTDescription[];
 extern const char kSearchInCCTAlternateTapHandlingName[];

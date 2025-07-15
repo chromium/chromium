@@ -11896,6 +11896,7 @@ from previous Chrome versions.
   <int value="-791730714" label="NotebookLmAppPreinstall:disabled"/>
   <int value="-791590673" label="bookmarks-tree-view:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
+  <int value="-790764083" label="CCTResetTimeoutEnabled:disabled"/>
   <int value="-790544721"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:disabled"/>
   <int value="-790292839" label="LauncherKeywordExtractionScoring:enabled"/>
@@ -17540,6 +17541,7 @@ from previous Chrome versions.
   <int value="1295688198" label="ClipboardHistoryRefresh:enabled"/>
   <int value="1295868587" label="CastStreamingHardwareHevc:disabled"/>
   <int value="1295887301" label="ShowNtpAtStartupAndroid:disabled"/>
+  <int value="1296035069" label="CCTResetTimeoutEnabled:enabled"/>
   <int value="1296474231" label="SafetyHubAndroidSurvey:disabled"/>
   <int value="1296512860" label="AndroidAppIntegrationV2:disabled"/>
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>

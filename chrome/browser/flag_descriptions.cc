@@ -1095,6 +1095,11 @@ const char kBypassAppBannerEngagementChecksDescription[] =
     "manifest, are met.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kCCTResetTimeoutEnabledName[] = "CCT Reset Timeout Enabled";
+const char kCCTResetTimeoutEnabledDescription[] =
+    "Enables the reset timeout for CCTs. This flag allows embedder to "
+    "close CCT after a specified time in mins.";
+
 const char kSearchInCCTName[] = "Search in Chrome Custom Tabs";
 const char kSearchInCCTDescription[] =
     "Permits apps to create searchable and "

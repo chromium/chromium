@@ -278,6 +278,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTShowTabFix,
     &kCCTTabModalDialog,
     &kCCTToolbarRefactor,
+    &kCCTResetTimeoutEnabled,
     &kChangeUnfocusedPriority,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
@@ -862,6 +863,10 @@ BASE_FEATURE(kCCTTabModalDialog,
 
 BASE_FEATURE(kCCTToolbarRefactor,
              "CCTToolbarRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTResetTimeoutEnabled,
+             "CCTResetTimeoutEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChangeUnfocusedPriority,
