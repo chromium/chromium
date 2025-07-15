@@ -53,7 +53,8 @@ public class BookmarkPage extends BasicNativePage {
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
-                        PriceDropNotificationManagerFactory.create(profile));
+                        PriceDropNotificationManagerFactory.create(profile),
+                        host::createEdgeToEdgePadAdjuster);
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         initWithView(mBookmarkManagerCoordinator.getView());
     }

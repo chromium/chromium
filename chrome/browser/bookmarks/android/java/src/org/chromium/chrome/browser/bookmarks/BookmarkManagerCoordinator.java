@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDel
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
@@ -62,6 +63,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
 // TODO(crbug.com/40268641): Add a new coordinator so this class doesn't own everything.
@@ -142,6 +144,7 @@ public class BookmarkManagerCoordinator
      * @param bookmarkOpener Helper class to open bookmarks.
      * @param bookmarkManagerOpener Helper class to open bookmark activities.
      * @param priceDropNotificationManager Manages price drop notifications.
+     * @param edgeToEdgePadAdjusterGenerator Generator for the edge to edge pad adjuster.
      */
     public BookmarkManagerCoordinator(
             Context context,
@@ -151,7 +154,8 @@ public class BookmarkManagerCoordinator
             BookmarkUiPrefs bookmarkUiPrefs,
             BookmarkOpener bookmarkOpener,
             BookmarkManagerOpener bookmarkManagerOpener,
-            PriceDropNotificationManager priceDropNotificationManager) {
+            PriceDropNotificationManager priceDropNotificationManager,
+            @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
         mContext = context;
         mProfile = profile;
         mImageFetcher =
@@ -179,7 +183,10 @@ public class BookmarkManagerCoordinator
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
                 new DragAndCancelAdapter(context, mModelList);
         mRecyclerView =
-                mSelectableListLayout.initializeRecyclerView(dragReorderableRecyclerViewAdapter);
+                mSelectableListLayout.initializeRecyclerView(
+                        dragReorderableRecyclerViewAdapter,
+                        /* recyclerView= */ null,
+                        edgeToEdgePadAdjusterGenerator);
 
         // Disable everything except move animations. Switching between folders should be as
         // seamless as possible without flickering caused by these animations. While dragging

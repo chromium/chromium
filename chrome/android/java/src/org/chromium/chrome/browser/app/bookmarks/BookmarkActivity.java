@@ -66,7 +66,8 @@ public class BookmarkActivity extends SnackbarActivity {
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
-                        PriceDropNotificationManagerFactory.create(profile));
+                        PriceDropNotificationManagerFactory.create(profile),
+                        /* edgeToEdgePadAdjusterGenerator= */ null);
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
