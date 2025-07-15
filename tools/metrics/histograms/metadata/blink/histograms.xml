@@ -2415,7 +2415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fetch.RequestResourceTime2{SchemeOrPreload}"
-    units="microseconds" expires_after="2025-11-09">
+    units="microseconds" expires_after="2026-01-11">
   <owner>cduvall@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

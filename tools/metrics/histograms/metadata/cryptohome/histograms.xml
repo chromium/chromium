@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cryptohome.{ErrorOperation}{AuthFactorType}.DevUnexpectedState"
-    enum="CryptohomeErrorLocation" expires_after="2025-11-09">
+    enum="CryptohomeErrorLocation" expires_after="2026-01-11">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -871,7 +871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{ErrorOperation}{AuthFactorType}.LeafErrorWithTPM"
-    enum="CryptohomeErrorLocationWithTPMError" expires_after="2025-11-09">
+    enum="CryptohomeErrorLocationWithTPMError" expires_after="2026-01-11">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
