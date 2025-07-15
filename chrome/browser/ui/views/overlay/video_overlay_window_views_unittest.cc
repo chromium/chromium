@@ -1432,6 +1432,58 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTapOutside) {
   EXPECT_FALSE(live_caption_dialog->IsDrawn());
 }
 
+TEST_F(VideoOverlayWindowViewsWith2024UITest, InitialTitleAndScrimVisibility) {
+  overlay_window().ForceControlsVisibleForTesting(false);
+  overlay_window().ShowInactive();
+  WaitForLayout();
+
+  // The initial title hide timer should be running.
+  EXPECT_TRUE(
+      overlay_window().initial_title_hide_timer_for_testing().IsRunning());
+
+  // Title and scrim should be visible.
+  EXPECT_TRUE(overlay_window().AreTitleAndScrimVisibleForTesting());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, TitleAndScrimHideAfterTimer) {
+  overlay_window().ShowInactive();
+  WaitForLayout();
+
+  // Fast forward time to fire the timer.
+  task_environment()->FastForwardBy(
+      VideoOverlayWindowViews::kTitleShowDuration);
+
+  // Timer should not be running anymore.
+  EXPECT_FALSE(
+      overlay_window().initial_title_hide_timer_for_testing().IsRunning());
+
+  // Title and scrim should now be animating to hidden.
+  EXPECT_FALSE(overlay_window().AreTitleAndScrimVisibleForTesting());
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, MouseHoverShowsAllControls) {
+  overlay_window().ShowInactive();
+  WaitForLayout();
+
+  // Move mouse over the window.
+  const auto controls_top_scrim_bounds =
+      overlay_window().controls_top_scrim_view_for_testing()->bounds();
+  const gfx::Point moved_location(controls_top_scrim_bounds.CenterPoint());
+  ui::MouseEvent moved_event(ui::EventType::kMouseMoved, moved_location,
+                             moved_location, ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
+  overlay_window().OnMouseEvent(&moved_event);
+
+  // Timer should not be running anymore.
+  EXPECT_FALSE(
+      overlay_window().initial_title_hide_timer_for_testing().IsRunning());
+
+  // All controls should now be visible or animating to visible.
+  EXPECT_TRUE(overlay_window().AreTitleAndScrimVisibleForTesting());
+  EXPECT_TRUE(overlay_window().AreControlsVisible());
+}
+
 class VideoOverlayWindowWithShowAnimationTest
     : public VideoOverlayWindowViewsTest {
  public:

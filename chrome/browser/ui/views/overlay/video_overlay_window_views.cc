@@ -822,25 +822,55 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
   const bool wanted_visibility =
       !IsOverlayViewShown() && force_controls_visible_.value_or(is_visible);
 
-  // If this shouldn't be animated, then cancel any existing animations and set
-  // the opacity instantly.
-  if (!should_animate) {
+  // If the controls are becoming visible, stop the initial hide timer.
+  if (wanted_visibility) {
+    initial_title_hide_timer_.Stop();
+  }
+
+  // The title and controls top scrim are visible if the controls are, or if we
+  // are in the initial "show" period.
+  const bool title_is_visible = (wanted_visibility && Use2024UI()) ||
+                                initial_title_hide_timer_.IsRunning();
+
+  if (should_animate) {
+    // Animate the title and top scrim.
+    if (title_is_visible != AreTitleAndScrimVisible()) {
+      title_fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
+          *GetTitleView(), title_is_visible
+                               ? OverlayControlsFadeAnimation::Type::kToShown
+                               : OverlayControlsFadeAnimation::Type::kToHidden);
+      controls_top_scrim_fade_animation_ =
+          std::make_unique<OverlayControlsFadeAnimation>(
+              *GetControlsTopScrimView(),
+              title_is_visible ? OverlayControlsFadeAnimation::Type::kToShown
+                               : OverlayControlsFadeAnimation::Type::kToHidden);
+
+      title_fade_animation_->Start();
+      controls_top_scrim_fade_animation_->Start();
+    }
+
+    // Animate the main controls.
+    if (wanted_visibility != AreControlsVisible()) {
+      fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
+          *GetControlsContainerView(),
+          wanted_visibility ? OverlayControlsFadeAnimation::Type::kToShown
+                            : OverlayControlsFadeAnimation::Type::kToHidden);
+      fade_animation_->Start();
+    }
+  } else {
+    // Instantly set the opacity for the title, top scrim and main controls.
+    title_fade_animation_.reset();
+    controls_top_scrim_fade_animation_.reset();
     fade_animation_.reset();
+
+    if (Use2024UI()) {
+      GetTitleView()->layer()->SetOpacity(title_is_visible ? 1.0 : 0.0);
+      GetControlsTopScrimView()->layer()->SetOpacity(title_is_visible ? 1.0
+                                                                      : 0.0);
+    }
     GetControlsContainerView()->layer()->SetOpacity(wanted_visibility ? 1.0
                                                                       : 0.0);
-    return;
   }
-
-  if (wanted_visibility == AreControlsVisible()) {
-    return;
-  }
-
-  // Fade to the new visibility state.
-  fade_animation_ = std::make_unique<OverlayControlsFadeAnimation>(
-      *GetControlsContainerView(),
-      wanted_visibility ? OverlayControlsFadeAnimation::Type::kToShown
-                        : OverlayControlsFadeAnimation::Type::kToHidden);
-  fade_animation_->Start();
 }
 
 void VideoOverlayWindowViews::UpdateControlsBounds() {
@@ -868,6 +898,10 @@ void VideoOverlayWindowViews::FinishTuckAnimationForTesting() {
   if (tucker_) {
     tucker_->FinishAnimationForTesting();  // IN-TEST
   }
+}
+
+bool VideoOverlayWindowViews::AreTitleAndScrimVisibleForTesting() const {
+  return AreTitleAndScrimVisible();
 }
 
 void VideoOverlayWindowViews::OnDisplayMetricsChanged(
@@ -1013,6 +1047,14 @@ views::View* VideoOverlayWindowViews::GetControlsContainerView() const {
   return controls_container_view_;
 }
 
+views::View* VideoOverlayWindowViews::GetTitleView() const {
+  return title_view_;
+}
+
+views::View* VideoOverlayWindowViews::GetControlsTopScrimView() const {
+  return controls_top_scrim_view_;
+}
+
 void VideoOverlayWindowViews::SetUpViews() {
   // View that is displayed when video is hidden. ------------------------------
   // Adding an extra pixel to width/height makes sure controls background cover
@@ -1021,6 +1063,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   auto video_view = std::make_unique<views::View>();
   auto controls_scrim_view = std::make_unique<ControlsBackgroundView>();
   auto controls_container_view = std::make_unique<views::View>();
+  auto title_view = std::make_unique<views::View>();
   auto close_controls_view = std::make_unique<CloseImageButton>(
       base::BindRepeating(&VideoOverlayWindowViews::CloseAndPauseIfAvailable,
                           base::Unretained(this)));
@@ -1364,6 +1407,13 @@ void VideoOverlayWindowViews::SetUpViews() {
     back_to_tab_button->SetPaintToLayer(ui::LAYER_TEXTURED);
     back_to_tab_button->layer()->SetFillsBoundsOpaquely(false);
     back_to_tab_button->layer()->SetName("BackToTabControlsView");
+
+    // views::View that displays the window title. The window title consists of
+    // the origin and favicon. Always displayed together with the controls top
+    // scrim view.
+    title_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    title_view->layer()->SetFillsBoundsOpaquely(false);
+    title_view->layer()->SetName("TitleView");
   } else {
     // views::View that closes the window and focuses initiator tab. ----------
     CHECK(back_to_tab_label_button);
@@ -1460,8 +1510,6 @@ void VideoOverlayWindowViews::SetUpViews() {
   controls_scrim_view_ =
       controls_container_view->AddChildView(std::move(controls_scrim_view));
   if (Use2024UI()) {
-    controls_top_scrim_view_ = controls_container_view->AddChildView(
-        std::move(controls_top_scrim_view));
     controls_bottom_scrim_view_ = controls_container_view->AddChildView(
         std::move(controls_bottom_scrim_view));
     playback_controls_container_view_ = controls_container_view->AddChildView(
@@ -1481,11 +1529,10 @@ void VideoOverlayWindowViews::SetUpViews() {
       controls_container_view->AddChildView(std::move(close_controls_view));
   if (Use2024UI()) {
     // Initialize the favicon view with the default icon.
-    favicon_view_ =
-        controls_container_view->AddChildView(std::move(favicon_view));
+    favicon_view_ = title_view->AddChildView(std::move(favicon_view));
     UpdateFavicon(gfx::ImageSkia());
 
-    origin_ = controls_container_view->AddChildView(std::move(origin));
+    origin_ = title_view->AddChildView(std::move(origin));
     minimize_button_ =
         controls_container_view->AddChildView(std::move(minimize_button));
     back_to_tab_button_ =
@@ -1544,8 +1591,16 @@ void VideoOverlayWindowViews::SetUpViews() {
   resize_handle_view_ =
       controls_container_view->AddChildView(std::move(resize_handle_view));
 #endif
+  // The top scrim is added before the other views so it is drawn behind them.
+  if (Use2024UI()) {
+    controls_top_scrim_view_ =
+        AddChildView(&view_holder_, std::move(controls_top_scrim_view));
+  }
   controls_container_view_ =
       AddChildView(&view_holder_, std::move(controls_container_view));
+  if (Use2024UI()) {
+    title_view_ = AddChildView(&view_holder_, std::move(title_view));
+  }
 }
 
 void VideoOverlayWindowViews::OnRootViewReady() {
@@ -2053,6 +2108,20 @@ void VideoOverlayWindowViews::ShowInactive() {
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
     overlay_view_->ShowBubble(GetNativeView());
     SetBounds(CalculateAndUpdateWindowBounds());
+  }
+
+  if (Use2024UI()) {
+    // When the window is first shown, make the title and top controls
+    // visible for a few seconds.
+    initial_title_hide_timer_.Start(
+        FROM_HERE, kTitleShowDuration,
+        // base::Unretained() is safe since the callback will not be called
+        // after `initial_title_hide_timer_` is destroyed, and it is owned by
+        // this object.
+        base::BindOnce(&VideoOverlayWindowViews::OnInitialTitleTimerFired,
+                       base::Unretained(this)));
+    // The controls are not visible, but the title should be.
+    UpdateControlsVisibility(false);
   }
 
   // If this is not the first time the window is shown, this will be a no-op.
@@ -2595,6 +2664,20 @@ ui::Layer* VideoOverlayWindowViews::video_layer_for_testing() const {
   return video_view_->layer();
 }
 
+views::View* VideoOverlayWindowViews::title_view_for_testing() const {
+  return title_view_;
+}
+
+views::View* VideoOverlayWindowViews::controls_top_scrim_view_for_testing()
+    const {
+  return controls_top_scrim_view_;
+}
+
+base::OneShotTimer&
+VideoOverlayWindowViews::initial_title_hide_timer_for_testing() {
+  return initial_title_hide_timer_;
+}
+
 const viz::FrameSinkId* VideoOverlayWindowViews::GetCurrentFrameSinkId() const {
   if (auto* surface = video_view_->layer()->GetSurfaceId()) {
     return &surface->frame_sink_id();
@@ -2687,4 +2770,31 @@ void VideoOverlayWindowViews::UpdateFavicon(const gfx::ImageSkia& favicon) {
         ScaleImageSizeToFitView(favicon.size(), kFaviconIconSize));
     favicon_view_->SetImage(ui::ImageModel::FromImageSkia(favicon));
   }
+}
+
+void VideoOverlayWindowViews::OnInitialTitleTimerFired() {
+  UpdateControlsVisibility(false);
+}
+
+bool VideoOverlayWindowViews::AreTitleAndScrimVisible() const {
+  if (!Use2024UI()) {
+    return false;
+  }
+
+  if (title_fade_animation_) {
+    // The title and scrim are animated together, so their animations should
+    // either both exist or both not exist.
+    DCHECK(controls_top_scrim_fade_animation_);
+    DCHECK_EQ(title_fade_animation_->type(),
+              controls_top_scrim_fade_animation_->type());
+    return (title_fade_animation_->type() ==
+            OverlayControlsFadeAnimation::Type::kToShown);
+  }
+
+  // If no animation is active, check the opacity of the layers. They should
+  // also be in sync.
+  DCHECK(!controls_top_scrim_fade_animation_);
+  DCHECK_EQ(GetTitleView()->layer()->opacity(),
+            GetControlsTopScrimView()->layer()->opacity());
+  return GetTitleView()->layer()->opacity() > 0;
 }
