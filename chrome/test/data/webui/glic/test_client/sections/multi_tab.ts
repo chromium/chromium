@@ -81,7 +81,7 @@ async function fetchPinnedTabState(
     return update;
   }
   try {
-    const viewportScreenshot = true;
+    const viewportScreenshot = observableTabOnly;
     const annotatedPageContent = true;
     const pdfData = true;
     const pdfSizeLimit = DEFAULT_PDF_SIZE_LIMIT;
@@ -94,7 +94,9 @@ async function fetchPinnedTabState(
           pdfSizeLimit,
           maxMetaTags,
         });
+    logMessage(`Pinned tab context: ` + JSON.stringify(update));
   } catch (e: any) {
+    logMessage(`Failed to grab pinned tab context: ` + JSON.stringify(e));
     update.errorReason = e.message;
   }
   return update;

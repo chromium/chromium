@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -198,6 +199,22 @@ bool GlicPinnedTabManager::PinTabs(
       pinning_fully_succeeded = false;
       continue;
     }
+
+    // Tab might be unloaded (e.g. discarded, restored from history). We reload
+    // it now (and prevent it from being discarded elsewhere), so it can have
+    // its context pulled.
+    // TODO(crbug.com/422767952): prevent pinned tabs from being discarded.
+    if (tab->GetContents()) {
+      ::mojom::LifecycleUnitState tab_lifecycle_state =
+          resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+              tab->GetContents())
+              ->GetTabState();
+      if (tab_lifecycle_state == ::mojom::LifecycleUnitState::DISCARDED) {
+        tab->GetContents()->GetController().SetNeedsReload();
+      }
+      tab->GetContents()->GetController().LoadIfNecessary();
+    }
+
     pinned_tabs_.emplace_back(
         tab_handle,
         std::make_unique<PinnedTabObserver>(
