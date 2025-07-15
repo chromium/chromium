@@ -177,6 +177,8 @@ component("webnn_service") {
       "ort/context_impl_ort.h",
       "ort/context_provider_ort.cc",
       "ort/context_provider_ort.h",
+      "ort/external_weights_manager.cc",
+      "ort/external_weights_manager.h",
       "ort/graph_builder_ort.cc",
       "ort/graph_builder_ort.h",
       "ort/graph_impl_ort.cc",

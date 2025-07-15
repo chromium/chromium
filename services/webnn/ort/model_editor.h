@@ -21,6 +21,8 @@
 
 namespace webnn::ort {
 
+class ExternalWeightsManager;
+
 class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
  public:
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ModelInfo {
@@ -29,9 +31,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
     ModelInfo& operator=(const ModelInfo&) = delete;
     ~ModelInfo();
 
+    // `external_weights_manager` should be prior to `model` since
+    // `external_weights_manager` will be called by ORT to release the external
+    // weights during `model` destruction.
+    std::unique_ptr<ExternalWeightsManager> external_weights_manager;
+
     ScopedOrtModel model;
-    // The external data should be kept alive during graph inferencing.
-    std::vector<base::HeapArray<uint8_t>> external_data;
+
     base::flat_map<std::string, std::string>
         operand_input_name_to_onnx_input_name;
     base::flat_map<std::string, std::string>
@@ -86,14 +92,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
                                base::span<const int64_t> shape,
                                base::span<const uint8_t> data);
 
-  // Add an initializer and transfer the data into `ModelInfo::external_data`.
+  // Add an initializer and transfer the data into
+  // `model_info_->external_weights_manager`.
   void AddInitializerAsExternalData(base::cstring_view name,
                                     ONNXTensorElementDataType data_type,
                                     base::span<const int64_t> shape,
                                     base::HeapArray<uint8_t> data);
-
-  // Describes where the constant buffer resides in memory.
-  ScopedOrtMemoryInfo memory_info_;
 
   std::vector<ScopedOrtValueInfo> inputs_;
   std::vector<ScopedOrtValueInfo> outputs_;

@@ -95,10 +95,6 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
       model_editor.BuildAndTakeModelInfo();
   ASSERT_NE(model_info, nullptr);
-
-  // `add_initializer` data should be saved into `external_data` since it
-  // reaches `kMinExternalDataSize`.
-  EXPECT_EQ(model_info->external_data.size(), 1u);
   EXPECT_TRUE(model_info->model.is_valid());
 }
 
@@ -143,8 +139,6 @@ TEST_F(WebNNOrtModelEditorTest, ReshapeToScalar) {
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
       model_editor.BuildAndTakeModelInfo();
   ASSERT_NE(model_info, nullptr);
-
-  EXPECT_EQ(model_info->external_data.size(), 0u);
   EXPECT_TRUE(model_info->model.is_valid());
 }
 

@@ -7,6 +7,7 @@
 #include <ranges>
 
 #include "base/types/fixed_array.h"
+#include "services/webnn/ort/external_weights_manager.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/ort_tensor.h"
@@ -71,19 +72,13 @@ ScopedOrtValueInfo CreateOrtValueInfo(base::cstring_view name,
 
 }  // namespace
 
-ModelEditor::ModelInfo::ModelInfo() = default;
+ModelEditor::ModelInfo::ModelInfo()
+    : external_weights_manager(std::make_unique<ExternalWeightsManager>()) {}
 ModelEditor::ModelInfo::~ModelInfo() = default;
 
 ModelEditor::ModelEditor(bool is_external_data_supported)
     : model_info_(std::make_unique<ModelInfo>()),
       is_external_data_supported_(is_external_data_supported) {
-  const OrtApi* ort_api = GetOrtApi();
-  // Create a CPU memory info, the constants will always be created in
-  // CPU memory.
-  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(
-      OrtDeviceAllocator, OrtMemTypeDefault,
-      ScopedOrtMemoryInfo::Receiver(memory_info_).get()));
-
   const OrtModelEditorApi* ort_model_editor_api = GetOrtModelEditorApi();
   CHECK_STATUS(ort_model_editor_api->CreateGraph(
       ScopedOrtGraph::Receiver(graph_).get()));
@@ -189,19 +184,9 @@ void ModelEditor::AddInitializerAsExternalData(
     base::span<const int64_t> shape,
     base::HeapArray<uint8_t> data) {
   CHECK_EQ(data.size(), CalculateOrtTensorSizeInBytes(shape, data_type));
-
-  // The data will not be copied into the graph, so it must be stored outside.
-  model_info_->external_data.push_back(std::move(data));
-
-  const OrtApi* ort_api = GetOrtApi();
-  ScopedOrtValue initializer;
-  // TODO(crbug.com/411465403): Use `CreateTensorWithDataAndDeleterAsOrtValue()`
-  // to let ORT take the ownership of the tensor and free it when no longer in
-  // use.
-  CHECK_STATUS(ort_api->CreateTensorWithDataAsOrtValue(
-      memory_info_.get(), model_info_->external_data.back().data(),
-      model_info_->external_data.back().size(), shape.data(), shape.size(),
-      data_type, ScopedOrtValue::Receiver(initializer).get()));
+  ScopedOrtValue initializer =
+      model_info_->external_weights_manager->CreateInitializer(
+          std::move(data), shape, data_type);
 
   const OrtModelEditorApi* ort_model_editor_api = GetOrtModelEditorApi();
   // Graph will own the initializer.

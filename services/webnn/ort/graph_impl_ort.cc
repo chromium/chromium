@@ -11,6 +11,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/external_weights_manager.h"
 #include "services/webnn/ort/model_editor.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -52,19 +53,20 @@ ToNamedBufferStates(
 // executing the graph.
 class GraphImplOrt::ComputeResources {
  public:
-  ComputeResources(ScopedOrtEnv env,
-                   ScopedOrtSession session,
-                   std::vector<base::HeapArray<uint8_t>> external_data,
-                   base::flat_map<std::string, std::string>
-                       operand_input_name_to_onnx_input_name,
-                   base::flat_map<std::string, std::string>
-                       operand_output_name_to_onnx_output_name)
+  ComputeResources(
+      ScopedOrtEnv env,
+      std::unique_ptr<ExternalWeightsManager> external_weights_manager,
+      ScopedOrtSession session,
+      base::flat_map<std::string, std::string>
+          operand_input_name_to_onnx_input_name,
+      base::flat_map<std::string, std::string>
+          operand_output_name_to_onnx_output_name)
       : operand_input_name_to_onnx_input_name_(
             std::move(operand_input_name_to_onnx_input_name)),
         operand_output_name_to_onnx_output_name_(
             std::move(operand_output_name_to_onnx_output_name)),
-        external_data_(std::move(external_data)),
         env_(std::move(env)),
+        external_weights_manager_(std::move(external_weights_manager)),
         session_(std::move(session)) {}
 
   ~ComputeResources() = default;
@@ -105,12 +107,15 @@ class GraphImplOrt::ComputeResources {
       operand_input_name_to_onnx_input_name_;
   base::flat_map<std::string, std::string>
       operand_output_name_to_onnx_output_name_;
-  std::vector<base::HeapArray<uint8_t>> external_data_;
 
-  // `env` should be prior to `session`. That ensures releasing `env` after
+  // `env_` should be prior to `session_`. That ensures releasing `env_` after
   // releasing the session. This avoids unloading the providers DLLs being
-  // used during `session` destruction.
+  // used during `session_` destruction.
   ScopedOrtEnv env_;
+  // `external_weights_manager_` should be prior to `session_` since it will be
+  // called by ORT to release the external weights during `session_`
+  // destruction.
+  std::unique_ptr<ExternalWeightsManager> external_weights_manager_;
   ScopedOrtSession session_;
 };
 
@@ -184,7 +189,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   scoped_trace.AddStep("Create compute resources");
   return base::WrapUnique(new GraphImplOrt::ComputeResources(
-      std::move(env), std::move(session), std::move(model_info->external_data),
+      std::move(env), std::move(model_info->external_weights_manager),
+      std::move(session),
       std::move(model_info->operand_input_name_to_onnx_input_name),
       std::move(model_info->operand_output_name_to_onnx_output_name)));
 }
