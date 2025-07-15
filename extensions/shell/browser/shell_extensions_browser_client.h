@@ -133,6 +133,7 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
+  SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
   std::string GetApplicationLocale() override;
 
   // `context` is the single BrowserContext used for IsValidContext().
@@ -160,6 +161,8 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ExtensionCache> extension_cache_;
 
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
+
+  std::unique_ptr<SafeBrowsingDelegate> safe_browsing_delegate_;
 };
 
 }  // namespace extensions

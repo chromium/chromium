@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -160,6 +161,7 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
+  SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context) override;
   std::string GetApplicationLocale() override;
@@ -196,6 +198,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   base::RepeatingCallback<update_client::UpdateClient*(void)>
       update_client_factory_;
+
+  std::unique_ptr<SafeBrowsingDelegate> safe_browsing_delegate_;
 };
 
 }  // namespace extensions

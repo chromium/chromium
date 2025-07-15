@@ -9,6 +9,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
@@ -1684,14 +1685,12 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/prefetch",
     "//chrome/browser/profiles/keep_alive",
-    "//chrome/browser/safe_browsing",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui",
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
-    "//components/safe_browsing/core/common:features",
     "//components/sessions",
     "//components/update_client",
     "//extensions/browser/api/content_settings",
@@ -1734,5 +1733,19 @@ source_set("chrome_extensions_browser_client") {
         "//chromeos/components/mgs",
       ]
     }
+  }
+
+  # TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android,
+  # then enable this for safe_browsing_mode == 2 as well.
+  if (safe_browsing_mode == 1) {
+    sources += [
+      "chrome_safe_browsing_delegate.cc",
+      "chrome_safe_browsing_delegate.h",
+    ]
+
+    deps += [
+      "//chrome/browser/safe_browsing",
+      "//components/safe_browsing/core/common:features",
+    ]
   }
 }

@@ -19,7 +19,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +43,7 @@ class EventRouterForwarder;
 class ExtensionCache;
 class ExtensionsAPIClient;
 class ProcessManagerDelegate;
+class SafeBrowsingDelegate;
 class ScopedExtensionUpdaterKeepAlive;
 class UserScriptListener;
 
@@ -172,6 +172,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                        int* tab_id,
                                        int* window_id) override;
   KioskDelegate* GetKioskDelegate() override;
+  SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
   std::string GetApplicationLocale() override;
   bool IsExtensionEnabled(const ExtensionId& extension_id,
                           content::BrowserContext* context) const override;
@@ -192,24 +193,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                     int tab_id,
                     bool include_incognito,
                     content::WebContents** web_contents) const override;
-  bool IsExtensionTelemetryServiceEnabled(
-      content::BrowserContext* context) const override;
   ScriptExecutor* GetScriptExecutorForTab(
       content::WebContents& web_contents) override;
-  void NotifyExtensionApiTabExecuteScript(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const std::string& code) const override;
-  void NotifyExtensionApiDeclarativeNetRequest(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const std::vector<api::declarative_net_request::Rule>& rules)
-      const override;
-  void NotifyExtensionDeclarativeNetRequestRedirectAction(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const GURL& request_url,
-      const GURL& redirect_url) const override;
   bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
                                   const ExtensionId& extension_id,
                                   int vendor_id,
@@ -244,8 +229,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int call_type) override;
-  void CreatePasswordReuseDetectionManager(
-      content::WebContents* web_contents) const override;
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
   bool HasControlledFrameCapability(content::BrowserContext* context,
@@ -296,6 +279,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ExtensionCache> extension_cache_;
 
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
+
+  std::unique_ptr<SafeBrowsingDelegate> safe_browsing_delegate_;
 
   std::unique_ptr<UserScriptListener> user_script_listener_;
 

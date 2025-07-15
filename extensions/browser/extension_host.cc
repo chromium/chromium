@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -169,8 +170,9 @@ ExtensionHost::ExtensionHost(const Extension* extension,
 
   // Create password reuse detection manager when new extension web contents are
   // created.
-  ExtensionsBrowserClient::Get()->CreatePasswordReuseDetectionManager(
-      host_contents_.get());
+  ExtensionsBrowserClient::Get()
+      ->GetSafeBrowsingDelegate()
+      ->CreatePasswordReuseDetectionManager(host_contents_.get());
 
   ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
 }

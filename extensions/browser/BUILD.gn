@@ -465,6 +465,8 @@ source_set("browser_sources") {
     "rules_registry_ids.h",
     "ruleset_parse_result.cc",
     "ruleset_parse_result.h",
+    "safe_browsing_delegate.cc",
+    "safe_browsing_delegate.h",
     "sandboxed_unpacker.cc",
     "sandboxed_unpacker.h",
     "script_executor.cc",

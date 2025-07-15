@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 #include "chrome/browser/extensions/chrome_process_manager_delegate.h"
+#include "chrome/browser/extensions/chrome_safe_browsing_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/user_script_listener.h"
@@ -31,6 +32,9 @@ void ChromeExtensionsBrowserClient::Init() {
 
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();
+
+  // Full safe browsing is supported so use the Chrome delegate.
+  safe_browsing_delegate_ = std::make_unique<ChromeSafeBrowsingDelegate>();
 }
 
 ProcessManagerDelegate*

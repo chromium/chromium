@@ -146,28 +146,6 @@ ScriptExecutor* ExtensionsBrowserClient::GetScriptExecutorForTab(
   return nullptr;
 }
 
-void ExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const std::string& code) const {}
-
-bool ExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
-    content::BrowserContext* context) const {
-  return false;
-}
-
-void ExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const std::vector<api::declarative_net_request::Rule>& rules) const {}
-
-void ExtensionsBrowserClient::
-    NotifyExtensionDeclarativeNetRequestRedirectAction(
-        content::BrowserContext* context,
-        const ExtensionId& extension_id,
-        const GURL& request_url,
-        const GURL& redirect_url) const {}
-
 bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
@@ -249,9 +227,6 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
   }
   std::move(callback).Run(partition_config);
 }
-
-void ExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
-    content::WebContents* web_contents) const {}
 
 media_device_salt::MediaDeviceSaltService*
 ExtensionsBrowserClient::GetMediaDeviceSaltService(

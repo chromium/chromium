@@ -22,7 +22,6 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
 #include "extensions/browser/script_executor.h"
-#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -97,6 +96,7 @@ class PermissionSet;
 class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
+class SafeBrowsingDelegate;
 class ScopedExtensionUpdaterKeepAlive;
 class UserScriptListener;
 
@@ -405,6 +405,9 @@ class ExtensionsBrowserClient {
   // Returns a delegate that provides kiosk mode functionality.
   virtual KioskDelegate* GetKioskDelegate() = 0;
 
+  // Returns a delegate that provides safe browsing functionality.
+  virtual SafeBrowsingDelegate* GetSafeBrowsingDelegate() = 0;
+
   // Returns the locale used by the application.
   virtual std::string GetApplicationLocale() = 0;
 
@@ -459,36 +462,9 @@ class ExtensionsBrowserClient {
                             bool include_incognito,
                             content::WebContents** web_contents) const;
 
-  // Returns true if chrome extension telemetry service is enabled.
-  virtual bool IsExtensionTelemetryServiceEnabled(
-      content::BrowserContext* context) const;
-
   // Returns the script executor for `web_contents`.
   virtual ScriptExecutor* GetScriptExecutorForTab(
       content::WebContents& web_contents);
-
-  // TODO(anunoy): This is a temporary implementation of notifying the
-  // extension telemetry service of the tabs.executeScript API invocation
-  // while its usefulness is evaluated.
-  virtual void NotifyExtensionApiTabExecuteScript(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const std::string& code) const;
-
-  // Notifies the extension telemetry service when declarativeNetRequest API
-  // rules are added.
-  virtual void NotifyExtensionApiDeclarativeNetRequest(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const std::vector<api::declarative_net_request::Rule>& rules) const;
-
-  // Notifies the extension telemetry service when declarativeNetRequest
-  // redirect action is invoked.
-  virtual void NotifyExtensionDeclarativeNetRequestRedirectAction(
-      content::BrowserContext* context,
-      const ExtensionId& extension_id,
-      const GURL& request_url,
-      const GURL& redirect_url) const;
 
   // Return true if the USB device is allowed by policy.
   virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
@@ -551,11 +527,6 @@ class ExtensionsBrowserClient {
       bool in_memory,
       base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback);
-
-  // Creates password reuse detection manager when new extension web contents
-  // are created.
-  virtual void CreatePasswordReuseDetectionManager(
-      content::WebContents* web_contents) const;
 
   // Returns a service that provides persistent salts for generating media
   // device IDs. Can be null if the embedder does not support persistent salts.

@@ -20,6 +20,7 @@
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/null_app_sorting.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
@@ -85,6 +86,8 @@ void ChromeExtensionsBrowserClient::Init() {
   kiosk_delegate_ = std::make_unique<DesktopAndroidKioskDelegate>();
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();
+  // Full safe browsing is not supported so use a stub delegate.
+  safe_browsing_delegate_ = std::make_unique<SafeBrowsingDelegate>();
 }
 
 ProcessManagerDelegate*

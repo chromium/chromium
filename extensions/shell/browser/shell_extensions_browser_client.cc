@@ -21,6 +21,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/null_app_sorting.h"
+#include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
@@ -45,7 +46,8 @@ namespace extensions {
 
 ShellExtensionsBrowserClient::ShellExtensionsBrowserClient()
     : api_client_(new ShellExtensionsAPIClient),
-      extension_cache_(new NullExtensionCache()) {
+      extension_cache_(new NullExtensionCache()),
+      safe_browsing_delegate_(std::make_unique<SafeBrowsingDelegate>()) {
   // app_shell does not have a concept of channel yet, so leave UNKNOWN to
   // enable all channel-dependent extension APIs.
   SetCurrentChannel(version_info::Channel::UNKNOWN);
@@ -317,6 +319,10 @@ KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
   if (!kiosk_delegate_)
     kiosk_delegate_ = std::make_unique<ShellKioskDelegate>();
   return kiosk_delegate_.get();
+}
+
+SafeBrowsingDelegate* ShellExtensionsBrowserClient::GetSafeBrowsingDelegate() {
+  return safe_browsing_delegate_.get();
 }
 
 std::string ShellExtensionsBrowserClient::GetApplicationLocale() {
