@@ -66,7 +66,7 @@ public interface InterceptNavigationDelegateClient {
 
     /**
      * Starts the repareting process for this Tab. Reparenting is an async task that "moves" an
-     * existing tab into a separate Activity. Currently, only reparenting towards Chrome browser is
+     * existing tab into a separate Task. Currently, only reparenting towards Chrome browser is
      * supported.
      */
     void startReparentingTask();
