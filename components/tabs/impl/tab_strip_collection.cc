@@ -276,6 +276,17 @@ TabGroupTabCollection* TabStripCollection::GetTabGroupCollection(
   return group_mapping_.at(group_id);
 }
 
+std::vector<tab_groups::TabGroupId> TabStripCollection::GetAllTabGroupIds()
+    const {
+  std::vector<tab_groups::TabGroupId> group_ids;
+  group_ids.reserve(group_mapping_.size());
+  for (const auto& pair : group_mapping_) {
+    group_ids.push_back(pair.first);
+  }
+
+  return group_ids;
+}
+
 void TabStripCollection::MoveTabGroupTo(const tab_groups::TabGroupId& group,
                                         int to_index) {
   tabs::TabGroupTabCollection* group_collection = GetTabGroupCollection(group);

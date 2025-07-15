@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration test for {@link TabCollectionTabModelImpl}. */
@@ -632,6 +633,85 @@ public class TabCollectionTabModelImplTest {
         didCreateNewGroupHelper.waitForOnly();
 
         assertTabsInOrderAre(tabs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAllTabGroupIdsAndCount() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+
+        // TODO(crbug.com/429145597): Remove this once the implementation is further along.
+        // Create a tab that is not in a group to act as the current tab. This is required to
+        // prevent TabListMediator from being created and failing a bunch of lookups for
+        // representative tabs that are not yet implemented.
+        createTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNotNull(tab0);
+                    assertNotNull(tab1);
+
+                    assertTrue(
+                            "Initially, getAllTabGroupIds should be empty.",
+                            mCollectionModel.getAllTabGroupIds().isEmpty());
+                    assertEquals(
+                            "Initially, getTabGroupCount should be 0.",
+                            0,
+                            mCollectionModel.getTabGroupCount());
+
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId0 = tab0.getTabGroupId();
+                    assertNotNull(groupId0);
+
+                    Set<Token> groupIds = mCollectionModel.getAllTabGroupIds();
+                    assertEquals("Should be 1 group.", 1, groupIds.size());
+                    assertTrue("Set should contain group 0 id.", groupIds.contains(groupId0));
+                    assertEquals(
+                            "getTabGroupCount should be 1.",
+                            1,
+                            mCollectionModel.getTabGroupCount());
+
+                    mCollectionModel.createSingleTabGroup(tab1);
+                    Token groupId1 = tab1.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    groupIds = mCollectionModel.getAllTabGroupIds();
+                    assertEquals("Should be 2 groups.", 2, groupIds.size());
+                    assertTrue("Set should contain group 0 id.", groupIds.contains(groupId0));
+                    assertTrue("Set should contain group 1 id.", groupIds.contains(groupId1));
+                    assertEquals(
+                            "getTabGroupCount should be 2.",
+                            2,
+                            mCollectionModel.getTabGroupCount());
+
+                    // Group 0 should be removed as it's now empty.
+                    mCollectionModel.moveTabOutOfGroupInDirection(
+                            tab0.getId(), /* trailing= */ false);
+                    assertNull(tab0.getTabGroupId());
+
+                    groupIds = mCollectionModel.getAllTabGroupIds();
+                    assertEquals("Should be 1 group left.", 1, groupIds.size());
+                    assertFalse("Set should not contain group 0 id.", groupIds.contains(groupId0));
+                    assertTrue("Set should still contain group 1 id.", groupIds.contains(groupId1));
+                    assertEquals(
+                            "getTabGroupCount should be 1.",
+                            1,
+                            mCollectionModel.getTabGroupCount());
+
+                    // Group 1 should be removed as it's now also empty.
+                    mCollectionModel.moveTabOutOfGroupInDirection(
+                            tab1.getId(), /* trailing= */ false);
+                    assertNull(tab1.getTabGroupId());
+
+                    assertTrue(
+                            "getAllTabGroupIds should be empty again.",
+                            mCollectionModel.getAllTabGroupIds().isEmpty());
+                    assertEquals(
+                            "getTabGroupCount should be 0 again.",
+                            0,
+                            mCollectionModel.getTabGroupCount());
+                });
     }
 
     @Test

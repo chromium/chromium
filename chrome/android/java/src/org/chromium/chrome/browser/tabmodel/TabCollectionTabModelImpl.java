@@ -52,6 +52,17 @@ import java.util.Set;
 @JNINamespace("tabs")
 public class TabCollectionTabModelImpl extends TabModelJniBridge
         implements TabGroupModelFilterInternal {
+    /** Holds a tab and its index in the tab collection. */
+    private static class IndexAndTab {
+        public final int index;
+        public final @Nullable Tab tab;
+
+        IndexAndTab(int index, @Nullable Tab tab) {
+            this.index = index;
+            this.tab = tab;
+        }
+    }
+
     private final ObserverList<TabModelObserver> mTabModelObservers = new ObserverList<>();
     private final ObserverList<TabGroupModelFilterObserver> mTabGroupObservers =
             new ObserverList<>();
@@ -59,7 +70,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(0);
-
     private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
@@ -619,49 +629,63 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public List<Tab> getRepresentativeTabList() {
+        // TODO(crbug.com/429145597): TabGroupModelFilterImpl uses the last selected tab in a tab
+        // group as the representative tab. Ideally, we'd change this to use the first tab in the
+        // tab group as the representative tab. However, the tab TabList* code still depends on
+        // this being the last selected tab. A refactor of TabList* code is needed to change this.
         return Collections.emptyList();
     }
 
     @Override
     public int getIndividualTabAndGroupCount() {
-        return 0;
+        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
+        // this in C++ and returning a count.
+        return getRepresentativeTabList().size();
     }
 
     @Override
     public int getCurrentRepresentativeTabIndex() {
-        return TabList.INVALID_TAB_INDEX;
+        IndexAndTab currentRepresentativeIndexAndTab = getCurrentRepresentativeIndexAndTab();
+        return currentRepresentativeIndexAndTab.index;
     }
 
     @Override
     public @Nullable Tab getCurrentRepresentativeTab() {
-        return null;
+        IndexAndTab currentRepresentativeIndexAndTab = getCurrentRepresentativeIndexAndTab();
+        return currentRepresentativeIndexAndTab.tab;
     }
 
     @Override
     public @Nullable Tab getRepresentativeTabAt(int index) {
-        return null;
+        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
+        List<Tab> representativeTabList = getRepresentativeTabList();
+        if (index < 0 || index >= representativeTabList.size()) return null;
+        return representativeTabList.get(index);
     }
 
     @Override
     public int representativeIndexOf(@Nullable Tab tab) {
-        return TabList.INVALID_TAB_INDEX;
+        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+        return getRepresentativeTabList().indexOf(tab);
     }
 
     @Override
     public int getTabGroupCount() {
-        return 0;
+        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
+        return getAllTabGroupIds().size();
     }
 
     @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
-        // TODO(crbug.com/428692223): revisit the performance of this method as compared to checking
+        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
         // this in C++ and returning a count.
         return getTabsInGroup(tabGroupId).size();
     }
 
     @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
-        // TODO(crbug.com/428692223): revisit the performance of this method as compared to checking
+        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to checking
         // this in C++ and returning a boolean.
         return getTabsInGroup(tabGroupId).size() > 0;
     }
@@ -691,7 +715,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int getIndexOfTabInGroup(Tab tab) {
-        // TODO(crbug.com/428692223): revisit the performance of this method as compared to
+        // TODO(crbug.com/428692223): Revisit the performance of this method as compared to
         // computing the index in C++ and returning it.
         return getTabsInGroup(tab.getTabGroupId()).indexOf(tab);
     }
@@ -752,7 +776,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public Set<Token> getAllTabGroupIds() {
-        return Collections.emptySet();
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return Collections.emptySet();
+        return new HashSet<>(
+                TabCollectionTabModelImplJni.get()
+                        .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr));
     }
 
     @Override
@@ -1064,6 +1092,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return finalIndex;
     }
 
+    private IndexAndTab getCurrentRepresentativeIndexAndTab() {
+        // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
+        Tab currentTab = mCurrentTabSupplier.get();
+        if (currentTab == null) return new IndexAndTab(TabList.INVALID_TAB_INDEX, null);
+
+        Token currentTabGroupId = currentTab.getTabGroupId();
+        List<Tab> representativeTabList = getRepresentativeTabList();
+        for (int i = 0; i < representativeTabList.size(); i++) {
+            Tab tab = representativeTabList.get(i);
+            if (tab == currentTab
+                    || (currentTabGroupId != null
+                            && currentTabGroupId.equals(tab.getTabGroupId()))) {
+                return new IndexAndTab(i, tab);
+            }
+        }
+        assert false : "Current tab not found in representative tab list.";
+        return new IndexAndTab(TabList.INVALID_TAB_INDEX, null);
+    }
+
     private Token createDetachedTabGroup() {
         Token tabGroupId = Token.createRandom();
         @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
@@ -1214,5 +1261,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getAllTabs(long nativeTabCollectionTabModelImpl);
+
+        @JniType("std::vector<base::Token>")
+        List<Token> getAllTabGroupIds(long nativeTabCollectionTabModelImpl);
     }
 }

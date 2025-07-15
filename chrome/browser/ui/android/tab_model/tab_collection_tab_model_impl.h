@@ -107,6 +107,9 @@ class TabCollectionTabModelImpl {
   // Gets a list of all tabs.
   std::vector<TabAndroid*> GetAllTabs(JNIEnv* env);
 
+  // Gets a list of all tab group IDs.
+  std::vector<base::Token> GetAllTabGroupIds(JNIEnv* env);
+
  private:
   // Returns a safe index for adding or moving a single tab without it changing
   // state.

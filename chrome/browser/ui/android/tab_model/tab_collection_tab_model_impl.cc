@@ -337,6 +337,19 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {
   return tabs;
 }
 
+std::vector<base::Token> TabCollectionTabModelImpl::GetAllTabGroupIds(
+    JNIEnv* env) {
+  std::vector<TabGroupId> group_ids =
+      tab_strip_collection_->GetAllTabGroupIds();
+
+  std::vector<base::Token> tokens;
+  tokens.reserve(group_ids.size());
+  for (const TabGroupId& group_id : group_ids) {
+    tokens.push_back(group_id.token());
+  }
+  return tokens;
+}
+
 static jlong JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_java_object,
