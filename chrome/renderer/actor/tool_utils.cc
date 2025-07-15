@@ -76,12 +76,17 @@ bool IsNodeFocused(const content::RenderFrame& frame,
   return element == currently_focused;
 }
 
-bool IsPointWithinViewport(const gfx::PointF& point,
+bool IsPointWithinViewport(const gfx::Point& point,
                            const content::RenderFrame& frame) {
   CHECK(frame.GetWebFrame());
   CHECK_EQ(frame.GetWebFrame(), frame.GetWebFrame()->LocalRoot());
   gfx::Rect viewport(frame.GetWebFrame()->FrameWidget()->VisibleViewportSize());
-  return viewport.Contains(gfx::ToFlooredPoint(point));
+  return viewport.Contains(point);
+}
+
+bool IsPointWithinViewport(const gfx::PointF& point,
+                           const content::RenderFrame& frame) {
+  return IsPointWithinViewport(gfx::ToFlooredPoint(point), frame);
 }
 
 std::string ToDebugString(const mojom::ToolTargetPtr& target) {

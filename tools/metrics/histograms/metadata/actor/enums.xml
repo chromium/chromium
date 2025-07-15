@@ -48,6 +48,8 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="TriggeredNavigationBlocked"/>
   <int value="28" label="EmptyActionSequence"/>
   <int value="29" label="ExecutorBusy"/>
+  <int value="30" label="ObservedTargetElementDestroyed"/>
+  <int value="31" label="ObservedTargetElementChanged"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="200" label="ClickSuppressed"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>

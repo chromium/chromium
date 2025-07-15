@@ -197,6 +197,15 @@ enum ActionResultCode {
   // The tool executor was busy with another tool, so could not invoke another.
   kExecutorBusy = 29,
 
+  // The target element from hit test observed page content cannot be found in
+  // the live DOM.
+  kObservedTargetElementDestroyed  = 30,
+
+  // The target element from hit test observed page content is different from
+  // hit test on the live DOM.
+  kObservedTargetElementChanged = 31,
+
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)

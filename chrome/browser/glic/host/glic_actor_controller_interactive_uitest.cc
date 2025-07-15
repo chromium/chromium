@@ -535,6 +535,52 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ToctouCheckFailWhenNodeRemoved) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  BrowserAction navigate = actor::MakeNavigate(task_url.spec());
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      ExecuteAction(ClickActionProvider(kClickableButtonLabel),
+                    UpdatedContextOptions()),
+      ExecuteJs(kNewActorTabId,
+                "()=>{document.getElementById('clickable').remove();}"),
+      ExecuteAction(ClickActionProvider(kClickableButtonLabel),
+                    UpdatedContextOptions(),
+                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ToctouCheckFailWhenNodeMoved) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  BrowserAction navigate = actor::MakeNavigate(task_url.spec());
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      ExecuteAction(ClickActionProvider(kClickableButtonLabel),
+                    UpdatedContextOptions()),
+      ExecuteJs(kNewActorTabId,
+                "()=>{document.getElementById('clickable').style.cssText = "
+                "'position: relative; left: 20px;'}"),
+      ExecuteJs(kNewActorTabId,
+                "()=>{const forcelayout = "
+                "document.getElementById('clickable').offsetHeight;}"),
+      ExecuteAction(ClickActionProvider(kClickableButtonLabel),
+                    UpdatedContextOptions(),
+                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        UsesExistingActorTabOnSubsequentNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =

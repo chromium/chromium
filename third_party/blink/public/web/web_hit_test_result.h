@@ -54,6 +54,10 @@ class BLINK_EXPORT WebHitTestResult {
   // The node that was hit (only one for point-based tests).
   WebNode GetNode() const;
 
+  // The element containing the node that was hit (only one for point-based
+  // tests).
+  WebElement GetElement() const;
+
   // If a link (eg. anchor or area tag) is hit, return the element.
   // Return null otheriwse.
   WebElement UrlElement() const;
