@@ -76,6 +76,7 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   static bool IsNonKeywordColor(const InterpolableValue&);
 
  private:
+  friend class CSSGapColorListInterpolationType;
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,

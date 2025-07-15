@@ -15,6 +15,9 @@ namespace blink {
 // specified. These values can be an auto repeater, an integer repeater, or a
 // single value. The value could be a color, style or width. See:
 // https://drafts.csswg.org/css-gaps-1/#color-style-width
+// TODO(crbug.com/357648037): Consider removing the template and instead having
+// concrete subclasses
+// for StyleColor, EBorderStyle, and int.
 template <typename T>
 class CORE_EXPORT GapDataList {
   DISALLOW_NEW();
@@ -53,6 +56,12 @@ class CORE_EXPORT GapDataList {
     }
   }
 
+  explicit GapDataList(HeapVector<StyleColor, 1>& colors) {
+    for (const auto& color : colors) {
+      gap_data_list_.emplace_back(GapData<StyleColor>(color));
+    }
+  }
+
   explicit GapDataList(wtf_size_t size) { gap_data_list_.reserve(size); }
 
   void AddGapData(const GapData<T>& gap_data) {
@@ -61,6 +70,10 @@ class CORE_EXPORT GapDataList {
 
   void AddGapData(const Length& length) {
     gap_data_list_.emplace_back(GapData<int>(length.Pixels()));
+  }
+
+  void AddGapData(const StyleColor& color) {
+    gap_data_list_.emplace_back(GapData<StyleColor>(color));
   }
 
   // TODO(javiercon): Specialize this for StyleColor, EBorderStyle, and int.

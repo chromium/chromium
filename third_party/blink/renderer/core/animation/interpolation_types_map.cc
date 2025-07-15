@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/animation/css_font_style_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_variation_settings_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_weight_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_gap_color_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_gap_length_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_grid_template_property_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
@@ -196,6 +197,16 @@ const InterpolationTypes* InterpolationTypesMap::Get(
             MakeGarbageCollected<CSSGridTemplatePropertyInterpolationType>(
                 property));
         break;
+      case CSSPropertyID::kColumnRuleColor:
+      case CSSPropertyID::kRowRuleColor:
+        if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+          applicable_types->push_back(
+              MakeGarbageCollected<CSSGapColorListInterpolationType>(property));
+          break;
+        }
+        applicable_types->push_back(
+            MakeGarbageCollected<CSSColorInterpolationType>(property));
+        break;
       case CSSPropertyID::kColumnRuleWidth:
       case CSSPropertyID::kRowRuleWidth:
         if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
@@ -275,8 +286,6 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kStopColor:
       case CSSPropertyID::kTextDecorationColor:
       case CSSPropertyID::kTextEmphasisColor:
-      case CSSPropertyID::kColumnRuleColor:
-      case CSSPropertyID::kRowRuleColor:
       case CSSPropertyID::kWebkitTextStrokeColor:
         applicable_types->push_back(
             MakeGarbageCollected<CSSColorInterpolationType>(property));

@@ -6572,7 +6572,7 @@
     {
       name: "row-rule-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
-      interpolable: false,
+      interpolable: true,
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/gap_data_list.h",
