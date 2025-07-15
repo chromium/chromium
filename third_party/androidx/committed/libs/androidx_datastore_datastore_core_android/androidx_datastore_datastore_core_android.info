@@ -15,8 +15,6 @@ native_libraries = [
   "jni/x86/libdatastore_shared_counter.so",
   "jni/x86_64/libdatastore_shared_counter.so"
 ]
-resources = [
-  "res/values/values.xml"
-]
+resources = []
 subjar_tuples = []
 subjars = []

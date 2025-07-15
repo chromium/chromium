@@ -104,6 +104,7 @@ resources = [
   "res/layout/pdf_search_view.xml",
   "res/layout/search.xml",
   "res/layout/tool_box_view.xml",
+  "res/layout/pdf_content_layout.xml",
   "res/layout/dialog_password.xml",
   "res/layout/page_indicator.xml",
   "res/layout/pdf_view_container.xml",
