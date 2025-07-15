@@ -9927,7 +9927,7 @@
       "ototot@chromium.org",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "vc-retouch-inference-backend",
@@ -9938,7 +9938,7 @@
       "ototot@google.com",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "vc-segmentation-inference-backend",
@@ -9949,7 +9949,7 @@
       "ototot@chromium.org",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "vc-segmentation-model",
@@ -9959,7 +9959,7 @@
   {
     "name": "vc-studio-look",
     "owners": [ "okuji@chromium.org", "chromeos-camera-eng@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "vc-tray-mic-indicator",
