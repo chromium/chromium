@@ -97,17 +97,19 @@ public class NewTabAnimationLayout extends Layout {
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
-    private AnimatorSet mTabCreatedForegroundAnimation;
-    private AnimatorSet mTabCreatedBackgroundAnimation;
-    private ObjectAnimator mFadeAnimator;
+    private @Nullable AnimatorSet mTabCreatedForegroundAnimation;
+    private @Nullable AnimatorSet mTabCreatedBackgroundAnimation;
+    private @Nullable ObjectAnimator mFadeAnimator;
     // Retains a strong reference to the {@link ShrinkExpandAnimator} on the class to prevent it
     // from being prematurely GC'd when using {@link ObjectAnimator}.
-    private ShrinkExpandAnimator mExpandAnimator;
-    private ShrinkExpandImageView mRectView;
-    private NewBackgroundTabAnimationHostView mBackgroundHostView;
-    private NewForegroundTabAnimationHostView mForegroundHostView;
-    private Runnable mAnimationRunnable;
-    private Runnable mTimeoutRunnable;
+    private @Nullable ShrinkExpandAnimator mExpandAnimator;
+    private @Nullable ObjectAnimator mRectAnimator;
+    private @Nullable ValueAnimator mCornerAnimator;
+    private @Nullable ShrinkExpandImageView mRectView;
+    private @Nullable NewBackgroundTabAnimationHostView mBackgroundHostView;
+    private @Nullable NewForegroundTabAnimationHostView mForegroundHostView;
+    private @Nullable Runnable mAnimationRunnable;
+    private @Nullable Runnable mTimeoutRunnable;
     private Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
     private int mToken = TokenHolder.INVALID_TOKEN;
@@ -582,7 +584,7 @@ public class NewTabAnimationLayout extends Layout {
         mExpandAnimator =
                 new ShrinkExpandAnimator(
                         mRectView, initialRect, finalRect, /* searchBoxHeight= */ 0);
-        ObjectAnimator rectAnimator =
+        mRectAnimator =
                 ObjectAnimator.ofObject(
                         mExpandAnimator,
                         ShrinkExpandAnimator.RECT,
@@ -596,7 +598,7 @@ public class NewTabAnimationLayout extends Layout {
             endRadii[i] = Math.round(startRadii[i] * scaleFactor);
         }
         mRectView.setRoundedCorners(startRadii[0], startRadii[1], startRadii[2], startRadii[3]);
-        ValueAnimator cornerAnimator =
+        mCornerAnimator =
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
                         mRectView, startRadii, endRadii);
 
@@ -617,13 +619,15 @@ public class NewTabAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation = new AnimatorSet();
         mTabCreatedForegroundAnimation.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
         mTabCreatedForegroundAnimation.setDuration(FOREGROUND_ANIMATION_DURATION_MS);
-        mTabCreatedForegroundAnimation.playTogether(rectAnimator, cornerAnimator);
+        mTabCreatedForegroundAnimation.playTogether(mRectAnimator, mCornerAnimator);
         mTabCreatedForegroundAnimation.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mTabCreatedForegroundAnimation = null;
                         mExpandAnimator = null;
+                        mRectAnimator = null;
+                        mCornerAnimator = null;
                         if (mFadeAnimator != null) mFadeAnimator.start();
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
