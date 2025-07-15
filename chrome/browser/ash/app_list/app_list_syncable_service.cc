@@ -65,6 +65,7 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1450,6 +1451,11 @@ std::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> AppListSyncableService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string AppListSyncableService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  return entity_data.specifics.app_list().item_id();
 }
 
 void AppListSyncableService::Shutdown() {

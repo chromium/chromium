@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 #include "chrome/browser/extensions/api/storage/syncable_settings_storage.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/protocol/entity_data.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/common/extension_id.h"
@@ -238,6 +239,23 @@ std::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> SyncStorageBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string SyncStorageBackend::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  if (entity_data.specifics.has_extension_setting()) {
+    return GetClientTagInternal(entity_data.specifics.extension_setting());
+  } else {
+    DCHECK(entity_data.specifics.has_app_setting());
+    return GetClientTagInternal(
+        entity_data.specifics.app_setting().extension_setting());
+  }
+}
+
+std::string SyncStorageBackend::GetClientTagInternal(
+    const sync_pb::ExtensionSettingSpecifics& specifics) const {
+  return settings_sync_util::ConstructClientTag(specifics.extension_id(),
+                                                specifics.key());
 }
 
 void SyncStorageBackend::StopSyncing(syncer::DataType type) {

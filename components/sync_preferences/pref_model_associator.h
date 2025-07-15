@@ -97,6 +97,8 @@ class PrefModelAssociator final : public syncer::SyncableService,
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
   // PrefStore::Observer implementation.
   void OnPrefValueChanged(std::string_view name) override;

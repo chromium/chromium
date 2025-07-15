@@ -423,10 +423,6 @@ std::string SpellcheckCustomDictionary::GetClientTag(
   return entity_data.specifics.dictionary().word();
 }
 
-bool SpellcheckCustomDictionary::SupportsGetClientTag() const {
-  return true;
-}
-
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
     : is_valid_file(false) {}
 

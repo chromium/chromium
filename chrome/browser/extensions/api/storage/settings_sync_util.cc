@@ -55,6 +55,11 @@ void PopulateAppSettingSpecifics(const ExtensionId& extension_id,
 
 }  // namespace
 
+std::string ConstructClientTag(const ExtensionId& extension_id,
+                               const std::string& key) {
+  return extension_id + "/" + key;
+}
+
 syncer::SyncData CreateData(const ExtensionId& extension_id,
                             const std::string& key,
                             const base::Value& value,
@@ -81,8 +86,8 @@ syncer::SyncData CreateData(const ExtensionId& extension_id,
       NOTREACHED();
   }
 
-  return syncer::SyncData::CreateLocalData(
-      extension_id + "/" + key, key, specifics);
+  std::string client_tag = ConstructClientTag(extension_id, key);
+  return syncer::SyncData::CreateLocalData(client_tag, key, specifics);
 }
 
 syncer::SyncChange CreateAdd(const ExtensionId& extension_id,

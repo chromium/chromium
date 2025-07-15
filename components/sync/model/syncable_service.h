@@ -104,12 +104,12 @@ class SyncableService {
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
 
-  // TODO(crbug.com/40726283): Make pure virtual once all subclasses implement
-  // this function.
-  virtual std::string GetClientTag(const EntityData& entity_data) const;
+  // Returns the client tag of the entity data. This is also used as the storage
+  // key for the entity data.
+  virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
 
-  // TODO(crbug.com/40726283): This function will be removed when all
-  // syncable services support GetClientTag().
+  // Whether or not the syncable service is capable of producing a client tag
+  // from `EntityData` (usually remote changes), via GetClientTag().
   virtual bool SupportsGetClientTag() const;
 
   // Get a WeakPtr to the instance.

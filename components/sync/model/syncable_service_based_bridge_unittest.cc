@@ -92,6 +92,11 @@ class MockSyncableService : public SyncableService {
   base::WeakPtr<SyncableService> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
+  MOCK_METHOD(std::string,
+              GetClientTag,
+              (const EntityData& entity_data),
+              (const override));
+  MOCK_METHOD(bool, SupportsGetClientTag, (), (const override));
 
  private:
   base::WeakPtrFactory<MockSyncableService> weak_ptr_factory_{this};

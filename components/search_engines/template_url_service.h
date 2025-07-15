@@ -62,6 +62,7 @@ class ChoiceScreenData;
 
 namespace syncer {
 class SyncData;
+struct EntityData;
 }
 
 namespace TemplateURLPrepopulateData {
@@ -527,6 +528,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void StopSyncing(syncer::DataType type) override;
   void OnBrowserShutdown(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
   // Processes a TemplateURL change for Sync. `turl` is the TemplateURL
   // that has been modified, and `type` is the Sync ChangeType that took place.

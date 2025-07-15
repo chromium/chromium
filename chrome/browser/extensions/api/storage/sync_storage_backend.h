@@ -19,6 +19,10 @@
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "extensions/common/extension_id.h"
 
+namespace sync_pb {
+class ExtensionSettingSpecifics;
+}
+
 namespace value_store {
 class ValueStoreFactory;
 }
@@ -62,6 +66,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
       const syncer::SyncChangeList& change_list) override;
   void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
 
  private:
   // Gets a weak reference to the storage area for a given extension,
@@ -73,6 +79,10 @@ class SyncStorageBackend final : public syncer::SyncableService {
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(
       const ExtensionId& extension_id) const;
+
+  // Returns the client tag for an extension or app setting.
+  std::string GetClientTagInternal(
+      const sync_pb::ExtensionSettingSpecifics& specifics) const;
 
   // The Factory to use for creating new ValueStores.
   const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;

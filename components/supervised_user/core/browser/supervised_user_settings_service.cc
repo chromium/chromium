@@ -25,6 +25,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 
@@ -456,6 +457,12 @@ SupervisedUserSettingsService::ProcessSyncChanges(
 base::WeakPtr<syncer::SyncableService>
 SupervisedUserSettingsService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string SupervisedUserSettingsService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_managed_user_setting());
+  return entity_data.specifics.managed_user_setting().name();
 }
 
 void SupervisedUserSettingsService::OnInitializationCompleted(bool success) {

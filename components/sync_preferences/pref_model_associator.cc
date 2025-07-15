@@ -27,6 +27,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
@@ -383,6 +384,26 @@ std::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> PrefModelAssociator::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string PrefModelAssociator::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (type_ == syncer::OS_PREFERENCES) {
+    DCHECK(entity_data.specifics.has_os_preference());
+    return entity_data.specifics.os_preference().preference().name();
+  } else if (type_ == syncer::OS_PRIORITY_PREFERENCES) {
+    DCHECK(entity_data.specifics.has_os_priority_preference());
+    return entity_data.specifics.os_priority_preference().preference().name();
+  }
+#endif
+  if (type_ == syncer::PREFERENCES) {
+    DCHECK(entity_data.specifics.has_preference());
+    return entity_data.specifics.preference().name();
+  } else {
+    DCHECK(entity_data.specifics.has_priority_preference());
+    return entity_data.specifics.priority_preference().preference().name();
+  }
 }
 
 void PrefModelAssociator::AddSyncedPrefObserver(const std::string& name,

@@ -67,6 +67,7 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -1981,6 +1982,12 @@ std::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> TemplateURLService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string TemplateURLService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_search_engine());
+  return entity_data.specifics.search_engine().sync_guid();
 }
 
 std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(

@@ -28,6 +28,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/protocol/entity_data.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
@@ -291,6 +292,17 @@ std::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> ExtensionSyncService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string ExtensionSyncService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  // Since extension_sync_service is used for both extensions and apps, we need
+  // to check for both.
+  if (entity_data.specifics.has_extension()) {
+    return entity_data.specifics.extension().id();
+  }
+  DCHECK(entity_data.specifics.has_app());
+  return entity_data.specifics.app().extension().id();
 }
 
 ExtensionSyncData ExtensionSyncService::CreateSyncData(

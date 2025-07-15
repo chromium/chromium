@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
@@ -495,6 +496,14 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string ThemeSyncableService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_theme());
+  // Theme always returns the same client tag as there is only one single theme
+  // entity.
+  return kSyncEntityClientTag;
 }
 
 ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(

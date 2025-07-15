@@ -330,8 +330,7 @@ std::string SyncableServiceBasedBridge::GetClientTag(
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
     const EntityData& entity_data) const {
-  // Not supported as per SupportsGetStorageKey().
-  NOTREACHED();
+  return syncable_service_->GetClientTag(entity_data);
 }
 
 bool SyncableServiceBasedBridge::IsEntityDataValid(
@@ -342,8 +341,6 @@ bool SyncableServiceBasedBridge::IsEntityDataValid(
 }
 
 bool SyncableServiceBasedBridge::SupportsGetClientTag() const {
-  // TODO(crbug.com/40726283): This function can always return true once all
-  // syncable services support GetClientTag().
   return syncable_service_->SupportsGetClientTag();
 }
 
