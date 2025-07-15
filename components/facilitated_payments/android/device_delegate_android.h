@@ -33,10 +33,13 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   // Opens the Pix account linking page in Google Wallet.
   void LaunchPixAccountLinkingPage() override;
 
-  // The `callback` is called after the Chrome app goes to background and then
-  // returns to the foreground. The `callback` is not called if the active tab
-  // that called this method is closed or if the app itself is closed.
-  void SetOnReturnToChromeCallback(base::OnceClosure callback) final;
+  // Starts observing the Chrome app status. Runs the `callback` if the Chrome
+  // app is moved to the background and then to the foreground. Stops observing
+  // after running the `callback`. The `callback` is not called if the active
+  // tab that called this method is closed or if the Chrome app itself is
+  // closed.
+  void SetOnReturnToChromeCallbackAndObserveAppState(
+      base::OnceClosure callback) final;
 
   std::unique_ptr<FacilitatedPaymentsAppInfoList> GetSupportedPaymentApps(
       const GURL& payment_link_url) override;

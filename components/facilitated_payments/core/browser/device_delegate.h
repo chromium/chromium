@@ -29,9 +29,10 @@ class DeviceDelegate {
   // Takes user to the Pix account linking page.
   virtual void LaunchPixAccountLinkingPage() = 0;
 
-  // Saves the `callback` to be run after the user leaves and then returns to
+  // Observes the Chrome app, and runs the `callback` when the user returns to
   // Chrome.
-  virtual void SetOnReturnToChromeCallback(base::OnceClosure callback) = 0;
+  virtual void SetOnReturnToChromeCallbackAndObserveAppState(
+      base::OnceClosure callback) = 0;
 
   virtual std::unique_ptr<FacilitatedPaymentsAppInfoList>
   GetSupportedPaymentApps(const GURL& payment_link_url) = 0;

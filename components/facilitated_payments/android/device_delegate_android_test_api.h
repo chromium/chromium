@@ -25,6 +25,9 @@ class DeviceDelegateAndroidTestApi {
   void OnApplicationStateChanged(base::android::ApplicationState state) {
     delegate_->OnApplicationStateChanged(state);
   }
+  base::android::ApplicationStatusListener* app_status_listener() {
+    return delegate_->app_status_listener_.get();
+  }
 
  private:
   const raw_ref<DeviceDelegateAndroid> delegate_;

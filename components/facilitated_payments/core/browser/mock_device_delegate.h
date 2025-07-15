@@ -20,7 +20,7 @@ class MockDeviceDelegate : public DeviceDelegate {
   MOCK_METHOD(bool, IsPixAccountLinkingSupported, (), (const, override));
   MOCK_METHOD(void, LaunchPixAccountLinkingPage, (), (override));
   MOCK_METHOD(void,
-              SetOnReturnToChromeCallback,
+              SetOnReturnToChromeCallbackAndObserveAppState,
               (base::OnceClosure),
               (override));
   MOCK_METHOD(std::unique_ptr<FacilitatedPaymentsAppInfoList>,

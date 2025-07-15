@@ -59,9 +59,10 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   }
   // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
   // and GetDetailsForCreatePaymentInstrument is completed.
-  client_->GetDeviceDelegate()->SetOnReturnToChromeCallback(base::BindOnce(
-      &PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible,
-      weak_ptr_factory_.GetWeakPtr()));
+  client_->GetDeviceDelegate()->SetOnReturnToChromeCallbackAndObserveAppState(
+      base::BindOnce(
+          &PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PixAccountLinkingManager::Reset() {

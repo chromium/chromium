@@ -74,7 +74,7 @@ class PixAccountLinkingManagerTest : public testing::Test {
         }));
     // Simulate user leaving and returning to Chrome, after which the callback
     // that triggers showing the prompt is called.
-    ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+    ON_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
         .WillByDefault(
             [](base::OnceClosure callback) { std::move(callback).Run(); });
   }
@@ -195,7 +195,7 @@ TEST_F(PixAccountLinkingManagerTest, TabNotActive_PromptNotShown) {
 
 TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
   // Simulate user not returning to Chrome, so the callback is never run.
-  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+  EXPECT_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
       .WillOnce([](base::OnceClosure callback) {});
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
@@ -262,9 +262,10 @@ TEST_F(PixAccountLinkingManagerTest,
 TEST_F(PixAccountLinkingManagerTest,
        Reset_BeforeReturningToChrome_PromptNotShown) {
   base::OnceClosure on_return_to_chrome_callback;
-  // Override the default behavior of SetOnReturnToChromeCallback to capture the
-  // callback and simulate an async response.
-  ON_CALL(*device_delegate(), SetOnReturnToChromeCallback)
+  // Override the default behavior of
+  // SetOnReturnToChromeCallbackAndObserveAppState to capture the callback and
+  // simulate an async response.
+  ON_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
       .WillByDefault(testing::Invoke([&](base::OnceClosure callback) {
         on_return_to_chrome_callback = std::move(callback);
       }));
