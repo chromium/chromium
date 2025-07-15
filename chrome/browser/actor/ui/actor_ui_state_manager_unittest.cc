@@ -286,8 +286,10 @@ class ActorUiStateManagerActorTaskUiTabScopedTest
       public testing::WithParamInterface<
           std::tuple<ActorTask::State, UiTabState>> {};
 
+// TODO(crbug.com/431292104): Re-enable after the memory sanitizer issue is
+// resolved.
 TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
-       OnActorTaskState_UpdateTabScopedUi) {
+       DISABLED_OnActorTaskState_UpdateTabScopedUi) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   MockTabInterface mock_tab;
   actor_keyed_service()->GetTask(task_id)->AddToTabSet(mock_tab.GetHandle());
@@ -335,8 +337,10 @@ class ActorUiStateManagerUiEventUiTabScopedTest
       public testing::WithParamInterface<std::tuple<AsyncUiEvent, UiTabState>> {
 };
 
+// TODO(crbug.com/431292104): Re-enable after the memory sanitizer issue is
+// resolved.
 TEST_P(ActorUiStateManagerUiEventUiTabScopedTest,
-       OnActorTaskState_UpdateTabScopedUi) {
+       DISABLED_OnActorTaskState_UpdateTabScopedUi) {
   auto [ui_event, expected_ui_tab_state] = GetParam();
   actor_ui_state_manager()->OnUiEvent(ui_event, base::DoNothing());
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);
