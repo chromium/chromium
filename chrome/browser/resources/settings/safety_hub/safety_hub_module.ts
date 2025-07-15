@@ -141,6 +141,10 @@ export class SettingsSafetyHubModuleElement extends
     for (const item of items) {
       const links = item.querySelectorAll('a');
       links.forEach((link) => {
+        if (link.target === '_blank') {
+          link.setAttribute('aria-description', this.i18n('opensInNewTab'));
+        }
+
         link.addEventListener('click', function() {
           this.dispatchEvent(new CustomEvent(
               'sh-module-item-link-click',

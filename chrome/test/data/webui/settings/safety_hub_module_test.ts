@@ -8,6 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -24,6 +25,7 @@ function waitUntilVisible(element: HTMLElement, intervalMs: number = 10) {
 }
 
 suite('SafetyHubModule', function() {
+  const opensInNewTabString = 'opens in new tab';
   let testElement: SettingsSafetyHubModuleElement;
 
   const mockData = [1, 2, 3, 4].map(i => ({
@@ -58,6 +60,10 @@ suite('SafetyHubModule', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-module');
     document.body.appendChild(testElement);
+
+    loadTimeData.overrideValues({
+      opensInNewTab: opensInNewTabString,
+    });
   });
 
   teardown(function() {
@@ -124,6 +130,26 @@ suite('SafetyHubModule', function() {
           mockData[i]!.detail,
           entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
     }
+
+    // Check a link in secondary text has an aria description.
+    testElement.sites = [
+      {
+        origin: 'https://www.example.com',
+        detail: 'This detail has a <a href="#" target="_blank">link</a>.',
+      },
+      {
+        origin: 'https://www.example.com',
+        detail: 'This detail has a <a href="#">link</a>.',
+      },
+    ];
+    flush();
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    let link = getEntries()[0]!.querySelector('a')!;
+    assertEquals(opensInNewTabString, link.getAttribute('aria-description'));
+    link = getEntries()[1]!.querySelector('a')!;
+    assertEquals(null, link.getAttribute('aria-description'));
+
 
     // Check the item list and line is hidden when there is no item.
     testElement.sites = [];
