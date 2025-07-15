@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 #if BUILDFLAG(IS_WIN)
   // Send the contexts lost reason to the renderer process and kill the GPU
   // process to destroy all contexts.
-  void DestroyContextsAndKillGpuProcess(std::string_view reason);
+  void DestroyContextsAndKillGpuProcess(const std::string& reason);
 #endif  // BUILDFLAG(IS_WIN)
 
   // Retrieves a `WebNNContextImpl` instance created from this provider.

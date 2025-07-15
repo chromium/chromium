@@ -176,10 +176,10 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
 
 #if BUILDFLAG(IS_WIN)
 void WebNNContextProviderImpl::DestroyContextsAndKillGpuProcess(
-    std::string_view reason) {
+    const std::string& reason) {
   // Send the contexts lost reason to the renderer process.
   for (const auto& impl : impls_) {
-    impl->ResetReceiverWithReason(reason);
+    impl->OnLost(reason);
   }
 
   std::move(lose_all_contexts_callback_).Run();

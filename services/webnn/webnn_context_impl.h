@@ -126,11 +126,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   const ContextProperties& properties() { return properties_; }
   const mojom::CreateContextOptions& options() const { return *options_; }
 
-  void ResetReceiverWithReason(std::string_view message);
-
   // Closes the `receiver_` pipe with the renderer process, then self destructs
   // by removing itself from the ownership of `context_provider_`.
-  void OnLost(std::string_view context_lost_info);
+  void OnLost(const std::string& reason);
 
   WebNNContextProviderImpl* context_provider() const {
     return context_provider_.get();
@@ -192,6 +190,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       tensor_impls_;
 
  private:
+  void ResetReceiverWithReason(const std::string& message);
+
   // Graph builders owned by this context.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraphBuilder>
       graph_builder_impls_;
@@ -221,6 +221,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Used to generate a SyncToken for the renderer which can be passed
   // to another message pipe to wait on WebNN work.
   uint64_t last_sync_token_release_id_ = 0;
+
+  // Ensures ResetWithReason() runs on the correct sequence, even if OnLost()
+  // is called from another thread.
+  base::OnceCallback<void(const std::string&)> on_lost_callback_;
 };
 
 }  // namespace webnn

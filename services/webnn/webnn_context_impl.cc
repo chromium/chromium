@@ -60,6 +60,18 @@ WebNNContextImpl::WebNNContextImpl(
       base::BindPostTask(scheduler_task_runner_,
                          base::BindOnce(&WebNNContextImpl::OnConnectionError,
                                         base::Unretained(this))));
+
+  // Safe to use base::Unretained because `this` is sequence-bound to
+  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
+  // pending tasks - including this one - before the object is destroyed.
+  on_lost_callback_ = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      [](WebNNContextImpl* self, const std::string& reason) {
+        self->ResetReceiverWithReason(reason);
+        self->scheduler_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&WebNNContextImpl::OnConnectionError,
+                                      base::Unretained((self))));
+      },
+      base::Unretained(this)));
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
@@ -227,13 +239,12 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNGraphImpl(
   graph_impls_.erase(it);
 }
 
-void WebNNContextImpl::ResetReceiverWithReason(std::string_view message) {
+void WebNNContextImpl::ResetReceiverWithReason(const std::string& message) {
   receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
 }
 
-void WebNNContextImpl::OnLost(std::string_view message) {
-  ResetReceiverWithReason(message);
-  context_provider_->OnConnectionError(this);
+void WebNNContextImpl::OnLost(const std::string& reason) {
+  std::move(on_lost_callback_).Run(reason);
 }
 
 base::optional_ref<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
