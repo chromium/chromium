@@ -21,7 +21,6 @@
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 
 enum class SessionState {
   kNone = 0,
@@ -185,7 +184,8 @@ class ComposeboxQueryController {
   ComposeboxQueryController(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      version_info::Channel channel);
+      version_info::Channel channel,
+      std::string locale);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -215,6 +215,10 @@ class ComposeboxQueryController {
                         const std::vector<std::string>& cors_exempt_headers,
                         UploadProgressCallback upload_progress_callback);
 
+  // Creates the client context for Lens requests. Protected to allow access
+  // from tests.
+  lens::LensOverlayClientContext CreateClientContext() const;
+
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
   // SetQueryControllerState() instead.
@@ -230,9 +234,6 @@ class ComposeboxQueryController {
   std::map<base::UnguessableToken, std::unique_ptr<FileInfo>> active_files_;
 
  private:
-  // Creates the client context for Lens requests.
-  lens::LensOverlayClientContext CreateClientContext();
-
   // Fetches the OAuth headers and calls the callback with the headers. If the
   // OAuth cannot be retrieved (like if the user is not logged in), the callback
   // will be called with an empty vector. Returns the access token fetcher
@@ -316,6 +317,9 @@ class ComposeboxQueryController {
 
   // The channel to use for Lens network requests.
   version_info::Channel channel_;
+
+  // The locale used for creating the client context.
+  std::string locale_;
 
   // The request id generator for this query flow instance.
   lens::LensOverlayRequestIdGenerator request_id_generator_;

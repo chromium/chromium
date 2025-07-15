@@ -18,8 +18,13 @@
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 
 using endpoint_fetcher::CredentialsMode;
 using endpoint_fetcher::EndpointFetcher;
@@ -115,10 +120,12 @@ lens::LensOverlayServerRequest CreateFileUploadRequestProto(
 ComposeboxQueryController::ComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    version_info::Channel channel)
+    version_info::Channel channel,
+    std::string locale)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      channel_(channel) {
+      channel_(channel),
+      locale_(locale) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -225,6 +232,31 @@ ComposeboxQueryController::CreateEndpointFetcher(
           .Build());
 }
 
+lens::LensOverlayClientContext
+ComposeboxQueryController::CreateClientContext() const {
+  lens::LensOverlayClientContext context;
+  context.set_surface(lens::SURFACE_CHROME_NTP);
+  context.set_platform(lens::PLATFORM_LENS_OVERLAY);
+  context.mutable_client_filters()->add_filter()->set_filter_type(
+      lens::AUTO_FILTER);
+  context.mutable_locale_context()->set_language(locale_);
+  context.mutable_locale_context()->set_region(
+      icu::Locale(locale_.c_str()).getCountry());
+
+  std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
+  icu::UnicodeString time_zone_id, time_zone_canonical_id;
+  zone->getID(time_zone_id);
+  UErrorCode status = U_ZERO_ERROR;
+  icu::TimeZone::getCanonicalID(time_zone_id, time_zone_canonical_id, status);
+  if (status == U_ZERO_ERROR) {
+    std::string zone_id_str;
+    time_zone_canonical_id.toUTF8String(zone_id_str);
+    context.mutable_locale_context()->set_time_zone(zone_id_str);
+  }
+
+  return context;
+}
+
 // TODO(crbug.com/424869589): Clean up code duplication with
 // LensOverlayQueryController.
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
@@ -247,14 +279,6 @@ ComposeboxQueryController::CreateOAuthHeadersAndContinue(
   // Fall back to fetching the endpoint directly using API key.
   std::move(callback).Run(std::vector<std::string>());
   return nullptr;
-}
-
-lens::LensOverlayClientContext
-ComposeboxQueryController::CreateClientContext() {
-  lens::LensOverlayClientContext context;
-  // TODO(crbug.com/424871547): Create the client context.
-
-  return context;
 }
 
 void ComposeboxQueryController::FetchClusterInfo() {
