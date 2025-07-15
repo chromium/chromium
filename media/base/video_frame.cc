@@ -1367,11 +1367,9 @@ void VideoFrame::MapGMBOrSharedImageAsync(
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (gpu_memory_buffer_) {
-    // `base::Unretained()` is safe because of the requirement for callers to
-    // keep the VideoFrame alive until the callback executes.
-    gpu_memory_buffer_->MapAsync(
-        base::BindOnce(&VideoFrame::MakeScopedMappingForGpuMemoryBuffer,
-                       base::Unretained(this), std::move(result_cb)));
+    // LegacyGpuMemoryBufferForVideo supports only synchronous mapping.
+    MakeScopedMappingForGpuMemoryBuffer(std::move(result_cb),
+                                        gpu_memory_buffer_->Map());
     return;
   }
 #endif
@@ -1388,7 +1386,8 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
     return shared_image_->AsyncMappingIsNonBlocking();
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
+  // LegacyGpuMemoryBufferForVideo supports only synchronous mapping.
+  return false;
 #else
   NOTREACHED();
 #endif
