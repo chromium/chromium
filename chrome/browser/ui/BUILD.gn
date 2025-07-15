@@ -4797,7 +4797,6 @@ static_library("ui") {
       "webauthn/user_actions.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
-      "window_name_prompt/window_name_prompt.cc",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
@@ -4855,6 +4854,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//chrome/browser/ui/window_name_prompt",
       "//components/collaboration/public",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
@@ -4923,6 +4923,7 @@ static_library("ui") {
       "//chrome/browser/ui/sharing_hub:impl",
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/page_info:impl",
+      "//chrome/browser/ui/window_name_prompt",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
       # chrome_{typography,layout_provider} get modularized.
