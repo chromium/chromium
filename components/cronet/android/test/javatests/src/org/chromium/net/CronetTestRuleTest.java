@@ -33,6 +33,7 @@ import org.chromium.net.CronetTestRule.IntFlag;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestRule.StringFlag;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.HttpFlagsForImpl;
 import org.chromium.net.impl.JavaCronetEngine;
@@ -186,35 +187,17 @@ public class CronetTestRuleTest {
                         value = {'a', 'b', 'c'})
             })
     public void testHttpFlagsAreCorrectlyApplied() {
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_string_flag")
-                                .getStringValue())
+        var flags =
+                HttpFlagsForImpl.getHttpFlags(
+                                mTestRule.getTestFramework().getContext(),
+                                CronetSource.CRONET_SOURCE_UNSPECIFIED)
+                        .flags();
+        assertThat(flags.get("random_string_flag").getStringValue())
                 .isEqualTo("some_message_value");
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_int_flag")
-                                .getIntValue())
-                .isEqualTo(123456789012345L);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_bool_flag")
-                                .getBoolValue())
-                .isEqualTo(true);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_float_flag")
-                                .getFloatValue())
-                .isEqualTo(0.123456f);
-        assertThat(
-                        HttpFlagsForImpl.getHttpFlags(mTestRule.getTestFramework().getContext())
-                                .flags()
-                                .get("random_bytes_flag")
-                                .getBytesValue())
+        assertThat(flags.get("random_int_flag").getIntValue()).isEqualTo(123456789012345L);
+        assertThat(flags.get("random_bool_flag").getBoolValue()).isEqualTo(true);
+        assertThat(flags.get("random_float_flag").getFloatValue()).isEqualTo(0.123456f);
+        assertThat(flags.get("random_bytes_flag").getBytesValue())
                 .isEqualTo(ByteString.copyFrom(new byte[] {'a', 'b', 'c'}));
     }
 }

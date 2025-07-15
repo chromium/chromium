@@ -17,7 +17,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /** Implementation of {@link ICronetEngineBuilder} that builds native Cronet engine. */
 // WARNING: the fully qualified name of this class is hardcoded in the Google Play Services Cronet
 // provider code, which is part of the Google Play Services SDK. This means THIS CLASS CANNOT BE
-// RENAMED, MOVED NOR DELETED without breaking the Google Play Services provider.
+// RENAMED, MOVED NOR DELETED without breaking the Google Play Services provider. It is also
+// hardcoded in CronetManifest#isAppOptedInForTelemetry().
 public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
 

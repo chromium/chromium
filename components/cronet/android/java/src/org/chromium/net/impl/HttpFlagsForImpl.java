@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.httpflags.ResolvedFlags;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 /**
  * Retrieves httpflags for the current Impl version.
@@ -22,8 +23,11 @@ public final class HttpFlagsForImpl {
      *
      * <p>Never returns null: if HTTP flags were not loaded, will return an empty set of flags.
      */
-    public static ResolvedFlags getHttpFlags(Context context) {
+    public static ResolvedFlags getHttpFlags(Context context, CronetSource source) {
         return HttpFlagsLoader.getHttpFlags(
-                context, ImplVersion.getCronetVersion(), /* isLoadedFromApi= */ false);
+                context,
+                ImplVersion.getCronetVersion(),
+                /* isLoadedFromApi= */ false,
+                CronetManifest.isAppOptedInForTelemetry(context, source));
     }
 }

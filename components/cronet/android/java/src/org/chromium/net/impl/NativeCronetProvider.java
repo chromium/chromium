@@ -11,6 +11,7 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetProvider;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.util.Arrays;
 
@@ -77,7 +78,8 @@ public class NativeCronetProvider extends CronetProvider {
     private boolean shouldUseHttpEngine() {
         if (!HttpEngineNativeProvider.isHttpEngineAvailable()) return false;
         var shouldForceHttpEngine =
-                HttpFlagsForImpl.getHttpFlags(mContext)
+                HttpFlagsForImpl.getHttpFlags(
+                                mContext, CronetSource.CRONET_SOURCE_STATICALLY_LINKED)
                         .flags()
                         .get(OVERRIDE_NATIVE_CRONET_WITH_HTTPENGINE_FLAG);
         return shouldForceHttpEngine != null && shouldForceHttpEngine.getBoolValue();

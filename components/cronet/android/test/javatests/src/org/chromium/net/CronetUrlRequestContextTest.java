@@ -168,13 +168,15 @@ public class CronetUrlRequestContextTest {
         }
     }
 
-    private void setReadHttpFlagsInManifest(boolean value) {
+    private void setupManifest(boolean enableHttpFlags, boolean enableTelemetry) {
         Bundle metaData = new Bundle();
-        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
+        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, enableHttpFlags);
+        metaData.putBoolean(CronetManifest.ENABLE_TELEMETRY_META_DATA_KEY, enableTelemetry);
         mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
     }
 
-    private void setLogFlag(String marker, String appId, String minVersion) {
+    private void setLogFlag(
+            String marker, String appId, String minVersion, boolean applyIfTelemetryDisabled) {
         FlagValue.ConstrainedValue.Builder constrainedValueBuilder =
                 FlagValue.ConstrainedValue.newBuilder()
                         .setStringValue("Test log flag value " + marker);
@@ -183,6 +185,9 @@ public class CronetUrlRequestContextTest {
         }
         if (minVersion != null) {
             constrainedValueBuilder.setMinVersion(minVersion);
+        }
+        if (applyIfTelemetryDisabled) {
+            constrainedValueBuilder.setApplyEvenIfCronetTelemetryDisabled(applyIfTelemetryDisabled);
         }
         mTestRule
                 .getTestFramework()
@@ -259,9 +264,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreLoaded() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -273,9 +282,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreLoadedFromAPI() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         getHttpFlagsFromAPIWhileExpectingLog(marker);
     }
 
@@ -287,9 +300,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
-        setReadHttpFlagsInManifest(false);
+        setupManifest(/* enableHttpFlags= */ false, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -301,9 +318,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsNotAppliedIfAppIdDoesntMatch() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ "org.chromium.fake.app.id", /* minVersion= */ null);
+        setLogFlag(
+                marker,
+                /* appId= */ "org.chromium.fake.app.id",
+                /* minVersion= */ null,
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -315,12 +336,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAppliedIfAppIdMatches() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setLogFlag(
                 marker,
                 /* appId= */ mTestRule.getTestFramework().getContext().getPackageName(),
-                /* minVersion= */ ImplVersion.getCronetVersion());
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -332,9 +354,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsNotAppliedIfBelowMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ "999999.0.0.0");
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ "999999.0.0.0",
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
     }
 
@@ -345,10 +371,50 @@ public class CronetUrlRequestContextTest {
             reason =
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
-    public void testHttpFlagsAppliedIfAtMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+    public void testHttpFlagsNotAppliedIfTelemetryDisabled() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ false);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ ImplVersion.getCronetVersion());
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
+        runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "HTTP flags are only supported on native Cronet for now. "
+                            + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
+    public void testHttpFlagsAppliedIfTelemetryOverrideIsUsed() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ false);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ true);
+        runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "HTTP flags are only supported on native Cronet for now. "
+                            + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
+    public void testHttpFlagsAppliedIfAtMinVersion() throws Exception {
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ ImplVersion.getCronetVersion(),
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -360,9 +426,13 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testHttpFlagsAppliedIfAboveMinVersion() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
-        setLogFlag(marker, /* appId= */ null, /* minVersion= */ "100.0.0.0");
+        setLogFlag(
+                marker,
+                /* appId= */ null,
+                /* minVersion= */ "100.0.0.0",
+                /* applyIfTelemetryDisabled= */ false);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
     }
 
@@ -401,7 +471,7 @@ public class CronetUrlRequestContextTest {
                     "HTTP flags are only supported on native Cronet for now. "
                             + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
     public void testBaseFeatureFlagsOverridesEnabled() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setChromiumBaseFeatureLogFlag(true, marker);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
@@ -413,7 +483,7 @@ public class CronetUrlRequestContextTest {
             implementations = {CronetImplementation.FALLBACK},
             reason = "HTTP flags are only supported on native Cronet for now")
     public void testBaseFeatureFlagsOverridesDisabled() throws Exception {
-        setReadHttpFlagsInManifest(true);
+        setupManifest(/* enableHttpFlags= */ true, /* enableTelemetry= */ true);
         String marker = UUID.randomUUID().toString();
         setChromiumBaseFeatureLogFlag(false, marker);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ false);

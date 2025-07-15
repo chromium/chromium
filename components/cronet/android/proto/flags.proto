@@ -38,6 +38,22 @@ message FlagValue {
     // If not set, matches all versions. The empty string is not a valid value.
     optional string min_version = 2;
 
+    // If set to true, Cronet will consider this flag value even if telemetry is
+    // disabled. By default, flags are NOT applied if telemetry is disabled, to
+    // avoid "blindly" pushing flags to apps that cannot tell us about
+    // regressions in Cronet metrics.
+    //
+    // Note that in the case of the Cronet API layer, if the app does not
+    // explicitly opt in or out of telemetry through its manifest, then it is
+    // not possible to know in advance if telemetry is going to be enabled or
+    // disabled, because that depends on the source which is not yet known. In
+    // this case, we use a heuristic where we treat telemetry as disabled if the
+    // app happens to bundle native Cronet.
+    //
+    // Note: this field was introduced in July 2025; older versions of Cronet
+    // will not honor this flag, and will behave as if it is set to true.
+    optional bool apply_even_if_cronet_telemetry_disabled = 8;
+
     // If none of these fields are set, the flag is deemed to be unset.
     oneof value {
       bool bool_value = 3;

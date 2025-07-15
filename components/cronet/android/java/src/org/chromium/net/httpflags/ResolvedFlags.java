@@ -40,9 +40,16 @@ public final class ResolvedFlags {
         private final Object mValue;
 
         @Nullable
-        private static Value resolve(FlagValue flagValue, String appId, int[] cronetVersion) {
+        private static Value resolve(
+                FlagValue flagValue,
+                String appId,
+                int[] cronetVersion,
+                boolean isTelemetryEnabled) {
             for (var constrainedValue : flagValue.getConstrainedValuesList()) {
-                if ((constrainedValue.hasAppId() && !constrainedValue.getAppId().equals(appId))
+                if ((!isTelemetryEnabled
+                                && !constrainedValue.getApplyEvenIfCronetTelemetryDisabled())
+                        || (constrainedValue.hasAppId()
+                                && !constrainedValue.getAppId().equals(appId))
                         || (constrainedValue.hasMinVersion()
                                 && !matchesVersion(
                                         cronetVersion,
@@ -196,14 +203,22 @@ public final class ResolvedFlags {
      *     android.content.Context#getPackageName}.
      * @param cronetVersion The version to use for filtering against the {@link
      *     FlagValue.ConstrainedValue#getMinVersion} field.
+     * @param isTelemetryEnabled Whether Cronet telemetry is enabled; used for filtering against the
+     *     {@link FlagValue.ConstrainedValue#getApplyEvenIfCronetTelemetryDisabled} field.
      */
-    public static ResolvedFlags resolve(Flags flags, String appId, String cronetVersion) {
+    public static ResolvedFlags resolve(
+            Flags flags, String appId, String cronetVersion, boolean isTelemetryEnabled) {
         try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet ResolvedFlags#resolve")) {
             int[] parsedCronetVersion = parseVersionString(cronetVersion);
             Map<String, Value> resolvedFlags = new HashMap<>();
             for (var flag : flags.getFlagsMap().entrySet()) {
                 try {
-                    Value value = Value.resolve(flag.getValue(), appId, parsedCronetVersion);
+                    Value value =
+                            Value.resolve(
+                                    flag.getValue(),
+                                    appId,
+                                    parsedCronetVersion,
+                                    isTelemetryEnabled);
                     if (value == null) continue;
                     resolvedFlags.put(flag.getKey(), value);
                 } catch (RuntimeException exception) {

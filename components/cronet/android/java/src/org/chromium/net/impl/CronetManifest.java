@@ -46,7 +46,7 @@ public final class CronetManifest {
     static final String META_DATA_HOLDER_SERVICE_NAME = "android.net.http.MetaDataHolder";
 
     @VisibleForTesting
-    static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
+    public static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
 
     @VisibleForTesting
     public static final String READ_HTTP_FLAGS_META_DATA_KEY = "android.net.http.ReadHttpFlags";
@@ -65,6 +65,30 @@ public final class CronetManifest {
         return getMetaData(context)
                 .getBoolean(
                         ENABLE_TELEMETRY_META_DATA_KEY, /* default= */ telemetryIsDefaultEnabled);
+    }
+
+    /**
+     * Same as above, for the case where the source is not known (e.g. because one has not been
+     * selected yet). If you know the source, use the other method as it gives a more accurate
+     * result.
+     */
+    public static boolean isAppOptedInForTelemetry(Context context) {
+        // Look for in-app native Cronet; if we can find it, assume the app is going to use its own
+        // Cronet, and set the telemetry default to disabled in this case. Note this is merely a
+        // heuristic, as the app could decide to ignore its own Cronet and use one from another
+        // source. But we have no way to know, so we err on the safe side. See also
+        // https://crbug.com/430895740.
+        boolean hasNativeCronet = true;
+        try {
+            Class.forName(
+                    "org.chromium.net.impl.NativeCronetEngineBuilderImpl",
+                    /* initialize= */ false,
+                    CronetManifest.class.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            hasNativeCronet = false;
+        }
+        return getMetaData(context)
+                .getBoolean(ENABLE_TELEMETRY_META_DATA_KEY, /* default= */ !hasNativeCronet);
     }
 
     /**

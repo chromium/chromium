@@ -10,6 +10,7 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetProvider;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.util.Arrays;
 
@@ -32,7 +33,9 @@ public class JavaCronetProvider extends CronetProvider {
     private boolean shouldUseHttpEngine() {
         if (!HttpEngineNativeProvider.isHttpEngineAvailable()) return false;
         var shouldForceHttpEngine =
-                HttpFlagsForImpl.getHttpFlags(mContext).flags().get(FORCE_HTTPENGINE_FLAG);
+                HttpFlagsForImpl.getHttpFlags(mContext, CronetSource.CRONET_SOURCE_FALLBACK)
+                        .flags()
+                        .get(FORCE_HTTPENGINE_FLAG);
         return shouldForceHttpEngine != null && shouldForceHttpEngine.getBoolValue();
     }
 

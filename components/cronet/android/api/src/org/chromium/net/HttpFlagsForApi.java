@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.httpflags.ResolvedFlags;
+import org.chromium.net.impl.CronetManifest;
 
 /**
  * Retrieves httpflags for the current API version.
@@ -24,6 +25,9 @@ final class HttpFlagsForApi {
      */
     public static ResolvedFlags getHttpFlags(Context context) {
         return HttpFlagsLoader.getHttpFlags(
-                context, ApiVersion.getCronetVersion(), /* isLoadedFromApi= */ true);
+                context,
+                ApiVersion.getCronetVersion(),
+                /* isLoadedFromApi= */ true,
+                CronetManifest.isAppOptedInForTelemetry(context));
     }
 }

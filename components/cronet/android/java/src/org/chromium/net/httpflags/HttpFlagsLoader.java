@@ -111,7 +111,7 @@ public final class HttpFlagsLoader {
      * then it will be cached indefinitely.
      */
     public static ResolvedFlags getHttpFlags(
-            Context context, String version, boolean isLoadedFromApi) {
+            Context context, String version, boolean isLoadedFromApi, boolean isTelemetryEnabled) {
         synchronized (sLock) {
             assert (sHttpFlags == null) == (sVersion == null);
             if (sVersion != null && !version.equals(sVersion)) {
@@ -133,7 +133,8 @@ public final class HttpFlagsLoader {
                         ResolvedFlags.resolve(
                                 flags != null ? flags : Flags.newBuilder().build(),
                                 context.getPackageName(),
-                                version);
+                                version,
+                                isTelemetryEnabled);
                 ResolvedFlags.Value logMe = sHttpFlags.flags().get(LOG_FLAG_NAME);
                 if (logMe != null) {
                     Log.i(

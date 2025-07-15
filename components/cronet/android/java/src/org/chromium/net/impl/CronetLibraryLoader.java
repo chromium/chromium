@@ -246,7 +246,9 @@ public class CronetLibraryLoader {
             // likely wouldn't make any difference.
             // Load and initialize httpflags in parallel with Cronet loading
             // as an attempt to alleviate the critical path blocking.
-            HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext());
+            HttpFlagsForImpl.getHttpFlags(
+                    ContextUtils.getApplicationContext(),
+                    NativeCronetEngineBuilderImpl.getCronetSource());
             sHttpFlagsLoaded.open();
             NetworkChangeNotifier.init();
             NetworkChangeNotifier.setAutoDetectConnectivityState(
@@ -301,7 +303,9 @@ public class CronetLibraryLoader {
     @CalledByNative
     private static byte[] getBaseFeatureOverrides() {
         return BaseFeature.getOverrides(
-                        HttpFlagsForImpl.getHttpFlags(ContextUtils.getApplicationContext()))
+                        HttpFlagsForImpl.getHttpFlags(
+                                ContextUtils.getApplicationContext(),
+                                NativeCronetEngineBuilderImpl.getCronetSource()))
                 .toByteArray();
     }
 
