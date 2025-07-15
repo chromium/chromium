@@ -26,15 +26,13 @@ v8::Local<v8::Private> GetPrivatePropertyName(v8::Isolate* isolate,
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo APIBindingBridge::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
                                    v8::Local<v8::Context> context,
                                    v8::Local<v8::Value> api_object,
                                    const ExtensionId& extension_id,
                                    const std::string& context_type)
-    : extension_id_(extension_id), context_type_(context_type) {
+    : extension_id_(extension_id),
+      context_type_(context_type) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();
   v8::Maybe<bool> result = wrapper->SetPrivate(
@@ -54,8 +52,7 @@ APIBindingBridge::~APIBindingBridge() = default;
 
 gin::ObjectTemplateBuilder APIBindingBridge::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<APIBindingBridge>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::Wrappable<APIBindingBridge>::GetObjectTemplateBuilder(isolate)
       .SetMethod("registerCustomHook", &APIBindingBridge::RegisterCustomHook);
 }
 
@@ -106,6 +103,10 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   // removed when that's fixed.
   CHECK(binding::IsContextValid(context));
   JSRunner::Get(context)->RunJSFunction(function, context, args);
+}
+
+const gin::WrapperInfo* APIBindingBridge::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 }  // namespace extensions

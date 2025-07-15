@@ -68,6 +68,8 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
@@ -253,12 +255,13 @@ v8::Local<v8::Object> CreateRootBinding(v8::Local<v8::Context> context,
   v8::Local<v8::Object> binding_object =
       bindings_system->CreateAPIInstance(name, context, &hooks);
 
-  gin::Handle<APIBindingBridge> bridge_handle = gin::CreateHandle(
-      v8::Isolate::GetCurrent(),
-      new APIBindingBridge(hooks, context, binding_object,
-                           script_context->GetExtensionID(),
-                           script_context->GetContextTypeDescription()));
-  v8::Local<v8::Value> native_api_bridge = bridge_handle.ToV8();
+  v8::Isolate* isolate = context->GetIsolate();
+  auto* bridge = cppgc::MakeGarbageCollected<APIBindingBridge>(
+      isolate->GetCppHeap()->GetAllocationHandle(), hooks, context,
+      binding_object, script_context->GetExtensionID(),
+      script_context->GetContextTypeDescription());
+  v8::Local<v8::Value> native_api_bridge =
+      bridge->GetWrapper(isolate).ToLocalChecked();
   script_context->module_system()->OnNativeBindingCreated(name,
                                                           native_api_bridge);
 

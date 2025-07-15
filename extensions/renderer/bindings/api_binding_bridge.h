@@ -17,23 +17,23 @@ class APIBindingHooks;
 // An object that serves as a bridge between the current JS-centric bindings and
 // the new native bindings system. This basically needs to conform to the public
 // methods of the Binding prototype in binding.js.
-class APIBindingBridge final
-    : public gin::DeprecatedWrappable<APIBindingBridge> {
+class APIBindingBridge final : public gin::Wrappable<APIBindingBridge> {
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kAPIBindingBridge};
+
+  APIBindingBridge(const APIBindingBridge&) = delete;
+  APIBindingBridge& operator=(const APIBindingBridge&) = delete;
+
+  // Public for cppgc::MakeGarbageCollected.
   APIBindingBridge(APIBindingHooks* hooks,
                    v8::Local<v8::Context> context,
                    v8::Local<v8::Value> api_object,
                    const ExtensionId& extension_id,
                    const std::string& context_type);
-
-  APIBindingBridge(const APIBindingBridge&) = delete;
-  APIBindingBridge& operator=(const APIBindingBridge&) = delete;
-
   ~APIBindingBridge() override;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
-
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 
@@ -48,6 +48,8 @@ class APIBindingBridge final
   // This should register any hooks that the JS needs for the given API.
   void RegisterCustomHook(v8::Isolate* isolate,
                           v8::Local<v8::Function> function);
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // The id of the extension that owns the context this belongs to.
   ExtensionId extension_id_;
