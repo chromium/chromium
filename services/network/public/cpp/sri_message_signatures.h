@@ -70,7 +70,7 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const net::URLRequest& url_request,
     const network::mojom::URLResponseHead& response,
-    const std::vector<std::string>& expected_public_keys,
+    const std::vector<std::vector<uint8_t>>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer = nullptr,
     const std::string& devtools_request_id = std::string());
 
@@ -79,7 +79,7 @@ MaybeBlockResponseForSRIMessageSignature(
 COMPONENT_EXPORT(NETWORK_CPP)
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest*,
-    const std::vector<std::string>& expected_public_keys);
+    const std::vector<std::vector<uint8_t>>& expected_public_keys);
 
 }  // namespace network
 

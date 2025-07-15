@@ -420,12 +420,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   // This is also called as a side-effect of `SetFetchIntegrity()`.
   void SetExpectedPublicKeys(const IntegrityMetadataSet&);
-
-  // Returns a base64-encoded representation of the expected public keys.
-  //
-  // TODO(407447367): Match the rest of SRI/CSP with a binary representation of
-  // this data (`Vector<uint8_t>`).
-  const WTF::Vector<String>& GetExpectedPublicKeys() const {
+  const WTF::Vector<Vector<uint8_t>>& GetExpectedPublicKeys() const {
     return expected_public_keys_;
   }
 
@@ -770,7 +765,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // Exposed as Request.integrity in Service Workers
   String fetch_integrity_;
   // Public key expectations extracted from `integrity_`
-  WTF::Vector<String> expected_public_keys_;
+  WTF::Vector<Vector<uint8_t>> expected_public_keys_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;

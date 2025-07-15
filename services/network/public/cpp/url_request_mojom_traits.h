@@ -271,7 +271,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.fetch_integrity;
   }
-  static const std::vector<std::string>& expected_public_keys(
+  static const std::vector<std::vector<uint8_t>>& expected_public_keys(
       const network::ResourceRequest& request) {
     return request.expected_public_keys;
   }

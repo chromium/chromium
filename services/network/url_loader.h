@@ -646,7 +646,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const mojom::RequestDestination request_destination_ =
       mojom::RequestDestination::kEmpty;
 
-  const std::vector<std::string> expected_public_keys_;
+  const std::vector<std::vector<uint8_t>> expected_public_keys_;
 
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 

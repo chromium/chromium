@@ -407,16 +407,13 @@ bool ValidateSignatureValue(
 
 bool MatchExpectedPublicKeys(
     mojom::SRIMessageSignaturesPtr& message_signatures,
-    const std::vector<std::string>& expected_public_keys) {
+    const std::vector<std::vector<uint8_t>>& expected_public_keys) {
   if (expected_public_keys.empty()) {
     return true;
   }
-  for (const std::string& key : expected_public_keys) {
+  for (const auto& key : expected_public_keys) {
     for (const auto& signature : message_signatures->signatures) {
-      // TODO(407447367): Store the public keys as binary data (`array<uint8>`)
-      // to avoid this reencoding.
-      if (signature->keyid &&
-          base::Base64Encode(signature->keyid.value()) == key) {
+      if (signature->keyid && signature->keyid.value() == key) {
         return true;
       }
     }
@@ -426,7 +423,10 @@ bool MatchExpectedPublicKeys(
   auto issue = mojom::SRIMessageSignatureIssue::New();
   issue->error =
       mojom::SRIMessageSignatureError::kValidationFailedIntegrityMismatch;
-  issue->integrity_assertions = expected_public_keys;
+  issue->integrity_assertions.emplace();
+  for (const auto& key : expected_public_keys) {
+    issue->integrity_assertions->push_back(base::Base64Encode(key));
+  }
   message_signatures->issues.push_back(std::move(issue));
   return false;
 }
@@ -781,7 +781,7 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const net::URLRequest& url_request,
     const network::mojom::URLResponseHead& response,
-    const std::vector<std::string>& expected_public_keys,
+    const std::vector<std::vector<uint8_t>>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
     const std::string& devtools_request_id) {
   // If the feature is disabled, never block resources.
@@ -816,7 +816,7 @@ MaybeBlockResponseForSRIMessageSignature(
 
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest* request,
-    const std::vector<std::string>& expected_public_keys) {
+    const std::vector<std::vector<uint8_t>>& expected_public_keys) {
   // In order to support request-specific experimentation, we send the
   // `Accept-Signature` header whenever signatures are expected by a request's
   // initiator, regardless of the `features::kSRIMessageSignatureEnforcement`
@@ -827,11 +827,9 @@ void MaybeSetAcceptSignatureHeader(
 
   std::stringstream header;
   int counter = 0;
-  for (const std::string& public_key : expected_public_keys) {
-    // We expect these to be validly base64-encoded Ed25519 public keys:
-    std::optional<std::vector<uint8_t>> decoded =
-        base::Base64Decode(public_key);
-    if (!decoded || decoded->size() != kEd25519KeyLength) {
+  for (const auto& public_key : expected_public_keys) {
+    // We expect these to be valid lengths for Ed25519 public keys:
+    if (public_key.size() != kEd25519KeyLength) {
       continue;
     }
 
@@ -842,7 +840,7 @@ void MaybeSetAcceptSignatureHeader(
       header << ", ";
     }
     header << "sig" << counter << "=(\"unencoded-digest\";sf);keyid=\""
-           << public_key << "\";tag=\"ed25519-integrity\"";
+           << base::Base64Encode(public_key) << "\";tag=\"ed25519-integrity\"";
     ++counter;
   }
   if (header.str().empty()) {

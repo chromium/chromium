@@ -327,8 +327,9 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->redirect_mode = src.GetRedirectMode();
   dest->fetch_integrity = src.GetFetchIntegrity().Utf8();
   dest->expected_public_keys.reserve(src.GetExpectedPublicKeys().size());
-  for (const String& public_key : src.GetExpectedPublicKeys()) {
-    dest->expected_public_keys.push_back(public_key.Utf8());
+  for (const auto& public_key : src.GetExpectedPublicKeys()) {
+    dest->expected_public_keys.emplace_back(public_key.begin(),
+                                            public_key.end());
   }
   if (src.GetWebBundleTokenParams().has_value()) {
     dest->web_bundle_token_params =

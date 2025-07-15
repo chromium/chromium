@@ -475,8 +475,7 @@ void ResourceRequestHead::SetFetchIntegrity(
 void ResourceRequestHead::SetExpectedPublicKeys(
     const IntegrityMetadataSet& metadata) {
   for (const auto& public_key : metadata.public_keys) {
-    expected_public_keys_.push_back(
-        Base64Encode(base::as_byte_span(public_key.value)));
+    expected_public_keys_.push_back(public_key.value);
   }
 }
 
