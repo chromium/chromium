@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -152,6 +153,7 @@ public class MultiWindowIntegrationTest {
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
     })
+    @DisabledTest(message = "crbug.com/432308780")
     public void testMovingLastTabKeepsActivityAlive() {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return;
