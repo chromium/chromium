@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "bwg_settings_mutator.h",
     "bwg_settings_view_controller.h",
     "bwg_settings_view_controller.mm",
   ]

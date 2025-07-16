@@ -6,6 +6,8 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_mutator.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -101,6 +103,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 #pragma mark - Private
 
+// TODO(crbug.com/427226904): Convert to different TableViewItem that uses
+// attributed text.
 - (TableViewMultiDetailTextItem*)detailItemWithType:(NSInteger)type
                                                text:(NSString*)text
                                          detailText:(NSString*)detailText
@@ -119,6 +123,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   return detailItem;
 }
 
+// TODO(crbug.com/427226904): Convert to different TableViewItem that uses
+// attributed text.
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)title
                                 detailText:(NSString*)detailText
