@@ -40,6 +40,12 @@ namespace WTF {
 int* const CountCopy::kDeletedValue =
     reinterpret_cast<int*>(static_cast<uintptr_t>(-1));
 
+}  // namespace WTF
+namespace blink {
+
+using WTF::Dummy;
+using WTF::DummyRefCounted;
+
 namespace {
 
 TEST(HashSetTest, IteratorComparison) {
@@ -494,4 +500,4 @@ static_assert(!IsTraceable<HashSet<int>>::value,
 
 }  // anonymous namespace
 
-}  // namespace WTF
+}  // namespace blink

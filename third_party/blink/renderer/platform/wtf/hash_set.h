@@ -37,7 +37,7 @@
 // mark the file to ignore instead.
 GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
 
-namespace WTF {
+namespace blink {
 
 struct IdentityExtractor;
 
@@ -48,7 +48,7 @@ struct IdentityExtractor;
 // See hash_traits.h for how to define hash traits.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = WTF::PartitionAllocator>
 class HashSet {
   USE_ALLOCATOR(HashSet, Allocator);
 
@@ -385,10 +385,11 @@ inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
   return Take(begin());
 }
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::HashSet;
 }  // namespace blink
+
+// TODO(crbug.com/422768753): Remove this `using` directive.
+namespace WTF {
+using blink::HashSet;
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_SET_H_
