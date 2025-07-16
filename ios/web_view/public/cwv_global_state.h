@@ -17,7 +17,7 @@ CWV_EXPORT
 @interface CWVEarlyInitFlags : NSObject
 
 // Set to `YES` to enable the autofill across iframes feature.
-@property(nonatomic, readonly) BOOL autofillAcrossIframesEnabled;
+@property(nonatomic, readwrite) BOOL autofillAcrossIframesEnabled;
 
 @end
 
