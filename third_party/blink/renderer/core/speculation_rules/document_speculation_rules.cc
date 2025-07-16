@@ -76,6 +76,8 @@ String SpeculationActionAsString(mojom::blink::SpeculationAction action) {
     case mojom::blink::SpeculationAction::kPrefetch:
     case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
       return "prefetch";
+    case mojom::blink::SpeculationAction::kPrerenderUntilScript:
+      return "prerender-until-script";
     case mojom::blink::SpeculationAction::kPrerender:
       return "prerender";
   }
@@ -674,7 +676,8 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
 
         // Ensured by `SpeculationRuleSet`.
         CHECK(!rule->target_browsing_context_name_hint() ||
-              action == mojom::blink::SpeculationAction::kPrerender);
+              action == mojom::blink::SpeculationAction::kPrerender ||
+              action == mojom::blink::SpeculationAction::kPrerenderUntilScript);
         CHECK(!rule->requires_anonymous_client_ip_when_cross_origin() ||
               action == mojom::blink::SpeculationAction::kPrefetch);
 
@@ -720,6 +723,10 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     push_candidates(mojom::blink::SpeculationAction::kPrerender, rule_set,
                     rule_set->prerender_rules());
 
+    if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled()) {
+      push_candidates(mojom::blink::SpeculationAction::kPrerenderUntilScript,
+                      rule_set, rule_set->prerender_until_script_rules());
+    }
     // Set the flag to evict the cached data of Session Storage when the
     // document is frozen or unload to avoid reusing old data in the cache
     // after the session storage has been modified by another renderer process.
@@ -843,7 +850,9 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                 mojom::blink::SpeculationTargetHint::kNoHint;
             if (RuntimeEnabledFeatures::SpeculationRulesTargetHintEnabled(
                     execution_context) &&
-                action == mojom::blink::SpeculationAction::kPrerender) {
+                (action == mojom::blink::SpeculationAction::kPrerender ||
+                 action ==
+                     mojom::blink::SpeculationAction::kPrerenderUntilScript)) {
               if (rule->target_browsing_context_name_hint()) {
                 target_hint = rule->target_browsing_context_name_hint().value();
               } else {
@@ -892,6 +901,12 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
 
       push_link_candidates(mojom::blink::SpeculationAction::kPrerender,
                            rule_set, rule_set->prerender_rules());
+
+      if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled()) {
+        push_link_candidates(
+            mojom::blink::SpeculationAction::kPrerenderUntilScript, rule_set,
+            rule_set->prerender_until_script_rules());
+      }
     }
 
     if (!link_candidates->empty()) {

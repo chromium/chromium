@@ -75,6 +75,8 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
                            candidate_ptr->target_browsing_context_name_hint));
         break;
       case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      // TODO(https://crbug.com/428500219): Implement this.
+      case blink::mojom::SpeculationAction::kPrerenderUntilScript:
         NOTIMPLEMENTED_LOG_ONCE();
     };
   }

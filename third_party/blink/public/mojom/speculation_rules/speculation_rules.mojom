@@ -22,19 +22,28 @@ interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
   UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
+
   // Called when LCP is predicted.
   OnLCPPredicted();
+
   // Initiates previewing the given `url`.
   // TODO(https://b/292184832): Give more hints, such as gfx.mjom.PointF
   // screen_position.
   InitiatePreview(url.mojom.Url url);
 };
 
-// The action that is proposed.
+// The action that is proposed. The actions can be executed in a pipeline-like
+// way: prefetch -> prerender-until-script -> prerender.
+// TODO(https://crbug.com/428500219): Reorder after kPrefetchWithSubresources is
+// deprecated.
 enum SpeculationAction {
   kPrefetch,
+  // TODO(https://crbug.com/428500219): This action will be meaningless once the
+  // prerender-until-script feature is launched. Remove this action at that
+  // time.
   kPrefetchWithSubresources,
   kPrerender,
+  kPrerenderUntilScript,
 };
 
 // The target hint that is proposed.
@@ -58,9 +67,9 @@ enum SpeculationEagerness {
 
 // Specifies the way in which speculation rules were injected.
 enum SpeculationInjectionType {
-  kNone,                  // Not injected, i.e., statically-inserted script tags.
-  kMainWorldScript,       // Injected by main V8 world's script.
-  kIsolatedWorldScript,   // Injected by an isolated V8 world's script.
+  kNone,  // Not injected, i.e., statically-inserted script tags.
+  kMainWorldScript,  // Injected by main V8 world's script.
+  kIsolatedWorldScript,  // Injected by an isolated V8 world's script.
   kAutoSpeculationRules,  // Injected by the browser as part of the auto speculation rules feature.
 };
 
@@ -92,7 +101,8 @@ struct SpeculationCandidate {
   SpeculationEagerness eagerness = kConservative;
 
   // The expected No-Vary-Search header if specified.
-  // Explainer: https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
+  // Explainer:
+  // https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
   network.mojom.NoVarySearch? no_vary_search_hint;
 
   // The way in which the speculation rules were injected.
@@ -101,7 +111,8 @@ struct SpeculationCandidate {
   // A list of string tags which are associated with the speculation candidate,
   // and it is optional as both null and empty are valid values. Null and empty
   // string will be stored as they are into the vector.
-  // Explainer: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+  // Explainer:
+  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
   //
   // Mapping:
   // - An empty string tag is represented as
