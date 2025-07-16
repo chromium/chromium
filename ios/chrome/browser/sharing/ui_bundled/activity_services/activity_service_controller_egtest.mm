@@ -24,6 +24,11 @@
 #import "ios/web/public/test/http_server/response_provider.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+// The text of the Share Sheet item for the Open Extension.
+NSString* const kEGOpenExtension = @"EGOpenExtension";
+}  // namespace
+
 // Earl grey integration tests for Activity Service Controller.
 @interface ActivityServiceControllerTestCase : WebHttpServerChromeTestCase
 @end
@@ -81,9 +86,25 @@
                 : more_button_1;
         [more_button tap];
       }
-    }
 
-    [ChromeEarlGrey tapButtonInActivitySheetWithID:@"EGOpenExtension"];
+      // TODO(crbug.com/432223861): Revisit using
+      // `tapButtonInActivitySheetWithID` if it can be fixed to work better on
+      // iOS 26, or if Apple fixes a bug that caused the item to not be
+      // hittable.
+      [ChromeEarlGrey verifyTextVisibleInActivitySheetWithID:kEGOpenExtension];
+      XCUIElement* button = app.otherElements[@"ActivityListView"]
+                                .staticTexts[kEGOpenExtension]
+                                .firstMatch;
+      // Tap the coordinates of the center of the button instead of calling
+      // `[button tap]`. This avoids an issue where calling `tap` on the button
+      // might cause it to try to scroll to the button and inadvertently cause
+      // the button in question to become not hittable.
+      XCUICoordinate* buttonCenter =
+          [button coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+      [buttonCenter tap];
+    } else {
+      [ChromeEarlGrey tapButtonInActivitySheetWithID:kEGOpenExtension];
+    }
 
     GREYCondition* tabCountCheck =
         [GREYCondition conditionWithName:@"Tab count"
