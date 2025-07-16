@@ -1603,7 +1603,8 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   if (same_document) {
     params->origin = current_rfh->GetLastCommittedOrigin();
   } else {
-    params->origin = origin_.value_or(request_->GetOriginToCommit().value());
+    params->origin =
+        origin_.value_or(request_->commit_params().origin_to_commit);
   }
 
   if (same_document) {

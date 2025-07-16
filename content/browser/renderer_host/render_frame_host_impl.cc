@@ -14908,6 +14908,15 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     }
   }
 
+  // TODO(https://crbug.com/402272788): Remove `origin` from DidCommitParams,
+  // making this check unnecessary.
+  if (navigation_request &&
+      navigation_request->commit_params().origin_to_commit != params->origin) {
+    bad_message::ReceivedBadMessage(process,
+                                    bad_message::RFH_ORIGIN_TO_COMMIT_MISMATCH);
+    return false;
+  }
+
   return true;
 }
 

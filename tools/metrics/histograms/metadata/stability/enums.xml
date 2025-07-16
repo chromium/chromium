@@ -494,6 +494,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="326" label="MSDH_DISABLED_FEATURE_IS_SET"/>
   <int value="327" label="RFH_SAME_DOC_INSECURE_REQUEST_POLICY_CHANGE"/>
   <int value="328" label="RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE"/>
+  <int value="329" label="RFH_ORIGIN_TO_COMMIT_MISMATCH"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
