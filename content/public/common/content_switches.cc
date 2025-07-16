@@ -797,10 +797,6 @@ const char kUtilityStartupDialog[] = "utility-startup-dialog";
 // it easier to identify the purpose of the utility process.
 const char kUtilitySubType[] = "utility-sub-type";
 
-// Crash the Utility process early in start-up, for testing.
-const char kUtilityImmediateCrashForTesting[] =
-    "utility-immediate-crash-for-testing";
-
 // Causes tests to attempt to verify pixel output.
 const char kVerifyPixels[] = "browser-ui-tests-verify-pixels";
 

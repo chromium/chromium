@@ -76,20 +76,6 @@ constexpr std::string_view kTestMessage{"hello from shared memory"};
 class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
                                       public ContentBrowserTest {
  public:
-  class Client : public UtilityProcessHost::Client {
-   public:
-    explicit Client(UtilityProcessHostBrowserTest* test_class)
-        : test_class_(test_class) {}
-
-    // content::UtilityProcessHost::Client implementation:
-    void OnProcessCrashed(CrashType type) override {
-      test_class_->crash_was_pre_ipc_ =
-          (type == CrashType::kPreIpcInitialization);
-    }
-
-   private:
-    raw_ptr<UtilityProcessHostBrowserTest> test_class_;
-  };
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     BrowserChildProcessObserver::Add(this);
@@ -139,8 +125,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     options.WithBoundServiceInterfaceOnChildProcess(
         service_.BindNewPipeAndPassReceiver());
 
-    UtilityProcessHost::Start(std::move(options),
-                              std::make_unique<Client>(this));
+    UtilityProcessHost::Start(std::move(options));
 
     std::move(run_test).Run();
     run_loop.Run();
@@ -227,10 +212,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   // Access on UI thread.
   bool has_crashed_ = false;
   bool has_failed_launch_ = false;
-  std::optional<bool> crash_was_pre_ipc_;
 
  private:
-  friend Client;
   // content::BrowserChildProcessObserver implementation:
   void BrowserChildProcessKilled(
       const ChildProcessData& data,
@@ -384,8 +367,6 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
       DefaultOptions(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunCrashImmediatelyTest,
                      base::Unretained(this)));
-  ASSERT_TRUE(crash_was_pre_ipc_.has_value());
-  EXPECT_FALSE(crash_was_pre_ipc_.value());
 }
 #endif
 
@@ -405,27 +386,10 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, FailToLaunchProcess) {
       std::move(options),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
                      base::Unretained(this)));
-  // Fail to launch is not considered a crash.
-  ASSERT_FALSE(crash_was_pre_ipc_.has_value());
 }
 #endif  // !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-
-IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
-                       FailToStartNetworkProcess) {
-  expect_crashed_ = true;
-  RunUtilityProcess(
-      DefaultOptions()
-          .WithSandboxType(sandbox::mojom::Sandbox::kNetwork)
-          .WithExtraCommandLineSwitches(
-              {switches::kUtilityImmediateCrashForTesting})
-          .Pass(),
-      base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
-                     base::Unretained(this)));
-  EXPECT_TRUE(*crash_was_pre_ipc_);
-}
-
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
   RunUtilityProcess(
       DefaultOptions()
@@ -450,8 +414,6 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
           .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunCrashImmediatelyTest,
                      base::Unretained(this)));
-  EXPECT_TRUE(crash_was_pre_ipc_.has_value());
-  EXPECT_FALSE(crash_was_pre_ipc_.value());
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -29,10 +29,6 @@
 #include "content/public/common/zygote/zygote_handle.h"
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
-#if BUILDFLAG(IS_WIN)
-#include "base/synchronization/waitable_event.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace base {
 class Thread;
 }  // namespace base
@@ -64,30 +60,11 @@ class CONTENT_EXPORT UtilityProcessHost
   // methods are called from the IO thread.
   class Client {
    public:
-    enum class CrashType {
-      // Indicates this crash occurred very early in process lifetime, before
-      // UtilityMain was able to execute and fully lock down the sandbox or
-      // start IPC. It typically indicates a critical failure to bootstrap the
-      // sandbox or OS services (e.g. a loader issue). No untrusted data has yet
-      // been processed by the utility process at this point so it is safe to
-      // assume that the crash is not attacker controlled. This type of crash is
-      // only reported on Windows.
-      kPreIpcInitialization,
-      // Indicates the crash occurred after IPC was initialized and service(s)
-      // have started running in the process and started processing potentially
-      // untrusted data.
-      kPostIpcInitialization,
-    };
-    virtual ~Client() = default;
+    virtual ~Client() {}
 
-    // Called when the OS has reported that the process has successfully
-    // launched.
     virtual void OnProcessLaunched(const base::Process& process) {}
-    // Called when the process has terminated normally.
     virtual void OnProcessTerminatedNormally() {}
-    // Called when the process has terminated due to a crash. The `type` field
-    // indicates the type of crash. See above.
-    virtual void OnProcessCrashed(CrashType type) {}
+    virtual void OnProcessCrashed() {}
   };
 
   struct CONTENT_EXPORT Options {
@@ -252,13 +229,6 @@ class CONTENT_EXPORT UtilityProcessHost
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
   std::unique_ptr<Client> client_;
-
-#if BUILDFLAG(IS_WIN)
-  // An event that is passed to the utility process. Only set for sandboxed
-  // processes. The utility process uses this to signal that it has reached
-  // UtilityMain.
-  std::optional<base::WaitableEvent> bootstrap_signal_event_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace content

@@ -5,12 +5,9 @@
 #include "content/browser/service_host/utility_sandbox_delegate.h"
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/win/windows_handle_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -229,6 +226,23 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
   return true;
 }
 
+// Adds preload-libraries to the delegate blob for utility_main() to access
+// before lockdown is initialized.
+void AddDelegateData(sandbox::TargetPolicy* policy,
+                     std::vector<base::FilePath>& preload_libraries) {
+  if (preload_libraries.empty()) {
+    return;
+  }
+  auto sandbox_config = content::mojom::sandbox::UtilityConfig::New();
+  for (const auto& library_path : preload_libraries) {
+    sandbox_config->preload_libraries.push_back(library_path);
+  }
+
+  std::vector<uint8_t> blob =
+      content::mojom::sandbox::UtilityConfig::Serialize(&sandbox_config);
+  policy->AddDelegateData(blob);
+}
+
 }  // namespace
 
 std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
@@ -415,31 +429,7 @@ bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  AddDelegateData(policy);
+  AddDelegateData(policy, preload_libraries_);
   return SandboxedProcessLauncherDelegate::PreSpawnTarget(policy);
-}
-
-void UtilitySandboxedProcessLauncherDelegate::SetBootstrapStatusEvent(
-    const base::WaitableEvent& event) {
-  event_handle_to_inherit_.emplace(event.handle());
-}
-
-void UtilitySandboxedProcessLauncherDelegate::AddDelegateData(
-    sandbox::TargetPolicy* policy) {
-  auto sandbox_config = content::mojom::sandbox::UtilityConfig::New();
-
-  for (const auto& library_path : preload_libraries_) {
-    sandbox_config->preload_libraries.push_back(library_path);
-  }
-
-  if (event_handle_to_inherit_) {
-    sandbox_config->bootstrap_event_handle =
-        base::win::HandleToUint32(*event_handle_to_inherit_);
-    policy->AddHandleToShare(*event_handle_to_inherit_);
-  }
-
-  std::vector<uint8_t> blob =
-      content::mojom::sandbox::UtilityConfig::Serialize(&sandbox_config);
-  policy->AddDelegateData(blob);
 }
 }  // namespace content

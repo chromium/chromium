@@ -9,7 +9,6 @@
 #include "base/debug/alias.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
-#include "base/immediate_crash.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
@@ -107,10 +106,8 @@
 #include "base/native_library.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "content/utility/sandbox_delegate_data.mojom.h"
 #include "sandbox/policy/win/sandbox_warmup.h"
@@ -204,15 +201,6 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       }
     }
   }
-
-  HANDLE event =
-      base::win::Uint32ToHandle(sandbox_config->bootstrap_event_handle);
-
-  CHECK(event && event != INVALID_HANDLE_VALUE);
-  CHECK(::SetEvent(event));
-  // Close handle to ensure nothing can reset it after sandbox lockdown.
-  CHECK(::CloseHandle(event));
-
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -233,11 +221,6 @@ void SetUtilityThreadName(const std::string& utility_sub_type) {
 
 // Mainline routine for running as the utility process.
 int UtilityMain(MainFunctionParams parameters) {
-  if (parameters.command_line->HasSwitch(
-          switches::kUtilityImmediateCrashForTesting)) {
-    base::ImmediateCrash();
-  }
-
   base::MessagePumpType message_pump_type =
       parameters.command_line->HasSwitch(switches::kMessageLoopTypeUi)
           ? base::MessagePumpType::UI

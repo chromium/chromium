@@ -75,7 +75,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/synchronization/waitable_event.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "media/capture/capture_switches.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
@@ -532,12 +531,6 @@ bool UtilityProcessHost::StartProcess() {
   if (!options_.preload_libraries_.empty()) {
     delegate->SetPreloadLibraries(options_.preload_libraries_);
   }
-
-  // Not possible to transfer the event for an unsandboxed process.
-  if (!sandbox::policy::IsUnsandboxedSandboxType(options_.sandbox_type_)) {
-    delegate->SetBootstrapStatusEvent(bootstrap_signal_event_.emplace());
-  }
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -571,17 +564,7 @@ void UtilityProcessHost::OnProcessCrashed(int exit_code) {
   // Take ownership of |client_| so the destructor doesn't notify it of
   // termination.
   auto client = std::move(client_);
-
-  Client::CrashType type = Client::CrashType::kPostIpcInitialization;
-
-#if BUILDFLAG(IS_WIN)
-  if (bootstrap_signal_event_) {
-    type = bootstrap_signal_event_->IsSignaled()
-               ? Client::CrashType::kPostIpcInitialization
-               : Client::CrashType::kPreIpcInitialization;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-  client->OnProcessCrashed(type);
+  client->OnProcessCrashed();
 }
 
 std::optional<std::string> UtilityProcessHost::GetServiceName() {
