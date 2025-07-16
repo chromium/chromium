@@ -707,10 +707,6 @@ BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
              "NoVarySearchIgnoreUnrecognizedKeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid,
-             "EncryptedAndPlaintextValuesAreInvalid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableStaticCTAPIEnforcement,
              "EnableStaticCTAPIEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);

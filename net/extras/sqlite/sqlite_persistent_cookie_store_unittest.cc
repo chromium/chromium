@@ -2305,25 +2305,12 @@ class SQLitePersistentCookieStorev24UpgradeTest
       public ::testing::WithParamInterface<
           std::tuple</*crypto_for_encrypt*/ bool,
                      /*crypto_for_decrypt*/ bool,
-                     /*place_unencrypted_too*/ bool,
-                     /*kEncryptedAndPlaintextValuesAreInvalid*/ bool>> {
- protected:
-  void SetUp() override {
-    features_.InitWithFeatureState(
-        features::kEncryptedAndPlaintextValuesAreInvalid,
-        std::get<3>(GetParam()));
-    SQLitePersistentCookieStoreTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
+                     /*place_unencrypted_too*/ bool>> {};
 
 TEST_P(SQLitePersistentCookieStorev24UpgradeTest, UpgradeToSchemaVersion24) {
   const bool crypto_for_encrypt = std::get<0>(GetParam());
   const bool crypto_for_decrypt = std::get<1>(GetParam());
   const bool place_unencrypted_too = std::get<2>(GetParam());
-  const bool drop_dup_values = std::get<3>(GetParam());
 
   const base::FilePath database_path =
       temp_dir_.GetPath().Append(kCookieFilename);
@@ -2367,7 +2354,7 @@ TEST_P(SQLitePersistentCookieStorev24UpgradeTest, UpgradeToSchemaVersion24) {
       // and above) with both plaintext and encrypted values is tested in the
       // `OverridePlaintextValue` test below.
       const base::Histogram::Sample32 expected_bucket =
-          drop_dup_values && place_unencrypted_too
+          place_unencrypted_too
               ? /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8
               : /*CookieLoadProblem::kNoCrypto*/ 7;
       histogram_tester.ExpectBucketCount("Cookie.LoadProblem", expected_bucket,
@@ -2388,7 +2375,6 @@ TEST_P(SQLitePersistentCookieStorev24UpgradeTest, UpgradeToSchemaVersion24) {
 INSTANTIATE_TEST_SUITE_P(,
                          SQLitePersistentCookieStorev24UpgradeTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool()));
 
@@ -2933,34 +2919,12 @@ TEST_F(SQLitePersistentCookieStoreTest, NoCryptoForDecryption) {
   }
 }
 
-class SQLitePersistentCookieStoreTestWithDropDupDataFeature
-    : public ::testing::WithParamInterface<
-          /*features::kEncryptedAndPlaintextValuesAreInvalid*/ bool>,
-      public SQLitePersistentCookieStoreTest {
- public:
-  void SetUp() override {
-    features_.InitWithFeatureState(
-        features::kEncryptedAndPlaintextValuesAreInvalid,
-        IsDroppingCookiesEnabled());
-    SQLitePersistentCookieStoreTest::SetUp();
-  }
-
- protected:
-  bool IsDroppingCookiesEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
 // This test verifies that if a plaintext value is in the store (e.g. written in
 // manually, or crypto was at some point not available in the past) and crypto
 // is now available, it can still be read fine, including if the value is empty.
 // It also tests the case where both a plaintext and encrypted value exist,
-// where the encrypted value should always take precedence except if
-// kEncryptedAndPlaintextValuesAreInvalid is enabled, in which case the cookie
-// is dropped.
-TEST_P(SQLitePersistentCookieStoreTestWithDropDupDataFeature,
-       OverridePlaintextValue) {
+// in which case the cookie should be dropped.
+TEST_F(SQLitePersistentCookieStoreTest, OverridePlaintextValue) {
   {
     CreateAndLoad(/*crypt_cookies=*/true,
                   /*restore_old_session_cookies=*/false);
@@ -3013,9 +2977,8 @@ TEST_P(SQLitePersistentCookieStoreTestWithDropDupDataFeature,
     histogram_tester.ExpectBucketCount("Cookie.EncryptedAndPlaintextValues",
                                        true, 1);
 
-    // Third cookie (example3.com) should be dropped if
-    // kEncryptedAndPlaintextValuesAreInvalid is enabled.
-    ASSERT_EQ(cookies.size(), IsDroppingCookiesEnabled() ? 2u : 3u);
+    // Third cookie (example3.com) should be dropped.
+    ASSERT_EQ(cookies.size(), 2u);
     // Cookie should load fine since it's been modified by writing plaintext and
     // clearing ciphertext.
     EXPECT_EQ(cookies[0]->Domain(), "example.com");
@@ -3025,29 +2988,12 @@ TEST_P(SQLitePersistentCookieStoreTestWithDropDupDataFeature,
     EXPECT_EQ(cookies[1]->Name(), "C");
     EXPECT_TRUE(cookies[1]->Value().empty());
 
-    if (IsDroppingCookiesEnabled()) {
-      // Cookie should be dropped and a metric recorded.
-      histogram_tester.ExpectBucketCount(
-          "Cookie.LoadProblem",
-          /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8, 1u);
-    } else {
-      // If the kEncryptedAndPlaintextValuesAreInvalid feature is disabled (and
-      // the cookie was not dropped) then the final cookie should always use the
-      // encrypted value and not the plaintext value.
-      EXPECT_EQ(cookies[2]->Domain(), "example3.com");
-      EXPECT_EQ(cookies[2]->Name(), "E");
-      EXPECT_EQ(cookies[2]->Value(), "F");
-      histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
-    }
+    // Cookie should be dropped and a metric recorded.
+    histogram_tester.ExpectBucketCount(
+        "Cookie.LoadProblem",
+        /*CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext*/ 8, 1u);
     DestroyStore();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SQLitePersistentCookieStoreTestWithDropDupDataFeature,
-                         ::testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "Enabled" : "Disabled";
-                         });
 
 }  // namespace net

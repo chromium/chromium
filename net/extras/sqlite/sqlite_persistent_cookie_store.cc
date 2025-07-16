@@ -1037,16 +1037,11 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     UMA_HISTOGRAM_BOOLEAN("Cookie.EncryptedAndPlaintextValues",
                           encrypted_and_plaintext_values);
 
-    // Ensure feature is fully activated for all users who load cookies, before
-    // checking the validity of the row.
-    if (base::FeatureList::IsEnabled(
-            features::kEncryptedAndPlaintextValuesAreInvalid)) {
-      if (encrypted_and_plaintext_values) {
-        RecordCookieLoadProblem(
-            CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext);
-        ok = false;
-        continue;
-      }
+    if (encrypted_and_plaintext_values) {
+      RecordCookieLoadProblem(
+          CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext);
+      ok = false;
+      continue;
     }
 
     if (!encrypted_value.empty()) {
