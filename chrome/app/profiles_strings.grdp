@@ -974,6 +974,10 @@
       desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
       Save your bookmarks and more with sync
     </message>
+    <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS"
+      desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
+      Store your passwords, bookmarks, and more
+    </message>
     <if expr="not use_titlecase">
       <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
         Don't sign in
