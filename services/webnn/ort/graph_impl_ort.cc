@@ -11,6 +11,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/context_impl_ort.h"
+#include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/external_weights_manager.h"
 #include "services/webnn/ort/model_editor.h"
 #include "services/webnn/ort/ort_status.h"
@@ -54,7 +55,7 @@ ToNamedBufferStates(
 class GraphImplOrt::ComputeResources {
  public:
   ComputeResources(
-      ScopedOrtEnv env,
+      scoped_refptr<Environment> env,
       std::unique_ptr<ExternalWeightsManager> external_weights_manager,
       ScopedOrtSession session,
       base::flat_map<std::string, std::string>
@@ -110,8 +111,8 @@ class GraphImplOrt::ComputeResources {
 
   // `env_` should be prior to `session_`. That ensures releasing `env_` after
   // releasing the session. This avoids unloading the providers DLLs being
-  // used during `session_` destruction.
-  ScopedOrtEnv env_;
+  // used during `session` destruction.
+  scoped_refptr<Environment> env_;
   // `external_weights_manager_` should be prior to `session_` since it will be
   // called by ORT to release the external weights during `session_`
   // destruction.
@@ -135,11 +136,11 @@ void GraphImplOrt::CreateAndBuild(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), context->session_options(),
-                     context->properties(), std::move(constant_operands),
-                     context->is_external_data_supported(),
-                     std::move(scoped_trace)),
+      base::BindOnce(
+          &GraphImplOrt::CreateAndBuildOnBackgroundThread,
+          std::move(graph_info), context->session_options(), context->env(),
+          context->properties(), std::move(constant_operands),
+          context->is_external_data_supported(), std::move(scoped_trace)),
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
                      context->AsWeakPtr(), std::move(compute_resource_info),
                      std::move(callback)));
@@ -150,6 +151,7 @@ base::expected<std::unique_ptr<GraphImplOrt::ComputeResources>, mojom::ErrorPtr>
 GraphImplOrt::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     scoped_refptr<SessionOptions> session_options,
+    scoped_refptr<Environment> env,
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
@@ -162,26 +164,12 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
           *graph_info, std::move(context_properties),
           std::move(constant_operands), is_external_data_supported));
 
-  scoped_trace.AddStep("Initializing ORT");
-  // `CreateEnv()` will increase the reference count and return the reference of
-  // the existing `OrtEnv` instance that is created by context provider. `env`
-  // will be owned by `GraphImplOrt::Session` that ensures releasing `OrtEnv`
-  // reference after releasing `OrtSession`.
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  ScopedOrtEnv env;
-  if (ORT_CALL_FAILED(ort_api->CreateEnv(ORT_LOGGING_LEVEL_ERROR, "WebNN",
-                                         ScopedOrtEnv::Receiver(env).get()))) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create the ONNX Runtime environment."));
-  }
-
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;
   const OrtModelEditorApi* ort_model_editor_api =
       PlatformFunctions::GetInstance()->ort_model_editor_api();
   if (ORT_CALL_FAILED(ort_model_editor_api->CreateSessionFromModel(
-          env.get(), model_info->model.get(), session_options->get(),
+          env->get(), model_info->model.get(), session_options->get(),
           ScopedOrtSession::Receiver(session).get()))) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create session."));

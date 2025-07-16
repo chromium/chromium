@@ -4,7 +4,6 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
-#include "base/notimplemented.h"
 #include "services/webnn/ort/buffer_content_ort.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
@@ -23,16 +22,16 @@ ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    ScopedOrtEnv env,
-    scoped_refptr<SessionOptions> session_options,
-    bool is_external_data_supported)
+    scoped_refptr<Environment> env,
+    scoped_refptr<SessionOptions> session_options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
                        std::move(options)),
       env_(std::move(env)),
       session_options_(std::move(session_options)),
-      is_external_data_supported_(is_external_data_supported) {}
+      is_external_data_supported_(
+          env_->IsExternalDataSupported(this->options().device)) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 

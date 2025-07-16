@@ -27,6 +27,7 @@ class WebNNConstantOperand;
 namespace ort {
 
 class ContextImplOrt;
+class Environment;
 class SessionOptions;
 
 // GraphImplOrt inherits from WebNNGraphImpl to represent an ORT graph
@@ -62,6 +63,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
   CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       scoped_refptr<SessionOptions> session_options,
+      scoped_refptr<Environment> env,
       ContextProperties context_properties,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,

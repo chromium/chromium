@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/webnn_types.h"
@@ -25,9 +26,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 ScopedOrtEnv env,
-                 scoped_refptr<SessionOptions> session_options,
-                 bool is_external_data_supported);
+                 scoped_refptr<Environment> env,
+                 scoped_refptr<SessionOptions> session_options);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -38,6 +38,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
   static ContextProperties GetContextProperties();
+
+  scoped_refptr<Environment> env() const { return env_; }
 
   scoped_refptr<SessionOptions> session_options() const {
     return session_options_;
@@ -62,8 +64,7 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
-  // It is sequence bound.
-  ScopedOrtEnv env_;
+  scoped_refptr<Environment> env_;
 
   // The session options are shared among all the sessions created by this
   // context.
