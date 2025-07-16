@@ -77,8 +77,6 @@ void KioskArcvmAppData::SetCache(const std::string& name,
 }
 
 void KioskArcvmAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
-  kiosk_app_icon_loader_.reset();
-
   if (!icon.has_value()) {
     LOG(ERROR) << "Icon Load Failure";
     return;

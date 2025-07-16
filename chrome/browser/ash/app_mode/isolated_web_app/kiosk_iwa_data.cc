@@ -152,7 +152,6 @@ bool KioskIwaData::LoadFromCache() {
 
 void KioskIwaData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  kiosk_app_icon_loader_.reset();
 
   if (!icon.has_value()) {
     LOG(ERROR) << "Kiosk IWA icon load failure";

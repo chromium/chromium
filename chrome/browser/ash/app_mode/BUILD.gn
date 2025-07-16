@@ -119,7 +119,6 @@ static_library("app_mode") {
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/app_mode",
-    "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",

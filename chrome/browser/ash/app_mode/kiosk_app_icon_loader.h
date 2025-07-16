@@ -18,22 +18,27 @@ class FilePath;
 namespace ash {
 
 // Loads locally stored icon data and decodes it.
+// New instance should be created for each request.
 class KioskAppIconLoader {
  public:
   using ResultCallback =
       base::OnceCallback<void(std::optional<gfx::ImageSkia>)>;
 
-  explicit KioskAppIconLoader(ResultCallback delegate);
+  KioskAppIconLoader();
   KioskAppIconLoader(const KioskAppIconLoader&) = delete;
   KioskAppIconLoader& operator=(const KioskAppIconLoader&) = delete;
   ~KioskAppIconLoader();
 
-  void Start(const base::FilePath& icon_path);
+  // Starts loading `icon_path` then decoding the icon.
+  // `callback` is called with nullopt on error.
+  // `callback` will not be called when `this` is deleted earlier.
+  void Start(const base::FilePath& icon_path, ResultCallback callback);
 
  private:
-  void OnImageDecodingFinished(std::optional<gfx::ImageSkia> result);
+  void OnImageDecoded(ResultCallback callback,
+                      std::optional<gfx::ImageSkia> result);
 
-  ResultCallback callback_;
+  bool started_ = false;
 
   base::WeakPtrFactory<KioskAppIconLoader> weak_factory_{this};
 };

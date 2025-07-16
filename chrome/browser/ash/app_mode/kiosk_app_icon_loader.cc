@@ -10,88 +10,77 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ipc/ipc_channel.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 
 using content::BrowserThread;
 
 namespace ash {
 
-class IconImageRequest : public ImageDecoder::ImageRequest {
- public:
-  IconImageRequest(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-                   KioskAppIconLoader::ResultCallback result_callback)
-      : ImageRequest(task_runner),
-        result_callback_(std::move(result_callback)) {}
+namespace {
 
-  void OnImageDecoded(const SkBitmap& decoded_image) override {
-    gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(decoded_image);
-    image.MakeThreadSafe();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(result_callback_), image));
-    delete this;
-  }
-
-  void OnDecodeImageFailed() override {
+std::optional<gfx::ImageSkia> CreateResultFromBitmap(const SkBitmap& bitmap) {
+  if (bitmap.isNull()) {
     LOG(ERROR) << "Failed to decode icon image.";
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(result_callback_),
-                                  std::optional<gfx::ImageSkia>()));
-    delete this;
+    return std::nullopt;
   }
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image.MakeThreadSafe();
+  return image;
+}
 
- private:
-  ~IconImageRequest() override = default;
-  KioskAppIconLoader::ResultCallback result_callback_;
-};
-
-void LoadOnBlockingPool(
-    const base::FilePath& icon_path,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    KioskAppIconLoader::ResultCallback result_callback) {
-  DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
-
+void LoadOnBlockingPool(const base::FilePath& icon_path,
+                        KioskAppIconLoader::ResultCallback result_callback) {
   std::string data;
   if (!base::ReadFileToString(base::FilePath(icon_path), &data)) {
     LOG(ERROR) << "Failed to read icon file.";
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  std::optional<gfx::ImageSkia>()));
+    std::move(result_callback).Run(std::nullopt);
     return;
   }
 
-  // IconImageRequest will delete itself on completion of ImageDecoder callback.
-  IconImageRequest* image_request =
-      new IconImageRequest(callback_task_runner, std::move(result_callback));
-  ImageDecoder::Start(image_request, std::move(data));
+  data_decoder::DecodeImageIsolated(
+      base::as_byte_span(data), data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false,
+      static_cast<int64_t>(IPC::Channel::kMaximumMessageSize),
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&CreateResultFromBitmap).Then(std::move(result_callback)));
 }
 
-KioskAppIconLoader::KioskAppIconLoader(ResultCallback callback)
-    : callback_(std::move(callback)) {}
+}  // namespace
+
+KioskAppIconLoader::KioskAppIconLoader() = default;
 
 KioskAppIconLoader::~KioskAppIconLoader() = default;
 
-void KioskAppIconLoader::Start(const base::FilePath& icon_path) {
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LoadOnBlockingPool, icon_path, task_runner,
-          base::BindOnce(&KioskAppIconLoader::OnImageDecodingFinished,
-                         weak_factory_.GetWeakPtr())));
+void KioskAppIconLoader::Start(const base::FilePath& icon_path,
+                               ResultCallback callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // `Start` must not be called multiple times.
+  CHECK(!started_);
+  started_ = true;
+
+  ResultCallback reply_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&KioskAppIconLoader::OnImageDecoded,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTask(FROM_HERE, base::BindOnce(&LoadOnBlockingPool, icon_path,
+                                           std::move(reply_callback)));
 }
 
-void KioskAppIconLoader::OnImageDecodingFinished(
-    std::optional<gfx::ImageSkia> result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+void KioskAppIconLoader::OnImageDecoded(ResultCallback callback,
+                                        std::optional<gfx::ImageSkia> result) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::move(callback_).Run(result);
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash

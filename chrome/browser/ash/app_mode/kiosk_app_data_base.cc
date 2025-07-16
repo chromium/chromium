@@ -126,11 +126,14 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict) {
   return true;
 }
 
-void KioskAppDataBase::DecodeIcon(KioskAppIconLoader::ResultCallback callback) {
+void KioskAppDataBase::DecodeIcon(DecodeIconCallback callback) {
   DLOG_IF(ERROR, icon_path_.empty()) << "Icon path is empty";
-  kiosk_app_icon_loader_ =
-      std::make_unique<KioskAppIconLoader>(std::move(callback));
-  kiosk_app_icon_loader_->Start(icon_path_);
+  kiosk_app_icon_loader_ = std::make_unique<KioskAppIconLoader>();
+  // `Unretained` is safe because deleting `kiosk_app_icon_loader_` disables the
+  // callback.
+  kiosk_app_icon_loader_->Start(
+      icon_path_, base::BindOnce(&KioskAppDataBase::OnIconDecoded,
+                                 base::Unretained(this), std::move(callback)));
 }
 
 void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
@@ -168,6 +171,12 @@ void KioskAppDataBase::ClearCache() const {
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(icon_path_));
   }
+}
+
+void KioskAppDataBase::OnIconDecoded(DecodeIconCallback callback,
+                                     std::optional<gfx::ImageSkia> result) {
+  kiosk_app_icon_loader_.reset();
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash

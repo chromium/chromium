@@ -373,7 +373,6 @@ void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
 
 void KioskWebAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  kiosk_app_icon_loader_.reset();
 
   if (!icon.has_value()) {
     LOG(ERROR) << "Icon Load Failure";

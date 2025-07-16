@@ -438,7 +438,7 @@ void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
 
 void KioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  kiosk_app_icon_loader_.reset();
+
   if (!icon.has_value()) {
     // Re-fetch data from web store when failed to load cached data.
     StartFetch();
