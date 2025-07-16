@@ -550,11 +550,7 @@ TEST_F(RegionalCapabilitiesServiceTest,
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kClearPrefForUnknownCountry};
-
   SetPrefCountryIDAtInstall(CountryId());
   std::unique_ptr<RegionalCapabilitiesService> service =
       InitService(kBelgiumCountryId);
@@ -573,29 +569,7 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
             kBelgiumCountryId.Serialize());
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Disabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kClearPrefForUnknownCountry);
-
-  SetPrefCountryIDAtInstall(CountryId());
-  std::unique_ptr<RegionalCapabilitiesService> service =
-      InitService(kBelgiumCountryId);
-  histogram_tester().ExpectTotalCount(
-      "Search.ChoiceDebug.UnknownCountryIdStored", 0);
-
-  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
-  histogram_tester().ExpectUniqueSample(
-      "Search.ChoiceDebug.UnknownCountryIdStored",
-      1 /* kDontClearInvalidCountry */, 1);
-  EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
-            country_codes::CountryId().Serialize());
-}
-
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kClearPrefForUnknownCountry};
-
   SetPrefCountryIDAtInstall(kBelgiumCountryId);
   std::unique_ptr<RegionalCapabilitiesService> service = InitService();
 
@@ -608,8 +582,6 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
   EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
             kBelgiumCountryId.Serialize());
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_LINUX)
 
 TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   std::unique_ptr<RegionalCapabilitiesService> service =

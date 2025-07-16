@@ -46,7 +46,7 @@ constexpr char kUnknownCountryIdStored[] =
 // LINT.IfChange(UnknownCountryIdStored)
 enum class UnknownCountryIdStored {
   kValidCountryId = 0,
-  kDontClearInvalidCountry = 1,
+  // kDontClearInvalidCountry = 1, // Deprecated.
   kClearedPref = 2,
   kValidDynamicCountryId = 3,
   kMaxValue = kValidDynamicCountryId,
@@ -369,19 +369,10 @@ std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
     return persisted_country_id;
   }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(switches::kClearPrefForUnknownCountry)) {
-    profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
-    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                  UnknownCountryIdStored::kClearedPref);
-    return std::nullopt;
-  }
-#endif
-
-  base::UmaHistogramEnumeration(
-      kUnknownCountryIdStored,
-      UnknownCountryIdStored::kDontClearInvalidCountry);
-  return persisted_country_id;
+  profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
+  base::UmaHistogramEnumeration(kUnknownCountryIdStored,
+                                UnknownCountryIdStored::kClearedPref);
+  return std::nullopt;
 }
 
 void RegionalCapabilitiesService::TrySetPersistedCountryId(
