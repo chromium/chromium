@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
   CTRequirementLevel IsCTRequiredForHost(
       std::string_view hostname,
       const net::X509Certificate* chain,
-      const net::HashValueVector& spki_hashes) const override;
+      const std::vector<net::SHA256HashValue>& spki_hashes) const override;
 
   // Updates the CTDelegate to exclude |excluded_hosts| from CT policies. In
   // addition, this method updates |excluded_spkis| intended for use within an
@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
   // Returns true if a policy to disable Certificate Transparency for |chain|,
   // which contains the SPKI hashes |hashes|, is found.
   bool MatchSPKI(const net::X509Certificate* chain,
-                 const net::HashValueVector& hashes) const;
+                 const std::vector<net::SHA256HashValue>& hashes) const;
 
   // Parses the filters from |host_patterns|, adding them as filters to
   // |filters_|, and updating |*conditions| with the corresponding
@@ -82,14 +82,14 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
   // Parses the SPKIs from |spki_list|, setting |*hashes| to the sorted set of
   // all valid SPKIs.
   void ParseSpkiHashes(const std::vector<std::string> spki_list,
-                       net::HashValueVector* hashes) const;
+                       std::vector<net::SHA256HashValue>* hashes) const;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
   base::MatcherStringPattern::ID next_id_;
   std::map<base::MatcherStringPattern::ID, Filter> filters_;
 
   // SPKI list is sorted.
-  net::HashValueVector spkis_;
+  std::vector<net::SHA256HashValue> spkis_;
 };
 
 }  // namespace certificate_transparency

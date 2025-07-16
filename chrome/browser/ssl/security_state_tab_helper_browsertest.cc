@@ -83,6 +83,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/cert_status_flags.h"
@@ -1066,8 +1067,8 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPBypass) {
   verify_result.is_issued_by_known_root = false;
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
-  net::HashValue hash(net::HASH_VALUE_SHA256);
-  std::ranges::fill(hash.span(), 1);
+  net::SHA256HashValue hash;
+  std::ranges::fill(hash, 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
@@ -1091,8 +1092,8 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPEnforced) {
   verify_result.is_issued_by_known_root = true;
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
-  net::HashValue hash(net::HASH_VALUE_SHA256);
-  std::ranges::fill(hash.span(), 1);
+  net::SHA256HashValue hash;
+  std::ranges::fill(hash, 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);

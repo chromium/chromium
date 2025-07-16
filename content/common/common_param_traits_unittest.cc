@@ -147,7 +147,7 @@ TEST(IPCMessageTest, SSLInfo) {
   in.client_cert_sent = true;
   in.handshake_type = net::SSLInfo::HANDSHAKE_FULL;
   const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
-  in.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  in.public_key_hashes.push_back(kCertPublicKeyHashValue);
   in.encrypted_client_hello = true;
 
   scoped_refptr<net::ct::SignedCertificateTimestamp> sct(

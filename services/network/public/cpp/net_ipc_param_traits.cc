@@ -9,6 +9,7 @@
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_platform_file.h"
+#include "net/base/hash_value.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/http/http_util.h"
 
@@ -74,19 +75,32 @@ void ParamTraits<net::CertVerifyResult>::Log(const param_type& p,
   l->append("<CertVerifyResult>");
 }
 
-void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.ToString());
+void ParamTraits<net::SHA256HashValue>::Write(base::Pickle* m,
+                                              const param_type& p) {
+  absl::InlinedVector<uint8_t, 32> bytes;
+  for (uint8_t byte : p) {
+    bytes.push_back(byte);
+  }
+  WriteParam(m, bytes);
 }
 
-bool ParamTraits<net::HashValue>::Read(const base::Pickle* m,
-                                       base::PickleIterator* iter,
-                                       param_type* r) {
-  std::string_view encoded;
-  return iter->ReadStringPiece(&encoded) && r->FromString(encoded);
+bool ParamTraits<net::SHA256HashValue>::Read(const base::Pickle* m,
+                                             base::PickleIterator* iter,
+                                             param_type* r) {
+  absl::InlinedVector<uint8_t, 32> bytes;
+  if (!ReadParam(m, iter, &bytes)) {
+    return false;
+  }
+  if (bytes.size() != 32) {
+    return false;
+  }
+  base::span(*r).copy_from(bytes);
+  return true;
 }
 
-void ParamTraits<net::HashValue>::Log(const param_type& p, std::string* l) {
-  l->append("<HashValue>");
+void ParamTraits<net::SHA256HashValue>::Log(const param_type& p,
+                                            std::string* l) {
+  l->append("<SHA256HashValue>");
 }
 
 void ParamTraits<net::IPEndPoint>::Write(base::Pickle* m, const param_type& p) {

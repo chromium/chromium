@@ -58,6 +58,9 @@ class NET_EXPORT HashValue {
   base::span<uint8_t> span();
   base::span<const uint8_t> span() const;
 
+  // Returns the SHA256 byte array. CHECK-fails if tag() != HASH_VALUE_SHA256;
+  const SHA256HashValue& sha256hashvalue() const;
+
   HashValueTag tag() const { return tag_; }
 
   NET_EXPORT friend bool operator==(const HashValue& lhs, const HashValue& rhs);

@@ -186,7 +186,7 @@ NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 // valid certificate, returns false and |hash| is in an undefined state.
 [[nodiscard]] NET_EXPORT bool CalculateSha256SpkiHash(
     const CRYPTO_BUFFER* buffer,
-    HashValue* hash);
+    SHA256HashValue* hash);
 
 // Calls |verifier->VerifyInit|, using the public key from |certificate|,
 // checking if the digitalSignature key usage bit is present, and returns true

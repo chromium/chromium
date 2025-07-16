@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/hex_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -105,10 +106,11 @@ base::TimeTicks InstantaneousReads() {
 
 class MockRequireCTDelegate : public RequireCTDelegate {
  public:
-  MOCK_CONST_METHOD3(IsCTRequiredForHost,
-                     CTRequirementLevel(std::string_view host,
-                                        const X509Certificate* chain,
-                                        const HashValueVector& hashes));
+  MOCK_CONST_METHOD3(
+      IsCTRequiredForHost,
+      CTRequirementLevel(std::string_view host,
+                         const X509Certificate* chain,
+                         const std::vector<SHA256HashValue>& hashes));
 
  protected:
   ~MockRequireCTDelegate() override = default;
@@ -6337,11 +6339,11 @@ TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   ssl_info.cert = ImportCertFromFile(GetTestCertsDirectory(),
                                      "spdy_pooling.pem");
   ssl_info.is_issued_by_known_root = true;
-  HashValue hash;
+  HashValue hash_value;
   // The expected value of GoodPin1 used by |scoped_security_state_source|.
-  ASSERT_TRUE(
-      hash.FromString("sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
-  ssl_info.public_key_hashes.push_back(hash);
+  ASSERT_TRUE(hash_value.FromString(
+      "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
+  ssl_info.public_key_hashes.push_back(hash_value.sha256hashvalue());
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                    "www.example.org", "mail.example.org"));

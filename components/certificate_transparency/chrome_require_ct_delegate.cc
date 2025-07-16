@@ -178,7 +178,7 @@ net::RequireCTDelegate::CTRequirementLevel
 ChromeRequireCTDelegate::IsCTRequiredForHost(
     std::string_view hostname,
     const net::X509Certificate* chain,
-    const net::HashValueVector& spki_hashes) const {
+    const std::vector<net::SHA256HashValue>& spki_hashes) const {
   if (MatchHostname(hostname) || MatchSPKI(chain, spki_hashes)) {
     return CTRequirementLevel::NOT_REQUIRED;
   }
@@ -221,15 +221,19 @@ bool ChromeRequireCTDelegate::MatchHostname(std::string_view hostname) const {
 
 bool ChromeRequireCTDelegate::MatchSPKI(
     const net::X509Certificate* chain,
-    const net::HashValueVector& hashes) const {
+    const std::vector<net::SHA256HashValue>& hashes) const {
   if (spkis_.empty())
     return false;
+
+  // TODO(crbug.com/41286522): simplify this to require the input hashes match
+  // the order of the certs in the chain, so that we don't have to jump through
+  // hoops to figure out which certificate's SPKI hash actually matched.
 
   // Scan the constrained SPKIs via |hashes| first, as an optimization. If
   // there are matches, the SPKI hash will have to be recomputed anyways to
   // find the matching certificate, but avoid recomputing all the hashes for
   // the case where there is no match.
-  net::HashValueVector matches;
+  std::vector<net::SHA256HashValue> matches;
   for (const auto& hash : hashes) {
     if (std::binary_search(spkis_.begin(), spkis_.end(), hash)) {
       matches.push_back(hash);
@@ -243,7 +247,7 @@ bool ChromeRequireCTDelegate::MatchSPKI(
   // As an optimization, since the leaf is allowed to be listed as an SPKI,
   // a match on the leaf's SPKI hash can return early, without comparing
   // the organization information to itself.
-  net::HashValue hash;
+  net::SHA256HashValue hash;
   if (net::x509_util::CalculateSha256SpkiHash(leaf_cert, &hash) &&
       base::Contains(matches, hash)) {
     return true;
@@ -344,14 +348,17 @@ void ChromeRequireCTDelegate::AddFilters(
 
 void ChromeRequireCTDelegate::ParseSpkiHashes(
     const std::vector<std::string> spki_list,
-    net::HashValueVector* hashes) const {
+    std::vector<net::SHA256HashValue>* hashes) const {
   hashes->clear();
   for (const auto& value : spki_list) {
     net::HashValue hash;
     if (!hash.FromString(value)) {
       continue;
     }
-    hashes->push_back(std::move(hash));
+    if (hash.tag() != net::HASH_VALUE_SHA256) {
+      continue;
+    }
+    hashes->push_back(hash.sha256hashvalue());
   }
   std::sort(hashes->begin(), hashes->end());
 }

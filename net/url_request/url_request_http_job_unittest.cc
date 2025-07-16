@@ -991,10 +991,9 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       {0x98, 0x47, 0xe5, 0x65, 0x3e, 0x5e, 0x9e, 0x84, 0x75, 0x16, 0xe5,
        0xcb, 0x81, 0x86, 0x06, 0xaa, 0x75, 0x44, 0xa1, 0x9b, 0xe6, 0x7f,
        0xd7, 0x36, 0x6d, 0x50, 0x69, 0x88, 0xe8, 0xd8, 0x43, 0x47}};
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(HashValue(leaf_hash));
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(
-      HashValue(intermediate_hash));
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(HashValue(root_hash));
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(leaf_hash);
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(intermediate_hash);
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(root_hash);
 
   const base::HistogramBase::Sample32 kGTSRootR4HistogramID = 486;
 
@@ -1075,13 +1074,10 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       {0x98, 0x47, 0xe5, 0x65, 0x3e, 0x5e, 0x9e, 0x84, 0x75, 0x16, 0xe5,
        0xcb, 0x81, 0x86, 0x06, 0xaa, 0x75, 0x44, 0xa1, 0x9b, 0xe6, 0x7f,
        0xd7, 0x36, 0x6d, 0x50, 0x69, 0x88, 0xe8, 0xd8, 0x43, 0x47}};
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(HashValue(leaf_hash));
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(
-      HashValue(intermediate_hash));
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(
-      HashValue(gts_root_r3_hash));
-  ssl_socket_data.ssl_info.public_key_hashes.push_back(
-      HashValue(gts_root_r4_hash));
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(leaf_hash);
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(intermediate_hash);
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(gts_root_r3_hash);
+  ssl_socket_data.ssl_info.public_key_hashes.push_back(gts_root_r4_hash);
 
   const base::HistogramBase::Sample32 kGTSRootR3HistogramID = 485;
 

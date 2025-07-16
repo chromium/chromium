@@ -92,9 +92,12 @@ class NET_EXPORT SSLInfo {
 
   HandshakeType handshake_type = HANDSHAKE_UNKNOWN;
 
-  // The hashes, in several algorithms, of the SubjectPublicKeyInfos from
-  // each certificate in the chain.
-  HashValueVector public_key_hashes;
+  // The hashes of the SubjectPublicKeyInfo from each certificate in the
+  // verified chain.
+  //
+  // TODO(crbug.com/41286522): change to document/require this be in the same
+  // order as verified cert chain.
+  std::vector<SHA256HashValue> public_key_hashes;
 
   // List of SignedCertificateTimestamps and their corresponding validation
   // status.

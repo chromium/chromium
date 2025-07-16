@@ -6191,9 +6191,8 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   CertVerifyResult verify_result;
   verify_result.verified_cert = cert;
   verify_result.is_issued_by_known_root = false;
-  HashValue hash;
-  ASSERT_TRUE(
-      hash.FromString("sha256/1111111111111111111111111111111111111111111="));
+  SHA256HashValue hash;
+  hash.fill(1);
   verify_result.public_key_hashes.push_back(hash);
   auto cert_verifier = std::make_unique<MockCertVerifier>();
   cert_verifier->AddResultForCert(cert.get(), verify_result, OK);
@@ -11497,10 +11496,10 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
     EXPECT_FALSE(cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
   }
 
-  HashValue spki_hash_value;
+  SHA256HashValue spki_hash_value;
   ASSERT_TRUE(x509_util::CalculateSha256SpkiHash(
       test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
-  std::string spki_hash(base::as_string_view(spki_hash_value.span()));
+  std::string spki_hash(base::as_string_view(spki_hash_value));
   {
     auto crl_set =
         CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});
@@ -11626,9 +11625,8 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
   scoped_refptr<X509Certificate> cert = https_server.GetCertificate();
   ASSERT_TRUE(cert);
 
-  HashValue filler_hash;
-  ASSERT_TRUE(filler_hash.FromString(
-      "sha256/3333333333333333333333333333333333333333333="));
+  SHA256HashValue filler_hash;
+  filler_hash.fill(3);
 
   CertVerifyResult fake_result;
   fake_result.verified_cert = cert;
@@ -11651,8 +11649,7 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
 
   // Configure for kHSTSSubdomainWithKnownInterception
   CertVerifyResult sts_sub_result = fake_result;
-  auto root_hash = GetTestRootCertSPKIHash();
-  sts_sub_result.public_key_hashes.push_back(HashValue(root_hash));
+  sts_sub_result.public_key_hashes.push_back(GetTestRootCertSPKIHash());
   sts_sub_result.cert_status |=
       CERT_STATUS_REVOKED | CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
   cert_verifier->AddResultForCertAndHost(

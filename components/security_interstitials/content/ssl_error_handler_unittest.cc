@@ -307,8 +307,7 @@ class SSLErrorHandlerNameMismatchTest
     SSLErrorHandler::SetInterstitialDelayForTesting(base::TimeDelta());
     ssl_info_.cert = GetCertificate();
     ssl_info_.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-    ssl_info_.public_key_hashes.push_back(
-        net::HashValue(kCertPublicKeyHashValue));
+    ssl_info_.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     pref_service_.registry()->RegisterBooleanPref(
@@ -443,7 +442,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     config_proto->add_captive_portal_cert()->set_sha256_hash(
-        ssl_info().public_key_hashes[0].ToString());
+        net::HashValue(ssl_info().public_key_hashes[0]).ToString());
     config_proto->add_captive_portal_cert()->set_sha256_hash(
         "sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
     SSLErrorHandler::SetErrorAssistantProto(std::move(config_proto));
@@ -574,8 +573,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     ssl_info_ = net::SSLInfo();
     ssl_info_.cert = cert;
     ssl_info_.cert_status = cert_status;
-    ssl_info_.public_key_hashes.push_back(
-        net::HashValue(kCertPublicKeyHashValue));
+    ssl_info_.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     captive_portal_service_ =
@@ -1399,7 +1397,7 @@ TEST_F(SSLErrorHandlerTest, BlockedInterceptionInterstitial) {
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkayCertName);
   ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-  ssl_info.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
   std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
       new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));
@@ -1437,7 +1435,7 @@ TEST_F(SSLErrorHandlerTest, NonPrimaryMainframeShouldNotAffectSSLErrorHandler) {
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkayCertName);
   ssl_info.cert_status = net::CERT_STATUS_AUTHORITY_INVALID;
-  ssl_info.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
 
   std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
       new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));

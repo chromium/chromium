@@ -128,11 +128,18 @@ class MojoCertVerifierTest : public PlatformTest {
 
   DummyCVService* dummy_cv_service() { return &dummy_cv_service_; }
 
-  void RespondToRequest(const net::CertVerifier::RequestParams& params) {
+  void RespondToRequestWithResult(
+      const net::CertVerifier::RequestParams& params,
+      const net::CertVerifyResult& result,
+      int net_error) {
     ASSERT_TRUE(received_requests_.count(params));
+    received_requests_[params]->Complete(result, net_error);
+  }
+
+  void RespondToRequest(const net::CertVerifier::RequestParams& params) {
     net::CertVerifyResult result;
     result.cert_status = kExpectedCertStatus;
-    received_requests_[params]->Complete(result, kExpectedNetError);
+    RespondToRequestWithResult(params, result, kExpectedNetError);
   }
 
   bool DidRequestDisconnect(const net::CertVerifier::RequestParams& params) {
@@ -211,11 +218,21 @@ TEST_F(MojoCertVerifierTest, BasicVerify) {
   // Handle Mojo request
   task_environment()->RunUntilIdle();
 
-  RespondToRequest(dummy_params);
+  net::CertVerifyResult sent_result;
+  sent_result.cert_status =
+      net::CERT_STATUS_AUTHORITY_INVALID | net::CERT_STATUS_COMMON_NAME_INVALID;
+  sent_result.public_key_hashes.push_back({2});
+  sent_result.public_key_hashes.push_back({1});
+  sent_result.public_key_hashes.push_back({3});
+  const int sent_net_error = net::CERT_STATUS_AUTHORITY_INVALID;
+
+  RespondToRequestWithResult(dummy_params, sent_result, sent_net_error);
 
   net_error = test_cb.WaitForResult();
-  EXPECT_EQ(net_error, kExpectedNetError);
-  EXPECT_EQ(cert_verify_result->cert_status, kExpectedCertStatus);
+  EXPECT_EQ(net_error, sent_net_error);
+  EXPECT_EQ(cert_verify_result->cert_status, sent_result.cert_status);
+  EXPECT_EQ(cert_verify_result->public_key_hashes,
+            sent_result.public_key_hashes);
   ExpectReceivedNetlogSource(dummy_params, net_log.source().type,
                              net_log.source().id, net_log.source().start_time);
 }

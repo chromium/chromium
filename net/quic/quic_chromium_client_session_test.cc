@@ -1613,9 +1613,10 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionPooledWithMatchingPin) {
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   details.cert_verify_result.is_issued_by_known_root = true;
   HashValue primary_pin(HASH_VALUE_SHA256);
-  EXPECT_TRUE(primary_pin.FromString(
+  ASSERT_TRUE(primary_pin.FromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
-  details.cert_verify_result.public_key_hashes.push_back(primary_pin);
+  details.cert_verify_result.public_key_hashes.push_back(
+      primary_pin.sha256hashvalue());
 
   ASSERT_TRUE(details.cert_verify_result.verified_cert.get());
 

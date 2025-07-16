@@ -8,17 +8,16 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 
 namespace net {
-
-class HashValue;
 
 // Returns a value within the NetRootCert histogram enum indicating the
 // ID of the trust anchor whose subjectPublicKeyInfo hash is |spki_hash|, or
 // 0 if it cannot be found.
 NET_EXPORT int32_t
-GetNetTrustAnchorHistogramIdForSPKI(const HashValue& spki_hash);
+GetNetTrustAnchorHistogramIdForSPKI(const SHA256HashValue& spki_hash);
 
 }  // namespace net
 

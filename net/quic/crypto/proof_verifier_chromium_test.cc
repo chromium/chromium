@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_status_flags.h"
@@ -284,10 +285,10 @@ TEST_F(ProofVerifierChromiumTest, FailsIfSignatureFails) {
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
-HashValueVector MakeHashValueVector(uint8_t tag) {
-  HashValue hash(HASH_VALUE_SHA256);
-  std::ranges::fill(hash.span(), tag);
-  HashValueVector hashes;
+std::vector<SHA256HashValue> MakeHashValueVector(uint8_t tag) {
+  SHA256HashValue hash;
+  std::ranges::fill(hash, tag);
+  std::vector<SHA256HashValue> hashes;
   hashes.push_back(hash);
   return hashes;
 }

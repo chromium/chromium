@@ -510,12 +510,13 @@ bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   return options;
 }
 
-bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer, HashValue* hash) {
+bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer,
+                             SHA256HashValue* hash) {
   std::string_view spki;
   if (!asn1::ExtractSPKIFromDERCert(CryptoBufferAsStringPiece(buffer), &spki)) {
     return false;
   }
-  *hash = HashValue(crypto::hash::Sha256(base::as_byte_span(spki)));
+  *hash = crypto::hash::Sha256(base::as_byte_span(spki));
   return true;
 }
 

@@ -44,7 +44,7 @@ class NET_EXPORT RequireCTDelegate
   virtual CTRequirementLevel IsCTRequiredForHost(
       std::string_view hostname,
       const X509Certificate* chain,
-      const HashValueVector& hashes) const = 0;
+      const std::vector<SHA256HashValue>& hashes) const = 0;
 
   // Returns CT_REQUIREMENTS_NOT_MET if a connection violates CT policy
   // requirements: that is, if a connection to |host|, using the validated
@@ -58,7 +58,7 @@ class NET_EXPORT RequireCTDelegate
       const RequireCTDelegate* delegate,
       std::string_view host,
       bool is_issued_by_known_root,
-      const HashValueVector& public_key_hashes,
+      const std::vector<SHA256HashValue>& public_key_hashes,
       const X509Certificate* validated_certificate_chain,
       ct::CTPolicyCompliance policy_compliance);
 

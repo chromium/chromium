@@ -17,23 +17,18 @@ namespace net {
 namespace {
 
 // Comparator-predicate that serves as a < function for comparing a
-// RootCertData to a HashValue
+// RootCertData to a SHA256HashValue.
 struct HashValueToRootCertDataComp {
-  bool operator()(const HashValue& hash, const RootCertData& root_cert) {
-    DCHECK_EQ(HASH_VALUE_SHA256, hash.tag());
-    return hash.span() < root_cert.sha256_spki_hash;
+  bool operator()(const SHA256HashValue& hash, const RootCertData& root_cert) {
+    return hash < base::span(root_cert.sha256_spki_hash);
   }
 
-  bool operator()(const RootCertData& root_cert, const HashValue& hash) {
-    DCHECK_EQ(HASH_VALUE_SHA256, hash.tag());
-    return root_cert.sha256_spki_hash < hash.span();
+  bool operator()(const RootCertData& root_cert, const SHA256HashValue& hash) {
+    return base::span(root_cert.sha256_spki_hash) < hash;
   }
 };
 
-const RootCertData* GetRootCertData(const HashValue& spki_hash) {
-  if (spki_hash.tag() != HASH_VALUE_SHA256)
-    return nullptr;
-
+const RootCertData* GetRootCertData(const SHA256HashValue& spki_hash) {
   auto* it = std::lower_bound(std::begin(kRootCerts), std::end(kRootCerts),
                               spki_hash, HashValueToRootCertDataComp());
   if (it == std::end(kRootCerts) ||
@@ -45,7 +40,7 @@ const RootCertData* GetRootCertData(const HashValue& spki_hash) {
 
 }  // namespace
 
-int32_t GetNetTrustAnchorHistogramIdForSPKI(const HashValue& spki_hash) {
+int32_t GetNetTrustAnchorHistogramIdForSPKI(const SHA256HashValue& spki_hash) {
   const RootCertData* root_data = GetRootCertData(spki_hash);
   if (!root_data)
     return 0;

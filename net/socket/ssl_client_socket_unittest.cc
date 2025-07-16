@@ -4523,10 +4523,10 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
 }
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
-HashValueVector MakeHashValueVector(uint8_t value) {
-  HashValueVector out;
-  HashValue hash(HASH_VALUE_SHA256);
-  std::ranges::fill(hash.span(), value);
+std::vector<SHA256HashValue> MakeHashValueVector(uint8_t tag) {
+  SHA256HashValue hash;
+  std::ranges::fill(hash, tag);
+  std::vector<SHA256HashValue> out;
   out.push_back(hash);
   return out;
 }

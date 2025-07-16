@@ -10,6 +10,7 @@
 #include "components/grit/components_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -138,12 +139,14 @@ bool RegexMatchesAny(const std::vector<std::string>& organization_names,
 // hashes.
 bool MatchSSLInfoWithHashes(const net::SSLInfo& ssl_info,
                             std::unordered_set<std::string> spki_hashes) {
-  for (const net::HashValue& hash_value : ssl_info.public_key_hashes) {
-    if (hash_value.tag() != net::HASH_VALUE_SHA256)
-      continue;
-
-    if (spki_hashes.find(hash_value.ToString()) != spki_hashes.end())
+  for (const net::SHA256HashValue& hash_value : ssl_info.public_key_hashes) {
+    // TODO(crbug.com/431097632): this is silly, the
+    // captive_portal_spki_hashes_ should be stored as raw hashes instead (also
+    // should switch from unordered_set to flat_hash_set instead.)
+    if (spki_hashes.find(net::HashValue(hash_value).ToString()) !=
+        spki_hashes.end()) {
       return true;
+    }
   }
 
   return false;

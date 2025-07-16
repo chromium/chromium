@@ -38,6 +38,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
@@ -190,7 +191,7 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
 // which is expected to be ordered with the leaf cert first and the root cert
 // last. This complements the per-verification histogram
 // Net.Certificate.TrustAnchor.Verify
-void LogTrustAnchor(const HashValueVector& spki_hashes) {
+void LogTrustAnchor(const std::vector<SHA256HashValue>& spki_hashes) {
   // Don't record metrics if there are no hashes; this is true if the HTTP
   // load did not come from an active network connection, such as the disk
   // cache or a synthesized response.

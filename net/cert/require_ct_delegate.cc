@@ -11,7 +11,7 @@ ct::CTRequirementsStatus RequireCTDelegate::CheckCTRequirements(
     const RequireCTDelegate* delegate,
     std::string_view host,
     bool is_issued_by_known_root,
-    const HashValueVector& public_key_hashes,
+    const std::vector<SHA256HashValue>& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
     ct::CTPolicyCompliance policy_compliance) {
   // CT is not required if the certificate does not chain to a publicly

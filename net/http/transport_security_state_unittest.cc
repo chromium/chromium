@@ -94,10 +94,11 @@ constexpr auto kBadPath = std::to_array<const char*>({
 
 class MockRequireCTDelegate : public RequireCTDelegate {
  public:
-  MOCK_CONST_METHOD3(IsCTRequiredForHost,
-                     CTRequirementLevel(std::string_view hostname,
-                                        const X509Certificate* chain,
-                                        const HashValueVector& hashes));
+  MOCK_CONST_METHOD3(
+      IsCTRequiredForHost,
+      CTRequirementLevel(std::string_view hostname,
+                         const X509Certificate* chain,
+                         const std::vector<SHA256HashValue>& hashes));
 
  protected:
   ~MockRequireCTDelegate() override = default;
@@ -120,22 +121,22 @@ bool operator==(const TransportSecurityState::PKPState& lhs,
          lhs.domain == rhs.domain;
 }
 
-net::HashValueVector DeserializeHashes(
+std::vector<SHA256HashValue> DeserializeHashes(
     base::span<const char* const> serialized_hashes) {
-  net::HashValueVector result;
+  std::vector<SHA256HashValue> result;
   for (const auto* serialized_hash : serialized_hashes) {
     net::HashValue h(HASH_VALUE_SHA256);
     CHECK(h.FromString(std::string_view(serialized_hash)));
-    result.push_back(h);
+    result.push_back(h.sha256hashvalue());
   }
   return result;
 }
 
 std::vector<std::vector<uint8_t>> UnpackRawHashes(
-    const net::HashValueVector& hashes) {
+    const std::vector<SHA256HashValue>& hashes) {
   std::vector<std::vector<uint8_t>> raws;
   for (const auto& hash : hashes) {
-    raws.emplace_back(base::ToVector(hash.span()));
+    raws.emplace_back(base::ToVector(hash));
   }
   return raws;
 }
@@ -747,8 +748,8 @@ TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
 
-  HashValueVector good_hashes = DeserializeHashes(kGoodPath);
-  HashValueVector bad_hashes = DeserializeHashes(kBadPath);
+  std::vector<SHA256HashValue> good_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   state.SetPinningListAlwaysTimelyForTesting(true);
@@ -960,9 +961,9 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
       ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
   ASSERT_TRUE(cert);
 
-  HashValueVector hashes;
+  std::vector<SHA256HashValue> hashes;
   hashes.push_back(
-      HashValue(X509Certificate::CalculateFingerprint256(cert->cert_buffer())));
+      X509Certificate::CalculateFingerprint256(cert->cert_buffer()));
 
   // If CT is required, then the requirements are not met if the CT policy
   // wasn't met, but are met if the policy was met or the build was out of
@@ -1044,9 +1045,9 @@ TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
       ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
   ASSERT_TRUE(cert);
 
-  HashValueVector hashes;
+  std::vector<SHA256HashValue> hashes;
   hashes.push_back(
-      HashValue(X509Certificate::CalculateFingerprint256(cert->cert_buffer())));
+      X509Certificate::CalculateFingerprint256(cert->cert_buffer()));
 
   TransportSecurityState state;
   state.SetCTEmergencyDisabled(true);
@@ -1485,7 +1486,7 @@ TEST_F(TransportSecurityStateStaticTest, BuiltinCertPins) {
   EXPECT_TRUE(state.GetStaticPKPState("chrome.google.com", &pkp_state));
   EXPECT_TRUE(HasStaticPublicKeyPins("chrome.google.com"));
 
-  HashValueVector hashes;
+  std::vector<SHA256HashValue> hashes;
   // Checks that a built-in list does exist.
   EXPECT_FALSE(pkp_state.CheckPublicKeyPins(hashes));
   EXPECT_FALSE(HasStaticPublicKeyPins("www.paypal.com"));
@@ -1612,7 +1613,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HashValueVector bad_hashes = DeserializeHashes(kBadPath);
+  std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1641,7 +1642,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HashValueVector good_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> good_hashes = DeserializeHashes(kGoodPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1679,7 +1680,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HashValueVector bad_hashes = DeserializeHashes(kBadPath);
+  std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1704,7 +1705,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   // expected hashes for the tld of this domain. kGoodPath is used here because
   // it's a path that is accepted prior to any updates, and this test will
   // validate it is rejected afterwards.
-  HashValueVector unpinned_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1743,7 +1744,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   // expected hashes for the tld of this domain. kGoodPath is used here because
   // it's a path that is accepted prior to any updates, and this test will
   // validate it is rejected afterwards.
-  HashValueVector unpinned_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1781,7 +1782,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   // it's a path that is accepted prior to any updates, and this test will
   // validate it is accepted or rejected afterwards depending on whether the
   // domain is an exact match.
-  HashValueVector unpinned_hashes = DeserializeHashes(kGoodPath);
+  std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1820,7 +1821,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  HashValueVector bad_hashes = DeserializeHashes(kBadPath);
+  std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);
@@ -1871,7 +1872,7 @@ class TransportSecurityStatePinningKillswitchTest
 };
 
 TEST_F(TransportSecurityStatePinningKillswitchTest, PinningKillswitchSet) {
-  HashValueVector bad_hashes = DeserializeHashes(kBadPath);
+  std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
   EnableStaticPins(&state);

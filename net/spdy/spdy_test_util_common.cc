@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/proxy_delegate.h"
@@ -994,9 +995,9 @@ quiche::HttpHeaderBlock SpdyTestUtil::ConstructHeaderBlock(
 }
 
 namespace test {
-HashValue GetTestHashValue(uint8_t label) {
-  HashValue hash_value(HASH_VALUE_SHA256);
-  std::ranges::fill(hash_value.span(), label);
+SHA256HashValue GetTestHashValue(uint8_t label) {
+  SHA256HashValue hash_value;
+  std::ranges::fill(hash_value, label);
   return hash_value;
 }
 

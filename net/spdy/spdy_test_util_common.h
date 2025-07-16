@@ -48,7 +48,6 @@ class GURL;
 namespace net {
 
 class ClientSocketFactory;
-class HashValue;
 class HostPortPair;
 class HostResolver;
 class QuicContext;
@@ -495,8 +494,8 @@ class SpdyTestUtil {
 
 namespace test {
 
-// Returns a SHA1 HashValue in which each byte has the value |label|.
-HashValue GetTestHashValue(uint8_t label);
+// Returns a SHA256HashValue in which each byte has the value |label|.
+SHA256HashValue GetTestHashValue(uint8_t label);
 
 }  // namespace test
 }  // namespace net

@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -308,10 +309,11 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
 
 class MockRequireCTDelegate : public RequireCTDelegate {
  public:
-  MOCK_CONST_METHOD3(IsCTRequiredForHost,
-                     CTRequirementLevel(std::string_view host,
-                                        const X509Certificate* chain,
-                                        const HashValueVector& hashes));
+  MOCK_CONST_METHOD3(
+      IsCTRequiredForHost,
+      CTRequirementLevel(std::string_view host,
+                         const X509Certificate* chain,
+                         const std::vector<SHA256HashValue>& hashes));
 
  protected:
   ~MockRequireCTDelegate() override = default;

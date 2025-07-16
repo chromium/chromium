@@ -303,19 +303,13 @@ bool IsSelfSignedCertOnLocalNetwork(const X509Certificate* cert,
   return X509Certificate::IsSelfSigned(cert->cert_buffer());
 }
 
-// Appends the SHA256 hashes of |spki_bytes| to |*hashes|.
-void AppendPublicKeyHashes(const bssl::der::Input& spki_bytes,
-                           HashValueVector* hashes) {
-  hashes->emplace_back(crypto::hash::Sha256(spki_bytes));
-}
-
 // Appends the SubjectPublicKeyInfo hashes for all certificates in
 // |path| to |*hashes|.
 void AppendPublicKeyHashes(const bssl::CertPathBuilderResultPath& path,
-                           HashValueVector* hashes) {
+                           std::vector<SHA256HashValue>* hashes) {
   for (const std::shared_ptr<const bssl::ParsedCertificate>& cert :
        path.certs) {
-    AppendPublicKeyHashes(cert->tbs().spki_tlv, hashes);
+    hashes->emplace_back(crypto::hash::Sha256(cert->tbs().spki_tlv));
   }
 }
 
@@ -568,7 +562,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // TODO(crbug.com/41392053): The SPKI hashes are calculated here, during
     // CRLSet checks, and in AssignVerifyResult. Calculate once and cache in
     // delegate_data so that it can be reused.
-    HashValueVector public_key_hashes;
+    std::vector<SHA256HashValue> public_key_hashes;
     AppendPublicKeyHashes(*path, &public_key_hashes);
 
     bool is_issued_by_known_root = false;

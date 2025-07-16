@@ -75,8 +75,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<net::HashValue> {
-  typedef net::HashValue param_type;
+struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
+    ParamTraits<net::SHA256HashValue> {
+  typedef net::SHA256HashValue param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

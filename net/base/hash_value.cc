@@ -81,6 +81,11 @@ base::span<const uint8_t> HashValue::span() const {
   NOTREACHED();
 }
 
+const SHA256HashValue& HashValue::sha256hashvalue() const {
+  CHECK(tag_ == HASH_VALUE_SHA256);
+  return fingerprint.sha256;
+}
+
 bool operator==(const HashValue& lhs, const HashValue& rhs) {
   if (lhs.tag_ != rhs.tag_)
     return false;

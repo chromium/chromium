@@ -6778,7 +6778,7 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
 
     net::HashValue hash;
     ASSERT_TRUE(hash.FromString(kMatchingDynamicInterstitialCert));
-    verify_result.public_key_hashes.push_back(hash);
+    verify_result.public_key_hashes.push_back(hash.sha256hashvalue());
 
     mock_cert_verifier()->AddResultForCert(cert, verify_result,
                                            net::ERR_CERT_COMMON_NAME_INVALID);

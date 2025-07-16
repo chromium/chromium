@@ -16,9 +16,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/android/network_library.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_net_fetcher.h"
@@ -319,7 +319,8 @@ bool VerifyFromAndroidTrustManager(
       continue;
     }
 
-    HashValue sha256(crypto::hash::Sha256(base::as_byte_span(spki_bytes)));
+    SHA256HashValue sha256(
+        crypto::hash::Sha256(base::as_byte_span(spki_bytes)));
     verify_result->public_key_hashes.push_back(sha256);
 
     if (!verify_result->is_issued_by_known_root) {

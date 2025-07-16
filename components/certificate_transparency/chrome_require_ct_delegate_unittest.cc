@@ -36,7 +36,7 @@ class ChromeRequireCTDelegateTest : public ::testing::Test {
         net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
     ASSERT_TRUE(cert_);
 
-    net::HashValue spki_hash;
+    net::SHA256HashValue spki_hash;
     ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(cert_->cert_buffer(),
                                                         &spki_hash));
     hashes_.push_back(spki_hash);
@@ -46,7 +46,7 @@ class ChromeRequireCTDelegateTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<net::X509Certificate> cert_;
-  net::HashValueVector hashes_;
+  std::vector<net::SHA256HashValue> hashes_;
 };
 
 // Treat the preferences as a black box as far as naming, but ensure that
@@ -88,7 +88,7 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedSPKIs) {
             delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded SPKI
-  delegate->UpdateCTPolicies({}, {hashes_.front().ToString()});
+  delegate->UpdateCTPolicies({}, {net::HashValue(hashes_.front()).ToString()});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
@@ -142,19 +142,19 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
   scoped_refptr<net::X509Certificate> tmp =
       net::ImportCertFromFile(test_directory, "leaf-o1.pem");
   ASSERT_TRUE(tmp);
-  net::HashValue leaf_spki;
+  net::SHA256HashValue leaf_spki;
   ASSERT_TRUE(
       net::x509_util::CalculateSha256SpkiHash(tmp->cert_buffer(), &leaf_spki));
   tmp = net::ImportCertFromFile(test_directory, "int-o3.pem");
   ASSERT_TRUE(tmp);
-  net::HashValue intermediate_spki;
+  net::SHA256HashValue intermediate_spki;
   ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(tmp->cert_buffer(),
                                                       &intermediate_spki));
 
   struct {
     const char* const leaf_file;
     const char* const intermediate_file;
-    const net::HashValue spki;
+    const net::SHA256HashValue spki;
     CTRequirementLevel expected;
   } kTestCases[] = {
       // Positive cases
@@ -224,11 +224,11 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
         net::ImportCertFromFile(test_directory, test.leaf_file);
     ASSERT_TRUE(leaf);
 
-    net::HashValueVector hashes;
-    net::HashValue leaf_hash;
+    std::vector<net::SHA256HashValue> hashes;
+    net::SHA256HashValue leaf_spki_hash;
     ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(leaf->cert_buffer(),
-                                                        &leaf_hash));
-    hashes.push_back(std::move(leaf_hash));
+                                                        &leaf_spki_hash));
+    hashes.push_back(std::move(leaf_spki_hash));
 
     // Append the intermediate to |leaf|, if any.
     if (test.intermediate_file) {
@@ -236,7 +236,7 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
           net::ImportCertFromFile(test_directory, test.intermediate_file);
       ASSERT_TRUE(intermediate);
 
-      net::HashValue intermediate_hash;
+      net::SHA256HashValue intermediate_hash;
       ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(
           intermediate->cert_buffer(), &intermediate_hash));
       hashes.push_back(std::move(intermediate_hash));
@@ -253,7 +253,7 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
     EXPECT_EQ(CTRequirementLevel::REQUIRED,
               delegate->IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
-    delegate->UpdateCTPolicies({}, {test.spki.ToString()});
+    delegate->UpdateCTPolicies({}, {net::HashValue(test.spki).ToString()});
 
     // The new setting should take effect.
     EXPECT_EQ(test.expected,

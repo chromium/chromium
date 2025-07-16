@@ -69,9 +69,12 @@ class NET_EXPORT CertVerifyResult {
   // hashes for all of the SubjectPublicKeyInfos of the chain (target,
   // intermediates, and trust anchor)
   //
-  // The ordering of the hashes in this vector is unspecified. Both the SHA1
-  // and SHA256 hash will be present for each certificate.
-  HashValueVector public_key_hashes;
+  // The ordering of the hashes in this vector is unspecified.
+  //
+  // TODO(crbug.com/41286522): change this to document and add unittests that
+  // the ordering of the hashes in this vector matches the certificates in
+  // `verified_cert`.
+  std::vector<SHA256HashValue> public_key_hashes;
 
   // is_issued_by_known_root is true if we recognise the root CA as a standard
   // root.  If it isn't then it's probably the case that this certificate was

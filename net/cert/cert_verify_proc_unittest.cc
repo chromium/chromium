@@ -1389,8 +1389,9 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
 
   // Convert |public_key_hashes| to strings for ease of comparison.
   std::vector<std::string> public_key_hash_strings;
-  for (const auto& public_key_hash : verify_result.public_key_hashes)
-    public_key_hash_strings.push_back(public_key_hash.ToString());
+  for (const auto& public_key_hash : verify_result.public_key_hashes) {
+    public_key_hash_strings.push_back(HashValue(public_key_hash).ToString());
+  }
 
   std::vector<std::string> expected_public_key_hashes = {
       // Target
@@ -5672,9 +5673,9 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyUMA) {
       {0x98, 0x47, 0xe5, 0x65, 0x3e, 0x5e, 0x9e, 0x84, 0x75, 0x16, 0xe5,
        0xcb, 0x81, 0x86, 0x06, 0xaa, 0x75, 0x44, 0xa1, 0x9b, 0xe6, 0x7f,
        0xd7, 0x36, 0x6d, 0x50, 0x69, 0x88, 0xe8, 0xd8, 0x43, 0x47}};
-  result.public_key_hashes.push_back(HashValue(leaf_hash));
-  result.public_key_hashes.push_back(HashValue(intermediate_hash));
-  result.public_key_hashes.push_back(HashValue(root_hash));
+  result.public_key_hashes.push_back(leaf_hash);
+  result.public_key_hashes.push_back(intermediate_hash);
+  result.public_key_hashes.push_back(root_hash);
 
   const base::HistogramBase::Sample32 kGTSRootR4HistogramID = 486;
 
@@ -5718,10 +5719,10 @@ TEST(CertVerifyProcTest, LogsOnlyMostSpecificTrustAnchorUMA) {
       {0x98, 0x47, 0xe5, 0x65, 0x3e, 0x5e, 0x9e, 0x84, 0x75, 0x16, 0xe5,
        0xcb, 0x81, 0x86, 0x06, 0xaa, 0x75, 0x44, 0xa1, 0x9b, 0xe6, 0x7f,
        0xd7, 0x36, 0x6d, 0x50, 0x69, 0x88, 0xe8, 0xd8, 0x43, 0x47}};
-  result.public_key_hashes.push_back(HashValue(leaf_hash));
-  result.public_key_hashes.push_back(HashValue(intermediate_hash));
-  result.public_key_hashes.push_back(HashValue(gts_root_r3_hash));
-  result.public_key_hashes.push_back(HashValue(gts_root_r4_hash));
+  result.public_key_hashes.push_back(leaf_hash);
+  result.public_key_hashes.push_back(intermediate_hash);
+  result.public_key_hashes.push_back(gts_root_r3_hash);
+  result.public_key_hashes.push_back(gts_root_r4_hash);
 
   const base::HistogramBase::Sample32 kGTSRootR3HistogramID = 485;
 
@@ -5758,9 +5759,9 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyOutOfDateUMA) {
   SHA256HashValue leaf_hash = {{0}};
   SHA256HashValue intermediate_hash = {{1}};
   SHA256HashValue root_hash = {{2}};
-  result.public_key_hashes.push_back(HashValue(leaf_hash));
-  result.public_key_hashes.push_back(HashValue(intermediate_hash));
-  result.public_key_hashes.push_back(HashValue(root_hash));
+  result.public_key_hashes.push_back(leaf_hash);
+  result.public_key_hashes.push_back(intermediate_hash);
+  result.public_key_hashes.push_back(root_hash);
   result.is_issued_by_known_root = true;
 
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);

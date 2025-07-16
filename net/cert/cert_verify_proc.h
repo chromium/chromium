@@ -332,7 +332,7 @@ class NET_EXPORT CertVerifyProc
   // (which are hashes of SubjectPublicKeyInfo structures) has name constraints
   // imposed on it and the names in |dns_names| are not permitted.
   static bool HasNameConstraintsViolation(
-      const HashValueVector& public_key_hashes,
+      const std::vector<SHA256HashValue>& public_key_hashes,
       const std::string& common_name,
       const std::vector<std::string>& dns_names,
       const std::vector<std::string>& ip_addrs);

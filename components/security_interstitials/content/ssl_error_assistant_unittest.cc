@@ -84,8 +84,7 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
     ssl_info_.cert = net::ImportCertFromFile(
         net::GetTestCertsDirectory(), "subjectAltName_www_example_com.pem");
     ssl_info_.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-    ssl_info_.public_key_hashes.push_back(
-        net::HashValue(kCertPublicKeyHashValue));
+    ssl_info_.public_key_hashes.push_back(kCertPublicKeyHashValue);
   }
 
   void TearDown() override {
@@ -159,7 +158,7 @@ TEST_F(SSLErrorAssistantTest, CaptivePortalCertificateList) {
 
   config_proto->add_captive_portal_cert()->set_sha256_hash("sha256/boxfish");
   config_proto->add_captive_portal_cert()->set_sha256_hash(
-      ssl_info().public_key_hashes[0].ToString());
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   config_proto->add_captive_portal_cert()->set_sha256_hash(
       "sha256/treecreeper");
   error_assistant()->SetErrorAssistantProto(std::move(config_proto));
@@ -244,7 +243,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListMatch) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_mitm_software_name("UwS");
@@ -290,7 +290,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListComplexRegexMatch) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_mitm_software_name("UwS");
@@ -334,7 +335,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListMatchUnknownCertError) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::UNKNOWN_CERT_ERROR);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex(issuer_common_name());
@@ -379,7 +381,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListNoCommonName) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex(std::string());
@@ -424,7 +427,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListNoOrganizationRegex) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex(issuer_common_name());
@@ -522,7 +526,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListCertErrorMismatch) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_DATE_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex(issuer_common_name());
@@ -577,7 +582,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListCommonNameMismatch) {
       chrome_browser_ssl::DynamicInterstitial::UNKNOWN_CERT_ERROR);
 
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex("beeeater");
@@ -605,7 +611,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListOrganizationMismatch) {
       chrome_browser_ssl::DynamicInterstitial::UNKNOWN_CERT_ERROR);
 
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_issuer_common_name_regex(issuer_common_name());
@@ -635,7 +642,8 @@ TEST_F(SSLErrorAssistantTest, DynamicInterstitialListOverridable) {
   filter->set_cert_error(
       chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
   filter->add_sha256_hash("sha256/nuthatch");
-  filter->add_sha256_hash(ssl_info().public_key_hashes[0].ToString());
+  filter->add_sha256_hash(
+      net::HashValue(ssl_info().public_key_hashes[0]).ToString());
   filter->add_sha256_hash("sha256/treecreeper");
 
   filter->set_mitm_software_name("UwS");
