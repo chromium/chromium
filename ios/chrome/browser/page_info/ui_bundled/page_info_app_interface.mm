@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
+#import "components/optimization_guide/core/optimization_guide_proto_util.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/page_info/core/proto/about_this_site_metadata.pb.h"
@@ -38,7 +39,8 @@
   optimization_guide::OptimizationMetadata optimizationMetadata;
   page_info::proto::AboutThisSiteMetadata metadata;
   *metadata.mutable_site_info() = siteInfo;
-  optimizationMetadata.SetAnyMetadataForTesting(metadata);
+  optimizationMetadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(metadata));
 
   OptimizationGuideService* service =
       OptimizationGuideServiceFactory::GetForProfile(
