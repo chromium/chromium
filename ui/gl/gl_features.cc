@@ -119,12 +119,6 @@ constexpr base::FeatureParam<base::TimeDelta> kGLCompileShaderDelay = {
 #endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
 #if BUILDFLAG(IS_WIN)
-// If true, VSyncThreadWin will use the primary monitor's
-// refresh rate as the vsync interval.
-BASE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3,
-             "UsePrimaryMonitorVSyncIntervalOnSV3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If true, VsyncThreadWin will use the compositor clock
 // to determine the vsync interval.
 BASE_FEATURE(kUseCompositorClockVSyncInterval,

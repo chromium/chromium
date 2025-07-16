@@ -146,9 +146,7 @@ base::TimeDelta VSyncThreadWinDXGI::GetVsyncInterval() {
   // To work around this discrepancy get the VSync interval directly from
   // monitor associated with window_ or the primary monitor.
   static bool use_sv3_workaround =
-      base::win::GetVersion() > base::win::Version::WIN11_22H2 &&
-      base::FeatureList::IsEnabled(
-          features::kUsePrimaryMonitorVSyncIntervalOnSV3);
+      base::win::GetVersion() > base::win::Version::WIN11_22H2;
 
   const bool get_vsync_params_succeeded =
       use_sv3_workaround

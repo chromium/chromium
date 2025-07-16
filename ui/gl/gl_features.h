@@ -29,7 +29,6 @@ GL_EXPORT BASE_DECLARE_FEATURE(kAddDelayToGLCompileShader);
 #endif
 
 #if BUILDFLAG(IS_WIN)
-GL_EXPORT BASE_DECLARE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3);
 GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
 #endif  // BUILDFLAG(IS_WIN)
 
