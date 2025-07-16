@@ -656,5 +656,106 @@ TEST(AutofillPredictionSourceToStringViewTest, ConversionTest) {
             "Rationalization");
 }
 
+// Parameters for `AutofillFieldTestWithPasswordManagerMlPredictions`
+struct AutofillFieldWithPasswordManagerMlPredictionsParams {
+  // These values denote what type the field was classified as by various
+  // sources.
+  const HtmlFieldType html_field_type;
+  const FieldType server_type;
+  const FieldType autofill_heuristic_type;
+  const FieldType password_manager_predicted_type;
+  // These value denote expected resulting type and prediction source.
+  const FieldType expected_result;
+  const AutofillPredictionSource expected_source;
+};
+
+class AutofillFieldTestWithPasswordManagerMlPredictions
+    : public testing::TestWithParam<
+          AutofillFieldWithPasswordManagerMlPredictionsParams> {};
+
+// Tests the correctness of applying password manager ML predictions while
+// computing the overall field type.
+TEST_P(AutofillFieldTestWithPasswordManagerMlPredictions,
+       PasswordManagerMlPredictions) {
+  AutofillFieldWithPasswordManagerMlPredictionsParams test_case = GetParam();
+  SCOPED_TRACE(testing::Message()
+               << "html_field_type: " << test_case.html_field_type
+               << ", server_type: " << test_case.server_type
+               << ", autofill_heuristic_type: "
+               << test_case.autofill_heuristic_type
+               << ", password_manager_predicted_type: "
+               << test_case.password_manager_predicted_type
+               << ", expected_result: " << test_case.expected_result);
+
+  AutofillField field;
+  field.SetHtmlType(test_case.html_field_type, HtmlFieldMode::kNone);
+  field.set_server_predictions({CreateFieldPrediction(test_case.server_type)});
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           test_case.autofill_heuristic_type);
+  field.set_heuristic_type(HeuristicSource::kPasswordManagerMachineLearning,
+                           test_case.password_manager_predicted_type);
+  EXPECT_EQ(field.ComputedType().GetStorableType(), test_case.expected_result);
+  EXPECT_EQ(field.PredictionSource(), test_case.expected_source);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillFieldTestWithPasswordManagerMlPredictions,
+    AutofillFieldTestWithPasswordManagerMlPredictions,
+    testing::Values(
+        // Verify that autofill server predictions override password manager
+        // OTP classifications.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = PHONE_HOME_NUMBER,
+            .autofill_heuristic_type = UNKNOWN_TYPE,
+            .password_manager_predicted_type = ONE_TIME_CODE,
+            .expected_result = PHONE_HOME_NUMBER,
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
+        // Verify that password manager server predictions do not override
+        // password manager OTP classifications.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = PASSWORD,
+            .autofill_heuristic_type = UNKNOWN_TYPE,
+            .password_manager_predicted_type = ONE_TIME_CODE,
+            .expected_result = ONE_TIME_CODE,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        // Verify that autocomplete has higher priority than password manager
+        // OTP classifications.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kPostalCode,
+            .server_type = NO_SERVER_DATA,
+            .autofill_heuristic_type = UNKNOWN_TYPE,
+            .password_manager_predicted_type = ONE_TIME_CODE,
+            .expected_result = ADDRESS_HOME_ZIP,
+            .expected_source = AutofillPredictionSource::kAutocomplete},
+        // Verify that autocomplete has higher priority than password manager
+        // non-OTP classifications.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kPostalCode,
+            .server_type = NO_SERVER_DATA,
+            .autofill_heuristic_type = UNKNOWN_TYPE,
+            .password_manager_predicted_type = PASSWORD,
+            .expected_result = ADDRESS_HOME_ZIP,
+            .expected_source = AutofillPredictionSource::kAutocomplete},
+        // Verify that password manager OTP classifications override autofill
+        // heuristics.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NO_SERVER_DATA,
+            .autofill_heuristic_type = PHONE_HOME_NUMBER,
+            .password_manager_predicted_type = ONE_TIME_CODE,
+            .expected_result = ONE_TIME_CODE,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        // Verify that password manager non-OTP classifications do not override
+        // autofill heuristics.
+        AutofillFieldWithPasswordManagerMlPredictionsParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NO_SERVER_DATA,
+            .autofill_heuristic_type = PHONE_HOME_NUMBER,
+            .password_manager_predicted_type = PASSWORD,
+            .expected_result = PHONE_HOME_NUMBER,
+            .expected_source = AutofillPredictionSource::kHeuristics}));
+
 }  // namespace
 }  // namespace autofill

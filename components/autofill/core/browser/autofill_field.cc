@@ -563,6 +563,8 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
   const HtmlFieldType html_type_local = html_type();
   const FieldType server_type_local = server_type();
   const FieldType heuristic_type_local = heuristic_type();
+  const FieldType password_classification_type_local =
+      heuristic_type(HeuristicSource::kPasswordManagerMachineLearning);
 
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always use the server prediction as html types are not very reliable.
@@ -658,10 +660,26 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
         believe_server && !(heuristic_type_local == LOYALTY_MEMBERSHIP_ID &&
                             server_type_local == UNKNOWN_TYPE);
 
+    // Password server predictions are ignored when the field is parsed to
+    // be an OTP field with the clientside model, as incorrect server
+    // password predictions are common in this case.
+    believe_server = believe_server &&
+                     !(password_classification_type_local == ONE_TIME_CODE &&
+                       GroupTypeOfFieldType(server_type_local) ==
+                           FieldTypeGroup::kPasswordField);
+
     if (believe_server) {
       return {AutofillType(server_type_local),
               AutofillPredictionSource::kServerCrowdsourcing};
     }
+  }
+
+  // If the field was classified as an OTP field by PasswordManager and
+  // `server_type_local` and `html_type_local` did not contradict it,
+  // return PasswordManager prediction.
+  if (password_classification_type_local == ONE_TIME_CODE) {
+    return {AutofillType(password_classification_type_local),
+            AutofillPredictionSource::kHeuristics};
   }
 
   return {AutofillType(heuristic_type_local),
