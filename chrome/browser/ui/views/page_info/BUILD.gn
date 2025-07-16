@@ -31,9 +31,10 @@ source_set("impl") {
   deps = [
     ":page_info",
     "//base:base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/page_info",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_info",
     "//components/dom_distiller/core",
     "//components/page_info/core",
