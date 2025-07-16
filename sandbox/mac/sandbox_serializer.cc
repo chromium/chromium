@@ -11,10 +11,6 @@
 #include "sandbox/mac/sandbox_logging.h"
 #include "sandbox/mac/seatbelt.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 namespace sandbox {
 
