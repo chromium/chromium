@@ -9,20 +9,22 @@ import type {Dimensions} from './dimensions.js';
 import {HorizonLine} from './horizon_line.js';
 import {NightMode} from './night_mode.js';
 import {Obstacle, setMaxGapCoefficient as setMaxObstacleGapCoefficient, setMaxObstacleLength} from './obstacle.js';
+import {Runner} from './offline.js';
 import type {ObstacleType, SpritePositions} from './offline_sprite_definitions.js';
 import {spriteDefinitionByType} from './offline_sprite_definitions.js';
-import {getRandomNum, getRunnerConfigValue, getRunnerSlowdown, getRunnerSpriteDefinition, isRunnerAltGameModeEnabled} from './utils.js';
+import {getRandomNum} from './utils.js';
 
 /**
  * Horizon background class.
  */
 export class Horizon {
+  obstacles: Obstacle[] = [];
+
   private canvas: HTMLCanvasElement;
   private canvasCtx: CanvasRenderingContext2D;
   private config: HorizonConfig = horizonConfig;
   private dimensions: Dimensions;
   private gapCoefficient: number;
-  private obstacles: Obstacle[] = [];
   private obstacleHistory: Array<keyof SpritePositions> = [];
   private cloudFrequency: number;
   private spritePos: SpritePositions;
@@ -58,7 +60,7 @@ export class Horizon {
     // Initialise the horizon. Just add the line and a cloud. No obstacles.
     this.obstacleTypes = spriteDefinitionByType.original.obstacles;
     this.addCloud();
-    const runnerSpriteDefinition = getRunnerSpriteDefinition();
+    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
     assert(runnerSpriteDefinition);
 
     // Multiple Horizon lines
@@ -76,7 +78,7 @@ export class Horizon {
    */
   adjustObstacleSpeed() {
     for (let i = 0; i < this.obstacleTypes.length; i++) {
-      if (getRunnerSlowdown()) {
+      if (Runner.getInstance().hasSlowdown) {
         this.obstacleTypes[i]!.multipleSpeed =
             this.obstacleTypes[i]!.multipleSpeed / 2;
         this.obstacleTypes[i]!.minGap *= 1.5;
@@ -95,7 +97,7 @@ export class Horizon {
    * Update sprites to correspond to change in sprite sheet.
    */
   enableAltGameMode(spritePos: SpritePositions) {
-    const runnerSpriteDefinition = getRunnerSpriteDefinition();
+    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
     assert(runnerSpriteDefinition);
 
     // Clear existing horizon objects.
@@ -130,7 +132,7 @@ export class Horizon {
   update(
       deltaTime: number, currentSpeed: number, updateObstacles: boolean,
       showNightMode: boolean) {
-    const runnerSpriteDefinition = getRunnerSpriteDefinition();
+    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
     assert(runnerSpriteDefinition);
     if (this.altGameModeActive) {
       this.updateBackgroundEls(deltaTime);
@@ -245,7 +247,8 @@ export class Horizon {
     const obstacleCount =
         this.obstacleTypes[this.obstacleTypes.length - 1]!.type !==
                 'collectable' ||
-            (isRunnerAltGameModeEnabled() && !this.altGameModeActive ||
+            (Runner.getInstance().isAltGameModeEnabled() &&
+                 !this.altGameModeActive ||
              this.altGameModeActive) ?
         this.obstacleTypes.length - 1 :
         this.obstacleTypes.length - 2;
@@ -271,7 +274,7 @@ export class Horizon {
 
       if (this.obstacleHistory.length > 1) {
         const maxObstacleDuplicationValue =
-            getRunnerConfigValue('MAX_OBSTACLE_DUPLICATION');
+            Runner.getInstance().getConfig().maxObstacleDuplication;
         assert(maxObstacleDuplicationValue);
         this.obstacleHistory.splice(maxObstacleDuplicationValue);
       }
@@ -289,7 +292,7 @@ export class Horizon {
       duplicateCount = obstacle === nextObstacleType ? duplicateCount + 1 : 0;
     }
     const maxObstacleDuplicationValue =
-        getRunnerConfigValue('MAX_OBSTACLE_DUPLICATION');
+        Runner.getInstance().getConfig().maxObstacleDuplication;
     assert(maxObstacleDuplicationValue);
     return duplicateCount >= maxObstacleDuplicationValue!;
   }
@@ -327,7 +330,7 @@ export class Horizon {
    * Add a random background element to the horizon.
    */
   addBackgroundEl() {
-    const runnerSpriteDefinition = getRunnerSpriteDefinition();
+    const runnerSpriteDefinition = Runner.getInstance().getSpriteDefinition();
     assert(runnerSpriteDefinition);
     const backgroundElTypes = Object.keys(runnerSpriteDefinition.backgroundEl);
 

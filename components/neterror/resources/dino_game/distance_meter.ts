@@ -5,9 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI, IS_RTL} from './constants.js';
+import {Runner} from './offline.js';
 import type {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRunnerImageSprite, getTimeStamp} from './utils.js';
+import {getTimeStamp} from './utils.js';
+
 
 /**
  * Dimensions of each individual character in pixels.
@@ -73,8 +75,7 @@ export class DistanceMeter {
     const canvasContext = canvas.getContext('2d');
     assert(canvasContext);
     this.canvasCtx = canvasContext;
-    const runnerImageSprite = getRunnerImageSprite();
-    assert(runnerImageSprite);
+    const runnerImageSprite = Runner.getInstance().getRunnerImageSprite();
     this.image = runnerImageSprite;
     this.spritePos = spritePos;
 
@@ -285,7 +286,7 @@ export class DistanceMeter {
    * Whether a clicked is in the high score area.
    * @return Whether the click was in the high score bounds.
    */
-  hasClickedOnHighScore(e: TouchEvent|MouseEvent): boolean {
+  hasClickedOnHighScore(e: Event): boolean {
     let x = 0;
     let y = 0;
 
@@ -294,7 +295,7 @@ export class DistanceMeter {
       const canvasBounds = this.canvas.getBoundingClientRect();
       x = e.touches[0]!.clientX - canvasBounds.left;
       y = e.touches[0]!.clientY - canvasBounds.top;
-    } else {
+    } else if (e instanceof MouseEvent) {
       x = e.offsetX;
       y = e.offsetY;
     }

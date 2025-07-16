@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {FPS, IS_HIDPI} from './constants.js';
 import type {Dimensions} from './dimensions.js';
+import {Runner} from './offline.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRunnerImageSprite} from './utils.js';
 
 
 export interface HorizonLineConfig {
@@ -75,7 +75,7 @@ export class HorizonLine {
    * Draw the horizon line.
    */
   draw() {
-    const runnerImageSprite = getRunnerImageSprite();
+    const runnerImageSprite = Runner.getInstance().getRunnerImageSprite();
     assert(runnerImageSprite);
     this.canvasCtx.drawImage(
         runnerImageSprite, this.sourceXPos[0], this.spritePos.y,

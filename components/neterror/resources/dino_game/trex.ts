@@ -4,10 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {FPS, IS_HIDPI} from './constants.js';
+import {DEFAULT_DIMENSIONS, FPS, IS_HIDPI} from './constants.js';
+import {Runner} from './offline.js';
 import {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRunnerAudioCues, getRunnerConfigValue, getRunnerDefaultDimensions, getRunnerGeneratedSoundFx, getRunnerImageSprite, getRunnerSlowdown, getRunnerSpriteDefinition, getTimeStamp} from './utils.js';
+import {getTimeStamp} from './utils.js';
 
 
 interface BaseTrexConfig {
@@ -156,6 +157,7 @@ export class Trex {
   jumping: boolean = false;
   speedDrop: boolean = false;
 
+  private runner: Runner;
   private canvasCtx: CanvasRenderingContext2D;
   private spritePos: SpritePosition;
   private xInitialPos: number = 0;
@@ -185,9 +187,10 @@ export class Trex {
     this.canvasCtx = canvasContext;
     this.spritePos = spritePos;
     this.config = Object.assign(defaultTrexConfig, normalJumpConfig);
+    this.runner = Runner.getInstance();
 
-    const runnerDefaultDimensions = getRunnerDefaultDimensions();
-    const runnerBottomPadding = getRunnerConfigValue('BOTTOM_PAD');
+    const runnerDefaultDimensions = DEFAULT_DIMENSIONS;
+    const runnerBottomPadding = this.runner.getConfig().bottomPad;
     assert(runnerDefaultDimensions);
     assert(runnerBottomPadding);
     this.groundYPos = runnerDefaultDimensions.height - this.config.height -
@@ -204,7 +207,8 @@ export class Trex {
    * Assign the appropriate jump parameters based on the game speed.
    */
   enableSlowConfig() {
-    const jumpConfig = getRunnerSlowdown() ? slowJumpConfig : normalJumpConfig;
+    const jumpConfig =
+        this.runner.hasSlowdown ? slowJumpConfig : normalJumpConfig;
     this.config = Object.assign(defaultTrexConfig, jumpConfig);
 
     this.adjustAltGameConfigForSlowSpeed();
@@ -217,13 +221,12 @@ export class Trex {
   enableAltGameMode(spritePos: SpritePosition) {
     this.altGameModeEnabled = true;
     this.spritePos = spritePos;
-    const spriteDefinition = getRunnerSpriteDefinition();
+    const spriteDefinition = this.runner.getSpriteDefinition();
     assert(spriteDefinition);
     const tRexSpriteDefinition =
         spriteDefinition.tRex as AltGameModeSpriteConfig;
     assert(tRexSpriteDefinition.running1);
-    const runnerDefaultDimensions = getRunnerDefaultDimensions();
-    assert(runnerDefaultDimensions);
+    const runnerDefaultDimensions = DEFAULT_DIMENSIONS;
 
 
     // Update animation frames.
@@ -264,7 +267,7 @@ export class Trex {
    * Slow speeds adjustments for the alt game modes.
    */
   private adjustAltGameConfigForSlowSpeed(gravityValue?: number) {
-    if (getRunnerSlowdown()) {
+    if (this.runner.hasSlowdown) {
       if (gravityValue) {
         this.config.gravity = gravityValue / 1.5;
       }
@@ -356,7 +359,7 @@ export class Trex {
         this.config.widthCrashed! :
         this.config.width;
 
-    const runnerImageSprite = getRunnerImageSprite();
+    const runnerImageSprite = this.runner.getRunnerImageSprite();
     assert(runnerImageSprite);
 
 
@@ -400,7 +403,7 @@ export class Trex {
         this.altGameModeEnabled && this.jumping &&
         this.status !== Status.CRASHED) {
       assert(this.config.widthJump);
-      const spriteDefinition = getRunnerSpriteDefinition();
+      const spriteDefinition = this.runner.getSpriteDefinition();
       assert(spriteDefinition);
       assert(spriteDefinition.tRex);
       const jumpOffset =
@@ -515,8 +518,8 @@ export class Trex {
       this.reset();
       this.jumpCount++;
 
-      if (getRunnerAudioCues()) {
-        const generatedSoundFx = getRunnerGeneratedSoundFx();
+      if (this.runner.hasAudioCues) {
+        const generatedSoundFx = this.runner.getGeneratedSoundFx();
         assert(generatedSoundFx);
         generatedSoundFx.loopFootSteps();
       }

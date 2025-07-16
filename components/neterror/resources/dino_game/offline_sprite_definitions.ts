@@ -11,7 +11,7 @@ import type {AltGameModeSpriteConfig as AltTrexSpriteDefinition} from './trex.js
 /*
  * List of alternative game types defined in spriteDefinitionByType.
  */
-export const GAME_TYPE: string[] = [];
+export const GAME_TYPE: Array<keyof SpriteDefinitionByType> = [];
 
 //******************************************************************************
 
@@ -92,7 +92,7 @@ export interface SpriteDefinition {
   altGameEndConfig?: AltGameEndConfig;
 }
 
-interface SpriteDefinitionByType {
+export interface SpriteDefinitionByType {
   original: SpriteDefinition;
 }
 

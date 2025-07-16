@@ -5,8 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
+import {Runner} from './offline.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum, getRunnerImageSprite} from './utils.js';
+import {getRandomNum} from './utils.js';
 
 export class Cloud {
   gap: number;
@@ -45,8 +46,7 @@ export class Cloud {
    * Draw the cloud.
    */
   draw() {
-    const runnerImageSprite = getRunnerImageSprite();
-    assert(runnerImageSprite);
+    const runnerImageSprite = Runner.getInstance().getRunnerImageSprite();
 
     this.canvasCtx.save();
     let sourceWidth = Config.WIDTH;

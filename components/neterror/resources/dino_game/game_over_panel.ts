@@ -6,10 +6,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI, IS_RTL} from './constants.js';
 import type {Dimensions} from './dimensions.js';
+import {Runner} from './offline.js';
 import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import type {Trex} from './trex.js';
-import {getRunnerAltCommonImageSprite, getRunnerOrigImageSprite, getRunnerSpriteDefinition, getTimeStamp} from './utils.js';
+import {getTimeStamp} from './utils.js';
 
 const RESTART_ANIM_DURATION: number = 875;
 const LOGO_PAUSE_DURATION: number = 875;
@@ -134,8 +135,9 @@ export class GameOverPanel {
       textSourceY += this.textImgPos.y;
     }
 
-    const spriteSource = useAltText ? getRunnerAltCommonImageSprite() :
-                                      getRunnerOrigImageSprite();
+    const runner = Runner.getInstance();
+    const spriteSource = useAltText ? runner.getAltCommonImageSprite() :
+                                      runner.getOrigImageSprite();
     assert(spriteSource);
 
     this.canvasCtx.save();
@@ -158,8 +160,7 @@ export class GameOverPanel {
    * Draw additional adornments for alternative game types.
    */
   private drawAltGameElements(tRex: Trex) {
-    const spriteDefinition = getRunnerSpriteDefinition();
-    assert(spriteDefinition);
+    const spriteDefinition = Runner.getInstance().getSpriteDefinition();
     // Additional adornments.
     if (this.altGameModeActive && spriteDefinition) {
       assert(this.altGameEndImgPos);
@@ -176,7 +177,8 @@ export class GameOverPanel {
         altGameEndSourceHeight *= 2;
       }
 
-      const altCommonImageSprite = getRunnerAltCommonImageSprite();
+      const altCommonImageSprite =
+          Runner.getInstance().getAltCommonImageSprite();
       assert(altCommonImageSprite);
 
 
@@ -212,8 +214,7 @@ export class GameOverPanel {
       this.canvasCtx.translate(this.canvasDimensions.width, 0);
       this.canvasCtx.scale(-1, 1);
     }
-    const origImageSprite = getRunnerOrigImageSprite();
-    assert(origImageSprite);
+    const origImageSprite = Runner.getInstance().getOrigImageSprite();
 
     this.canvasCtx.drawImage(
         origImageSprite, this.restartImgPos.x + framePosX, this.restartImgPos.y,

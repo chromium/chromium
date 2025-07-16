@@ -6,26 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
 import {Runner} from './offline.js';
-import type {SpriteDefinition} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum, getRunnerImageSprite} from './utils.js';
-
-/**
- * Get sprite config for a specific element type.
- * TODO(373951324): Remove this once Runner is migrated to typescript.
- */
-function getSpriteConfigForType(type: string): BackgroundElSpriteConfig|null {
-  if ('spriteDefinition' in Runner) {
-    const spriteDefinition = Runner.spriteDefinition as SpriteDefinition;
-    if (spriteDefinition) {
-      if (spriteDefinition.backgroundEl[type]) {
-        return spriteDefinition.backgroundEl[type];
-      }
-    }
-  }
-
-  return null;
-}
+import {getRandomNum} from './utils.js';
 
 export interface BackgroundElSpriteConfig {
   height: number;
@@ -104,7 +86,8 @@ export class BackgroundEl {
     this.type = type;
     this.gap = getRandomNum(getGlobalConfig().minGap, getGlobalConfig().maxGap);
 
-    const spriteConfig = getSpriteConfigForType(this.type);
+    const spriteConfig =
+        Runner.getInstance().getSpriteDefinition().backgroundEl[this.type];
     assert(spriteConfig);
     this.spriteConfig = spriteConfig;
     this.init();
@@ -134,7 +117,7 @@ export class BackgroundEl {
     let sourceX = this.spriteConfig.xPos;
     const outputWidth = sourceWidth;
     const outputHeight = sourceHeight;
-    const imageSprite = getRunnerImageSprite();
+    const imageSprite = Runner.getInstance().getRunnerImageSprite();
     assert(imageSprite);
 
     if (IS_HIDPI) {

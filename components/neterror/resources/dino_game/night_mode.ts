@@ -5,9 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {IS_HIDPI} from './constants.js';
+import {Runner} from './offline.js';
 import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum, getRunnerOrigImageSprite} from './utils.js';
+import {getRandomNum} from './utils.js';
 
 
 const PHASES: number[] = [140, 120, 100, 60, 40, 20, 0];
@@ -114,7 +115,7 @@ export class NightMode {
     const moonOutputWidth = moonSourceWidth;
     let starSize = Config.STAR_SIZE;
     let starSourceX = spriteDefinitionByType.original.ldpi.star.x;
-    const runnerOrigImageSprite = getRunnerOrigImageSprite();
+    const runnerOrigImageSprite = Runner.getInstance().getOrigImageSprite();
     assert(runnerOrigImageSprite);
 
     if (IS_HIDPI) {

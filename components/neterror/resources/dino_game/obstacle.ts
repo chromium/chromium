@@ -6,10 +6,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {FPS, IS_HIDPI, IS_MOBILE} from './constants.js';
 import type {Dimensions} from './dimensions.js';
+import {Runner} from './offline.js';
 import type {ObstacleType} from './offline_sprite_definitions.js';
 import {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum, getRunnerAltCommonImageSprite, getRunnerAltGameImageSprite, getRunnerAudioCues, getRunnerImageSprite, getRunnerSlowdown} from './utils.js';
+import {getRandomNum} from './utils.js';
 
 /**
  * Coefficient for calculating the maximum gap.
@@ -39,9 +40,9 @@ export class Obstacle {
   width: number = 0;
   xPos: number;
   yPos: number = 0;
+  typeConfig: ObstacleType;
 
   private canvasCtx: CanvasRenderingContext2D;
-  private typeConfig: ObstacleType;
   private spritePos: SpritePosition;
   private gapCoefficient: number;
   private speedOffset: number = 0;
@@ -59,18 +60,19 @@ export class Obstacle {
       spriteImgPos: SpritePosition, dimensions: Dimensions,
       gapCoefficient: number, speed: number, xOffset: number = 0,
       isAltGameMode: boolean = false) {
+    const runner = Runner.getInstance();
     this.canvasCtx = canvasCtx;
     this.spritePos = spriteImgPos;
     this.typeConfig = type;
     this.gapCoefficient =
-        getRunnerSlowdown() ? gapCoefficient * 2 : gapCoefficient;
+        runner.hasSlowdown ? gapCoefficient * 2 : gapCoefficient;
     this.size = getRandomNum(1, maxObstacleLength);
     this.xPos = dimensions.width + xOffset;
     this.altGameModeActive = isAltGameMode;
     const imageSprite = this.typeConfig.type === 'collectable' ?
-        getRunnerAltCommonImageSprite() :
-        this.altGameModeActive ? getRunnerAltGameImageSprite() :
-                                 getRunnerImageSprite();
+        runner.getAltCommonImageSprite() :
+        this.altGameModeActive ? runner.getRunnerAltGameImageSprite() :
+                                 runner.getRunnerImageSprite();
     assert(imageSprite);
     this.imageSprite = imageSprite;
 
@@ -129,7 +131,7 @@ export class Obstacle {
     this.gap = this.getGap(this.gapCoefficient, speed);
 
     // Increase gap for audio cues enabled.
-    if (getRunnerAudioCues()) {
+    if (Runner.getInstance().hasAudioCues) {
       this.gap *= 2;
     }
   }
