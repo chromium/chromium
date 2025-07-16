@@ -32,6 +32,7 @@ source_set("row") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
     "//url",
   ]

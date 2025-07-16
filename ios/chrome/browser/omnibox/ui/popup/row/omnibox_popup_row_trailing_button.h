@@ -9,11 +9,14 @@
 
 // The trailing icon type.
 enum class TrailingIconType {
+  /// No trailing icon.
+  kNone,
   /// Append arrow icon type.
   kRefineQuery,
   /// Open existing tab icon type.
   kOpenExistingTab,
-  kNone
+  /// Search with Aim icon type.
+  kSearchWithAim
 };
 
 // Trailing button view used in the omnibox popup row.

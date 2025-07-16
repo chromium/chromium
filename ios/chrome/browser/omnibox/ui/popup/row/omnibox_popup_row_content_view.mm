@@ -32,6 +32,7 @@ const CGFloat kMultilineTextTopMargin = 12.0;
 /// too close to the trailing (button/end).
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
+const CGFloat kAimIconTextTrailingMargin = 12.0;
 const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 16;
 const CGFloat kTrailingButtonTrailingMargin = 18;
@@ -409,7 +410,13 @@ const double kContentSizeMultiplierAccesibility = 2.0;
   _separator.hidden = !configuration.showSeparator;
 
   // Text margins.
-  if (configuration.primaryTextNumberOfLines > 1) {
+  if (configuration.trailingIconType == TrailingIconType::kSearchWithAim) {
+    _textTrailingToButtonConstraint.constant = kAimIconTextTrailingMargin;
+    _textTrailingConstraint.constant = kAimIconTextTrailingMargin;
+    _textTopConstraint.constant = configuration.primaryTextNumberOfLines > 1
+                                      ? kTextTopMargin
+                                      : kMultilineTextTopMargin;
+  } else if (configuration.primaryTextNumberOfLines > 1) {
     _textTrailingConstraint.constant = kMultilineTextTrailingMargin;
     _textTrailingToButtonConstraint.constant = kMultilineTextTrailingMargin;
     _textTopConstraint.constant = kMultilineTextTopMargin;
