@@ -30,6 +30,7 @@ source_set("model") {
     ":constants",
     ":features",
     ":reader_mode_js",
+    ":reader_mode_prefs",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/proto",
     "//components/dom_distiller/ios",
@@ -42,6 +43,7 @@ source_set("model") {
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
@@ -70,7 +72,20 @@ source_set("features") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features:system_flags",
+  ]
+}
+
+source_set("reader_mode_prefs") {
+  sources = [
+    "reader_mode_prefs.h",
+    "reader_mode_prefs.mm",
+  ]
+  deps = [
+    ":features",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
   ]
 }
 
@@ -155,6 +170,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/browser/web_selection/model",
+    "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",

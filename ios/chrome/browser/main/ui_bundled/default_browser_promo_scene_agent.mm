@@ -17,7 +17,10 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -41,6 +44,18 @@
 }
 
 #pragma mark - Private
+
+// Registers the generic default browser promo if the user is eligible.
+// Otherwise, deregisters. Eligibility depends on the latest usage of the
+// Reading Mode feature.
+- (void)updateReaderModeRegistration {
+  if (self.isEligibleForReaderModeDefaultBrowserPromo) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::DefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+  }
+}
 
 // Registers the post restore default browser promo if the user is eligible.
 // Otherwise, deregisters. To be eligible, they must be in the first session
@@ -232,6 +247,15 @@
       signin::ConsentLevel::kSignin);
 }
 
+- (BOOL)isEligibleForReaderModeDefaultBrowserPromo {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  if (!profile) {
+    return NO;
+  }
+  return reader_mode_prefs::IsReaderModeRecentlyUsed(*profile->GetPrefs()) &&
+         !IsChromeLikelyDefaultBrowser();
+}
+
 - (feature_engagement::Tracker*)featureEngagementTracker {
   ProfileIOS* profile = self.sceneState.profileState.profile;
   if (!profile) {
@@ -255,6 +279,15 @@
   }
 
   DCHECK(self.promosManager);
+
+  // If the Reading Mode default browser promo experiment is enabled, ignore all
+  // other criteria for default browser promo eligibility.
+  if (IsReaderModeAvailable() &&
+      base::FeatureList::IsEnabled(kEnableReaderModeDefaultBrowserPromo)) {
+    [self updateReaderModeRegistration];
+    return;
+  }
+
   [self updatePostRestorePromoRegistration];
   [self updatePostDefaultAbandonmentPromoRegistration];
   [self updateAllTabsPromoRegistration];

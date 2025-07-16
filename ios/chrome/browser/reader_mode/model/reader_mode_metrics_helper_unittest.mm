@@ -31,6 +31,7 @@ class ReaderModeMetricsHelperTest : public PlatformTest {
  public:
   void SetUp() override {
     profile_ = TestProfileIOS::Builder().Build();
+    web_state_.SetBrowserState(profile_.get());
     distilled_page_prefs_ =
         DistillerServiceFactory::GetForProfile(profile_.get())
             ->GetDistilledPagePrefs();

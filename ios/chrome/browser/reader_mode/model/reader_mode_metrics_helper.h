@@ -34,6 +34,10 @@ class ReaderModeMetricsHelper
   // Stops recording heuristic and resets state for the next event.
   void CancelReaderHeuristicRecording();
 
+  // Returns true if the Reading Mode feature usage meets the configurable
+  // criteria for number of times used across a time span.
+  bool ReaderModeIsRecentlyUsed();
+
   // Records histograms for the Reading Mode distillation event.
   void RecordReaderDistillerTriggered();
   void RecordReaderDistillerCompleted(ReaderModeDistillerResult result);

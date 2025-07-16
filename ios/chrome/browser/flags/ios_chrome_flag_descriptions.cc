@@ -1339,6 +1339,12 @@ const char kReaderModeReadabilityDistillerName[] =
 const char kReaderModeReadabilityDistillerDescription[] =
     "Enables Readability distiller for Reader Mode UI.";
 
+const char kReaderModeDefaultBrowserPromoName[] =
+    "Enables the default browser promo with Reader Mode criteria";
+const char kReaderModeDefaultBrowserPromoDescription[] =
+    "Enables the Reader Mode eligibility criteria for displaying the default "
+    "browser promo and disables all other criteria.";
+
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";

@@ -4,14 +4,37 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 
+#import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
+
+// Updates the most recently used timestamp for Reading Mode usage with
+// the current event time.
+void UpdateRecentlyUsedTimestamps(PrefService* prefs) {
+  const base::Time now = base::Time::Now();
+  ScopedListPrefUpdate reader_mode_timestamps_pref_update(
+      prefs, reader_mode_prefs::kReaderModeRecentlyUsedTimestampsPref);
+  reader_mode_timestamps_pref_update->Append(base::TimeToValue(now));
+
+  // Only keep the last 5 timestamps to maintain a small size.
+  constexpr size_t kMaxTimestamps = 5;
+  if (reader_mode_timestamps_pref_update->size() > kMaxTimestamps) {
+    size_t entries_to_erase =
+        reader_mode_timestamps_pref_update->size() - kMaxTimestamps;
+    reader_mode_timestamps_pref_update->erase(
+        reader_mode_timestamps_pref_update->begin(),
+        reader_mode_timestamps_pref_update->begin() + entries_to_erase);
+  }
+}
 
 // Converts dom_distiller::mojom::FontFamily to Reader mode metric type.
 ReaderModeFontFamily ConvertMojomFontFamily(
@@ -126,6 +149,10 @@ void ReaderModeMetricsHelper::RecordReaderShown() {
   last_reader_mode_state_.reset();
   base::UmaHistogramEnumeration(kReaderModeStateHistogram,
                                 ReaderModeState::kReaderShown);
+  PrefService* pref_service =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
+  UpdateRecentlyUsedTimestamps(pref_service);
+
   reading_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 

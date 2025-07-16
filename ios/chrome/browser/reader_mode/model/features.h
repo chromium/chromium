@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kEnableReaderModeDebugInfo);
 // Feature to enable Readability heuristic for page triggering eligibility.
 BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
 
+// Feature to enable the default browser promo with Reading mode eligibility
+// criteria.
+BASE_DECLARE_FEATURE(kEnableReaderModeDefaultBrowserPromo);
+
 // Name to configure the duration string for page load delay. See
 // `base::TimeDeltaFromString` for valid duration string configurations.
 extern const char kReaderModeDistillerPageLoadDelayDurationStringName[];
@@ -33,5 +37,13 @@ bool IsReaderModeAvailable();
 
 // Returns whether the Reader Mode snackbar is enabled.
 bool IsReaderModeSnackbarEnabled();
+
+// Returns the number of days a user must be active to display the default
+// browser promo.
+int ReaderModeDefaultBrowserActiveDaysCriteria();
+
+// Returns the number of days to span to determine the Reading Mode default
+// browser eligibility criteria.
+int ReaderModeDefaultBrowserNumDaysCriteria();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_FEATURES_H_

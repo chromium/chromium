@@ -14,11 +14,14 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,6 +37,7 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -100,6 +104,13 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
     agent_.promosManager = promos_manager_.get();
 
+    web_state_.SetBrowserState(profile_.get());
+    distilled_page_prefs_ =
+        DistillerServiceFactory::GetForProfile(profile_.get())
+            ->GetDistilledPagePrefs();
+    metrics_helper_ = std::make_unique<ReaderModeMetricsHelper>(
+        &web_state_, distilled_page_prefs_);
+
     base::RunLoop run_loop;
     // Call IsFirstSessionAfterDeviceRestore() explicitly to make sure sentinel
     // files related to backup/restore are fully created before the test begins.
@@ -134,6 +145,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
          forKey:@"SimulatePostDeviceRestore"];
 
     ResetDeviceRestoreDataForTesting();
+  }
+
+  void SimulateReadingModeInteraction() {
+    metrics_helper_->RecordReaderShown();
   }
 
   void VerifyPromoRegistration(std::set<promos_manager::Promo> promos) {
@@ -207,6 +222,9 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   DefaultBrowserPromoSceneAgent* agent_;
+  web::FakeWebState web_state_;
+  std::unique_ptr<ReaderModeMetricsHelper> metrics_helper_;
+  raw_ptr<dom_distiller::DistilledPagePrefs> distilled_page_prefs_;
 };
 
 // Tests that DefaultBrowser was registered with the promo manager when user is
@@ -511,4 +529,17 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaExperiment) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   Mock::VerifyAndClearExpectations(mock_tracker_);
   scene_state_.activationLevel = SceneActivationLevelBackground;
+}
+
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaForReadingMode) {
+  scoped_feature_list_.InitWithFeatures(
+      {kEnableReaderMode, kEnableReaderModeDefaultBrowserPromo}, {});
+
+  SimulateReadingModeInteraction();
+  SimulateReadingModeInteraction();
+
+  VerifyPromoRegistration({promos_manager::Promo::DefaultBrowser});
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  Mock::VerifyAndClearExpectations(promos_manager_.get());
 }
