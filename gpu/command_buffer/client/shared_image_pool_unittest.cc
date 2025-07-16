@@ -286,7 +286,6 @@ TEST_F(SharedImagePoolTest, SetReleaseSyncToken) {
 // Test that SharedImagePool creates a mappable shared image when buffer_usage
 // is set.
 TEST_F(SharedImagePoolTest, CreatesMappableSharedImageWhenBufferUsageIsSet) {
-  test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   // Define ImageInfo with buffer_usage set.
   ImageInfo info = {gfx::Size(100, 100),
                     viz::SinglePlaneFormat::kRGBA_8888,
@@ -308,7 +307,6 @@ TEST_F(SharedImagePoolTest, CreatesMappableSharedImageWhenBufferUsageIsSet) {
 }
 
 TEST_F(SharedImagePoolTest, DoesNotReuseSharedImageWithDifferentBufferUsage) {
-  test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   // Define ImageInfo with initial buffer_usage.
   ImageInfo info = {gfx::Size(100, 100),
                     viz::SinglePlaneFormat::kRGBA_8888,
