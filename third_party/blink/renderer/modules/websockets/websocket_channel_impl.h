@@ -369,7 +369,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   KURL url_;
   uint64_t identifier_;
   Member<BlobLoader> blob_loader_;
-  WTF::Deque<Message> messages_;
+  Deque<Message> messages_;
   Member<WebSocketMessageChunkAccumulator> message_chunks_;
   const Member<ExecutionContext> execution_context_;
 
@@ -399,7 +399,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::SimpleWatcher readable_watcher_;
-  WTF::Deque<DataFrame> pending_data_frames_;
+  Deque<DataFrame> pending_data_frames_;
 
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;

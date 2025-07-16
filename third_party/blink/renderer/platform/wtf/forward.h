@@ -41,6 +41,10 @@ class StringBuilder;
 class StringImpl;
 class StringView;
 
+template <typename T,
+          wtf_size_t inlineBuffer = 0,
+          typename Allocator = WTF::PartitionAllocator>
+class Deque;
 template <typename T>
 class StringBuffer;
 template <typename T,
@@ -51,11 +55,6 @@ class Vector;
 }  // namespace blink
 
 namespace WTF {
-
-template <typename T,
-          wtf_size_t inlineBuffer = 0,
-          typename Allocator = PartitionAllocator>
-class Deque;
 
 class OrdinalNumber;
 class SegmentedBuffer;

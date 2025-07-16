@@ -1604,7 +1604,7 @@ class OperatorFlatMapSubscribeDelegate final
     // this). These values are queued and processed one-by-one; they each get
     // passed into `mapper_`.
     //
-    // TODO(crbug.com/40282760): This should be a `WTF::Deque` or `HeapDeque`,
+    // TODO(crbug.com/40282760): This should be a `blink::Deque` or `HeapDeque`,
     // but neither support holding a `ScriptValue` type at the moment. This
     // needs some investigation, so we can avoid using `HeapVector` here, which
     // has O(n) performance when removing values from the front.

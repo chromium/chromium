@@ -82,7 +82,7 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   const std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool> pool_;
   base::AtomicSequenceNumber trace_flow_seqno_;
 
-  WTF::Deque<std::unique_ptr<base::CancelableOnceClosure>>
+  Deque<std::unique_ptr<base::CancelableOnceClosure>>
       pending_gpu_completion_callbacks_;
 };
 

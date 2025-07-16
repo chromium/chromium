@@ -422,7 +422,7 @@ void WebRtcVideoTrackSource::ProcessMappedFrame(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT("webrtc", "WebRtcVideoTrackSource::ProcessMappedFrame");
 
-  WTF::Deque<PendingFrame>::iterator it;
+  Deque<PendingFrame>::iterator it;
   for (it = pending_frames_.begin(); it != pending_frames_.end(); ++it) {
     if (it->id == id) {
       break;

@@ -76,7 +76,7 @@ class MODULES_EXPORT LowLatencyVideoRendererAlgorithm {
   scoped_refptr<media::VideoFrame> current_frame_;
 
   // Queue of incoming frames waiting for rendering.
-  using VideoFrameQueue = WTF::Deque<scoped_refptr<media::VideoFrame>>;
+  using VideoFrameQueue = Deque<scoped_refptr<media::VideoFrame>>;
   VideoFrameQueue frame_queue_;
 
   // Render deadline min for when the last frame was rendered.

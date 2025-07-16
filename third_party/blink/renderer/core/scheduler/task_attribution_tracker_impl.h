@@ -72,7 +72,7 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
   // same-document navigation that was sent to the browser side. They are kept
   // here to ensure the relevant object remains alive (and hence properly
   // tracked through task attribution).
-  WTF::Deque<Persistent<TaskAttributionInfo>> same_document_navigation_tasks_;
+  Deque<Persistent<TaskAttributionInfo>> same_document_navigation_tasks_;
 
   // The lifetime of this class is tied to the `isolate_`.
   v8::Isolate* isolate_;

@@ -230,7 +230,7 @@ class WebRtcVideoTrackSourceTest
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources_;
   scoped_refptr<WebRtcVideoTrackSource> track_source_;
   media::VideoCaptureFeedback feedback_;
-  WTF::Deque<base::OnceCallback<void(bool)>> map_callbacks_;
+  Deque<base::OnceCallback<void(bool)>> map_callbacks_;
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 

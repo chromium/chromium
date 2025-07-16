@@ -37,7 +37,7 @@ BucketFileSystemBuilder::BucketFileSystemBuilder(
       storage_key_(storage_key),
       directory_name_(name),
       /*file_system_handle_queue_(
-          std::make_unique<WTF::Deque<FileSystemHandle*>>()),*/
+          std::make_unique<Deque<FileSystemHandle*>>()),*/
       completion_callback_(std::move(completion_callback)),
       receiver_(this, execution_context) {
   nested_directories_ = std::make_unique<protocol::Array<String>>();

@@ -962,7 +962,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // Metadata for frames passed to Encode(), matched to encoded frames using
   // timestamps.
-  WTF::Deque<FrameInfo> submitted_frames_;
+  Deque<FrameInfo> submitted_frames_;
 
   // Indicates that timestamp match failed and we should no longer attempt
   // matching.
@@ -970,7 +970,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // The pending frames to be encoded with the boolean representing whether the
   // frame must be encoded keyframe.
-  WTF::Deque<FrameChunk> pending_frames_;
+  Deque<FrameChunk> pending_frames_;
 
   // Frame sizes.
   gfx::Size input_frame_coded_size_;

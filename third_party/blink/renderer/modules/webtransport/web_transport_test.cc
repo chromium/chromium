@@ -332,9 +332,9 @@ class WebTransportTest : public ::testing::Test {
 
   raw_ptr<const BrowserInterfaceBrokerProxy, DanglingUntriaged>
       interface_broker_ = nullptr;
-  WTF::Deque<AcceptUnidirectionalStreamCallback>
+  Deque<AcceptUnidirectionalStreamCallback>
       pending_unidirectional_accept_callbacks_;
-  WTF::Deque<AcceptBidirectionalStreamCallback>
+  Deque<AcceptBidirectionalStreamCallback>
       pending_bidirectional_accept_callbacks_;
   test::TaskEnvironment task_environment_;
   WebTransportConnector connector_;

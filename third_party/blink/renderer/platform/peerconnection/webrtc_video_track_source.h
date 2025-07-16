@@ -159,7 +159,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
     int64_t id;
     bool can_be_delivered = false;
   };
-  WTF::Deque<PendingFrame> pending_frames_;
+  Deque<PendingFrame> pending_frames_;
 
   scoped_refptr<CallbackProxy> callback_proxy_;
 

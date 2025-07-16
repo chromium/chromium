@@ -101,7 +101,7 @@ class MODULES_EXPORT TrackAudioRenderer
     std::unique_ptr<media::AudioBus> audio;
   };
 
-  using PendingDataQueue = WTF::Deque<PendingData>;
+  using PendingDataQueue = Deque<PendingData>;
 
   struct PendingReconfig {
     PendingReconfig(const media::AudioParameters& format, int generation);
@@ -113,7 +113,7 @@ class MODULES_EXPORT TrackAudioRenderer
     const media::AudioParameters format;
   };
 
-  using PendingReconfigQueue = WTF::Deque<PendingReconfig>;
+  using PendingReconfigQueue = Deque<PendingReconfig>;
 
   // WebMediaStreamAudioSink implementation.
 

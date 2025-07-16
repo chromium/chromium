@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class DequeIteratorBase;
@@ -249,7 +249,7 @@ class DequeIteratorBase {
 
 template <typename T,
           wtf_size_t InlineCapacity = 0,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = WTF::PartitionAllocator>
 class DequeIterator : public DequeIteratorBase<T, InlineCapacity, Allocator> {
  private:
   typedef DequeIteratorBase<T, InlineCapacity, Allocator> Base;
@@ -303,7 +303,7 @@ class DequeIterator : public DequeIteratorBase<T, InlineCapacity, Allocator> {
 
 template <typename T,
           wtf_size_t InlineCapacity = 0,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = WTF::PartitionAllocator>
 class DequeConstIterator
     : public DequeIteratorBase<T, InlineCapacity, Allocator> {
  private:
@@ -766,8 +766,6 @@ inline void swap(Deque<T, InlineCapacity, Allocator>& a,
   a.Swap(b);
 }
 
-}  // namespace WTF
-
-using WTF::Deque;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DEQUE_H_

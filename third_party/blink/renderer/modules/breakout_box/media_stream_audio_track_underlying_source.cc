@@ -121,7 +121,7 @@ class AudioBufferPoolImpl
   media::AudioParameters params_;
 
   static constexpr int kInlineCapacity = 4;
-  WTF::Deque<scoped_refptr<media::AudioBuffer>, kInlineCapacity> buffers_;
+  Deque<scoped_refptr<media::AudioBuffer>, kInlineCapacity> buffers_;
 };
 
 MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(

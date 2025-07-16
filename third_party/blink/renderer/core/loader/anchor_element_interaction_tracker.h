@@ -76,7 +76,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
     gfx::Vector2dF acceleration_;
     // Mouse velocity in (pixels/second).
     gfx::Vector2dF velocity_;
-    WTF::Deque<MousePositionAndTimeStamp> mouse_position_and_timestamps_;
+    Deque<MousePositionAndTimeStamp> mouse_position_and_timestamps_;
     HeapTaskRunnerTimer<AnchorElementInteractionTracker::MouseMotionEstimator>
         update_timer_;
     const base::TickClock* clock_;

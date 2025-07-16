@@ -146,9 +146,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   Member<TransferredMediaStreamComponent> transferred_component_;
   Member<MediaStreamTrack> track_;
   Vector<SetterFunction> setter_call_order_;
-  WTF::Deque<String> content_hint_list_;
+  Deque<String> content_hint_list_;
   HeapDeque<Member<ConstraintsPair>> constraints_list_;
-  WTF::Deque<bool> enabled_state_list_;
+  Deque<bool> enabled_state_list_;
   HeapDeque<Member<TransferredMediaStreamTrack>> clone_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;

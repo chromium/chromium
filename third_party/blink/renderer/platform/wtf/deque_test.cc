@@ -30,7 +30,12 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
+namespace blink {
+
+using WTF::DestructCounter;
+using WTF::LivenessCounter;
+using WTF::MoveOnly;
+using WTF::WrappedInt;
 
 namespace {
 
@@ -581,4 +586,4 @@ static_assert(!IsTraceable<Deque<int>>::value,
               "Deque<int> must not be traceable.");
 
 }  // anonymous namespace
-}  // namespace WTF
+}  // namespace blink

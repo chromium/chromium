@@ -67,15 +67,15 @@ class BasicHeapDeque final
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
-// On-stack for in-field version of WTF::Deque for referring to GarbageCollected
-// or DISALLOW_NEW() objects with Trace() methods.
+// On-stack for in-field version of blink::Deque for referring to
+// GarbageCollected or DISALLOW_NEW() objects with Trace() methods.
 template <typename T>
 using HeapDeque = BasicHeapDeque<internal::HeapCollectionType::kDisallowNew, T>;
 
 static_assert(WTF::IsDisallowNew<HeapDeque<int>>);
 ASSERT_SIZE(Deque<int>, HeapDeque<int>);
 
-// GCed version of WTF::Deque for referring to GarbageCollected or
+// GCed version of blink::Deque for referring to GarbageCollected or
 // DISALLOW_NEW() objects with Trace() methods.
 template <typename T>
 using GCedHeapDeque = BasicHeapDeque<internal::HeapCollectionType::kGCed, T>;

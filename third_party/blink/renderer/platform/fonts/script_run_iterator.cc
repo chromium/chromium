@@ -325,7 +325,7 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
         // And pop stack to this point.
         int num_popped =
             static_cast<int>(std::distance(brackets_.rbegin(), it));
-        // TODO: No resize operation in WTF::Deque?
+        // TODO: No resize operation in blink::Deque?
         for (int i = 0; i < num_popped; ++i)
           brackets_.pop_back();
         brackets_fixup_depth_ = static_cast<wtf_size_t>(

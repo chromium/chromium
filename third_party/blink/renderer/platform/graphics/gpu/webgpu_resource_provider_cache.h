@@ -99,7 +99,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
     int resource_size_;
   };
 
-  using DequeResourceProvider = WTF::Deque<Resource>;
+  using DequeResourceProvider = Deque<Resource>;
 
   // Search |unused_providers_| and acquire the canvas resource provider with
   // the same cache key for re-use.

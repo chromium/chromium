@@ -258,12 +258,12 @@ class RTCVideoDecoderAdapter::Impl {
   raw_ptr<webrtc::DecodedImageCallback> decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
   // Requests that have not been submitted to the decoder yet.
-  WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
+  Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
   // Record of timestamps that have been sent to be decoded. Removing a
   // timestamp will cause the frame to be dropped when it is output.
-  WTF::Deque<base::TimeDelta> decode_timestamps_;
+  Deque<base::TimeDelta> decode_timestamps_;
   bool require_key_frame_ = true;
-  WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback_;
+  CrossThreadRepeatingFunction<void(Status)> change_status_callback_;
 
   SEQUENCE_CHECKER(media_sequence_checker_);
 
