@@ -36,7 +36,6 @@ public class ReaderModeBottomSheetCoordinator {
     private final ReaderModeBottomSheetContent mBottomSheetContent;
     private final ReaderModeBottomSheetView mReaderModeBottomSheetView;
     private final DomDistillerService mDomDistillerService;
-    ;
 
     /**
      * @param context The {@link Context} associated with this coordinator.
@@ -130,17 +129,17 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public @StringRes int getSheetClosedAccessibilityStringId() {
-            return 0;
+            return R.string.reader_mode_bottom_sheet_closed_content_description;
         }
 
         @Override
         public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-            return 0;
+            return R.string.reader_mode_bottom_sheet_half_height_content_description;
         }
 
         @Override
         public @StringRes int getSheetFullHeightAccessibilityStringId() {
-            return 0;
+            return R.string.reader_mode_bottom_sheet_full_height_content_description;
         }
 
         @Override
