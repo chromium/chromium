@@ -536,13 +536,6 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              "SkipEarlyCommitPendingForCrashedFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Skip granting access to the data path if it has already been set.
-BASE_FEATURE(kSkipGrantAccessToDataPathIfAlreadySet,
-             "SkipGrantAccessToDataPathIfAlreadySet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, ensure high-rank processes are on the LRU list while app is in
 // background or the effective binding state is in conflict with low rank

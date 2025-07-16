@@ -234,14 +234,10 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   static constexpr DWORD kInheritance =
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
 
-  if (base::FeatureList::IsEnabled(
-          features::kSkipGrantAccessToDataPathIfAlreadySet)) {
-    // If LPAC capability already has access to the directory then avoid
-    // granting access again. This is a performance optimization.
-    if (HasAccessToPath(directory->path(), ac_sids, kAccessMask,
-                        kInheritance)) {
-      return true;
-    }
+  // If LPAC capability already has access to the directory then avoid
+  // granting access again. This is a performance optimization.
+  if (HasAccessToPath(directory->path(), ac_sids, kAccessMask, kInheritance)) {
+    return true;
   }
 
   // Grant recursive access to directory. This also means new files in the
