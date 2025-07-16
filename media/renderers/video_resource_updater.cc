@@ -1129,18 +1129,13 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   resource->SetUniqueId(video_frame->unique_id());
 
   // TODO(crbug.com/41380578): This should really default to rec709.
-  // Use the identity color space for when MatrixID is RGB for multiplanar
-  // software video frames.
-  // TODO(crbug.com/368870063): Implement RGB matrix support in
-  // ToSkYUVColorSpace.
-  SkYUVColorSpace color_space = kIdentity_SkYUVColorSpace;
+  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
   gfx::ColorSpace video_color_space = video_frame->ColorSpace();
   // There should be no usages of RGB matrix for color space here.
   CHECK(!video_color_space.IsValid() ||
             (video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB),
         base::NotFatalUntil::M139);
-  if (video_color_space.IsValid() &&
-      video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
+  if (video_color_space.IsValid()) {
     // The ColorSpace is converted to SkYUVColorSpace but not used by
     // WritePixelsYUV.
     CHECK(video_color_space.ToSkYUVColorSpace(video_frame->BitDepth(),
