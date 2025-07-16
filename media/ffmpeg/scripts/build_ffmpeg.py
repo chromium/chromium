@@ -363,7 +363,7 @@ def SetupWindowsCrossCompileToolchain(target_arch):
 
 def SetupMacCrossCompileToolchain(target_arch):
     # First compute the various SDK paths.
-    mac_min_ver = '10.10'
+    mac_min_ver = '12.0'
     developer_dir = os.path.join(CHROMIUM_ROOT_DIR, 'build', 'mac_files',
                                  'xcode_binaries', 'Contents', 'Developer')
     sdk_dir = os.path.join(developer_dir, 'Platforms', 'MacOSX.platform',
