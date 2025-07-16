@@ -2813,8 +2813,7 @@ class Spanifier {
 
     // Matches a pointer type loc without a restriction like `pointer_type`,
     // which excludes certain pointer types.
-    auto pointer_type_loc = loc(qualType(anyOf(
-        pointerType(), autoType(hasDeducedType(qualType(pointerType()))))));
+    auto pointer_type_loc = pointerTypeLoc();
 
     auto raw_ptr_type = qualType(
         hasDeclaration(classTemplateSpecializationDecl(hasName("raw_ptr"))));
