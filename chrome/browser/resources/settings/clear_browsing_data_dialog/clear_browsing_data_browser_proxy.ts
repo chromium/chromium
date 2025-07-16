@@ -65,7 +65,6 @@ export interface ClearBrowsingDataResult {
  */
 export interface UpdateSyncStateEvent {
   signedIn: boolean;
-  syncConsented: boolean;
   syncingHistory: boolean;
   shouldShowCookieException: boolean;
   isNonGoogleDse: boolean;

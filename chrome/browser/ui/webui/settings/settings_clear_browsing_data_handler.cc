@@ -383,9 +383,6 @@ base::Value::Dict ClearBrowsingDataHandler::CreateSyncStateEvent() {
   base::Value::Dict event;
   event.Set("signedIn", identity_manager && identity_manager->HasPrimaryAccount(
                                                 signin::ConsentLevel::kSignin));
-  event.Set("syncConsented",
-            identity_manager && identity_manager->HasPrimaryAccount(
-                                    signin::ConsentLevel::kSync));
   event.Set("syncingHistory", sync_service_ &&
                                   sync_service_->IsSyncFeatureActive() &&
                                   sync_service_->GetActiveDataTypes().Has(

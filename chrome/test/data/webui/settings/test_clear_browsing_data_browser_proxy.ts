@@ -52,7 +52,6 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
     this.methodCalled('getSyncState');
     return Promise.resolve({
       signedIn: false,
-      syncConsented: false,
       syncingHistory: false,
       shouldShowCookieException: false,
       isNonGoogleDse: false,
