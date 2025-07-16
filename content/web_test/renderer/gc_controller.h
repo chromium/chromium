@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/wrappable.h"
-#include "gin/public/wrappable_pointer_tags.h"
 
 namespace blink {
 class WebLocalFrame;
@@ -20,21 +19,14 @@ class Arguments;
 
 namespace content {
 
-class GCController : public gin::Wrappable<GCController> {
+class GCController : public gin::DeprecatedWrappable<GCController> {
  public:
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin},
-      gin::kGCController};
-
-  const gin::WrapperInfo* wrapper_info() const override;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   GCController(const GCController&) = delete;
   GCController& operator=(const GCController&) = delete;
 
   static void Install(blink::WebLocalFrame* frame);
-
-  explicit GCController(blink::WebLocalFrame* frame);
-  ~GCController() override;
 
  private:
   // In the first GC cycle, a weak callback of the DOM wrapper is called back
@@ -44,6 +36,9 @@ class GCController : public gin::Wrappable<GCController> {
   // more than two GC cycles are needed to collect all DOM wrappers
   // that are chained. Seven GC cycles look enough in most tests.
   static constexpr int kNumberOfGCsForFullCollection = 7;
+
+  explicit GCController(blink::WebLocalFrame* frame);
+  ~GCController() override;
 
   // gin::Wrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

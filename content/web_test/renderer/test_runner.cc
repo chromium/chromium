@@ -50,8 +50,8 @@
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
+#include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/mojom/base/text_direction.mojom-forward.h"
 #include "net/base/filename_util.h"
@@ -103,9 +103,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/test/icc_profiles.h"
-#include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/prefinalizer.h"
-#include "v8/include/v8-cppgc.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #include "third_party/blink/public/platform/web_font_render_style.h"
@@ -201,15 +199,9 @@ void ConvertAndSet(gin::Arguments* args, blink::WebString* set_param) {
 
 }  // namespace
 
-class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
-  CPPGC_USING_PRE_FINALIZER(TestRunnerBindings, Dispose);
-
+class TestRunnerBindings : public gin::DeprecatedWrappable<TestRunnerBindings> {
  public:
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin},
-      gin::kTestRunnerBindings};
-
-  const gin::WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   TestRunnerBindings(const TestRunnerBindings&) = delete;
   TestRunnerBindings& operator=(const TestRunnerBindings&) = delete;
@@ -245,10 +237,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     return frame_->GetWebFrame();
   }
 
-  explicit TestRunnerBindings(TestRunner* test_runner,
-                              WebFrameTestProxy* frame,
-                              SpellCheckClient* spell_check);
-
  private:
   // Watches for the RenderFrame that the TestRunnerBindings is attached to
   // being destroyed.
@@ -265,7 +253,12 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     const raw_ptr<TestRunnerBindings> bindings_;
   };
 
-  // gin::Wrappable overrides.
+  explicit TestRunnerBindings(TestRunner* test_runner,
+                              WebFrameTestProxy* frame,
+                              SpellCheckClient* spell_check);
+  ~TestRunnerBindings() override;
+
+  // gin::DeprecatedWrappable overrides.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -454,6 +447,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   base::WeakPtrFactory<TestRunnerBindings> weak_ptr_factory_{this};
 };
 
+gin::DeprecatedWrapperInfo TestRunnerBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
+
 // static
 void TestRunnerBindings::Install(TestRunner* test_runner,
                                  WebFrameTestProxy* frame,
@@ -468,13 +464,15 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
 
   v8::Context::Scope context_scope(context);
 
-  auto* bindings = cppgc::MakeGarbageCollected<TestRunnerBindings>(
-      isolate->GetCppHeap()->GetAllocationHandle(), test_runner, frame,
-      spell_check);
-  v8::Local<v8::Object> wrapper =
-      bindings->GetWrapper(isolate).ToLocalChecked();
+  TestRunnerBindings* wrapped =
+      new TestRunnerBindings(test_runner, frame, spell_check);
+  gin::Handle<TestRunnerBindings> bindings =
+      gin::CreateHandle(isolate, wrapped);
+  CHECK(!bindings.IsEmpty());
   v8::Local<v8::Object> global = context->Global();
-  global->Set(context, gin::StringToV8(isolate, "testRunner"), wrapper)
+  v8::Local<v8::Value> v8_bindings = bindings.ToV8();
+
+  global->Set(context, gin::StringToV8(isolate, "testRunner"), v8_bindings)
       .Check();
 
   // Inject some JavaScript to the top-level frame of a reftest in the
@@ -555,9 +553,11 @@ TestRunnerBindings::TestRunnerBindings(TestRunner* runner,
       frame_(frame),
       spell_check_(spell_check) {}
 
+TestRunnerBindings::~TestRunnerBindings() = default;
+
 gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<TestRunnerBindings>::GetObjectTemplateBuilder(
+  return gin::DeprecatedWrappable<TestRunnerBindings>::GetObjectTemplateBuilder(
              isolate)
       .SetMethod("abortModal", &TestRunnerBindings::NotImplemented)
       .SetMethod("addDisallowedURL", &TestRunnerBindings::NotImplemented)

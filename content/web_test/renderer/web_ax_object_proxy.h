@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_event_intent.h"
@@ -25,7 +24,7 @@ class WebLocalFrame;
 
 namespace content {
 
-class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
+class WebAXObjectProxy : public gin::DeprecatedWrappable<WebAXObjectProxy> {
  public:
   class Factory {
    public:
@@ -35,11 +34,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
     virtual blink::WebAXContext* GetAXContext() = 0;
   };
 
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin},
-      gin::kWebAXObjectProxy};
-
-  const gin::WrapperInfo* wrapper_info() const override;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   WebAXObjectProxy(const blink::WebAXObject& object, Factory* factory);
 

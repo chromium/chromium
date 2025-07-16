@@ -6,9 +6,9 @@
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
+#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -21,32 +21,28 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/events/base_event_utils.h"
-#include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace content {
 
 class TextInputControllerBindings
-    : public gin::Wrappable<TextInputControllerBindings> {
+    : public gin::DeprecatedWrappable<TextInputControllerBindings> {
  public:
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin},
-      gin::kTextInputControllerBindings};
-
-  const gin::WrapperInfo* wrapper_info() const override;
+  static gin::DeprecatedWrapperInfo kWrapperInfo;
 
   TextInputControllerBindings(const TextInputControllerBindings&) = delete;
   TextInputControllerBindings& operator=(const TextInputControllerBindings&) =
       delete;
 
-  explicit TextInputControllerBindings(
-      base::WeakPtr<TextInputController> controller);
   static void Install(base::WeakPtr<TextInputController> controller,
                       blink::WebLocalFrame* frame);
 
  private:
-  // gin::Wrappable:
+  explicit TextInputControllerBindings(
+      base::WeakPtr<TextInputController> controller);
+  ~TextInputControllerBindings() override;
+
+  // gin::DeprecatedWrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -72,6 +68,9 @@ class TextInputControllerBindings
   base::WeakPtr<TextInputController> controller_;
 };
 
+gin::DeprecatedWrapperInfo TextInputControllerBindings::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
+
 // static
 void TextInputControllerBindings::Install(
     base::WeakPtr<TextInputController> controller,
@@ -84,15 +83,15 @@ void TextInputControllerBindings::Install(
 
   v8::Context::Scope context_scope(context);
 
-  auto* bindings = cppgc::MakeGarbageCollected<TextInputControllerBindings>(
-      isolate->GetCppHeap()->GetAllocationHandle(), controller);
-  v8::Local<v8::Object> wrapper;
-  if (!bindings->GetWrapper(isolate).ToLocal(&wrapper))
+  gin::Handle<TextInputControllerBindings> bindings =
+      gin::CreateHandle(isolate, new TextInputControllerBindings(controller));
+  if (bindings.IsEmpty()) {
     return;
+  }
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "textInputController"),
-            wrapper)
+            bindings.ToV8())
       .Check();
 }
 
@@ -100,14 +99,12 @@ TextInputControllerBindings::TextInputControllerBindings(
     base::WeakPtr<TextInputController> controller)
     : controller_(controller) {}
 
-const gin::WrapperInfo* TextInputControllerBindings::wrapper_info() const {
-  return &kWrapperInfo;
-}
+TextInputControllerBindings::~TextInputControllerBindings() {}
 
 gin::ObjectTemplateBuilder
 TextInputControllerBindings::GetObjectTemplateBuilder(v8::Isolate* isolate) {
-  return gin::Wrappable<TextInputControllerBindings>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::DeprecatedWrappable<
+             TextInputControllerBindings>::GetObjectTemplateBuilder(isolate)
       .SetMethod("insertText", &TextInputControllerBindings::InsertText)
       .SetMethod("unmarkText", &TextInputControllerBindings::UnmarkText)
       .SetMethod("unmarkAndUnselectText",
