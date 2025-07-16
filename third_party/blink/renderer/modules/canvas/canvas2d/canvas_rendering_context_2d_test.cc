@@ -1835,7 +1835,8 @@ class CanvasRenderingContext2DTestAccelerated
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProviderForCanvas2D();
+      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext())
+          ->GetOrCreateCanvas2DResourceProvider();
       // Expect that at least the first 10 are accelerated. The exact number
       // depends on the feature params.
       if (i < 10) {
@@ -3213,7 +3214,8 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProviderForCanvas2D();
+      static_cast<CanvasRenderingContext2D*>(canvas->RenderingContext())
+          ->GetOrCreateCanvas2DResourceProvider();
       EXPECT_TRUE(canvas->IsAccelerated());
       canvas->DisableAccelerationForCanvas2D();
     }
