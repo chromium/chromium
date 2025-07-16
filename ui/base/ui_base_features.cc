@@ -113,7 +113,7 @@ BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
 // Controls whether support for Wayland's linux-drm-syncobj is enabled.
 BASE_FEATURE(kWaylandLinuxDrmSyncobj,
              "WaylandLinuxDrmSyncobj",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
