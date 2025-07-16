@@ -38,6 +38,49 @@ class CreditCardFormEventLoggerTest : public AutofillMetricsBaseTest,
     copy.set_record_type(CreditCard::RecordType::kVirtualCard);
     return copy;
   }
+
+  // A helper that creates a credit card form consisting of an expiration month,
+  // a 2-digit expiration year, and a credit card number field.
+  std::pair<FormData, std::vector<FieldType>> CreateMonthYearNumberForm(
+      std::string_view number_value) {
+    return {
+        CreateForm({CreateTestFormField("Month", "card_month", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Year", "card_year", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Credit card", "cardnum", number_value,
+                                        FormControlType::kInputText)}),
+        {CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+         CREDIT_CARD_NUMBER}};
+  }
+
+  // A helper that creates a credit card form consisting of an expiration month,
+  // a 2-digit expiration year, a cvc, and a credit card number field.
+  std::pair<FormData, std::vector<FieldType>> CreateMonthYearCvcNumberForm() {
+    return {CreateForm({CreateTestFormField("Month", "card_month", "",
+                                            FormControlType::kInputText),
+                        CreateTestFormField("Year", "card_year", "",
+                                            FormControlType::kInputText),
+                        CreateTestFormField("CVC", "cvc", "",
+                                            FormControlType::kInputText),
+                        CreateTestFormField("Credit card", "cardnum", "",
+                                            FormControlType::kInputText)}),
+            {CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+             CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NUMBER}};
+  }
+
+  // A helper that creates a credit card form consisting of a name field, a
+  // credit card number field, and a 2-digit expiration year.
+  std::pair<FormData, std::vector<FieldType>> CreateNameNumberYearForm() {
+    return {CreateForm({CreateTestFormField("Name on card", "cc-name", "",
+                                            FormControlType::kInputText),
+                        CreateTestFormField("Credit card", "cardnum", "",
+                                            FormControlType::kInputText),
+                        CreateTestFormField("Expiration date", "expdate", "",
+                                            FormControlType::kInputText)}),
+            {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+             CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}};
+  }
 };
 
 // Parameterized test class to test
@@ -467,17 +510,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // Test that we log interacted form event for credit cards related.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardInteractedFormEvents) {
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -509,17 +542,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // Test that we log suggestion shown form events for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardShownFormEvents) {
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -574,24 +597,12 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        VirtualCreditCardShownFormEvents) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Month", "card_month", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Year", "card_year", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText),
-       CreateTestFormField("Credit card", "cardnum", "",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
-      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NUMBER};
-
   // Creating cards, including a virtual card.
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card*/ true);
 
+  auto [form, field_types] = CreateMonthYearCvcNumberForm();
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -696,19 +707,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
-
   {
     // Previewing suggestions should not record selected-form-events metrics.
     base::HistogramTester histogram_tester;
@@ -862,17 +862,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1146,17 +1136,7 @@ TEST_F(CreditCardFormEventLoggerTest,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown, but not selected.
@@ -1178,17 +1158,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "411111111",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] =
+      CreateMonthYearNumberForm(/*number_value=*/"411111111");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown, but not selected.
@@ -1210,17 +1181,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form = CreateForm(
-      {CreateTestFormField("Month", "card_month", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Year", "card_year", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Credit card", "cardnum", "4444444444444444",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] =
+      CreateMonthYearNumberForm(/*number_value=*/"4444444444444444");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown, but not selected.
@@ -1242,17 +1204,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form = CreateForm(
-      {CreateTestFormField("Month", "card_month", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Year", "card_year", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Credit card", "cardnum", "5105105105105100",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] =
+      CreateMonthYearNumberForm(/*number_value=*/"5105105105105100");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown, but not selected.
@@ -1274,17 +1227,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form = CreateForm(
-      {CreateTestFormField("Month", "card_month", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Year", "card_year", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Credit card", "cardnum", "4111111111111111",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] =
+      CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown, but not selected.
@@ -1306,17 +1250,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form = CreateForm(
-      {CreateTestFormField("Month", "card_month", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Year", "card_year", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Credit card", "cardnum", "4111111111111111",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] =
+      CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulating submission with suggestion shown and selected.
@@ -1348,17 +1283,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1644,17 +1570,8 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
   {
@@ -1961,21 +1878,12 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 // Test that we log interacted form event for credit cards only once.
 TEST_F(CreditCardFormEventLoggerTest, CreditCardFormEventsAreSegmented) {
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Year", "card_year", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
+
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
 
   {
     // Simulate activating the autofill popup for the credit card field.
@@ -2101,18 +2009,7 @@ TEST_F(CreditCardFormEventLoggerTest,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  FormData form =
-      CreateForm({CreateTestFormField("Name on card", "cc-name", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Expiration date", "expdate", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
-                                        CREDIT_CARD_NUMBER,
-                                        CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR};
-
+  auto [form, field_types] = CreateNameNumberYearForm();
   autofill_manager().AddSeenForm(form, field_types);
 
   // Simulate an Autofill query on a credit card field.
