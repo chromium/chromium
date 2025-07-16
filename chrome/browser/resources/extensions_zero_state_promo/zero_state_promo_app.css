@@ -23,7 +23,7 @@
   justify-content: center;
   gap: var(--container-gap);
   padding: 20px;
-  width: 300px;
+  width: 290px;
   background-color: var(--zero-state-promo-background-color);
   color: var(--zero-state-promo-foreground-color);
 }
@@ -55,6 +55,7 @@
   font-weight: 400;
   line-height: 20px;
   padding-bottom: 4px;
+  width: 272px;
 }
 
 #labelContainer, #buttonContainer {
@@ -74,7 +75,6 @@
   display: block;
   font-size: 14px;
   line-height: 20px;
-  padding-top: 4px;
   width: 267px;
 }
 
