@@ -5342,9 +5342,6 @@ const char kReadLaterDescription[] =
     "Allow users to save tabs for later. Enables a new button and menu for "
     "accessing tabs saved for later.";
 
-const char kReaderModeAutoDistillName[] = "Reader Mode auto distillation";
-const char kReaderModeAutoDistillDescription[] =
-    "Automatically distills web contents on every page.";
 const char kReaderModeDistillInAppName[] = "Reader Mode distillation in app";
 const char kReaderModeDistillInAppDescription[] =
     "Distills the web page in brapp instead of a custom tab.";

@@ -8238,11 +8238,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "reader-mode-auto-distill",
-    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "reader-mode-debug-info-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_NATIVE_SCHEME;
-import static org.chromium.components.embedder_support.util.UrlConstants.CHROME_SCHEME;
 import static org.chromium.components.embedder_support.util.UrlConstants.DISTILLER_SCHEME;
 
 import android.app.Activity;
@@ -271,18 +269,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         DomDistillerTabUtils.setInterceptNavigationDelegate(
                 mCustomTabNavigationDelegate, webContents);
-    }
-
-    @Override
-    public void onPageLoadFinished(Tab tab, GURL url) {
-        if (!DomDistillerFeatures.sReaderModeAutoDistill.isEnabled()
-                || url.getScheme().equals(DISTILLER_SCHEME)
-                || url.getScheme().equals(CHROME_SCHEME)
-                || url.getScheme().equals(CHROME_NATIVE_SCHEME)) {
-            return;
-        }
-
-        distillInCustomTab();
     }
 
     @Override
