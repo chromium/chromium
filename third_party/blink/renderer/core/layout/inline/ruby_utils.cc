@@ -38,20 +38,15 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
       primary_font_data->GetFontMetrics().FixedAscent(font_baseline);
   const LayoutUnit primary_descent = line_height - primary_ascent;
 
-  // We don't use ShapeResultView::FallbackFonts() because we can't know if the
-  // primary font is actually used with FallbackFonts().
-  HeapVector<ShapeResult::RunFontData> run_fonts;
+  HeapHashSet<Member<const SimpleFontData>> run_fonts = shape_view.UsedFonts();
   ClearCollectionScope clear_scope(&run_fonts);
-  shape_view.GetRunFontData(&run_fonts);
+
   const LayoutUnit kNoDiff = LayoutUnit::Max();
   LayoutUnit over_diff = kNoDiff;
   LayoutUnit under_diff = kNoDiff;
   for (const auto& run_font : run_fonts) {
-    const SimpleFontData* font_data = run_font.font_data_;
-    if (!font_data)
-      continue;
     const FontHeight normalized_height =
-        font_data->NormalizedTypoAscentAndDescent(font_baseline);
+        run_font->NormalizedTypoAscentAndDescent(font_baseline);
     // Floor() is better than Round().  We should not subtract pixels larger
     // than |primary_ascent - em_box.ascent|.
     const LayoutUnit current_over_diff(
@@ -83,18 +78,14 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
     const FontHeight primary_height =
         primary_font_data->GetFontMetrics().GetFloatFontHeight(font_baseline);
     FontHeight result_height;
-    // We don't use ShapeResultView::FallbackFonts() because we can't know if
-    // the primary font is actually used with FallbackFonts().
-    HeapVector<ShapeResult::RunFontData> run_fonts;
+
+    HeapHashSet<Member<const SimpleFontData>> run_fonts =
+        shape_result_view->UsedFonts();
     ClearCollectionScope clear_scope(&run_fonts);
-    shape_result_view->GetRunFontData(&run_fonts);
+
     for (const auto& run_font : run_fonts) {
-      const SimpleFontData* font_data = run_font.font_data_;
-      if (!font_data) {
-        continue;
-      }
       result_height.Unite(
-          font_data->NormalizedTypoAscentAndDescent(font_baseline));
+          run_font->NormalizedTypoAscentAndDescent(font_baseline));
     }
     result_height.ascent = std::min(LayoutUnit(result_height.ascent.Ceil()),
                                     primary_height.ascent);
