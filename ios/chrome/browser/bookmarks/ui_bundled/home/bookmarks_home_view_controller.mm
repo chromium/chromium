@@ -26,6 +26,7 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
@@ -1407,6 +1408,95 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 #pragma mark - private
 
+// Creates a delete action for the swipe menu with destructive style (and red
+// color).
+- (UIContextualAction*)createDeleteActionForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+
+  return [UIContextualAction
+      contextualActionWithStyle:UIContextualActionStyleDestructive
+                          title:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_DELETE)
+                        handler:^(UIContextualAction* action,
+                                  UIView* sourceView,
+                                  void (^completionHandler)(BOOL)) {
+                          [weakSelf
+                              handleDeleteActionForIndexPath:indexPath
+                                           completionHandler:completionHandler];
+                        }];
+}
+
+// Creates a remind action for the swipe menu with normal style (and orange
+// color).
+- (UIContextualAction*)createRemindActionForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+
+  UIContextualAction* remindAction = [UIContextualAction
+      contextualActionWithStyle:UIContextualActionStyleNormal
+                          title:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_REMIND)
+                        handler:^(UIContextualAction* action,
+                                  UIView* sourceView,
+                                  void (^completionHandler)(BOOL)) {
+                          [weakSelf
+                              handleRemindActionForIndexPath:indexPath
+                                           completionHandler:completionHandler];
+                        }];
+
+  remindAction.backgroundColor = [UIColor colorNamed:kOrange500Color];
+
+  return remindAction;
+}
+
+// Handles the delete action for a cell at the given `indexPath` and calls the
+// `completionHandler` when complete. This is used by swipe actions.
+- (void)handleDeleteActionForIndexPath:(NSIndexPath*)indexPath
+                     completionHandler:(void (^)(BOOL))completionHandler {
+  const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
+
+  BOOL canDeleteNode = bookmarkNode &&
+                       [self isNodeEditableByUser:bookmarkNode] &&
+                       [self isEditBookmarksEnabled];
+
+  if (!canDeleteNode) {
+    if (completionHandler) {
+      completionHandler(NO);
+    }
+    return;
+  }
+
+  [self deleteBookmarkNodeWithID:bookmarkNode->id()
+                      userAction:"MobileBookmarkManagerEntryDeleted"];
+
+  if (completionHandler) {
+    completionHandler(YES);
+  }
+}
+
+// Handles the remind action for a cell at the given `indexPath`, displays the
+// tab reminder UI for the selected item, and calls the `completionHandler` when
+// complete. This is used by swipe actions when Tab Reminders are enabled.
+- (void)handleRemindActionForIndexPath:(NSIndexPath*)indexPath
+                     completionHandler:(void (^)(BOOL))completionHandler {
+  const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
+
+  if (!bookmarkNode) {
+    if (completionHandler) {
+      completionHandler(NO);
+    }
+    return;
+  }
+
+  [self.homeDelegate bookmarkHomeViewController:self
+             wantsToShowSetTabReminderUIForNode:bookmarkNode];
+
+  if (completionHandler) {
+    completionHandler(YES);
+  }
+}
+
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
@@ -2658,6 +2748,46 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 }
 
 #pragma mark - UITableViewDelegate
+
+- (UISwipeActionsConfiguration*)tableView:(UITableView*)tableView
+    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath {
+  const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
+
+  if (!bookmarkNode) {
+    return nil;
+  }
+
+  NSMutableArray<UIContextualAction*>* actions = [NSMutableArray array];
+
+  BOOL canEditNode =
+      [self isNodeEditableByUser:bookmarkNode] && [self isEditBookmarksEnabled];
+
+  if (canEditNode) {
+    UIContextualAction* deleteAction =
+        [self createDeleteActionForIndexPath:indexPath];
+    [actions addObject:deleteAction];
+  }
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
+      bookmarkNode->is_url()) {
+    UIContextualAction* remindAction =
+        [self createRemindActionForIndexPath:indexPath];
+    [actions addObject:remindAction];
+  }
+
+  if (!actions.count) {
+    return nil;
+  }
+
+  UISwipeActionsConfiguration* configuration =
+      [UISwipeActionsConfiguration configurationWithActions:actions];
+
+  // A full swipe automatically performs the first action (Delete).
+  configuration.performsFirstActionWithFullSwipe = canEditNode;
+
+  return configuration;
+}
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForRowAtIndexPath:(NSIndexPath*)indexPath {

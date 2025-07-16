@@ -37,6 +37,10 @@ class GURL;
                                      inIncognito:(BOOL)inIncognito
                                           newTab:(BOOL)newTab;
 
+// The view controller wants to show the 'Set a Reminder' UI for `node`.
+- (void)bookmarkHomeViewController:(BookmarksHomeViewController*)controller
+    wantsToShowSetTabReminderUIForNode:(const bookmarks::BookmarkNode*)node;
+
 @end
 
 // Class to navigate the bookmark hierarchy.

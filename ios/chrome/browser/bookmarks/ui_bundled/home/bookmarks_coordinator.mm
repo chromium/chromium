@@ -18,6 +18,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
+#import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -135,6 +137,10 @@ enum class PresentedState {
   base::WeakPtr<ProfileIOS> _profile;
 
   base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
+
+  // Coordinator to display the "Set a reminder" UI for the user's selected
+  // bookmark.
+  ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
 }
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
@@ -170,6 +176,10 @@ enum class PresentedState {
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  // TODO(crbug.com/431224365): Create ReminderNotificationsCoordinatorDelegate
+  // for more complete coordinator lifecycle management.
+  [_reminderNotificationsCoordinator stop];
+  _reminderNotificationsCoordinator = nil;
   switch (self.currentPresentedState) {
     case PresentedState::BOOKMARK_BROWSER:
       [self bookmarkBrowserDismissed];
@@ -574,6 +584,20 @@ enum class PresentedState {
       [self openURLInNewTab:url inIncognito:inIncognito inBackground:YES];
     }
   }  // end for
+}
+
+- (void)bookmarkHomeViewController:(BookmarksHomeViewController*)controller
+    wantsToShowSetTabReminderUIForNode:(const bookmarks::BookmarkNode*)node {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(node && node->is_url());
+  CHECK(self.bookmarkNavigationController);
+
+  _reminderNotificationsCoordinator = [[ReminderNotificationsCoordinator alloc]
+      initWithBaseViewController:self.bookmarkNavigationController
+                         browser:self.browser];
+
+  [_reminderNotificationsCoordinator start];
 }
 
 #pragma mark - BookmarksCommands

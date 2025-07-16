@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
