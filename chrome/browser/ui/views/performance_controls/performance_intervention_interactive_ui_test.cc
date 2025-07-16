@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
+#include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
@@ -58,6 +59,7 @@
 #include "ui/views/view.h"
 
 namespace {
+using ::performance_manager::testing::ScopedSetAllPagesDiscardableForTesting;
 
 class DiscardObserver : public resource_coordinator::LifecycleUnitObserver,
                         public ui::test::StateObserver<bool> {
@@ -118,6 +120,13 @@ class PerformanceInterventionInteractiveTest
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    unconditionally_discard_pages_ =
+        std::make_unique<ScopedSetAllPagesDiscardableForTesting>();
+  }
+
+  void TearDownOnMainThread() override {
+    unconditionally_discard_pages_.reset();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
   Profile* CreateTestProfile() {
@@ -204,6 +213,10 @@ class PerformanceInterventionInteractiveTest
                                enabled);
     });
   }
+
+ private:
+  std::unique_ptr<ScopedSetAllPagesDiscardableForTesting>
+      unconditionally_discard_pages_;
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
@@ -439,14 +452,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 // The dialog should discard tabs suggested in the tab list
-// TODO(crbug.com/416350381): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TakeSuggestedAction DISABLED_TakeSuggestedAction
-#else
-#define MAYBE_TakeSuggestedAction TakeSuggestedAction
-#endif
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       MAYBE_TakeSuggestedAction) {
+                       TakeSuggestedAction) {
   RunTestSequence(
       InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetURL()),
       AddInstrumentedTab(kSecondTab, GetURL()),
@@ -463,14 +470,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 }
 
 // The dialog should discard tabs suggested in the tab list
-// TODO(crbug.com/416350381): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RemoveSuggestedTabFromList DISABLED_RemoveSuggestedTabFromList
-#else
-#define MAYBE_RemoveSuggestedTabFromList RemoveSuggestedTabFromList
-#endif
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       MAYBE_RemoveSuggestedTabFromList) {
+                       RemoveSuggestedTabFromList) {
   const char kTabListRow[] = "TabListRow";
   const char kSuggestedCloseButton[] = "SuggestedCloseButton";
 
