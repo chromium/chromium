@@ -7601,6 +7601,8 @@ void NavigationRequest::OnNavigationClientDisconnected(
         // subsequent attempt to navigate elsewhere.
         return;
       case mojom::NavigationClientDisconnectReason::kNoExplicitReason:
+        error_navigation_trigger_ =
+            ErrorNavigationTrigger::kNavigationClientDisconnected;
         discard_reason = NavigationDiscardReason::kInternalCancellation;
         break;
       case mojom::NavigationClientDisconnectReason::kResetForAbort:
@@ -10376,13 +10378,27 @@ void NavigationRequest::SetState(NavigationState state) {
 bool NavigationRequest::MaybeCancelFailedNavigation() {
   // TODO(crbug.com/41349746): Maybe take `ThrottleCheckResult::action()` into
   // account as well.
+  std::optional<ErrorNavigationTrigger> error_reason;
+
   // If the request was canceled by the user, do not show an error page.
-  if (net::ERR_ABORTED == net_error_ ||
-      // Some embedders suppress error pages to allow custom error handling.
-      silently_ignore_errors_ ||
-      // <webview> guests suppress net::ERR_BLOCKED_BY_CLIENT.
-      (net::ERR_BLOCKED_BY_CLIENT == net_error_ &&
-       silently_ignore_blocked_by_client_)) {
+  if (net::ERR_ABORTED == net_error_) {
+    error_reason = ErrorNavigationTrigger::kFailedWithSilentErrorOnNetAborted;
+  }
+
+  // Some embedders suppress error pages to allow custom error handling.
+  if (silently_ignore_errors_) {
+    error_reason = ErrorNavigationTrigger::kFailedWithSilentErrorOnIgnore;
+  }
+
+  // <webview> guests suppress net::ERR_BLOCKED_BY_CLIENT.
+  if (net::ERR_BLOCKED_BY_CLIENT == net_error_ &&
+      silently_ignore_blocked_by_client_) {
+    error_reason =
+        ErrorNavigationTrigger::kFailedWithSilentErrorOnBlockedByClient;
+  }
+
+  if (error_reason.has_value()) {
+    error_navigation_trigger_ = error_reason;
     frame_tree_node_->ResetNavigationRequest(
         NavigationDiscardReason::kInternalCancellation);
     return true;
@@ -10398,6 +10414,8 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
   // blocked by WebRequest, DNS errors, et cetera.
   if (frame_tree_node()->frame_owner_element_type() ==
       blink::FrameOwnerElementType::kObject) {
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kNavigationOfObjectFailed;
     RenderFallbackContentForObjectTag();
     frame_tree_node_->ResetNavigationRequest(
         NavigationDiscardReason::kInternalCancellation);

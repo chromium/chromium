@@ -197,6 +197,7 @@
 #include "content/public/browser/document_ref.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/feature_observer_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_device_id.h"
@@ -15963,6 +15964,8 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
   // DidCommitSameDocumentNavigation.
   request->second->set_navigation_discard_reason(
       NavigationDiscardReason::kInternalCancellation);
+  request->second->set_error_navigation_trigger(
+      ErrorNavigationTrigger::kSameDocumentCommitAborted);
   // If the pending_navigation_api_key is set, the NavigationRequest destructor
   // will notify the renderer of the cancellation. There's no need - the
   // renderer itself cancelled the navigation and already did its own cleanup.
@@ -16397,6 +16400,8 @@ void RenderFrameHostImpl::DidCommitNavigation(
     if (request) {
       request->set_navigation_discard_reason(
           NavigationDiscardReason::kInternalCancellation);
+      request->set_error_navigation_trigger(
+          ErrorNavigationTrigger::kCommittedOnPendingDeletion);
     }
     return;
   }

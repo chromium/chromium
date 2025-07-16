@@ -284,6 +284,13 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kRenderInitiatedCrossProcessNavigationNotAllowed"/>
   <int value="11" label="kRendererInitiatedCanNotRequestURL"/>
   <int value="12" label="kShouldRenderFallbackContent"/>
+  <int value="13" label="kNavigationClientDisconnected"/>
+  <int value="14" label="kFailedWithSilentErrorOnNetAborted"/>
+  <int value="15" label="kFailedWithSilentErrorOnIgnore"/>
+  <int value="16" label="kFailedWithSilentErrorOnBlockedByClient"/>
+  <int value="17" label="kNavigationOfObjectFailed"/>
+  <int value="18" label="kSameDocumentCommitProcessed"/>
+  <int value="19" label="kCommittedOnPendingDeletion"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/error_navigation_trigger.h:ErrorNavigationTrigger) -->

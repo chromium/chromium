@@ -56,7 +56,31 @@ enum class ErrorNavigationTrigger {
   // The response rendered fallback content, due to e.g. Http errors.
   kShouldRenderFallbackContent,
 
-  kMaxValue = kShouldRenderFallbackContent,
+  // The navigation client was disconnected.
+  kNavigationClientDisconnected,
+
+  // The navigation failed due to silent errors caused by `net::ERR_ABORTED`.
+  kFailedWithSilentErrorOnNetAborted,
+
+  // The navigation failed due to silent errors caused by the error page being
+  // suppressed due to custom handling of the error.
+  kFailedWithSilentErrorOnIgnore,
+
+  // The navigation failed due to silent errors caused by <webview> guests
+  // suppressing the `net::ERR_BLOCKED_BY_CLIENT` error.
+  kFailedWithSilentErrorOnBlockedByClient,
+
+  // The navigation of kObject failed.
+  kNavigationOfObjectFailed,
+
+  // The navigation was same-document commit aborted by the renderer.
+  kSameDocumentCommitAborted,
+
+  // The navigation was aborted because the `RenderFrameHost` was deleted
+  // before the navigation finished.
+  kCommittedOnPendingDeletion,
+
+  kMaxValue = kCommittedOnPendingDeletion,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:ErrorNavigationTrigger)
 }  // namespace content
