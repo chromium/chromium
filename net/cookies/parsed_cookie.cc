@@ -502,6 +502,18 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   return true;
 }
 
+bool ParsedCookie::ForEachAttribute(
+    base::FunctionRef<bool(std::string_view, std::string_view)> functor) const {
+  // The first element in `pairs_` is the name and value, so skip that one.
+  for (const auto& [attribute, value] : base::span(pairs_).subspan(1u)) {
+    if (!functor(attribute, value)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // Parse all token/value pairs and populate pairs_.
 void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
                                         CookieInclusionStatus& status_out) {

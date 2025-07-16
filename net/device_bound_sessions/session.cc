@@ -155,9 +155,8 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
           SessionError{SessionError::ErrorType::kInvalidCredentials});
     }
 
-    std::optional<CookieCraving> craving =
-        CookieCraving::Create(params.fetcher_url, cred.name, cred.attributes,
-                              base::Time::Now(), std::nullopt);
+    std::optional<CookieCraving> craving = CookieCraving::Create(
+        params.fetcher_url, cred.name, cred.attributes, base::Time::Now());
     if (craving) {
       session->cookie_cravings_.push_back(*craving);
     } else {

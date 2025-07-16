@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -83,8 +85,7 @@ std::optional<CookieCraving> CookieCraving::Create(
     const GURL& url,
     const std::string& name,
     const std::string& attributes,
-    base::Time creation_time,
-    std::optional<CookiePartitionKey> cookie_partition_key) {
+    base::Time creation_time) {
   if (!url.is_valid() || creation_time.is_null()) {
     return std::nullopt;
   }
@@ -104,6 +105,16 @@ std::optional<CookieCraving> CookieCraving::Create(
 
   ParsedCookie parsed_cookie(line_to_parse);
   if (!parsed_cookie.IsValid()) {
+    return std::nullopt;
+  }
+
+  static constexpr auto kPermittedAttributes =
+      base::MakeFixedFlatSet<std::string>(
+          {"domain", "path", "secure", "httponly", "samesite"});
+  if (!parsed_cookie.ForEachAttribute(
+          [](std::string_view attribute, std::string_view value) {
+            return base::Contains(kPermittedAttributes, attribute);
+          })) {
     return std::nullopt;
   }
 
@@ -133,17 +144,6 @@ std::optional<CookieCraving> CookieCraving::Create(
     return std::nullopt;
   }
 
-  // TODO(chlily): Determine whether nonced partition keys should be supported
-  // for CookieCravings.
-  bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
-  if (!cookie_util::IsCookiePartitionedValid(url, parsed_cookie,
-                                             partition_has_nonce)) {
-    return std::nullopt;
-  }
-  if (!parsed_cookie.IsPartitioned() && !partition_has_nonce) {
-    cookie_partition_key = std::nullopt;
-  }
-
   // Note: This is a deviation from CanonicalCookie::Create(), which allows
   // cookies with a Secure attribute to be created as if they came from a
   // cryptographic URL, even if the URL is not cryptographic, on the basis that
@@ -161,7 +161,6 @@ std::optional<CookieCraving> CookieCraving::Create(
                                parsed_cookie.IsSecure(),
                                parsed_cookie.IsHttpOnly(),
                                parsed_cookie.SameSite(),
-                               std::move(cookie_partition_key),
                                source_scheme,
                                source_port};
 
@@ -277,14 +276,11 @@ CookieCraving CookieCraving::CreateUnsafeForTesting(
     bool secure,
     bool httponly,
     CookieSameSite same_site,
-    std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
-  return CookieCraving{std::move(name), std::move(domain),
-                       std::move(path), creation,
-                       secure,          httponly,
-                       same_site,       std::move(partition_key),
-                       source_scheme,   source_port};
+  return CookieCraving{
+      std::move(name), std::move(domain), std::move(path), creation,   secure,
+      httponly,        same_site,         source_scheme,   source_port};
 }
 
 CookieCraving::CookieCraving() = default;
@@ -296,7 +292,6 @@ CookieCraving::CookieCraving(std::string name,
                              bool secure,
                              bool httponly,
                              CookieSameSite same_site,
-                             std::optional<CookiePartitionKey> partition_key,
                              CookieSourceScheme source_scheme,
                              int source_port)
     : CookieBase(std::move(name),
@@ -306,7 +301,7 @@ CookieCraving::CookieCraving(std::string name,
                  secure,
                  httponly,
                  same_site,
-                 std::move(partition_key),
+                 /*partition_key=*/std::nullopt,
                  source_scheme,
                  source_port) {}
 
@@ -350,21 +345,6 @@ proto::CookieCraving CookieCraving::ToProto() const {
       CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
   proto.set_same_site(ProtoEnumFromCookieSameSite(SameSite()));
   proto.set_source_scheme(ProtoEnumFromCookieSourceScheme(SourceScheme()));
-
-  if (IsPartitioned()) {
-    // TODO(crbug.com/356581003) The serialization below does not handle
-    // nonced cookies. Need to figure out whether this is required.
-    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
-                   std::string>
-        serialized_partition_key =
-            net::CookiePartitionKey::Serialize(PartitionKey());
-    CHECK(serialized_partition_key.has_value());
-    proto.mutable_serialized_partition_key()->set_top_level_site(
-        serialized_partition_key->TopLevelSite());
-    proto.mutable_serialized_partition_key()->set_has_cross_site_ancestor(
-        serialized_partition_key->has_cross_site_ancestor());
-  }
-
   return proto;
 }
 
@@ -378,25 +358,6 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
     return std::nullopt;
   }
 
-  // Retrieve the serialized cookie partition key if present.
-  std::optional<CookiePartitionKey> partition_key;
-  if (proto.has_serialized_partition_key()) {
-    const proto::SerializedCookiePartitionKey& serialized_key =
-        proto.serialized_partition_key();
-    if (!serialized_key.has_top_level_site() ||
-        !serialized_key.has_has_cross_site_ancestor()) {
-      return std::nullopt;
-    }
-    base::expected<std::optional<CookiePartitionKey>, std::string>
-        restored_key = CookiePartitionKey::FromStorage(
-            serialized_key.top_level_site(),
-            serialized_key.has_cross_site_ancestor());
-    if (!restored_key.has_value() || *restored_key == std::nullopt) {
-      return std::nullopt;
-    }
-    partition_key = std::move(*restored_key);
-  }
-
   CookieCraving cookie_craving{
       proto.name(),
       proto.domain(),
@@ -406,7 +367,6 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
       proto.secure(),
       proto.httponly(),
       CookieSameSiteFromProtoEnum(proto.same_site()),
-      std::move(partition_key),
       CookieSourceSchemeFromProtoEnum(proto.source_scheme()),
       proto.source_port()};
 

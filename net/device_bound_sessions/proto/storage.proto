@@ -66,12 +66,6 @@ enum CookieSourceScheme {
   SECURE = 2;
 }
 
-// Serialized data for a partitioned cookie.
-message SerializedCookiePartitionKey {
-  optional string top_level_site = 1;
-  optional bool has_cross_site_ancestor = 2;
-}
-
 // Represents the need for a certain cookie to be present.
 // See //net/device_bound_sessions/cookie_craving.h for details.
 message CookieCraving {
@@ -84,7 +78,7 @@ message CookieCraving {
   optional int64 creation_time = 7;
   optional CookieSameSite same_site = 8;
   optional CookieSourceScheme source_scheme = 9;
-  optional SerializedCookiePartitionKey serialized_partition_key = 10;
+  reserved 10;
 }
 
 // A Session represents persistent state scoped to a single DBSC session.

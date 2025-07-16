@@ -15,9 +15,12 @@
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
+
+using ::testing::ElementsAre;
 
 TEST(ParsedCookieTest, TestBasic) {
   ParsedCookie pc1("a=b");
@@ -1232,6 +1235,36 @@ TEST(ParsedCookieTest, HtabInNameOrValue) {
   std::string htab_value_string = "foo=b\tar";
   ParsedCookie htab_value(htab_value_string);
   EXPECT_TRUE(htab_value.HasInternalHtab());
+}
+
+TEST(ParsedCookieTest, ForEachAttribute) {
+  ParsedCookie pc("a=b; secure; httponly; path=/foo; domain=bar.test");
+  std::vector<std::pair<std::string, std::string>> attributes;
+
+  EXPECT_TRUE(pc.ForEachAttribute(
+      [&](std::string_view attribute, std::string_view value) {
+        attributes.emplace_back(attribute, value);
+        return true;
+      }));
+
+  std::vector<std::pair<std::string, std::string>> expected_attributes{
+      {"secure", ""},
+      {"httponly", ""},
+      {"path", "/foo"},
+      {"domain", "bar.test"}};
+  EXPECT_EQ(attributes, expected_attributes);
+
+  attributes.clear();
+
+  EXPECT_FALSE(pc.ForEachAttribute(
+      [&](std::string_view attribute, std::string_view value) {
+        attributes.emplace_back(attribute, value);
+        return attribute != "httponly";
+      }));
+
+  expected_attributes = std::vector<std::pair<std::string, std::string>>{
+      {"secure", ""}, {"httponly", ""}};
+  EXPECT_EQ(attributes, expected_attributes);
 }
 
 }  // namespace net

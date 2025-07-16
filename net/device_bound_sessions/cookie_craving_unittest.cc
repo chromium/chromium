@@ -27,10 +27,9 @@ CookieCraving CreateValidCookieCraving(
     const GURL& url,
     const std::string& name,
     const std::string& attributes,
-    base::Time creation_time = kCreationTime,
-    std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt) {
-  std::optional<CookieCraving> maybe_cc = CookieCraving::Create(
-      url, name, attributes, creation_time, cookie_partition_key);
+    base::Time creation_time = kCreationTime) {
+  std::optional<CookieCraving> maybe_cc =
+      CookieCraving::Create(url, name, attributes, creation_time);
   EXPECT_TRUE(maybe_cc);
   EXPECT_TRUE(maybe_cc->IsValid());
   return std::move(*maybe_cc);
@@ -40,12 +39,10 @@ CookieCraving CreateValidCookieCraving(
 CanonicalCookie CreateCanonicalCookie(
     const GURL& url,
     const std::string& cookie_line,
-    base::Time creation_time = kCreationTime,
-    std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt) {
+    base::Time creation_time = kCreationTime) {
   std::unique_ptr<CanonicalCookie> canonical_cookie =
       CanonicalCookie::CreateForTesting(url, cookie_line, creation_time,
-                                        /*server_time=*/std::nullopt,
-                                        cookie_partition_key);
+                                        /*server_time=*/std::nullopt);
   EXPECT_TRUE(canonical_cookie);
   EXPECT_TRUE(canonical_cookie->IsCanonical());
   return *canonical_cookie;
@@ -96,59 +93,6 @@ TEST(CookieCravingTest, CreateBasic) {
   EXPECT_EQ(cc.SourcePort(), 443);
 }
 
-TEST(CookieCravingTest, CreateWithPartitionKey) {
-  // The site of the partition key is not checked in Create(), so these two
-  // should behave the same.
-  const CookiePartitionKey kSameSitePartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://auth.example.test"));
-  const CookiePartitionKey kCrossSitePartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://www.other.test"));
-  // A key with a nonce might be used for a fenced frame or anonymous iframe.
-  const CookiePartitionKey kNoncedPartitionKey =
-      CookiePartitionKey::FromURLForTesting(
-          GURL("https://www.anonymous-iframe.test"),
-          CookiePartitionKey::AncestorChainBit::kCrossSite,
-          base::UnguessableToken::Create());
-
-  for (const CookiePartitionKey& partition_key :
-       {kSameSitePartitionKey, kCrossSitePartitionKey, kNoncedPartitionKey}) {
-    // Partitioned cookies must be set with Secure. The __Host- prefix is not
-    // required.
-    CookieCraving cc =
-        CreateValidCookieCraving(GURL(kUrlString), kName, "Secure; Partitioned",
-                                 kCreationTime, partition_key);
-    EXPECT_TRUE(cc.SecureAttribute());
-    EXPECT_TRUE(cc.IsPartitioned());
-    EXPECT_EQ(cc.PartitionKey(), partition_key);
-  }
-
-  // If a cookie is not set with a Partitioned attribute, the partition key
-  // should be ignored and cleared (if it's a normal partition key).
-  for (const CookiePartitionKey& partition_key :
-       {kSameSitePartitionKey, kCrossSitePartitionKey}) {
-    CookieCraving cc = CreateValidCookieCraving(
-        GURL(kUrlString), kName, "Secure", kCreationTime, partition_key);
-    EXPECT_TRUE(cc.SecureAttribute());
-    EXPECT_FALSE(cc.IsPartitioned());
-    EXPECT_EQ(cc.PartitionKey(), std::nullopt);
-  }
-
-  // For nonced partition keys, the Partitioned attribute is not explicitly
-  // required in order for the cookie to be considered partitioned.
-  CookieCraving cc = CreateValidCookieCraving(
-      GURL(kUrlString), kName, "Secure", kCreationTime, kNoncedPartitionKey);
-  EXPECT_TRUE(cc.SecureAttribute());
-  EXPECT_TRUE(cc.IsPartitioned());
-  EXPECT_EQ(cc.PartitionKey(), kNoncedPartitionKey);
-
-  // The Secure attribute is also not required for a nonced partition key.
-  cc = CreateValidCookieCraving(GURL(kUrlString), kName, "", kCreationTime,
-                                kNoncedPartitionKey);
-  EXPECT_FALSE(cc.SecureAttribute());
-  EXPECT_TRUE(cc.IsPartitioned());
-  EXPECT_EQ(cc.PartitionKey(), kNoncedPartitionKey);
-}
-
 TEST(CookieCravingTest, CreateWithPrefix) {
   // Valid __Host- cookie.
   CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), "__Host-blah",
@@ -184,10 +128,6 @@ TEST(CookieCravingTest, CreateStrange) {
   const char* kStrangeAttributesLines[] = {
       // Capitalization.
       "SECURE; PATH=/; SAMESITE=LAX",
-      // Leading semicolon.
-      "; Secure; Path=/; SameSite=Lax",
-      // Empty except for semicolons.
-      ";;;",
       // Extra whitespace.
       "     Secure;     Path=/;     SameSite=Lax     ",
       // No whitespace.
@@ -199,9 +139,9 @@ TEST(CookieCravingTest, CreateStrange) {
       // Path not beginning with '/' is allowed. (It's just ignored.)
       "Path=noslash",
       // Attributes with extraneous values.
-      "Secure=true; HttpOnly=yes; Partitioned=absolutely",
-      // Unknown attributes or attribute values.
-      "Fake=totally; SameSite=SuperStrict",
+      "Secure=true; HttpOnly=yes; SameSite=absolutely",
+      // Unknown attribute values.
+      "SameSite=SuperStrict",
   };
   for (const char* attributes : kStrangeAttributesLines) {
     CreateValidCookieCraving(GURL(kUrlString), kName, attributes);
@@ -232,9 +172,8 @@ TEST(CookieCravingTest, CreateFailParse) {
       {"name", "Secure;\n Path=/"},
   };
   for (const auto& input : kParseFailInputs) {
-    std::optional<CookieCraving> cc =
-        CookieCraving::Create(GURL(kUrlString), input.name, input.attributes,
-                              kCreationTime, std::nullopt);
+    std::optional<CookieCraving> cc = CookieCraving::Create(
+        GURL(kUrlString), input.name, input.attributes, kCreationTime);
     EXPECT_FALSE(cc);
   }
 }
@@ -243,47 +182,35 @@ TEST(CookieCravingTest, CreateFailParse) {
 TEST(CookieCravingTest, CreateFailInvalidParams) {
   // Invalid URL.
   std::optional<CookieCraving> cc =
-      CookieCraving::Create(GURL(), kName, "", kCreationTime, std::nullopt);
+      CookieCraving::Create(GURL(), kName, "", kCreationTime);
   EXPECT_FALSE(cc);
 
   // Null creation time.
-  cc = CookieCraving::Create(GURL(kUrlString), kName, "", base::Time(),
-                             std::nullopt);
+  cc = CookieCraving::Create(GURL(kUrlString), kName, "", base::Time());
   EXPECT_FALSE(cc);
 }
 
 TEST(CookieCravingTest, CreateFailBadDomain) {
   // URL does not match domain.
-  std::optional<CookieCraving> cc =
-      CookieCraving::Create(GURL(kUrlString), kName, "Domain=other.test",
-                            kCreationTime, std::nullopt);
+  std::optional<CookieCraving> cc = CookieCraving::Create(
+      GURL(kUrlString), kName, "Domain=other.test", kCreationTime);
   EXPECT_FALSE(cc);
 
   // Public suffix is not allowed to be Domain attribute.
   cc = CookieCraving::Create(GURL(kUrlString), kName, "Domain=test",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
   // IP addresses cannot set suffixes as the Domain attribute.
   cc = CookieCraving::Create(GURL("http://1.2.3.4"), kName, "Domain=2.3.4",
-                             kCreationTime, std::nullopt);
-  EXPECT_FALSE(cc);
-}
-
-TEST(CookieCravingTest, CreateFailBadPartitioned) {
-  const CookiePartitionKey kPartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://example.test"));
-
-  // Not Secure.
-  std::optional<CookieCraving> cc = CookieCraving::Create(
-      GURL(kUrlString), kName, "Partitioned", kCreationTime, kPartitionKey);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
-  // The URL scheme is not cryptographic.
-  cc = CookieCraving::Create(GURL("http://example.test"), kName,
-                             "Secure; Partitioned", kCreationTime,
-                             kPartitionKey);
+  // Forbidden attributes even if the attribute is in the name field too.
+  cc = CookieCraving::Create(GURL(kUrlString), "partitioned", "partitioned",
+                             kCreationTime);
   EXPECT_FALSE(cc);
+
 }
 
 TEST(CookieCravingTest, CreateFailInvalidPrefix) {
@@ -294,73 +221,70 @@ TEST(CookieCravingTest, CreateFailInvalidPrefix) {
   // __Host- with insecure URL.
   std::optional<CookieCraving> cc =
       CookieCraving::Create(GURL("http://insecure.test"), "__Host-blah",
-                            "Secure; Path=/", kCreationTime, std::nullopt);
+                            "Secure; Path=/", kCreationTime);
   EXPECT_FALSE(cc);
 
   // __Host- with non-Secure cookie.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah", "Path=/",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
   // __Host- with Domain attribute value.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah",
                              "Secure; Path=/; Domain=example.test",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
   // __Host- with non-root path.
   cc = CookieCraving::Create(GURL(kUrlString), "__Host-blah",
-                             "Secure; Path=/foo", kCreationTime, std::nullopt);
+                             "Secure; Path=/foo", kCreationTime);
   EXPECT_FALSE(cc);
 
   // __Secure- with non-Secure cookie.
   cc = CookieCraving::Create(GURL(kUrlString), "__Secure-blah", "",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
   // Prefixes are checked case-insensitively, so these CookieCravings are also
   // invalid for not satisfying the prefix requirements.
   // Missing Secure.
   cc = CookieCraving::Create(GURL(kUrlString), "__host-blah", "Path=/",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
   // Specifies Domain.
   cc = CookieCraving::Create(GURL(kUrlString), "__HOST-blah",
                              "Secure; Path=/; Domain=example.test",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
   // Missing Secure.
   cc = CookieCraving::Create(GURL(kUrlString), "__SeCuRe-blah", "",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah", "Path=/",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah", "secure;Path=/",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__http-blah",
-                             "secure;Path=/;httpOnly", kCreationTime,
-                             std::nullopt);
+                             "secure;Path=/;httpOnly", kCreationTime);
   EXPECT_TRUE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah", "Path=/",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
-                             "secure;Path=/", kCreationTime, std::nullopt);
+                             "secure;Path=/", kCreationTime);
   EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
-                             "secure;Path=/;httpOnly", kCreationTime,
-                             std::nullopt);
+                             "secure;Path=/;httpOnly", kCreationTime);
   EXPECT_TRUE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
-                             "secure;Path=/cookies/;httpOnly", kCreationTime,
-                             std::nullopt);
+                             "secure;Path=/cookies/;httpOnly", kCreationTime);
   EXPECT_FALSE(cc);
   cc = CookieCraving::Create(GURL(kUrlString), "__hosthttp-blah",
                              "secure;Path=/;httpOnly;Domain=example.test",
-                             kCreationTime, std::nullopt);
+                             kCreationTime);
   EXPECT_FALSE(cc);
 }
 
@@ -408,18 +332,10 @@ TEST(CookieCravingTest, IsNotValid) {
         test_case.name, test_case.domain, test_case.path, test_case.creation,
         test_case.secure,
         /*httponly=*/false, CookieSameSite::LAX_MODE,
-        /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443);
+        CookieSourceScheme::kSecure, 443);
     SCOPED_TRACE(cc.DebugString());
     EXPECT_FALSE(cc.IsValid());
   }
-
-  // Additionally, Partitioned requires the Secure attribute.
-  CookieCraving cc = CookieCraving::CreateUnsafeForTesting(
-      "name", "www.example.test", "/", kCreationTime, /*secure=*/false,
-      /*httponly=*/false, CookieSameSite::LAX_MODE,
-      CookiePartitionKey::FromURLForTesting(GURL("https://example.test")),
-      CookieSourceScheme::kSecure, 443);
-  EXPECT_FALSE(cc.IsValid());
 }
 
 TEST(CookieCravingTest, IsSatisfiedBy) {
@@ -542,112 +458,6 @@ TEST(CookieCravingTest, IsNotSatisfiedBy) {
   EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
 }
 
-TEST(CookieCravingTest, IsSatisfiedByWithPartitionKey) {
-  const CookiePartitionKey kPartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://example.test"));
-  const CookiePartitionKey kOtherPartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://other.test"));
-
-  const base::UnguessableToken kNonce = base::UnguessableToken::Create();
-  const CookiePartitionKey kNoncedPartitionKey =
-      CookiePartitionKey::FromURLForTesting(
-          GURL("https://example.test"),
-          CookiePartitionKey::AncestorChainBit::kCrossSite, kNonce);
-
-  // Partition keys match.
-  CanonicalCookie canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure; Partitioned", kCreationTime,
-      kPartitionKey);
-  CookieCraving cookie_craving =
-      CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
-                               kCreationTime, kPartitionKey);
-  EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Cookie line doesn't specified Partitioned so key gets cleared for both.
-  canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure", kCreationTime, kPartitionKey);
-  cookie_craving = CreateValidCookieCraving(GURL(kUrlString), "name", "Secure",
-                                            kCreationTime, kOtherPartitionKey);
-  EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Without partition key for the CookieCraving, but cookie line doesn't
-  // specify Partitioned so they are equivalent.
-  canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure", kCreationTime, kPartitionKey);
-  cookie_craving = CreateValidCookieCraving(GURL(kUrlString), "name", "Secure");
-  EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Without partition key for the CanonicalCookie, but cookie line doesn't
-  // specify Partitioned so they are equivalent.
-  canonical_cookie =
-      CreateCanonicalCookie(GURL(kUrlString), "name=somevalue; Secure");
-  cookie_craving = CreateValidCookieCraving(GURL(kUrlString), "name", "Secure",
-                                            kCreationTime, kPartitionKey);
-  EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Identical nonced partition keys.
-  canonical_cookie =
-      CreateCanonicalCookie(GURL(kUrlString), "name=somevalue; Secure",
-                            kCreationTime, kNoncedPartitionKey);
-  cookie_craving = CreateValidCookieCraving(GURL(kUrlString), "name", "Secure",
-                                            kCreationTime, kNoncedPartitionKey);
-  EXPECT_TRUE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-}
-
-TEST(CookieCravingTest, IsNotSatisfiedByWithPartitionKey) {
-  const CookiePartitionKey kPartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://example.test"));
-  const CookiePartitionKey kOtherPartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://other.test"));
-
-  const base::UnguessableToken kNonce = base::UnguessableToken::Create();
-  const base::UnguessableToken kOtherNonce = base::UnguessableToken::Create();
-  const CookiePartitionKey kNoncedPartitionKey =
-      CookiePartitionKey::FromURLForTesting(
-          GURL("https://example.test"),
-          CookiePartitionKey::AncestorChainBit::kCrossSite, kNonce);
-  const CookiePartitionKey kOtherNoncedPartitionKey =
-      CookiePartitionKey::FromURLForTesting(
-          GURL("https://example.test"),
-          CookiePartitionKey::AncestorChainBit::kCrossSite, kOtherNonce);
-
-  // Partition keys do not match.
-  CanonicalCookie canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure; Partitioned", kCreationTime,
-      kPartitionKey);
-  CookieCraving cookie_craving =
-      CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
-                               kCreationTime, kOtherPartitionKey);
-  EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Nonced partition keys do not match.
-  canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure; Partitioned", kCreationTime,
-      kNoncedPartitionKey);
-  cookie_craving =
-      CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
-                               kCreationTime, kOtherNoncedPartitionKey);
-  EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Nonced partition key vs regular partition key.
-  canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure; Partitioned", kCreationTime,
-      kNoncedPartitionKey);
-  cookie_craving =
-      CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
-                               kCreationTime, kPartitionKey);
-  EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-
-  // Regular partition key vs nonced partition key.
-  canonical_cookie = CreateCanonicalCookie(
-      GURL(kUrlString), "name=somevalue; Secure; Partitioned", kCreationTime,
-      kPartitionKey);
-  cookie_craving =
-      CreateValidCookieCraving(GURL(kUrlString), "name", "Secure; Partitioned",
-                               kCreationTime, kNoncedPartitionKey);
-  EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
-}
-
 TEST(CookieCravingTest, BasicCookieToFromProto) {
   // Default cookie.
   CookieCraving cc = CreateValidCookieCraving(GURL(kUrlString), kName, "");
@@ -662,7 +472,6 @@ TEST(CookieCravingTest, BasicCookieToFromProto) {
   EXPECT_FALSE(proto.httponly());
   EXPECT_EQ(proto.same_site(),
             proto::CookieSameSite::COOKIE_SAME_SITE_UNSPECIFIED);
-  EXPECT_FALSE(proto.has_serialized_partition_key());
   EXPECT_EQ(proto.source_scheme(), proto::CookieSourceScheme::SECURE);
   EXPECT_EQ(proto.source_port(), 443);
 
@@ -685,48 +494,12 @@ TEST(CookieCravingTest, BasicCookieToFromProto) {
   EXPECT_TRUE(proto.secure());
   EXPECT_TRUE(proto.httponly());
   EXPECT_EQ(proto.same_site(), proto::CookieSameSite::LAX_MODE);
-  EXPECT_FALSE(proto.has_serialized_partition_key());
   EXPECT_EQ(proto.source_scheme(), proto::CookieSourceScheme::SECURE);
   EXPECT_EQ(proto.source_port(), 443);
 
   restored_cc = CookieCraving::CreateFromProto(proto);
   ASSERT_TRUE(restored_cc.has_value());
   EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
-}
-
-TEST(CookieCravingTest, PartitionedCookieToFromProto) {
-  const CookiePartitionKey kSameSitePartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://auth.example.test"));
-  const CookiePartitionKey kCrossSitePartitionKey =
-      CookiePartitionKey::FromURLForTesting(GURL("https://www.other.test"));
-
-  for (const CookiePartitionKey& partition_key :
-       {kSameSitePartitionKey, kCrossSitePartitionKey}) {
-    // Partitioned cookies must be set with Secure. The __Host- prefix is not
-    // required.
-    CookieCraving cc =
-        CreateValidCookieCraving(GURL(kUrlString), kName, "Secure; Partitioned",
-                                 kCreationTime, partition_key);
-    EXPECT_EQ(cc.PartitionKey(), partition_key);
-    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
-                   std::string>
-        serialized_partition_key =
-            net::CookiePartitionKey::Serialize(partition_key);
-    CHECK(serialized_partition_key.has_value());
-
-    proto::CookieCraving proto = cc.ToProto();
-    EXPECT_TRUE(proto.secure());
-    ASSERT_TRUE(proto.has_serialized_partition_key());
-    EXPECT_EQ(proto.serialized_partition_key().top_level_site(),
-              serialized_partition_key->TopLevelSite());
-    EXPECT_EQ(proto.serialized_partition_key().has_cross_site_ancestor(),
-              serialized_partition_key->has_cross_site_ancestor());
-
-    std::optional<CookieCraving> restored_cc =
-        CookieCraving::CreateFromProto(proto);
-    ASSERT_TRUE(restored_cc.has_value());
-    EXPECT_TRUE(restored_cc->IsEqualForTesting(cc));
-  }
 }
 
 TEST(CookieCravingTest, FailCreateFromInvalidProto) {
@@ -792,14 +565,6 @@ TEST(CookieCravingTest, FailCreateFromInvalidProto) {
   {
     proto::CookieCraving p(proto);
     p.clear_source_scheme();
-    std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
-    EXPECT_FALSE(c.has_value());
-  }
-  // Malformed serialized partition key.
-  {
-    proto::CookieCraving p(proto);
-    p.mutable_serialized_partition_key()->set_top_level_site("");
-    p.mutable_serialized_partition_key()->set_has_cross_site_ancestor(false);
     std::optional<CookieCraving> c = CookieCraving::CreateFromProto(p);
     EXPECT_FALSE(c.has_value());
   }

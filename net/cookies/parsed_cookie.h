@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -167,6 +168,14 @@ class NET_EXPORT ParsedCookie {
       const std::string& name,
       const std::string& value,
       CookieInclusionStatus* status_out = nullptr);
+
+  // Synchronously calls `functor` with each attribute and value in the
+  // parsed cookie. `functor` may return `true` to continue the
+  // iteration or `false` to terminate. This function will return `true`
+  // if iteration was completed, or `false` if it was terminated.
+  bool ForEachAttribute(
+      base::FunctionRef<bool(std::string_view, std::string_view)> functor)
+      const;
 
  private:
   void ParseTokenValuePairs(std::string_view cookie_line,
