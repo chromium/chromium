@@ -439,8 +439,11 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
     // Create an additional ManualFillCredential for the backup password if
     // existing.
-    if (std::optional<std::u16string> backupPassword =
-            passwordForm.GetPasswordBackup()) {
+    std::optional<std::u16string> backupPassword =
+        passwordForm.GetPasswordBackup();
+    if (backupPassword &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSFillRecoveryPassword)) {
       PasswordForm tempPasswordForm = passwordForm;
       tempPasswordForm.password_value = backupPassword.value();
       ManualFillCredential* backupManualFillCredential =

@@ -194,16 +194,32 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerWithBackupCredential) {
   GetTestStore().AddLogin(form);
   WaitUntilPasswordIsSavedToStore();
 
-  OCMExpect([consumer()
-      presentCredentials:[OCMArg checkWithBlock:^(
-                                     NSArray<ManualFillCredentialItem*>*
-                                         credential_items) {
-        EXPECT_EQ([credential_items count], 2u);
-        return YES;
-      }]]);
+  auto check_credentials = ^(NSUInteger expected_count) {
+    OCMExpect([consumer()
+        presentCredentials:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<ManualFillCredentialItem*>*
+                                           credential_items) {
+          EXPECT_EQ(credential_items.count, expected_count);
+          return YES;
+        }]]);
 
-  // Call `savedPasswordsDidChange` to trigger a call to `fetchAllPasswords`.
-  [saved_passwords_presenter_observer savedPasswordsDidChange];
+    // Call `savedPasswordsDidChange` to trigger a call to `fetchAllPasswords`.
+    [saved_passwords_presenter_observer savedPasswordsDidChange];
+  };
+
+  {
+    base::test::ScopedFeatureList feature_list{
+        password_manager::features::kIOSFillRecoveryPassword};
+
+    check_credentials(2);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        password_manager::features::kIOSFillRecoveryPassword);
+
+    check_credentials(1);
+  }
 
   EXPECT_OCMOCK_VERIFY(consumer());
 }
