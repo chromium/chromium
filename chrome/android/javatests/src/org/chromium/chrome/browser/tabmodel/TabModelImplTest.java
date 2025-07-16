@@ -34,7 +34,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
@@ -52,7 +54,9 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Tests for {@link TabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -1064,6 +1068,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testHighlightTabs() {
         createTabs(2);
 
@@ -1135,6 +1140,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testHighlightTabs_assertionFailsWithEmptyList() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1151,10 +1157,10 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testHighlightTabs_assertionFailsWithNullTabToActivate() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Create a valid, non-empty list of tabs.
                     List<Tab> tabs = new ArrayList<>();
                     tabs.add(mTabModelJni.getTabAt(0));
 
@@ -1168,8 +1174,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testHighlightTabs_assertionFailsWithMismatchedTabToActivate() {
-        // Create a second tab to use as the mismatched tab.
         createTab();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1188,6 +1194,37 @@ public class TabModelImplTest {
                                             mTabModelJni.highlightTabs(
                                                     tabToActivate, listWithoutTabToActivate));
                     assertEquals("tabToActivate not found in tab list", e.getMessage());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
+    public void testSetTabsMultiSelected_assertionFailsWithNoActiveTabInSet() {
+        createTabs(2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    // Set active tab to Tab1 (index 1)
+                    tabModel.setIndex(1, TabSelectionType.FROM_USER);
+                    assertEquals("Active tab index should be 1.", 1, tabModel.index());
+
+                    Tab tabToSelect = tabModel.getTabAt(2);
+                    Set<Integer> selection = new HashSet<>();
+                    selection.add(tabToSelect.getId());
+
+                    // Attempt to set a selection that does not include the active tab (Tab1).
+                    AssertionError e =
+                            assertThrows(
+                                    AssertionError.class,
+                                    () -> tabModel.setTabsMultiSelected(selection, true));
+
+                    assertEquals(
+                            "If the selection is not empty, the current tab must always be"
+                                    + " present within the set.",
+                            e.getMessage());
                 });
     }
 

@@ -2974,8 +2974,8 @@ public class StripLayoutHelper
         } else if (isCtrlPressed) {
             handleCtrlClick(tab);
         } else {
-            clearMultiSelection(/* clearAnchor= */ true, /* notifyObservers= */ true);
             selectTab(tab);
+            clearMultiSelection(/* clearAnchor= */ true, /* notifyObservers= */ true);
         }
 
         mRenderHost.requestRender();
@@ -2999,10 +2999,13 @@ public class StripLayoutHelper
             }
             mModel.setTabsMultiSelected(Collections.singleton(tabId), false);
         } else {
-            // When Ctrl clicked, even the current tab gets selected.
-            mModel.setTabsMultiSelected(Set.of(tabId, getSelectedTabId()), true);
+            int oldSelectedTabId = getSelectedTabId();
             // select clicked tab.
             selectTab(clickedTab);
+            // When Ctrl clicked, even the previous tab gets selected.
+            mModel.setTabsMultiSelected(Set.of(tabId, oldSelectedTabId), true);
+            // Clear anchor tab.
+            mAnchorTabId = Tab.INVALID_TAB_ID;
         }
     }
 
@@ -3049,8 +3052,8 @@ public class StripLayoutHelper
                 }
             }
         }
-        mModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
         selectTab(clickedTab);
+        mModel.setTabsMultiSelected(/* tabIds= */ selectedTabIds, /* isSelected= */ true);
     }
 
     /**

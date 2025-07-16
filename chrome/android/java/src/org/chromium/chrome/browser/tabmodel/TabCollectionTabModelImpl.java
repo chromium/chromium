@@ -435,6 +435,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assertOnUiThread();
         TabModelImplUtil.setTabsMultiSelected(
                 tabIds, isSelected, mMultiSelectedTabs, mTabModelObservers);
+        assert mMultiSelectedTabs.isEmpty()
+                        || mMultiSelectedTabs.contains(TabModelUtils.getCurrentTabId(this))
+                : "If the selection is not empty, the current tab must always be present within the"
+                        + " set.";
     }
 
     @Override

@@ -6112,6 +6112,46 @@ public class StripLayoutHelperTest {
         assertTrue("Tab 4 should be selected.", mModel.isTabMultiSelected(tabs[4].getTabId()));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
+    public void testMultiSelect_CtrlClick_ResetsAnchorTab() {
+        initializeTest(false, false, 1, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Shift+Click Tab 3 to establish an anchor tab (which will be Tab 1).
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 3),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_SHIFT_ON);
+
+        // Anchor should be tab 1.
+        assertEquals(
+                "Anchor tab should be set after Shift+Click.",
+                tabs[1].getTabId(),
+                mStripLayoutHelper.getAnchorTabIdForTesting());
+
+        // Ctrl+Click any other tab (Tab 0).
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 0),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_CTRL_ON);
+
+        // The anchor tab should now be reset.
+        assertEquals(
+                "Anchor tab should be reset after a Ctrl+Click.",
+                Tab.INVALID_TAB_ID,
+                mStripLayoutHelper.getAnchorTabIdForTesting());
+    }
+
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {
         return stripViews[i].getTouchTargetBounds().left
                 + (stripViews[i].getTouchTargetBounds().right

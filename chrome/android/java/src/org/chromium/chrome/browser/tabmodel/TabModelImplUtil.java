@@ -8,6 +8,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
@@ -150,6 +151,7 @@ public class TabModelImplUtil {
             boolean isSelected,
             Set<Integer> multiSelectedTabs,
             ObserverList<TabModelObserver> observers) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return;
         if (isSelected) {
             multiSelectedTabs.addAll(tabIds);
         } else {
@@ -171,6 +173,7 @@ public class TabModelImplUtil {
             boolean notifyObservers,
             Set<Integer> multiSelectedTabs,
             ObserverList<TabModelObserver> observers) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return;
         if (multiSelectedTabs.isEmpty()) return;
         multiSelectedTabs.clear();
         if (notifyObservers) {
@@ -191,6 +194,7 @@ public class TabModelImplUtil {
      */
     public static boolean isTabMultiSelected(
             int tabId, Set<Integer> multiSelectedTabs, TabModel model) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return false;
         return multiSelectedTabs.contains(tabId) || tabId == TabModelUtils.getCurrentTabId(model);
     }
 }
