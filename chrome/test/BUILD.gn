@@ -1572,6 +1572,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/power/power_apitest.cc",
       "../browser/extensions/api/preference/preference_apitest.cc",
       "../browser/extensions/api/processes/processes_apitest.cc",
+      "../browser/extensions/api/proxy/proxy_apitest.cc",
       "../browser/extensions/api/reading_list/reading_list_apitest.cc",
       "../browser/extensions/api/runtime/runtime_apitest.cc",
       "../browser/extensions/api/scripting/scripting_apitest.cc",
@@ -4760,7 +4761,6 @@ if (!is_android) {
       sources += [
         "../browser/extensions/api/automation/automation_apitest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
-        "../browser/extensions/api/proxy/proxy_apitest.cc",
         "../browser/ui/extensions/extension_uninstall_dialog_impl_browsertest.cc",
       ]
 

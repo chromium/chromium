@@ -842,9 +842,10 @@
   }],
   "proxy": [{
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app"
+    ]
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
