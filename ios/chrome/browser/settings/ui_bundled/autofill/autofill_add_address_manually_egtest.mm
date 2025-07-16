@@ -192,6 +192,11 @@ UIViewController* TopPresentedViewController() {
   // Fill the required fields.
   [self fillRequiredFields];
 
+  // Scroll to bottom, this is needed in some cases because the "Save" button is
+  // not always visible.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   // Save the profile.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
       performAction:grey_tap()];
