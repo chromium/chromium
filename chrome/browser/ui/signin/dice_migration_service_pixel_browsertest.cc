@@ -17,7 +17,7 @@
 namespace {
 constexpr char kTestEmail[] = "test@gmail.com";
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "6688495";
+constexpr char kScreenshotBaselineCL[] = "6727956";
 const gfx::Image kAccountImage = gfx::test::CreateImage(20, 20, SK_ColorYELLOW);
 const char kAccountImageUrl[] = "ACCOUNT_IMAGE_URL";
 
@@ -51,6 +51,7 @@ class DiceMigrationServicePixelBrowserTest
       switches::kOfferMigrationToDiceUsers};
 };
 
+// This dialog is shown during all but the final time the migration is offered.
 IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
   RunTestSequence(
       TriggerDialog(),
@@ -91,6 +92,29 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
           DiceMigrationService::kAcceptButtonElementId,
           /*screenshot_name=*/"dice_migration_dialog_with_account_image",
           /*baseline_cl=*/kScreenshotBaselineCL));
+}
+
+// This dialog is shown only during the final time the migration is offered.
+IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
+                       DialogViewFinalVariant) {
+  // Set the dialog shown count to the max - 1 to show the final variant.
+  GetProfile()->GetPrefs()->SetInteger(
+      kDiceMigrationDialogShownCount,
+      DiceMigrationService::kMaxDialogShownCount - 1);
+
+  RunTestSequence(TriggerDialog(),
+
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshots not supported in all testing environments."),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Grab a screenshot of the entire dialog that pops up.
+                  ScreenshotSurface(
+                      DiceMigrationService::kAcceptButtonElementId,
+                      /*screenshot_name=*/"dice_migration_dialog_final_variant",
+                      /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {

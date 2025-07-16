@@ -56,6 +56,13 @@ class DiceMigrationServiceInteractiveUiTest
     });
   }
 
+  auto PressCloseButton() {
+    return Do([&]() {
+      GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
+          views::Widget::ClosedReason::kCloseButtonClicked);
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kOfferMigrationToDiceUsers};
@@ -63,18 +70,14 @@ class DiceMigrationServiceInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                        CloseXButtonClosesDialog) {
-  RunTestSequence(
-      TriggerDialog(),
+  RunTestSequence(TriggerDialog(),
 
-      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
 
-      // Simulate clicking the close-x button.
-      Do([this]() {
-        GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
-            views::Widget::ClosedReason::kCloseButtonClicked);
-      }),
+                  // Simulate clicking the close-x button.
+                  PressCloseButton(),
 
-      WaitForHide(DiceMigrationService::kAcceptButtonElementId));
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -147,6 +150,29 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   EnsurePresent(DiceMigrationService::kAcceptButtonElementId));
 
   ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                       FinalDialogVariant) {
+  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
+    RunTestSequence(
+        TriggerDialog(),
+
+        WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+        If(
+            [&i]() {
+              return i == DiceMigrationService::kMaxDialogShownCount - 1;
+            },
+            Then(
+                EnsureNotPresent(DiceMigrationService::kCancelButtonElementId)),
+            Else(EnsurePresent(DiceMigrationService::kCancelButtonElementId))),
+
+        // Ensure the surface containing the dialog is active.
+        PressCloseButton(),
+
+        EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {

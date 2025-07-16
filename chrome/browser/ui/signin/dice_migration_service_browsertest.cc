@@ -17,6 +17,8 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace {
 
@@ -286,6 +288,58 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, LimitDialogShownCount) {
   // Migration dialog is not shown anymore.
   GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
   EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, FinalDialogVariant) {
+  ASSERT_TRUE(SetupClients());
+
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `kWebSignin` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(GetAccountEmail()));
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  // Returns true if the widget or any of its children has the close button.
+  auto contains_close_button = [&](views::Widget* widget) {
+    auto search = [&](const auto& self, const views::View* view) -> bool {
+      for (const views::View* child : view->children()) {
+        if (child->GetProperty(views::kElementIdentifierKey) ==
+                DiceMigrationService::kCancelButtonElementId ||
+            // Recurse into the child.
+            self(self, child)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    return search(search, widget->GetRootView());
+  };
+
+  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
+    // Show the migration bubble.
+    GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+    ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+
+    views::Widget* dialog_widget =
+        GetDiceMigrationService()->GetDialogWidgetForTesting();
+    ASSERT_TRUE(dialog_widget);
+    EXPECT_EQ(contains_close_button(dialog_widget),
+              i != DiceMigrationService::kMaxDialogShownCount - 1);
+
+    // Dismiss the dialog.
+    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+    dialog_widget->CloseWithReason(
+        views::Widget::ClosedReason::kCloseButtonClicked);
+    waiter.Wait();
+  }
 }
 
 }  // namespace

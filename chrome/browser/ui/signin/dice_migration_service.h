@@ -30,6 +30,7 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   static const int kMaxDialogShownCount;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 
   explicit DiceMigrationService(Profile* profile);
   DiceMigrationService(const DiceMigrationService&) = delete;

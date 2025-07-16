@@ -117,6 +117,8 @@ const int DiceMigrationService::kMaxDialogShownCount = 3;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kAcceptButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
+                                      kCancelButtonElementId);
 
 DiceMigrationService::DiceMigrationService(Profile* profile)
     : profile_(profile) {}
@@ -155,6 +157,7 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
 
   auto builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());
+  SetBannerImage(builder, IdentityManagerFactory::GetForProfile(profile_));
   builder.SetTitle(l10n_util::GetStringUTF16(IDS_DICE_MIGRATION_DIALOG_TITLE));
   builder.AddParagraph(description_text);
   builder.AddOkButton(base::DoNothing(),
@@ -162,7 +165,19 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
                           .SetId(kAcceptButtonElementId)
                           .SetLabel(l10n_util::GetStringUTF16(
                               IDS_DICE_MIGRATION_DIALOG_OK_BUTTON)));
-  SetBannerImage(builder, IdentityManagerFactory::GetForProfile(profile_));
+
+  // The "final" variant does not include a close button, but rather the close-x
+  // button.
+  if (GetDialogShownCount() < kMaxDialogShownCount - 1) {
+    // Non-"final" variant.
+    builder.OverrideShowCloseButton(false);
+    builder.AddCancelButton(
+        base::DoNothing(),
+        ui::DialogModel::Button::Params()
+            .SetId(kCancelButtonElementId)
+            .SetLabel(l10n_util::GetStringUTF16(IDS_NOT_NOW)));
+  }
+
   // TODO(crbug.com/399838468): Refine the dialog behavior.
   builder.DisableCloseOnDeactivate();
   builder.SetIsAlertDialog();
