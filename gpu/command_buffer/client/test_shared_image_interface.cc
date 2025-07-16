@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -77,21 +78,22 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(
   return handle;
 }
 
-class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
+class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
  public:
-  GpuMemoryBufferImpl(const gfx::Size& size,
-                      gfx::BufferFormat format,
-                      base::UnsafeSharedMemoryRegion shared_memory_region,
-                      size_t offset,
-                      size_t stride)
-      : size_(size),
+  FakeGpuMemoryBufferImpl(const gfx::Size& size,
+                          gfx::BufferFormat format,
+                          base::UnsafeSharedMemoryRegion shared_memory_region,
+                          size_t offset,
+                          size_t stride)
+      : GpuMemoryBufferImpl(size, format),
+        size_(size),
         format_(format),
         region_(std::move(shared_memory_region)),
         offset_(offset),
         stride_(stride),
         mapped_(false) {}
 
-  ~GpuMemoryBufferImpl() override = default;
+  ~FakeGpuMemoryBufferImpl() override = default;
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
@@ -155,7 +157,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> CreateTestGpuMemoryBuffer(
     return nullptr;
   }
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> result(new GpuMemoryBufferImpl(
+  std::unique_ptr<gfx::GpuMemoryBuffer> result(new FakeGpuMemoryBufferImpl(
       size, format, std::move(shared_memory_region), 0,
       base::checked_cast<int>(
           gfx::RowSizeForBufferFormat(size.width(), format, 0))));
