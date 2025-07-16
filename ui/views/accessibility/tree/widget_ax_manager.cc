@@ -219,8 +219,7 @@ bool WidgetAXManager::AccessibilityIsRootFrame() const {
 }
 
 bool WidgetAXManager::ShouldSuppressAXLoadComplete() {
-  // TODO(accessibility): Implement.
-  return false;
+  return true;
 }
 
 content::WebContentsAccessibility*
