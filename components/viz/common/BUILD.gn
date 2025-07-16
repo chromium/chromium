@@ -51,6 +51,38 @@ buildflag_header("buildflags") {
   ]
 }
 
+if (skia_use_metal) {
+  viz_component("metal_context_provider") {
+    output_name = "viz_metal_context_provider"
+
+    defines = [ "VIZ_METAL_CONTEXT_PROVIDER_IMPLEMENTATION" ]
+
+    sources = [
+      "//gpu/command_buffer/service/graphite_shared_context.cc",
+      "//gpu/command_buffer/service/graphite_shared_context.h",
+      "gpu/metal_context_provider.h",
+      "gpu/metal_context_provider.mm",
+      "viz_metal_context_provider_export.h",
+    ]
+
+    public_deps = [ "//skia" ]
+
+    deps = [
+      "//base",
+      "//components/crash/core/common:crash_key",
+      "//components/metal_util",
+      "//gpu/config",
+      "//ui/gfx",
+      "//ui/gl",
+    ]
+
+    frameworks = [
+      "Metal.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
 if (enable_vulkan) {
   viz_component("vulkan_context_provider") {
     output_name = "viz_vulkan_context_provider"
@@ -309,6 +341,9 @@ viz_component("common") {
 
   if (enable_vulkan) {
     public_deps += [ ":vulkan_context_provider" ]
+  }
+  if (skia_use_metal) {
+    public_deps += [ ":metal_context_provider" ]
   }
 }
 

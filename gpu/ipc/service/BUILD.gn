@@ -114,6 +114,9 @@ component("service") {
       "image_transport_surface_overlay_mac.mm",
     ]
     deps += [ "//ui/accelerated_widget_mac" ]
+    if (skia_use_metal) {
+      deps += [ "//components/viz/common:metal_context_provider" ]
+    }
     if (is_mac) {
       sources += [ "image_transport_surface_mac.mm" ]
       deps += [

@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
-#include "gpu/command_buffer/service/metal_context_provider.h"
+#include "components/viz/common/gpu/metal_context_provider.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(USE_DAWN)
