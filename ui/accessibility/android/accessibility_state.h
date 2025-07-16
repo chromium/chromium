@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
+
 namespace ui {
 
 // Provides methods for measuring accessibility state on Android via
 // org.chromium.ui.accessibility.AccessibilityState.
-class AccessibilityState {
+class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
  public:
   // Provides an interface for clients to listen to animator duration scale
   // changes.

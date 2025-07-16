@@ -540,15 +540,17 @@ if (is_android) {
     ]
   }
 
-  source_set("ax_base_android") {
+  component("ax_base_android") {
     sources = [
       "android/accessibility_state.cc",
       "android/accessibility_state.h",
     ]
-    deps = [
-      ":ax_jni_headers",
-      "//base",
-    ]
+
+    defines = [ "IS_AX_BASE_ANDROID_IMPL" ]
+
+    deps = [ ":ax_jni_headers" ]
+
+    public_deps = [ "//base" ]
   }
 
   android_library("accessibility_features_native_map_java") {
