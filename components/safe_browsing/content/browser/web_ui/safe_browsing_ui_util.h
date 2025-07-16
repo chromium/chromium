@@ -150,6 +150,8 @@ base::Value::Dict SerializeReferringAppInfo(
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token);
 std::string SerializePGResponse(const LoginReputationClientResponse& response);
+std::string SerializeURTLookupPing(const URTLookupRequest& ping);
+std::string SerializeURTLookupResponse(const RTLookupResponse& response);
 
 }  // namespace safe_browsing::web_ui
 

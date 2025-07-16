@@ -605,16 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-std::string SerializeURTLookupPing(const web_ui::URTLookupRequest& ping) {
-  base::Value::Dict request_dict = Serialize(ping.request);
-  request_dict.Set("scoped_oauth_token", ping.token);
-  return web_ui::SerializeJson(request_dict);
-}
-
-std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
-  return web_ui::SerializeJson(Serialize(response));
-}
-
 std::string SerializeHPRTLookupPing(const web_ui::HPRTLookupRequest& ping) {
   base::Value::Dict request_dict;
 
@@ -1108,7 +1098,7 @@ void SafeBrowsingUIHandler::GetURTLookupResponses(
     base::Value::List response_entry;
     response_entry.Append(token_and_response.first);
     response_entry.Append(
-        SerializeURTLookupResponse(token_and_response.second));
+        web_ui::SerializeURTLookupResponse(token_and_response.second));
     responses_sent.Append(std::move(response_entry));
   }
 
@@ -1436,7 +1426,7 @@ void SafeBrowsingUIHandler::NotifyURTLookupResponseJsListener(
     const RTLookupResponse& response) {
   base::Value::List response_list;
   response_list.Append(token);
-  response_list.Append(SerializeURTLookupResponse(response));
+  response_list.Append(web_ui::SerializeURTLookupResponse(response));
 
   AllowJavascript();
   FireWebUIListener("urt-lookup-responses-update", response_list);

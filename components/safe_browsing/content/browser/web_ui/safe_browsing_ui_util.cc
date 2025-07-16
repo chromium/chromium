@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 
 using sync_pb::GaiaPasswordReuse;
 
@@ -423,6 +424,16 @@ std::string SerializePGPing(
 }
 
 std::string SerializePGResponse(const LoginReputationClientResponse& response) {
+  return SerializeJson(Serialize(response));
+}
+
+std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
+  base::Value::Dict request_dict = Serialize(ping.request);
+  request_dict.Set("scoped_oauth_token", ping.token);
+  return SerializeJson(request_dict);
+}
+
+std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
   return SerializeJson(Serialize(response));
 }
 

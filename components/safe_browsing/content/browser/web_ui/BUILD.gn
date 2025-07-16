@@ -68,6 +68,8 @@ source_set("util") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_extras",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto_extras",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//components/sync/protocol",
