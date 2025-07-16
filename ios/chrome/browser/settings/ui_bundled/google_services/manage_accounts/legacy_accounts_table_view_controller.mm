@@ -461,7 +461,9 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
 - (void)handleDidAddAccount:(SigninCoordinatorResult)result {
   // TODO(crbug.com/40229802): Remove the following line when todo bug will be
   // fixed.
-  [self allowUserInteraction];
+  if (@available(iOS 26, *)) {
+    [self allowUserInteraction];
+  }
   [self stopSigninCoordinator];
   [self handleAuthenticationOperationDidFinish];
   if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess &&
