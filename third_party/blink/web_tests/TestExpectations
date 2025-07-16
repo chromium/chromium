@@ -124,8 +124,7 @@ crbug.com/895777 external/wpt/css/css-transforms/transform-flattening-001.html [
 crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Timeout ]
 crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip Timeout ]
 
-# Added "Failure" on 2025-07-16.
-#crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
+crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
 # The following tests need to remove the assumption that user activation is
 # available in child/sibling frames.  This assumption doesn't hold with User
@@ -4316,8 +4315,7 @@ crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/api/abort/serviceworker-inte
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 external/wpt/avif/animated-avif-timeout.html [ Failure ]
-# Added "Failure" on 2025-07-16.
-# crbug.com/626703 [ Linux ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 # TODO(crbug.com/1358135, crbug.com/1358147): Re-enable this test: Re-enable this test
@@ -5465,8 +5463,7 @@ crbug.com/946335 [ Debug Mac ] fast/filesystem/file-writer-abort-depth.html [ Cr
 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
-# Added "Failure" on 2025-07-16.
-# crbug.com/41445275 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Timeout ]
+crbug.com/41445275 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Timeout ]
 
 # Sheriff 2019-04-30
 crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Crash Failure Pass Timeout ]
@@ -9580,30 +9577,3 @@ crbug.com/431938385 [ Win11-arm64 ] external/wpt/service-workers/service-worker/
 
 # Gardener 2025-07-16
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/add.https.any.html?cpu [ Failure Pass ]
-crbug.com/432054947 [ Linux ] external/wpt/encoding/unsupported-labels.window.html [ Failure Pass Timeout ]
-crbug.com/432054947 [ Linux ] fast/arraybuffer/webgl2_size_check.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-001.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-002.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-003.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-007.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-011.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-016.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-017.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-018.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] fast/css-grid-layout/grid-auto-repeat-huge-grid-019.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] html5lib/generated/run-tests16-data.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/elements/styles-1/edit-value-url-with-color.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Failure Pass Timeout ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/network/network-search.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/network/preview-searchable.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/profiler/heap-snapshot-comparison-expansion-preserved-when-sorting.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/profiler/heap-snapshot-summary-expansion-preserved-when-sorting.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/reveal-objects.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-reload.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] http/tests/devtools/sources/debugger/debugger-prototype-property.js [ Failure Pass ]
-crbug.com/432054947 [ Linux ] jquery/core.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] jquery/event.html [ Failure Pass ]
-crbug.com/432054947 [ Linux ] jquery/manipulation.html [ Failure Pass Timeout ]
-crbug.com/432054947 [ Linux ] jquery/traversing.html [ Failure Pass ]
