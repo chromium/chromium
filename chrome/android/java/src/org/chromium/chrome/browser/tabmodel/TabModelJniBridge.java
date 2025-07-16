@@ -441,17 +441,27 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     /**
-     * Selects a given list of tabs, adding them to the current multi-selection set.
+     * Highlights a given list of tabs and makes one of them the active tab.
      *
-     * <p>This is an additive operation; it does not clear previously selected tabs.
+     * <p>This operation is destructive; the given {@code tabs} are added to the current
+     * multi-selection set after clearing previously selected tabs.
      *
-     * @param tabs The list of {@link Tab} objects to select.
+     * @param tabToActivate The {@link Tab} to set as active. Must be present in the {@code tabs}
+     *     list.
+     * @param tabs The list of {@link Tab}s to highlight. Must not be empty.
      */
     @CalledByNative
-    protected void highlightTabs(@JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
+    protected void highlightTabs(
+            @JniType("TabAndroid*") Tab tabToActivate,
+            @JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
+        assert !tabs.isEmpty() : "The provided tab list cannot be empty.";
+        assert tabToActivate != null : "tabToActivate cannot be null";
         Set<Integer> tabIds = new HashSet<>();
         for (Tab tab : tabs) tabIds.add(tab.getId());
-        setTabsMultiSelected(tabIds, true);
+        assert tabIds.contains(tabToActivate.getId()) : "tabToActivate not found in tab list";
+        clearMultiSelection(/* notifyObservers= */ false);
+        setIndex(TabModelUtils.getTabIndexById(this, tabToActivate.getId()));
+        setTabsMultiSelected(tabIds, /* isSelected= */ true);
     }
 
     @CalledByNative

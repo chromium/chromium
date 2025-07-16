@@ -60,8 +60,12 @@ class TabListInterface {
   // if the index is out-of-bounds.
   virtual tabs::TabInterface* GetTab(int index) = 0;
 
-  // Highlights / selects the `tabs`.
-  virtual void HighlightTabs(const std::set<tabs::TabHandle>& tabs) = 0;
+  // Highlights a set of tabs, adding them to the multi-selection set and
+  // activating one of them. This is an additive operation; it does not clear
+  // other currently selected tabs. The `tab_to_activate` becomes the active
+  // tab. The `tab_to_activate` must be present in `tabs`.
+  virtual void HighlightTabs(tabs::TabHandle tab_to_activate,
+                             const std::set<tabs::TabHandle>& tabs) = 0;
 
   // Moves the `tab` to `index`. The nearest valid index will be used.
   virtual void MoveTab(tabs::TabHandle tab, int index) = 0;

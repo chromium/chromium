@@ -38,7 +38,8 @@ tabs::TabInterface* TabListBridge::GetTab(int index) {
   return tab_strip_->GetTabAtIndex(index);
 }
 
-void TabListBridge::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {}
+void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
+                                  const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {}
 

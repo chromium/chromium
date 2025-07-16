@@ -79,7 +79,8 @@ class TestTabModel : public TabModel {
   void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
-  void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
+  void HighlightTabs(tabs::TabHandle tab_to_activate,
+                     const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(tabs::TabHandle tab, int index) override;
   void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
@@ -171,7 +172,8 @@ class OwningTestTabModel : public TabModel {
   void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
-  void HighlightTabs(const std::set<tabs::TabHandle>& tabs) override;
+  void HighlightTabs(tabs::TabHandle tab_to_activate,
+                     const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(tabs::TabHandle tab, int index) override;
   void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;

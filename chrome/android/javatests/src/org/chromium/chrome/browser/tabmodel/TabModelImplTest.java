@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -1058,6 +1059,135 @@ public class TabModelImplTest {
 
                     // Cleanup.
                     tabModel.removeObserver(mTabModelObserver);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testHighlightTabs() {
+        createTabs(2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    assertEquals("Should start with 3 tabs.", 3, tabModel.getCount());
+
+                    Tab tab0 = tabModel.getTabAt(0);
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+
+                    // Initially, only Tab 1 should be in the multi-selection set.
+                    assertEquals(
+                            "There should be only 1 tab in the selection set",
+                            1,
+                            tabModel.getMultiSelectedTabsCount());
+                    assertFalse(
+                            "Tab 0 should not be selected initially.",
+                            tabModel.isTabMultiSelected(tab0.getId()));
+                    assertFalse(
+                            "Tab 1 should not be selected initially.",
+                            tabModel.isTabMultiSelected(tab1.getId()));
+                    assertTrue(
+                            "Tab 2 should be selected initially.",
+                            tabModel.isTabMultiSelected(tab2.getId()));
+
+                    // Highlight Tab 1 and Tab 2, and activate Tab 1.
+                    List<Tab> tabsToHighlight = new ArrayList<>();
+                    tabsToHighlight.add(tab1);
+                    tabsToHighlight.add(tab2);
+                    mTabModelJni.highlightTabs(tab1, tabsToHighlight);
+
+                    // Verify that Tab 1 is the active tab.
+                    assertEquals("The active tab should be at index 1.", 1, tabModel.index());
+
+                    // Verify the multi-selection state.
+                    assertFalse(
+                            "Tab 0 should not be selected.",
+                            tabModel.isTabMultiSelected(tab0.getId()));
+                    assertTrue(
+                            "Tab 1 should now be selected.",
+                            tabModel.isTabMultiSelected(tab1.getId()));
+                    assertTrue(
+                            "Tab 2 should now be selected.",
+                            tabModel.isTabMultiSelected(tab2.getId()));
+
+                    // Verify the destructive nature by highlighting another tab.
+                    List<Tab> moreTabs = new ArrayList<>();
+                    moreTabs.add(tab0);
+                    mTabModelJni.highlightTabs(tab0, moreTabs);
+
+                    // Verify that Tab 0 is now the active tab.
+                    assertEquals("The active tab should now be at index 0.", 0, tabModel.index());
+
+                    // Verify that only tab 0 is in the multi-selection set.
+                    assertTrue(
+                            "Tab 0 should now be selected.",
+                            tabModel.isTabMultiSelected(tab0.getId()));
+                    assertFalse(
+                            "Tab 1 should not be selected.",
+                            tabModel.isTabMultiSelected(tab1.getId()));
+                    assertFalse(
+                            "Tab 2 should not be selected.",
+                            tabModel.isTabMultiSelected(tab2.getId()));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testHighlightTabs_assertionFailsWithEmptyList() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tabToActivate = mTabModelJni.getTabAt(0);
+                    List<Tab> emptyList = new ArrayList<>();
+
+                    AssertionError e =
+                            assertThrows(
+                                    AssertionError.class,
+                                    () -> mTabModelJni.highlightTabs(tabToActivate, emptyList));
+                    assertEquals("The provided tab list cannot be empty.", e.getMessage());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testHighlightTabs_assertionFailsWithNullTabToActivate() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create a valid, non-empty list of tabs.
+                    List<Tab> tabs = new ArrayList<>();
+                    tabs.add(mTabModelJni.getTabAt(0));
+
+                    AssertionError e =
+                            assertThrows(
+                                    AssertionError.class,
+                                    () -> mTabModelJni.highlightTabs(null, tabs));
+                    assertEquals("tabToActivate cannot be null", e.getMessage());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testHighlightTabs_assertionFailsWithMismatchedTabToActivate() {
+        // Create a second tab to use as the mismatched tab.
+        createTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab0 = mTabModelJni.getTabAt(0);
+                    Tab tabToActivate = mTabModelJni.getTabAt(1);
+
+                    // Create a list that does NOT contain the tab we intend to activate.
+                    List<Tab> listWithoutTabToActivate = new ArrayList<>();
+                    listWithoutTabToActivate.add(tab0);
+
+                    AssertionError e =
+                            assertThrows(
+                                    AssertionError.class,
+                                    () ->
+                                            mTabModelJni.highlightTabs(
+                                                    tabToActivate, listWithoutTabToActivate));
+                    assertEquals("tabToActivate not found in tab list", e.getMessage());
                 });
     }
 

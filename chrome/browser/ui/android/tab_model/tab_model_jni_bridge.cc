@@ -293,11 +293,14 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
   return GetTabAt(index);
 }
 
-void TabModelJniBridge::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
+void TabModelJniBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
+                                      const std::set<tabs::TabHandle>& tabs) {
   std::vector<TabAndroid*> tabs_to_highlight = GetAllTabsFromHandles(tabs);
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab_to_activate);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_highlightTabs(env, jobj, tabs_to_highlight);
+  Java_TabModelJniBridge_highlightTabs(env, jobj, tab_android,
+                                       tabs_to_highlight);
 }
 
 void TabModelJniBridge::MoveTab(tabs::TabHandle tab, int index) {

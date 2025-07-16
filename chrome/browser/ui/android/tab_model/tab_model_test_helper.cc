@@ -141,7 +141,8 @@ tabs::TabInterface* TestTabModel::GetTab(int index) {
   return nullptr;
 }
 
-void TestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
+void TestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,
+                                 const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
@@ -345,7 +346,8 @@ tabs::TabInterface* OwningTestTabModel::GetTab(int index) {
   return nullptr;
 }
 
-void OwningTestTabModel::HighlightTabs(const std::set<tabs::TabHandle>& tabs) {
+void OwningTestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,
+                                       const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
 }
 
