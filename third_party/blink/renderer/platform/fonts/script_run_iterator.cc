@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -471,9 +471,7 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
   UNSAFE_TODO(U16_NEXT(text_, ahead_pos_, length_, ahead_character_));
 
   if (!next_set_->empty() && next_set_->front() != USCRIPT_COMMON &&
-      U_GET_GC_MASK(ahead_character_) & U_GC_M_MASK &&
-      RuntimeEnabledFeatures::ScriptRunIteratorCombiningMarksEnabled())
-      [[unlikely]] {
+      Character::IsGcMark(ahead_character_)) [[unlikely]] {
     // A combining mark--whatever its Script property value--should inherit the
     // script property value of its base character.
     // https://www.unicode.org/reports/tr24/#Nonspacing_Marks
