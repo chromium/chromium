@@ -671,11 +671,9 @@ void NoDeleteBrowsingDataDialogHistogram(
 
   // Open Quick Delete.
   [ChromeEarlGreyUI openToolsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityLabel(l10n_util::GetNSString(
+                             IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))];
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
