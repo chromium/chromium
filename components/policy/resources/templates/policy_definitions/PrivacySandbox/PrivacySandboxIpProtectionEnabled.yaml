@@ -10,9 +10,13 @@ desc: |- # TODO(b/416726104): Move the considerations and other details to a hel
   If the policy is not set, <ph name="IP_PROTECTION_NAME">IP Protection</ph> will be enabled by default and users will be able to control the feature on their device via UI settings.
 
   Some considerations regarding whether enterprises should disable <ph name="IP_PROTECTION_NAME">IP Protection</ph> include:
+
   - DNS lookups won't be performed for requests that are proxied, which may impact DNS-based monitoring or filtering.
+
   - Enterprise applications may experience breakage when used in Incognito mode if they rely on requests to domains (or subdomains of those domains) on the Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/Masked-Domain-List.md</ex></ph>) and require those requests to come from specific IP address ranges.
+
   - Traffic might not be proxied in Incognito mode under certain conditions, for example when users launch Incognito mode from a Chrome profile they aren't signed in to. In general the feature requires the user to have been signed in to Chrome with a personal Google account when launching Incognito mode.
+
   - The list of domains on the Masked Domain List may change over time, with new versions being pushed to users automatically. For more information on the Masked Domain List, see: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/README.md#identifying-domains-and-the-masked-domain-list-mdl</ex></ph>.
 
   For more information on <ph name="IP_PROTECTION_NAME">IP Protection</ph>, see: <ph name="IP_PROTECTION_README_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/README.md</ex></ph>.
