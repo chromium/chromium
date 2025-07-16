@@ -78,4 +78,11 @@ void GlicFrePageHandler::ExceededTimeoutError() {
       ->ExceededTimeoutError();
 }
 
+void GlicFrePageHandler::LogWebUiLoadComplete() {
+  GetGlicService()
+      ->window_controller()
+      .fre_controller()
+      ->LogWebUiLoadComplete();
+}
+
 }  // namespace glic

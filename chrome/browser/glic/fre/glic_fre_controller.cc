@@ -155,6 +155,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
 
   source_browser_ = browser.get();
 
+  widget_creation_start_time_ = base::TimeTicks::Now();
   CreateView();
 
   tab_showing_modal_ = browser->GetActiveTabInterface();
@@ -179,6 +180,10 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
 
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
   base::UmaHistogramEnumeration("Glic.FRE.InvocationSource", source);
+  base::UmaHistogramMediumTimes(
+      "Glic.Fre.WidgetCreationTime",
+      base::TimeTicks::Now() - widget_creation_start_time_);
+  webui_load_start_time_ = base::TimeTicks::Now();
   auth_controller_.OnGlicWindowOpened();
 
   // Recording the load latency time when FRE contents were preloaded.
@@ -482,10 +487,27 @@ void GlicFreController::CreateView() {
 void GlicFreController::RecordMetricsIfDialogIsShowingAndReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!!fre_widget_ && webui_state_ == mojom::FreWebUiState::kReady &&
-      !show_start_time_.is_null()) {
+      !show_start_time_.is_null() && !web_client_load_start_time_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        "Glic.Fre.WebClientLoadTime",
+        base::TimeTicks::Now() - web_client_load_start_time_);
     base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
                                   (base::TimeTicks::Now() - show_start_time_));
     show_start_time_ = base::TimeTicks();
+    web_client_load_start_time_ = base::TimeTicks();
+  }
+}
+
+void GlicFreController::LogWebUiLoadComplete() {
+  if (!webui_load_start_time_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        "Glic.Fre.WebUiFrameworkLoadTime",
+        base::TimeTicks::Now() - webui_load_start_time_);
+    webui_load_start_time_ = base::TimeTicks();
+
+    // The FRE webclient begins loading as soon as the web ui is loaded
+    // successfully.
+    web_client_load_start_time_ = base::TimeTicks::Now();
   }
 }
 

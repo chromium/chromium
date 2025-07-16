@@ -135,6 +135,8 @@ class GlicFreController {
 
   void UpdateFreWidgetSize(const gfx::Size& new_size);
 
+  void LogWebUiLoadComplete();
+
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
   Profile* profile() { return profile_; }
@@ -181,8 +183,17 @@ class GlicFreController {
   base::RepeatingCallbackList<void(mojom::FreWebUiState)>
       webui_state_callback_list_;
 
-  // The timestamp when the FRE window is shown.
+  // The timestamp when the FRE window is requested to be shown.
   base::TimeTicks show_start_time_;
+
+  // The timestamp when the FRE widget creation starts.
+  base::TimeTicks widget_creation_start_time_;
+
+  // The timestamp when the FRE WebUI loading starts.
+  base::TimeTicks webui_load_start_time_;
+
+  // The timestamp when the FRE web content loading starts.
+  base::TimeTicks web_client_load_start_time_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };

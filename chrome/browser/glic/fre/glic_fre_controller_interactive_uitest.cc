@@ -363,6 +363,24 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
       })));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
+                       RecordsWebUiAndWebContentLoadTimeHistograms) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      InAnyContext(Do([&]() {
+        histogram_tester().ExpectTotalCount("Glic.Fre.WidgetCreationTime", 1);
+        histogram_tester().ExpectTotalCount("Glic.Fre.WebUiFrameworkLoadTime",
+                                            1);
+        histogram_tester().ExpectTotalCount("Glic.Fre.WebClientLoadTime", 1);
+      })));
+}
+
 class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
