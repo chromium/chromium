@@ -711,7 +711,7 @@ public class LayoutManagerImpl
 
         if (mNextActiveLayout != null) startShowing(mNextActiveLayout, true);
 
-        selector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
+        selector.getCurrentTabModelSupplier().addSyncObserver(mCurrentTabModelObserver);
 
         mTabGroupModelFilterObserver = createTabModelObserver();
         getTabModelSelector()
