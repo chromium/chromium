@@ -640,7 +640,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertNotNull(productIcon);
 
         TextView title = mView.getContentView().findViewById(R.id.title);
-        assertThat(title.getText(), is("Pay with Pix directly in Chrome"));
+        assertThat(title.getText(), is("Pay with Pix directly in Chrome next time"));
 
         TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
         assertThat(valuePropMessage1.getText(), is("Enable Pix by linking your account quickly"));
