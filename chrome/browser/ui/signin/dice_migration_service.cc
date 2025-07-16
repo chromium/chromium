@@ -18,6 +18,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -108,6 +109,12 @@ void MaybeShowToast(Browser* browser) {
 
 }  // namespace
 
+const char kDiceMigrationDialogShownCount[] =
+    "signin.dice_migration.dialog_shown_count";
+
+// static
+const int DiceMigrationService::kMaxDialogShownCount = 3;
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kAcceptButtonElementId);
 
@@ -123,10 +130,13 @@ DiceMigrationService::~DiceMigrationService() {
 
 // static
 void DiceMigrationService::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {}
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(kDiceMigrationDialogShownCount, 0);
+}
 
 void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
-  if (!IsUserEligibleForDiceMigration(profile_) || IsDialogShowing()) {
+  if (!IsUserEligibleForDiceMigration(profile_) || IsDialogShowing() ||
+      GetDialogShownCount() >= kMaxDialogShownCount) {
     return;
   }
 
@@ -173,6 +183,13 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   browser_ = browser->AsWeakPtr();
   dialog_widget_->Show();
 
+  // TODO(crbug.com/399838468): Only increment the count if and when the dialog
+  // is actually visible to the user. For example, showing the dialog on a
+  // minimized browser window should not increment the count.
+  // TODO(crbug.com/399838468): Consider instead tracking the number of times
+  // the user actually interacts with the dialog and using that for limiting.
+  IncrementDialogShownCount();
+
   // TODO(crbug.com/399838468): Close the dialog when the avatar pill is
   // clicked.
 }
@@ -207,4 +224,16 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
       break;
   }
   browser_.reset();
+}
+
+int DiceMigrationService::GetDialogShownCount() const {
+  PrefService* prefs = profile_->GetPrefs();
+  CHECK(prefs);
+  return prefs->GetInteger(kDiceMigrationDialogShownCount);
+}
+
+void DiceMigrationService::IncrementDialogShownCount() {
+  PrefService* prefs = profile_->GetPrefs();
+  CHECK(prefs);
+  prefs->SetInteger(kDiceMigrationDialogShownCount, GetDialogShownCount() + 1);
 }

@@ -21,8 +21,14 @@ namespace views {
 class Widget;
 }  // namespace views
 
+// Tracks the number of times the DICe migration dialog has been shown.
+extern const char kDiceMigrationDialogShownCount[];
+
 class DiceMigrationService : public KeyedService, public views::WidgetObserver {
  public:
+  // The maximum number of times the dialog can be shown.
+  static const int kMaxDialogShownCount;
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonElementId);
 
   explicit DiceMigrationService(Profile* profile);
@@ -43,6 +49,9 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
  private:
   // `views::WidgetObserver`:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  int GetDialogShownCount() const;
+  void IncrementDialogShownCount();
 
   raw_ptr<Profile> profile_ = nullptr;
 

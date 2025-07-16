@@ -108,6 +108,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/toasts",
+      "//components/pref_registry",
     ]
   }
 

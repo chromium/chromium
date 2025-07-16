@@ -199,4 +199,93 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
             false);
 }
 
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_IncrementDialogShownCount) {
+  ASSERT_TRUE(SetupClients());
+
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `kWebSignin` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(GetAccountEmail()));
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  // Show the migration bubble.
+  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+
+  // The dialog shown count is incremented.
+  EXPECT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
+                kDiceMigrationDialogShownCount),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       IncrementDialogShownCount) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
+                kDiceMigrationDialogShownCount),
+            1);
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  // Show the migration bubble.
+  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+
+  // The dialog shown count is incremented.
+  EXPECT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
+                kDiceMigrationDialogShownCount),
+            2);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, LimitDialogShownCount) {
+  ASSERT_TRUE(SetupClients());
+
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `kWebSignin` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(GetAccountEmail()));
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  // Migration dialog is shown `DiceMigrationService::kMaxDialogShownCount`
+  // times.
+  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
+    // Show the migration bubble.
+    GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+    ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+
+    // Dismiss the dialog.
+    views::Widget* dialog_widget =
+        GetDiceMigrationService()->GetDialogWidgetForTesting();
+    ASSERT_TRUE(dialog_widget);
+    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+    dialog_widget->CloseWithReason(
+        views::Widget::ClosedReason::kCloseButtonClicked);
+    waiter.Wait();
+  }
+
+  // Migration dialog is not shown anymore.
+  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+  EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+}
+
 }  // namespace
