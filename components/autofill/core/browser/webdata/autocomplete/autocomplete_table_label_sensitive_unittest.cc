@@ -433,118 +433,465 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, PrefixNarrowsDownResults) {
                                          optional_field1.value().value(), 1)));
 }
 
-// TODO(crbug.com/346507576): Refactor into multiple tests:
-// 1. GetCountOfValuesContainedBetween_ReturnsCorrectCount
-// 2. GetCountOfValuesContainedBetween_ReturnsZeroIfNothingIsInTheInterval
-// 3. GetCountOfValuesContainedBetween_ReturnsValuesOnlyInTheInterval
-// 4. GetCountOfValuesContainedBetween_ReturnsEverythingForUnlimitedInterval
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_GetCountOfValuesContainedBetween) {
-  AutocompleteChangeLabelSensitiveList changes;
-  // This test makes time comparisons that are precise to a microsecond, but the
-  // database uses the time_t format which is only precise to a second.
-  // Make sure we use timestamps rounded to a second.
-  const auto begin = base::Time::Now();
+using GetCountOfValuesContainedBetweenTest =
+    AutocompleteTableLabelSensitiveTest;
 
-  struct Entry {
-    const char16_t* name;
-    const char16_t* label;
-    const char16_t* value;
-  } entries[] = {{u"alter_ego", u"Alter ego", u"Superman"},
-                 {u"name", u"Name", u"Superman"},
-                 {u"name", u"Name", u"Clark Kent"},
-                 {u"name", u"Name", u"Superman"},
-                 {u"name", u"Name", u"Clark Sutter"},
-                 {u"name", u"Nomen", u"Clark Kent"}};
+// Add several entries to the database with different timestamps and expect
+// GetCountOfValuesContainedBetween to return all of them if the time interval
+// is large enough.
+TEST_F(GetCountOfValuesContainedBetweenTest, ReturnsCorrectCount) {
+  const Time begin = base::Time::Now();
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
 
-  for (Entry entry : entries) {
-    autofill::FormFieldData field;
-    field.set_name(entry.name);
-    field.set_label(entry.label);
-    field.set_value(entry.value);
-    ASSERT_TRUE(table().AddFormFieldValues({field}, &changes));
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
+
+  EXPECT_EQ(
+      table().GetCountOfValuesContainedBetween(begin, begin + base::Seconds(4)),
+      3);
+}
+
+// Add several entries to the database with different timestamps and expect
+// GetCountOfValuesContainedBetween to return nothing if the time interval
+// provided does not contain any of the entries.
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ReturnsZeroIfNothingIsInTheInterval) {
+  const Time begin = base::Time::Now();
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(5),
+                                                     begin + base::Seconds(6)),
+            0);
+}
+
+// Add several entries to the database with different timestamps. Call
+// GetCountOfValuesContainedBetween with such an interval that some entries are
+// contained and some are not. Expect to return the number of entries that are
+// contained in the time interval provided.
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ReturnsCountOfEntriesOnlyInTheInterval) {
+  const Time begin = base::Time::Now();
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  AdvanceClock(base::Seconds(2));
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  AdvanceClock(base::Seconds(2));
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(3)),
+            1);
+}
+
+// Add several entries to the database with different timestamps. Call
+// GetCountOfValuesContainedBetween with interval [0, MAX_VALUE) interval.
+// Expect to return all the entries.
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ReturnsEverythingForUnboundedInterval) {
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  AdvanceClock(base::Seconds(2));
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  AdvanceClock(base::Seconds(2));
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(base::Time(), Time::Max()),
+            3);
+}
+
+// GetCountOfValuesContainedBetween should treat provided interval as
+// closed-open, e.g. include begin and exclude end. Both entry's creation and
+// update time, should be in the interval to be counted. Interval [1, 5) should
+// not contain an entry with creation/update timespan [0, 1].
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ShouldNotIncludeIfUpdateEqualsBegin) {
+  const Time begin = base::Time::Now();
+
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(5)),
+            0);
+}
+
+// GetCountOfValuesContainedBetween should treat provided interval as
+// closed-open, e.g. include begin and exclude end. Both entry's creation and
+// update time, should be in the interval to be counted. Interval [1, 5) should
+// contain an entry with creation/update timespan [1, 1].
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ShouldIncludeIfCreateAndUpdateEqualsBegin) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(5)),
+            1);
+}
+
+// GetCountOfValuesContainedBetween should treat provided interval as
+// closed-open, e.g. include begin and exclude end. Both entry's creation and
+// update time, should be in the interval to be counted. Interval [1, 5) should
+// contain an entry with creation/update timespan [1, 5].
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ShouldNotIncludeIfCreateEqualsBeginAndUpdateEqualsEnd) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+  AdvanceClock(base::Seconds(4));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(5)),
+            0);
+}
+
+// GetCountOfValuesContainedBetween should treat provided interval as
+// closed-open, e.g. include begin and exclude end. Both entry's creation and
+// update time, should be in the interval to be counted. Interval [1, 5) should
+// not contain an entry with creation/update timespan [5, 5].
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ShouldNotIncludeIfCreateAndUpdateEqualsEnd) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(5));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(5)),
+            0);
+}
+
+// GetCountOfValuesContainedBetween should treat provided interval as
+// closed-open, e.g. include begin and exclude end. Both entry's creation and
+// update time, should be in the interval to be counted. Interval [1, 5) should
+// not contain an entry with creation/update timespan [5, 6].
+TEST_F(GetCountOfValuesContainedBetweenTest,
+       ShouldNotIncludeIfCreateEqualsEnd) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(5));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  EXPECT_EQ(table().GetCountOfValuesContainedBetween(begin + base::Seconds(1),
+                                                     begin + base::Seconds(5)),
+            0);
+}
+
+using RemoveFormElementsAddedBetweenTest = AutocompleteTableLabelSensitiveTest;
+
+// Add an entry to the database at a specified timestamp and expect it to be
+// removed by RemoveFormElementsAddedBetween when the entry's timestamp is in
+// the time range provided.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       RemovesEntryAddedDuringTheSpecifiedRange) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin, begin + base::Seconds(2), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::REMOVE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+}
+
+// Add an entry to the database at a specified timestamp and expect it not to be
+// removed by RemoveFormElementsAddedBetween when the entry's timestamp is
+// outside the time range provided.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       DoesNotRemoveEntryAddedOutsideTheRange) {
+  const Time begin = base::Time::Now();
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(10), begin + base::Seconds(20), changes()));
+
+  EXPECT_EQ(changes().size(), 0U);
+}
+
+// Add multiple entries to the database with specified timestamps and expect
+// them all to be removed by RemoveFormElementsAddedBetween when the entries'
+// timestamps are in the time range provided.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       RemovesMultipleEntriesAddedDuringTheRange) {
+  const Time begin = base::Time::Now();
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  AdvanceClock(base::Seconds(1));
+  std::optional<FormFieldData> optional_second_field =
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Kent");
+  ASSERT_TRUE(optional_second_field.has_value());
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin, begin + base::Seconds(10), changes()));
+
+  EXPECT_THAT(changes(),
+              ElementsAre(AutocompleteChangeLabelSensitive(
+                              AutocompleteChangeLabelSensitive::REMOVE,
+                              AutocompleteKeyLabelSensitive(
+                                  kDefaultName, kDefaultLabel, kDefaultValue)),
+                          AutocompleteChangeLabelSensitive(
+                              AutocompleteChangeLabelSensitive::REMOVE,
+                              AutocompleteKeyLabelSensitive(
+                                  kDefaultName, kDefaultLabel,
+                                  optional_second_field.value().value()))));
+}
+
+// RemoveFormElementsAddedBetween should remove an entry when it was added and
+// updated during the provided time range.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       RemovesEntryAddedAndUpdatedDuringTheRange) {
+  const Time begin = base::Time::Now();
+  std::optional<FormFieldData> optional_field = CreateAndSubmitDefaultField();
+  ASSERT_TRUE(optional_field.has_value());
+
+  AdvanceClock(base::Seconds(1));
+  ASSERT_TRUE(SubmitFormField(optional_field.value()));
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin, begin + base::Seconds(10), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::REMOVE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+}
+
+// RemoveFormElementsAddedBetween should UPDATE entry when it was added outside
+// of the provided time range, but was updated during the provided time range.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       UpdatesEntryAddedBeforeAndUpdatedDuringTheRange) {
+  const Time begin = base::Time::Now();
+  std::optional<FormFieldData> optional_field = CreateAndSubmitDefaultField();
+  ASSERT_TRUE(optional_field.has_value());
+
+  AdvanceClock(base::Seconds(10));
+  ASSERT_TRUE(SubmitFormField(optional_field.value()));
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(5), begin + base::Seconds(15), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+}
+
+// RemoveFormElementsAddedBetween should update entry when it was added inside
+// of the provided time range, but was updated outside of the provided time
+// range.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       UpdatesEntryAddedDuringAndUpdatedAfterTheRange) {
+  const Time begin = base::Time::Now();
+
+  AdvanceClock(base::Seconds(10));
+  std::optional<FormFieldData> optional_field = CreateAndSubmitDefaultField();
+  ASSERT_TRUE(optional_field.has_value());
+
+  AdvanceClock(base::Seconds(10));
+  ASSERT_TRUE(SubmitFormField(optional_field.value()));
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(5), begin + base::Seconds(15), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+}
+
+// Add two entries to the database. Call RemoveFormElementsAddedBetween with
+// such range that first entry is fully inside of the range, second entry is
+// partially inside of the range. Expect one entry to be REMOVED and another
+// one to be UPDATED.
+TEST_F(RemoveFormElementsAddedBetweenTest, RemovesAndUpdatesAtTheSameTime) {
+  const Time begin = base::Time::Now();
+  std::optional<FormFieldData> optional_field1 = CreateAndSubmitDefaultField();
+  ASSERT_TRUE(optional_field1.has_value());
+
+  AdvanceClock(base::Seconds(5));
+  ASSERT_TRUE(SubmitFormField(optional_field1.value()));
+
+  AdvanceClock(base::Seconds(5));
+  std::optional<FormFieldData> optional_field2 =
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Kent");
+  ASSERT_TRUE(optional_field2.has_value());
+
+  AdvanceClock(base::Seconds(5));
+  ASSERT_TRUE(SubmitFormField(optional_field2.value()));
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin, begin + base::Seconds(12), changes()));
+
+  EXPECT_THAT(
+      changes(),
+      ElementsAre(
+          AutocompleteChangeLabelSensitive(
+              AutocompleteChangeLabelSensitive::REMOVE,
+              AutocompleteKeyLabelSensitive(kDefaultName, kDefaultLabel,
+                                            optional_field1.value().value())),
+          AutocompleteChangeLabelSensitive(
+              AutocompleteChangeLabelSensitive::UPDATE,
+              AutocompleteKeyLabelSensitive(kDefaultName, kDefaultLabel,
+                                            optional_field2.value().value()))));
+}
+
+// Add and update entry every X seconds. Call RemoveFormElementsAddedBetween
+// with such range that covers half of the entry's [create, last_update] span.
+// Expect the use counter to be updated to become interpolated to half of the
+// original number.
+TEST_F(RemoveFormElementsAddedBetweenTest, UpdatesCountCorrectly) {
+  const Time begin = base::Time::Now();
+  FormFieldData field = CreateDefaultField();
+
+  AdvanceClock(base::Seconds(10));
+
+  for (int i = 0; i < 10; ++i) {
+    ASSERT_TRUE(SubmitFormField(field));
     AdvanceClock(base::Seconds(1));
   }
 
-  // While the entry "Alter ego" : "Superman" is entirely contained within
-  // the first second, the value "Superman" itself appears in another entry,
-  // so it is not contained.
-  EXPECT_EQ(0, table().GetCountOfValuesContainedBetween(
-                   begin, begin + base::Seconds(1)));
+  // Sanity check
+  ASSERT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            10);
 
-  // No values are entirely contained within the first three seconds either
-  // (note that the second time constraint is exclusive).
-  EXPECT_EQ(0, table().GetCountOfValuesContainedBetween(
-                   begin, begin + base::Seconds(3)));
+  // The element had 10 uses between timestamp 10 (exclusive) and 19
+  // (inclusive). Remove entries that were submitted between 5th second
+  // (inclusive) and 15th second (exclusive). This corresponds to 5 uses in
+  // reality. The database applies linear interpolation and also decreases the
+  // use counter by 5.
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(5), begin + base::Seconds(15), changes()));
 
-  // Only "Superman" is entirely contained within the first four seconds.
-  EXPECT_EQ(1, table().GetCountOfValuesContainedBetween(
-                   begin, begin + base::Seconds(4)));
-
-  // "Clark Kent" and "Clark Sutter" are contained between the first
-  // and seventh second.
-  EXPECT_EQ(2, table().GetCountOfValuesContainedBetween(
-                   begin + base::Seconds(1), begin + base::Seconds(7)));
-
-  // Beginning from the third second, "Clark Kent" is not contained.
-  EXPECT_EQ(1, table().GetCountOfValuesContainedBetween(
-                   begin + base::Seconds(3), begin + base::Seconds(7)));
-
-  // We have three distinct values total.
-  EXPECT_EQ(3, table().GetCountOfValuesContainedBetween(
-                   begin, begin + base::Seconds(7)));
-
-  // And we should get the same result for unlimited time interval.
-  EXPECT_EQ(3, table().GetCountOfValuesContainedBetween(Time(), Time::Max()));
-
-  // The null time interval is also interpreted as unlimited.
-  EXPECT_EQ(3, table().GetCountOfValuesContainedBetween(Time(), Time()));
-
-  // An interval that does not fully contain any entries returns zero.
-  EXPECT_EQ(0, table().GetCountOfValuesContainedBetween(
-                   begin + base::Seconds(1), begin + base::Seconds(2)));
-
-  // So does an interval which has no intersection with any entry.
-  EXPECT_EQ(0, table().GetCountOfValuesContainedBetween(Time(), begin));
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+  // The number of usages should be half of the original number.
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            5);
 }
 
-// TODO(crbug.com/346507576): Refactor into multiple tests:
-// 1. RemoveFormElementsAddedBetween_RemovesWhatIsInRange
-// 2. RemoveFormElementsAddedBetween_RemovesEverything
-// 3. RemoveFormElementsAddedBetween_EdistWhatIsBeforeAndDuringTheRange
-// 4. RemoveFormElementsAddedBetween_EdistWhatIsAfterAndDuringTheRange
-// 5. RemoveFormElementsAddedBetween_DoesNotRemoveBeforeTheRange
-// 6. RemoveFormElementsAddedBetween_DoesNotRemoveAfterTheRange
-// 7. RemoveFormElementsAddedBetween_DeletesEverythingOlderThan30Days
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_RemoveBetweenChanges) {
-  const base::Time t1 = base::Time::Now();
-  const base::Time t2 = t1 + base::Days(1);
+// As we store only creation and last update timestamps,
+// RemoveFormElementsAddedBetween assumes that all updates during given time
+// range appeared uniformly distributed in time. This test adds and update the
+// same entry multiple times with the same timestamp than makes another update X
+// seconds later. This means that all except the last update happened in the
+// beginning of [create, last_update] timespan. Nevertheless, call of
+// RemoveFormElementsAddedBetween with the time range that covers the half of
+// aforementioned timespan would still half the count instead of decreasing it
+// to 1.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       AssumesUniformallyDistributedTimestampsOnUpdate) {
+  const Time begin = base::Time::Now();
+  FormFieldData field = CreateDefaultField();
 
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  AdvanceClock(base::Days(1));
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
+  AdvanceClock(base::Seconds(10));
 
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(t1, t2, changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::UPDATE,
-                AutocompleteKeyLabelSensitive(u"name", u"Name", u"Superman")),
-            changes[0]);
-  changes.clear();
+  // Create a timespan [creation_time, last_update_time] where all usages except
+  // the last one happen at the beginning of the timespan, creation_time = 10s,
+  // last_update_time = 13s.
+  for (int i = 0; i < 3; ++i) {
+    ASSERT_TRUE(SubmitFormField(field));
+  }
+  AdvanceClock(base::Seconds(3));
+  ASSERT_TRUE(SubmitFormField(field));
 
-  EXPECT_TRUE(
-      table().RemoveFormElementsAddedBetween(t2, t2 + base::Days(1), changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::REMOVE,
-                AutocompleteKeyLabelSensitive(u"name", u"Name", u"Superman")),
-            changes[0]);
+  // Sanity check
+  ASSERT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            4);
+
+  // Remove half of the entry's timespan (up to second 12 inclusive).
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(5), begin + base::Seconds(12), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+  // The number of usages should be half of the original number.
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            2);
+}
+
+// Previous tests were always removing the first half of the entry's [create,
+// last_update] span. This test checks that RemoveFormElementsAddedBetween works
+// the same when removing the second half of the span.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       UpdatesCountCorrectlyWhenRemovingSecondHalfOfEntrySpan) {
+  const Time begin = base::Time::Now();
+  FormFieldData field = CreateDefaultField();
+
+  AdvanceClock(base::Seconds(10));
+
+  for (int i = 0; i < 10; ++i) {
+    ASSERT_TRUE(SubmitFormField(field));
+    AdvanceClock(base::Seconds(1));
+  }
+
+  // Sanity check
+  ASSERT_EQ(10, GetAutocompleteEntryLabelSensitiveCount(
+                    kDefaultName, kDefaultLabel, kDefaultValue, &db()));
+
+  // Remove half of the entry's span.
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      begin + base::Seconds(15), begin + base::Seconds(30), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
+  // The number of usages should be half of the original number.
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            5);
+}
+
+// RemoveFormElementsAddedBetween should work correctly when called to remove
+// everything older than 30 days.
+TEST_F(RemoveFormElementsAddedBetweenTest,
+       CorrectlyRemovesEverythingOlderThan30Days) {
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  AdvanceClock(base::Days(2));
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  AdvanceClock(base::Days(29));
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
+
+  ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
+      base::Time(), base::Time::Now() - base::Days(30), changes()));
+
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::REMOVE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
 }
 
 // TODO(crbug.com/346507576): Refactor into
@@ -669,210 +1016,6 @@ TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateDontReplace) {
       all_entries.begin(), all_entries.end(), CompareAutocompleteEntries);
   EXPECT_EQ(1U, expected_entries.count(existing));
   EXPECT_EQ(1U, expected_entries.count(entry));
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
-  // Add an entry used only before the targeted range.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-    AdvanceClock(base::Seconds(10));
-  }
-
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time::Now() - base::Seconds(9), base::Time::Now(), changes));
-  EXPECT_TRUE(changes.empty());
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
-  // Add an entry used only after the targeted range.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
-    AdvanceClock(base::Seconds(10));
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  }
-
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time::Now() - base::Seconds(50),
-      base::Time::Now() - base::Seconds(41), changes));
-  EXPECT_TRUE(changes.empty());
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
-  // Add an entry used entirely during the targeted range.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-    AdvanceClock(base::Seconds(10));
-  }
-
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time::Now() - base::Seconds(50), base::Time::Now(), changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::REMOVE,
-                AutocompleteKeyLabelSensitive(field.name(), field.label(),
-                                              field.value())),
-            changes[0]);
-  EXPECT_EQ(0, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
-  SetClock(autofill::test::kJune2017);
-  // Add an entry used both before and during the targeted range.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
-    AdvanceClock(base::Seconds(10));
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  }
-
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time::Now() - base::Seconds(10),
-      base::Time::Now() + base::Seconds(10), changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::UPDATE,
-                AutocompleteKeyLabelSensitive(field.name(), field.label(),
-                                              field.value())),
-            changes[0]);
-  EXPECT_EQ(4, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-  std::optional<AutocompleteEntryLabelSensitive> entry =
-      table().GetAutocompleteEntryLabelSensitive(field.name(), field.label(),
-                                                 field.value());
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(base::Time::Now() - base::Seconds(40), entry->date_created());
-  EXPECT_EQ(base::Time::Now() - base::Seconds(11), entry->date_last_used());
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
-  SetClock(autofill::test::kJune2017);
-  // Add an entry used both during and after the targeted range.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  for (int i = 0; i < 5; i++) {
-    AdvanceClock(base::Seconds(10));
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  }
-
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time::Now() - base::Seconds(50),
-      base::Time::Now() - base::Seconds(10), changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::UPDATE,
-                AutocompleteKeyLabelSensitive(field.name(), field.label(),
-                                              field.value())),
-            changes[0]);
-  EXPECT_EQ(2, GetAutocompleteEntryLabelSensitiveCount(
-                   field.name(), field.label(), field.value(), &db()));
-  std::optional<AutocompleteEntryLabelSensitive> entry =
-      table().GetAutocompleteEntryLabelSensitive(field.name(), field.label(),
-                                                 field.value());
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(base::Time::Now() - base::Seconds(10), entry->date_created());
-  EXPECT_EQ(base::Time::Now(), entry->date_last_used());
-}
-
-// TODO(crbug.com/346507576): remove, should be covered in
-// RemoveFormElementsAddedBetween
-TEST_F(AutocompleteTableLabelSensitiveTest,
-       Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days) {
-  // Add some form field entries.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-
-  field.set_value(u"Clark Sutter");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  AdvanceClock(base::Days(2));
-
-  field.set_value(u"Clark Kent");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  AdvanceClock(base::Days(29));
-
-  field.set_value(u"Superman");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-
-  EXPECT_EQ(3U, changes.size());
-
-  // Removing all elements added before 30 days from the database.
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(
-      base::Time(), base::Time::Now() - base::Days(30), changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(
-      AutocompleteChangeLabelSensitive(
-          AutocompleteChangeLabelSensitive::REMOVE,
-          AutocompleteKeyLabelSensitive(u"name", u"Name", u"Clark Sutter")),
-      changes[0]);
-  EXPECT_EQ(0, GetAutocompleteEntryLabelSensitiveCount(u"name", u"Name",
-                                                       u"Clark Sutter", &db()));
-  EXPECT_EQ(1, GetAutocompleteEntryLabelSensitiveCount(u"name", u"Name",
-                                                       u"Superman", &db()));
-  EXPECT_EQ(1, GetAutocompleteEntryLabelSensitiveCount(u"name", u"Name",
-                                                       u"Clark Kent", &db()));
-  changes.clear();
 }
 
 // TODO(crbug.com/346507576): refactor to
