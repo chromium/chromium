@@ -68,12 +68,6 @@ class AIManager : public base::SupportsUserData::Data,
     return model_download_progress_manager_.GetNumberOfReporters();
   }
 
-  // Return the max top k value for the LanguageModel API. Note that this value
-  // won't exceed the max top k defined by the underlying on-device model.
-  uint32_t GetLanguageModelMaxTopK();
-  // Return the max temperature for the LanguageModel API.
-  float GetLanguageModelMaxTemperature();
-
   // Returns if all of the language codes in `languages` are supported.
   static bool IsLanguagesSupported(
       const std::vector<AILanguageCodePtr>& languages,

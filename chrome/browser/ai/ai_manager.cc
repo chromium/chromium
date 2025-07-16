@@ -710,9 +710,9 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {
   auto model_info = blink::mojom::AILanguageModelParams::New(
       blink::mojom::AILanguageModelSamplingParams::New(),
       blink::mojom::AILanguageModelSamplingParams::New());
-  model_info->max_sampling_params->top_k = GetLanguageModelMaxTopK();
-  model_info->max_sampling_params->temperature =
-      GetLanguageModelMaxTemperature();
+  model_info->max_sampling_params->top_k =
+      optimization_guide::features::GetOnDeviceModelMaxTopK();
+  model_info->max_sampling_params->temperature = kDefaultMaxTemperature;
 
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
@@ -976,32 +976,6 @@ void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
         "Unable to create a session because the model path ('%s') is invalid.",
         model_path.AsUTF8Unsafe());
   }
-}
-
-// TODO(crbug.com/367771112): remove these methods after we roll out the model
-// execution config change.
-uint32_t AIManager::GetLanguageModelMaxTopK() {
-  if (base::FeatureList::IsEnabled(
-          features::kAILanguageModelOverrideConfiguration)) {
-    return std::min(
-        optimization_guide::features::GetOnDeviceModelMaxTopK(),
-        features::kAILanguageModelOverrideConfigurationMaxTopK.Get());
-  }
-
-  return optimization_guide::features::GetOnDeviceModelMaxTopK();
-}
-
-float AIManager::GetLanguageModelMaxTemperature() {
-  if (base::FeatureList::IsEnabled(
-          features::kAILanguageModelOverrideConfiguration)) {
-    return std::min(
-        kDefaultMaxTemperature,
-        static_cast<float>(
-            features::kAILanguageModelOverrideConfigurationMaxTemperature
-                .Get()));
-  }
-
-  return kDefaultMaxTemperature;
 }
 
 void AIManager::AddModelDownloadProgressObserver(
