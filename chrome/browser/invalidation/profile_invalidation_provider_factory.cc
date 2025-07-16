@@ -60,6 +60,22 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
       profile->GetPrefs(), project_number, std::move(log_prefix));
 }
 
+std::unique_ptr<IdentityProvider> CreateIdentityProvider(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (user_manager::UserManager::IsInitialized() &&
+      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
+      connector->IsDeviceEnterpriseManaged()) {
+    return std::make_unique<DeviceIdentityProvider>(
+        DeviceOAuth2TokenServiceFactory::Get());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return std::make_unique<ProfileIdentityProvider>(
+      IdentityManagerFactory::GetForProfile(profile));
+}
+
 }  // namespace
 
 // static
@@ -117,25 +133,10 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     return testing_factory_.Run(context);
   }
 
-  std::unique_ptr<IdentityProvider> identity_provider;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
-      connector->IsDeviceEnterpriseManaged()) {
-    identity_provider = std::make_unique<DeviceIdentityProvider>(
-        DeviceOAuth2TokenServiceFactory::Get());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (!identity_provider) {
-    identity_provider = std::make_unique<ProfileIdentityProvider>(
-        IdentityManagerFactory::GetForProfile(profile));
-  }
+  std::unique_ptr<IdentityProvider> identity_provider =
+      CreateIdentityProvider(profile);
   ProfileInvalidationProvider::InvalidationServiceOrListenerFactory
       service_or_listener_factory =
           base::BindRepeating(&CreateInvalidationServiceOrListenerImpl, profile,
