@@ -224,6 +224,20 @@ TEST(UrlUtilTest, GetValueForKeyInQueryInvalidURL) {
   EXPECT_FALSE(GetValueForKeyInQuery(url, "test", &value));
 }
 
+TEST(UrlUtilTest, GetValueForKeyInQueryNoOutputValue) {
+  GURL url(
+      "http://example.com/path?name=value&boolParam&"
+      "url=http://test.com/q?n1%3Dv1%26n2");
+
+  // False when getting a non-existent query param.
+  EXPECT_FALSE(GetValueForKeyInQuery(url, "non-exist", nullptr));
+
+  // True when query param exists.
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "name", nullptr));
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "boolParam", nullptr));
+  EXPECT_TRUE(GetValueForKeyInQuery(url, "url", nullptr));
+}
+
 TEST(UrlUtilTest, ParseQuery) {
   const GURL url("http://example.com/path?name=value&boolParam&"
                  "url=http://test.com/q?n1%3Dv1%26n2&"

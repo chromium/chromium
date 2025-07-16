@@ -187,7 +187,9 @@ bool GetValueForKeyInQuery(const GURL& url,
                            std::string* out_value) {
   for (QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     if (it.GetKey() == search_key) {
-      *out_value = it.GetUnescapedValue();
+      if (out_value) {
+        *out_value = it.GetUnescapedValue();
+      }
       return true;
     }
   }

@@ -107,9 +107,9 @@ class NET_EXPORT QueryIterator {
   std::string unescaped_value_;
 };
 
-// Looks for |search_key| in the query portion of |url|. Returns true if the
-// key is found and sets |out_value| to the unescaped value for the key.
-// Returns false if the key is not found.
+// Looks for |search_key| in the query portion of |url|. Returns true if the key
+// is found, false otherwise. If the key is found and |out_value| is not null,
+// sets its contents to the unescaped value for the key.
 NET_EXPORT bool GetValueForKeyInQuery(const GURL& url,
                                       std::string_view search_key,
                                       std::string* out_value);
