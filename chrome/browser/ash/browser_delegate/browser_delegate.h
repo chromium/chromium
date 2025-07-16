@@ -73,6 +73,10 @@ class BrowserDelegate {
   // Shows the browser window, or activates it if it's already visible.
   virtual void Show() = 0;
 
+  // Shows the window, but does not activate it. Does nothing if the window is
+  // already visible.
+  virtual void ShowInactive() = 0;
+
   // Activates the browser window.
   virtual void Activate() = 0;
 
@@ -106,8 +110,17 @@ class BrowserDelegate {
   // Pins the given tab.
   virtual void PinTab(size_t tab_index) = 0;
 
+  // Moves the given tab to the given `target_browser`, where it's placed at the
+  // end of the tab strip.
+  virtual void MoveTab(size_t tab_index, BrowserDelegate& target_browser) = 0;
+
  protected:
   ~BrowserDelegate() = default;
+
+ private:
+  // BrowserDelegateImpl assumes it's the only implementation.
+  BrowserDelegate() = default;
+  friend class BrowserDelegateImpl;
 };
 
 }  // namespace ash

@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
@@ -223,36 +225,29 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
 void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
     const std::vector<coral::mojom::Tab>& tabs,
     size_t src_desk_index) {
-  Browser* target_browser = nullptr;
+  ash::BrowserDelegate* target_browser = nullptr;
   for (const auto& tab : tabs) {
     // Find the index of the tab item on its browser window.
     const auto& tab_url = tab.url;
     int tab_index = -1;
-    Browser* source_browser =
-        FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index);
+    ash::BrowserDelegate* source_browser =
+        ash::BrowserController::GetInstance()->GetDelegate(
+            FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index));
     if (source_browser) {
       // Create a browser on the new desk if there is none.
       if (!target_browser) {
-        target_browser = CreateBrowser();
+        target_browser =
+            ash::BrowserController::GetInstance()->GetDelegate(CreateBrowser());
         if (!target_browser) {
           break;
         }
       }
-
-      // Move the tab from source browser to target browser.
-      TabStripModel* source_tab_strip = source_browser->tab_strip_model();
-      bool was_pinned = source_tab_strip->IsTabPinned(tab_index);
-      int add_types =
-          was_pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_ACTIVE;
-      std::unique_ptr<tabs::TabModel> tab_model =
-          source_tab_strip->DetachTabAtForInsertion(tab_index);
-      target_browser->tab_strip_model()->InsertDetachedTabAt(
-          -1, std::move(tab_model), add_types);
+      source_browser->MoveTab(tab_index, *target_browser);
     }
   }
 
   if (target_browser) {
-    target_browser->window()->ShowInactive();
+    target_browser->ShowInactive();
   }
 }
 

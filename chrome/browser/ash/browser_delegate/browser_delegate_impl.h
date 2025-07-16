@@ -30,6 +30,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   bool IsClosing() const override;
   bool IsActive() const override;
   void Show() override;
+  void ShowInactive() override;
   void Activate() override;
   void Minimize() override;
   void Close() override;
@@ -40,6 +41,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
                                        TabPinning pin_tab) override;
   void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) override;
   void PinTab(size_t tab_index) override;
+  void MoveTab(size_t tab_index, BrowserDelegate& target_browser) override;
 
  private:
   const raw_ref<Browser> browser_;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -72,6 +73,10 @@ void BrowserDelegateImpl::Show() {
   browser_->window()->Show();
 }
 
+void BrowserDelegateImpl::ShowInactive() {
+  browser_->window()->ShowInactive();
+}
+
 void BrowserDelegateImpl::Activate() {
   browser_->window()->Activate();
 }
@@ -123,6 +128,22 @@ void BrowserDelegateImpl::CreateTabGroup(
 void BrowserDelegateImpl::PinTab(size_t tab_index) {
   browser_->tab_strip_model()->SetTabPinned(static_cast<int>(tab_index),
                                             /*pinned=*/true);
+}
+
+void BrowserDelegateImpl::MoveTab(size_t tab_index,
+                                  BrowserDelegate& target_browser) {
+  TabStripModel* source_tab_strip = browser_->tab_strip_model();
+  TabStripModel* target_tab_strip =
+      static_cast<BrowserDelegateImpl&>(target_browser)
+          .browser_->tab_strip_model();
+
+  const bool was_pinned = source_tab_strip->IsTabPinned(tab_index);
+
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      source_tab_strip->DetachTabAtForInsertion(tab_index);
+  target_tab_strip->InsertDetachedTabAt(
+      TabStripModel::kNoTab, std::move(detached_tab),
+      was_pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_ACTIVE);
 }
 
 }  // namespace ash

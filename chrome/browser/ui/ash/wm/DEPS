@@ -11,6 +11,8 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/app_restore",
+  "+chrome/browser/ash/browser_delegate/browser_controller.h",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/profiles",
