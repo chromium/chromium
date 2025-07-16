@@ -18,7 +18,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 import org.chromium.components.cached_flags.DoubleCachedFeatureParam;
 import org.chromium.components.cached_flags.IntCachedFeatureParam;
@@ -47,7 +48,8 @@ public final class FieldTrialsInstrumentationTest {
             };
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @SmallTest
@@ -64,7 +66,7 @@ public final class FieldTrialsInstrumentationTest {
         // @Param overrides as Java level, but should also override at native level. Remove the
         // override at Java level to check the override at native level.
         FeatureOverrides.removeAllIncludingAnnotations();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
         Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
@@ -84,7 +86,7 @@ public final class FieldTrialsInstrumentationTest {
     public void testNative_CommandLine_EnableWithParams() {
         // @CommandLine overrides as Java level, but should also override at native level. Remove
         // the override at Java level to check the override at native level.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         FeatureOverrides.removeAllIncludingAnnotations();
 
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
@@ -109,7 +111,7 @@ public final class FieldTrialsInstrumentationTest {
     public void testNative_ParamValueIsUnescaped_CommandLine_EnableWithParams() {
         // @CommandLine overrides as Java level, but should also override at native level. Remove
         // the override at Java level to check the override at native level.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         FeatureOverrides.removeAllIncludingAnnotations();
 
         Assert.assertEquals(
@@ -215,7 +217,7 @@ public final class FieldTrialsInstrumentationTest {
     @Test
     @SmallTest
     public void testGetLastUpdateFromNativeTimeMillis() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         Assert.assertNotEquals(0, ChromeCachedFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
     }
 }

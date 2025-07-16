@@ -51,7 +51,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -147,7 +149,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
 
@@ -156,10 +159,11 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     private FacilitatedPaymentsPaymentMethodsMediator mMediator;
     private FacilitatedPaymentsPaymentMethodsView mView;
     private PropertyModel mModel;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
                         .getActivity()

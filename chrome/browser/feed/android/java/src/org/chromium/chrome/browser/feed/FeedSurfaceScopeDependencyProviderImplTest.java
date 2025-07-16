@@ -21,7 +21,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 import java.util.ArrayList;
 
@@ -42,12 +43,12 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
     }
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityWithURL("about:blank");
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test

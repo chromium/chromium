@@ -420,6 +420,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/data_sharing:test_support_java",
       "//components/data_sharing/public:public_java",
       "//content/public/test/android:content_java_test_support",

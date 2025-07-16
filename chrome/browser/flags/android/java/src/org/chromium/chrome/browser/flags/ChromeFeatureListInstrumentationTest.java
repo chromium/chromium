@@ -20,7 +20,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -28,11 +29,12 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 @Batch(Batch.PER_CLASS)
 public class ChromeFeatureListInstrumentationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test

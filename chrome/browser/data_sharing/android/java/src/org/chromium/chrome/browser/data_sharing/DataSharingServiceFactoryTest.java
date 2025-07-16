@@ -23,7 +23,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
@@ -38,7 +39,8 @@ import java.util.concurrent.TimeoutException;
 public class DataSharingServiceFactoryTest {
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @MediumTest
@@ -49,7 +51,7 @@ public class DataSharingServiceFactoryTest {
                     DataSharingServiceFactory.setForTesting(testService);
                 });
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -66,7 +68,7 @@ public class DataSharingServiceFactoryTest {
     // TODO(b/343541441) : Fix this test with `chrome_internal_flag`.
     public void testServiceCreation_RealService() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         CountDownLatch countDownLatch = new CountDownLatch(6); // 6 method calls to wait for.
 
@@ -154,7 +156,7 @@ public class DataSharingServiceFactoryTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testServiceCreation_EmptyService() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
