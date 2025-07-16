@@ -206,6 +206,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Recommended" summary="Recommended Policy"/>
 </variants>
 
+<variants name="PromotionPages">
+  <variant name="Management" summary="chrome://management"/>
+  <variant name="Policy" summary="chrome://policy"/>
+</variants>
+
 <variants name="ResumableRequestCheckType">
   <variant name="Content" summary="Content upload step of a Resumable request"/>
   <variant name="Metadata"
@@ -2619,16 +2624,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.ManagementPromotionBannerDisplayed" enum="Boolean"
-    expires_after="2025-12-07">
-  <owner>austinzzr@chromium.org</owner>
-  <owner>esalma@google.com</owner>
-  <summary>
-    Records the number of times the promotion banner on chrome://management is
-    visited and displayed or visited but not displayed.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.OidcEnrollment.Interception.Funnel"
     enum="OidcInterceptionFunnelStep" expires_after="2025-07-27">
   <owner>xzonghan@chromium.org</owner>
@@ -2815,27 +2810,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Load status from the policy loaders which pull policy settings from the
     underlying platform, such as Windows Group Policy.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.PolicyPromotionBannerAction"
-    enum="PromotionBannerAction" expires_after="2025-08-10">
-  <owner>austinzzr@chromium.org</owner>
-  <owner>esalma@google.com</owner>
-  <summary>
-    Record the action the user takes when the promotion banner is shown on the
-    chrome://policy page. The action can be to either dismiss the page or click
-    on a button.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.PolicyPromotionBannerDisplayed" enum="Boolean"
-    expires_after="2025-12-07">
-  <owner>austinzzr@chromium.org</owner>
-  <owner>esalma@google.com</owner>
-  <summary>
-    Records the number of times the promotion banner on chrome://policy is
-    visited and displayed or visited but not displayed.
   </summary>
 </histogram>
 
@@ -3903,6 +3877,29 @@ chromium-metrics-reviews@google.com.
   <token key="ContentAnalysisProtocol" variants="ContentAnalysisProtocol"/>
   <token key="ContentAnalysisRequestType"
       variants="ContentAnalysisRequestType"/>
+</histogram>
+
+<histogram name="Enterprise.{Page}PromotionBannerAction"
+    enum="PromotionBannerAction" expires_after="2025-12-07">
+  <owner>austinzzr@chromium.org</owner>
+  <owner>esalma@google.com</owner>
+  <summary>
+    Record the action the user takes when the promotion banner is shown on the
+    chrome://{Page} page. The action can be to either dismiss the page or click
+    on a button.
+  </summary>
+  <token key="Page" variants="PromotionPages"/>
+</histogram>
+
+<histogram name="Enterprise.{Page}PromotionBannerDisplayed" enum="Boolean"
+    expires_after="2025-12-07">
+  <owner>austinzzr@chromium.org</owner>
+  <owner>esalma@google.com</owner>
+  <summary>
+    Records the number of times the promotion banner on chrome://{Page} is
+    visited and displayed or visited but not displayed.
+  </summary>
+  <token key="Page" variants="PromotionPages"/>
 </histogram>
 
 <histogram name="Enterprise.{UploadEvent}.FileCount" units="count"
