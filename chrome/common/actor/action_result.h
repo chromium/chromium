@@ -14,6 +14,8 @@ namespace actor {
 
 bool IsOk(const mojom::ActionResult& result);
 
+bool IsOk(mojom::ActionResultCode code);
+
 mojom::ActionResultPtr MakeOkResult();
 
 // TODO(crbug.com/409558980): Replace generic errors with tool-specific ones,

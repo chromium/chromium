@@ -88,37 +88,15 @@ void ActorTask::SetState(State state) {
   state_ = state;
 }
 
-void ActorTask::Act(const optimization_guide::proto::BrowserAction& action,
-                    ActionResultCallback callback) {
-  if (state_ == State::kPausedByClient) {
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused));
-    return;
-  }
-  if (state_ == State::kFinished) {
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway));
-    return;
-  }
-  SetState(State::kActing);
-  execution_engine_->Act(
-      action,
-      base::BindOnce(&ActorTask::OnFinishedActDeprecated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ActorTask::OnFinishedActDeprecated(ActionResultCallback callback,
-                                        mojom::ActionResultPtr result) {
-  if (state_ != State::kActing) {
-    std::move(callback).Run(MakeErrorResult());
-    return;
-  }
-  SetState(State::kReflecting);
-  std::move(callback).Run(std::move(result));
-}
-
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
   if (state_ == State::kPausedByClient) {
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused),
+                            std::nullopt);
+    return;
+  }
+  if (state_ == State::kFinished) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway),
                             std::nullopt);
     return;
   }
@@ -174,8 +152,7 @@ base::Time ActorTask::GetEndTime() const {
   return end_time_;
 }
 
-void ActorTask::AddTab(tabs::TabHandle tab_handle,
-                       ActionResultCallback callback) {
+void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
   if (tab_handles_.contains(tab_handle)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));

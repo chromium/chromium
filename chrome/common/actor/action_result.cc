@@ -11,7 +11,11 @@
 namespace actor {
 
 bool IsOk(const mojom::ActionResult& result) {
-  return result.code == mojom::ActionResultCode::kOk;
+  return IsOk(result.code);
+}
+
+bool IsOk(mojom::ActionResultCode code) {
+  return code == mojom::ActionResultCode::kOk;
 }
 
 mojom::ActionResultPtr MakeOkResult() {

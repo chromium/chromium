@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,10 +16,6 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
-
-namespace optimization_guide::proto {
-class BrowserStartTaskResult;
-}
 
 namespace actor {
 class ExecutionEngine;
@@ -58,18 +56,13 @@ class GlicActorController {
   void OnResponseStopped();
 
  private:
-  void OnTaskStartedForAct(
-      optimization_guide::proto::BrowserAction action,
-      const mojom::GetTabContextOptions& options,
-      mojom::WebClientHandler::ActInFocusedTabCallback callback,
-      optimization_guide::proto::BrowserStartTaskResult result);
-
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
-      actor::mojom::ActionResultPtr result) const;
+      actor::mojom::ActionResultCode result,
+      std::optional<size_t> index_of_failed_action) const;
 
   actor::ExecutionEngine* GetExecutionEngine() const;
   actor::ActorTask* GetCurrentTask() const;

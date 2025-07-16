@@ -441,15 +441,6 @@ void GlicKeyedService::ActInFocusedTab(
   }
 
   CHECK(actor_controller_);
-
-  auto* actor_service = actor::ActorKeyedService::Get(profile_);
-  CHECK(actor_service);
-
-  actor::ActorTask* task = actor_service->GetMostRecentTask();
-  if (task && (!action.has_task_id() || action.task_id() == 0)) {
-    action.set_task_id(task->id().value());
-  }
-
   actor_controller_->Act(action, options, std::move(callback));
 }
 

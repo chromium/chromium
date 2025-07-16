@@ -21,6 +21,7 @@
 #include "base/state_transitions.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/task_id.h"
@@ -58,14 +59,6 @@ using tabs::TabInterface;
 namespace actor {
 
 namespace {
-
-void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
-                            mojom::ActionResultPtr result) {
-  UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
-                            result->code);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-}
 
 void PostTaskForActCallback(ActorTask::ActCallback callback,
                             mojom::ActionResultPtr result,
@@ -171,110 +164,12 @@ void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   external_tool_failure_reason_ = reason;
 }
 
-void ExecutionEngine::Act(const BrowserAction& action,
-                          ActionResultCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(action.task_id(), task_->id().value());
-
-  if (task_->IsPaused()) {
-    journal_->Log(GURL(), task_->id(), "Act Failed",
-                  "Unable to perform action: task is paused");
-    PostTaskForActCallback(std::move(callback),
-                           MakeResult(mojom::ActionResultCode::kTaskPaused));
-    return;
-  }
-
-  // NOTE: Improve this API by queuing the action instead.
-  if (!action_sequence_.empty()) {
-    journal_->Log(
-        GURL(), task_->id(), "Act Failed",
-        "Unable to perform action: task already has action in progress");
-    PostTaskForActCallback(std::move(callback),
-                           MakeResult(mojom::ActionResultCode::kError,
-                                      "Task already has action in progress"));
-    return;
-  }
-
-  if (action.actions_size() <= 0) {
-    journal_->Log(GURL(), task_->id(), "Act Failed",
-                  "Unable to perform action: proto contains no actions");
-    PostTaskForActCallback(
-        std::move(callback),
-        MakeResult(mojom::ActionResultCode::kEmptyActionSequence,
-                   "The BrowserAction proto had no actions"));
-    return;
-  }
-
-  BuildToolRequestResult result = BuildToolRequest(action, nullptr);
-  if (!result.has_value()) {
-    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
-                  "Failed to convert BrowserAction proto to ToolRequest");
-    PostTaskForActCallback(
-        std::move(callback),
-        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
-                   "Failed to convert BrowserAction proto to ToolRequest"));
-    return;
-  }
-
-  next_action_index_ = 0;
-  action_sequence_ = std::move(result.value());
-
-  // Adapt the callback in this path to the one used by the ToolRequest taking
-  // Act.
-  act_callback_ = base::BindOnce(
-      [](ActionResultCallback callback, mojom::ActionResultPtr result,
-         std::optional<size_t>) { std::move(callback).Run(std::move(result)); },
-      std::move(callback));
-
-  if (state_ == State::kInit) {
-    // This is the first Act() by this ExecutionEngine, so we should notify
-    // the UI, then kickoff the first action.
-    //
-    // TODO(crbug.com/411462297): Make sure we're property dispatching
-    // StartingToActOnTab UiEvents when tasks aren't scoped to a single tab.
-    // This won't work if the first action sequence is creating the tab on which
-    // following sequences will act.
-    // TODO(crbug.com/420669167): This needs to support taking multiple tabs. Is
-    // it even the right interface? Different sets of tabs might be acted on in
-    // followup sequences...
-    absl::flat_hash_set<int32_t> acting_tab_handles;
-    for (const std::unique_ptr<ToolRequest>& request : action_sequence_) {
-      if (request->GetTabHandle() != tabs::TabHandle::Null()) {
-        acting_tab_handles.insert(request->GetTabHandle().raw_value());
-      }
-    }
-
-    ui_event_dispatcher_->OnPreFirstAct(
-        ui::UiEventDispatcher::FirstActInfo{
-            .task_id = task_->id(),
-            .tab_handle = acting_tab_handles.empty()
-                              ? std::nullopt
-                              : std::make_optional(tabs::TabHandle(
-                                    *acting_tab_handles.begin()))},
-        base::BindOnce(&ExecutionEngine::KickOffNextAction, GetWeakPtr()));
-  } else {
-    // We previously notified the UI, so just kickoff the first action.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ExecutionEngine::KickOffNextAction,
-                                  GetWeakPtr(), MakeOkResult()));
-  }
-}
-
 void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                           ActorTask::ActCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(!actions.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (task_->IsPaused()) {
-    journal_->Log(actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
-                  "Unable to perform action: task is paused");
-    PostTaskForActCallback(std::move(callback),
-                           MakeResult(mojom::ActionResultCode::kTaskPaused),
-                           std::nullopt);
-    return;
-  }
+  CHECK_EQ(task_->GetState(), ActorTask::State::kActing);
 
   if (!action_sequence_.empty()) {
     journal_->Log(

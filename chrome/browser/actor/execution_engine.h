@@ -50,8 +50,6 @@ class UiEventDispatcher;
 // Coordinates the execution of a multi-step task.
 class ExecutionEngine {
  public:
-  using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-
   // State machine (success case)
   //
   //    Init
@@ -97,11 +95,6 @@ class ExecutionEngine {
   // If there is an ongoing tool request, treat it as having failed with the
   // given reason.
   void FailCurrentTool(mojom::ActionResultCode reason);
-
-  // Performs the next action in the current task.
-  // TODO(crbug.com/411462297): Deprecated, this will be removed soon.
-  void Act(const optimization_guide::proto::BrowserAction& action,
-           ActionResultCallback callback);
 
   // Performs the given tool actions and invokes the callback when completed.
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,

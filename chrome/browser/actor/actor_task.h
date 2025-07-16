@@ -31,7 +31,6 @@ class UiEventDispatcher;
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
-  using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   using ActCallback =
       base::OnceCallback<void(mojom::ActionResultPtr, std::optional<size_t>)>;
 
@@ -69,11 +68,6 @@ class ActorTask {
 
   base::Time GetEndTime() const;
 
-  // TODO(crbug.com/411462297): Deprecated, new callers should use the
-  // ToolRequest version below.
-  void Act(const optimization_guide::proto::BrowserAction& action,
-           ActionResultCallback callback);
-
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
@@ -94,7 +88,8 @@ class ActorTask {
 
   // Add the given TabHandle to the set of tabs this task is operating over
   // and notify the UI if this is a new tab for the task.
-  void AddTab(tabs::TabHandle tab, ActionResultCallback callback);
+  using AddTabCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  void AddTab(tabs::TabHandle tab, AddTabCallback callback);
 
   // Returns true if the given tab is part of this task's acting set.
   bool HasActedOnTab(tabs::TabHandle tab) const;
@@ -118,8 +113,6 @@ class ActorTask {
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
                      std::optional<size_t> index_of_failed_action);
-  void OnFinishedActDeprecated(ActionResultCallback callback,
-                               mojom::ActionResultPtr result);
 
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
