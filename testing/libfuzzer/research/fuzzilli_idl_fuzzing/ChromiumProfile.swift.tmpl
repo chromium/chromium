@@ -97,7 +97,7 @@ public extension ILType {
 }
 
 {%- macro define_group(identifier, group) %}
-let js{{identifier}} = ObjectGroup(
+fileprivate let js{{identifier}} = ObjectGroup(
   name: "{{group.name}}",
   instanceType: {{group.instanceType.fuzzilli_repr()}},
   properties: [
@@ -139,7 +139,7 @@ let js{{identifier}} = ObjectGroup(
 {{define_group(interface.identifier, inter[1])}}
 {% endfor -%}
 
-let fastCallables : [(group: ILType, method: String)] = [
+fileprivate let fastCallables : [(group: ILType, method: String)] = [
 {%- for interface in database.interfaces -%}
 {%- for operation in interface.operations -%}
 {%- if operation.is_static == False -%}
@@ -180,7 +180,7 @@ fileprivate let FastApiCallFuzzer = ProgramTemplate("FastApiCallFuzzer") { b in
     b.build(n: 10)
 }
 
-let WasmFastCallFuzzer = WasmProgramTemplate("WasmFastCallFuzzer") { b in
+fileprivate let WasmFastCallFuzzer = WasmProgramTemplate("WasmFastCallFuzzer") { b in
     b.buildPrefix()
     b.build(n: 10)
     let target = fastCallables.randomElement()!
