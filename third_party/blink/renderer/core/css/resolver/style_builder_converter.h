@@ -74,6 +74,7 @@
 namespace blink {
 
 class ClipPathOperation;
+class ComputedGridTrackList;
 class CSSToLengthConversionData;
 class Font;
 class FontBuilder;
@@ -88,7 +89,6 @@ class StyleSVGResource;
 class TextSizeAdjust;
 class TranslateTransformOperation;
 class UnzoomedLength;
-struct ComputedGridTrackList;
 
 class StyleBuilderConverterBase {
   STATIC_ONLY(StyleBuilderConverterBase);
@@ -327,9 +327,8 @@ class StyleBuilderConverter {
   static TransformOrigin ConvertTransformOrigin(StyleResolverState&,
                                                 const CSSValue&);
 
-  static void ConvertGridTrackList(const CSSValue&,
-                                   ComputedGridTrackList&,
-                                   StyleResolverState&);
+  static ComputedGridTrackList* ConvertGridTrackList(StyleResolverState&,
+                                                     const CSSValue&);
   static ScrollMarkerGroup* ConvertScrollMarkerGroup(StyleResolverState&,
                                                      const CSSValue&);
 

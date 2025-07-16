@@ -47,9 +47,9 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       column_auto_repetitions_(column_auto_repetitions),
       row_auto_repetitions_(row_auto_repetitions),
       subgridded_columns_merged_explicit_grid_line_names_(
-          grid_style.TemplateTracks(kForColumns).named_grid_lines),
+          grid_style.TemplateTracks(kForColumns).GetNamedGridLines()),
       subgridded_rows_merged_explicit_grid_line_names_(
-          grid_style.TemplateTracks(kForRows).named_grid_lines) {
+          grid_style.TemplateTracks(kForRows).GetNamedGridLines()) {
   const bool has_subgridded_columns =
       subgrid_area.columns.IsTranslatedDefinite();
   const bool has_subgridded_rows = subgrid_area.rows.IsTranslatedDefinite();
@@ -132,7 +132,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
          wtf_size_t auto_repetitions, bool is_opposite_direction_to_parent,
          bool is_nested_subgrid) -> void {
     const wtf_size_t auto_repeat_track_count =
-        track_list.track_list.AutoRepeatTrackCount();
+        track_list.GetTrackList().AutoRepeatTrackCount();
     const wtf_size_t auto_repeat_total_tracks =
         auto_repeat_track_count * auto_repetitions;
     if (auto_repeat_total_tracks == 0) {
@@ -148,7 +148,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
     // TODO(kschmi): Properly shift line names after the insertion point for
     // nested subgrids. This should happen in `MergeNamedGridLinesWithParent`.
     // TODO(kschmi): Do we also need to do this for implicit lines?
-    const wtf_size_t insertion_point = track_list.auto_repeat_insertion_point;
+    const wtf_size_t insertion_point = track_list.GetAutoRepeatInsertionPoint();
     if (!is_nested_subgrid) {
       for (const auto& pair : subgrid_map) {
         Vector<wtf_size_t> shifted_list;
@@ -525,7 +525,8 @@ wtf_size_t GridLineResolver::ExplicitGridColumnCount() const {
   }
 
   wtf_size_t column_count = style_->TemplateTracks(kForColumns)
-                                .track_list.TrackCountWithoutAutoRepeat() +
+                                .GetTrackList()
+                                .TrackCountWithoutAutoRepeat() +
                             AutoRepeatTrackCount(kForColumns);
   if (const auto& grid_template_areas = style_->GridTemplateAreas()) {
     column_count = std::max(column_count, grid_template_areas->column_count);
@@ -540,7 +541,8 @@ wtf_size_t GridLineResolver::ExplicitGridRowCount() const {
   }
 
   wtf_size_t row_count = style_->TemplateTracks(kForRows)
-                             .track_list.TrackCountWithoutAutoRepeat() +
+                             .GetTrackList()
+                             .TrackCountWithoutAutoRepeat() +
                          AutoRepeatTrackCount(kForRows);
   if (const auto& grid_template_areas = style_->GridTemplateAreas()) {
     row_count = std::max(row_count, grid_template_areas->row_count);
@@ -565,7 +567,8 @@ wtf_size_t GridLineResolver::AutoRepeatTrackCount(
     GridTrackSizingDirection track_direction) const {
   return AutoRepetitions(track_direction) *
          ComputedGridTrackList(track_direction)
-             .track_list.AutoRepeatTrackCount();
+             .GetTrackList()
+             .AutoRepeatTrackCount();
 }
 
 wtf_size_t GridLineResolver::SubgridSpanSize(
@@ -657,7 +660,7 @@ const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(
 
   return subgrid_merged_grid_line_names
              ? *subgrid_merged_grid_line_names
-             : ComputedGridTrackList(track_direction).named_grid_lines;
+             : ComputedGridTrackList(track_direction).GetNamedGridLines();
 }
 
 const NamedGridAreaMap* GridLineResolver::NamedAreasMap() const {
@@ -674,7 +677,7 @@ const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(
     GridTrackSizingDirection track_direction) const {
   // Auto repeat line names always come from the style object, as they get
   // merged into the explicit line names map for subgrids.
-  return ComputedGridTrackList(track_direction).auto_repeat_named_grid_lines;
+  return ComputedGridTrackList(track_direction).GetAutoRepeatNamedGridLines();
 }
 
 const blink::ComputedGridTrackList& GridLineResolver::ComputedGridTrackList(

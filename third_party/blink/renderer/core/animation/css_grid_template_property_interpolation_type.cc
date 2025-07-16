@@ -133,8 +133,8 @@ class InheritedGridTrackListChecker
     const ComputedStyle& style = *state.ParentStyle();
     const GridTrackList& state_track_list =
         (property_id_ == CSSPropertyID::kGridTemplateColumns)
-            ? style.GridTemplateColumns().track_list
-            : style.GridTemplateRows().track_list;
+            ? style.GridTemplateColumns().GetTrackList()
+            : style.GridTemplateRows().GetTrackList();
 
     if (track_list_.HasAutoRepeater() || state_track_list.HasAutoRepeater() ||
         track_list_.RepeaterCount() != state_track_list.RepeaterCount() ||
@@ -216,7 +216,7 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
           ? parent_style->GridTemplateColumns()
           : parent_style->GridTemplateRows();
   const GridTrackList& parent_track_list =
-      parent_computed_grid_track_list.track_list;
+      parent_computed_grid_track_list.GetTrackList();
 
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedGridTrackListChecker>(parent_track_list,
@@ -225,8 +225,8 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
       CreateInterpolableGridTrackList(parent_track_list, CssProperty(),
                                       parent_style->EffectiveZoom()),
       MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
-          parent_computed_grid_track_list.named_grid_lines,
-          parent_computed_grid_track_list.ordered_named_grid_lines));
+          parent_computed_grid_track_list.GetNamedGridLines(),
+          parent_computed_grid_track_list.GetOrderedNamedGridLines()));
 }
 
 InterpolationValue CSSGridTemplatePropertyInterpolationType::
@@ -237,11 +237,11 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::
           ? style.GridTemplateColumns()
           : style.GridTemplateRows();
   return InterpolationValue(
-      CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
+      CreateInterpolableGridTrackList(computed_grid_track_list.GetTrackList(),
                                       CssProperty(), style.EffectiveZoom()),
       MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
-          computed_grid_track_list.named_grid_lines,
-          computed_grid_track_list.ordered_named_grid_lines));
+          computed_grid_track_list.GetNamedGridLines(),
+          computed_grid_track_list.GetOrderedNamedGridLines()));
 }
 
 InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
@@ -253,16 +253,16 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
     return InterpolationValue(nullptr);
   }
 
-  ComputedGridTrackList computed_grid_track_list;
-  StyleBuilderConverter::ConvertGridTrackList(
-      value, computed_grid_track_list, const_cast<StyleResolverState&>(state));
+  ComputedGridTrackList* computed_grid_track_list =
+      StyleBuilderConverter::ConvertGridTrackList(
+          const_cast<StyleResolverState&>(state), value);
   return InterpolationValue(
-      CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
+      CreateInterpolableGridTrackList(computed_grid_track_list->GetTrackList(),
                                       CssProperty(),
                                       state.StyleBuilder().EffectiveZoom()),
       MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
-          computed_grid_track_list.named_grid_lines,
-          computed_grid_track_list.ordered_named_grid_lines));
+          computed_grid_track_list->GetNamedGridLines(),
+          computed_grid_track_list->GetOrderedNamedGridLines()));
 }
 
 void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
@@ -278,17 +278,19 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
   bool is_for_columns = property_id_ == CSSPropertyID::kGridTemplateColumns;
   ComputedStyleBuilder& builder = state.StyleBuilder();
   CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
-  ComputedGridTrackList computed_grid_track_list(
-      is_for_columns ? builder.GridTemplateColumns()
-                     : builder.GridTemplateRows());
+  ComputedGridTrackList* computed_grid_track_list(
+      is_for_columns ? MakeGarbageCollected<ComputedGridTrackList>(
+                           std::move(builder.GridTemplateColumns()))
+                     : MakeGarbageCollected<ComputedGridTrackList>(
+                           std::move(builder.GridTemplateRows())));
 
-  computed_grid_track_list.track_list =
-      interpolable_grid_track_list.CreateGridTrackList(conversion_data);
-  computed_grid_track_list.named_grid_lines =
-      non_interoplable_grid_track_list->GetCurrentNamedGridLines(progress);
-  computed_grid_track_list.ordered_named_grid_lines =
+  computed_grid_track_list->SetTrackList(
+      interpolable_grid_track_list.CreateGridTrackList(conversion_data));
+  computed_grid_track_list->SetNamedGridLines(
+      non_interoplable_grid_track_list->GetCurrentNamedGridLines(progress));
+  computed_grid_track_list->SetOrderedNamedGridLines(
       non_interoplable_grid_track_list->GetCurrentOrderedNamedGridLines(
-          progress);
+          progress));
 
   if (is_for_columns)
     builder.SetGridTemplateColumns(computed_grid_track_list);

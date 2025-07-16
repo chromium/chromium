@@ -170,8 +170,10 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetGridRowStart(StyleRef().GridRowStart());
 
   // grid-template-columns, grid-template-rows, grid-template-areas
-  child_style_builder.SetGridTemplateColumns(StyleRef().GridTemplateColumns());
-  child_style_builder.SetGridTemplateRows(StyleRef().GridTemplateRows());
+  child_style_builder.SetGridTemplateColumns(
+      StyleRef().SpecifiedGridTemplateColumns());
+  child_style_builder.SetGridTemplateRows(
+      StyleRef().SpecifiedGridTemplateRows());
   child_style_builder.SetGridTemplateAreas(StyleRef().GridTemplateAreas());
 
   child_style_builder.SetRowGap(StyleRef().RowGap());

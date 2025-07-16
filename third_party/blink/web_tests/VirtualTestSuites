@@ -752,6 +752,21 @@
     ]
   },
   {
+    "prefix": "disable-css-masonry-layout",
+    "platforms": [
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/css/css-grid/parsing"
+    ],
+    "args": [
+      "--disable-blink-features=CSSMasonryLayout"
+    ],
+    "owners": [
+      "almaher@microsoft.com"
+    ]
+  },
+  {
     "prefix": "disable-frequency-capping-for-overlay-popup",
     "owners": [
       "yaoxia@chromium.org",

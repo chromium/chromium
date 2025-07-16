@@ -10,7 +10,7 @@
 
 namespace blink {
 
-struct ComputedGridTrackList;
+class ComputedGridTrackList;
 
 class GridNamedLineCollection {
  public:

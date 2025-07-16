@@ -22,8 +22,8 @@ GridNamedLineCollection::GridNamedLineCollection(
     bool is_subgridded_to_parent)
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
-  is_standalone_grid_ =
-      computed_grid_track_list.axis_type == GridAxisType::kStandaloneAxis;
+  is_standalone_grid_ = computed_grid_track_list.GetGridAxisType() ==
+                        GridAxisType::kStandaloneAxis;
 
   // Line names from the container style are valid when the grid axis type is a
   // standalone grid or the axis is a subgrid and the parent is a grid. See:
@@ -31,7 +31,7 @@ GridNamedLineCollection::GridNamedLineCollection(
   bool are_named_lines_valid = is_subgridded_to_parent || is_standalone_grid_;
 
   const NamedGridLinesMap& auto_repeat_grid_line_names =
-      computed_grid_track_list.auto_repeat_named_grid_lines;
+      computed_grid_track_list.GetAutoRepeatNamedGridLines();
 
   if (!explicit_grid_line_names.empty() && are_named_lines_valid) {
     auto it = explicit_grid_line_names.find(named_line);
@@ -51,9 +51,9 @@ GridNamedLineCollection::GridNamedLineCollection(
         it == implicit_grid_line_names.end() ? nullptr : &it->value;
   }
 
-  insertion_point_ = computed_grid_track_list.auto_repeat_insertion_point;
+  insertion_point_ = computed_grid_track_list.GetAutoRepeatInsertionPoint();
   auto_repeat_track_list_length_ =
-      computed_grid_track_list.track_list.AutoRepeatTrackCount();
+      computed_grid_track_list.GetTrackList().AutoRepeatTrackCount();
 
   // For standalone grids, auto repeaters guarantee a minimum of one repeat,
   // but subgrids have a minimum of zero repeats. This can present issues, as

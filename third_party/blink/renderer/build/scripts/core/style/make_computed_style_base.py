@@ -32,7 +32,6 @@ ALIGNMENT_ORDER = [
     'StyleHighlightData',
     'FilterOperations',
     'DynamicRangeLimit',
-    'ComputedGridTrackList',
     'std::optional<gfx::Size>',
     'double',
     'StyleViewTransitionGroup',

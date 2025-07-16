@@ -628,9 +628,9 @@ wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions(
       style.MasonryTrackSizingDirection();
   const bool is_for_columns = masonry_track_sizing_direction == kForColumns;
 
-  const GridTrackList& track_list = is_for_columns
-                                        ? style.GridTemplateColumns().track_list
-                                        : style.GridTemplateRows().track_list;
+  const GridTrackList& track_list =
+      is_for_columns ? style.GridTemplateColumns().GetTrackList()
+                     : style.GridTemplateRows().GetTrackList();
 
   if (!track_list.HasAutoRepeater()) {
     return 0;

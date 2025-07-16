@@ -1119,8 +1119,8 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
   const auto& style = Style();
   const auto& track_list = is_for_columns
-                               ? style.GridTemplateColumns().track_list
-                               : style.GridTemplateRows().track_list;
+                               ? style.GridTemplateColumns().GetTrackList()
+                               : style.GridTemplateRows().GetTrackList();
 
   if (!track_list.HasAutoRepeater())
     return 0;
@@ -1163,7 +1163,7 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
   const auto& computed_track_list = (track_direction == kForColumns)
                                         ? Style().GridTemplateColumns()
                                         : Style().GridTemplateRows();
-  const auto& track_list = computed_track_list.track_list;
+  const auto& track_list = computed_track_list.GetTrackList();
   DCHECK(track_list.HasAutoRepeater());
 
   const wtf_size_t non_auto_repeat_line_count =

@@ -67,10 +67,11 @@ GridRangeBuilder::GridRangeBuilder(const ComputedStyle& grid_style,
                                    GridTrackSizingDirection track_direction,
                                    wtf_size_t auto_repetitions,
                                    wtf_size_t start_offset)
-    : GridRangeBuilder(grid_style.TemplateTracks(track_direction).track_list,
-                       grid_style.AutoTracks(track_direction),
-                       auto_repetitions,
-                       start_offset) {
+    : GridRangeBuilder(
+          grid_style.TemplateTracks(track_direction).GetTrackList(),
+          grid_style.AutoTracks(track_direction),
+          auto_repetitions,
+          start_offset) {
   // There is a special scenario where named grid areas can be specified through
   // the "grid-template" property with no specified explicit grid; such case is
   // tricky because the computed value of "grid-template-columns" is expected to
@@ -1000,7 +1001,7 @@ void GridSizingTrackCollection::BuildSets(
                                    ? grid_available_size.inline_size
                                    : grid_available_size.block_size;
 
-  BuildSets(grid_style.TemplateTracks(track_direction_).track_list,
+  BuildSets(grid_style.TemplateTracks(track_direction_).GetTrackList(),
             grid_style.AutoTracks(track_direction_),
             available_size == kIndefiniteSize);
   InitializeSets(available_size);

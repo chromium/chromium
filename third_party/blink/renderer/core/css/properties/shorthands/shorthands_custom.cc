@@ -2339,7 +2339,7 @@ bool Grid::ParseShorthand(bool important,
                                                                    context))) {
       return false;
     }
-    template_rows = GetCSSPropertyGridTemplateRows().InitialValue();
+    template_rows = CSSIdentifierValue::Create(CSSValueID::kNone);
     auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
   } else {
     // 3- <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?
@@ -2363,7 +2363,7 @@ bool Grid::ParseShorthand(bool important,
       // the caller will clean up since we're not at the end.
       auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
     }
-    template_columns = GetCSSPropertyGridTemplateColumns().InitialValue();
+    template_columns = CSSIdentifierValue::Create(CSSValueID::kNone);
     auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
   }
 

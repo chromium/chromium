@@ -45,11 +45,13 @@ namespace {
 bool ExplicitGridDidResize(const ComputedStyle& new_style,
                            const ComputedStyle& old_style) {
   const auto& old_ng_columns_track_list =
-      old_style.GridTemplateColumns().track_list;
+      old_style.GridTemplateColumns().GetTrackList();
   const auto& new_ng_columns_track_list =
-      new_style.GridTemplateColumns().track_list;
-  const auto& old_ng_rows_track_list = old_style.GridTemplateRows().track_list;
-  const auto& new_ng_rows_track_list = new_style.GridTemplateRows().track_list;
+      new_style.GridTemplateColumns().GetTrackList();
+  const auto& old_ng_rows_track_list =
+      old_style.GridTemplateRows().GetTrackList();
+  const auto& new_ng_rows_track_list =
+      new_style.GridTemplateRows().GetTrackList();
 
   return old_ng_columns_track_list.TrackCountWithoutAutoRepeat() !=
              new_ng_columns_track_list.TrackCountWithoutAutoRepeat() ||
@@ -63,10 +65,10 @@ bool ExplicitGridDidResize(const ComputedStyle& new_style,
 
 bool NamedGridLinesDefinitionDidChange(const ComputedStyle& new_style,
                                        const ComputedStyle& old_style) {
-  return new_style.GridTemplateRows().named_grid_lines !=
-             old_style.GridTemplateRows().named_grid_lines ||
-         new_style.GridTemplateColumns().named_grid_lines !=
-             old_style.GridTemplateColumns().named_grid_lines;
+  return new_style.GridTemplateRows().GetNamedGridLines() !=
+             old_style.GridTemplateRows().GetNamedGridLines() ||
+         new_style.GridTemplateColumns().GetNamedGridLines() !=
+             old_style.GridTemplateColumns().GetNamedGridLines();
 }
 
 }  // namespace
@@ -80,13 +82,14 @@ void LayoutGrid::StyleDidChange(StyleDifference diff,
 
   const auto& new_style = StyleRef();
   const auto& new_grid_columns_track_list =
-      new_style.GridTemplateColumns().track_list;
+      new_style.GridTemplateColumns().GetTrackList();
   const auto& new_grid_rows_track_list =
-      new_style.GridTemplateRows().track_list;
+      new_style.GridTemplateRows().GetTrackList();
 
   if (new_grid_columns_track_list !=
-          old_style->GridTemplateColumns().track_list ||
-      new_grid_rows_track_list != old_style->GridTemplateRows().track_list ||
+          old_style->GridTemplateColumns().GetTrackList() ||
+      new_grid_rows_track_list !=
+          old_style->GridTemplateRows().GetTrackList() ||
       new_style.GridAutoColumns() != old_style->GridAutoColumns() ||
       new_style.GridAutoRows() != old_style->GridAutoRows() ||
       new_style.GetGridAutoFlow() != old_style->GetGridAutoFlow()) {

@@ -1601,16 +1601,17 @@ GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
   return track_list;
 }
 
-void StyleBuilderConverter::ConvertGridTrackList(
-    const CSSValue& value,
-    ComputedGridTrackList& computed_grid_track_list,
-    StyleResolverState& state) {
+ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
+    StyleResolverState& state,
+    const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return;
+    return nullptr;
   }
 
-  GridTrackList& track_list = computed_grid_track_list.track_list;
+  ComputedGridTrackList* computed_grid_track_list =
+      MakeGarbageCollected<ComputedGridTrackList>();
+  GridTrackList& track_list = computed_grid_track_list->GetMutableTrackList();
 
   wtf_size_t current_named_grid_line = 0;
   auto ConvertLineNameOrTrackSize =
@@ -1621,15 +1622,15 @@ void StyleBuilderConverter::ConvertGridTrackList(
       ++line_name_indices_count;
       ConvertGridLineNamesList(
           curr_value, current_named_grid_line,
-          computed_grid_track_list.named_grid_lines,
-          computed_grid_track_list.ordered_named_grid_lines, is_in_repeat,
-          is_first_repeat);
-      if (computed_grid_track_list.IsSubgriddedAxis()) {
+          computed_grid_track_list->GetMutableNamedGridLines(),
+          computed_grid_track_list->GetMutableOrderedNamedGridLines(),
+          is_in_repeat, is_first_repeat);
+      if (computed_grid_track_list->IsSubgriddedAxis()) {
         ++current_named_grid_line;
         track_list.IncrementNonAutoRepeatLineCount();
       }
     } else {
-      DCHECK_EQ(computed_grid_track_list.axis_type,
+      DCHECK_EQ(computed_grid_track_list->GetGridAxisType(),
                 GridAxisType::kStandaloneAxis);
       ++current_named_grid_line;
     }
@@ -1644,7 +1645,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kSubgrid) {
     state.GetDocument().CountUse(WebFeature::kCSSSubgridLayout);
-    computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
+    computed_grid_track_list->SetGridAxisType(GridAxisType::kSubgriddedAxis);
     track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
     is_subgrid = true;
     UNSAFE_TODO(++curr_value);
@@ -1658,16 +1659,17 @@ void StyleBuilderConverter::ConvertGridTrackList(
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
       DCHECK(auto_repeat_id == CSSValueID::kAutoFill ||
              auto_repeat_id == CSSValueID::kAutoFit);
-      computed_grid_track_list.auto_repeat_type =
+      computed_grid_track_list->SetAutoRepeatType(
           (auto_repeat_id == CSSValueID::kAutoFill) ? AutoRepeatType::kAutoFill
-                                                    : AutoRepeatType::kAutoFit;
+                                                    : AutoRepeatType::kAutoFit);
       for (const CSSValue* auto_repeat_value : To<CSSValueList>(**curr_value)) {
         if (auto_repeat_value->IsGridLineNamesValue()) {
           ConvertGridLineNamesList(
               *auto_repeat_value, auto_repeat_index,
-              computed_grid_track_list.auto_repeat_named_grid_lines,
-              computed_grid_track_list.auto_repeat_ordered_named_grid_lines);
-          if (computed_grid_track_list.IsSubgriddedAxis()) {
+              computed_grid_track_list->GetMutableAutoRepeatNamedGridLines(),
+              computed_grid_track_list
+                  ->GetMutableOrderedAutoRepeatNamedGridLines());
+          if (computed_grid_track_list->IsSubgriddedAxis()) {
             ++auto_repeat_index;
           }
           continue;
@@ -1679,10 +1681,10 @@ void StyleBuilderConverter::ConvertGridTrackList(
       // `repeat_count` is always 1 for auto-repeaters.
       track_list.AddRepeater(repeated_track_sizes,
                              static_cast<GridTrackRepeater::RepeatType>(
-                                 computed_grid_track_list.auto_repeat_type),
+                                 computed_grid_track_list->GetAutoRepeatType()),
                              /*repeat_count=*/1u, auto_repeat_index);
-      computed_grid_track_list.auto_repeat_insertion_point =
-          current_named_grid_line++;
+      computed_grid_track_list->SetAutoRepeatInsertionPoint(
+          current_named_grid_line++);
       continue;
     }
 
@@ -1745,7 +1747,9 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // <track-list> without any <track-size> as this is not conformant to
   // the syntax.
   DCHECK(track_list.RepeaterCount() ||
-         computed_grid_track_list.IsSubgriddedAxis());
+         computed_grid_track_list->IsSubgriddedAxis());
+
+  return computed_grid_track_list;
 }
 
 ScrollMarkerGroup* StyleBuilderConverter::ConvertScrollMarkerGroup(

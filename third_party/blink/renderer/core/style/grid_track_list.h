@@ -52,6 +52,10 @@ class CORE_EXPORT GridTrackList {
   explicit GridTrackList(const GridTrackSize& default_track_size) {
     AddRepeater({default_track_size});
   }
+  explicit GridTrackList(const GridTrackSize& default_track_size,
+                         const GridTrackRepeater::RepeatType repeat_type) {
+    AddRepeater({default_track_size}, repeat_type);
+  }
 
   // Returns the repeat count of the repeater at `index`, or `auto_value`
   // if the repeater is auto.

@@ -2272,12 +2272,9 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   // `grid-template-rows` and `grid-template-columns` are shorthards within this
   // shorthand. Based on how parsing works, we can't differentiate between an
   // author specifying `none` and uninitialized.
-  const bool non_initial_template_rows =
-      (*template_row_values !=
-       *GetCSSPropertyGridTemplateRows().InitialValue());
-  const bool non_initial_template_columns =
-      *template_column_values !=
-      *GetCSSPropertyGridTemplateColumns().InitialValue();
+  CSSValue* none_value = CSSIdentifierValue::Create(CSSValueID::kNone);
+  bool non_initial_template_rows = *template_row_values != *none_value;
+  bool non_initial_template_columns = *template_column_values != *none_value;
 
   // `grid-template-*` and `grid-auto-*` are mutually exclusive per direction.
   if ((non_initial_template_rows && specified_non_initial_auto_rows) ||

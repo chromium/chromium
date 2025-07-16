@@ -1103,6 +1103,20 @@ class ComputedStyle final : public ComputedStyleBase {
            kInternalAutoFlowAlgorithmDense;
   }
 
+  // grid-template-*
+  const ComputedGridTrackList& GridTemplateColumns() const {
+    return ComputedGridTemplate(
+        SpecifiedGridTemplateColumns(),
+        /*use_masonry_default=*/IsDisplayMasonryBox() &&
+            MasonryTrackSizingDirection() == kForColumns);
+  }
+
+  const ComputedGridTrackList& GridTemplateRows() const {
+    return ComputedGridTemplate(SpecifiedGridTemplateRows(),
+                                /*use_masonry_default=*/IsDisplayMasonryBox() &&
+                                    MasonryTrackSizingDirection() == kForRows);
+  }
+
   // Masonry utility functions.
   GridTrackSizingDirection MasonryTrackSizingDirection() const {
     switch (MasonryDirection()) {
@@ -2612,6 +2626,23 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableCaption;
   }
 
+  static GridTrackSizingDirection MasonryTrackSizingDirection(
+      EMasonryDirection direction) {
+    switch (direction) {
+      case EMasonryDirection::kColumn:
+      case EMasonryDirection::kColumnReverse:
+        return kForColumns;
+      case EMasonryDirection::kRow:
+      case EMasonryDirection::kRowReverse:
+        return kForRows;
+    }
+    NOTREACHED();
+  }
+
+  static CORE_EXPORT const ComputedGridTrackList& ComputedGridTemplate(
+      const Member<ComputedGridTrackList>& track_list,
+      const bool use_masonry_default);
+
   [[nodiscard]] bool HasPropertyDependingOnCurrentColor() const;
 
   bool BorderOutlineVisitedColorChanged(const ComputedStyle& other) const {
@@ -3121,6 +3152,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
            Display() == EDisplay::kTableColumn ||
            Display() == EDisplay::kTableColumnGroup;
   }
+  bool IsDisplayMasonryBox() const {
+    return ComputedStyle::IsDisplayMasonryBox(Display());
+  }
   DisplayStyle GetDisplayStyle() const {
     return DisplayStyle(Display(), StyleType(), GetContentData());
   }
@@ -3154,6 +3188,21 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   FontSizeStyle GetFontSizeStyle() const {
     return FontSizeStyle(GetFont(), LineHeightInternal(), EffectiveZoom());
+  }
+
+  // grid-template-*
+  const ComputedGridTrackList& GridTemplateColumns() const {
+    return ComputedStyle::ComputedGridTemplate(
+        SpecifiedGridTemplateColumns(),
+        /*use_masonry_default=*/IsDisplayMasonryBox() &&
+            MasonryTrackSizingDirection() == kForColumns);
+  }
+
+  const ComputedGridTrackList& GridTemplateRows() const {
+    return ComputedStyle::ComputedGridTemplate(
+        SpecifiedGridTemplateRows(),
+        /*use_masonry_default=*/IsDisplayMasonryBox() &&
+            MasonryTrackSizingDirection() == kForRows);
   }
 
   // letter-spacing
@@ -3244,6 +3293,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
   StyleImage* MaskBoxImageSource() const {
     return MaskBoxImageInternal().GetImage();
+  }
+
+  // masonry
+  GridTrackSizingDirection MasonryTrackSizingDirection() const {
+    return ComputedStyle::MasonryTrackSizingDirection(MasonryDirection());
   }
 
   // opacity
