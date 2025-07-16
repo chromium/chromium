@@ -241,7 +241,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+  config.relaunch_policy = ForceRelaunchByKilling;
   return config;
 }
 
