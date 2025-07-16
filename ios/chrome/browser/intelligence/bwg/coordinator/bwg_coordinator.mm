@@ -138,7 +138,7 @@
 
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
   BOOL shouldAnimatePresentation =
-      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : NO;
+      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : YES;
 
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_navigationController
