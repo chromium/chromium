@@ -131,48 +131,6 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
                         context.max_y);
 }
 
-int ShapeResultBuffer::OffsetForPosition(
-    const TextRun& run,
-    float target_x,
-    IncludePartialGlyphsOption partial_glyphs,
-    BreakGlyphsOption break_glyphs) const {
-  StringView text = run.ToStringView();
-  unsigned total_offset;
-  if (run.Rtl()) {
-    total_offset = run.length();
-    for (unsigned i = results_.size(); i; --i) {
-      const Member<const ShapeResult>& word_result = results_[i - 1];
-      if (!word_result)
-        continue;
-      total_offset -= word_result->NumCharacters();
-      if (target_x >= 0 && target_x <= word_result->Width()) {
-        int offset_for_word = word_result->OffsetForPosition(
-            target_x,
-            StringView(text, total_offset, word_result->NumCharacters()),
-            partial_glyphs, break_glyphs);
-        return total_offset + offset_for_word;
-      }
-      target_x -= word_result->Width();
-    }
-  } else {
-    total_offset = 0;
-    for (const Member<const ShapeResult>& word_result : results_) {
-      if (!word_result)
-        continue;
-      int offset_for_word = word_result->OffsetForPosition(
-          target_x, StringView(text, 0, word_result->NumCharacters()),
-          partial_glyphs, break_glyphs);
-      DCHECK_GE(offset_for_word, 0);
-      total_offset += offset_for_word;
-      if (target_x >= 0 && target_x <= word_result->Width())
-        return total_offset;
-      text = StringView(text, word_result->NumCharacters());
-      target_x -= word_result->Width();
-    }
-  }
-  return total_offset;
-}
-
 HeapVector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
   HeapVector<ShapeResult::RunFontData> font_data;
   for (const auto& result : results_)

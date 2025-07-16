@@ -92,17 +92,6 @@ static inline float ShapeResultsForRun(ShapeCache* shape_cache,
   return total_width;
 }
 
-int CachingWordShaper::OffsetForPosition(
-    const TextRun& run,
-    float target_x,
-    IncludePartialGlyphsOption partial_glyphs,
-    BreakGlyphsOption break_glyphs) {
-  ShapeResultBuffer buffer;
-  ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);
-
-  return buffer.OffsetForPosition(run, target_x, partial_glyphs, break_glyphs);
-}
-
 void CachingWordShaper::FillResultBuffer(const TextRun& run,
                                          ShapeResultBuffer* buffer) {
   DCHECK(buffer);

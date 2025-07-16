@@ -111,14 +111,6 @@ struct DeprecatedInkBounds : public GarbageCollected<DeprecatedInkBounds> {
   gfx::RectF ink_bounds;
 };
 
-// There are two options for how OffsetForPosition behaves:
-// IncludePartialGlyphs - decides what to do when the position hits more than
-// 50% of the glyph. If enabled, we count that glyph, if disable we don't.
-enum IncludePartialGlyphsOption {
-  kOnlyFullGlyphs,
-  kIncludePartialGlyphs,
-};
-
 // BreakGlyphsOption - allows OffsetForPosition to consider graphemes
 // separations inside a glyph. It allows the function to return a point inside
 // a glyph when multiple graphemes share a glyph (for example, in a ligature)
@@ -237,17 +229,10 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Returns the offset that can fit to between |x| and the left or the right
   // edge. The side of the edge is determined by |line_direction|.
   unsigned OffsetToFit(float x, TextDirection line_direction) const;
+  // TODO(ikilpatrick): Remove this method.
   unsigned OffsetForPosition(float x,
                              const StringView& text,
-                             IncludePartialGlyphsOption include_partial_glyphs,
                              BreakGlyphsOption break_glyphs) const {
-    if (include_partial_glyphs == kOnlyFullGlyphs) {
-      // TODO(kojii): Consider prohibiting OnlyFullGlyphs +
-      // BreakGlyphsOption(true), sed only in tests.
-      if (break_glyphs)
-        EnsureGraphemes(text);
-      return OffsetForPosition(x, break_glyphs);
-    }
     return CaretOffsetForHitTest(x, text, break_glyphs);
   }
 

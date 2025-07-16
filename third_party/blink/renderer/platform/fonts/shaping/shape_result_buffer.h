@@ -17,7 +17,6 @@ struct CharacterRange;
 class FontDescription;
 struct GlyphData;
 class ShapeResultBloberizer;
-class TextRun;
 
 class PLATFORM_EXPORT ShapeResultBuffer {
   STACK_ALLOCATED();
@@ -34,10 +33,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
 
-  int OffsetForPosition(const TextRun& run,
-                        float target_x,
-                        IncludePartialGlyphsOption,
-                        BreakGlyphsOption) const;
   CharacterRange GetCharacterRange(const StringView& text,
                                    TextDirection,
                                    float total_width,

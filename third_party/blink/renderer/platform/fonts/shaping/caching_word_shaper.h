@@ -49,10 +49,6 @@ class PLATFORM_EXPORT CachingWordShaper final {
   ~CachingWordShaper() = default;
 
   float Width(const TextRun&, gfx::RectF* glyph_bounds);
-  int OffsetForPosition(const TextRun&,
-                        float target_x,
-                        IncludePartialGlyphsOption,
-                        BreakGlyphsOption);
 
   void FillResultBuffer(const TextRun&, ShapeResultBuffer*);
   CharacterRange GetCharacterRange(const TextRun&, unsigned from, unsigned to);
