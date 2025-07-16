@@ -51,8 +51,8 @@
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
 #include "gin/object_template_builder.h"
-#include "gin/wrappable.h"
 #include "gin/public/wrappable_pointer_tags.h"
+#include "gin/wrappable.h"
 #include "mojo/public/mojom/base/text_direction.mojom-forward.h"
 #include "net/base/filename_util.h"
 #include "printing/metafile_skia.h"
@@ -102,9 +102,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
 #include "ui/gfx/test/icc_profiles.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/cppgc/prefinalizer.h"
+#include "v8/include/v8-cppgc.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #include "third_party/blink/public/platform/web_font_render_style.h"
@@ -201,6 +202,8 @@ void ConvertAndSet(gin::Arguments* args, blink::WebString* set_param) {
 }  // namespace
 
 class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
+  CPPGC_USING_PRE_FINALIZER(TestRunnerBindings, Dispose);
+
  public:
   static constexpr gin::WrapperInfo kWrapperInfo = {
       {gin::kEmbedderNativeGin},
@@ -216,6 +219,8 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                       SpellCheckClient* spell_check,
                       bool is_wpt_reftest,
                       bool is_main_test_window);
+
+  void Dispose();
 
   // Wraps the V8 function in a base::OnceCallback that binds in the given V8
   // arguments. The callback will do nothing when Run() if the
@@ -536,6 +541,10 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
           });
         })")));
   }
+}
+
+void TestRunnerBindings::Dispose() {
+  frame_observer_.Dispose();
 }
 
 TestRunnerBindings::TestRunnerBindings(TestRunner* runner,

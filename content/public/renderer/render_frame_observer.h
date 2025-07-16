@@ -364,13 +364,13 @@ class CONTENT_EXPORT RenderFrameObserver {
 
   RenderFrame* render_frame() const;
 
- protected:
-  explicit RenderFrameObserver(RenderFrame* render_frame);
-  virtual ~RenderFrameObserver();
-
   // This method exists for subclasses of Oilpan objects that need to clean up
   // the RenderFrameObserver in their pre-finalizer.
   void Dispose();
+
+ protected:
+  explicit RenderFrameObserver(RenderFrame* render_frame);
+  virtual ~RenderFrameObserver();
 
  private:
   friend class RenderFrameImpl;
