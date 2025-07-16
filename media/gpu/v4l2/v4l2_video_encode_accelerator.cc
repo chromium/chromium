@@ -329,6 +329,13 @@ EncoderStatus V4L2VideoEncodeAccelerator::Initialize(
         base::BindOnce(
             &V4L2VideoEncodeAccelerator::OnSharedImageInterfaceAvailable,
             weak_this_));
+  } else {
+    // |gpu_task_runner_| or |get_command_buffer_helper_cb_| were not set. The
+    // shared image interface must not be important for the client. Finishes
+    // initialization now.
+    encoder_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::InitializeTask,
+                                  weak_this_, config_));
   }
 
   return {EncoderStatus::Codes::kOk};
@@ -754,7 +761,7 @@ void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
 void V4L2VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(
     scoped_refptr<gpu::SharedImageInterface> sii) {
   CHECK(!sii_) << "SharedImageInterface is already set.";
-  OnSharedImageInterfaceAvailable(std::move(sii));
+  sii_ = std::move(sii);
 }
 
 VideoEncodeAccelerator::SupportedProfiles
