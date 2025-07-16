@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metalli (kiiltävä)</translation>
 <translation id="1070901266639972381">Yö</translation>
 <translation id="1073690811593784042">Lasi (värillinen)</translation>
+<translation id="1074287282535157335">Maksa neljässä erässä tai kuukausittain (kelpoisuuden mukaan)</translation>
 <translation id="1074497978438210769">Ei turvallinen</translation>
 <translation id="1074779248866616641">Tulos</translation>
 <translation id="1075364221219156102">Käytä avainkoodia</translation>
@@ -656,6 +657,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2102134110707549001">Ehdota vahvaa salasanaa…</translation>
 <translation id="2102495993840063010">Android-sovellukset</translation>
 <translation id="2102519472192754194">Selaimet</translation>
+<translation id="2103210856015238101">Kosketusnäytöllä täytettävissä olevat kanta-asiakaskortit avattu koko näytön korkeudella.</translation>
 <translation id="2105838220373099643">Roolipelit</translation>
 <translation id="2107021941795971877">Tulostustuet</translation>
 <translation id="2108755909498034140">Käynnistä tietokone uudelleen.</translation>
@@ -1297,6 +1299,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3187472288455401631">Mainosten mittaus</translation>
 <translation id="3190736958609431397">Lopeta seuraaminen</translation>
 <translation id="3194737229810486521"><ph name="URL" /> haluaa tallentaa tietoja pysyvästi laitteellesi.</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />, palvelin: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Saa pyytää luvan tietää, kun käytät tätä laitetta aktiivisesti</translation>
 <translation id="3201482403106004262">Kyselyssä tapahtui virhe.</translation>
@@ -1772,6 +1775,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3963721102035795474">Lukijatila</translation>
 <translation id="3965672182149944205">Tallennetaanko osoite?</translation>
 <translation id="3966044442021752214">Tuoteturvallisuus</translation>
+<translation id="396761677631735618">Kosketuksella täytettävissä olevat kanta-asiakaskortit avattu puolen näytön korkeudella.</translation>
 <translation id="3969869202926863008">Pääsy lähiverkkoon</translation>
 <translation id="3970239200223030389">Myöntämispäivä</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
@@ -1892,6 +1896,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4165986682804962316">Sivustoasetukset</translation>
 <translation id="4169189393773057143">Hallinnoi kanta-asiakaskortteja tai laita ehdotukset pois päältä Google Walletissa</translation>
 <translation id="4169535189173047238">Älä salli</translation>
+<translation id="4170851022123611628">Kanta-asiakaskorttilista on suljettu.</translation>
 <translation id="4171400957073367226">Virheellinen vahvistusallekirjoitus.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Lukot ja lukkosepät</translation>
@@ -1900,6 +1905,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> toinen kohde}other{<ph name="ITEM_COUNT" /> muuta kohdetta}}</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4177501066905053472">Mainosten aiheet</translation>
+<translation id="4178863275556660738">Maksa muilla kuin korttimaksutavoilla</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Lopeta hinnan seuraaminen</translation>
 <translation id="4190446002599583608">Tekoälyä hyödyntävä historiahaku</translation>
@@ -2095,6 +2101,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4493480324863638523">Virheellinen URL-osoite URL-osoitteen on oltava vakiomallien mukainen, esimerkiksi "http://example.com" tai "https://example.com".</translation>
 <translation id="4494323206460475851">Asetuksista näet mainosaiheet ja voit estää sellaiset, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat mainosaiheet automaattisesti.</translation>
+<translation id="4497010149473852018">Kosketuksella täytettävät kanta-asiakaskortit. Näppäimistö piilotettu.</translation>
 <translation id="4500587658229086076">suojaamaton sisältö</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> henkilöä</translation>
 <translation id="450602096898954067">Koulutetut tarkastajat voivat nähdä dataa ominaisuuden parantamiseksi</translation>
@@ -2662,6 +2669,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5466018172325111652">Etkö saanut koodia? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Toista muokkaus</translation>
 <translation id="5472588168895083535">Käsien liikkeen seuranta estetty</translation>
+<translation id="5479505548832623900">Laajennus todennäköisesti ohittaa nämä.</translation>
 <translation id="547963486735802022">Yritä siirtää tiedostot uudelleen</translation>
 <translation id="5481076368049295676">Tämä sisältö saattaa yrittää asentaa vaarallisia ohjelmistoja laitteellesi tai varastaa tai poistaa tietojasi. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Ikkunoiden ja välilehtien sijoittelu</translation>
@@ -3912,6 +3920,7 @@ Lisätietoja:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Poistetaanko luottokortti Chromen tiedoista?</translation>
 <translation id="7569983096843329377">Musta</translation>
+<translation id="7571813784389228510">Googlen tekoälytila</translation>
 <translation id="7574998639136359461">Talviurheilulajien välineet</translation>
 <translation id="7575207903026901870">Ehdotuksen poistopainike, poista ehdotus painamalla Enter</translation>
 <translation id="7575800019233204241">"Yhteytesi ei ole salattu", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" tai "SSL-varmennevirhe"</translation>

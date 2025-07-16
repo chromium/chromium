@@ -63,6 +63,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="1704230497453185209">Saytlarga tovush ijro qilishni taqiqlash</translation>
 <translation id="1717218214683051432">Harakat sensorlari</translation>
 <translation id="1717996979683942279">Yoqilsa, saytlar barcha displeylardagi oynalarni boshqarishga ruxsat soʻrashi mumkin. Yoqilmasa, saytlar barcha displeylardagi oynalarni boshqara olmaydi.</translation>
+<translation id="1738912554587725807">Yangi varaq sahifasi koʻrinishining mavzular toʻplami pastki oynasi</translation>
 <translation id="1743802530341753419">Saytlar qurilmaga ulanishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="1777815584158991902">Tasmani varaqlash quyi ekrani</translation>
 <translation id="1779089405699405702">Tasvir dekoderi</translation>
@@ -120,6 +121,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="2410940059315936967">Siz kirgan sayt boshqa saytlardagi kontentni, masalan, rasmlar, reklamalar va matnlarni joylashtirishi mumkin. Ushbu boshqa saytlar belgilaydigan cookie fayllar tashqi cookie fayllar hisoblanadi.</translation>
+<translation id="2411116727035790889">Tezkor tugmalarni yoqish</translation>
 <translation id="2433507940547922241">Tashqi ko‘rinish</translation>
 <translation id="2434158240863470628">Yuklab olindi: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Siz bu saytga tashqi cookie fayllaridan foydalanishga vaqtincha ruxsat berdingiz, bu esa kuzatuvdan himoyani kamaytiradi, lekin sayt funksiyalari kutilganidek ishlaydi. <ph name="BEGIN_LINK" />Fikr-mulohaza<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3114012059975132928">Video pleyer</translation>
 <translation id="3115898365077584848">Ma’lumotlarni ko‘rsatish</translation>
 <translation id="3123473560110926937">Ayrim saytlarda bloklangan</translation>
+<translation id="3132996321662585180">Kunlik yangilash</translation>
 <translation id="3143754809889689516">Boshidan ijro etish</translation>
 <translation id="3162899666601560689">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalanishi mumkin</translation>
 <translation id="3165022941318558018">Saytga tashqi cookie fayllardan foydalanishga ruxsat beriladi</translation>
@@ -356,6 +359,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="5100237604440890931">Yig‘ilgan - Kengaytirish uchun bosing</translation>
 <translation id="5116239826668864748">Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin</translation>
 <translation id="5123685120097942451">Inkognito varaq</translation>
+<translation id="512938610812707830">Yangi varaq sahifasi koʻrinishining mavzular toʻplami pastki oynasi toʻliq balandlikda ochildi</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ochiq varaqlarda narx tushishi}other{Ochiq varaqlarda narx tushishi}}</translation>
 <translation id="5186036860380548585">Parametr ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="5197729504361054390">Tanlangan kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytiga ulashiladi.</translation>

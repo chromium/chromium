@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">金屬 (光面)</translation>
 <translation id="1070901266639972381">晚上</translation>
 <translation id="1073690811593784042">玻璃 (彩色)</translation>
+<translation id="1074287282535157335">分 4 期或每月分期付款 (須符合資格)</translation>
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1074779248866616641">結果</translation>
 <translation id="1075364221219156102">使用密碼金鑰</translation>
@@ -655,6 +656,7 @@
 <translation id="2102134110707549001">建議高強度密碼…</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
 <translation id="2102519472192754194">網路瀏覽器</translation>
+<translation id="2103210856015238101">會員卡已顯示在整個畫面上，輕觸即可填入。</translation>
 <translation id="2105838220373099643">角色扮演遊戲</translation>
 <translation id="2107021941795971877">列印支援</translation>
 <translation id="2108755909498034140">重新啟動電腦</translation>
@@ -1294,6 +1296,7 @@
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
 <translation id="3201482403106004262">問卷調查發生錯誤。</translation>
@@ -1769,6 +1772,7 @@
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3965672182149944205">要儲存地址嗎？</translation>
 <translation id="3966044442021752214">產品安全</translation>
+<translation id="396761677631735618">會員卡已顯示在畫面下半部，輕觸即可填入。</translation>
 <translation id="3969869202926863008">區域網路存取權</translation>
 <translation id="3970239200223030389">核發日期</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -1889,6 +1893,7 @@
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169189393773057143">前往 Google 錢包管理會員卡或關閉這些建議</translation>
 <translation id="4169535189173047238">不允許</translation>
+<translation id="4170851022123611628">會員卡清單已關閉。</translation>
 <translation id="4171400957073367226">驗證簽名無效</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">鎖與鎖匠</translation>
@@ -1897,6 +1902,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{還有另外 <ph name="ITEM_COUNT" /> 個項目}other{還有另外 <ph name="ITEM_COUNT" /> 個項目}}</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4177501066905053472">廣告主題</translation>
+<translation id="4178863275556660738">使用卡片以外的方式付款</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
 <translation id="4190446002599583608">採用 AI 技術的記錄搜尋功能</translation>
@@ -2092,6 +2098,7 @@
 <translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4494323206460475851">你可以在設定中查看廣告主題，封鎖不想與網站分享的主題。Chrome 也會自動刪除 4 週以前的廣告主題。</translation>
+<translation id="4497010149473852018">會員卡已顯示在畫面上，輕觸即可填入。鍵盤已隱藏。</translation>
 <translation id="4500587658229086076">不安全的內容</translation>
 <translation id="4504850595255879616">「<ph name="ENGINE" />」成員</translation>
 <translation id="450602096898954067">為改善這項功能，受過專業訓練的審查員可能會查看這些資料</translation>

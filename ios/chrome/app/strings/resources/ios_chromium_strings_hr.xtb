@@ -252,6 +252,7 @@ Važne napomene:
 
 Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromiumove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Obavijesti Chromiuma trenutačno su isključene u postavkama uređaja.</translation>
+<translation id="7195217321165708458">Gemini u Chromiumu</translation>
 <translation id="7219205286115692265">Brže pristupite Chromiumu putem donje trake početnog zaslona na iPadu.</translation>
 <translation id="7222001353246886083">Pretraži ${searchPhrase} u Chromiumu</translation>
 <translation id="7228180817326917122">Savjet za Chromium: odaberite položaj adresne trake</translation>

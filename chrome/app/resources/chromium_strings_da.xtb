@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1026101648481255140">Genoptag installation</translation>
 <translation id="1029669172902658969">Genstart og opdater &amp;Chromium OS</translation>
+<translation id="103359417695385097">Chromium forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er deaktiveret.</translation>
 <translation id="1040916596585577953">Chromium anbefaler, at du gennemgår denne udvidelse</translation>
 <translation id="1042552502243217427">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chromium Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
 <translation id="1051793555070215510">Hjælp os med at forbedre inkognito ved at deltage i denne undersøgelse, der kun tager 1 minut.</translation>
@@ -99,6 +100,7 @@
 <translation id="2241627712206172106">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chromium, som de ønsker hver især.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}one{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}other{Chromium anbefaler, at du sætter de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="2313870531055795960">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chromium. Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser og bl.a. mindre mængder sideindhold til Beskyttet browsing.</translation>
+<translation id="232860113504534383">Dit Chromium – overalt</translation>
 <translation id="2343156876103232566">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2361918034042471035">Udvidelsen "<ph name="EXTENSION_NAME" />" vil have dig til at logge ind i Chromium</translation>
@@ -278,6 +280,7 @@
 <translation id="4598116752460667024">Søg efter en proces på listen.</translation>
 <translation id="4613863813562375431">Chromium OS-version</translation>
 <translation id="4621240073146040695">Næsten opdateret. Genstart Chromium for at afslutte opdateringen.</translation>
+<translation id="4654936675281451226">Chromium forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er aktiveret.</translation>
 <translation id="4665829708273112819">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
 <translation id="4677944499843243528">Profilen ser ud til at være i brug i en anden Chromium-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chromium har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du fjerne blokeringen af profilen og genstarte Chromium.</translation>
@@ -498,6 +501,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7585391435984513350">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>
+<translation id="7622753900276619808">Du har nu flere tilgængelige funktioner i Chromium</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>
@@ -514,6 +518,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7859018312476869945">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
+<translation id="786097294490253281">Når du klikker på "OK", kan du gemme og bruge adgangskoder m.m. på din Google-konto, når du er logget ind i Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium kunne ikke opdatere til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7888981273428720788">Angiv Chromium som standardbrowser</translation>

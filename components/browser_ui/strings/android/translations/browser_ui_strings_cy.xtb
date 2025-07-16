@@ -63,6 +63,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="1704230497453185209">Peidio â chaniatáu i wefannau chwarae sain</translation>
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
 <translation id="1717996979683942279">Pan fydd ymlaen, gall gwefannau ofyn i reoli ffenestri ar eich holl sgriniau. Pan fydd wedi'i ddiffodd, ni all gwefannau reoli ffenestri ar eich holl sgriniau.</translation>
+<translation id="1738912554587725807">Dalen waelod casgliadau thema ymddangosiad tudalen tab newydd</translation>
 <translation id="1743802530341753419">Gofyn cyn caniatáu i wefannau gysylltu â dyfais (argymhellir)</translation>
 <translation id="1777815584158991902">Dalen waelod ffrwd darganfod</translation>
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
@@ -186,6 +187,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3114012059975132928">Chwaraewr fideo</translation>
 <translation id="3115898365077584848">Dangos Gwybodaeth</translation>
 <translation id="3123473560110926937">Wedi'u rhwystro ar rai gwefannau</translation>
+<translation id="3132996321662585180">Adnewyddu'n ddyddiol</translation>
 <translation id="3143754809889689516">Chwarae o'r dechrau</translation>
 <translation id="3162899666601560689">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa</translation>
 <translation id="3165022941318558018">Caniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
@@ -356,6 +358,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5100237604440890931">Wedi'i grebachu - cliciwch i'w ehangu.</translation>
 <translation id="5116239826668864748">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="5123685120097942451">Tab anhysbys</translation>
+<translation id="512938610812707830">Dalen waelod casgliadau thema ymddangosiad tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Gostyngiad pris ar eich tabiau sydd ar agor}zero{Gostyngiadau pris ar eich tabiau sydd ar agor}two{Gostyngiadau pris ar eich tabiau sydd ar agor}few{Gostyngiadau pris ar eich tabiau sydd ar agor}many{Gostyngiadau pris ar eich tabiau sydd ar agor}other{Gostyngiadau pris ar eich tabiau sydd ar agor}}</translation>
 <translation id="5186036860380548585">Mae'r opsiwn ar gael yn agos at frig y sgrîn</translation>
 <translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 διεύθυνση}other{# διευθύνσεις}}</translation>
 <translation id="1605405588277479165">Ανενεργή - Δεν συνιστάται</translation>
 <translation id="1605658421715042784">Αντιγραφή εικόνας</translation>
+<translation id="1606899876897213121">Κλείσιμο σύνοψης πρόσφατης δραστηριότητας</translation>
 <translation id="1612754831519568745">Αυτή τη στιγμή, η Ασφαλής περιήγηση είναι απενεργοποιημένη. Προστατευτείτε από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622717322707146952">Επιλέξτε Προσθήκη στο Ημερολόγιο Google ή Προσθήκη στο Ημερολόγιο Apple.</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">Ομάδα καρτελών, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> καρτέλες.</translation>
 <translation id="2577522251608256362">Γειτονιά</translation>
 <translation id="2579713773888829241">Κοινά Drive</translation>
+<translation id="2583688836549072561">Ομάδα καρτελών, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> καρτέλες, νέα δραστηριότητα.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Παρακολούθηση πτώσεων τιμών προϊόντων</translation>
 <translation id="260378315836159338">Στο επάνω μέρος της οθόνης, πατήστε +</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">Προσαρμογή της αρχικής οθόνης σας</translation>
 <translation id="3277021493514034324">Η διεύθυνση ιστοτόπου αντιγράφηκε</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, νέα δραστηριότητα</translation>
 <translation id="3305294846493618482">περισσότερα</translation>
 <translation id="3311748811247479259">Ανενεργό</translation>
 <translation id="3312300514034250578">Βελτιωμένη Ασφαλής περιήγηση</translation>
@@ -1603,7 +1606,6 @@
 <translation id="7412027924265291969">Συνέχεια</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
 <translation id="7417689656810783109">Μετονομασία ομάδας</translation>
-<translation id="7418703176995102827">Οι συνομιλίες σας με το Gemini και τα δεδομένα σας στο Google Workspace δεν θα ελέγχονται από αναθεωρητές ούτε θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI.</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
 <translation id="7425053386765766120">Προσθήκη τρόπου πληρωμής…</translation>
 <translation id="7425346204213733349">Οι αλλαγές στους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και σε άλλες ρυθμίσεις δεν θα συγχρονίζονται πλέον με το Λογαριασμό σας Google. Ωστόσο, τα υπάρχοντα δεδομένα σας θα παραμείνουν αποθηκευμένα στο Λογαριασμό σας Google.</translation>
@@ -1644,6 +1646,7 @@
 <translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
 <translation id="7561196759112975576">Πάντα</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
+<translation id="7566349809380613217">Άνοιγμα ομάδας <ph name="GROUP_TITLE" />, κοινόχρηστη ομάδα <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Οι σελιδοδείκτες είναι κρυφοί</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="7582666837709186351">Μεταφράστε κείμενο στις φωτογραφίες ή στο περιβάλλον σας μέσω κάμερας.</translation>
@@ -1908,7 +1911,6 @@
 <translation id="8560253818350321773">Να εμφανίζονται πρώτα τα στοιχεία που χρησιμοποιούνται συχνά.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Διατίθεται {count} επιλογή κωδικού πρόσβασης πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} επιλογές κωδικού πρόσβασης πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="8564894539416715395">Σελίδα Νέα καρτέλα</translation>
-<translation id="8569414323292250522">Οι συνομιλίες ελέγχονται και χρησιμοποιούνται για τη βελτίωση του Google AI. Μάθετε σχετικά με τις επιλογές σας. Μαζί με τη δραστηριότητά σας αποθηκεύονται και πληροφορίες σχετικά με την τοποθεσία σας.</translation>
 <translation id="8569721750632860947">Ποιο URL θέλετε να προσθέσετε στη λίστα ανάγνωσης;</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8577056989960190117">Αυτόματη συμπλήρωση του έτους λήξης <ph name="YEAR" /></translation>

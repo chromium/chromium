@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1026101648481255140">Nastavi instaliranje</translation>
 <translation id="1029669172902658969">Ponovo pokrenite da biste ažurirali &amp;Chromium OS</translation>
+<translation id="103359417695385097">Chromium bolje razumije obrasce i može ih brže automatski popuniti. Postavka je isključena.</translation>
 <translation id="1040916596585577953">Chromium preporučuje da pregledate ovo proširenje</translation>
 <translation id="1042552502243217427">Kad web-lokacija zatraži privatno predučitavanje veza na stranici, Chromium upotrebljava Googleove poslužitelje. Na taj se način vaš identitet sakriva od predučitane web-lokacije, ali Google saznaje koje se web-lokacije predučitavaju.</translation>
 <translation id="1051793555070215510">Pomozite nam da poboljšamo anonimni način rada ispunjavanjem ove jednominutne ankete.</translation>
@@ -99,6 +100,7 @@
 <translation id="2241627712206172106">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium preporučuje pauziranje kartice koja usporava preglednik}one{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}few{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}other{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}}</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromiumu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
+<translation id="232860113504534383">Vaš Chromium, bilo gdje</translation>
 <translation id="2343156876103232566">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2361918034042471035">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite u Chromium</translation>
@@ -278,6 +280,7 @@
 <translation id="4598116752460667024">Potražite bilo koji proces s popisa.</translation>
 <translation id="4613863813562375431">Verzija Chromium OS-a</translation>
 <translation id="4621240073146040695">Ažuriranje će uskoro biti gotovo. Za dovršetak ponovo pokrenite Chromium.</translation>
+<translation id="4654936675281451226">Chromium bolje razumije obrasce i može ih brže automatski popuniti. Postavka je uključena.</translation>
 <translation id="4665829708273112819">Upozorenje: Chromium ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
 <translation id="4673151026126227699">Ako dijelite i izvješća o upotrebi Chromiuma, ta izvješća uključuju URL-ove koje posjećujete</translation>
 <translation id="4677944499843243528">Izgleda da neki drugi proces Chromiuma (<ph name="PROCESS_ID" />) na nekom drugom računalu (<ph name="HOST_NAME" />) upotrebljava taj profil. Chromium je zaključao profil da se profil ne bi promijenio. Ako ste sigurni da nijedan drugi proces ne upotrebljava taj profil, možete ga otključati i ponovo pokrenuti Chromium.</translation>
@@ -498,6 +501,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7585391435984513350">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium upotrebljava vašu kameru i mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je upravo postao bolji</translation>
+<translation id="7622753900276619808">Sada imate više dostupnih značajki u Chromiumu</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>
@@ -514,6 +518,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7828947555739565424">Profil u Chromiumu s tim računom već postoji na ovom uređaju</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
 <translation id="7859018312476869945">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upisujete Chromium šalje vašoj zadanoj tražilici kako bi vam pružio bolje prijedloge. To je isključeno u anonimnom načinu.</translation>
+<translation id="786097294490253281">Kad kliknete Shvaćam, možete spremati i upotrebljavati zaporke i druge podatke na svojem Google računu kad ste prijavljeni u Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>
 <translation id="7888981273428720788">Postavite Chromium kao zadani preglednik</translation>

@@ -108,6 +108,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1419753403124156396">Redémarrer Chrome ?</translation>
 <translation id="1428770807407000502">Désactiver la synchronisation ?</translation>
 <translation id="1430915738399379752">Imprimer</translation>
+<translation id="1433478348197382180">Mode Lecture</translation>
 <translation id="1435593198351412143">Ouvrir automatiquement les PDF</translation>
 <translation id="1437543266176261764">Exécution dans <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
@@ -1167,6 +1168,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6255809143828972562">Avec les outils de Chrome, vous pouvez naviguer de façon sécurisée et garder le contrôle</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>
+<translation id="6267063201726531683">Bottom sheet du mode Lecture</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6284472661216707937">Mots de passe sur tous vos appareils (fiche fermée)</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">मेटल (ग्लॉसी)</translation>
 <translation id="1070901266639972381">रात</translation>
 <translation id="1073690811593784042">ग्लास (कलर्ड)</translation>
+<translation id="1074287282535157335">चार किस्तों या हर महीने की किस्तों में पेमेंट करें. हालांकि, यह इस पर निर्भर करता है कि आपने ज़रूरी शर्तें पूरी की हैं या नहीं</translation>
 <translation id="1074497978438210769">सुरक्षित नहीं है</translation>
 <translation id="1074779248866616641">नतीजा</translation>
 <translation id="1075364221219156102">पासकी का इस्तेमाल करें</translation>
@@ -657,6 +658,7 @@
 <translation id="2102134110707549001">मज़बूत पासवर्ड सुझाएं…</translation>
 <translation id="2102495993840063010">Android ऐप्लिकेशन</translation>
 <translation id="2102519472192754194">वेब ब्राउज़र</translation>
+<translation id="2103210856015238101">टच करके भरे जाने वाले लॉयल्टी कार्ड की सूची, पूरी स्क्रीन पर खुली है.</translation>
 <translation id="2105838220373099643">भूमिका निभाने वाले गेम</translation>
 <translation id="2107021941795971877">प्रिंट सहायता</translation>
 <translation id="2108755909498034140">अपना कंप्यूटर फिर से चालू करें</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">विज्ञापनों की परफ़ॉर्मेंस का आकलन</translation>
 <translation id="3190736958609431397">ट्रैक न करें</translation>
 <translation id="3194737229810486521"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए डेटा संग्रहीत करना चाहता है</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> पर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">साइट, यह जानकारी मांग सकती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="3201482403106004262">सर्वे में कोई गड़बड़ी हुई.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">रीडर मोड</translation>
 <translation id="3965672182149944205">क्या आपको पता सेव करना है?</translation>
 <translation id="3966044442021752214">प्रॉडक्ट सुरक्षा</translation>
+<translation id="396761677631735618">टच करके भरे जाने वाले लॉयल्टी कार्ड की सूची, आधी स्क्रीन पर खुली है.</translation>
 <translation id="3969869202926863008">लोकल नेटवर्क का ऐक्सेस</translation>
 <translation id="3970239200223030389">जारी होने की तारीख</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4169189393773057143">Google Wallet में लॉयल्टी कार्ड मैनेज करें या इन सुझावों को बंद करें</translation>
 <translation id="4169535189173047238">अनुमति न दें</translation>
+<translation id="4170851022123611628">लॉयल्टी कार्ड की सूची दिखाने वाली बॉटम शीट बंद है.</translation>
 <translation id="4171400957073367226">गलत सत्यापन हस्ताक्षर</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">ताला-चाबी बनाने या ठीक करने से जुड़ी सेवा और ताले</translation>
@@ -2095,6 +2100,7 @@
 <translation id="449126573531210296">अपने Google खाते के साथ सिंक किए गए पासवर्ड सुरक्षित करें.</translation>
 <translation id="4493480324863638523">यूआरएल गलत है. यूआरएल में सामान्य स्कीम, जैसे कि, http://example.com या https://example.com.ज़रूर होनी चाहिए.</translation>
 <translation id="4494323206460475851">सेटिंग में विज्ञापन के विषयों की जानकारी दिख सकती है. आप चाहें, तो उन विषयों को ब्लॉक कर दें जिनकी जानकारी आपको साइटों के साथ शेयर नहीं करनी है. Chrome भी, विज्ञापन के विषयों की जानकारी अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुरानी होती हैं.</translation>
+<translation id="4497010149473852018">टच करके लॉयल्टी कार्ड भरने की सुविधा उपलब्ध है. कीबोर्ड छिपा हुआ है.</translation>
 <translation id="4500587658229086076">असुरक्षित कॉन्टेंट</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> व्यक्ति</translation>
 <translation id="450602096898954067">समीक्षा करने वाले उपयोगकर्ता यह डेटा देख सकते हैं, ताकि इस सुविधा को बेहतर बनाया जा सके</translation>
@@ -3549,6 +3555,7 @@
 <translation id="6970885655016700774">फ़ैब्रिक (आर्काइवल)</translation>
 <translation id="6971439137020188025">Slides में जल्दी से नई Google प्रज़ेंटेशन बनाएं</translation>
 <translation id="6972629891077993081">एचआईडी डिवाइस</translation>
+<translation id="6972867931824045907">क्लिपबोर्ड इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="6973656660372572881">फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर और .pac स्‍क्रिप्‍ट URL दोनों ही बताए गए हैं.</translation>
 <translation id="6973988895180423160">3.5 x 5 इंच</translation>
 <translation id="6978121630131642226">सर्च इंजन</translation>

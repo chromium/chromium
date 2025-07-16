@@ -318,6 +318,7 @@
 <translation id="4895437082222824641">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
 <translation id="4918844574251943176">이미지 복사됨</translation>
 <translation id="492720062778050435">Chrome에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
+<translation id="4946912144186040233">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. 설정이 사용 중지되어 있습니다</translation>
 <translation id="4953650215774548573">Chrome을 기본 브라우저로 설정</translation>
 <translation id="495931528404527476">Chrome</translation>
 <translation id="4969674060580488087">계정의 로그인 세부정보가 오래되어 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
@@ -326,6 +327,7 @@
 <translation id="4990567037958725628">Chrome Canary</translation>
 <translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
 <translation id="504867494566807945">모든 앱에서 Chrome으로 링크를 엽니다. 또한 쉽게 액세스할 수 있도록 작업 표시줄에 고정됩니다</translation>
+<translation id="5049567194145991071">'확인'을 클릭하면 Chrome에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="5120334927898581447">다른 Google 서비스에 로그인할 때 Chrome에 로그인</translation>
 <translation id="5126049312684316860">Chrome은 사용자가 방문할 가능성이 높은 페이지를 미리 로드하여 사용자가 방문할 때 페이지가 더 빠르게 로드됩니다.</translation>
@@ -514,6 +516,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="749228101751499733">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. <ph name="SHORTCUT" />에서 Google 서비스 설정을 변경할 수 있습니다.</translation>
 <translation id="7496017508659652909">Chrome에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. 설정이 사용 설정되어 있습니다</translation>
 <translation id="7514258452813684157">Google 업데이터 서비스</translation>
 <translation id="7515191208480168435">Google 렌즈를 고정하여 쉽게 액세스할 수 있습니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
@@ -546,6 +549,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7825851276765848807">알 수 없는 오류로 인해 설치에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="7826342993930002256">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="7827099906024714326">일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chrome에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
@@ -632,6 +636,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8948460679427074738">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chrome에서 삭제할 것을 권장합니다.</translation>
+<translation id="8958307504142971576">이제 Chrome에서 더 많은 기능을 사용할 수 있습니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>

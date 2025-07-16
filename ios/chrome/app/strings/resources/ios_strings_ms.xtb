@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} kata laluan}other{{count} kata laluan}}</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
+<translation id="1287229685519872919">Data Google Workspace</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
 <translation id="1296581780163690620">Muat turun fail? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3940195383040445971">Jejaki harga pada tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tutup {COUNT} tab}other{Tutup {COUNT} tab}}</translation>
 <translation id="3948600256434252210">Anda boleh meleret ke kanan untuk menyemak imbas dalam Inkognito.</translation>
+<translation id="3949712484278252781">Perbualan anda dengan Gemini atau <ph name="GOOGLE_WORKSPACE_DATA" /> anda tidak akan disemak oleh jurusemak atau digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="3950479158728806902">Buat kunci laluan secara automatik untuk log masuk dengan lebih pantas</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="3955740319737378355">Selesai</translation>
@@ -1605,7 +1607,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7412027924265291969">Teruskan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7417689656810783109">Namakan Semula Kumpulan</translation>
-<translation id="7418703176995102827">Perbualan anda dengan Gemini atau data Google Workspace anda tidak akan disemak oleh jurusemak atau digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
 <translation id="7425053386765766120">Tambahkan kaedah pembayaran…</translation>
 <translation id="7425346204213733349">Perubahan kepada penanda halaman, sejarah, kata laluan dan tetapan anda yang lain tidak akan disegerakkan ke Google Account anda lagi. Walau bagaimanapun, data sedia ada akan kekal disimpan dalam Google Account anda.</translation>
@@ -1638,6 +1639,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7512909159512473473">Masukkan ungkapan laluan…</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7514530647142300459">Kekal menggunakan kata laluan dalam Google Account anda <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Maklumat tentang lokasi anda</translation>
 <translation id="7522948500476882302">Apabila anda memuat turun fail, pilih supaya fail tersebut dipadamkan secara automatik selepas 1 bulan</translation>
 <translation id="7524055474074101597">Akses kata laluan anda dan pelbagai lagi merentas apl.</translation>
 <translation id="75362970626182391">Kumpulan Tab Baharu</translation>
@@ -1652,6 +1654,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7582666837709186351">Terjemahkan teks dalam foto anda atau persekitaran anda dengan kamera anda.</translation>
 <translation id="7582857256643797524">Tetapan ini didayakan pada peranti anda</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
+<translation id="7588149553568293500">Ketahui pilihan anda.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Tutup {COUNT} tab yang tidak aktif?}other{Tutup {COUNT} tab yang tidak aktif?}}</translation>
 <translation id="7598439272585186139">Dapatkan perlindungan lanjut</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
@@ -1911,7 +1914,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8560253818350321773">Menunjukkan item yang sering digunakan dahulu.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} pilihan kata laluan tersedia pada sebelah atas papan kekunci anda.}other{{count} pilihan kata laluan tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="8564894539416715395">Halaman tab baharu</translation>
-<translation id="8569414323292250522">Sembang disemak dan akan digunakan untuk meningkatkan Google AI. Ketahui pilihan anda. Maklumat tentang lokasi anda juga disimpan bersama aktiviti anda.</translation>
 <translation id="8569721750632860947">Apakah URL yang mahu ditambahkan pada senarai bacaan anda?</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8577056989960190117">Autoisi tahun tamat tempoh <ph name="YEAR" /></translation>
@@ -2055,6 +2057,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9066097352053395362">Sembunyikan Edit Penanda Halaman</translation>
 <translation id="9070824521421603770">Anda akan dilog keluar dan tab akan ditutup</translation>
 <translation id="9072837124205571418">Kumpulan tab daripada semua peranti</translation>
+<translation id="9075970015528364598">Sembang disemak dan akan digunakan untuk meningkatkan Google AI. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> juga disimpan bersama aktiviti anda.</translation>
 <translation id="9081058212938299310">Kemas kini kata laluan untuk <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Anda mempunyai {count} kata laluan lemah yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}other{Anda mempunyai {count} kata laluan lemah yang boleh mendedahkan keselamatan anda kepada risiko. Betulkan masalah ini sekarang untuk kekal selamat.}}</translation>

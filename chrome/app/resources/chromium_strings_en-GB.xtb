@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1026101648481255140">Resume installation</translation>
 <translation id="1029669172902658969">Relaunch to update &amp;Chromium OS</translation>
+<translation id="103359417695385097">Chromium understands forms better and can autofill them faster for you. This setting is off.</translation>
 <translation id="1040916596585577953">Chromium recommends that you review this extension</translation>
 <translation id="1042552502243217427">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="1051793555070215510">Help us improve Incognito by taking this 1-minute survey.</translation>
@@ -101,6 +102,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2241627712206172106">If you share a computer, friends and family can browse separately and set up Chromium just the way they want.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recommends pausing the tab that's slowing your browser}other{Chromium recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
+<translation id="232860113504534383">Your Chromium, everywhere</translation>
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2361918034042471035">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chromium</translation>
@@ -280,6 +282,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4598116752460667024">Search for any process from the list.</translation>
 <translation id="4613863813562375431">Chromium OS version</translation>
 <translation id="4621240073146040695">Nearly up to date! Relaunch Chromium to finish updating.</translation>
+<translation id="4654936675281451226">Chromium understands forms better and can autofill them faster for you. This setting is on.</translation>
 <translation id="4665829708273112819">Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="4673151026126227699">If you also share Chromium usage reports, those reports include the URLs that you visit</translation>
 <translation id="4677944499843243528">The profile appears to be in use by another Chromium process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chromium has locked the profile so that it doesn't get corrupted. If you are sure that no other processes are using this profile, you can unlock the profile and relaunch Chromium.</translation>
@@ -500,6 +503,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7585391435984513350">You haven't visited recently. Chromium removed <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium is using your camera and microphone.</translation>
 <translation id="7617377681829253106">Chromium just got better</translation>
+<translation id="7622753900276619808">You now have more features available in Chromium</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
@@ -516,6 +520,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7828947555739565424">A Chromium profile with this account already exists on this device</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7859018312476869945">When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
+<translation id="786097294490253281">When you click 'Got it', you can save and use passwords and more in your Google Account whenever you're signed in to Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7888981273428720788">Set Chromium as your default</translation>

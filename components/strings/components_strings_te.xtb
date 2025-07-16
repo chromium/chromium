@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">మెటల్ (గ్లాసీ)</translation>
 <translation id="1070901266639972381">రాత్రి</translation>
 <translation id="1073690811593784042">గ్లాస్ (కలర్డ్)</translation>
+<translation id="1074287282535157335">4 వాయిదాలలో లేదా నెలవారీగా పేమెంట్ చేయండి (అర్హతను బట్టి)</translation>
 <translation id="1074497978438210769">సురక్షితం కాదు</translation>
 <translation id="1074779248866616641">ఫలితం</translation>
 <translation id="1075364221219156102">పాస్-కీని ఉపయోగించండి</translation>
@@ -651,6 +652,7 @@
 <translation id="2102134110707549001">బలమైన పాస్‌వర్డ్‌ను సూచించు…</translation>
 <translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2102519472192754194">వెబ్ బ్రౌజర్‌లు</translation>
+<translation id="2103210856015238101">'టచ్ చేసి నింపడానికి అందుబాటులో ఉన్న లాయల్టీ కార్డ్‌లు' పూర్తి స్థాయిలో తెరవబడ్డాయి.</translation>
 <translation id="2105838220373099643">పాత్రలను పోషించే గేమ్‌లు</translation>
 <translation id="2107021941795971877">ప్రింట్ మద్దతులు</translation>
 <translation id="2108755909498034140">మీ కంప్యూటర్‌ను పునఃప్రారంభించండి</translation>
@@ -1291,6 +1293,7 @@
 <translation id="3187472288455401631">యాడ్ మెజర్‌మెంట్</translation>
 <translation id="3190736958609431397">అన్‌ట్రాక్ చేయండి</translation>
 <translation id="3194737229810486521"><ph name="URL" /> శాశ్వతంగా డేటాను మీ పరికరంలో స్టోరేజ్‌ చేయాలనుకుంటోంది</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />లో <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగించే సమయాలను తెలుసుకోవడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="3201482403106004262">సర్వేతో ఎర్రర్ ఏర్పడింది.</translation>
@@ -1766,6 +1769,7 @@
 <translation id="3963721102035795474">పాఠకుని మోడ్</translation>
 <translation id="3965672182149944205">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="3966044442021752214">ప్రోడక్ట్ భద్రత</translation>
+<translation id="396761677631735618">'టచ్ చేసి నింపడానికి అందుబాటులో ఉన్న లాయల్టీ కార్డ్‌లు' సగం మేరకు తెరవబడ్డాయి.</translation>
 <translation id="3969869202926863008">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="3970239200223030389">జారీ చేసిన తేదీ</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
@@ -1886,6 +1890,7 @@
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
 <translation id="4169189393773057143">లాయల్టీ కార్డ్‌లను మేనేజ్ చేయండి లేదా Google Walletలో ఈ సూచనలను ఆఫ్ చేయండి</translation>
 <translation id="4169535189173047238">అనుమతించవద్దు</translation>
+<translation id="4170851022123611628">లాయల్టీ కార్డ్‌ల లిస్ట్ మూసివేయబడింది.</translation>
 <translation id="4171400957073367226">ధృవీకరణ సంతకం చెల్లదు</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">తాళాలు &amp; తాళాలను తయారు చేసేవారు</translation>
@@ -1894,6 +1899,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{మరో <ph name="ITEM_COUNT" /> అంశం}other{మరో <ph name="ITEM_COUNT" /> అంశాలు}}</translation>
 <translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
+<translation id="4178863275556660738">కార్డ్ పేమెంట్ ఆప్షన్‌లను లోడ్ చేయడం సాధ్యపడదు</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ధరను అన్‌ట్రాక్ చేయండి</translation>
 <translation id="4190446002599583608">AI సహాయంతో హిస్టరీ సెర్చ్</translation>
@@ -2089,6 +2095,7 @@
 <translation id="449126573531210296">సింక్ చేయబడిన పాస్‌వర్డ్‌లను మీ Google ఖాతాతో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="4493480324863638523">చెల్లని URL. URL తప్పనిసరిగా ఒక ప్రామాణిక స్కీమ్‌ను కలిగి ఉండాలి, ఉదా http://example.com లేదా https://example.com.</translation>
 <translation id="4494323206460475851">సెట్టింగ్‌లలో యాడ్ టాపిక్‌లను చూడవచ్చు, సైట్‌లతో షేర్ చేయకూడదనుకునే వాటిని బ్లాక్ చేయవచ్చు. Chrome 4 వారాల కంటే పాతవైన యాడ్ టాపిక్‌లను ఆటోమేటిక్‌గా తొలగిస్తుంది.</translation>
+<translation id="4497010149473852018">టచ్ చేసి నింపడానికి లాయల్టీ కార్డ్‌లు అందుబాటులో ఉన్నాయి. కీబోర్డ్ దాచబడింది.</translation>
 <translation id="4500587658229086076">సురక్షితం కాని కంటెంట్</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> మంది వ్యక్తులు</translation>
 <translation id="450602096898954067">ఈ ఫీచర్‌ను మెరుగుపరచడానికి, ట్రెయినింగ్ పొందిన రివ్యూవర్‌లు డేటాను చూడవచ్చు</translation>
@@ -3543,6 +3550,7 @@
 <translation id="6970885655016700774">ఫ్యాబ్రిక్ (ఆర్కైవల్)</translation>
 <translation id="6971439137020188025">Slidesలో త్వరగా కొత్త Google ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6972629891077993081">HID పరికరాలు</translation>
+<translation id="6972867931824045907">మీ క్లిప్‌బోర్డ్‌ను ఉపయోగించడానికి, <ph name="LINK" />‌లో Chromeకు యాక్సెస్ ఇవ్వండి.</translation>
 <translation id="6973656660372572881">రెండు స్థిర ప్రాక్సీ సర్వర్లు మరియు ఒక .pac స్క్రిప్ట్ URL పేర్కొనబడ్డాయి.</translation>
 <translation id="6973988895180423160">3.5 x 5 అంగుళాలు</translation>
 <translation id="6978121630131642226">సెర్చ్ ఇంజిన్‌లు</translation>

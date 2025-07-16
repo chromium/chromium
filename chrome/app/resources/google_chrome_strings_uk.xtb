@@ -315,6 +315,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4895437082222824641">Відкрити посилання в новій &amp;вкладці Chrome</translation>
 <translation id="4918844574251943176">Зображення скопійовано</translation>
 <translation id="492720062778050435">Chrome радить перевірити це розширення</translation>
+<translation id="4946912144186040233">Chrome краще визначає форми й швидше заповнює їх. Це налаштування вимкнено.</translation>
 <translation id="4953650215774548573">Зробити Google Chrome веб-переглядачем за умовчанням</translation>
 <translation id="495931528404527476">У Chrome</translation>
 <translation id="4969674060580488087">ОС Chrome Flex не змогла синхронізувати вашу інформацію, оскільки облікові дані застаріли.</translation>
@@ -323,6 +324,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Натисніть "Google Менеджер паролів"</translation>
 <translation id="504867494566807945">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності.</translation>
+<translation id="5049567194145991071">Натиснувши "Зрозуміло", ви зможете зберігати й використовувати паролі та інші дані в обліковому записі Google, коли входите в Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="USER_EMAIL" />, введіть парольну фразу</translation>
 <translation id="5120334927898581447">Входити в Chrome під час входу в інші сервіси Google</translation>
 <translation id="5126049312684316860">Chrome попередньо завантажує ще більше сторінок, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
@@ -507,6 +509,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7481213027396403996">Отримайте найвищий рівень безпеки в Chrome</translation>
 <translation id="749228101751499733">Увійшовши в Chrome, ви можете використовувати паролі й інші дані з облікового запису Google. Налаштування сервісів Google можна змінити за допомогою комбінації клавіш <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">Chrome попередньо завантажує сторінки, щоб ви могли швидше переглядати й шукати контент. <ph name="BEGIN_LINK" />Докладніше про попереднє завантаження сторінок.<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome краще визначає форми й швидше заповнює їх. Це налаштування ввімкнено.</translation>
 <translation id="7514258452813684157">Сервіс оновлення Google</translation>
 <translation id="7515191208480168435">Google Об’єктив можна закріпити для швидкого доступу</translation>
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>
@@ -539,6 +542,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7808348361785373670">Видалити з Chrome…</translation>
 <translation id="7825851276765848807">Програму не вдалося встановити через невизначену помилку. Завантажте Google Chrome ще раз.</translation>
+<translation id="7826342993930002256">Ваші персоналізовані налаштування Chrome – будь-де</translation>
 <translation id="7827099906024714326">Chrome має підтвердити вашу особу, перш ніж деякі дані можна буде зберігати в обліковому записі Google і використовувати на всіх ваших пристроях. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7845233973568007926">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити комп’ютер.</translation>
 <translation id="7872446069773932638">Завантаження… Залишилося: <ph name="SECONDS" /> с.</translation>
@@ -625,6 +629,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8948460679427074738">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chrome радить вилучити його.</translation>
+<translation id="8958307504142971576">Тепер у Chrome доступно більше функцій</translation>
 <translation id="8989968390305463310">Ваша історія веб-перегляду впливає на оголошення, що вам показуються, а також на наведений нижче список інтересів. З міркувань конфіденційності Chrome щомісяця автоматично видаляє ваші інтереси. Інтереси можуть оновлюватись, якщо ви не вилучите їх.</translation>
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8999117580775242387">Якщо протокол HTTPS недоступний, Chrome використовуватиме незахищене з’єднання без попередження</translation>

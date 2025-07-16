@@ -252,6 +252,7 @@ Du bør tenke på følgende:
 
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-varsler er nå slått av i enhetsinnstillingene.</translation>
+<translation id="7195217321165708458">Gemini i Chromium</translation>
 <translation id="7219205286115692265">Få raskere tilgang til Chromium fra dokken på Hjem-skjermen på iPad.</translation>
 <translation id="7222001353246886083">Søk etter ${searchPhrase} i Chromium</translation>
 <translation id="7228180817326917122">Chromium-tips: Velg plassering for adressefeltet</translation>

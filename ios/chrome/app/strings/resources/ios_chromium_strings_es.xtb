@@ -252,6 +252,7 @@ Notas importantes:
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas actualmente en los ajustes del dispositivo.</translation>
+<translation id="7195217321165708458">Gemini en Chromium</translation>
 <translation id="7219205286115692265">Accede más rápido a Chromium desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="7222001353246886083">Buscar ${searchFrase} en Chromium</translation>
 <translation id="7228180817326917122">Consejo de Chromium: elige la posición de la barra de direcciones</translation>

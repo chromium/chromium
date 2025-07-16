@@ -63,6 +63,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
 <translation id="1717218214683051432">Liiketunnistimet</translation>
 <translation id="1717996979683942279">Kun tämä on päällä, sivustot voivat pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä. Kun tämä on pois päältä, sivustot eivät voi hallinnoida ikkunoita kaikilla näytöillä.</translation>
+<translation id="1738912554587725807">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli</translation>
 <translation id="1743802530341753419">Pyydä lupaa, kun sivustot yrittävät yhdistää laitteeseen (suositus)</translation>
 <translation id="1777815584158991902">Discover-fiidin alapaneeli</translation>
 <translation id="1779089405699405702">Kuvien dekooderi</translation>
@@ -120,6 +121,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mt</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}}</translation>
 <translation id="2410940059315936967">Avaamasi sivusto voi upottaa muiden sivustojen sisältöä, esim. kuvia, mainoksia ja tekstiä. Muiden sivustojen asettamia evästeitä kutsutaan kolmannen osapuolen evästeiksi.</translation>
+<translation id="2411116727035790889">Laita pikanäppäimet käyttöön</translation>
 <translation id="2433507940547922241">Ulkoasu</translation>
 <translation id="2434158240863470628">Lataus valmis <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Olet väliaikaisesti sallinut tämän sivuston käyttää kolmannen osapuolen evästeitä. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3114012059975132928">Videosoitin</translation>
 <translation id="3115898365077584848">Näytä tiedot</translation>
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
+<translation id="3132996321662585180">Päivitä päivittäin</translation>
 <translation id="3143754809889689516">Toista alusta</translation>
 <translation id="3162899666601560689">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön</translation>
 <translation id="3165022941318558018">Salli sivuston käyttää kolmannen osapuolen evästeitä</translation>
@@ -356,6 +359,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5100237604440890931">Tiivistetty – laajenna klikkaamalla.</translation>
 <translation id="5116239826668864748">Voit käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
+<translation id="512938610812707830">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu kokonaan</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnanalennus avoimilla välilehdillä}other{Hinnanalennukset avoimilla välilehdillä}}</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>

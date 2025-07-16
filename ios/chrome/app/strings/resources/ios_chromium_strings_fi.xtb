@@ -252,6 +252,7 @@ Huomioitavaa:
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromiumin ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>
+<translation id="7195217321165708458">Gemini in Chromium</translation>
 <translation id="7219205286115692265">Avaa Chromium nopeammin iPadin aloitusnäytön alapalkista.</translation>
 <translation id="7222001353246886083">Tee haku ${searchPhrase} Chromiumissa</translation>
 <translation id="7228180817326917122">Chromium-vinkki: Valitse osoitepalkin sijainti</translation>

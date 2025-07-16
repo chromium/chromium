@@ -63,6 +63,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="1704230497453185209">Sitelerin ses çalmasına izin verme</translation>
 <translation id="1717218214683051432">Hareket sensörleri</translation>
 <translation id="1717996979683942279">Bu özellik açıkken siteler tüm ekranlarınızda pencereleri yönetme izni isteyebilir. Kapalıyken siteler tüm ekranlarınızda pencereleri yönetemez.</translation>
+<translation id="1738912554587725807">Yeni sekme sayfası görünümü tema koleksiyonları alt sayfası</translation>
 <translation id="1743802530341753419">Sitelerin bir cihaza bağlanmasına izin verilmeden önce sor (önerilir)</translation>
 <translation id="1777815584158991902">Keşfet feed'i alt sayfası</translation>
 <translation id="1779089405699405702">Görsel kod çözücüsü</translation>
@@ -186,6 +187,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3114012059975132928">Video oynatıcı</translation>
 <translation id="3115898365077584848">Bilgileri Göster</translation>
 <translation id="3123473560110926937">Bazı sitelerde engelleniyor</translation>
+<translation id="3132996321662585180">Günlük olarak yenile</translation>
 <translation id="3143754809889689516">Baştan oynat</translation>
 <translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir.</translation>
 <translation id="3165022941318558018">Bir sitenin, üçüncü taraf çerezlerini kullanmasına izin verin</translation>
@@ -356,6 +358,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5100237604440890931">Daraltıldı - Genişletmek için tıklayın.</translation>
 <translation id="5116239826668864748">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
 <translation id="5123685120097942451">Gizli sekme</translation>
+<translation id="512938610812707830">Yeni sekme sayfası görünümü tema koleksiyonları alt sayfası tam ekranda açıldı</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açık sekmelerinizde fiyat düşüşü}other{Açık sekmelerinizde fiyat düşüşleri}}</translation>
 <translation id="5186036860380548585">Seçenek, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5197729504361054390">Seçtiğiniz kişiler <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ile paylaşılacak.</translation>

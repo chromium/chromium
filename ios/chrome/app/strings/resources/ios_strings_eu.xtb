@@ -1602,7 +1602,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7412027924265291969">Egin aurrera</translation>
 <translation id="741204030948306876">Bai, ados</translation>
 <translation id="7417689656810783109">Aldatu taldearen izena</translation>
-<translation id="7418703176995102827">Gemini-rekin dituzun elkarrizketak eta Google Workspace-ko datuak ez dituzte berrikusiko gizakiek, eta ez dira erabiliko AAko eredu generatiboak hobetzeko.</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
 <translation id="7425053386765766120">Gehitu ordainketa-metodo bat…</translation>
 <translation id="7425346204213733349">Aurrerantzean, ez dira Google-ko kontuarekin sinkronizatuko laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egiten dituzun aldaketak. Hala ere, orain arteko datuak Google-ko kontuan izaten jarraituko duzu.</translation>
@@ -1907,7 +1906,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8560253818350321773">Erakutsi maiz erabiltzen diren elementuak lehenik.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Pasahitz {count} dago erabilgarri teklatuaren gainean.}other{{count} pasahitz daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="8564894539416715395">Fitxa berriaren orria</translation>
-<translation id="8569414323292250522">Google-ren AA hobetzeko berrikusiko eta erabiliko dira txatak. Lortu zure aukerei buruzko informazioa. Zure kokapenari buruzko informazioa ere jarduerekin batera gordetzen da.</translation>
 <translation id="8569721750632860947">Zer URL gehitu nahi duzu irakurketa-zerrendan?</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
 <translation id="8577056989960190117">Bete automatikoki iraungitze-urtea <ph name="YEAR" /> urtearekin</translation>

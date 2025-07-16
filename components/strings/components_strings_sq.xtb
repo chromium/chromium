@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (me shkëlqim)</translation>
 <translation id="1070901266639972381">Natë</translation>
 <translation id="1073690811593784042">Qelq (me ngjyra)</translation>
+<translation id="1074287282535157335">Paguaj me 4 këste ose çdo muaj (sipas kualifikueshmërisë)</translation>
 <translation id="1074497978438210769">Jo i sigurt</translation>
 <translation id="1074779248866616641">Rezultati</translation>
 <translation id="1075364221219156102">Përdor një çelës kalimi</translation>
@@ -656,6 +657,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2102134110707549001">Sugjero fjalëkalim të fortë…</translation>
 <translation id="2102495993840063010">Aplikacionet e Android</translation>
 <translation id="2102519472192754194">Shfletuesit e uebit</translation>
+<translation id="2103210856015238101">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje janë hapur në lartësi të plotë.</translation>
 <translation id="2105838220373099643">Lojëra me ndërrim rolesh</translation>
 <translation id="2107021941795971877">Mbështetjet e printimit</translation>
 <translation id="2108755909498034140">Rinis kompjuterin</translation>
@@ -1296,6 +1298,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3187472288455401631">Matja e reklamave</translation>
 <translation id="3190736958609431397">Anulo monitorimin</translation>
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Mund të kërkojë të dijë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3201482403106004262">Ndodhi një gabim me anketën.</translation>
@@ -1771,6 +1774,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3963721102035795474">Modaliteti i lexuesit</translation>
 <translation id="3965672182149944205">Të ruhet adresa?</translation>
 <translation id="3966044442021752214">Siguria e produktit</translation>
+<translation id="396761677631735618">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje janë hapur në gjysmë lartësi.</translation>
 <translation id="3969869202926863008">Qasja në rrjetin lokal</translation>
 <translation id="3970239200223030389">Data e lëshimit</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -1891,6 +1895,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
 <translation id="4169189393773057143">Menaxho kartat e besnikërisë ose çaktivizoji këto sugjerime te "Portofoli i Google"</translation>
 <translation id="4169535189173047238">Mos lejo</translation>
+<translation id="4170851022123611628">Lista e kartave të besnikërisë është mbyllur.</translation>
 <translation id="4171400957073367226">Nënshkrim vërtetimi i gabuar</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Brava dhe bravandreqës</translation>
@@ -1899,6 +1904,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> artikull tjetër}other{<ph name="ITEM_COUNT" /> artikuj të tjerë}}</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4177501066905053472">Temat e reklamave</translation>
+<translation id="4178863275556660738">Paguaj me mënyra pagese pa kartë</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
 <translation id="4190446002599583608">Kërkimi te historiku, mundësuar nga IA-ja</translation>
@@ -2094,6 +2100,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="4493480324863638523">URL e pavlefshme. Duhet të jetë URL me një skemë standarde, p.sh. http://shembull.com ose https://shembull.com.</translation>
 <translation id="4494323206460475851">Mund të shikosh temat e reklamave te cilësimet dhe të bllokosh ato që nuk dëshiron të ndahen me sajtet. Gjithashtu, Android i fshin në mënyrë autokatike temat e reklamave që janë më të vjetra se 4 javë.</translation>
+<translation id="4497010149473852018">Kartat e besnikërisë të disponueshme për t'u plotësuar me prekje. Tastiera është e fshehur.</translation>
 <translation id="4500587658229086076">përmbajtja e pasigurt</translation>
 <translation id="4504850595255879616">Persona nga <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Për të përmirësuar këtë veçori, të dhënat mund të shihen nga shqyrtuesit e trajnuar</translation>

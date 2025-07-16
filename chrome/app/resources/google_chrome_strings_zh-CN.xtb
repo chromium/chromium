@@ -314,6 +314,7 @@
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="492720062778050435">Chrome 建议您检查此扩展程序</translation>
+<translation id="4946912144186040233">Chrome 可以更好地理解表单，并更快地为您自动填充表单。此设置已关闭。</translation>
 <translation id="4953650215774548573">将Google Chrome设为默认浏览器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">您的账号登录详细信息已过期，ChromeOS Flex 无法同步您的数据。</translation>
@@ -322,6 +323,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="504867494566807945">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
+<translation id="5049567194145991071">点击“知道了”后，只要您登录 Chrome，就可以随时在 Google 账号中保存密码等信息以及使用其中的密码等信息。<ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
 <translation id="5120334927898581447">登录其他 Google 服务时登录 Chrome</translation>
 <translation id="5126049312684316860">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
@@ -506,6 +508,7 @@
 <translation id="7481213027396403996">获享 Chrome 最强大的安全保护</translation>
 <translation id="749228101751499733">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。使用 <ph name="SHORTCUT" /> 可以更改 Google 服务设置。</translation>
 <translation id="7496017508659652909">Chrome 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome 可以更好地理解表单，并更快地为您自动填充表单。此设置已开启。</translation>
 <translation id="7514258452813684157">Google 更新程序服务</translation>
 <translation id="7515191208480168435">您可以固定 Google 智能镜头以方便访问</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
@@ -538,6 +541,7 @@
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
+<translation id="7826342993930002256">您的专属 Chrome 浏览器，走到哪带到哪</translation>
 <translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
@@ -624,6 +628,7 @@
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>
+<translation id="8958307504142971576">您现在可以在 Chrome 中使用更多功能</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8992769679401294069">系统将使用您的口令加密您的数据。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>

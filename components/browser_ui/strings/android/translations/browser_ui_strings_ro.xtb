@@ -63,6 +63,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="1704230497453185209">Nu permite site-urilor să redea sunet</translation>
 <translation id="1717218214683051432">Senzori de mișcare</translation>
 <translation id="1717996979683942279">Când opțiunea este activată, site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele. Când opțiunea este dezactivată, site-urile nu pot gestiona ferestre pe toate ecranele.</translation>
+<translation id="1738912554587725807">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă</translation>
 <translation id="1743802530341753419">Întreabă înainte de a permite site-urilor să se conecteze la un dispozitiv (recomandat)</translation>
 <translation id="1777815584158991902">Foaia din partea de jos a feedului Discover</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
@@ -186,6 +187,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3114012059975132928">Player video</translation>
 <translation id="3115898365077584848">Afișează informațiile</translation>
 <translation id="3123473560110926937">Blocate pe anumite site-uri</translation>
+<translation id="3132996321662585180">Actualizează zilnic</translation>
 <translation id="3143754809889689516">Redă de la început</translation>
 <translation id="3162899666601560689">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături</translation>
 <translation id="3165022941318558018">Permite ca un site să folosească cookie-uri terță parte</translation>
@@ -356,6 +358,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5100237604440890931">Afișare restrânsă – dă clic pentru a extinde.</translation>
 <translation id="5116239826668864748">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
+<translation id="512938610812707830">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă este deschisă la înălțime completă</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Scădere de preț în filele deschise}few{Scăderi de prețuri în filele deschise}other{Scăderi de prețuri în filele deschise}}</translation>
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

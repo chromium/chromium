@@ -2005,6 +2005,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2436302465999055995">将 <ph name="LACROS_NAME" /> 设为唯一可用的浏览器（尚未实施）</translation>
 <translation id="2439187682308339104">不允许任何网站通过 WebHID API 请求对 HID 设备的访问权限</translation>
 <translation id="2439733504887695659">允许关闭针对所输入凭据的密码泄露警示</translation>
+<translation id="2446029789419870019">允许使用该功能并改进 AI 模型</translation>
 <translation id="2446244536806499267">播放音频时不将用户视为空闲</translation>
 <translation id="2452225615952836461">始终大写请求方法</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
@@ -2177,6 +2178,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2568488785376704318">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="2570059561924004903">停用语音反馈</translation>
 <translation id="2570181623957732921">为一系列第三方网域启用 <ph name="DESK_API_NAME" /></translation>
+<translation id="2571821662934804440">允许使用该功能，但不改进 AI 模型</translation>
 <translation id="2573850437942404034">不允许</translation>
 <translation id="2575198840408498393">禁止创建漫游个人资料</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本即将被弃用。这类脚本是否会触发取决于 <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />。目前，政策默认允许触发，但后续会逐步更改为默认禁止触发，而且网站必须使用 <ph name="PERMISSIONS_POLICY_NAME" /> 标头明确启用此类脚本。这项企业政策可用于将默认设置强制保留为启用状态，这样就可以避免脚本被逐步弃用。
@@ -2850,6 +2852,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 该报告包含资料状态和使用情况信息，包括但不限于操作系统版本、浏览器版本、已安装的扩展程序和应用的政策。
 
 此政策只能设为云用户政策。</translation>
+<translation id="3062559845875011810">不允许使用该功能</translation>
 <translation id="3063302084011279315">停用“屏幕录制”功能</translation>
 <translation id="3063307261083019730">禁止具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存在往返缓存中。</translation>
 <translation id="3064530882228745118">在 Kerberos 身份验证期间使用 CNAME 查找功能</translation>
@@ -4182,6 +4185,19 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 *“滤除提供成人内容的网站”- 系统将会滤除色情网站
 
 此政策同时适用于用户导航到的网址和 iframe。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策优先于此政策，可用于替换 Google Safe Search API 的判定结果。</translation>
+<translation id="4049706391182174257">此政策用于控制 <ph name="PRODUCT_NAME" /> 的自动密码更改功能的可用性。
+
+如果启用，用户可以触发一个流程，让浏览器尝试自动更改其在某个网站上的密码。此流程由生成式 AI 管理。新密码会保存在浏览器的密码管理工具中。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 Google 管理控制台管理的企业用户和受 Google Workspace 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策未设置，其行为将由 GenAiDefaultSettings 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="4051723201852944592">启用窗口遮挡</translation>
 <translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
 <translation id="4053157306171963473">停用设备活动时长报告功能</translation>
@@ -4483,6 +4499,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4275048399551500192">不显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
 <translation id="4278656834593750050">启用充电提示音</translation>
+<translation id="4281322231545828290">启用自动密码更改功能</translation>
 <translation id="4282243913059705499">始终在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标</translation>
 <translation id="4285510855646731405">Google 日历（自 135 版起受支持）</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
@@ -4837,21 +4854,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
 <translation id="4558166110367609724">自动跳过《服务条款》并加载浏览器。</translation>
 <translation id="4559846397119102037">允许使用 <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">此设备级政策用于配置 <ph name="PRODUCT_OS_NAME" /> 是否在 TLS 中提供使用 ML-KEM NIST 标准的后量子密钥协议算法。在 <ph name="PRODUCT_OS_NAME" /> 131 之前，算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
-
-如果此政策已启用，<ph name="PRODUCT_OS_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量，防止被量子计算机解密。
-
-如果此政策已停用，<ph name="PRODUCT_OS_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
-
-如果此政策未设置，<ph name="PRODUCT_OS_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
-
-提供 Kyber 可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
-
-但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
-
-此政策只是一项暂时性措施，会在 <ph name="PRODUCT_OS_NAME" /> 141 版本之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。
-
-如果同时设置了此政策和 PostQuantumKeyAgreementEnabled 政策，则此政策的优先级更高。</translation>
 <translation id="4561560385824323005">允许用户选择要加载的预配置桌面布局</translation>
 <translation id="4561940244682063697">不允许网站提示用户分享录屏</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
@@ -9975,19 +9977,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       此政策已从 Chrome 88 中移除，所以相关设置（若已指定）会被忽略。
 
       请参阅 https://www.chromestatus.com/feature/5989473649164288。</translation>
-<translation id="8137301668000005268">此政策用于配置 <ph name="PRODUCT_NAME" /> 是否在 TLS 中提供使用 ML-KEM NIST 标准的后量子密钥协议算法。在 <ph name="PRODUCT_NAME" /> 131 之前，算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
-
-如果此政策已启用，<ph name="PRODUCT_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量，防止被量子计算机解密。
-
-如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
-
-如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
-
-提供后量子密钥协议可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
-
-但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
-
-此政策只是一项暂时性措施，会在 <ph name="PRODUCT_NAME" /> 141 版本之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。</translation>
 <translation id="8137443729340035928">在登录时询问用户是否恢复上次会话。</translation>
 <translation id="8141795997560411818">此政策不会阻止用户使用 Android 版“Google 云端硬盘”应用。如果您想阻止对 Google 云端硬盘的访问，则也应禁止安装 Android 版“Google 云端硬盘”应用。</translation>
 <translation id="8142894094385450823">为受管理自助服务终端设置建议的语言区域</translation>

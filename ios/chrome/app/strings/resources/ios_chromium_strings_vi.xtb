@@ -252,6 +252,7 @@ Những yếu tố cần xem xét:
 
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Thông báo của Chromium hiện đang tắt trong phần cài đặt của thiết bị.</translation>
+<translation id="7195217321165708458">Gemini trong Chromium</translation>
 <translation id="7219205286115692265">Truy cập Chromium nhanh hơn từ thanh dock trên màn hình chính của iPad.</translation>
 <translation id="7222001353246886083">Tìm kiếm ${searchCluster} trong Chromium</translation>
 <translation id="7228180817326917122">Mẹo khi dùng Chromium: Chọn vị trí thanh địa chỉ</translation>

@@ -46,6 +46,7 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="1625909126243026060">Reveja os principais controlos de privacidade e segurança no Chromium</translation>
 <translation id="1640672724030957280">A transferir...</translation>
+<translation id="1689003475830815471">Para aceder aos seus marcadores, palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chromium</translation>
 <translation id="1709772298389099340">Oferece privilégios elevados para o navegador <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Para ajudar a melhorar estas funcionalidades, o Chromium envia as suas interações com as funcionalidades para a Google. Estes dados podem ser lidos, processados e anotados por revisores humanos.</translation>
 <translation id="1722488837206509557">Isto permite-lhe selecionar entre os dispositivos disponíveis e apresentar conteúdo nestes.</translation>
@@ -501,6 +502,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7585391435984513350">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">O Chromium está a utilizar a câmara e o microfone.</translation>
 <translation id="7617377681829253106">O Chromium está ainda melhor</translation>
+<translation id="7622753900276619808">Agora, tem mais funcionalidades disponíveis no Chromium</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7686590090926151193">O Chromium não é o seu navegador predefinido.</translation>

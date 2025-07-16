@@ -1904,6 +1904,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Jeszcze <ph name="ITEM_COUNT" /> element}few{Jeszcze <ph name="ITEM_COUNT" /> elementy}many{Jeszcze <ph name="ITEM_COUNT" /> elementów}other{Jeszcze <ph name="ITEM_COUNT" /> elementu}}</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
+<translation id="4178863275556660738">Płać za pomocą form płatności innych niż karty</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
 <translation id="4190446002599583608">Wyszukiwanie w historii z wykorzystaniem AI</translation>
@@ -3554,6 +3555,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6970885655016700774">Tkanina (archiwalna)</translation>
 <translation id="6971439137020188025">Szybko utwórz nową prezentację w Prezentacjach Google</translation>
 <translation id="6972629891077993081">Urządzenia HID</translation>
+<translation id="6972867931824045907">Aby używać schowka, otwórz <ph name="LINK" /> i zezwól Chrome na dostęp.</translation>
 <translation id="6973656660372572881">Określono zarówno stałe serwery proxy, jak i URL skryptu PAC.</translation>
 <translation id="6973988895180423160">3,5 x 5 cali</translation>
 <translation id="6978121630131642226">Wyszukiwarki</translation>

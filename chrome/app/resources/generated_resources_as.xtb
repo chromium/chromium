@@ -591,7 +591,6 @@
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="140723521119632973">চেলুলাৰ সক্ৰিয়কৰণ</translation>
-<translation id="1407908250220330281">এতিয়া এই প্ৰ’ফাইলটো পৰিচালনা কৰা হ’ব</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" />ৰ বাবে ডায়লগ সম্পাদনা কৰক খুলিবলৈ ক্লিক কৰক</translation>
 <translation id="1408504635543854729">Files এপত ডিভাইচৰ সমল অন্বেষণ কৰক। প্ৰশাসকে সমল সীমাবদ্ধ কৰাৰ বাবে সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="1408980562518920698">ব্যক্তিগত তথ্য পৰিচালনা কৰক</translation>
@@ -801,7 +800,6 @@
 <translation id="1549966883323105187">আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ ক্ষিপ্ৰতাৰে লাভ কৰক</translation>
 <translation id="1550656959113606473">ডিফ’ল্ট Chrome</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে <ph name="SEARCH_PROVIDER_DOMAIN" /> ব্যৱহাৰ কৰিবলৈ সন্ধানৰ সুবিধাটো সলনি কৰিছে</translation>
-<translation id="1552357433305859738">এই প্ৰ’ফাইলটোৰ সৈতে ছিংক কৰি থাকক আৰু ডেটাখিনি একত্ৰিত কৰক</translation>
 <translation id="1552752544932680961">এক্সটেনশ্বন পৰিচালনা কৰক</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
 <translation id="1553947773881524342">আপোনাৰ Chromebookত Microsoft 365ৰ বিষয়ে <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" />।</translation>
@@ -1092,7 +1090,6 @@
 <translation id="1741190788710022490">অভিযোজিত চাৰ্জিং</translation>
 <translation id="174123615272205933">কাষ্টম</translation>
 <translation id="1741314857973421784">অব্যাহত ৰাখক</translation>
-<translation id="1743970419083351269">ডাউনল‘ডৰ বাৰডাল বন্ধ কৰক</translation>
 <translation id="1744108098763830590">নেপথ্যৰ পৃষ্ঠা</translation>
 <translation id="1745732479023874451">সম্পৰ্কসমূহ পৰিচালনা কৰক</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{এই ৱেব এপ্‌টোত # টা ফাইল খুলি সম্পাদনা কৰিবনে?}other{এই ৱেব এপ্‌টোত # টা ফাইল খুলি সম্পাদনা কৰিবনে?}}</translation>
@@ -1207,6 +1204,7 @@
 <translation id="1822635184853104396">এটা নতুন টেবত সম্পূৰ্ণ ডাউনল’ডৰ ইতিহাস দেখুৱাওক</translation>
 <translation id="1823768272150895732">ফণ্ট</translation>
 <translation id="1823781806707127806">ইতিমধ্যে থকা ব্ৰাউজিঙৰ ডেটা পৰিচালিত প্ৰ’ফাইলত যোগ দিয়ক</translation>
+<translation id="1824499847634940868">এপৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="18245044880483936">আপোনাৰ শিশুৰ Driveৰ ষ্ট'ৰেজত থকা নির্ধাৰিত ঠাইত বেক আপ ডেটা গণনা কৰা নহ’ব।</translation>
 <translation id="1824870205483790748">গোটটোক বুকমাৰ্কৰ বাৰত পিন কৰক</translation>
 <translation id="1825073796163165618">লিংক সক্ষম কৰক</translation>
@@ -2243,7 +2241,6 @@
 <translation id="2520961587246779103">বিভাজিত ভিউৰ বাবে অধিক বিকল্প</translation>
 <translation id="2521427645491031107">ডিভাইচৰ ছেটিঙত এপ্‌ ছিংক কৰাৰ সুবিধাটো ছেট কৰা আছে</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
-<translation id="2521854691574443804"><ph name="FILE_NAME" />ক আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ জৰিয়তে পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="252277619743753687">পাছৱৰ্ড বাছনি কৰক</translation>
 <translation id="2523184218357549926">আপুনি চোৱা পৃষ্ঠাসমূহৰ URL Googleলৈ পঠিওৱা হয়</translation>
 <translation id="2524093372979370955">এইটোৱে সমগ্ৰ ছিষ্টেমটোত আটাইবোৰ নতুন USB পৰিধীয়ৰ বাবে জাননী অক্ষম কৰিব। আপুনি অব্যাহত ৰাখিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
@@ -2756,7 +2753,6 @@
 <translation id="2876484123356705658">সময়ৰ পৰিসৰ বাছনি কৰক</translation>
 <translation id="2876556152483133018">Site Search</translation>
 <translation id="2877467134191447552">ৱেবছাইট আৰু এপ্‌ এক্সেছ কৰিবলৈ আপুনি নিজৰ অতিৰিক্ত একাউণ্ট যোগ দিব পাৰে।</translation>
-<translation id="2878782256107578644">স্কেন কৰা প্ৰক্ৰিয়া চলি আছে, এতিয়া খুলিবনে?</translation>
 <translation id="2878889940310164513">চেলুলাৰ যোগ দিয়ক…</translation>
 <translation id="288042212351694283">আপোনাৰ ইউনিভাৰ্ছেল ছেকেণ্ড ফেক্টৰ ডিভাইচ এক্সেছ কৰক</translation>
 <translation id="2881076733170862447">আপুনি এক্সটেনশ্বনত ক্লিক কৰিলে</translation>
@@ -2932,6 +2928,7 @@
 <translation id="3008142279736625920">চীজেৰে প্ৰস্তুত কৰা কে’ক</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{আপডে’ট ডাউনল’ড কৰিবলৈ <ph name="MANAGER" />ৰ বাবে আপুনি আজি এটা ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}one{<ph name="MANAGER" />ৰ বাবে আপুনি ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ আৰু নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এটা আপডে’ট ডাউনল’ড কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}other{<ph name="MANAGER" />ৰ বাবে আপুনি ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ আৰু নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এটা আপডে’ট ডাউনল’ড কৰাৰ আৱশ্যক। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।}}</translation>
+<translation id="3008923556848076408">Geminiএ আপোনাৰ কাৰ্যসমূহ কৰি থাকিব</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
 <translation id="3009352964623081324">Search + O, তাৰ পাছত S। কণ্ঠধ্বনিসমূহ ইনষ্টল, পৰিচালনা আৰু কাষ্টমাইজ কৰিবলৈ ব্যৱহাৰ কৰক।</translation>
 <translation id="3009779501245596802">ইনডেক্স কৰা ডেটাবেছ</translation>
@@ -3187,7 +3184,6 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" />লৈ স্ক্ৰীন কাষ্ট কৰাটো পজ কৰক</translation>
 <translation id="3202578601642193415">একেবাৰে নতুন</translation>
 <translation id="3204648577100496185">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে</translation>
-<translation id="3204717934117444051">কেৱল এই ডিভাইচত ছেভ কৰা ডেটা পূৰ্বৰে পৰা থকা প্ৰ’ফাইল থাকিব। এয়া <ph name="EMAIL" />লৈ ছিংক কৰা নহ’ব</translation>
 <translation id="3206289903841621620">ব্যৱহাৰকাৰীৰ অভিধান <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">আপোনাৰ শেহতীয়া কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি আপুনি আগ্ৰহী হ’ব পৰা সন্ধান আৰু শ্বপিঙৰ ৰেহাই সম্পৰ্কীয় পৰামৰ্শ দেখা পাইছে।
         <ph name="BREAK" />
@@ -3414,6 +3410,7 @@
 <translation id="3373196968211632036">Chromebook (বিটা)ৰ বাবে Steam শিশুৰ Google একাউণ্টৰ বাবে উপলব্ধ নহয়</translation>
 <translation id="3373701465337594448">অন থাকিলে, আপুনি চোৱা ছাইটবোৰৰ সূচী ইয়াত প্ৰদৰ্শিত হয়, যিবোৰে আপোনাৰ আগ্ৰহসমূহ অনুমান কৰে</translation>
 <translation id="3374294321938930390">‘<ph name="BOOKMARK_TITLE" />’ ‘<ph name="NEW_FOLDER_TITLE" />’লৈ নিয়া হ’ল।</translation>
+<translation id="3376035595160918049">এপৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="3378517653648586174">স্থানীয় প্ৰমাণপত্ৰ</translation>
 <translation id="3378572629723696641">এই এক্সটেনশ্বনটো হয়তো ব্যৱহাৰযোগ্য হৈ থকা নাই।</translation>
 <translation id="3378627645871606983">Steamৰ বাবে দিয়া অনুমতিসমূহ আটাইবোৰ Steam গে’ম আৰু এপৰ বাবে প্ৰযোজ্য হয়।</translation>
@@ -4234,7 +4231,6 @@
 <translation id="3914173277599553213">বাধ্যতামূলক</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> ফ’ল্ডাৰ খোলক</translation>
 <translation id="3915280005470252504">কণ্ঠস্বৰৰ দ্বাৰা সন্ধান</translation>
-<translation id="3916233823027929090">সুৰক্ষা পৰীক্ষা কৰা হৈছে</translation>
 <translation id="3916445069167113093">এনে ধৰণৰ ফাইলে আপোনাৰ কম্পিউটাৰৰ ক্ষতি সাধন কৰিব পাৰে। আপুনি যিকোনো প্ৰকাৰে <ph name="FILE_NAME" /> ৰাখিব খোজেনে?</translation>
 <translation id="3917184139185490151">আপোনাৰ কম্পিউটাৰটোত এটা সুৰক্ষিত মডিউল আছে যিটোক ChromeOSত বহুতো গুৰুত্বপূৰ্ণ সুৰক্ষা সম্পৰ্কীয় সুবিধা কাৰ্যকৰী কৰিবলৈ ব্যৱহাৰ কৰা হয়। অধিক জানিবলৈ Chromebookৰ সহায় কেন্দ্ৰলৈ যাওক: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">আপোনাৰ ফাইলসমূহ ছিংক কৰিবলৈ পৰ্যাপ্ত ষ্ট’ৰেজৰ স্থান নাই। ঠাই খালী কৰাৰ চেষ্টা কৰক।</translation>
@@ -4271,7 +4267,6 @@
 <translation id="3933121352599513978">অনাকাংক্ষিত অনুৰোধ সংকোচন কৰক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" />এ আপোনাৰ সৈতে এটা ৱাই-ফাই নেটৱৰ্ক শ্বেয়াৰ কৰি আছে</translation>
 <translation id="3936390757709632190">অডিঅ’ নতুন টেবত &amp;খোলক</translation>
-<translation id="3937110354160507845">এই এপ্‌টোৱে Chromeৰ <ph name="OPENINGS_COUNT" /> খন/টা ৱিণ্ড’ বা টেব খুলিছে। আপুনি এই আচৰণটো "পপ-আপ আৰু ৰিডাইৰেক্ট"ৰ অনুমতিৰ অধীনত পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="3937640725563832867">প্ৰমাণপত্ৰ প্ৰদানকাৰীৰ বৈকল্পিক নাম</translation>
 <translation id="3937734102568271121"><ph name="LANGUAGE" /> সদায়েই অনুবাদ কৰক</translation>
 <translation id="3938128855950761626"><ph name="VENDOR_ID" /> বিক্ৰেতাৰ ডিভাইচসমূহ</translation>
@@ -4371,7 +4366,6 @@
 <translation id="3994878504415702912">&amp;জুম কৰক</translation>
 <translation id="3995138139523574647">USB-C ডিভাইচ (সোঁফালে থকা পিছফালৰ প’ৰ্ট)</translation>
 <translation id="3995963973192100066">এনিমেশ্বন প্লে’ কৰক</translation>
-<translation id="3997537546406230684">কৰ্মস্থানৰ বাবে এটা নতুন প্ৰ’ফাইল সৃষ্টি কৰক আৰু মোৰ পূৰ্বৰে পৰা থকা ডেটা পৃথকে ৰাখক</translation>
 <translation id="399788104667917863">টুলবাৰত পিন কৰক</translation>
 <translation id="3998780825367526465">টেবৰ পূৰ্বদৰ্শনৰ প্ৰতিচ্ছবি দেখুৱাওক</translation>
 <translation id="3998976413398910035">প্ৰিণ্টাৰ পৰিচালনা কৰক</translation>
@@ -4393,7 +4387,6 @@
 <translation id="4016762287427926315">আপুনি <ph name="APP_NAME" />ক দিয়া অনুমতিসমূহ এই এপ্‌টোৱেও লাভ কৰিব। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">এই লিংকটোৰ বাবে কিউআৰ ক’ড সৃষ্টি কৰক</translation>
 <translation id="4019983356493507433">বুকমাৰ্কৰ সূচী সম্পাদনা কৰক</translation>
-<translation id="4020327272915390518">বিকল্পৰ মেনু</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">আপুনি সামান্যভাৱে মূৰটো লৰচৰ কৰিলে আপোনাৰ কাৰ্চৰডাল লৰচৰ হৈ থকাটো ৰোধ কৰিব পাৰে কিন্তু কিছু বিলম্ব হ’ব পাৰে।</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -4766,6 +4759,7 @@
 <translation id="4291265871880246274">লগইনৰ ডায়লগ</translation>
 <translation id="4292613336957320546">এক্সিলাৰেশ্বন</translation>
 <translation id="429312253194641664">ছাইটটোৱে মিডিয়া প্লে’ কৰি আছে</translation>
+<translation id="4293219510510666933">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক। আপুনি লগতে আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ ভিত্তিত প্ৰশ্ন কৰিব পাৰে আৰু উত্তৰ পাব পাৰে। এই ছেটিংটো অন আছে।</translation>
 <translation id="4294392694389031609">ডাউনল’ডৰ ইতিহাসৰ পৰা <ph name="FILE_NAME" /> মচা হৈছে, কিন্তু এতিয়াও আপোনাৰ ডিভাইচত আছে</translation>
 <translation id="4295072614469448764">আপোনাৰ টাৰ্মিনেলত এপ্ আছে। আপোনাৰ লঞ্চাৰটোএ এটা আইকন থাকিব পাৰে।</translation>
 <translation id="4295979599050707005">Chrome আৰু Google Playৰ ৱেবছাইট, এপ্‌ আৰু এক্সটেনশ্বনসমূহৰ সৈতে আপোনাৰ একাউণ্টটো <ph name="USER_EMAIL" /> ব্যৱহাৰ কৰিব পাৰি বুলি নিশ্চিত কৰিবলৈ, অনুগ্ৰহ কৰি পুনৰ ছাইন ইন কৰক। আপুনি এই একাউণ্টটোও আঁতৰাব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -5820,7 +5814,6 @@
 <translation id="5059526285558225588">কি শ্বেয়াৰ কৰিব সেয়া বাছনি কৰক</translation>
 <translation id="5060332552815861872">ছেভ কৰিবলৈ ১ টা প্ৰিণ্টাৰ উপলব্ধ।</translation>
 <translation id="5060419232449737386">কেপশ্বনৰ ছেটিং</translation>
-<translation id="5061270227873845372">আপোনাৰ ওচৰত বৰ্তমান <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> আৰু অধিক আছে। আপোনাৰ প্ৰতিষ্ঠানে এই ডেটা চাব আৰু পৰিচালনা কৰিব পাৰিব</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{এই ফ’ল্ডাৰটোত এটা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}one{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}other{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}}</translation>
 <translation id="5061531353537614467">তুন্দ্ৰা</translation>
 <translation id="5062930723426326933">ছাইন ইন কৰিব পৰা নগ’ল, অনুগ্ৰহ কৰি ইণ্টাৰনেটৰ সৈতে সংযোগ কৰি আকৌ চেষ্টা কৰক।</translation>
@@ -6135,6 +6128,7 @@
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />ৰ বাবে ক্ৰিডেনশ্বিয়েলসমূহ আপডে’ট কৰক</translation>
 <translation id="5280303168922585051">আপোনাৰ প্ৰতিষ্ঠানে এই ছেটিংটো ছেট আপ কৰিছে। আপুনি এই সন্ধানৰ ইঞ্জিনটো মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="5280426389926346830">শ্বৰ্টকাট সৃষ্টি কৰিবনে?</translation>
+<translation id="5280966903879030278">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="5281013262333731149">ইয়াত খোল খায়: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android এপ্‌ ডাউনল’ড কৰি ব্যৱহাৰ কৰিবলৈ আপুনি প্ৰথমতে প্ৰয়োজনীয় আপডে’টসমূহ ইনষ্টল কৰিব লাগিব। <ph name="DEVICE_TYPE" /> আপডে’ট হৈ থকা সময়ত আপুনি এইটো ব্যৱহাৰ কৰিব নোৱাৰে। ইনষ্টল হোৱা সম্পূৰ্ণ হ’লে আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট হ’ব।</translation>
 <translation id="5283677936944177147">আমি দুঃখিত! ছিষ্টেমটোৱে ডিভাইচৰ মডেল আৰু ক্ৰমিক নম্বৰ নিৰ্ধাৰণ কৰিব নোৱাৰিলে।</translation>
@@ -6836,6 +6830,7 @@
 <translation id="5800703268655655701">পোহৰ অথবা গাঢ় ৰঙৰ থীম বাছনি কৰক</translation>
 <translation id="5801051031414037185">ফ’ন ছেট আপ কৰক</translation>
 <translation id="5801568494490449797">অগ্ৰাধিকাৰসমূহ</translation>
+<translation id="5801848377610914194">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক। এই ছেটিংটো অন আছে।</translation>
 <translation id="5803689677801500549">ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ ইয়াত ওলাব। <ph name="USER_EMAIL" />ৰ বাবে <ph name="BRAND" />লৈ পাছৱৰ্ড আমদানি কৰিবলৈ, <ph name="BEGIN_LINK" />এটা CSV ফাইল বাছনি কৰক।<ph name="END_LINK" /></translation>
 <translation id="5804198298544152115">ইমাৰ্ছিভ অভিজ্ঞতা উন্নত কৰিবলৈ ছাইটসমূহে সাধাৰণতে আপোনাৰ হাত আৰু হাতৰ আঙুলি ট্ৰেক কৰে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
@@ -7037,7 +7032,6 @@
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />জৰিয়তে পৃষ্ঠাখন সন্ধান কৰক</translation>
 <translation id="5942779427914696408">ডিভাইচৰ দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপোনাৰ সত্যাপনৰ প্ৰক্ৰিয়াটো সফল হৈছে। আপোনাৰ স্থানীয় ডেটা আনলক আৰু পুনঃস্থাপন কৰিবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পুৰণি পাছৱৰ্ডটো দিয়ক।</translation>
-<translation id="5945002094477276055"><ph name="FILE_NAME" /> বিপজ্জনক হ’ব পাৰে। স্কেন কৰিবৰ বাবে Googleৰ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াবনে?</translation>
 <translation id="5945192511027649793">টাচ্চপেড অক্ষম কৰক</translation>
 <translation id="5945363896952315544">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিটোৱে আৰু ফিংগাৰপ্ৰিণ্ট ষ্ট'ৰ কৰিব নোৱাৰে। নতুন এটা যোগ দিবলৈ, প্ৰথমে পূর্বে থকা ফিংগাৰপ্ৰিণ্ট এটা মচক।</translation>
 <translation id="5946591249682680882">ৰিপ’ৰ্টৰ আইডি <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -7245,7 +7239,6 @@
 <translation id="6096326118418049043">X.500 নাম</translation>
 <translation id="6097480669505687979">যদি আপুনি ঠাই খালী নকৰে, ব্যৱহাৰকাৰী আৰু ডেটা হয়তো স্বয়ংক্ৰিয়ভাৱে আঁতৰোৱা হ’ব পাৰে।</translation>
 <translation id="6097600385983390082">কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান কৰা সুবিধাটো বন্ধ কৰা হৈছে</translation>
-<translation id="6098793583803863900">এটা অজ্ঞাত ফাইল বিপজ্জনক সমলৰ বাবে স্কেন কৰি থকা হৈছে।</translation>
 <translation id="609892108553214365">এই কাৰ্ডখন আপোনাৰ iPhoneত ব্যৱহাৰ কৰক</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" />ৰ পৰা প্ৰতিলিপি কৰা পাঠ</translation>
 <translation id="6099766472403716061"><ph name="HOST" />ক সদায় আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰিবলৈ অনুমতি দিয়ক</translation>
@@ -7299,7 +7292,6 @@
 <translation id="6134418895482326458">নতুন টেবৰ পৃষ্ঠাত ফুটাৰ লুকুৱাওক</translation>
 <translation id="6134428719487602109">আটাইবোৰ ব্যৱহাৰকাৰীৰ একাউণ্ট আঁতৰাওক আৰু আপোনাৰ Chromebookটো নতুন ডিভাইচৰ দৰে কৰি তুলিবলৈ ৰিছেট কৰক।</translation>
 <translation id="6135826623269483856">আপোনাৰ আটাইবোৰ ডিছপ্লে’ত থকা ৱিণ্ড’সমূহ পৰিচালনা কৰিবলৈ দিয়া নহয়</translation>
-<translation id="6136114942382973861">ডাউনল’ডৰ বাৰডাল বন্ধ কৰক</translation>
 <translation id="6136285399872347291">বেকস্পেচ</translation>
 <translation id="6136287496450963112">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবি এটা পিনৰ দ্বাৰা সুৰক্ষিত নহয়। ফিংগাৰপ্ৰিণ্ট পৰিচালনা কৰিবলৈ, প্ৰথমে এটা পিন সৃষ্টি কৰক।</translation>
 <translation id="6136872094979134163">Chromebookৰ বাবে Steam সম্পৰ্কীয় বাতৰি পুনৰুদ্ধাৰ কৰিব পৰা নগ’ল।</translation>
@@ -7452,7 +7444,6 @@
 <translation id="6240964651812394252">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chrome লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="6241530762627360640">আপোনাৰ ছিষ্টেমৰ সৈতে যোৰা লগোৱা ব্লুটুথ ডিভাইচসমূহৰ সম্পর্কীয় তথ্যত এক্সেছ কৰক আৰু নিকটৱৰ্তী ব্লুটুথ ডিভাইচসমূহ বিচাৰি পাওক।</translation>
 <translation id="6241844896329831164">কোনো এক্সেছৰ প্ৰয়োজন নাই</translation>
-<translation id="6242574558232861452">আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ জৰিয়তে পৰীক্ষা কৰি থকা হৈছে।</translation>
 <translation id="6242589501614145408">আপোনাৰ সুৰক্ষা চাবিটো ৰিছেট কৰক</translation>
 <translation id="6242605626259978229">আপোনাৰ ব্ৰাউজাৰ আৰু প্ৰ’ফাইল পৰিচালিত</translation>
 <translation id="6242852299490624841">এই টেবটোত ফ’কাছ কৰক</translation>
@@ -7562,7 +7553,6 @@
 <translation id="6316432269411143858">Google ChromeOSৰ চৰ্তাৱলীৰ সমল</translation>
 <translation id="6317369057005134371">এপ্লিকেশ্বন ৱিণ্ড’ৰ কাৰণে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="6318125393809743217">নীতিৰ কনফিগাৰেশ্বনসমূহৰ সৈতে এটা policies.json ফাইল অন্তৰ্ভুক্ত কৰক।</translation>
-<translation id="6318407754858604988">ডাউনল’ড আৰম্ভ হৈছে</translation>
 <translation id="6318944945640833942">কোনো প্ৰিণ্টাৰ চিনাক্ত কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি প্ৰিণ্টাৰৰ ঠিকনা পুনৰ দিয়ক।</translation>
 <translation id="6319278239690147683">আপুনি ছিংক কৰি ৰখা আটাইবোৰ ডিভাইচ আৰু Google একাউণ্টৰ পৰা ব্ৰাউজিঙৰ ডেটা মচিবলৈ <ph name="BEGIN_LINK" />ছিংক ছেটিংসমূহলৈ যাওক<ph name="END_LINK" />।</translation>
 <translation id="6322370287306604163">ফিংগাৰপ্ৰিণ্টৰ জৰিয়তে দ্ৰুতভাৱে আনলক কৰক</translation>
@@ -7776,7 +7766,6 @@
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধক</translation>
 <translation id="6483485061007832714">ডাউনল’ড কৰা ফাইল খোলক</translation>
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{টেবৰ গোটটো ৰাখিবনে?}one{টেবৰ গোটসমূহ ৰাখিবনে?}other{টেবৰ গোটসমূহ ৰাখিবনে?}}</translation>
-<translation id="6483805311199035658"><ph name="FILE" /> খুলি থকা হৈছে...</translation>
 <translation id="6486301003991593638">পাছকী পৰিচালনা কৰিবলৈ Windowsৰ এটা নতুন সংস্কৰণ ব্যৱহাৰ কৰক</translation>
 <translation id="6488266788670893993"><ph name="BRAND" />এ ডাটা উলংঘনত আপোনাৰ পাছৱৰ্ডসমূহ ফাদিল হৈছে নেকি পৰীক্ষা কৰিব নোৱাৰে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="6488384360522318064">ভাষা বাছনি কৰক</translation>
@@ -8206,6 +8195,7 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> দূৰৰ পৰা যোগ কৰা হৈছে</translation>
 <translation id="6790820461102226165">অন্য লোকক যোগ কৰক...</translation>
+<translation id="6792351896138862473">অসমৰ্থিত কিঅ’স্ক এপ্‌ লঞ্চ কৰিব নোৱাৰি। এই সমস্যাটোৰ বিষয়ে আপোনাৰ প্ৰশাসকক জনাওক।</translation>
 <translation id="6793610798874309813">আপোনাৰ পিনত ৪ টা বা ততোধিক বৰ্ণ থাকিব পাৰে</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>
@@ -9286,6 +9276,7 @@
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7561759921596375678">ভলিউম অন কৰক</translation>
 <translation id="7561982940498449837">মেনু বন্ধ কৰক</translation>
+<translation id="7563576896417108627"><ph name="APP_NAME" /> কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। আপডে’ট উপলব্ধ।</translation>
 <translation id="756445078718366910">ব্ৰাউজাৰ ৱিণ্ড’ খোলক</translation>
 <translation id="7564847347806291057">প্ৰক্ৰিয়া সমাপ্ত কৰক</translation>
 <translation id="756503097602602175">আপুনি ছাইন ইন কৰি ৰখা Google একাউণ্টসমূহ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />ৰ পৰা পৰিচালনা কৰিব পাৰে। আপুনি ৱেবছাইট আৰু এপক দিয়া অনুমতি আটাইবোৰ একাউণ্টত প্ৰযোজ্য হ’ব পাৰে। যদি আপুনি আপোনাৰ একাউণ্টৰ তথ্য কোনো ছাইট অথবা এপে এক্সেছ কৰাটো নিবিচাৰে, তেন্তে আপুনি আপোনাৰ <ph name="DEVICE_TYPE" />ত অতিথি হিচাপে ছাইন ইন কৰিব পাৰে অথবা এখন <ph name="LINK_2_BEGIN" />ইনক’গনিট’ ৱিণ্ড’<ph name="LINK_2_END" />ত ৱেব ব্ৰাউজ কৰিব পাৰে।</translation>
@@ -9688,7 +9679,6 @@
 <translation id="7833720883933317473">ছেভ কৰি থোৱা কাষ্টম শব্দ ইয়াত ওলাব</translation>
 <translation id="7834832693620032149">অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ইয়াৰ সলনি এটা টেব বা এখন ৱিণ্ড’ শ্বেয়াৰ কৰক</translation>
 <translation id="7836577093182643605">আপুনি ছাইটসমূহৰ সৈতে যিবোৰ বিষয়বস্তু শ্বেয়াৰ কৰাটো নিবিচাৰে, সেইবোৰৰ সূচী</translation>
-<translation id="7836745198769390202">আপোনাৰ ওচৰত বৰ্তমান <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> আৰু অধিক আছে। আপোনাৰ প্ৰতিষ্ঠানে এই ডেটা চাব আৰু পৰিচালনা কৰিব পাৰিব</translation>
 <translation id="7836850009646241041">সুৰক্ষা চাবিটো পুনৰ স্পৰ্শ কৰি চাওক</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" />ৰ পৰা '<ph name="NETWORK_NAME" />' ছেভ কৰিব পৰা নগ’ল</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}one{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}other{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিওৱা হ'ল}}</translation>
@@ -10044,6 +10034,7 @@
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8065144531309810062">অধিক সৃষ্টিশীল আৰু উৎপাদনশীল হ’বলৈ Google AI ব্যৱহাৰ কৰক</translation>
 <translation id="8066444921260601116">ডায়লগৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
+<translation id="8068904756674285749">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস সন্ধান কৰিবলৈ আৰু আপুনি চোৱা ছাইটসমূহ বিচাৰিবলৈ দৈনন্দিন জীৱনত ব্যৱহৃত ভাষা ব্যৱহাৰ কৰক। আপুনি লগতে আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ ভিত্তিত প্ৰশ্ন কৰিব পাৰে আৰু উত্তৰ পাব পাৰে। ছেটিংটো অফ আছে।</translation>
 <translation id="8070572887926783747"><ph name="APP_NAME" />ৰ অৱস্থানৰ অনুমতি</translation>
 <translation id="8070662218171013510">হেপটিক ফীডবেক</translation>
 <translation id="8071033114691184017">আপোনাৰ iPhoneত এই পাছৱৰ্ডটো ব্যৱহাৰ কৰক</translation>
@@ -10617,7 +10608,6 @@
 <translation id="846205103980293931">{NUM_TABS,plural, =1{১ টা বস্তু থকা তালিকা বাকচ}one{{NUM_TABS} টা বস্তু থকা তালিকা বাকচ}other{{NUM_TABS} টা বস্তু থকা তালিকা বাকচ}}</translation>
 <translation id="8463001014623882202">কৰ্তৃত্ব প্ৰদান কৰিব পৰা নগ’ল</translation>
 <translation id="8463348458784127076">আপোনাৰ Chromeৰ প্ৰ’ফাইলত পাছকী পৰিচালনা কৰক</translation>
-<translation id="846374874681391779">ডাউনল’ড দণ্ড</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> অক্ষম কৰা হ’ল৷</translation>
 <translation id="846399539692727039">ChromeOS Flex ডায়েগন’ষ্টিক পৰীক্ষা চলোৱা</translation>
 <translation id="8464132254133862871">এই ব্যৱহাৰকাৰীৰ একাউন্টটো সেৱাটোৰ বাবে যোগ্য নহয়।</translation>
@@ -10670,6 +10660,7 @@
 <translation id="8499083585497694743">মাইক্ৰ’ফ’ন আনমিউট কৰক</translation>
 <translation id="8500044868721690197">এই ছাইটটোৱে আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="8500123638242682652">ৱিণ্ড’ ওপৰফাললৈ স্থানান্তৰ কৰা হৈছে</translation>
+<translation id="8500132602331251964">এপৰ আপডে’ট উপলব্ধ</translation>
 <translation id="8502536196501630039">Google Playৰ এপ্‌সমূহ ব্যৱহাৰ কৰিবলৈ, আপুনি প্ৰথমে আপোনাৰ এপ্‌সমূহ পুনঃস্থাপন কৰিবই লাগিব৷ কিছুমান ডেটা হেৰুৱাব লগা হ’ব পাৰে৷</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="850382998924680137">আজি চাইছে</translation>
@@ -11478,7 +11469,6 @@
 <translation id="9052404922357793350">অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="90528604757378587">মসৃণভাৱে স্ক্ৰ’ল কৰাৰ সুবিধাটোৰ দৰে কিছুমান নেপথ্যৰ কাৰ্যকলাপ আৰু কিছুমান ভিজুৱেল ইফেক্ট সীমিত হ’ব পাৰে।</translation>
 <translation id="9053563360605707198">দুয়ো পিঠিতে প্ৰিণ্ট কৰক</translation>
-<translation id="9055810458113674066">আপোনাৰ ওচৰত বৰ্তমান <ph name="NUMBERED_ITEM" /> আৰু অধিক আছে। আপোনাৰ প্ৰতিষ্ঠানে এই ডেটা চাব আৰু পৰিচালনা কৰিব পাৰিব</translation>
 <translation id="9056788090206401048">এটা বেলেগ ডিভাইচত আপোনাৰ পাছকী ব্যৱহাৰ কৰিবলৈ ব্লুটুথ অন থাকিবই লাগিব। আপুনি যিকোনো সময়তে ছেটিঙত এইটো পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="9056810968620647706">মিল থকা একো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />এ তলত উল্লিখিত সমল এক্সেছ কৰিব বিচাৰে:</translation>
@@ -11595,7 +11585,6 @@
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" />ৰ ছেটিঙৰ পৃষ্ঠাখন খোলক</translation>
 <translation id="9128870381267983090">নেটৱৰ্কত সংযোগ কৰক</translation>
 <translation id="9129562557082598582">আটাইবোৰ <ph name="CERT_GROUP" /> এক্সপ’ৰ্ট কৰক</translation>
-<translation id="9129857793923570143"><ph name="APP_NAME" />এ একাধিক ৱিণ্ড’ খুলিছে।</translation>
 <translation id="9130015405878219958">অমান্য ম’ড দিয়া হৈছে।</translation>
 <translation id="9130135798965366513">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ এই ছাইটটোৰ সৈতে আপোনাৰ <ph name="FIELDS_STRING" /> শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK2" /> চাওক।</translation>
 <translation id="9130208109420587135"><ph name="NAME" /> গোটৰ নামটো সম্পাদনা কৰক</translation>

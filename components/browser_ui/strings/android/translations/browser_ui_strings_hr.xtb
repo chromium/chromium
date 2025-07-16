@@ -63,6 +63,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="1704230497453185209">Ne dopuštaj web-lokacijama reprodukciju zvuka</translation>
 <translation id="1717218214683051432">Senzori kretanja</translation>
 <translation id="1717996979683942279">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upravljanje prozorima na svim zaslonima. Kad je isključena, web-lokacije ne mogu upravljati prozorima na svim vašim zaslonima.</translation>
+<translation id="1738912554587725807">Donja tablica zbirki tema izgleda stranice Nova kartica</translation>
 <translation id="1743802530341753419">Web-lokacije moraju tražiti dopuštenje za povezivanje s uređajem (preporučeno)</translation>
 <translation id="1777815584158991902">Donja tablica feeda Discovera</translation>
 <translation id="1779089405699405702">Dekodiranje slika</translation>
@@ -186,6 +187,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3114012059975132928">Player videozapisa</translation>
 <translation id="3115898365077584848">Prikaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekim web-lokacijama</translation>
+<translation id="3132996321662585180">Osvježi svaki dan</translation>
 <translation id="3143754809889689516">Reproduciraj od početka</translation>
 <translation id="3162899666601560689">Web-lokacije mogu upotrebljavati kolačiće za poboljšanje vašeg doživljaja pregledavanja, primjerice da biste ostali prijavljeni ili da bi stavke u vašoj košarici ostale zapamćene</translation>
 <translation id="3165022941318558018">Dopusti web-lokaciji upotrebu kolačića trećih strana</translation>
@@ -356,6 +358,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="5100237604440890931">Sažeto – kliknite za proširivanje.</translation>
 <translation id="5116239826668864748">Možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
+<translation id="512938610812707830">Donja tablica zbirki tema izgleda stranice Nova kartica otvorena je u punoj visini</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje cijene na otvorenoj kartici}one{Sniženja cijena na otvorenim karticama}few{Sniženja cijena na otvorenim karticama}other{Sniženja cijena na otvorenim karticama}}</translation>
 <translation id="5186036860380548585">Opcija je dostupna pri vrhu zaslona</translation>
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

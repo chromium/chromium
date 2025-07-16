@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Метал (гланциран)</translation>
 <translation id="1070901266639972381">През нощта</translation>
 <translation id="1073690811593784042">Стъкло (цветно)</translation>
+<translation id="1074287282535157335">Плащане на 4 вноски или месечно (ако отговаряте на условията)</translation>
 <translation id="1074497978438210769">Няма защита</translation>
 <translation id="1074779248866616641">Резултат</translation>
 <translation id="1075364221219156102">Използване на ключ за достъп</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Предложение за надеждна парола…</translation>
 <translation id="2102495993840063010">Приложения за Android</translation>
 <translation id="2102519472192754194">Уеб браузъри</translation>
+<translation id="2103210856015238101">Списъкът с карти за лоялност, данните за които могат да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
 <translation id="2105838220373099643">Ролеви игри</translation>
 <translation id="2107021941795971877">Опори при отпечатване</translation>
 <translation id="2108755909498034140">Рестартирайте компютъра си.</translation>
@@ -1020,6 +1022,7 @@
 <translation id="2690699652723742414">Последните 30 дни</translation>
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Предупреждение за безопасност</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core ви дава възможност да управлявате правилата, приложенията и разширенията за браузъра от облака</translation>
 <translation id="2697248912349197812">Попитайте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Налично е подменю. Използвайте <ph name="SHORTCUT" />, за да навигирате до допълнителните опции.</translation>
 <translation id="2701514975700770343">С отпечатаната страна надолу</translation>
@@ -1296,6 +1299,7 @@
 <translation id="3187472288455401631">Измерване на рекламите</translation>
 <translation id="3190736958609431397">Спиране на проследяването</translation>
 <translation id="3194737229810486521"><ph name="URL" /> иска да съхранява за постоянно данни на устройството ви</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да поиска разрешение да разпознава кога използвате устройството активно</translation>
 <translation id="3201482403106004262">При показването на анкетата възникна грешка.</translation>
@@ -1771,6 +1775,7 @@
 <translation id="3963721102035795474">Режим за четене</translation>
 <translation id="3965672182149944205">Да се запази ли адресът?</translation>
 <translation id="3966044442021752214">Безопасност на продукта</translation>
+<translation id="396761677631735618">Списъкът с карти за лоялност, данните за които могат да бъдат попълнени при докосване, е отворен на половината височина.</translation>
 <translation id="3969869202926863008">Достъп в локалната мрежа</translation>
 <translation id="3970239200223030389">Дата на издаване</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
@@ -1891,6 +1896,7 @@
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4169189393773057143">Управлявайте картите за лоялност или изключете тези предложения в Google Wallet</translation>
 <translation id="4169535189173047238">Забраняване</translation>
+<translation id="4170851022123611628">Списъкът с карти за лоялност е затворен.</translation>
 <translation id="4171400957073367226">Невалиден подпис за потвърждаване</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Ключалки и ключарски услуги</translation>
@@ -2095,6 +2101,7 @@
 <translation id="449126573531210296">Синхронизираните пароли да се шифроват с идентификационните данни за профила ви в Google</translation>
 <translation id="4493480324863638523">Невалиден URL адрес. Трябва да е URL адрес със стандартна схема, напр. http://example.com или https://example.com.</translation>
 <translation id="4494323206460475851">Можете да видите рекламните теми в настройките и да блокирате тези, които не искате да се споделят със сайтовете. Chrome също така автоматично изтрива рекламните теми, които са по-стари от 4 седмици.</translation>
+<translation id="4497010149473852018">Карти за лоялност, данните за които могат да бъдат попълнени при докосване. Клавиатурата е скрита.</translation>
 <translation id="4500587658229086076">незащитено съдържание</translation>
 <translation id="4504850595255879616">Хора от <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Данните може да бъдат видени от обучени проверяващи лица с цел подобряване на тази функция.</translation>
@@ -3136,6 +3143,7 @@
 <translation id="6284449872909111707">SMS и незабавни съобщения</translation>
 <translation id="6284517535531159884">Тип на началното число за вариантите</translation>
 <translation id="6287197303017372967">Получавайте упътвания до дестинацията си с указания отсечка по отсечка, като използвате функцията за навигация.</translation>
+<translation id="6288559570252410796">Попитайте режима с AI на Google</translation>
 <translation id="628877850550444614">Открита е отстъпка</translation>
 <translation id="6289939620939689042">Цвят на страницата</translation>
 <translation id="6292819926564202163">Вашата търсеща машина в Chrome</translation>
@@ -4349,6 +4357,7 @@
 <translation id="831997045666694187">Вечерта</translation>
 <translation id="8321448084834652864">Можете да промените търсещата машина по всяко време от настройките на Chromium.</translation>
 <translation id="8321476692217554900">известия</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да задавате въпроси на режима с AI на Google</translation>
 <translation id="8322402665880479974">Легла и табли за легло</translation>
 <translation id="8323505966575306467">Защитете паролите си по-добре</translation>
 <translation id="832547548543012337">Изтриване на паспорта</translation>
@@ -4639,6 +4648,7 @@
 <translation id="883848425547221593">Други отметки</translation>
 <translation id="8842351563145134519">Списъкът с начини на плащане, които да бъдат попълнени при докосване, е отворен на половината височина.</translation>
 <translation id="884264119367021077">Адрес за доставка</translation>
+<translation id="8849032795302265570">Лесно управлявайте сърфирането на служителите ви в мрежата</translation>
 <translation id="8849231003559822746">130 x 180 мм</translation>
 <translation id="884923133447025588">Не е намерен механизъм за анулиране.</translation>
 <translation id="8849262850971482943">За по-голяма сигурност използвайте виртуалната си карта</translation>
@@ -4889,6 +4899,7 @@
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>
 <translation id="955429569736351433">Разрешено е използването на VR</translation>
 <translation id="955627189349169688">Можете да се откажете от това правило от <ph name="BEGIN_LINK" />настройките за синхронизиране на Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Бутон за режима с AI. Активирайте го, за да задавате въпроси на режима с AI на Google</translation>
 <translation id="95721182352849470">жълто 2</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>

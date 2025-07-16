@@ -252,6 +252,7 @@ Stvari za razmatranje:
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Obavještenja Chromiuma su trenutno isključena u postavkama uređaja.</translation>
+<translation id="7195217321165708458">Gemini u Chromiumu</translation>
 <translation id="7219205286115692265">Brže pristupajte Chromiumu s donje trake na početnom ekranu iPada.</translation>
 <translation id="7222001353246886083">Pretražite frazu ${searchPhrase} u Chromiumu</translation>
 <translation id="7228180817326917122">Savjet za Chromium: odaberite položaj trake za adresu</translation>

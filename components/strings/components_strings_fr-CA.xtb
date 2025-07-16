@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Métal (brillant)</translation>
 <translation id="1070901266639972381">Nuit</translation>
 <translation id="1073690811593784042">Verre (coloré)</translation>
+<translation id="1074287282535157335">Payez en quatre versements ou mensuellement (sous réserve d'admissibilité)</translation>
 <translation id="1074497978438210769">Pas sécuritaire</translation>
 <translation id="1074779248866616641">Résultat</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Suggérer un mot de passe fort…</translation>
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2102519472192754194">Navigateurs Web</translation>
+<translation id="2103210856015238101">Cartes de fidélité qui peuvent être remplies d'un toucher, ouvertes à pleine hauteur.</translation>
 <translation id="2105838220373099643">Jeux de rôles</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrer l'ordinateur</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3190736958609431397">Annuler le suivi</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Les sites peuvent demander à savoir quand vous utilisez activement cet appareil</translation>
 <translation id="3201482403106004262">Une erreur s'est produite concernant le sondage.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">Mode Lecteur</translation>
 <translation id="3965672182149944205">Enregistrer l'adresse?</translation>
 <translation id="3966044442021752214">Sécurité du produit</translation>
+<translation id="396761677631735618">Cartes de fidélité qui peuvent être remplies d'un toucher, ouvertes à mi-hauteur.</translation>
 <translation id="3969869202926863008">Accès au réseau local</translation>
 <translation id="3970239200223030389">Date d'émission</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -1891,6 +1895,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4169189393773057143">Gérer les cartes de fidélité ou désactiver ces suggestions dans Google Portefeuille</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
+<translation id="4170851022123611628">La liste des cartes de fidélité est fermée.</translation>
 <translation id="4171400957073367226">Signature de validation incorrecte</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Verrous et serrures</translation>
@@ -1899,6 +1904,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> autre élément}one{<ph name="ITEM_COUNT" /> autre élément}other{<ph name="ITEM_COUNT" /> autres éléments}}</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4177501066905053472">Sujets d'annonces</translation>
+<translation id="4178863275556660738">Payer avec des modes de paiement autres que des cartes</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annuler le suivi de prix</translation>
 <translation id="4190446002599583608">Recherche dans l'historique, propulsée par l'IA</translation>
@@ -2094,6 +2100,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4493480324863638523">URL incorrecte. Le format de l'URL doit être standard. Par exemple : http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Vous pouvez consulter les sujets d'annonces dans les paramètres et bloquer ceux que vous ne souhaitez pas partager avec les sites. De plus, Chrome supprime automatiquement les sujets d'annonces ayant plus de quatre semaines.</translation>
+<translation id="4497010149473852018">Cartes de fidélité qui peuvent être remplies d'un toucher. Clavier masqué.</translation>
 <translation id="4500587658229086076">Contenu non sécurisé</translation>
 <translation id="4504850595255879616">Personnes <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Les données peuvent être vues par des évaluateurs qualifiés pour améliorer cette fonctionnalité</translation>

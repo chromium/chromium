@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 件の住所}other{# 件の住所}}</translation>
 <translation id="1605405588277479165">オフ - 推奨されません</translation>
 <translation id="1605658421715042784">画像をコピー</translation>
+<translation id="1606899876897213121">最近のアクティビティの概要を閉じる</translation>
 <translation id="1612754831519568745">現在、セーフ ブラウジングはオフになっています。危険なサイト、ダウンロード、拡張機能からの保護を強化してください。</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1622717322707146952">[Google カレンダーに追加] または [Apple カレンダーに追加] を選択します。</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
 <translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2579713773888829241">共有ドライブ</translation>
+<translation id="2583688836549072561">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ、新しいアクティビティ。</translation>
 <translation id="2593272815202181319">等幅</translation>
 <translation id="2601778637777010194">商品の値下げを追跡</translation>
 <translation id="260378315836159338">画面上部の [+] をタップ</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
 <translation id="3280562213547448728">音声検索</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />、新しいアクティビティ</translation>
 <translation id="3305294846493618482">続き</translation>
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3312300514034250578">セーフ ブラウジング保護強化機能</translation>
@@ -1602,7 +1605,6 @@
 <translation id="7412027924265291969">続行</translation>
 <translation id="741204030948306876">ON にする</translation>
 <translation id="7417689656810783109">グループ名を変更</translation>
-<translation id="7418703176995102827">Gemini との会話や Google Workspace のデータが人間のレビュアーによって確認されたり、生成 AI モデルの改善に使用されたりすることはありません。</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
 <translation id="7425346204213733349">今後、ブックマーク、履歴、パスワード、その他の設定に行った変更は Google アカウントに同期されません。ただし、既存のデータは Google アカウントに保存されたままとなります。</translation>
@@ -1643,6 +1645,7 @@
 <translation id="7557508262441527045">ログアウトしました</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
+<translation id="7566349809380613217"><ph name="GROUP_TITLE" /> を開く、<ph name="NUMBER_OF_TABS" /> の共有グループ、<ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">ブックマークは非表示になっています</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="7582666837709186351">カメラを使って、写真や周囲のテキストを翻訳できます。</translation>
@@ -1907,7 +1910,6 @@
 <translation id="8560253818350321773">よく使うアイテムを最初に表示します。</translation>
 <translation id="8561999115126307258">{count,plural, =1{キーボードの上部に利用可能なパスワードの候補が {count} 件表示されています。}other{キーボードの上部に利用可能なパスワードの候補が {count} 件表示されています。}}</translation>
 <translation id="8564894539416715395">新しいタブページ</translation>
-<translation id="8569414323292250522">チャットはレビューされ、Google AI の改善に使用されます。お客様が選択できる項目の詳細をご確認ください。ユーザーの位置情報もアクティビティとともに保存されます。</translation>
 <translation id="8569721750632860947">どの URL をリーディング リストに追加しますか？</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8577056989960190117">有効期限（年）「<ph name="YEAR" />」を自動入力する</translation>

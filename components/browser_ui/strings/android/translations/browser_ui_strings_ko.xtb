@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">사이트에서 소리를 재생하도록 허용하지 않음</translation>
 <translation id="1717218214683051432">움직임 감지 센서</translation>
 <translation id="1717996979683942279">사용 설정하면 사이트에서 모든 디스플레이의 창 관리를 요청할 수 있습니다. 사용 중지하면 사이트에서 모든 디스플레이의 창을 관리할 수 없습니다.</translation>
+<translation id="1738912554587725807">새 탭 페이지 모양 테마 모음 하단 시트</translation>
 <translation id="1743802530341753419">사이트에서 내 기기에 연결하도록 허용하기 전에 확인(권장)</translation>
 <translation id="1777815584158991902">디스커버 피드 하단 시트</translation>
 <translation id="1779089405699405702">이미지 디코더</translation>
@@ -186,6 +187,7 @@
 <translation id="3114012059975132928">동영상 플레이어</translation>
 <translation id="3115898365077584848">정보 표시</translation>
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
+<translation id="3132996321662585180">매일 새로고침</translation>
 <translation id="3143754809889689516">처음부터 재생</translation>
 <translation id="3162899666601560689">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3165022941318558018">사이트에서 서드 파티 쿠키를 사용하도록 허용합니다</translation>
@@ -356,6 +358,7 @@
 <translation id="5100237604440890931">접힘 - 펼치려면 클릭</translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
+<translation id="512938610812707830">새 탭 페이지 모양 테마 모음 하단 시트가 전체 높이로 열림</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{열려 있는 탭의 가격 인하}other{열려 있는 탭의 가격 인하}}</translation>
 <translation id="5186036860380548585">화면 상단에서 옵션을 선택할 수 있습니다</translation>
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>

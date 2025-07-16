@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (brillo)</translation>
 <translation id="1070901266639972381">Noite</translation>
 <translation id="1073690811593784042">Cristal (de cores)</translation>
+<translation id="1074287282535157335">Paga en catro prazos ou mensualmente (opción suxeita ao cumprimento de requisitos)</translation>
 <translation id="1074497978438210769">Non seguro</translation>
 <translation id="1074779248866616641">Resultado</translation>
 <translation id="1075364221219156102">Usa unha clave de acceso</translation>
@@ -656,6 +657,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2102134110707549001">Suxerir contrasinal seguro…</translation>
 <translation id="2102495993840063010">Aplicacións para Android</translation>
 <translation id="2102519472192754194">Navegadores web</translation>
+<translation id="2103210856015238101">Lista de tarxetas de fidelidade dispoñibles que se completarán cun toque aberta a altura completa.</translation>
 <translation id="2105838220373099643">Xogos de rol</translation>
 <translation id="2107021941795971877">Soportes de impresión</translation>
 <translation id="2108755909498034140">Reinicia o ordenador</translation>
@@ -1296,6 +1298,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3190736958609431397">Deixar de facer seguimento</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedirche permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="3201482403106004262">Produciuse un erro ao cargar a enquisa.</translation>
@@ -1771,6 +1774,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3963721102035795474">Modo de lector</translation>
 <translation id="3965672182149944205">Queres gardar o enderezo?</translation>
 <translation id="3966044442021752214">Seguranza do produto</translation>
+<translation id="396761677631735618">Lista de tarxetas de fidelidade dispoñibles que se completarán cun toque aberta a altura media.</translation>
 <translation id="3969869202926863008">Acceso á rede local</translation>
 <translation id="3970239200223030389">Data de emisión</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1891,6 +1895,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4165986682804962316">Configuración do sitio</translation>
 <translation id="4169189393773057143">Xestiona as tarxetas de fidelidade ou desactiva estas suxestións en Google Wallet</translation>
 <translation id="4169535189173047238">Non permitir</translation>
+<translation id="4170851022123611628">A lista de tarxetas de fidelidade está pechada.</translation>
 <translation id="4171400957073367226">Sinatura de verificación incorrecta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" />, <ph name="RESULT_OWNER" /> (<ph name="RESULT_PRODUCT_SOURCE" />)</translation>
 <translation id="4171557247032367596">Ferrollos e cerralleiros</translation>
@@ -1899,6 +1904,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> elemento máis}other{<ph name="ITEM_COUNT" /> elementos máis}}</translation>
 <translation id="4176463684765177261">Desactivado</translation>
 <translation id="4177501066905053472">Temas dos anuncios</translation>
+<translation id="4178863275556660738">Pagar con métodos de pago sen tarxeta</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
 <translation id="4190446002599583608">Buscas no historial con tecnoloxía de IA</translation>
@@ -2094,6 +2100,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="449126573531210296">Cifrar contrasinais sincronizados coa túa Conta de Google</translation>
 <translation id="4493480324863638523">O URL non é válido. Debe ser un URL cunha estrutura estándar, como http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Na configuración podes ver os temas de anuncios e bloquear os que non queiras que se compartan cos sitios. Chrome tamén elimina automaticamente os temas de anuncios que teñen máis de 4 semanas de antigüidade.</translation>
+<translation id="4497010149473852018">Lista de tarxetas de fidelidade dispoñibles que se completarán cun toque. Teclado oculto.</translation>
 <translation id="4500587658229086076">contido inseguro</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> persoas</translation>
 <translation id="450602096898954067">Para mellorar esta función, pode que os datos os vexan membros do equipo de revisión</translation>

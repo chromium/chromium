@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metall (glänzend)</translation>
 <translation id="1070901266639972381">Nacht</translation>
 <translation id="1073690811593784042">Glas (farbig)</translation>
+<translation id="1074287282535157335">In 4 Monatsraten bezahlen (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="1074497978438210769">Nicht sicher</translation>
 <translation id="1074779248866616641">Ergebnis</translation>
 <translation id="1075364221219156102">Passkey verwenden</translation>
@@ -656,6 +657,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2102134110707549001">Starkes Passwort vorschlagen…</translation>
 <translation id="2102495993840063010">Android-Apps</translation>
 <translation id="2102519472192754194">Webbrowser</translation>
+<translation id="2103210856015238101">Die Liste mit den Kundenkarten, deren Daten bei Berührung eingefügt werden, ist vollständig geöffnet.</translation>
 <translation id="2105838220373099643">Rollenspiele</translation>
 <translation id="2107021941795971877">Stützstrukturen für Druck</translation>
 <translation id="2108755909498034140">Computer neu starten</translation>
@@ -1296,6 +1298,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3187472288455401631">Erfolgsmessung bei Anzeigen</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3194737229810486521"><ph name="URL" /> möchte Daten dauerhaft auf deinem Gerät speichern</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> auf <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Darf nachfragen, wenn sie Informationen zu meiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
 <translation id="3201482403106004262">Bei der Umfrage ist ein Fehler aufgetreten.</translation>
@@ -1769,6 +1772,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3963721102035795474">Lesemodus</translation>
 <translation id="3965672182149944205">Adresse speichern?</translation>
 <translation id="3966044442021752214">Produktsicherheit</translation>
+<translation id="396761677631735618">Die Liste mit den Kundenkarten, deren Daten bei Berührung eingefügt werden, ist halb geöffnet.</translation>
 <translation id="3969869202926863008">Zugriff auf lokales Netzwerk</translation>
 <translation id="3970239200223030389">Ausstellungsdatum</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -1889,6 +1893,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4169189393773057143">Du kannst in Google Wallet Kundenkarten verwalten oder diese Vorschläge deaktivieren</translation>
 <translation id="4169535189173047238">Nicht zulassen</translation>
+<translation id="4170851022123611628">Liste mit Kundenkarten ist geschlossen.</translation>
 <translation id="4171400957073367226">Ungültige Bestätigungssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Schlösser und Schlosser</translation>
@@ -1897,6 +1902,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> weiteres Element}other{<ph name="ITEM_COUNT" /> weitere Elemente}}</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4177501066905053472">Werbethemen</translation>
+<translation id="4178863275556660738">Mit anderen Zahlungsmethoden als Karten bezahlen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
 <translation id="4190446002599583608">KI‑gestützte Verlaufssuche</translation>
@@ -2092,6 +2098,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
 <translation id="4494323206460475851">Du kannst dir die Werbethemen in deinen Einstellungen ansehen und diejenigen blockieren, die nicht mit Websites geteilt werden sollen. Darüber hinaus werden in Chrome Werbethemen automatisch gelöscht, die älter als vier Wochen sind.</translation>
+<translation id="4497010149473852018">Kundenkarten, deren Daten bei Berührung eingefügt werden. Tastatur ausgeblendet.</translation>
 <translation id="4500587658229086076">Unsichere Inhalte</translation>
 <translation id="4504850595255879616">Mitarbeiter von <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Daten können zur Verbesserung dieser Funktion von geschulten Prüfern gelesen werden</translation>

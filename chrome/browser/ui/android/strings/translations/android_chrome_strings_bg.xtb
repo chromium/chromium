@@ -108,6 +108,7 @@
 <translation id="1419753403124156396">Да се рестартира ли Chrome?</translation>
 <translation id="1428770807407000502">Да се изключи ли синхронизирането?</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1433478348197382180">Режим на четене</translation>
 <translation id="1435593198351412143">Автоматично отваряне на PDF файловете</translation>
 <translation id="1437543266176261764">Изпълнява се в(ъв) <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Организирайте проследяваните от вас продукти в „Отметки“</translation>
@@ -719,6 +720,7 @@
 <translation id="4306489587293957491">Въведете</translation>
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4311652497846705514">Да се отвори ли PDF файлът?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Възможен спам}other{Възможен спам (#)}}</translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4326079409704643112">Потвърдете, че сте вие, за да използвате и запазвате данните от Chrome в профила си в Google</translation>
 <translation id="433213510553688132">Започвате да следите...</translation>
@@ -1057,6 +1059,7 @@
 <translation id="580893287573699959">Управлявайте темите и сайтовете, които ви интересуват</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{преди # час}other{преди # часа}}</translation>
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Показване на известието}other{Показване на известията}}</translation>
 <translation id="5814749351757353073">Получавайте актуална информация от любимите си сайтове</translation>
 <translation id="5823093032261493462">Искате ли да изтеглите „<ph name="FILE_NAME" />“ от <ph name="DOWNLOAD_DOMAIN" /> въпреки това?</translation>
 <translation id="5828921839638612740">Можете да изтриете данните в настройките на Chrome</translation>
@@ -1167,6 +1170,7 @@
 <translation id="6255809143828972562">С помощта на инструментите от Chrome можете да сърфирате безопасно и да запазите контрол</translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
 <translation id="6264485186158353794">Назад към безопасната страница</translation>
+<translation id="6267063201726531683">Долен лист за режима на четене</translation>
 <translation id="6277522088822131679">При отпечатването на страницата възникна проблем. Моля, опитайте отново.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Известието „Паролите са достъпни на всичките ви устройства“ е затворено</translation>

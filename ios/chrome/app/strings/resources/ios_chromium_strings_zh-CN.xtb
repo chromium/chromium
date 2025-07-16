@@ -252,6 +252,7 @@
 
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7192111075364461693">目前，在您的设备设置中，Chromium 通知功能处于关闭状态。</translation>
+<translation id="7195217321165708458">Chromium 中的 Gemini</translation>
 <translation id="7219205286115692265">从 iPad 主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="7222001353246886083">在 Chromium 中搜索 ${searchPhrase}</translation>
 <translation id="7228180817326917122">Chromium 提示：选择地址栏的位置</translation>

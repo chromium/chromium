@@ -985,7 +985,7 @@
 <translation id="4970724460420203313">使用代管帳戶登入 Chrome 後，就能將貴機構相關瀏覽資料 (包括分頁、歷史記錄和密碼) 與其他瀏覽資料分開</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
 <translation id="4979397965658815378">只要登入 Google 帳戶，即可在你的所有裝置上使用自己的書籤、密碼、歷史記錄和其他設定。</translation>
-<translation id="4985921635659180565">檔案排定刪除時間後就無法取消。</translation>
+<translation id="4985921635659180565">檔案排定刪除後就無法取消。</translation>
 <translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
 <translation id="4992255726304765516">分頁群組顏色：<ph name="COLOR" /></translation>
@@ -1128,7 +1128,7 @@
 <translation id="5581786858144165447">「詢問 AI」模式</translation>
 <translation id="5585019845078534178">資訊卡</translation>
 <translation id="5595485650161345191">編輯地址</translation>
-<translation id="559567008082979829">設定內容在下載的一個月後刪除。</translation>
+<translation id="559567008082979829">下載內容會在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
@@ -1602,7 +1602,6 @@
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7417689656810783109">變更群組名稱</translation>
-<translation id="7418703176995102827">人工審查員不會審查你與 Gemini 的對話及 Google Workspace 資料，這些內容也不會用於改良生成式 AI 模型。</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>
 <translation id="7425346204213733349">你更改過的書籤、歷史記錄、密碼和其他設定不會繼續與 Google 帳戶中的資料保持同步，但是 Google 帳戶現有的資料仍會保留。</translation>
@@ -1907,7 +1906,6 @@
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
 <translation id="8561999115126307258">{count,plural, =1{鍵盤上方顯示 {count} 個密碼選項。}other{鍵盤上方顯示 {count} 個密碼選項。}}</translation>
 <translation id="8564894539416715395">新分頁</translation>
-<translation id="8569414323292250522">我們會查看對話內容，並用於改良 Google AI。瞭解你的選項。你的位置資訊也會儲存在活動記錄中。</translation>
 <translation id="8569721750632860947">你想將哪個網址加入閱讀清單？</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8577056989960190117">自動填入到期年份 <ph name="YEAR" /></translation>

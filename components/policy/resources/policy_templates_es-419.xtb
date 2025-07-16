@@ -2111,6 +2111,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2436302465999055995">Seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible (aún no se implementó)</translation>
 <translation id="2439187682308339104">No permitir que ningún sitio solicite acceso a los dispositivos HID a través de la API de WebHID</translation>
 <translation id="2439733504887695659">Habilitar la opción de descartar las alertas de contraseña hackeada para las credenciales que hayas ingresado</translation>
+<translation id="2446029789419870019">Permitir el uso de la función y mejorar los modelos de IA</translation>
 <translation id="2446244536806499267">No considerar al usuario como inactivo mientras se reproduce un audio</translation>
 <translation id="2452225615952836461">Usar mayúsculas siempre en los métodos de solicitud</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
@@ -2299,6 +2300,7 @@ Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios we
 <translation id="2568488785376704318">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Inhabilitar los comentarios por voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
+<translation id="2571821662934804440">Permitir el uso de la función sin mejorar los modelos de IA</translation>
 <translation id="2573850437942404034">No permitir</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
 <translation id="25765864042030871">Los controladores del evento <ph name="UNLOAD_EVENT_NAME" /> dejarán de estar disponibles. Su activación depende de la <ph name="PERMISSIONS_POLICY_NAME" /> de <ph name="UNLOAD_EVENT_NAME" />. Actualmente, la política los admite de forma predeterminada. Paulatinamente, pasarán a estar inhabilitados de forma predeterminada, y los sitios deberán habilitarlos explícitamente mediante encabezados de la <ph name="PERMISSIONS_POLICY_NAME" />. Con esta política empresarial, se puede rechazar esta baja gradual. Para ello, se debe forzar que la configuración predeterminada permanezca habilitada.
@@ -2994,6 +2996,7 @@ Si la inhabilitas o no la estableces, no se activará la recopilación y carga d
 El informe contiene datos de uso y estado del perfil, incluidas, sin limitaciones, la versión del SO y del navegador, las extensiones instaladas y las políticas aplicadas.
 
 Esta política solo se puede establecer como política del usuario basada en la nube.</translation>
+<translation id="3062559845875011810">No permitir la función</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
@@ -4376,6 +4379,19 @@ Según el valor con el que establezcas la política, se obtendrán distintos com
 * Si aplicas filtros de contenido para adultos a los sitios, se filtrarán los sitios pornográficos
 
 La política se aplica a la URL a la que navega el usuario y a los iframes. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre esta política y se puede usar para anular los veredictos de la API de Google Safe Search.</translation>
+<translation id="4049706391182174257">Esta política controla la disponibilidad de la función de cambio de contraseña automatizado de <ph name="PRODUCT_NAME" />.
+
+Si se habilita, un usuario puede activar un proceso en el que el navegador intenta cambiar su contraseña en un sitio web de forma automática. La IA generativa administra este proceso. La nueva contraseña se guarda en el administrador de contraseñas del navegador.
+
+0 = Permite que se use la función y que Google use datos pertinentes para mejorar sus modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados, materiales de referencia y comentarios escritos, según la función. Es posible que personas revisen los datos para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (lo que incluye las instrucciones, las entradas, los resultados, los materiales de referencia y los comentarios escritos). 1 es el valor predeterminado para los usuarios empresariales que administra la Consola del administrador de Google y las cuentas de institución educativa que administra Google Workspace.
+
+2 = No permite la función.
+
+Si no estableces la política, su comportamiento se determina según la política GenAiDefaultSettings.
+
+Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes de tiempo de actividad del dispositivo</translation>
@@ -4703,6 +4719,7 @@ Esta política se usó para inhabilitar la actualización automática de conteni
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios también podrán cambiar esta configuración.</translation>
 <translation id="4275048399551500192">No mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="4278656834593750050">Habilitar sonidos de carga</translation>
+<translation id="4281322231545828290">Habilitar el cambio de contraseña automatizado</translation>
 <translation id="4282243913059705499">Mostrar siempre el ícono <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285510855646731405">Calendario de Google (compatible a partir de la versión 135)</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados usen ARC</translation>
@@ -5068,21 +5085,6 @@ Un dispositivo se considera administrado si se utiliza una versión empresarial 
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
 <translation id="4558166110367609724">Omite automáticamente las Condiciones del Servicio y carga el navegador</translation>
 <translation id="4559846397119102037">Permitir el uso de <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">Esta política a nivel del dispositivo configura si <ph name="PRODUCT_OS_NAME" /> ofrecerá un algoritmo de acuerdo de claves poscuántico en TLS, con el estándar ML-KEM NIST. Antes de la versión 131 de <ph name="PRODUCT_OS_NAME" />, el algoritmo era Kyber, una iteración de borrador anterior del estándar. Esto permite admitir servidores para evitar que las computadoras cuánticas desencripten el tráfico de usuarios posteriormente.
-
-Si habilitas esta política, <ph name="PRODUCT_OS_NAME" /> ofrecerá un acuerdo de claves poscuántico en las conexiones TLS. El tráfico de usuarios estará protegido contra las computadoras cuánticas cuando se comunique con servidores compatibles.
-
-Si la inhabilitas, <ph name="PRODUCT_OS_NAME" /> no ofrecerá un acuerdo de claves poscuántico en las conexiones TLS. El tráfico de usuarios no estará protegido contra las computadoras cuánticas.
-
-Si no estableces esta política, <ph name="PRODUCT_OS_NAME" /> seguirá el proceso de lanzamiento predeterminado para ofrecer un acuerdo de claves poscuántico.
-
-La oferta de Kyber es retrocompatible. Se espera que los servidores TLS existentes y el middleware de red ignoren la opción nueva y continúen seleccionando opciones anteriores.
-
-Sin embargo, es posible que los dispositivos que no implementan TLS correctamente no funcionen bien cuando se les ofrezca la opción nueva. Por ejemplo, es posible que se desconecten en respuesta a opciones no reconocidas o a mensajes más extensos. Estos dispositivos no están preparados para la poscuantificación y pueden interferir en la transición poscuántica de una empresa. Si se detectan errores, los administradores deben comunicarse con el proveedor para corregirlos.
-
-Esta política es una medida temporal y se quitará después de la versión 141 de <ph name="PRODUCT_OS_NAME" />. Es posible se habilite para permitirte buscar errores y que se inhabilite mientras se resuelven.
-
-Si se configuran esta política y la política PostQuantumKeyAgreementEnabled, esta política tendrá prioridad.</translation>
 <translation id="4561560385824323005">Permitir que los usuarios seleccionen un diseño de escritorio preconfigurado para cargar</translation>
 <translation id="4561940244682063697">No permitir que los sitios soliciten que el usuario comparta una transmisión de video por Internet de su pantalla</translation>
 <translation id="4562165737444703281">Permite que los usuarios habiliten o configuren la redirección de puertos de Crostini</translation>
@@ -10501,19 +10503,6 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="SC
       En la versión 88 de Chrome, se quitó esta política; si la estableces, se ignorará.
 
       Consulta https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8137301668000005268">Esta política configura si <ph name="PRODUCT_NAME" /> ofrecerá un algoritmo de acuerdo de claves poscuántico en TLS, con el estándar ML-KEM NIST. Antes de la versión 131 de <ph name="PRODUCT_NAME" />, el algoritmo era Kyber, una iteración de borrador anterior del estándar. Esto permite admitir servidores para evitar que las computadoras cuánticas desencripten el tráfico de usuarios posteriormente.
-
-Si habilitas esta política, <ph name="PRODUCT_NAME" /> ofrecerá un acuerdo de claves poscuántico en las conexiones TLS. El tráfico de usuarios estará protegido contra las computadoras cuánticas cuando se comunique con servidores compatibles.
-
-Si la inhabilitas, <ph name="PRODUCT_NAME" /> no ofrecerá un acuerdo de claves poscuántico en las conexiones TLS. El tráfico de usuarios no estará protegido contra las computadoras cuánticas.
-
-Si no estableces esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado para ofrecer un acuerdo de claves poscuántico.
-
-La oferta del acuerdo de claves poscuántico es retrocompatible. Se espera que los servidores TLS existentes y el middleware de red ignoren la opción nueva y continúen seleccionando opciones anteriores.
-
-Sin embargo, es posible que los dispositivos que no implementan TLS correctamente no funcionen bien cuando se les ofrezca la opción nueva. Por ejemplo, es posible que se desconecten en respuesta a opciones no reconocidas o a mensajes más extensos. Estos dispositivos no están preparados para la poscuantificación y pueden interferir en la transición poscuántica de una empresa. Si se detectan errores, los administradores deben comunicarse con el proveedor para corregirlos.
-
-Esta política es una medida temporal y se quitará después de la versión 141 de <ph name="PRODUCT_NAME" />. Es posible se habilite para permitirte buscar errores y que se inhabilite mientras se resuelven.</translation>
 <translation id="8137443729340035928">Preguntar al usuario si desea restablecer la última sesión al acceder</translation>
 <translation id="8141795997560411818">Esta política no impide que el usuario use la app de Google Drive de Android. Si deseas evitar el acceso a Google Drive, también debes inhabilitar la instalación de su app.</translation>
 <translation id="8142894094385450823">Establecer la configuración regional recomendada para una sesión administrada</translation>

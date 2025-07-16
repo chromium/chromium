@@ -63,6 +63,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1717996979683942279">Gdy ta opcja jest włączona, strony mogą prosić o zgodę na zarządzanie oknami na wszystkich wyświetlaczach. Gdy jest wyłączona, strony nie mogą zarządzać oknami na wszystkich wyświetlaczach.</translation>
+<translation id="1738912554587725807">Plansza dolna kolekcji motywów wyglądu strony Nowa karta</translation>
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
 <translation id="1777815584158991902">Plansza dolna karty Discover</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
@@ -186,6 +187,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3114012059975132928">Odtwarzacz</translation>
 <translation id="3115898365077584848">Pokaż informacje</translation>
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
+<translation id="3132996321662585180">Odświeżaj codziennie</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
 <translation id="3162899666601560689">Witryny mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
 <translation id="3165022941318558018">Zezwól witrynie na używanie plików cookie innych firm</translation>
@@ -356,6 +358,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5100237604440890931">Zwinięty – kliknij, by rozwinąć.</translation>
 <translation id="5116239826668864748">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
+<translation id="512938610812707830">Plansza dolna kolekcji motywów wyglądu strony Nowa karta, otwarta na całą wysokość</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Obniżka ceny na otwartych kartach}few{Obniżki cen na otwartych kartach}many{Obniżki cen na otwartych kartach}other{Obniżki cen na otwartych kartach}}</translation>
 <translation id="5186036860380548585">Opcja dostępna u góry ekranu</translation>
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

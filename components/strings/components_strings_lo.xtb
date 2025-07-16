@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">ໂລຫະ (ມັນວາວ)</translation>
 <translation id="1070901266639972381">ກາງຄືນ</translation>
 <translation id="1073690811593784042">ແກ້ວ (ມີສີ)</translation>
+<translation id="1074287282535157335">ຈ່າຍເງິນເປັນ 4 ງວດ ຫຼື ລາຍເດືອນ (ຂຶ້ນຢູ່ກັບການມີສິດ)</translation>
 <translation id="1074497978438210769">ບໍ່ປອດໄພ</translation>
 <translation id="1074779248866616641">ຜົນໄດ້ຮັບ</translation>
 <translation id="1075364221219156102">ໃຊ້ກະແຈຜ່ານ</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
 <translation id="2102495993840063010">ແອັບ Android</translation>
 <translation id="2102519472192754194">ໂປຣແກຣມທ່ອງເວັບ</translation>
+<translation id="2103210856015238101">ບັດສະມາຊິກທີ່ພ້ອມນຳໃຊ້ສຳລັບການຕື່ມຂໍ້ມູນເມື່ອສຳຜັດເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ.</translation>
 <translation id="2105838220373099643">ເກມສວມບົດບາດ</translation>
 <translation id="2107021941795971877">ການຮອງຮັບການພິມ</translation>
 <translation id="2108755909498034140">ປິດເປີດຄອມພິວເຕີຂອງທ່ານຄືນໃໝ່</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">ການວັດແທກໂຄສະນາ</translation>
 <translation id="3190736958609431397">ເຊົາຕິດຕາມ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນໄວ້ໃນອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ໃນ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">ສາມາດຂໍຂໍ້ມູນວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢ່າງຕໍ່ເນື່ອງຕອນໃດ</translation>
 <translation id="3201482403106004262">ເກີດຄວາມຜິດພາດຂຶ້ນກັບແບບສຳຫຼວດ.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">ໂໝດເຄື່ອງອ່ານ</translation>
 <translation id="3965672182149944205">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="3966044442021752214">ຄວາມປອດໄພຜະລິດຕະພັນ</translation>
+<translation id="396761677631735618">ບັດສະມາຊິກທີ່ພ້ອມນຳໃຊ້ສຳລັບການຕື່ມຂໍ້ມູນເມື່ອສຳຜັດເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ.</translation>
 <translation id="3969869202926863008">ການເຂົ້າເຖິງເຄືອຂ່າຍທ້ອງຖິ່ນ</translation>
 <translation id="3970239200223030389">ວັນທີອອກໃຫ້</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
 <translation id="4169189393773057143">ຈັດການບັດສະມາຊິກ ຫຼື ປິດການແນະນຳເຫຼົ່ານີ້ໃນ Google Wallet</translation>
 <translation id="4169535189173047238">ບໍ່ອະນຸຍາດ</translation>
+<translation id="4170851022123611628">ປິດລາຍຊື່ບັດສະມາຊິກແລ້ວ.</translation>
 <translation id="4171400957073367226">ລາຍເຊັນການຢື​ນ​ຢັນບໍ່​ດີ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">ລັອກ ແລະ ຊ່າງກະແຈ</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ອີກ <ph name="ITEM_COUNT" /> ລາຍການ}other{ອີກ <ph name="ITEM_COUNT" /> ລາຍການ}}</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4177501066905053472">ຫົວຂໍ້ໂຄສະນາ</translation>
+<translation id="4178863275556660738">ຈ່າຍເງິນດ້ວຍວິທີການຈ່າຍເງິນທີ່ບໍ່ແມ່ນບັດ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ເຊົາຕິດຕາມລາຄາ</translation>
 <translation id="4190446002599583608">ການຊອກຫາປະຫວັດທີ່ຂັບເຄື່ອນໂດຍ AI</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">ເຂົ້າລະຫັດລະຫັດຜ່ານທີ່ຊິ້ງຂໍ້ມູນໄວ້ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4493480324863638523">URL ໃຊ້ບໍ່ໄດ້. ຕ້ອງແມ່ນ URL ທີ່ມີຮູບແບບມາດຕະຖານ ເຊັ່ນ: http://example.com ຫຼື https://example.com.</translation>
 <translation id="4494323206460475851">ທ່ານສາມາດເບິ່ງຫົວຂໍ້ໂຄສະນາໃນການຕັ້ງຄ່າ ແລະ ບລັອກຫົວຂໍ້ທີ່ບໍ່ຕ້ອງການແບ່ງປັນກັບເວັບໄຊໄດ້. ນອກຈາກນັ້ນ, Chrome ຈະລຶບຫົວຂໍ້ໂຄສະນາທີ່ດົນກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="4497010149473852018">ບັດສະມາຊິກທີ່ພ້ອມນຳໃຊ້ສຳລັບການຕື່ມຂໍ້ມູນເມື່ອສຳຜັດ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
 <translation id="4500587658229086076">ເນື້ອຫາທີ່ບໍ່ປອດໄພ</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> ຄົນ</translation>
 <translation id="450602096898954067">ຜູ້ກວດສອບທີ່ຜ່ານການເຝິກອາດເຫັນຂໍ້ມູນເພື່ອປັບປຸງຄຸນສົມບັດນີ້</translation>

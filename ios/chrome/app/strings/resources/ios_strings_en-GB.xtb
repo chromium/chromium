@@ -1602,7 +1602,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7412027924265291969">Continue</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
 <translation id="7417689656810783109">Rename group</translation>
-<translation id="7418703176995102827">Neither your conversations with Gemini nor your Google Workspace data will be reviewed by human reviewers or used to improve generative AI models.</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7425053386765766120">Add payment method…</translation>
 <translation id="7425346204213733349">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.</translation>
@@ -1907,7 +1906,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8560253818350321773">Show frequently used items first.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option for password available above your keyboard.}other{{count} options for password available above your keyboard.}}</translation>
 <translation id="8564894539416715395">New tab page</translation>
-<translation id="8569414323292250522">Chats are reviewed and used to improve Google AI. Learn about your choices. Info about your location is also stored with your activity.</translation>
 <translation id="8569721750632860947">What URL would you like to add to your reading list?</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8577056989960190117">Autofill the expiry year <ph name="YEAR" /></translation>

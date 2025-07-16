@@ -314,6 +314,7 @@
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="492720062778050435">この拡張機能を確認することをおすすめします</translation>
+<translation id="4946912144186040233">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオフになっています。</translation>
 <translation id="4953650215774548573">Google Chrome を既定のブラウザとして設定する</translation>
 <translation id="495931528404527476">Chrome 専用</translation>
 <translation id="4969674060580488087">アカウントのログイン情報が最新ではないため、ChromeOS Flex はデータを同期できませんでした。</translation>
@@ -322,6 +323,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">[Google パスワード マネージャー] をクリックします</translation>
 <translation id="504867494566807945">他のアプリから Chrome でリンクを開くことができます。Chrome はタスクバーに固定され、簡単にアクセスできます。</translation>
+<translation id="5049567194145991071">[OK] をクリックすると、Chrome にログインしているときに Google アカウントにパスワードなどを保存して使用できます。<ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">アカウント「<ph name="USER_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="5120334927898581447">他の Google サービスにログインしたときに Chrome にログインする</translation>
 <translation id="5126049312684316860">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します</translation>
@@ -506,6 +508,7 @@
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
 <translation id="7496017508659652909">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオンになっています。</translation>
 <translation id="7514258452813684157">Google Updater サービス</translation>
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -538,6 +541,7 @@
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7825851276765848807">原因不明のエラーによりインストールに失敗しました。Google Chrome をもう一度ダウンロードしてください。</translation>
+<translation id="7826342993930002256">あなたの Chrome をいつでもどこでも</translation>
 <translation id="7827099906024714326">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7872446069773932638">ダウンロードしています... 残り <ph name="SECONDS" /> 秒です</translation>
@@ -624,6 +628,7 @@
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8948460679427074738">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
+<translation id="8958307504142971576">Chrome で新機能をご利用いただけるようになりました</translation>
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するため、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8992769679401294069">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>

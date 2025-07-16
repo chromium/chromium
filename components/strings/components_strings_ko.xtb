@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">금속(유광)</translation>
 <translation id="1070901266639972381">밤</translation>
 <translation id="1073690811593784042">유리(컬러)</translation>
+<translation id="1074287282535157335">할부 4회 결제 또는 월별 결제(자격 요건에 따라 다름)</translation>
 <translation id="1074497978438210769">주의 요함</translation>
 <translation id="1074779248866616641">결과</translation>
 <translation id="1075364221219156102">패스키 사용</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">강력한 비밀번호 추천...</translation>
 <translation id="2102495993840063010">Android 앱</translation>
 <translation id="2102519472192754194">웹브라우저</translation>
+<translation id="2103210856015238101">터치하여 입력할 수 있는 포인트 카드가 전체 높이로 열렸습니다.</translation>
 <translation id="2105838220373099643">롤플레잉 게임</translation>
 <translation id="2107021941795971877">인쇄 지지대</translation>
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3190736958609431397">추적 취소</translation>
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />의 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">사용자가 현재 이 기기를 사용 중인지 확인을 요청할 수 있음</translation>
 <translation id="3201482403106004262">설문조사에 오류가 발생했습니다.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3965672182149944205">주소를 저장하시겠습니까?</translation>
 <translation id="3966044442021752214">제품 안전</translation>
+<translation id="396761677631735618">터치하여 입력할 수 있는 포인트 카드가 절반 높이로 열렸습니다.</translation>
 <translation id="3969869202926863008">로컬 네트워크 액세스</translation>
 <translation id="3970239200223030389">발행일</translation>
 <translation id="397105322502079400">계산 중...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">사이트 설정</translation>
 <translation id="4169189393773057143">Google 월렛에서 포인트 카드를 관리하거나 추천을 사용 중지하세요.</translation>
 <translation id="4169535189173047238">허용 안함</translation>
+<translation id="4170851022123611628">포인트 카드 목록이 닫혔습니다.</translation>
 <translation id="4171400957073367226">잘못된 인증 서명입니다.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">열쇠 및 자물쇠</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{그 외 <ph name="ITEM_COUNT" />개 항목}other{그 외 <ph name="ITEM_COUNT" />개 항목}}</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4177501066905053472">광고 주제</translation>
+<translation id="4178863275556660738">카드 이외의 결제 수단으로 결제</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
 <translation id="4190446002599583608">AI 기반 방문 기록 검색</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
 <translation id="4493480324863638523">잘못된 URL입니다. URL에는 표준 스키마가 있어야 합니다(예: http://example.com 또는 https://example.com).</translation>
 <translation id="4494323206460475851">설정에서 광고 주제를 확인하고 사이트와 공유하길 원하지 않는 주제를 차단할 수 있습니다. Chrome에서는 4주가 지난 광고 주제를 자동 삭제합니다.</translation>
+<translation id="4497010149473852018">터치하여 입력할 수 있는 포인트 카드입니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="4500587658229086076">안전하지 않은 콘텐츠</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> 사용자</translation>
 <translation id="450602096898954067">이 기능의 개선을 위해 인적 검토자가 데이터를 확인할 수도 있습니다.</translation>

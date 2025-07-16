@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} password}one{{count} password}other{{count} na password}}</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
+<translation id="1287229685519872919">Data sa Google Workspace</translation>
 <translation id="1291506870746876680">Mare-reset sa naka-off ang mga pahintulot sa <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> kapag umalis ka sa site na ito.</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296581780163690620">I-download ang file? (<ph name="FILE_SIZE" />)</translation>
@@ -157,6 +158,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 address}one{# address}other{# na address}}</translation>
 <translation id="1605405588277479165">Naka-off - Hindi inirerekomenda</translation>
 <translation id="1605658421715042784">Kopyahin ang Larawan</translation>
+<translation id="1606899876897213121">Isara ang buod ng kamakailang aktibidad</translation>
 <translation id="1612754831519568745">Kasalukuyang naka-off ang iyong Ligtas na Pag-browse. Makakuha ng proteksyon mula sa mga mapanganib na site, download, at extension.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Piliin ang “Idagdag sa Google Calendar“ o “Idagdag sa Apple Calendar.“</translation>
@@ -407,6 +409,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2559843230610279254">Grupo ng tab na <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> (na) tab.</translation>
 <translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2579713773888829241">Mga Shared Drive</translation>
+<translation id="2583688836549072561">Grupo ng tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> (na) tab, bagong aktibidad.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Subaybayan ang mga pagbaba ng presyo ng mga produkto</translation>
 <translation id="260378315836159338">Sa itaas ng screen, i-tap ang +</translation>
@@ -572,6 +575,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
 <translation id="3280562213547448728">Paghahanap gamit ang boses</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, bagong aktibidad</translation>
 <translation id="3305294846493618482">higit pa</translation>
 <translation id="3311748811247479259">Naka-off</translation>
 <translation id="3312300514034250578">Pinahusay na Ligtas na Pag-browse</translation>
@@ -714,6 +718,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Isara ang {COUNT} tab}one{Isara ang {COUNT} tab}other{Isara ang {COUNT} na tab}}</translation>
 <translation id="3948600256434252210">Puwede kang mag-swipe pakanan para mag-browse sa Incognito.</translation>
+<translation id="3949712484278252781">Hindi susuriin ng mga taong tagasuri o gagamitin para pahusayin ang mga generative AI model ang mga pakikipag-usap mo sa Gemini o ang iyong <ph name="GOOGLE_WORKSPACE_DATA" />.</translation>
 <translation id="3950479158728806902">Awtomatikong gumawa ng passkey para mas mabilis na makapag-sign in</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3955740319737378355">Tapos na</translation>
@@ -1602,7 +1607,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
 <translation id="7417689656810783109">I-rename ang Grupo</translation>
-<translation id="7418703176995102827">Hindi susuriin ng mga taong tagasuri o gagamitin para mapahusay ang mga generative AI model ang iyong mga pag-uusap sa Gemini o ang data mo sa Google Workspace.</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>
 <translation id="7425346204213733349">Hindi na masi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password, at iba pang setting. Gayunpaman, mananatiling naka-store sa Google account mo ang iyong kasalukuyang data.</translation>
@@ -1635,6 +1639,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7512909159512473473">Ilagay ang passphrase…</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514530647142300459">Patuloy na gamitin ang mga password sa iyong Google Account na <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Impormasyon tungkol sa iyong lokasyon</translation>
 <translation id="7522948500476882302">Kapag nag-download ka ng file, piliin kung awtomatiko itong ide-delete sa loob ng 1 buwan</translation>
 <translation id="7524055474074101597">I-access ang iyong mga password at higit pa sa mga app.</translation>
 <translation id="75362970626182391">Bagong Grupo ng Tab</translation>
@@ -1643,11 +1648,13 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
+<translation id="7566349809380613217">Buksan ang <ph name="GROUP_TITLE" />, naka-share na grupo ng <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Naka-hide ang mga bookmark</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
 <translation id="7582666837709186351">Isalin ang text sa iyong mga larawan o sa paligid mo gamit ang iyong camera.</translation>
 <translation id="7582857256643797524">Naka-enable ang setting na ito sa iyong device</translation>
 <translation id="7583004045319035904">Gamitin ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para i-unlock ang iyong mga tab na Incognito.</translation>
+<translation id="7588149553568293500">Matuto tungkol sa iyong mga pagpipilian.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Isara ang {COUNT} hindi aktibong tab?}one{Isara ang {COUNT} hindi aktibong tab?}other{Isara ang {COUNT} na hindi aktibong tab?}}</translation>
 <translation id="7598439272585186139">Magkaroon ng higit pang seguridad</translation>
 <translation id="7600965453749440009">Huwag isalin kailanman ang <ph name="LANGUAGE" /></translation>
@@ -1907,7 +1914,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8560253818350321773">Unang ipakita ang mga item na madalas gamitin.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opsyon sa password ang available sa itaas ng iyong keyboard.}one{{count} opsyon sa password ang available sa itaas ng iyong keyboard.}other{{count} na opsyon sa password ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="8564894539416715395">Bagong page ng tab</translation>
-<translation id="8569414323292250522">Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. Alamin ang tungkol sa iyong mga pagpipilian. Naka-store din sa iyong aktibidad ang impormasyon tungkol sa lokasyon mo.</translation>
 <translation id="8569721750632860947">Anong URL ang gusto mong idagdag sa iyong listahan ng babasahin?</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
 <translation id="8577056989960190117">I-autofill ang taon ng pag-expire ng <ph name="YEAR" /></translation>
@@ -2052,6 +2058,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9066097352053395362">I-hide ang I-edit ang Bookmark</translation>
 <translation id="9070824521421603770">Masa-sign out ka at isasara ang mga tab</translation>
 <translation id="9072837124205571418">Mga grupo ng tab mula sa lahat ng device</translation>
+<translation id="9075970015528364598">Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. <ph name="LEARN_ABOUT_CHOICES" /> Sino-store din ang <ph name="INFO_ABOUT_LOCATION" /> kasama ng iyong aktibidad.</translation>
 <translation id="9081058212938299310">I-update ang password para sa <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Mayroon kang {count} mahinang password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} mahinang password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na mahinang password na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>

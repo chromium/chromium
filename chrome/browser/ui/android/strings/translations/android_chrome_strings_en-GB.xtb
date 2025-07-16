@@ -108,6 +108,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1419753403124156396">Restart Chrome?</translation>
 <translation id="1428770807407000502">Turn off sync?</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1433478348197382180">Reading mode</translation>
 <translation id="1435593198351412143">Automatically open PDFs</translation>
 <translation id="1437543266176261764">Running in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
@@ -1167,6 +1168,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6255809143828972562">With tools from Chrome, you can browse safely and stay in control</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6264485186158353794">Back to safety</translation>
+<translation id="6267063201726531683">Reading mode bottom sheet</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6284472661216707937">Passwords on all your devices closed</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">金属（光沢）</translation>
 <translation id="1070901266639972381">夜間</translation>
 <translation id="1073690811593784042">ガラス（カラー）</translation>
+<translation id="1074287282535157335">4 回払いまたは毎月の分割払い（利用条件があります）</translation>
 <translation id="1074497978438210769">保護されていない通信</translation>
 <translation id="1074779248866616641">結果</translation>
 <translation id="1075364221219156102">パスキーを使用する</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">安全なパスワードを自動生成…</translation>
 <translation id="2102495993840063010">Android アプリ</translation>
 <translation id="2102519472192754194">ウェブブラウザ</translation>
+<translation id="2103210856015238101">タップ操作で入力できるポイントカードが画面全体に表示されています。</translation>
 <translation id="2105838220373099643">ロールプレイング ゲーム</translation>
 <translation id="2107021941795971877">印刷サポート</translation>
 <translation id="2108755909498034140">パソコンを再起動する</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
 <translation id="3201482403106004262">アンケートでエラーが発生しました。</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">リーダーモード</translation>
 <translation id="3965672182149944205">住所を保存しますか？</translation>
 <translation id="3966044442021752214">製品の安全性</translation>
+<translation id="396761677631735618">タップ操作で入力できるポイントカードが画面の下半分に表示されています。</translation>
 <translation id="3969869202926863008">ローカル ネットワークへのアクセス</translation>
 <translation id="3970239200223030389">発行日</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4169189393773057143">Google ウォレットでポイントカードを管理するか、提案をオフにしてください</translation>
 <translation id="4169535189173047238">許可しない</translation>
+<translation id="4170851022123611628">ポイントカードのリストは閉じています。</translation>
 <translation id="4171400957073367226">確認用の署名に問題があります</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">鍵、鍵関連サービス</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{他 <ph name="ITEM_COUNT" /> 件のアイテム}other{他 <ph name="ITEM_COUNT" /> 件のアイテム}}</translation>
 <translation id="4176463684765177261">停止中</translation>
 <translation id="4177501066905053472">広告のトピック</translation>
+<translation id="4178863275556660738">カード以外のお支払い方法で支払う</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">価格トラッキングを停止</translation>
 <translation id="4190446002599583608">AI を活用した履歴検索</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
 <translation id="4494323206460475851">設定で広告のトピックを確認して、ウェブサイトと共有したくないトピックをブロックできます。Chrome では、4 週間以上経過した広告のトピックは自動削除されます。</translation>
+<translation id="4497010149473852018">タップ操作で入力できるポイントカードが表示されています。キーボードは非表示です。</translation>
 <translation id="4500587658229086076">安全でないコンテンツ</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> をお試し</translation>
 <translation id="450602096898954067">この機能を改善するため、トレーニングを受けたレビュアーがデータを確認することがあります</translation>
@@ -3548,6 +3555,7 @@
 <translation id="6970885655016700774">布（アーカイバル）</translation>
 <translation id="6971439137020188025">スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="6972629891077993081">HID デバイス</translation>
+<translation id="6972867931824045907">クリップボードを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="6973656660372572881">固定プロキシ サーバーと .pac スクリプト URL の両方が指定されています。</translation>
 <translation id="6973988895180423160">3.5x5 インチ（L 判）</translation>
 <translation id="6978121630131642226">検索エンジン</translation>

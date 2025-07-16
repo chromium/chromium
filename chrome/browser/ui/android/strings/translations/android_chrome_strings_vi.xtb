@@ -108,6 +108,7 @@
 <translation id="1419753403124156396">Khởi động lại Chrome?</translation>
 <translation id="1428770807407000502">Tắt tính năng đồng bộ hoá?</translation>
 <translation id="1430915738399379752">In</translation>
+<translation id="1433478348197382180">Chế độ đọc</translation>
 <translation id="1435593198351412143">Tự động mở tệp PDF</translation>
 <translation id="1437543266176261764">Chạy trong <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
@@ -719,6 +720,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4306489587293957491">Nhập</translation>
 <translation id="4307992518367153382">Cơ bản</translation>
 <translation id="4311652497846705514">Mở tệp PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Có thể là thông báo rác}other{Có thể là thông báo rác (#)}}</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
 <translation id="4326079409704643112">Xác minh danh tính của bạn để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
 <translation id="433213510553688132">Đang theo dõi...</translation>
@@ -1057,6 +1059,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="580893287573699959">Quản lý các chủ đề và trang web mà bạn quan tâm</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# giờ trước}other{# giờ trước}}</translation>
 <translation id="5810288467834065221">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Hiện thông báo}other{Hiện thông báo}}</translation>
 <translation id="5814749351757353073">Cập nhật thông tin với các trang web yêu thích của bạn</translation>
 <translation id="5823093032261493462">Bạn vẫn muốn tải "<ph name="FILE_NAME" />" xuống từ <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Bạn có thể xoá dữ liệu trong phần Cài đặt của Chrome</translation>
@@ -1167,6 +1170,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6255809143828972562">Với các công cụ của Chrome, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6264485186158353794">Quay lại trang an toàn</translation>
+<translation id="6267063201726531683">Bảng chế độ đọc ở dưới cùng</translation>
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6284472661216707937">Bảng "Mật khẩu trên tất cả thiết bị của bạn" đã đóng</translation>

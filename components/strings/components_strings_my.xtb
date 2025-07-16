@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">သတ္တု (တောက်ပြောင်)</translation>
 <translation id="1070901266639972381">ည</translation>
 <translation id="1073690811593784042">မှန် (အရောင်)</translation>
+<translation id="1074287282535157335">၄ ကြိမ် (သို့) လစဉ် ငွေပေးချေနိုင်သည် (သတ်မှတ်ချက်ပြည့်မီမှုပေါ် မူတည်သည်)</translation>
 <translation id="1074497978438210769">လုံခြုံမှုမရှိပါ</translation>
 <translation id="1074779248866616641">ရလဒ်</translation>
 <translation id="1075364221219156102">‘လျှို့ဝှက်ကီး’ သုံးရန်</translation>
@@ -657,6 +658,7 @@
 <translation id="2102134110707549001">ခိုင်မာသည့် စကားဝှက် အကြံပြုရန်…</translation>
 <translation id="2102495993840063010">Android အက်ပ်များ</translation>
 <translation id="2102519472192754194">ဝဘ်ဘရောင်ဇာ</translation>
+<translation id="2103210856015238101">ထိရုံဖြင့် ဖြည့်၍ရနိုင်သော ဖောက်သည်ကတ်များကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်။</translation>
 <translation id="2105838220373099643">သရုပ်ဆောင်တင်ဆက်မှုဂိမ်း</translation>
 <translation id="2107021941795971877">ပုံနှိပ်မှုဆိုင်ရာ အကူအညီများ</translation>
 <translation id="2108755909498034140">သင်၏ကွန်ပျူတာကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
@@ -1298,6 +1300,7 @@
 <translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
 <translation id="3190736958609431397">မစောင့်ကြည့်ရန်</translation>
 <translation id="3194737229810486521"><ph name="URL" /> သည် ဒေတာများကို သင်၏စက်တွင် အမြဲတမ်းသိုလှောင်လိုသည်</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ရှိ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="3201482403106004262">စစ်တမ်းတွင် အမှားဖြစ်သွားသည်။</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">စာဖတ်သူ မုဒ်</translation>
 <translation id="3965672182149944205">လိပ်စာ သိမ်းမလား။</translation>
 <translation id="3966044442021752214">ထုတ်ကုန်ဘေးကင်းလုံခြုံမှု</translation>
+<translation id="396761677631735618">ထိရုံဖြင့် ဖြည့်၍ရနိုင်သော ဖောက်သည်ကတ်များကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်။</translation>
 <translation id="3969869202926863008">အိမ်တွင်းကွန်ရက် သုံးခွင့်</translation>
 <translation id="3970239200223030389">ထုတ်ပေးသည့် ရက်စွဲ</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
 <translation id="4169189393773057143">Google Wallet တွင် ဖောက်သည်ကတ်များကို စီမံပါ (သို့) ဤအကြံပြုချက်များကို ပိတ်ပါ</translation>
 <translation id="4169535189173047238">ခွင့်မပြုပါ</translation>
+<translation id="4170851022123611628">ဖောက်သည်ကတ်စာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="4171400957073367226">ဆိုးရွားသည့် အတည်ပြု လက်မှတ်</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">သော့နှင့် သော့ပြင်</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{နောက်ထပ် <ph name="ITEM_COUNT" /> ခု}other{နောက်ထပ် <ph name="ITEM_COUNT" /> ခု}}</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
 <translation id="4177501066905053472">ကြော်ငြာအကြောင်းအရာများ</translation>
+<translation id="4178863275556660738">ကတ်မဟုတ်သော ငွေပေးချေနည်းလမ်းများဖြင့် ပေးချေခြင်း</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ဈေးနှုန်း မစောင့်ကြည့်ရန်</translation>
 <translation id="4190446002599583608">AI ဖြင့် ပံ့ပိုးထားသော မှတ်တမ်းရှာဖွေမှု</translation>
@@ -2095,6 +2101,7 @@
 <translation id="449126573531210296">စင့်ခ်လုပ်ထားသော စကားဝှက်များကို သင့် Google Account ဖြင့် အသွင်ဝှက်ရန်</translation>
 <translation id="4493480324863638523">URL မမှန်ကန်ပါ။ URL တွင် စံစနစ်တစ်ခု ရှိရမည်၊ ဥပမာ e.g http://example.com သို့မဟုတ် https://example.com။</translation>
 <translation id="4494323206460475851">သင်၏ ဆက်တင်များတွင် ကြော်ငြာအကြောင်းအရာများကို ကြည့်၍ ဝဘ်ဆိုက်များနှင့် မမျှဝေလိုသောအရာများကို ပိတ်ထားနိုင်သည်။ Chrome ကလည်း ၄ ပတ်ထက်ကျော်သော ကြော်ငြာအကြောင်းအရာများကို အလိုအလျောက် ဖျက်သည်။</translation>
+<translation id="4497010149473852018">ထိရုံဖြင့် ဖြည့်၍ရနိုင်သော ဖောက်သည်ကတ်များ။ ကီးဘုတ် ဖျောက်ထားသည်။</translation>
 <translation id="4500587658229086076">လုံခြုံမှုမရှိသည့် အကြောင်းအရာ</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> မှ ပုဂ္ဂိုလ်များ</translation>
 <translation id="450602096898954067">ဤဝန်ဆောင်မှု ပိုကောင်းအောင်လုပ်ရန်အတွက် ကျွမ်းကျင်သည့် စိစစ်သူများက ဒေတာများကို မြင်နိုင်သည်</translation>

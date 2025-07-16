@@ -2116,6 +2116,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2436302465999055995">Jadikan <ph name="LACROS_NAME" /> sebagai satu-satunya browser yang tersedia (belum diimplementasikan)</translation>
 <translation id="2439187682308339104">Jangan izinkan situs apa pun meminta akses ke perangkat HID melalui WebHID API</translation>
 <translation id="2439733504887695659">Mengaktifkan penutupan notifikasi sandi yang telah dibobol untuk kredensial yang dimasukkan</translation>
+<translation id="2446029789419870019">Izinkan penggunaan fitur dan peningkatan kualitas model AI</translation>
 <translation id="2446244536806499267">Jangan menganggap pengguna sebagai tidak ada aktivitas saat audio diputar</translation>
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
@@ -2306,6 +2307,7 @@ Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinona
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
+<translation id="2571821662934804440">Izinkan penggunaan fitur tanpa meningkatkan kualitas model AI</translation>
 <translation id="2573850437942404034">Jangan izinkan</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
 <translation id="25765864042030871">Pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> tidak digunakan lagi. Diaktifkan atau tidaknya pengendali tersebut bergantung pada <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Saat ini, pengendali tersebut diizinkan oleh kebijakan secara default. Pada masa mendatang, pengendali peristiwa akan secara bertahap tidak lagi diizinkan secara default, dan situs harus secara eksplisit mengaktifkannya menggunakan header <ph name="PERMISSIONS_POLICY_NAME" />. Kebijakan perusahaan ini dapat digunakan untuk memilih tidak mengikuti penghentian bertahap ini dengan memaksa setelan default tetap aktif.
@@ -3003,6 +3005,7 @@ Jika disetel ke Nonaktif atau tidak disetel, kebijakan ini tidak akan memicu pen
 Laporan berisi status dan informasi penggunaan profil, termasuk tetapi tidak terbatas pada versi OS, versi browser, ekstensi yang diinstal, dan kebijakan yang berlaku.
 
 Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation>
+<translation id="3062559845875011810">Jangan izinkan fitur</translation>
 <translation id="3063302084011279315">Nonaktifkan Screencast</translation>
 <translation id="3063307261083019730">Larang halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> disimpan di back-forward cache.</translation>
 <translation id="3064530882228745118">Gunakan pencarian CNAME selama autentikasi Kerberos</translation>
@@ -4387,6 +4390,19 @@ Saat kebijakan ini disetel ke:
 * Filter konten khusus dewasa dari situs, situs pornografi akan difilter
 
 Kebijakan ini berlaku untuk URL yang dibuka pengguna dan untuk iframe. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> lebih diprioritaskan daripada kebijakan ini dan dapat digunakan untuk mengganti verdict dari Google Safe Search API.</translation>
+<translation id="4049706391182174257">Kebijakan ini mengontrol ketersediaan fitur perubahan otomatis sandi <ph name="PRODUCT_NAME" />.
+
+Jika diaktifkan, pengguna dapat memicu proses saat browser mencoba mengubah sandi mereka di situs secara otomatis. Proses ini dikelola oleh AI Generatif. Sandi baru disimpan di pengelola sandi browser.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh konsol Google Admin dan untuk akun Education yang dikelola oleh Google Workspace.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan GenAiDefaultSettings.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Mengaktifkan Penghalangan Jendela</translation>
 <translation id="4052529125939620019">Memuat ekstensi komponen CryptoToken saat browser dimulai</translation>
 <translation id="4053157306171963473">Nonaktifkan pelaporan waktu aktivitas perangkat</translation>
@@ -4713,6 +4729,7 @@ Kebijakan ini digunakan untuk menonaktifkan upgrade otomatis konten campuran di 
       Jika tidak disetel, situs dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="4275048399551500192">Jangan tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="4278656834593750050">Mengaktifkan Suara Pengisian Daya</translation>
+<translation id="4281322231545828290">Aktifkan perubahan otomatis sandi</translation>
 <translation id="4282243913059705499">Selalu tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar</translation>
 <translation id="4285510855646731405">Google Kalender (didukung sejak versi 135)</translation>
 <translation id="4285674129118156176">Mengizinkan pengguna yang tak terafiliasi menggunakan ARC</translation>
@@ -5078,21 +5095,6 @@ Perangkat dianggap terkelola jika OS versi perusahaan digunakan, atau jika ada k
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
 <translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
 <translation id="4559846397119102037">Mengizinkan penggunaan <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">Kebijakan di tingkat perangkat ini mengonfigurasi apakah <ph name="PRODUCT_OS_NAME" /> akan menawarkan algoritma perjanjian kunci pasca-kuantum dalam koneksi TLS, yang algoritma menggunakan standar NIST ML-KEM. Sebelum <ph name="PRODUCT_OS_NAME" /> 131, algoritma yang digunakan adalah Kyber, yang merupakan hasil iterasi draf awal dari algoritma standar. Dengan digunakannya algoritma ini, server pendukung dapat melindungi traffic pengguna agar tidak didekripsi oleh komputer kuantum pada lain waktu.
-
-Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan menawarkan perjanjian kunci pasca-kuantum dalam koneksi TLS. Traffic pengguna akan dilindungi dari komputer kuantum saat berkomunikasi dengan server yang kompatibel.
-
-Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_OS_NAME" /> tidak akan menawarkan perjanjian kunci pasca-kuantum dalam koneksi TLS. Traffic pengguna tidak akan dilindungi dari komputer kuantum.
-
-Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan mengikuti proses peluncuran default untuk menawarkan perjanjian kunci pasca-kuantum.
-
-Penawaran untuk menggunakan algoritma Kyber kompatibel dengan versi lama. Server TLS dan middleware jaringan yang ada akan disetel untuk mengabaikan opsi baru ini dan tetap memilih opsi sebelumnya.
-
-Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi saat ditawarkan opsi baru ini. Misalnya, perangkat mungkin akan berhenti terhubung jika diberikan opsi yang tidak dikenal atau jika pesan yang dihasilkan jumlahnya lebih besar. Perangkat tersebut belum siap digunakan untuk pasca-kuantum dan akan mengganggu proses transisi ke algoritma pasca-kuantum yang dilakukan oleh perusahaan. Jika hal tersebut terjadi, administrator harus menghubungi vendor untuk memperbaikinya.
-
-Kebijakan ini merupakan tindakan sementara dan akan dihapus tidak lama setelah <ph name="PRODUCT_OS_NAME" /> versi 141 dirilis. Kebijakan ini mungkin akan disetel ke Aktif supaya Anda dapat melakukan pengujian untuk mendeteksi masalah, dan mungkin akan disetel ke Nonaktif saat masalah sedang diselesaikan.
-
-Jika kebijakan ini dan kebijakan PostQuantumKeyAgreementEnabled disetel, kebijakan ini akan diprioritaskan.</translation>
 <translation id="4561560385824323005">Mengizinkan pengguna memilih tata letak desktop yang dikonfigurasi sebelumnya untuk dimuat</translation>
 <translation id="4561940244682063697">Jangan izinkan situs meminta pengguna untuk membagikan streaming video dari layar mereka</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>
@@ -10507,19 +10509,6 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_S
       Kebijakan ini dihapus di Chrome 88 dan akan diabaikan jika disetel.
 
       Buka https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8137301668000005268">Kebijakan ini mengonfigurasi apakah <ph name="PRODUCT_NAME" /> akan menawarkan algoritma perjanjian kunci pasca-kuantum dalam koneksi TLS, yang menggunakan algoritma standar NIST ML-KEM. Sebelum <ph name="PRODUCT_NAME" /> 131, algoritma yang digunakan adalah Kyber, yang merupakan hasil iterasi draf awal dari algoritma standar. Dengan digunakannya algoritma ini, server pendukung dapat melindungi traffic pengguna agar tidak didekripsi oleh komputer kuantum pada lain waktu.
-
-Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menawarkan perjanjian kunci pasca-kuantum dalam koneksi TLS. Traffic pengguna akan dilindungi dari komputer kuantum saat berkomunikasi dengan server yang kompatibel.
-
-Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menawarkan perjanjian kunci pasca-kuantum dalam koneksi TLS. Traffic pengguna tidak akan dilindungi dari komputer kuantum.
-
-Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk menawarkan perjanjian kunci pasca-kuantum.
-
-Penawaran perjanjian kunci pasca-kuantum kompatibel dengan versi lama. Server TLS dan middleware jaringan yang ada akan disetel untuk mengabaikan opsi baru ini dan tetap memilih opsi sebelumnya.
-
-Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi saat ditawarkan opsi baru ini. Misalnya, perangkat mungkin akan berhenti terhubung jika diberikan opsi yang tidak dikenal atau jika pesan yang dihasilkan jumlahnya lebih besar. Perangkat tersebut belum siap digunakan untuk pasca-kuantum dan akan mengganggu proses transisi ke algoritma pasca-kuantum yang dilakukan oleh perusahaan. Jika hal tersebut terjadi, administrator harus menghubungi vendor untuk memperbaikinya.
-
-Kebijakan ini merupakan tindakan sementara dan akan dihapus tidak lama setelah <ph name="PRODUCT_NAME" /> versi 141 dirilis. Kebijakan ini mungkin akan disetel ke Aktif supaya Anda dapat melakukan pengujian untuk mendeteksi masalah, dan mungkin akan disetel ke Nonaktif saat masalah sedang diselesaikan.</translation>
 <translation id="8137443729340035928">Tanyakan kepada pengguna saat login apakah ingin memulihkan sesi terakhir.</translation>
 <translation id="8141795997560411818">Kebijakan ini tidak mencegah pengguna menggunakan aplikasi Google Drive Android. Jika ingin mencegah akses ke Google Drive, sebaiknya Anda tidak mengizinkan penginstalan aplikasi Google Drive Android.</translation>
 <translation id="8142894094385450823">Menetapkan lokal yang direkomendasikan untuk sesi terkelola</translation>

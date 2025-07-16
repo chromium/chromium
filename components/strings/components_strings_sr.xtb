@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Последњих 30 дана</translation>
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core вам омогућава да управљате смерницама прегледача, апликацијама и додацима из клауда</translation>
 <translation id="2697248912349197812">Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Подмени је доступан. Користите <ph name="SHORTCUT" /> да бисте дошли до додатних опција.</translation>
 <translation id="2701514975700770343">Са одштампаном страном надоле</translation>
@@ -1904,6 +1905,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{још <ph name="ITEM_COUNT" /> ставка}one{још <ph name="ITEM_COUNT" /> ставка}few{још <ph name="ITEM_COUNT" /> ставке}other{још <ph name="ITEM_COUNT" /> ставки}}</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4177501066905053472">Теме огласа</translation>
+<translation id="4178863275556660738">Плаћајте помоћу начина плаћања који нису картице</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Опозови праћење цене</translation>
 <translation id="4190446002599583608">Претрага историје, коју омогућава AI</translation>
@@ -2667,6 +2669,7 @@
 <translation id="5466018172325111652">Нисте добили кôд? <ph name="BEGIN_LINK" />Преузмите нов кôд<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Понови измену</translation>
 <translation id="5472588168895083535">Праћење руку је блокирано</translation>
+<translation id="5479505548832623900">Додатак ће их вероватно игнорисати.</translation>
 <translation id="547963486735802022">Пробајте да поново пренесете фајлове</translation>
 <translation id="5481076368049295676">Овај садржај ће покушати да инсталира опасан софтвер на уређај који ће украсти или обрисати ваше податке. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Уређење прозора и картица</translation>
@@ -3140,6 +3143,7 @@
 <translation id="6284449872909111707">Размена текстуалних и тренутних порука</translation>
 <translation id="6284517535531159884">Тип почетне вредности варијација</translation>
 <translation id="6287197303017372967">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
+<translation id="6288559570252410796">Питајте режим Google вештачке интелигенције</translation>
 <translation id="628877850550444614">Пронађен је попуст</translation>
 <translation id="6289939620939689042">Боја странице</translation>
 <translation id="6292819926564202163">Ваш претраживач у Chrome-у</translation>
@@ -3917,6 +3921,7 @@
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569952961197462199">Желите ли да уклоните кредитну картицу из Chrome-а?</translation>
 <translation id="7569983096843329377">Црна</translation>
+<translation id="7571813784389228510">Google AI режим</translation>
 <translation id="7574998639136359461">Опрема за зимске спортове</translation>
 <translation id="7575207903026901870">Дугме Уклони предлог, притисните Enter да бисте уклонили овај предлог</translation>
 <translation id="7575800019233204241">„Веза није приватна“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ или „Грешка са SSL сертификатом“</translation>
@@ -4354,6 +4359,7 @@
 <translation id="831997045666694187">Увече</translation>
 <translation id="8321448084834652864">Можете да промените претраживач у сваком тренутку у подешавањима Chromium-а.</translation>
 <translation id="8321476692217554900">обавештења</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Enter да бисте питали режим Google вештачке интелигенције</translation>
 <translation id="8322402665880479974">Кревети и узглавља</translation>
 <translation id="8323505966575306467">Додајте још заштите лозинкама</translation>
 <translation id="832547548543012337">Избришите пасош</translation>
@@ -4645,6 +4651,7 @@
 <translation id="883848425547221593">Остали обележивачи</translation>
 <translation id="8842351563145134519">Начини плаћања доступни за унос додиром отворени су до пола висине.</translation>
 <translation id="884264119367021077">Адреса за испоруку</translation>
+<translation id="8849032795302265570">Лако управљајте начином на који запослени прегледају веб</translation>
 <translation id="8849231003559822746">130×180 mm</translation>
 <translation id="884923133447025588">Није пронађен ниједан механизам опозива.</translation>
 <translation id="8849262850971482943">Користите виртуелну картицу ради додатне безбедности</translation>
@@ -4895,6 +4902,7 @@
 <translation id="950926967802086924">Приступни кључ • Google менаџер лозинки</translation>
 <translation id="955429569736351433">ВР је дозвољен</translation>
 <translation id="955627189349169688">Ове смернице можете да онемогућите у <ph name="BEGIN_LINK" />подешавањима Chrome синхронизације<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Дугме за режим вештачке интелигенције, активирајте да бисте питали режим Google вештачке интелигенције</translation>
 <translation id="95721182352849470">Жута 2</translation>
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>

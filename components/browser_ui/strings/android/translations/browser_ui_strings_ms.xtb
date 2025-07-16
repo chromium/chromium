@@ -121,6 +121,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi dibenarkan}}</translation>
 <translation id="2410940059315936967">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Kuki yang ditetapkan oleh laman lain ini dipanggil kuki pihak ketiga.</translation>
+<translation id="2411116727035790889">Hidupkan pintasan</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2434158240863470628">Muat turun selesai: <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Anda membenarkan laman ini menggunakan kuki pihak ketiga secara sementara, bermakna kurang perlindungan penyemakan imbas tetapi ciri laman berkemungkinan besar berfungsi seperti yang dijangkakan. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
@@ -187,6 +188,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3114012059975132928">Pemain video</translation>
 <translation id="3115898365077584848">Tunjukkan Maklumat</translation>
 <translation id="3123473560110926937">Disekat di sesetengah tapak</translation>
+<translation id="3132996321662585180">Muat semula setiap hari</translation>
 <translation id="3143754809889689516">Mainkan dari permulaan</translation>
 <translation id="3162899666601560689">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingat item dalam troli beli-belah anda</translation>
 <translation id="3165022941318558018">Benarkan laman menggunakan kuki pihak ketiga</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (glossy)</translation>
 <translation id="1070901266639972381">Night</translation>
 <translation id="1073690811593784042">Glass (coloured)</translation>
+<translation id="1074287282535157335">Pay in 4 or monthly (subject to eligibility)</translation>
 <translation id="1074497978438210769">Not secure</translation>
 <translation id="1074779248866616641">Result</translation>
 <translation id="1075364221219156102">Use a passkey</translation>
@@ -656,6 +657,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2102134110707549001">Suggest strong password…</translation>
 <translation id="2102495993840063010">Android apps</translation>
 <translation id="2102519472192754194">Web browsers</translation>
+<translation id="2103210856015238101">Loyalty cards available to be filled on touch opened at full height.</translation>
 <translation id="2105838220373099643">Role-playing games</translation>
 <translation id="2107021941795971877">Print supports</translation>
 <translation id="2108755909498034140">Restart your computer</translation>
@@ -1296,6 +1298,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Can ask to know when you're actively using this device</translation>
 <translation id="3201482403106004262">An error occurred with the survey.</translation>
@@ -1771,6 +1774,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3965672182149944205">Save address?</translation>
 <translation id="3966044442021752214">Product safety</translation>
+<translation id="396761677631735618">Loyalty cards available to be filled on touch opened at half height.</translation>
 <translation id="3969869202926863008">Local network access</translation>
 <translation id="3970239200223030389">Issue date</translation>
 <translation id="397105322502079400">Calculating...</translation>
@@ -1891,6 +1895,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4169189393773057143">Manage loyalty cards or turn these suggestions off in Google Wallet</translation>
 <translation id="4169535189173047238">Don't allow</translation>
+<translation id="4170851022123611628">List of loyalty cards is closed.</translation>
 <translation id="4171400957073367226">Bad verification signature</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Locks and Locksmiths</translation>
@@ -1899,6 +1904,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> more item}other{<ph name="ITEM_COUNT" /> more items}}</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4177501066905053472">Ad topics</translation>
+<translation id="4178863275556660738">Pay with non-card payment methods</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Untrack price</translation>
 <translation id="4190446002599583608">History search, powered by AI</translation>
@@ -2094,6 +2100,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
 <translation id="4493480324863638523">Invalid URL. Must be a URL with a standard scheme, e.g. http://example.com or https://example.com.</translation>
 <translation id="4494323206460475851">You can see ad topics in settings and block the ones that you don’t want shared with sites. Chrome also auto-deletes ad topics that are older than four weeks.</translation>
+<translation id="4497010149473852018">Loyalty cards available to be filled on touch. Keyboard hidden.</translation>
 <translation id="4500587658229086076">insecure content</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> people</translation>
 <translation id="450602096898954067">Data may be seen by trained reviewers to improve this feature</translation>

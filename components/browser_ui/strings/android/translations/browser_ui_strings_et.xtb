@@ -63,6 +63,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="1704230497453185209">Ära luba saitidel esitada heli</translation>
 <translation id="1717218214683051432">Liikumisandurid</translation>
 <translation id="1717996979683942279">Kui see on sisse lülitatud, saavad saidid küsida luba akende haldamiseks kõikidel teie ekraanidel. Kui see on välja lülitatud, ei saa saidid kõikidel teie ekraanidel aknaid hallata.</translation>
+<translation id="1738912554587725807">Uue vahelehe välimuse teema kogude alumine leht</translation>
 <translation id="1743802530341753419">Küsi luba, kui saidid üritavad seadmega ühendust luua (soovitatav)</translation>
 <translation id="1777815584158991902">Avastamisvoo alumine leht</translation>
 <translation id="1779089405699405702">Pildi dekooder</translation>
@@ -186,6 +187,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="3114012059975132928">Videopleier</translation>
 <translation id="3115898365077584848">Kuva teave</translation>
 <translation id="3123473560110926937">Blokeeritud teatud saitidel</translation>
+<translation id="3132996321662585180">Värskendatakse iga päev</translation>
 <translation id="3143754809889689516">Esita algusest</translation>
 <translation id="3162899666601560689">Saidid võivad kasutada küpsisefaile teie sirvimiskogemuse täiustamiseks, näiteks selleks, et hoida teid sisselogituna või jätta meelde teie ostukorvis olevad esemed</translation>
 <translation id="3165022941318558018">Saidil lubatakse kasutada kolmanda osapoole küpsisefaile</translation>
@@ -356,6 +358,7 @@ Täiustatud kaitsega juhitage järgmisi Chrome’i seadeid:
 <translation id="5100237604440890931">Ahendatud – laiendamiseks klõpsake.</translation>
 <translation id="5116239826668864748">Saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes</translation>
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
+<translation id="512938610812707830">Uue vahelehe välimuse teema kogude alumine leht on avatud täiskõrguses</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnalangus avatud vahelehtedel}other{Hinnalangused avatud vahelehtedel}}</translation>
 <translation id="5186036860380548585">Valik on saadaval ekraanikuva ülaosas</translation>
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -108,6 +108,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1419753403124156396">Želite da ponovo pokrenete Chrome?</translation>
 <translation id="1428770807407000502">Želite da isključite sinhronizaciju?</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1433478348197382180">Režim čitanja</translation>
 <translation id="1435593198351412143">Automatski otvaraj PDF-ove</translation>
 <translation id="1437543266176261764">Koristi <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
@@ -719,6 +720,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4306489587293957491">Unesi</translation>
 <translation id="4307992518367153382">Osnovna</translation>
 <translation id="4311652497846705514">Želite da otvorite PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mogući nepoželjan sadržaj}one{Mogući nepoželjan sadržaj (#)}few{Mogući nepoželjan sadržaj (#)}other{Mogući nepoželjan sadržaj (#)}}</translation>
 <translation id="4320177379694898372">Nema internet veze</translation>
 <translation id="4326079409704643112">Da biste koristili i čuvali Chrome podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="433213510553688132">Prati se…</translation>
@@ -1057,6 +1059,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="580893287573699959">Upravljajte temama i pretragama koje vas interesuju</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Pre # sata}one{Pre # sata}few{Pre # sata}other{Pre # sati}}</translation>
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Prikaži obaveštenje}one{Prikaži obaveštenja}few{Prikaži obaveštenja}other{Prikaži obaveštenja}}</translation>
 <translation id="5814749351757353073">Budite u toku sa omiljenim sajtovima</translation>
 <translation id="5823093032261493462">Ipak želite da preuzmete fajl <ph name="FILE_NAME" /> sa domena <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Možete da izbrišete podatke u Chrome podešavanjima</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Метал (сјајен)</translation>
 <translation id="1070901266639972381">Вечер</translation>
 <translation id="1073690811593784042">Стакло (во боја)</translation>
+<translation id="1074287282535157335">Платете на 4 рати или на месечно ниво (подлежи на подобност)</translation>
 <translation id="1074497978438210769">Не е безбедно</translation>
 <translation id="1074779248866616641">Резултат</translation>
 <translation id="1075364221219156102">Користете криптографски клуч</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Предложи силна лозинка…</translation>
 <translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2102519472192754194">Прелистувачи</translation>
+<translation id="2103210856015238101">Картичките за лојалност достапни за пополнување на допир се отворени на целосна висина.</translation>
 <translation id="2105838220373099643">Игри со играње улоги</translation>
 <translation id="2107021941795971877">Поддршка на печатењето</translation>
 <translation id="2108755909498034140">Рестартирајте го компјутерот</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">Мерење реклами</translation>
 <translation id="3190736958609431397">Отследи</translation>
 <translation id="3194737229810486521"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да прашува за да знае кога активно го користите уредов</translation>
 <translation id="3201482403106004262">Се јави грешка при вчитувањето на анкетата.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">Режим на читач</translation>
 <translation id="3965672182149944205">Да се зачува адресата?</translation>
 <translation id="3966044442021752214">Безбедност на производот</translation>
+<translation id="396761677631735618">Картичките за лојалност достапни за пополнување на допир се отворени на половина висина.</translation>
 <translation id="3969869202926863008">Пристап на локалната мрежа</translation>
 <translation id="3970239200223030389">Датум на издавање</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4169189393773057143">Управувајте со картичките за лојалност или исклучете ги предлозиве во Google Wallet</translation>
 <translation id="4169535189173047238">Не дозволувај</translation>
+<translation id="4170851022123611628">Списокот со картички за лојалност е затворен.</translation>
 <translation id="4171400957073367226">Лош потпис за проверка</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Брави и бравари</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Уште <ph name="ITEM_COUNT" /> ставка}one{Уште <ph name="ITEM_COUNT" /> ставка}other{Уште <ph name="ITEM_COUNT" /> ставки}}</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4177501066905053472">Теми на реклами</translation>
+<translation id="4178863275556660738">Плаќајте со начини на плаќање што не се картичка</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Отследи ја цената</translation>
 <translation id="4190446002599583608">Пребарување на историјата, овозможено од AI</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Шифрирај синхронизирани лозинки со сметката на Google</translation>
 <translation id="4493480324863638523">Неважечка URL-адреса. Мора да биде URL-адреса со стандардна шема, на пример, http://example.com или https://example.com.</translation>
 <translation id="4494323206460475851">Може да ги видите темите на рекламите во поставките и да ги блокирате оние што не сакате да се споделуваат со сајтовите. Chrome исто така автоматски ги брише темите на реклами што се постари од 4 седмици.</translation>
+<translation id="4497010149473852018">Картичките за лојалност се достапни за пополнување на допир. Тастатурата е скриена.</translation>
 <translation id="4500587658229086076">небезбедни содржини</translation>
 <translation id="4504850595255879616">Лица во <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">За да се подобри функцијава, податоците можеби ќе ги гледаат обучени рецензенти</translation>

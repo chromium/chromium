@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (blankt)</translation>
 <translation id="1070901266639972381">Nat</translation>
 <translation id="1073690811593784042">Glas (farvet)</translation>
+<translation id="1074287282535157335">Betal i 4 rater eller månedligt (med forbehold for kvalificering)</translation>
 <translation id="1074497978438210769">Ikke sikker</translation>
 <translation id="1074779248866616641">Resultat</translation>
 <translation id="1075364221219156102">Brug en adgangsnøgle</translation>
@@ -656,6 +657,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2102134110707549001">Foreslå stærk adgangskode…</translation>
 <translation id="2102495993840063010">Android-apps</translation>
 <translation id="2102519472192754194">Webbrowsere</translation>
+<translation id="2103210856015238101">Loyalitetskort, der kan udfyldes ved berøring, er åbnet i fuld højde.</translation>
 <translation id="2105838220373099643">Rollespil</translation>
 <translation id="2107021941795971877">Understøttelse til udskrivning</translation>
 <translation id="2108755909498034140">Genstart computeren</translation>
@@ -1296,6 +1298,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Websitet kan anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed</translation>
 <translation id="3201482403106004262">Der opstod en fejl med undersøgelsen.</translation>
@@ -1771,6 +1774,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3963721102035795474">Læser-tilstand</translation>
 <translation id="3965672182149944205">Vil du gemme adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhed</translation>
+<translation id="396761677631735618">Loyalitetskort, der kan udfyldes ved berøring, er åbnet i halv højde.</translation>
 <translation id="3969869202926863008">Lokal netværksadgang</translation>
 <translation id="3970239200223030389">Udstedelsesdato</translation>
 <translation id="397105322502079400">Beregner...</translation>
@@ -1891,6 +1895,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4169189393773057143">Administrer loyalitetskort, eller deaktiver disse forslag i Google Wallet</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
+<translation id="4170851022123611628">Listen over loyalitetskort er lukket.</translation>
 <translation id="4171400957073367226">Ugyldig verifikationssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Låse og låsesmede</translation>
@@ -1899,6 +1904,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> element mere}one{<ph name="ITEM_COUNT" /> element mere}other{<ph name="ITEM_COUNT" /> elementer mere}}</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
+<translation id="4178863275556660738">Betal med betalingsmetoder, som ikke er betalingskort</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Hold ikke længere øje med prisen</translation>
 <translation id="4190446002599583608">Søgning i historikken ved hjælp af AI</translation>
@@ -2094,6 +2100,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="449126573531210296">Kryptér synkroniserede adgangskoder med din Google-konto</translation>
 <translation id="4493480324863638523">Webadressen er ugyldig. Webadressen skal indeholde et standardskema, f.eks. http://eksempel.dk eller https://eksempel.dk.</translation>
 <translation id="4494323206460475851">Du kan se annonceemner i indstillingerne og blokere dem, der ikke skal deles med websites. Chrome sletter også automatisk annonceemner, der er mere end 4 uger gamle.</translation>
+<translation id="4497010149473852018">Loyalitetskort, der kan udfyldes ved berøring. Tastaturet er skjult.</translation>
 <translation id="4500587658229086076">usikkert indhold</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" />-personer</translation>
 <translation id="450602096898954067">Dataene kan ses af oplærte kontrollanter med henblik på at forbedre denne funktion</translation>

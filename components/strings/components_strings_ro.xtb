@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (lucios)</translation>
 <translation id="1070901266639972381">Noapte</translation>
 <translation id="1073690811593784042">Sticlă (colorat)</translation>
+<translation id="1074287282535157335">Plătește în patru rate sau lunar (în funcție de eligibilitate)</translation>
 <translation id="1074497978438210769">Nesecurizat</translation>
 <translation id="1074779248866616641">Rezultat</translation>
 <translation id="1075364221219156102">Folosește o cheie de acces</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Sugerează o parolă puternică…</translation>
 <translation id="2102495993840063010">Aplicații Android</translation>
 <translation id="2102519472192754194">Browsere web</translation>
+<translation id="2103210856015238101">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
 <translation id="2105838220373099643">Jocuri de rol</translation>
 <translation id="2107021941795971877">Suporturi de printare</translation>
 <translation id="2108755909498034140">repornește computerul;</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">Cuantificarea anunțurilor</translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Poate solicita permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3201482403106004262">A apărut o eroare legată de sondaj.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">Modul Cititor</translation>
 <translation id="3965672182149944205">Salvezi adresa?</translation>
 <translation id="3966044442021752214">Siguranța produsului</translation>
+<translation id="396761677631735618">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la jumătate din înălțime.</translation>
 <translation id="3969869202926863008">Accesul la rețeaua locală</translation>
 <translation id="3970239200223030389">Data publicării</translation>
 <translation id="397105322502079400">Se calculează...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4169189393773057143">Gestionează cardurile de fidelitate sau dezactivează aceste sugestii în Portofelul Google</translation>
 <translation id="4169535189173047238">Nu permite</translation>
+<translation id="4170851022123611628">Lista cardurilor de fidelitate este închisă.</translation>
 <translation id="4171400957073367226">Semnătură de verificare nevalidă</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Lacăte și lăcătuși</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Încă <ph name="ITEM_COUNT" /> articol}few{Încă <ph name="ITEM_COUNT" /> articole}other{Încă <ph name="ITEM_COUNT" /> de articole}}</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
+<translation id="4178863275556660738">Plătește folosind alte metode de plată decât cardul</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
 <translation id="4190446002599583608">Căutarea în istoric, bazată pe AI</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Criptează parolele sincronizate folosind Contul Google</translation>
 <translation id="4493480324863638523">Adresă URL nevalidă. Trebuie să fie o adresă URL cu schemă standard, de exemplu: http://example.com sau https://example.com.</translation>
 <translation id="4494323206460475851">Poți să vezi subiectele anunțurilor în setări și să le blochezi pe cele care nu dorești să apară pe site-uri. În plus, Chrome șterge automat subiectele anunțurilor mai vechi de patru săptămâni.</translation>
+<translation id="4497010149473852018">Cardurile de fidelitate disponibile pentru completarea la atingere. Tastatura este ascunsă.</translation>
 <translation id="4500587658229086076">Conținut nesecurizat</translation>
 <translation id="4504850595255879616">Persoane de la <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Examinatorii pregătiți pot vedea datele pentru a îmbunătăți această funcție</translation>

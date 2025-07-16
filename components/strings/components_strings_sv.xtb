@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metall (blank)</translation>
 <translation id="1070901266639972381">nattetid</translation>
 <translation id="1073690811593784042">Glas (färgat)</translation>
+<translation id="1074287282535157335">Dela upp betalningen i fyra avbetalningar eller betala månadsvis (om du uppfyller villkoren)</translation>
 <translation id="1074497978438210769">Inte säker</translation>
 <translation id="1074779248866616641">Resultat</translation>
 <translation id="1075364221219156102">Använd en nyckel</translation>
@@ -656,6 +657,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2102134110707549001">Föreslå ett starkt lösenord …</translation>
 <translation id="2102495993840063010">Android-appar</translation>
 <translation id="2102519472192754194">Webbläsare</translation>
+<translation id="2103210856015238101">Tillgängliga stamkundskort vars uppgifter kan fyllas i med ett tryck har öppnats över hela skärmen.</translation>
 <translation id="2105838220373099643">Rollspel</translation>
 <translation id="2107021941795971877">Skriva ut underlag</translation>
 <translation id="2108755909498034140">Starta om datorn</translation>
@@ -1296,6 +1298,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3190736958609431397">Ta bort bevakning</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill lagra data permanent på din enhet</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> på <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Får begära tillstånd att få veta om du använder den här enheten aktivt</translation>
 <translation id="3201482403106004262">Ett fel uppstod med enkäten.</translation>
@@ -1771,6 +1774,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3963721102035795474">Läsarläge</translation>
 <translation id="3965672182149944205">Vill du spara adressen?</translation>
 <translation id="3966044442021752214">Produktsäkerhet</translation>
+<translation id="396761677631735618">Tillgängliga stamkundskort vars uppgifter kan fyllas i med ett tryck har öppnats över halva skärmen.</translation>
 <translation id="3969869202926863008">Tillgång till lokalt nätverk</translation>
 <translation id="3970239200223030389">Datum för utfärdande</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
@@ -1891,6 +1895,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4169189393773057143">Hantera stamkundskort eller inaktivera dessa förslag i Google Wallet</translation>
 <translation id="4169535189173047238">Tillåt inte</translation>
+<translation id="4170851022123611628">Listan över stamkundskort har stängts.</translation>
 <translation id="4171400957073367226">Felaktig verifieringssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Lås och låssmeder</translation>
@@ -1899,6 +1904,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> objekt till}other{<ph name="ITEM_COUNT" /> objekt till}}</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
 <translation id="4177501066905053472">Annonsämnen</translation>
+<translation id="4178863275556660738">Betala med betalningsmetoder som inte är kort</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ta bort prisbevakning</translation>
 <translation id="4190446002599583608">Historiksökning med hjälp av AI</translation>
@@ -2094,6 +2100,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
 <translation id="4493480324863638523">Ogiltig webbadress. Måste vara en webbadress med ett standardprotokoll, t.ex. http://example.com eller https://example.com.</translation>
 <translation id="4494323206460475851">Du kan se annonsämnen i inställningarna och blockera dem som du inte vill ska delas med webbplatser. Chrome raderar även annonsämnen som är äldre än fyra veckor automatiskt.</translation>
+<translation id="4497010149473852018">Tillgängliga stamkundskort vars uppgifter kan fyllas i med ett tryck. Tangentbordet är dolt.</translation>
 <translation id="4500587658229086076">osäkert innehåll</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" />-personer</translation>
 <translation id="450602096898954067">Utbildade granskare kan se data för att förbättra den här funktionen</translation>

@@ -252,6 +252,7 @@
 
 Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chromium у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Сповіщення Chromium зараз вимкнено в налаштуваннях пристрою.</translation>
+<translation id="7195217321165708458">Gemini у Chromium</translation>
 <translation id="7219205286115692265">Відкривайте Chromium швидше з панелі Dock головного екрана iPad.</translation>
 <translation id="7222001353246886083">Шукати фразу "${searchPhrase}" у Chromium</translation>
 <translation id="7228180817326917122">Порада щодо Chromium: виберіть розташування адресного рядка</translation>

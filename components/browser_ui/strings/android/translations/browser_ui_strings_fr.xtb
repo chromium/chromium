@@ -63,6 +63,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1704230497453185209">Ne pas autoriser les sites à lire des sons</translation>
 <translation id="1717218214683051432">Capteurs de mouvement</translation>
 <translation id="1717996979683942279">Lorsque cette option est activée, les sites peuvent demander à gérer les fenêtres sur tous vos écrans. Lorsqu'elle est désactivée, les sites ne peuvent pas gérer les fenêtres sur tous vos écrans.</translation>
+<translation id="1738912554587725807">Bottom sheet des collections de thèmes de l'apparence de la page "Nouvel onglet"</translation>
 <translation id="1743802530341753419">Demander avant d'autoriser les sites à se connecter à un appareil (recommandé)</translation>
 <translation id="1777815584158991902">Bottom sheet du flux Discover</translation>
 <translation id="1779089405699405702">Décodage d'images</translation>
@@ -186,6 +187,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3114012059975132928">Lecteur vidéo</translation>
 <translation id="3115898365077584848">Afficher les informations</translation>
 <translation id="3123473560110926937">Bloqué sur certains sites</translation>
+<translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3143754809889689516">Lire depuis le début</translation>
 <translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
 <translation id="3165022941318558018">Autorisez un site à utiliser des cookies tiers</translation>
@@ -356,6 +358,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5100237604440890931">Réduit – Cliquer pour développer</translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
+<translation id="512938610812707830">Bottom sheet des collections de thèmes de l'apparence de la page "Nouvel onglet" ouverte à pleine hauteur</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix dans les onglets ouverts}one{Baisse de prix dans les onglets ouverts}other{Baisses de prix dans les onglets ouverts}}</translation>
 <translation id="5186036860380548585">Cette option est disponible en haut de l'écran</translation>
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

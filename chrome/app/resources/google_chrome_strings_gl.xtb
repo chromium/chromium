@@ -319,6 +319,7 @@
 <translation id="4895437082222824641">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="4918844574251943176">Copiouse a imaxe</translation>
 <translation id="492720062778050435">Chrome recoméndache revisar esta extensión</translation>
+<translation id="4946912144186040233">Chrome entenderá mellor o contido dos formularios e poderá completalos automaticamente máis rápido. Esta opción de configuración está desactivada.</translation>
 <translation id="4953650215774548573">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="495931528404527476">En Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
@@ -327,6 +328,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
 <translation id="504867494566807945">Abre ligazóns en Chrome desde calquera aplicación. Ademais, o navegador fíxase na barra de tarefas para que poidas acceder a el facilmente.</translation>
+<translation id="5049567194145991071">Ao facer clic en Entendido, poderás gardar e usar os contrasinais e outros elementos da túa Conta de Google sempre que teñas a sesión iniciada en Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome cando inicies sesión noutros servizos de Google</translation>
 <translation id="5126049312684316860">Chrome precargará aínda máis páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
@@ -515,6 +517,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="749228101751499733">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome. <ph name="SHORTCUT" /> pode cambiar a túa configuración dos servizos de Google.</translation>
 <translation id="7496017508659652909">Chrome precarga as páxinas para que navegar e facer buscas sexa máis rápido. <ph name="BEGIN_LINK" />Máis información sobre como precargar páxinas<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome entenderá mellor o contido dos formularios e poderá completalos automaticamente máis rápido. Esta opción de configuración está activada.</translation>
 <translation id="7514258452813684157">Servizo de Google Updater</translation>
 <translation id="7515191208480168435">Podes fixar Google Lens para acceder facilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -547,6 +550,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7808348361785373670">Eliminar de Chrome...</translation>
 <translation id="7825851276765848807">Non se puido efectuar a instalación debido a un erro non especificado. Volve descargar Google Chrome.</translation>
+<translation id="7826342993930002256">Goza de Chrome en todas partes</translation>
 <translation id="7827099906024714326">Chrome necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
 <translation id="7872446069773932638">Descargando… Tempo restante: <ph name="SECONDS" /> s</translation>
@@ -633,6 +637,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chrome recomenda que a quites.</translation>
+<translation id="8958307504142971576">Xa tes máis funcións dispoñibles en Chrome</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8992769679401294069">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>

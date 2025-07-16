@@ -1904,6 +1904,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> element més}other{<ph name="ITEM_COUNT" /> elements més}}</translation>
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4177501066905053472">Temes d'anunci</translation>
+<translation id="4178863275556660738">Paga amb formes de pagament que no siguin targetes</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixa de seguir el preu</translation>
 <translation id="4190446002599583608">Cerca a l'historial, amb tecnologia d'IA</translation>
@@ -3554,6 +3555,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6970885655016700774">Tela (arxiu)</translation>
 <translation id="6971439137020188025">Crea una presentació ràpidament a Presentacions de Google</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
+<translation id="6972867931824045907">Per poder utilitzar el teu porta-retalls, dona accés a Chrome a la <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">S'especifiquen tant els servidors intermediaris fixos com un URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 polzades</translation>
 <translation id="6978121630131642226">Motors de cerca</translation>

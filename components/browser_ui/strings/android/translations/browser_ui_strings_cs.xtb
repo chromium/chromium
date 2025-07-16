@@ -63,6 +63,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
 <translation id="1717218214683051432">Pohybová čidla</translation>
 <translation id="1717996979683942279">Když je tato možnost zapnutá, mohou weby žádat o správu oken na všech vašich displejích. Když je vypnutá, weby okna na všech vašich displejích spravovat nemohou.</translation>
+<translation id="1738912554587725807">Spodní panel se sbírkami motivů pro vzhled stránky Nová karta</translation>
 <translation id="1743802530341753419">Pokud se web bude chtít připojit k zařízení, zobrazit dotaz (doporučeno)</translation>
 <translation id="1777815584158991902">Spodní panel Feed Objevit</translation>
 <translation id="1779089405699405702">Dekodér obrázků</translation>
@@ -186,6 +187,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3114012059975132928">Přehrávač videa</translation>
 <translation id="3115898365077584848">Zobrazit informace</translation>
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
+<translation id="3132996321662585180">Každý den obnovit</translation>
 <translation id="3143754809889689516">Přehrát od začátku</translation>
 <translation id="3162899666601560689">Weby mohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich mohou pamatovat vaše přihlášení a položky v nákupním košíku</translation>
 <translation id="3165022941318558018">Povolení, aby web používal soubory cookie třetích stran</translation>
@@ -356,6 +358,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="5100237604440890931">Sbaleno – kliknutím rozbalíte</translation>
 <translation id="5116239826668864748">Chrome můžete použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
+<translation id="512938610812707830">Spodní panel se sbírkami motivů pro vzhled stránky Nová karta, otevřeno na plnou výšku</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na vašich otevřených kartách}few{Poklesy cen na vašich otevřených kartách}many{Poklesy cen na vašich otevřených kartách}other{Poklesy cen na vašich otevřených kartách}}</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -314,6 +314,7 @@
 <translation id="4895437082222824641">在新的 Chrome 分頁中開啟連結(&amp;T)</translation>
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="492720062778050435">Chrome 建議你檢查這項擴充功能</translation>
+<translation id="4946912144186040233">Chrome 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已關閉。</translation>
 <translation id="4953650215774548573">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">帳戶登入詳細資料尚未更新，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
@@ -322,6 +323,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
+<translation id="5049567194145991071">點選「我知道了」後，只要登入 Chrome，就能在 Google 帳戶中儲存及使用密碼和其他資訊。<ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="USER_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="5120334927898581447">登入其他 Google 服務時一併登入 Chrome</translation>
 <translation id="5126049312684316860">Chrome 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入</translation>
@@ -508,6 +510,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入帳戶就能在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊。按下 <ph name="SHORTCUT" /> 可變更 Google 服務設定。</translation>
 <translation id="7496017508659652909">Chrome 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已開啟。</translation>
 <translation id="7514258452813684157">Google 更新工具服務</translation>
 <translation id="7515191208480168435">固定 Google 智慧鏡頭可方便之後存取。</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
@@ -540,6 +543,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="7808348361785373670">從 Chrome 中移除...</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
+<translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
@@ -626,6 +630,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8948460679427074738">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chrome 建議你移除。</translation>
+<translation id="8958307504142971576">現在可以使用更多 Chrome 功能</translation>
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8992769679401294069">系統會使用通關密語加密資料。如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語。</translation>
 <translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>

@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1717218214683051432">移动传感器</translation>
 <translation id="1717996979683942279">开启此设置后，网站可以询问能否管理所有显示屏上的窗口。关闭此设置后，网站无法管理所有显示屏上的窗口。</translation>
+<translation id="1738912554587725807">“新标签页”页面外观主题集合底部动作条</translation>
 <translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
 <translation id="1777815584158991902">探索信息流底部动作条</translation>
 <translation id="1779089405699405702">图片解码器</translation>
@@ -186,6 +187,7 @@
 <translation id="3114012059975132928">视频播放器</translation>
 <translation id="3115898365077584848">显示信息</translation>
 <translation id="3123473560110926937">已禁止部分网站显示广告</translation>
+<translation id="3132996321662585180">每日刷新</translation>
 <translation id="3143754809889689516">从头播放</translation>
 <translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="3165022941318558018">允许网站使用第三方 Cookie</translation>
@@ -356,6 +358,7 @@
 <translation id="5100237604440890931">已收起 - 点击此处即可展开。</translation>
 <translation id="5116239826668864748">当您点按消息、文档和其他应用中的链接时，可以随时使用 Chrome 打开链接</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
+<translation id="512938610812707830">“新标签页”页面外观主题集合底部动作条已按最大高度显示</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{您打开的标签页中有降价}other{您打开的标签页中有降价}}</translation>
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>

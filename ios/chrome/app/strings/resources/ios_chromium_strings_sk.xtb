@@ -252,6 +252,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Upozornenia prehliadača Chromium sú momentálne v nastaveniach zariadenia vypnuté.</translation>
+<translation id="7195217321165708458">Gemini v prehliadači Chromium</translation>
 <translation id="7219205286115692265">Získavajte prístup k prehliadaču Chromium rýchlejšie v Docku na ploche iPadu.</translation>
 <translation id="7222001353246886083">Hľadať ${searchPhrase} v prehliadači Chromium</translation>
 <translation id="7228180817326917122">Tip pre Chromium: vyberte umiestnenie panela s adresou</translation>

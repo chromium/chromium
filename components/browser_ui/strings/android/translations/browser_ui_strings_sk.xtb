@@ -63,6 +63,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
 <translation id="1717218214683051432">Senzory pohybu</translation>
 <translation id="1717996979683942279">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie spravovať okná na všetkých obrazovkách. Keď je vypnutá, weby nemôžu spravovať okná na všetkých obrazovkách.</translation>
+<translation id="1738912554587725807">Dolný hárok zbierok motívov vzhľadu stránky na novej karte</translation>
 <translation id="1743802530341753419">Pýtať sa, či chcete povoliť webu pripojiť sa k zariadeniu (odporúčané)</translation>
 <translation id="1777815584158991902">Dolný hárok feedu Objaviť</translation>
 <translation id="1779089405699405702">Dekodér obrázkov</translation>
@@ -186,6 +187,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3114012059975132928">Prehrávač videa</translation>
 <translation id="3115898365077584848">Zobraziť informácie</translation>
 <translation id="3123473560110926937">Blokované na niektorých weboch</translation>
+<translation id="3132996321662585180">Obnovovať denne</translation>
 <translation id="3143754809889689516">Prehrať od začiatku</translation>
 <translation id="3162899666601560689">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku</translation>
 <translation id="3165022941318558018">Povoľte webu používať súbory cookie tretej strany</translation>
@@ -356,6 +358,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5100237604440890931">Zbalená (rozbalíte ju kliknutím)</translation>
 <translation id="5116239826668864748">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
+<translation id="512938610812707830">Dolný hárok zbierok motívov vzhľadu stránky na novej karte je otvorený na celú výšku</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pokles ceny na otvorených kartách}few{Poklesy cien na otvorených kartách}many{Poklesy cien na otvorených kartách}other{Poklesy cien na otvorených kartách}}</translation>
 <translation id="5186036860380548585">Možnosť je k dispozícii v hornej časti obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -5084,21 +5084,6 @@ Um dispositivo será considerado gerenciado se uma versão corporativa do SO for
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
 <translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
 <translation id="4559846397119102037">Permitir uso do <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">Esta política no dispositivo define se o <ph name="PRODUCT_OS_NAME" /> vai oferecer um algoritmo de contrato de chave pós-quântico em TLS usando o padrão ML-KEM do NIST. Antes da versão 131 do <ph name="PRODUCT_OS_NAME" />, o algoritmo era o Kyber, uma iteração de rascunho anterior do padrão. Isso permite que os servidores de suporte impeçam que o tráfego do usuário seja descriptografado posteriormente por computadores quânticos.
-
-Se esta política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário será protegido contra computadores quânticos ao se comunicar com servidores compatíveis.
-
-Se ela for desativada, o <ph name="PRODUCT_OS_NAME" /> não vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário ficará desprotegido contra computadores quânticos.
-
-Se ela não for definida, o <ph name="PRODUCT_OS_NAME" /> vai seguir o processo de lançamento padrão para oferecer um contrato de chave pós-quântico.
-
-A oferta do Kyber é compatível com versões anteriores. Os servidores TLS atuais e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
-
-No entanto, os dispositivos que não implementam corretamente a TLS talvez não funcionem direito quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção caso encontrem esse problema.
-
-Esta política é uma medida temporária e será removida após a versão 141 do <ph name="PRODUCT_OS_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.
-
-Se esta política e a PostQuantumKeyAgreementEnabled estiverem definidas, esta terá prioridade.</translation>
 <translation id="4561560385824323005">Permitir que os usuários selecionem um layout de área de trabalho pré-configurado para carregar</translation>
 <translation id="4561940244682063697">Não permitir que os sites peçam para o usuário compartilhar um stream de vídeo da tela</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
@@ -10501,19 +10486,6 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENAB
       Esta política foi removida no Chrome 88 e, se definida, será ignorada.
 
       Consulte https://www.chromestatus.com/feature/5989473649164288 (em inglês).</translation>
-<translation id="8137301668000005268">Esta política define se o <ph name="PRODUCT_NAME" /> vai oferecer um algoritmo de contrato de chave pós-quântico em TLS usando o padrão ML-KEM do NIST. Antes da versão 131 do <ph name="PRODUCT_NAME" />, o algoritmo era o Kyber, uma iteração de rascunho anterior do padrão. Isso permite que os servidores de suporte impeçam que o tráfego do usuário seja descriptografado posteriormente por computadores quânticos.
-
-Se esta política for ativada, o <ph name="PRODUCT_NAME" /> vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário será protegido contra computadores quânticos ao se comunicar com servidores compatíveis.
-
-Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai oferecer um contrato de chave pós-quântico nas conexões TLS. O tráfego do usuário ficará desprotegido contra computadores quânticos.
-
-Se ela for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão para oferecer um contrato de chave pós-quântico.
-
-A oferta de um contrato de chave pós-quântico é compatível com versões anteriores. Os servidores TLS atuais e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
-
-No entanto, os dispositivos que não implementam corretamente a TLS talvez não funcionem direito quando a nova opção for oferecida. Por exemplo, talvez eles se desconectem em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção caso encontrem esse problema.
-
-Esta política é uma medida temporária e será removida após a versão 141 do <ph name="PRODUCT_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.</translation>
 <translation id="8137443729340035928">Perguntar ao usuário no login se ele quer restaurar a última sessão.</translation>
 <translation id="8141795997560411818">Esta política não impede que os usuários usem o app Google Drive para Android. Para impedir o acesso ao Google Drive, bloqueie também a instalação do app Google Drive para Android.</translation>
 <translation id="8142894094385450823">Definir as localidades recomendadas para uma sessão gerenciada</translation>

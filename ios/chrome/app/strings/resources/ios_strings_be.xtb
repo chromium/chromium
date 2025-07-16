@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
 <translation id="1605405588277479165">Выключана (не рэкамендуецца)</translation>
 <translation id="1605658421715042784">Капіраваць відарыс</translation>
+<translation id="1606899876897213121">Закрыць зводку нядаўніх дзеянняў</translation>
 <translation id="1612754831519568745">Бяспечны прагляд зараз выключаны. Ён можа абараніць вас ад небяспечных сайтаў, спамповак і пашырэнняў.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Выберыце Add to Google Calendar ("Дадаць у Google Каляндар") або Add to Apple Calendar ("Дадаць у Calendar ад Apple").</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">Група ўкладак, <ph name="GROUP_TITLE" />, колькасць укладак: <ph name="TABS_NUMBER" />.</translation>
 <translation id="2577522251608256362">Раён</translation>
 <translation id="2579713773888829241">Абагуленыя дыскі</translation>
+<translation id="2583688836549072561">Група ўкладак "<ph name="GROUP_TITLE" />", колькасць укладак: <ph name="TABS_NUMBER" />, новае дзеянне.</translation>
 <translation id="2593272815202181319">Монашырынны</translation>
 <translation id="2601778637777010194">Адсочвайце зніжэнне цэн на тавары</translation>
 <translation id="260378315836159338">Націсніце на значок "+" у верхняй частцы экрана</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">Наладзіць галоўны экран</translation>
 <translation id="3277021493514034324">Адрас сайта скапіраваны</translation>
 <translation id="3280562213547448728">Галасавы пошук</translation>
+<translation id="3302837541200840455">Укладка "<ph name="TAB_TITLE" />", новае дзеянне</translation>
 <translation id="3305294846493618482">яшчэ</translation>
 <translation id="3311748811247479259">Выключана</translation>
 <translation id="3312300514034250578">Палепшаны Бяспечны прагляд</translation>
@@ -1602,7 +1605,6 @@
 <translation id="7412027924265291969">Працягнуць</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
 <translation id="7417689656810783109">Перайменаваць групу</translation>
-<translation id="7418703176995102827">Вашы размовы з Gemini і вашы даныя ў Google Workspace не будуць выкарыстоўвацца для паляпшэння мадэлей генератыўнага штучнага інтэлекту. Спецыялісты таксама не будуць разглядаць іх.</translation>
 <translation id="7419565702166471774">Заўсёды выкарыстоўваць бяспечнае падключэнне</translation>
 <translation id="7425053386765766120">Дадаць спосаб аплаты…</translation>
 <translation id="7425346204213733349">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google.</translation>
@@ -1643,6 +1645,7 @@
 <translation id="7557508262441527045">Выкананы выхад</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
+<translation id="7566349809380613217">Адкрыць групу ўкладак "<ph name="GROUP_TITLE" />", абагуленая група, колькасць укладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Закладкі схаваны</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="7582666837709186351">Выкарыстоўвайце камеру, каб перакладаць тэкст на фота і ў штодзённых сітуацыях.</translation>
@@ -1907,7 +1910,6 @@
 <translation id="8560253818350321773">Спачатку паказваць элементы, якія часта выкарыстоўваюцца.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Над вашай клавіятурай паказаны {count} варыянт пароля.}one{Над вашай клавіятурай паказаны {count} варыянт пароля.}few{Над вашай клавіятурай паказаны {count} варыянты пароля.}many{Над вашай клавіятурай паказаны {count} варыянтаў пароля.}other{Над вашай клавіятурай паказаны {count} варыянта пароля.}}</translation>
 <translation id="8564894539416715395">Старонка новай укладкі</translation>
-<translation id="8569414323292250522">Чаты правяраюцца і выкарыстоўваюцца для паляпшэння AI ад Google. Даведацца пра выбар. Інфармацыя пра месцазнаходжанне захоўваецца разам за вашымі дзеяннямі.</translation>
 <translation id="8569721750632860947">Які URL-адрас вы хочаце дадаць у Спіс на прагляд?</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8577056989960190117">Аўтаматычна запоўніць год заканчэння тэрміну дзеяння <ph name="YEAR" /></translation>

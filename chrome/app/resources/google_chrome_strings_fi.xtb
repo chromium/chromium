@@ -315,6 +315,7 @@
 <translation id="4895437082222824641">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="4918844574251943176">Kuva kopioitu</translation>
 <translation id="492720062778050435">Chrome suosittelee, että tarkistat tämän laajennukseen</translation>
+<translation id="4946912144186040233">Chrome tulkitsee lomakkeita paremmin ja voi täyttää ne automaattisesti nopeammin. Tämä asetus on poissa päältä.</translation>
 <translation id="4953650215774548573">Aseta Google Chrome oletusselaimeksi</translation>
 <translation id="495931528404527476">Chromessa</translation>
 <translation id="4969674060580488087">ChromeOS Flex ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
@@ -323,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
 <translation id="504867494566807945">Avaa minkä tahansa sovelluksen linkit Chromessa. Lisäksi se kiinnitetään tehtäväpalkkiin, jotta pääset siihen helposti.</translation>
+<translation id="5049567194145991071">Kun klikkaat "Ymmärrän", voit tallentaa ja käyttää esimerkiksi Google-tilin salasanoja aina, kun olet kirjautuneena Chromeen. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Kirjaudu Chromeen, kun kirjaudut muihin Googlen palveluihin</translation>
 <translation id="5126049312684316860">Chrome esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
@@ -507,6 +509,7 @@
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="749228101751499733">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. <ph name="SHORTCUT" /> voi muuttaa Googlen palvelujen asetuksiasi.</translation>
 <translation id="7496017508659652909">Chrome esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome tulkitsee lomakkeita paremmin ja voi täyttää ne automaattisesti nopeammin. Tämä asetus on päällä.</translation>
 <translation id="7514258452813684157">Googlen päivityspalvelu</translation>
 <translation id="7515191208480168435">Kiinnitä Google Lens, niin voit käyttää sitä helposti</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
@@ -539,6 +542,7 @@
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7808348361785373670">Poista Chromesta…</translation>
 <translation id="7825851276765848807">Asennus epäonnistui tuntemattoman virheen vuoksi. Lataa Google Chrome uudelleen.</translation>
+<translation id="7826342993930002256">Oma Chrome kaikkialla</translation>
 <translation id="7827099906024714326">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
@@ -625,6 +629,7 @@
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8948460679427074738">Tästä laajennuksesta ei ole julkaistu tietosuojakäytäntöjä koskien esimerkiksi datan keräämistä ja käyttöä. Chrome suosittelee poistamaan sen.</translation>
+<translation id="8958307504142971576">Chromessa on nyt enemmän ominaisuuksia</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8992769679401294069">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
 <translation id="8999117580775242387">Kun HTTPS ei ole käytettävissä, Chrome käyttää suojaamatonta yhteyttä ilman erillistä varoitusta</translation>

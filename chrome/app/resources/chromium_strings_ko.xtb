@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="1029669172902658969">다시 실행하여 ChromiumOS 업데이트</translation>
+<translation id="103359417695385097">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. 설정이 사용 중지되어 있습니다</translation>
 <translation id="1040916596585577953">Chromium에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
 <translation id="1042552502243217427">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chromium은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습하게 됩니다.</translation>
 <translation id="1051793555070215510">1분 정도 소요되는 설문조사에 참여하여 시크릿 모드를 개선하는 데 도움을 주세요.</translation>
@@ -100,6 +101,7 @@
 <translation id="2241627712206172106">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
+<translation id="232860113504534383">어디서나 Chromium 사용하기</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chromium 로그인을 요청합니다</translation>
@@ -279,6 +281,7 @@
 <translation id="4598116752460667024">목록에서 프로세스를 검색합니다.</translation>
 <translation id="4613863813562375431">ChromiumOS 버전</translation>
 <translation id="4621240073146040695">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 Chromium을 다시 시작하세요.</translation>
+<translation id="4654936675281451226">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. 설정이 사용 설정되어 있습니다</translation>
 <translation id="4665829708273112819">경고: Chromium에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="4673151026126227699">Chromium 사용 보고서도 공유하면 내가 방문한 URL이 해당 보고서에 포함됩니다.</translation>
 <translation id="4677944499843243528">다른 컴퓨터(<ph name="HOST_NAME" />)의 다른 Chromium 프로세스(<ph name="PROCESS_ID" />)에서 프로필을 사용 중인 것 같습니다. 프로필이 손상되지 않도록 Chromium에서 잠금 설정했습니다. 다른 프로세스에서 프로필을 사용 중이지 않은 것이 확실한 경우 프로필을 잠금 해제하고 Chromium을 다시 시작하세요.</translation>
@@ -499,6 +502,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7585391435984513350">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION" /> 권한을 삭제했습니다.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
+<translation id="7622753900276619808">이제 Chromium에서 더 많은 기능을 사용할 수 있습니다.</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
@@ -515,6 +519,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7828947555739565424">이 계정을 사용하는 Chromium 프로필이 기기에 이미 존재합니다</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
 <translation id="7859018312476869945">주소 표시줄이나 검색창에 검색어를 입력하면 Chromium은 더 나은 추천 검색어를 제공하기 위해 사용자가 입력한 내용을 기본 검색엔진으로 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
+<translation id="786097294490253281">'확인'을 클릭하면 Chromium에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>

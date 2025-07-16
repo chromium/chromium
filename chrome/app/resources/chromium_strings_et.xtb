@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1026101648481255140">Jätka installimist</translation>
 <translation id="1029669172902658969">Taaskäivitage &amp;Chromium OS-i värskendamiseks</translation>
+<translation id="103359417695385097">Chromium mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on välja lülitatud.</translation>
 <translation id="1040916596585577953">Chromium soovitab teil selle laienduse üle vaadata.</translation>
 <translation id="1042552502243217427">Kui sait palub lehel olevad lingid privaatselt eellaadida, kasutab Chromium Google'i servereid. See peidab teie identiteedi eellaaditud saidi eest, kuid Google saab teada, milliseid saite eellaaditakse.</translation>
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
@@ -99,6 +100,7 @@
 <translation id="2241627712206172106">Kui jagate arvutit, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chromiumi just nii, nagu neile meeldib.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium soovitab teie brauserit aeglustava vahelehe peatada}other{Chromium soovitab teie brauserit aeglustavad vahelehed peatada}}</translation>
 <translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
+<translation id="232860113504534383">Teie Chromium, kõikjal</translation>
 <translation id="2343156876103232566">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chromiumi sisse.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2361918034042471035">Laiendus „<ph name="EXTENSION_NAME" />“ soovib, et logiksite Chromiumisse sisse</translation>
@@ -278,6 +280,7 @@
 <translation id="4598116752460667024">Otsige loendist mis tahes protsessi.</translation>
 <translation id="4613863813562375431">Chromium OS-i versioon</translation>
 <translation id="4621240073146040695">Rakendus on peaaegu ajakohane! Värskenduse lõpuleviimiseks taaskäivitage Chromium.</translation>
+<translation id="4654936675281451226">Chromium mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on sisse lülitatud.</translation>
 <translation id="4665829708273112819">Hoiatus. Chromium ei saa takistada laiendustel teie sirvimisajalugu salvestada. Kui soovite laienduse inkognito režiimis keelata, siis tühistage see valik.</translation>
 <translation id="4673151026126227699">Kui jagate ka Chromiumi kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
 <translation id="4677944499843243528">Näib, et profiili kasutab Chromiumi muu protsess (<ph name="PROCESS_ID" />) mingis muus arvutis (<ph name="HOST_NAME" />). Chromium on profiili lukustanud, et seda ei saaks rikkuda. Kui olete kindel, et ükski muu protsess seda profiili ei kasuta, saate profiili avada ja Chromiumi taaskäivitada.</translation>
@@ -498,6 +501,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7585391435984513350">Te pole hiljuti külastanud. Chromium eemaldas <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium kasutab kaamerat ja mikrofoni.</translation>
 <translation id="7617377681829253106">Chromium muutus just paremaks</translation>
+<translation id="7622753900276619808">Nüüd on teil Chromiumis rohkem funktsioone saadaval.</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>
@@ -514,6 +518,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7828947555739565424">Selle kontoga Chromiumi profiil on selles seadmes juba olemas</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7859018312476869945">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chromium teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
+<translation id="786097294490253281">Kui klõpsate nupul „Selge”, saate oma Google'i kontol paroole ja muud salvestada ning neid alati kasutada, kui olete Chromiumi sisse logitud. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromiumi ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>
 <translation id="7888981273428720788">Määrake Chromium vaikebrauseriks</translation>

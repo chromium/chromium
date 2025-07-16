@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (parlaq)</translation>
 <translation id="1070901266639972381">Gecə</translation>
 <translation id="1073690811593784042">Şüşə (rəngli)</translation>
+<translation id="1074287282535157335">4 dəfəyə və ya aylıq ödəyin (uyğunluqdan asılıdır)</translation>
 <translation id="1074497978438210769">Təhlükəsiz deyil</translation>
 <translation id="1074779248866616641">Nəticə</translation>
 <translation id="1075364221219156102">Giriş açarı istifadə edin</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Güclü Parol Təklif Edin...</translation>
 <translation id="2102495993840063010">Android tətbiqləri</translation>
 <translation id="2102519472192754194">Veb-brauzerlər</translation>
+<translation id="2103210856015238101">Toxunaraq doldurulacaq loyallıq kartlarının siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="2105838220373099643">Rol Oyunları</translation>
 <translation id="2107021941795971877">Çap dəstəyi</translation>
 <translation id="2108755909498034140">Kompüteri yenidən başladın</translation>
@@ -1294,6 +1296,7 @@
 <translation id="3187472288455401631">Reklam ölçülməsi</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
 <translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
 <translation id="3201482403106004262">Sorğu ilə bağlı xəta baş verdi.</translation>
@@ -1767,6 +1770,7 @@
 <translation id="3963721102035795474">Oxu Rejimi</translation>
 <translation id="3965672182149944205">Ünvan yadda saxlanılsın?</translation>
 <translation id="3966044442021752214">Məhsul təhlükəsizliyi</translation>
+<translation id="396761677631735618">Toxunaraq doldurulmaq üçün əlçatan loyallıq kartlarının siyahısı yarı hündürlükdə açılıb.</translation>
 <translation id="3969869202926863008">Lokal şəbəkə girişi</translation>
 <translation id="3970239200223030389">Buraxılış tarixi</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
@@ -1887,6 +1891,7 @@
 <translation id="4165986682804962316">Sayt ayarları</translation>
 <translation id="4169189393773057143">Loyallıq kartlarını idarə edin və ya bu təklifləri Google Pulqabıda deaktiv edin</translation>
 <translation id="4169535189173047238">İcazə verməyin</translation>
+<translation id="4170851022123611628">Loyallıq kartlarının siyahısı bağlanıb.</translation>
 <translation id="4171400957073367226">Pis doğrulama imzası</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Kilid və çilingərlər</translation>
@@ -1895,6 +1900,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Daha <ph name="ITEM_COUNT" /> element}other{Daha <ph name="ITEM_COUNT" /> element}}</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4177501066905053472">Reklam mövzuları</translation>
+<translation id="4178863275556660738">Kartdan fərqli ödəniş metodları ilə ödəniş edin</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Qiyməti izləməyin</translation>
 <translation id="4190446002599583608">Tarixçədə axtarış, AI tərəfindən dəstəklənir</translation>
@@ -2090,6 +2096,7 @@
 <translation id="449126573531210296">Sinxronlaşdırılmış parolları Google Hesabınız ilə şifrləyin</translation>
 <translation id="4493480324863638523">Yanlış link. Standart sxemli link olmalıdır, məs., http://example.com və ya https://example.com.</translation>
 <translation id="4494323206460475851">Ayarlarda reklam mövzularına baxa və saytlarla paylaşılmasını istəmədiyiniz mövzuları bloklaya bilərsiniz. Chrome həmçinin 4 həftədən köhnə reklam mövzularını avtomatik silir.</translation>
+<translation id="4497010149473852018">Toxunaraq doldurulmaq üçün əlçatan loyallıq kartları. Gizli klaviatura.</translation>
 <translation id="4500587658229086076">təhlükəli məzmun</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> nəfər</translation>
 <translation id="450602096898954067">Bu funksiyanı təkmilləşdirmək üçün data təlimli redaktorlar tərəfindən görülə bilər</translation>

@@ -1022,6 +1022,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2690699652723742414">Nakalipas na 30 araw</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691924980723297736">Babala sa kaligtasan</translation>
+<translation id="2696385693639654606">Nagbibigay-daan sa iyo ang Chrome Enterprise Core na pamahalaan ang mga patakaran ng browser, app, at extension mula sa cloud</translation>
 <translation id="2697248912349197812">Magtanong sa <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">May available na submenu, gamitin ang <ph name="SHORTCUT" /> para mag-navigate sa mga karagdagang opsyon.</translation>
 <translation id="2701514975700770343">Nakataob</translation>
@@ -1904,6 +1905,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> pang item}one{<ph name="ITEM_COUNT" /> pang item}other{<ph name="ITEM_COUNT" /> pang item}}</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4177501066905053472">Mga paksa ng ad</translation>
+<translation id="4178863275556660738">Magbayad gamit ang mga paraan ng pagbabayad na non-card</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Huwag subaybayan ang presyo</translation>
 <translation id="4190446002599583608">Paghahanap sa history, na pinapagana ng AI</translation>
@@ -3141,6 +3143,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6284449872909111707">Text at Instant Messaging</translation>
 <translation id="6284517535531159884">Uri ng Seed ng Mga Variation</translation>
 <translation id="6287197303017372967">Kumuha ng mga direksyon patungo sa iyong destinasyon nang may gabay sa bawat pagliko gamit ang feature na pag-navigate.</translation>
+<translation id="6288559570252410796">Magtanong sa Google AI Mode</translation>
 <translation id="628877850550444614">May nakitang diskwento</translation>
 <translation id="6289939620939689042">Kulay ng Page</translation>
 <translation id="6292819926564202163">Ang iyong search engine sa Chrome</translation>
@@ -3554,6 +3557,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6970885655016700774">Tela (Archival)</translation>
 <translation id="6971439137020188025">Gumawa ng bagong Google presentation sa Slides nang mabilis</translation>
 <translation id="6972629891077993081">Mga HID device</translation>
+<translation id="6972867931824045907">Para gamitin ang iyong clipboard, bigyan ng access ang Chrome sa <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Tinukoy ang parehong mga hindi nababagong proxy server at isang .pac script URL.</translation>
 <translation id="6973988895180423160">3.5 x 5 in</translation>
 <translation id="6978121630131642226">Mga Search Engine</translation>
@@ -4354,6 +4358,7 @@ Mga karagdagang detalye:
 <translation id="831997045666694187">Gabi</translation>
 <translation id="8321448084834652864">Puwede mong palitan ang iyong search engine anumang oras sa mga setting ng Chromium.</translation>
 <translation id="8321476692217554900">mga notification</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Enter para magtanong sa Google AI Mode</translation>
 <translation id="8322402665880479974">Mga Kama at Headboard</translation>
 <translation id="8323505966575306467">Magdagdag ng higit pang proteksyon sa iyong mga password</translation>
 <translation id="832547548543012337">I-delete ang passport</translation>
@@ -4644,6 +4649,7 @@ Mga karagdagang detalye:
 <translation id="883848425547221593">Iba Pang Mga Bookmark</translation>
 <translation id="8842351563145134519">Mga paraan ng pagbabayad na available na mapunan kapag pinindot na nakabukas nang kalahati ang taas.</translation>
 <translation id="884264119367021077">Shipping address</translation>
+<translation id="8849032795302265570">Pamahalaan kung paano nagba-browse sa web ang iyong mga empleyado nang walang kahirap-hirap</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Walang nahanap na mekanismo ng pagpapawalang-bisa.</translation>
 <translation id="8849262850971482943">Gamitin ang iyong virtual card para sa karagdagang seguridad</translation>
@@ -4894,6 +4900,7 @@ Mga karagdagang detalye:
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="955429569736351433">Pinapayagan ang VR</translation>
 <translation id="955627189349169688">Puwede kang mag-opt out sa patakarang ito sa <ph name="BEGIN_LINK" />mga setting ng Chrome Sync<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Button ng AI Mode, i-activate para magtanong sa Google AI Mode</translation>
 <translation id="95721182352849470">Dilaw 2</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>

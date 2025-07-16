@@ -1903,6 +1903,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{อีก <ph name="ITEM_COUNT" /> รายการ}other{อีก <ph name="ITEM_COUNT" /> รายการ}}</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4177501066905053472">หัวข้อโฆษณา</translation>
+<translation id="4178863275556660738">ชำระเงินด้วยวิธีการชำระเงินที่ไม่ใช่บัตร</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
 <translation id="4190446002599583608">การค้นหาประวัติการเข้าชม ซึ่งทำงานด้วย AI</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (Glossy)</translation>
 <translation id="1070901266639972381">Noč</translation>
 <translation id="1073690811593784042">Glass (Colored)</translation>
+<translation id="1074287282535157335">Plačajte v 4 obrokih ali mesečno (odvisno od primernosti)</translation>
 <translation id="1074497978438210769">Ni varno</translation>
 <translation id="1074779248866616641">Rezultat</translation>
 <translation id="1075364221219156102">Uporaba ključa za dostop</translation>
@@ -656,6 +657,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2102134110707549001">Predlagaj močno geslo …</translation>
 <translation id="2102495993840063010">Aplikacije za Android</translation>
 <translation id="2102519472192754194">Spletni brskalniki</translation>
+<translation id="2103210856015238101">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom, odprte pri polni višini.</translation>
 <translation id="2105838220373099643">Igre igranja vlog</translation>
 <translation id="2107021941795971877">Podpora za tiskanje</translation>
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
@@ -1296,6 +1298,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3187472288455401631">Merjenje oglasov</translation>
 <translation id="3190736958609431397">Prekliči spremljanje</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno shraniti podatke v vaši napravi</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> v strežniku <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
 <translation id="3201482403106004262">Prišlo je do napake z anketo.</translation>
@@ -1771,6 +1774,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3963721102035795474">Način bralnika</translation>
 <translation id="3965672182149944205">Želite shraniti naslov?</translation>
 <translation id="3966044442021752214">Varnost izdelka</translation>
+<translation id="396761677631735618">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom, odprte pri polovični višini.</translation>
 <translation id="3969869202926863008">Dostop v lokalnem omrežju</translation>
 <translation id="3970239200223030389">Datum izdaje</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
@@ -1891,6 +1895,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4165986682804962316">Nastavitve spletnih mest</translation>
 <translation id="4169189393773057143">Upravljajte kartice zvestobe ali izklopite te predloge v Google Denarnici</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
+<translation id="4170851022123611628">Seznam kartic zvestobe je zaprt.</translation>
 <translation id="4171400957073367226">Neveljavni podpis za preverjanje</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Ključavničarstvo</translation>
@@ -1899,6 +1904,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Še <ph name="ITEM_COUNT" /> element}one{Še <ph name="ITEM_COUNT" /> element}two{Še <ph name="ITEM_COUNT" /> elementa}few{Še <ph name="ITEM_COUNT" /> elementi}other{Še <ph name="ITEM_COUNT" /> elementov}}</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4177501066905053472">Teme oglasov</translation>
+<translation id="4178863275556660738">Plačevanje s plačilnimi sredstvi, ki niso kartice</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prekliči spremljanje cene</translation>
 <translation id="4190446002599583608">Iskanje po zgodovini, ki uporablja umetno inteligenco</translation>
@@ -2094,6 +2100,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="449126573531210296">Šifriranje sinhroniziranih gesel z računom Google</translation>
 <translation id="4493480324863638523">Neveljaven URL. Mora biti URL s standardno shemo, kot je http://primer.com ali https://primer.com.</translation>
 <translation id="4494323206460475851">V nastavitvah si lahko ogledate teme oglasov in blokirate tiste, ki jih ne želite deliti s spletnimi mesti. Chrome prav tako samodejno izbriše teme oglasov, starejše od štirih tednov.</translation>
+<translation id="4497010149473852018">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom. Tipkovnica je skrita.</translation>
 <translation id="4500587658229086076">vsebina, ki ni varna</translation>
 <translation id="4504850595255879616">Osebe: <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Zaradi izboljšanja te funkcije bodo podatki morda prikazani usposobljenim pregledovalcem</translation>

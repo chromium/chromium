@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
 <translation id="1605405588277479165">Desactivada (opció no recomanada)</translation>
 <translation id="1605658421715042784">Copia la imatge</translation>
+<translation id="1606899876897213121">Tanca el resum de l'activitat recent</translation>
 <translation id="1612754831519568745">La funció Navegació segura està desactivada en aquest moment. Obtén protecció contra baixades, extensions i llocs web perillosos.</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
@@ -407,6 +408,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2559843230610279254">Grup de pestanyes, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanyes.</translation>
 <translation id="2577522251608256362">Veïnat</translation>
 <translation id="2579713773888829241">Unitats compartides</translation>
+<translation id="2583688836549072561">Grup de pestanyes, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanyes, activitat nova.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Fes un seguiment de les baixades de preu dels productes</translation>
 <translation id="260378315836159338">A la part superior de la pantalla, toca +</translation>
@@ -572,6 +574,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
 <translation id="3280562213547448728">Cerca per veu</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, activitat nova</translation>
 <translation id="3305294846493618482">més</translation>
 <translation id="3311748811247479259">Desactivat</translation>
 <translation id="3312300514034250578">Navegació segura millorada</translation>
@@ -1602,7 +1605,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7412027924265291969">Continua</translation>
 <translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7417689656810783109">Canvia el nom del grup</translation>
-<translation id="7418703176995102827">Els revisors humans no revisaran ni les teves converses amb Gemini ni les teves dades de Google Workspace, i aquestes dades tampoc no es faran servir per millorar els models d'IA generativa.</translation>
 <translation id="7419565702166471774">Utilitza sempre connexions segures</translation>
 <translation id="7425053386765766120">Afegeix una forma de pagament…</translation>
 <translation id="7425346204213733349">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades.</translation>
@@ -1643,6 +1645,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7557508262441527045">S'ha tancat la sessió</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
+<translation id="7566349809380613217">Obre <ph name="GROUP_TITLE" />, grup compartit de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Les adreces d'interès estan amagades</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7582666837709186351">Tradueix el text de les fotos o de l'entorn amb la càmera.</translation>
@@ -1907,7 +1910,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8560253818350321773">Mostra primer els elements que s'utilitzen més sovint.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Hi ha {count} opció de contrasenya disponible a sobre del teclat.}other{Hi ha {count} opcions de contrasenya disponibles a sobre del teclat.}}</translation>
 <translation id="8564894539416715395">Pàgina Pestanya nova</translation>
-<translation id="8569414323292250522">Els xats es revisen i s'utilitzen per millorar la IA de Google. Obtén informació sobre les teves opcions. Amb la teva activitat, també s'emmagatzema informació sobre la ubicació.</translation>
 <translation id="8569721750632860947">Quin URL vols afegir a la teva llista de lectura?</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
 <translation id="8577056989960190117">Emplena automàticament l'any de caducitat (<ph name="YEAR" />)</translation>

@@ -314,6 +314,7 @@
 <translation id="4895437082222824641">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="4918844574251943176">Immagine copiata</translation>
 <translation id="492720062778050435">Chrome consiglia di esaminare questa estensione</translation>
+<translation id="4946912144186040233">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido. Questa impostazione non è attiva.</translation>
 <translation id="4953650215774548573">Imposta Google Chrome come browser predefinito</translation>
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Impossibile sincronizzare i dati in ChromeOS Flex perché i dati di accesso dell'account sono obsoleti.</translation>
@@ -322,6 +323,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
 <translation id="504867494566807945">Apri i link in Chrome da qualsiasi app. Inoltre, per accedere facilmente, l'app viene bloccata nella barra delle applicazioni.</translation>
+<translation id="5049567194145991071">Se fai clic su "Ok", potrai salvare e usare le password e altri dati nel tuo Account Google ogni volta che accedi a Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Accedi a Chrome quando accedi ad altri servizi Google</translation>
 <translation id="5126049312684316860">Chrome precarica ancora più pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
@@ -506,6 +508,7 @@
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
 <translation id="7496017508659652909">Chrome precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido. Questa impostazione è attiva.</translation>
 <translation id="7514258452813684157">Servizio di Google Updater</translation>
 <translation id="7515191208480168435">Puoi bloccare Google Lens per un facile accesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -538,6 +541,7 @@
 <translation id="7801699035218095297">Google Chrome sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
 <translation id="7808348361785373670">Rimuovi da Chrome...</translation>
 <translation id="7825851276765848807">Installazione non riuscita a causa di un errore non specificato. Scarica nuovamente Google Chrome.</translation>
+<translation id="7826342993930002256">Il tuo Chrome, ovunque</translation>
 <translation id="7827099906024714326">Chrome deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7845233973568007926">L'installazione è terminata. Dovrai riavviare il computer per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
@@ -618,12 +622,13 @@
 <translation id="8823341990149967727">Chrome non è aggiornato</translation>
 <translation id="8825634023950448068">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Se Chrome ha fatto la scelta sbagliata o se non vuoi ricevere determinati annunci, puoi rimuovere un interesse.</translation>
 <translation id="8834965163890861871">Google Chrome sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
-<translation id="8843516219908676469">Chrome comprende meglio i moduli e può compilarli automaticamente e più velocemente</translation>
+<translation id="8843516219908676469">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome consiglia di rimuoverla}other{Chrome consiglia di rimuoverle}}</translation>
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8922193594870374009">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="8948460679427074738">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chrome consiglia di rimuoverla.</translation>
+<translation id="8958307504142971576">Ora hai a disposizione più funzionalità in Chrome</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>

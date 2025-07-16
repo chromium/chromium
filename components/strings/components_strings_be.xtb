@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Глянцавы метал</translation>
 <translation id="1070901266639972381">Ноч</translation>
 <translation id="1073690811593784042">Каляровае шкло</translation>
+<translation id="1074287282535157335">Аплата ў чатыры этапы або штомесяц (пры адпаведнасці патрабаванням)</translation>
 <translation id="1074497978438210769">Не абаронена</translation>
 <translation id="1074779248866616641">Вынік</translation>
 <translation id="1075364221219156102">Скарыстаць ключ доступу</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Прапанаваць надзейны пароль…</translation>
 <translation id="2102495993840063010">Праграмы для Android</translation>
 <translation id="2102519472192754194">Вэб-браўзеры</translation>
+<translation id="2103210856015238101">Карткі лаяльнасці, інфармацыю з якіх можна ўвесці, націснуўшы на іх, адкрыты на ўвесь экран.</translation>
 <translation id="2105838220373099643">Ролевыя гульні</translation>
 <translation id="2107021941795971877">Апоры прынтара</translation>
 <translation id="2108755909498034140">Перазапусціце камп’ютар.</translation>
@@ -1297,6 +1299,7 @@
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
 <translation id="3190736958609431397">Перастаць адсочваць</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="3201482403106004262">Адбылася памылка, звязаная з апытаннем.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">Рэжым чытання</translation>
 <translation id="3965672182149944205">Захаваць адрас?</translation>
 <translation id="3966044442021752214">Бяспека прадукту</translation>
+<translation id="396761677631735618">Карткі лаяльнасці, інфармацыю з якіх можна ўвесці, націснуўшы на іх, адкрыты на палову экрана.</translation>
 <translation id="3969869202926863008">Доступ да лакальнай сеткі</translation>
 <translation id="3970239200223030389">Дата выпуску</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">Налады сайтаў</translation>
 <translation id="4169189393773057143">Кіраваць карткамі лаяльнасці і выключыць гэтыя прапановы можна ў Google Кашальку</translation>
 <translation id="4169535189173047238">Не дазваляць</translation>
+<translation id="4170851022123611628">Спіс картак лаяльнасці закрыты.</translation>
 <translation id="4171400957073367226">Подпіс спраўджання недапушчальны</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Замкі і слесарскія паслугі</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Яшчэ <ph name="ITEM_COUNT" /> элемент}one{Яшчэ <ph name="ITEM_COUNT" /> элемент}few{Яшчэ <ph name="ITEM_COUNT" /> элементы}many{Яшчэ <ph name="ITEM_COUNT" /> элементаў}other{Яшчэ <ph name="ITEM_COUNT" /> элемента}}</translation>
 <translation id="4176463684765177261">Выключана</translation>
 <translation id="4177501066905053472">Тэмы рэкламы</translation>
+<translation id="4178863275556660738">Аплата спосабамі, адрознымі ад картак</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перастаць адсочваць цану</translation>
 <translation id="4190446002599583608">Пошук у гісторыі з дапамогай штучнага інтэлекту</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Шыфраваць сінхранізаваныя паролі з дапамогай даных Уліковага запісу Google</translation>
 <translation id="4493480324863638523">Няправільны URL-адрас. Патрабуецца URL-адрас са стандартнай структурай, напрыклад http://example.com ці https://example.com.</translation>
 <translation id="4494323206460475851">У наладах можна праглядзець тэмы рэкламы і заблакіраваць тыя з іх, якія вы не хочаце абагульваць з сайтамі. Chrome таксама аўтаматычна выдаляе тэмы рэкламы, дададзеныя больш чым 4 тыдні таму назад.</translation>
+<translation id="4497010149473852018">Карткі лаяльнасці, інфармацыю з якіх можна ўвесці, націснуўшы на іх. Клавіятура схавана.</translation>
 <translation id="4500587658229086076">небяспечнае змесціва</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" />: людзі</translation>
 <translation id="450602096898954067">Даныя могуць праглядаць спецыялісты, каб палепшыць гэту функцыю</translation>
@@ -3547,6 +3554,7 @@
 <translation id="6970885655016700774">Тканіна архіўнай якасці</translation>
 <translation id="6971439137020188025">Хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі"</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
+<translation id="6972867931824045907">Каб выкарыстоўваць буфер абмену, адкрыйце <ph name="LINK" /> і дайце Chrome доступ.</translation>
 <translation id="6973656660372572881">Вызначаюцца і фіксаваныя проксі-серверы, і URL-адрас сцэнарыя .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 цаляў</translation>
 <translation id="6978121630131642226">Пошукавыя сістэмы</translation>

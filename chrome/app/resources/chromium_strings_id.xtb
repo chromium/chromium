@@ -3,6 +3,7 @@
 <translationbundle lang="id">
 <translation id="1026101648481255140">Lanjutkan Penginstalan</translation>
 <translation id="1029669172902658969">Luncurkan kembali untuk mengupdate &amp;ChromiumOS</translation>
+<translation id="103359417695385097">Chromium memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda. Setelan ini nonaktif.</translation>
 <translation id="1040916596585577953">Chromium merekomendasikan Anda untuk meninjau ekstensi ini</translation>
 <translation id="1042552502243217427">Saat sebuah situs meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chromium akan menggunakan server Google. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat, tetapi Google akan mempelajari situs apa yang dipramuat.</translation>
 <translation id="1051793555070215510">Bantu kami meningkatkan mode Samaran dengan mengikuti survei 1 menit ini.</translation>
@@ -99,6 +100,7 @@
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chromium merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
+<translation id="232860113504534383">Chromium Anda, di mana saja</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2361918034042471035">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chromium</translation>
@@ -278,6 +280,7 @@
 <translation id="4598116752460667024">Telusuri proses apa saja dari daftar.</translation>
 <translation id="4613863813562375431">Versi ChromiumOS</translation>
 <translation id="4621240073146040695">Hampir selesai diperbarui! Luncurkan ulang Chromium untuk menyelesaikan pembaruan.</translation>
+<translation id="4654936675281451226">Chromium memahami formulir lebih baik dan dapat melakukan pengisian otomatis lebih cepat untuk Anda. Setelan ini aktif.</translation>
 <translation id="4665829708273112819">Peringatan: Chromium tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="4673151026126227699">Jika Anda juga membagikan laporan penggunaan Chromium, laporan tersebut akan menyertakan URL yang Anda buka</translation>
 <translation id="4677944499843243528">Profil tersebut mungkin digunakan pada proses Chromium lainnya (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chromium telah mengunci profil tersebut agar tidak rusak. Jika yakin tidak ada proses lain yang menggunakan profil tersebut, Anda dapat membuka profil dan meluncurkan Chromium kembali.</translation>
@@ -498,6 +501,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7585391435984513350">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="7617377681829253106">Chromium menjadi lebih baik</translation>
+<translation id="7622753900276619808">Anda kini memiliki lebih banyak fitur yang tersedia di Chromium</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>
@@ -514,6 +518,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7828947555739565424">Profil Chromium dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7859018312476869945">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chromium akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
+<translation id="786097294490253281">Jika Anda mengklik 'Oke', Anda dapat menyimpan dan menggunakan sandi serta data lainnya di Akun Google Anda setiap kali Anda login ke Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
 <translation id="7888981273428720788">Setel Chromium sebagai browser default</translation>

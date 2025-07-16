@@ -252,6 +252,7 @@
 
 Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chromium во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Во моментов, известувањата за Chromium се исклучени во вашите поставки за уредот.</translation>
+<translation id="7195217321165708458">Gemini во Chromium</translation>
 <translation id="7219205286115692265">Пристапувајте до Chromium побрзо од докот на почетниот екран на вашиот iPad.</translation>
 <translation id="7222001353246886083">Пребарајте ${searchPhrase} во Chromium</translation>
 <translation id="7228180817326917122">Совет за Chromium: изберете ја положбата на лентата за адреси</translation>

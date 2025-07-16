@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">ලෝහ (දීප්තිමත්)</translation>
 <translation id="1070901266639972381">රාත්‍රී</translation>
 <translation id="1073690811593784042">වීදුරු (වර්ණ සහිත)</translation>
+<translation id="1074287282535157335">4 හෝ මාසිකව ගෙවන්න (සුදුසුකම් තිබේ නම්)</translation>
 <translation id="1074497978438210769">සුරක්ෂිත නැත</translation>
 <translation id="1074779248866616641">ප්‍රතිඵලය</translation>
 <translation id="1075364221219156102">මුරයතුරක් භාවිතා කරන්න</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">ප්‍රබල මුරපදයක් යෝජනා කරන්න…</translation>
 <translation id="2102495993840063010">Android යෙදුම්</translation>
 <translation id="2102519472192754194">වෙබ් බ්‍රවුසර</translation>
+<translation id="2103210856015238101">ස්පර්ශ කිරීමෙන් පිරවිය හැකි විශ්වාස කාඩ්පත් සම්පූර්ණ උසින් විවෘත කර ඇත.</translation>
 <translation id="2105838220373099643">භූමිකා නිරූපණ ක්‍රීඩා</translation>
 <translation id="2107021941795971877">මුද්‍රණ සහය</translation>
 <translation id="2108755909498034140">ඔබේ පරිගණකය යළි අරඹන්න</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">වෙළඳ දැන්වීම් මිනුම</translation>
 <translation id="3190736958609431397">හඹා නොයන්න</translation>
 <translation id="3194737229810486521"><ph name="URL" /> හට ඔබේ උපාංගයේ දත්ත ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> මත <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව දැන ගැනීමට ඉල්ලිය හැකිය</translation>
 <translation id="3201482403106004262">සමීක්ෂණය සමග දෝෂයක් සිදු විය.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">කියවීම් ප්‍රකාරය</translation>
 <translation id="3965672182149944205">ලිපිනය සුරකින්න ද?</translation>
 <translation id="3966044442021752214">නිෂ්පාදන සුරක්ෂිතතාව</translation>
+<translation id="396761677631735618">ස්පර්ශ කිරීමෙන් පිරවිය හැකි විශ්වාස කාඩ්පත් අඩක් උසින් විවෘත කර ඇත.</translation>
 <translation id="3969869202926863008">දේශීය ජාල ප්‍රවේශය</translation>
 <translation id="3970239200223030389">නිකුත් කළ දිනය</translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">අඩවි සැකසුම්</translation>
 <translation id="4169189393773057143">පක්ෂපාතී කාඩ්පත් කළමනාකරණය කරන්න හෝ Google Wallet හි මෙම යෝජනා ක්‍රියා විරහිත කරන්න</translation>
 <translation id="4169535189173047238">අවසර නොදෙන්න</translation>
+<translation id="4170851022123611628">විශ්වාස කාඩ්පත් ලැයිස්තුව වසා ඇත.</translation>
 <translation id="4171400957073367226">වැරදි සත්‍යාපන සන් කිරීමකි</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">අගුළු සහ යතුරු සාදන්නන්</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{තවත් අයිතම <ph name="ITEM_COUNT" />}one{තවත් අයිතම <ph name="ITEM_COUNT" />}other{තවත් අයිතම <ph name="ITEM_COUNT" />}}</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>
 <translation id="4177501066905053472">දැන්වීම් මාතෘකා</translation>
+<translation id="4178863275556660738">කාඩ්පත් නොවන ගෙවීම් ක්‍රම සමග ගෙවන්න</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">මිල හඹා නොයන්න</translation>
 <translation id="4190446002599583608">ඉතිහාස සෙවීම, AI බලගන්වයි</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">සමමුහුර්ත කළ මුරපද ඔබගේ Google ගිණුම සමග සංකේතනය කරන්න</translation>
 <translation id="4493480324863638523">අවලංගු URL. සම්මත සැලැස්මක් සහිත URL එකක් විය යුතුමයි, උදා: http://example.com හෝ https://example.com.</translation>
 <translation id="4494323206460475851">ඔබට සැකසීම් තුළ දැන්වීම් මාතෘකා බැලීමට සහ ඔබට අඩවි සමග බෙදා ගැනීමට අවශ්‍ය නොවන ඒවා අවහිර කිරීමට හැක. Chrome සති 4කට වඩා පැරණි දැන්වීම් මාතෘකා ස්වයංක්‍රීයව මකා දමයි.</translation>
+<translation id="4497010149473852018">ස්පර්ශ කිරීමෙන් පුරවා ගත හැකි විශ්වාස කාඩ්පත්. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="4500587658229086076">අනාරක්ෂිත අන්තර්ගතය</translation>
 <translation id="4504850595255879616">පුද්ගලයන් <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">මෙම විශේෂාංගය වැඩි දියුණු කිරීම සඳහා පුහුණු සමාලෝචකයින් විසින් දත්ත දැකිය හැක</translation>

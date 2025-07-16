@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адреси}many{# адрес}other{# адреси}}</translation>
 <translation id="1605405588277479165">Вимкнено – не рекомендовано</translation>
 <translation id="1605658421715042784">Копіювати зображення</translation>
+<translation id="1606899876897213121">Закрити підсумок останніх дій</translation>
 <translation id="1612754831519568745">Безпечний перегляд вимкнено. Увімкніть його, щоб захиститися від небезпечних сайтів, завантажень і розширень.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Виберіть "Додати до Google Календаря" або "Додати до Календаря Apple".</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">Група вкладок "<ph name="GROUP_TITLE" />", кількість: <ph name="TABS_NUMBER" />.</translation>
 <translation id="2577522251608256362">Околиці</translation>
 <translation id="2579713773888829241">Спільні диски</translation>
+<translation id="2583688836549072561">Група вкладок "<ph name="GROUP_TITLE" />" (кількість вкладок: <ph name="TABS_NUMBER" />), нові дії.</translation>
 <translation id="2593272815202181319">Однакової ширини</translation>
 <translation id="2601778637777010194">Відстежуйте зниження цін на товари</translation>
 <translation id="260378315836159338">Угорі екрана натисніть +</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">Налаштуйте головний екран</translation>
 <translation id="3277021493514034324">Адресу сайту скопійовано</translation>
 <translation id="3280562213547448728">Голосовий пошук</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, нові дії</translation>
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
 <translation id="3312300514034250578">Безпечний перегляд із розширеним захистом</translation>
@@ -1602,7 +1605,6 @@
 <translation id="7412027924265291969">Продовжити</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7417689656810783109">Перейменувати групу</translation>
-<translation id="7418703176995102827">Ані ваші розмови з Gemini, ані дані з Google Workspace не будуть перевірятися спеціалістами Google або використовуватися для покращення моделей генеративного штучного інтелекту.</translation>
 <translation id="7419565702166471774">Завжди використовувати надійні з’єднання</translation>
 <translation id="7425053386765766120">Додати спосіб оплати…</translation>
 <translation id="7425346204213733349">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Однак наявні дані залишаться у вашому обліковому записі.</translation>
@@ -1643,6 +1645,7 @@
 <translation id="7557508262441527045">Ви вийшли</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
+<translation id="7566349809380613217">Відкрити спільну групу "<ph name="GROUP_TITLE" />" (<ph name="CREATION_TEXT" />), яка містить стільки вкладок: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="7567579665882069209">Закладки приховано</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="7582666837709186351">Перекладайте текст на фотографіях або навколишніх об’єктах за допомогою камери.</translation>
@@ -1907,7 +1910,6 @@
 <translation id="8560253818350321773">Спочатку показувати продукти, які часто використовуються.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Над клавіатурою показується {count} варіант пароля.}one{Над клавіатурою показується {count} варіант пароля.}few{Над клавіатурою показуються {count} варіанти пароля.}many{Над клавіатурою показуються {count} варіантів пароля.}other{Над клавіатурою показуються {count} варіанта пароля.}}</translation>
 <translation id="8564894539416715395">Сторінка нової вкладки</translation>
-<translation id="8569414323292250522">Ми переглядаємо чати й використовуємо їх для покращення ШІ від Google. Дізнайтеся про варіанти, які можна вибрати. Відомості про ваше місцезнаходження також зберігаються в історії дій.</translation>
 <translation id="8569721750632860947">Яку URL-адресу ви хочете додати в список читання?</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8577056989960190117">Автоматично заповнити рік закінчення строку дії (<ph name="YEAR" />)</translation>

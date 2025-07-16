@@ -315,6 +315,7 @@
 <translation id="4895437082222824641">Åpne linken i en ny &amp;fane i Chrome</translation>
 <translation id="4918844574251943176">Bildet er kopiert</translation>
 <translation id="492720062778050435">Chrome anbefaler at du går gjennom denne utvidelsen</translation>
+<translation id="4946912144186040233">Chrome forstår skjemaer bedre og kan autofylle dem raskere for deg. Denne innstillingen er slått av.</translation>
 <translation id="4953650215774548573">Bruk Google Chrome som standardnettleser</translation>
 <translation id="495931528404527476">I Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex kunne ikke synkronisere dataene dine. Dette skyldes at påloggingsopplysningene for kontoen din er utdaterte.</translation>
@@ -323,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
 <translation id="504867494566807945">Åpne linker i Chrome fra alle apper. For å få enkel tilgang, festes Chrome på oppgavelinjen.</translation>
+<translation id="5049567194145991071">Når du klikker på «Ok», kan du lagre og bruke passord med mer i Google-kontoen din når du er logget på Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
 <translation id="5126049312684316860">Chrome forhåndslaster enda flere sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
@@ -507,6 +509,7 @@
 <translation id="7481213027396403996">Få den sterkeste sikkerheten i Chrome</translation>
 <translation id="749228101751499733">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chrome. <ph name="SHORTCUT" /> kan endre innstillingene dine for Google-tjenester.</translation>
 <translation id="7496017508659652909">Chrome forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome forstår skjemaer bedre og kan autofylle dem raskere for deg. Denne innstillingen er på.</translation>
 <translation id="7514258452813684157">Google-oppdateringstjeneste</translation>
 <translation id="7515191208480168435">Du kan feste Google Lens for å gjøre det enklere å finne den</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -539,6 +542,7 @@
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
 <translation id="7825851276765848807">Installeringen mislyktes på grunn av en uspesifisert feil. Last ned Google Chrome på nytt.</translation>
+<translation id="7826342993930002256">Din egen Chrome, overalt</translation>
 <translation id="7827099906024714326">Chrome må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Laster ned … <ph name="SECONDS" /> sekund(er) igjen</translation>
@@ -625,6 +629,7 @@
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8948460679427074738">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chrome anbefaler at du fjerner den.</translation>
+<translation id="8958307504142971576">Nå har du flere funksjoner tilgjengelig i Chrome</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8992769679401294069">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8999117580775242387">Når HTTPS ikke er tilgjengelig, bruker Chrome usikre tilkoblinger uten å advare deg</translation>

@@ -251,6 +251,7 @@ Wichtige Hinweise:
 
 Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
+<translation id="7195217321165708458">Gemini in Chromium</translation>
 <translation id="7219205286115692265">Über das Startbildschirm-Dock deines iPads kannst du schneller auf Chromium zugreifen.</translation>
 <translation id="7222001353246886083">In Chromium nach ${searchPhrase} suchen</translation>
 <translation id="7228180817326917122">Chromium-Tipp: Position der Adressleiste auswählen</translation>

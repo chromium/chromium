@@ -63,6 +63,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="1704230497453185209">Spletnim mestom ni dovoljeno predvajanje zvoka.</translation>
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1717996979683942279">Ko je možnost vklopljena, lahko spletna mesta zahtevajo upravljanje oken na vseh prikazih. Ko je možnost izklopljena, spletna mesta ne morejo upravljati oken na vseh prikazih.</translation>
+<translation id="1738912554587725807">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek«</translation>
 <translation id="1743802530341753419">Prikaži poziv, preden se spletnim mestom dovoli povezovanje z napravo (priporočeno)</translation>
 <translation id="1777815584158991902">Razdelek na dnu zaslona za vir Odkrivanje</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
@@ -186,6 +187,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3114012059975132928">Videopredvajalnik</translation>
 <translation id="3115898365077584848">Pokaži informacije</translation>
 <translation id="3123473560110926937">Blokirano na nekaterih spletnih mestih</translation>
+<translation id="3132996321662585180">Dnevno osveževanje</translation>
 <translation id="3143754809889689516">Predvajaj od začetka</translation>
 <translation id="3162899666601560689">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, in sicer tako, da na primer poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.</translation>
 <translation id="3165022941318558018">Dovoli spletnemu mestu uporabo piškotkov tretje osebe</translation>
@@ -356,6 +358,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5100237604440890931">Strnjeno – kliknite, če želite razširiti.</translation>
 <translation id="5116239826668864748">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
+<translation id="512938610812707830">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek« odprt pri polni višini</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Znižanje cene na odprtih zavihkih}one{Znižanja cen na odprtih zavihkih}two{Znižanja cen na odprtih zavihkih}few{Znižanja cen na odprtih zavihkih}other{Znižanja cen na odprtih zavihkih}}</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

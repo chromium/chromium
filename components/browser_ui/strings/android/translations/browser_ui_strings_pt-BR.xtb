@@ -63,6 +63,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="1704230497453185209">Não permitir que os sites toquem sons</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717996979683942279">Quando essa opção está ativada, os sites podem pedir para gerenciar janelas em todas as telas. Quando está desativada, os sites não podem gerenciar janelas em todas as telas.</translation>
+<translation id="1738912554587725807">Página inferior de coleções de temas para a página "Nova guia"</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir que sites se conectem ao dispositivo (recomendado)</translation>
 <translation id="1777815584158991902">Página inferior do feed do Discover</translation>
 <translation id="1779089405699405702">Decodificador de imagem</translation>
@@ -186,6 +187,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
+<translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3143754809889689516">Reproduzir do início</translation>
 <translation id="3162899666601560689">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras</translation>
 <translation id="3165022941318558018">Permitir que um site use cookies de terceiros</translation>
@@ -356,6 +358,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5100237604440890931">Visualização recolhida. Clique para expandir</translation>
 <translation id="5116239826668864748">Você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps</translation>
 <translation id="5123685120097942451">Guia anônima</translation>
+<translation id="512938610812707830">A página inferior de coleções de temas para a página "Nova guia" está aberta no tamanho máximo</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Redução no preço nas guias abertas}one{Redução no preço nas guias abertas}other{Reduções nos preços nas guias abertas}}</translation>
 <translation id="5186036860380548585">Opção disponível perto da parte superior da tela</translation>
 <translation id="5197729504361054390">Os contatos selecionados serão compartilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

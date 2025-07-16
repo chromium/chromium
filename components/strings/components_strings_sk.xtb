@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Kov (lesklý)</translation>
 <translation id="1070901266639972381">Noc</translation>
 <translation id="1073690811593784042">Sklo (farebné)</translation>
+<translation id="1074287282535157335">Platba v štyroch splátkach alebo mesačne (platia podmienky oprávnenosti)</translation>
 <translation id="1074497978438210769">Nezabezpečené</translation>
 <translation id="1074779248866616641">Výsledok</translation>
 <translation id="1075364221219156102">Použiť prístupový kľúč</translation>
@@ -656,6 +657,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2102134110707549001">Navrhnúť silné heslo…</translation>
 <translation id="2102495993840063010">Aplikácie pre Android</translation>
 <translation id="2102519472192754194">Webové prehliadače</translation>
+<translation id="2103210856015238101">Vernostné karty, ktoré môžete dopĺňať klepnutím, sú otvorené na celú výšku.</translation>
 <translation id="2105838220373099643">Hry s rolami</translation>
 <translation id="2107021941795971877">Podpory tlače</translation>
 <translation id="2108755909498034140">Reštartujte počítač</translation>
@@ -1293,6 +1295,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3187472288455401631">Meranie reklám</translation>
 <translation id="3190736958609431397">Prestať sledovať</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce natrvalo ukladať dáta vo vašom zariadení</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serveri <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Môže žiadať o povolenie zistiť, kedy aktívne používate toto zariadenie</translation>
 <translation id="3201482403106004262">V súvislosti s prieskumom sa vyskytla chyba</translation>
@@ -1767,6 +1770,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3963721102035795474">Režim čítačky</translation>
 <translation id="3965672182149944205">Chcete adresu uložiť?</translation>
 <translation id="3966044442021752214">Bezpečnosť služby</translation>
+<translation id="396761677631735618">Vernostné karty, ktoré môžete dopĺňať klepnutím, sú otvorené na polovičnú výšku.</translation>
 <translation id="3969869202926863008">Prístup k miestnej sieti</translation>
 <translation id="3970239200223030389">Dátum vydania</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
@@ -1887,6 +1891,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4165986682804962316">Nastavenia webov</translation>
 <translation id="4169189393773057143">Spravujte vernostné karty alebo vypnite tieto návrhy v Peňaženke Google</translation>
 <translation id="4169535189173047238">Nepovoliť</translation>
+<translation id="4170851022123611628">Zoznam vernostných kariet je zatvorený.</translation>
 <translation id="4171400957073367226">Nesprávny overovací podpis</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Zámky a zámočníci</translation>
@@ -1895,6 +1900,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> ďalšia položka}few{<ph name="ITEM_COUNT" /> ďalšie položky}many{<ph name="ITEM_COUNT" /> ďalšej položky}other{<ph name="ITEM_COUNT" /> ďalších položiek}}</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4177501066905053472">Témy reklám</translation>
+<translation id="4178863275556660738">Plaťte bezkartovými spôsobmi platby</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prestať sledovať cenu</translation>
 <translation id="4190446002599583608">Vyhľadávanie v histórii používajúce umelú inteligenciu</translation>
@@ -2090,6 +2096,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="449126573531210296">Šifrovať synchronizované heslá pomocou účtu Google</translation>
 <translation id="4493480324863638523">Neplatná webová adresa. Je nutné použiť webovú adresu so štandardnou schémou, napr. http://example.com alebo https://example.com.</translation>
 <translation id="4494323206460475851">V nastaveniach si môžete pozrieť témy reklám a zablokovať tie, ktoré nechcete zdieľať s webmi. Chrome navyše automaticky odstraňuje témy reklám staršie ako štyri týždne.</translation>
+<translation id="4497010149473852018">Vernostné karty, ktoré môžete dopĺňať klepnutím. Klávesnica je skrytá.</translation>
 <translation id="4500587658229086076">nezabezpečený obsah</translation>
 <translation id="4504850595255879616">Ľudia <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Údaje si môžu zobraziť vyškolení kontrolóri na účely zlepšenia tejto funkcie</translation>

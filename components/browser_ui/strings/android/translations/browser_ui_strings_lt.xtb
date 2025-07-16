@@ -63,6 +63,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1704230497453185209">Neleisti svetainėms leisti garso</translation>
 <translation id="1717218214683051432">Judesių jutikliai</translation>
 <translation id="1717996979683942279">Įjungus svetainėse gali būti prašoma tvarkyti langus visuose ekranuose. Išjungus svetainės negali tvarkyti langų visuose ekranuose.</translation>
+<translation id="1738912554587725807">Naujo skirtuko puslapio išvaizdos temų rinkinių apatinis lapas</translation>
 <translation id="1743802530341753419">Paklausti prieš leidžiant svetainėms prisijungti prie įrenginio (rekomenduojama)</translation>
 <translation id="1777815584158991902">„Discover“ sklaidos kanalo apatinis lapas</translation>
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
@@ -120,6 +121,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Svetainėje, kurioje lankotės, gali būti įterpta turinio iš kitų svetainių, pvz., vaizdų, skelbimų ir teksto. Šių kitų svetainių nustatyti slapukai vadinami trečiųjų šalių slapukais.</translation>
+<translation id="2411116727035790889">Įjungti sparčiuosius klavišus</translation>
 <translation id="2433507940547922241">Išvaizda</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Laikinai leidote šiai svetainei naudoti trečiųjų šalių slapukus, dėl kurių teikiama silpnesnė naršymo apsauga, bet labiau tikėtina, kad svetainės funkcijos veiks, kaip numatyta. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3114012059975132928">Vaizdo įrašų leistuvė</translation>
 <translation id="3115898365077584848">Rodyti informaciją</translation>
 <translation id="3123473560110926937">Užblokuota kai kuriose svetainėse</translation>
+<translation id="3132996321662585180">Atnaujinti kasdien</translation>
 <translation id="3143754809889689516">Paleisti nuo pradžios</translation>
 <translation id="3162899666601560689">Svetainės gali naudoti slapukus naršymo kokybei pagerinti, pavyzdžiui, kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės</translation>
 <translation id="3165022941318558018">Leisti svetainėje naudoti trečiųjų šalių slapukus</translation>
@@ -356,6 +359,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
 <translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
+<translation id="512938610812707830">Naujo skirtuko puslapio išvaizdos temų rinkinių apatinis lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sumažinta kaina atidarytuose skirtukuose}one{Sumažinta kaina atidarytuose skirtukuose}few{Sumažinta kaina atidarytuose skirtukuose}many{Sumažinta kaina atidarytuose skirtukuose}other{Sumažinta kaina atidarytuose skirtukuose}}</translation>
 <translation id="5186036860380548585">Parinktis pasiekiama netoli ekrano viršaus</translation>
 <translation id="5197729504361054390">Pasirinkti kontaktai bus bendrinami su <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

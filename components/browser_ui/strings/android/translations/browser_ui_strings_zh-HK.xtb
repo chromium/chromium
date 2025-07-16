@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">不允許網站播放音效</translation>
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717996979683942279">開咗之後，網站可以要求管理所有螢幕上面嘅視窗；閂咗之後，網站就管理唔到所有螢幕上面嘅視窗。</translation>
+<translation id="1738912554587725807">新分頁外觀主題集頁底面板</translation>
 <translation id="1743802530341753419">允許網站連接裝置前先詢問您 (建議)</translation>
 <translation id="1777815584158991902">「探索」動態消息頁底面板</translation>
 <translation id="1779089405699405702">圖片解碼器</translation>
@@ -186,6 +187,7 @@
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資料</translation>
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
+<translation id="3132996321662585180">每日重新整理</translation>
 <translation id="3143754809889689516">從頭開始播放</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品</translation>
 <translation id="3165022941318558018">允許網站使用第三方 Cookie</translation>
@@ -356,6 +358,7 @@
 <translation id="5100237604440890931">已收合 - 點擊即可展開。</translation>
 <translation id="5116239826668864748">你現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
+<translation id="512938610812707830">新分頁外觀主題集頁底面板宜家顯示喺成個畫面</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{已開啟的分頁上有商品降價}other{已開啟的分頁上有商品降價}}</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
@@ -445,7 +448,7 @@
 <translation id="615886654739818377">不允許網站管理你所有顯示屏上的視窗</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6171020522141473435">開咗之後，網站可以要求使用藍牙裝置。閂咗之後，網站唔可以使用藍牙裝置。</translation>
-<translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
+<translation id="6177128806592000436">你與此網站的連線並不安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
 <translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>

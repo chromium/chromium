@@ -108,6 +108,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1419753403124156396">I-restart ang Chrome?</translation>
 <translation id="1428770807407000502">I-off ang pag-sync?</translation>
 <translation id="1430915738399379752">I-print</translation>
+<translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1435593198351412143">Awtomatikong magbubukas ang mga PDF</translation>
 <translation id="1437543266176261764">Tumatakbo sa <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Ayusin ang mga sinusubaybayan mong produkto sa Mga Bookmark</translation>
@@ -719,6 +720,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4306489587293957491">Ilagay</translation>
 <translation id="4307992518367153382">Mga Pangunahing Kaalaman</translation>
 <translation id="4311652497846705514">Buksan ang PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Posibleng spam}one{Posibleng spam (#)}other{Posibleng spam (#)}}</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
 <translation id="4326079409704643112">Para magamit at ma-save ang data sa Chrome sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="433213510553688132">Sinusubaybayan…</translation>
@@ -1057,6 +1059,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="580893287573699959">Pamahalaan ang mga paksa at site kung saan ka interesado</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ipakita ang notification}one{Ipakita ang mga notification}other{Ipakita ang mga notification}}</translation>
 <translation id="5814749351757353073">Makipagsabayan sa mga paborito mong site</translation>
 <translation id="5823093032261493462">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" mula sa <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Puwede mong i-delete ang data sa Mga Setting ng Chrome</translation>

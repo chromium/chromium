@@ -63,6 +63,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1704230497453185209">Tillad ikke, at websites afspiller lyd</translation>
 <translation id="1717218214683051432">Bevægelsessensorer</translation>
 <translation id="1717996979683942279">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at administrere vinduer på alle dine skærme. Når denne indstilling er deaktiveret, kan websites ikke administrere vinduer på alle dine skærme.</translation>
+<translation id="1738912554587725807">Feltet i bunden med temasamlinger til udseendet af siden Ny fane</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
@@ -186,6 +187,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3114012059975132928">Videoafspiller</translation>
 <translation id="3115898365077584848">Vis info</translation>
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
+<translation id="3132996321662585180">Opdater dagligt</translation>
 <translation id="3143754809889689516">Afspil fra begyndelsen</translation>
 <translation id="3162899666601560689">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv</translation>
 <translation id="3165022941318558018">Tillad, at et website bruger tredjepartscookies</translation>
@@ -356,6 +358,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
 <translation id="5116239826668864748">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="512938610812707830">Feltet i bunden med temasamlinger til siden Ny fane er åbnet i fuld højde</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prisfald på dine åbne faner}one{Prisfald på dine åbne faner}other{Prisfald på dine åbne faner}}</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{عنوان واحد}zero{‫# عنوان}two{عنوانان}few{‫# عناوين}many{‫# عنوانًا}other{‫# عنوان}}</translation>
 <translation id="1605405588277479165">غير مفعّل - (غير مستحسَن)</translation>
 <translation id="1605658421715042784">نسخ الصورة</translation>
+<translation id="1606899876897213121">إغلاق ملخّص الأنشطة الحديثة</translation>
 <translation id="1612754831519568745">ميزة "التصفّح الآمن" غير مفعَّلة حاليًا. يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">مجموعة علامات تبويب تحمل اسم "<ph name="GROUP_TITLE" />"، وعدد علامات التبويب فيها <ph name="TABS_NUMBER" /></translation>
 <translation id="2577522251608256362">الحي</translation>
 <translation id="2579713773888829241">مساحات التخزين السحابي المشتركة</translation>
+<translation id="2583688836549072561">مجموعة علامات تبويب تحمل الاسم "<ph name="GROUP_TITLE" />" وتضم علامات تبويب يبلغ عددها <ph name="TABS_NUMBER" />، وبها نشاط جديد.</translation>
 <translation id="2593272815202181319">أحادي المسافة</translation>
 <translation id="2601778637777010194">تتيح لك تتبُّع انخفاض أسعار المنتجات</translation>
 <translation id="260378315836159338">في أعلى الشاشة، انقر على رمز "+"</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">تخصيص شاشتك الرئيسية</translation>
 <translation id="3277021493514034324">تم نسخ عنوان الموقع</translation>
 <translation id="3280562213547448728">بحث صوتي</translation>
+<translation id="3302837541200840455">علامة التبويب "<ph name="TAB_TITLE" />" بها نشاط جديد</translation>
 <translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3311748811247479259">غير مفعَّل</translation>
 <translation id="3312300514034250578">الحماية المحسّنة للتصفّح الآمن</translation>
@@ -1600,7 +1603,6 @@
 <translation id="7412027924265291969">متابعة</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7417689656810783109">إعادة تسمية المجموعة</translation>
-<translation id="7418703176995102827">‏لن يدقّق المراجعون في محادثاتك مع Gemini أو في بياناتك على Google Workspace، ولن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
 <translation id="7425053386765766120">إضافة طريقة دفع…</translation>
 <translation id="7425346204213733349">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من الإعدادات مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google.</translation>
@@ -1641,6 +1643,7 @@
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
+<translation id="7566349809380613217">يمكن فتح "<ph name="GROUP_TITLE" />"، وهي مجموعة مشتركة تضم علامات تبويب يبلغ عددها <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">الإشارات المرجعية مخفية</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="7582666837709186351">يمكنك ترجمة النصوص في صورك أو التي تراها حولك بالكاميرا.</translation>
@@ -1906,7 +1909,6 @@
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8561999115126307258">{count,plural, =1{يتوفّر خيار واحد ({count}) لكلمة المرور أعلى لوحة المفاتيح.}zero{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}two{يتوفّر خياران ({count}) لكلمة المرور أعلى لوحة المفاتيح.}few{تتوفّر {count} خيارات لكلمة المرور أعلى لوحة المفاتيح.}many{يتوفّر {count} خيارًا لكلمة المرور أعلى لوحة المفاتيح.}other{يتوفّر {count} خيار لكلمة المرور أعلى لوحة المفاتيح.}}</translation>
 <translation id="8564894539416715395">صفحة علامة تبويب جديدة</translation>
-<translation id="8569414323292250522">‏يتم استخدام المحادثات ومراجعتها لتحسين ذكاء Google الاصطناعي. إليك معلومات عن الخيارات المتاحة. يتم تخزين معلومات عن موقعك الجغرافي أيضًا ضِمن نشاطك.</translation>
 <translation id="8569721750632860947">‏ما هو عنوان URL الذي تريد إضافته إلى "قائمة القراءة"؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>

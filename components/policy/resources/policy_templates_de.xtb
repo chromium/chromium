@@ -2016,6 +2016,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2436302465999055995"><ph name="LACROS_NAME" /> als einzigen verfügbaren Browser festlegen (noch nicht implementiert)</translation>
 <translation id="2439187682308339104">Websites nicht erlauben, den Nutzer über die WebHID API um Zugriff auf HID-Geräte zu bitten</translation>
 <translation id="2439733504887695659">Schließen von Warnungen zu gehackten Passwörtern für eingegebene Anmeldedaten aktivieren</translation>
+<translation id="2446029789419870019">Nutzung der Funktion mit Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="2446244536806499267">Nutzer wird während der Audiowiedergabe nicht als inaktiv angesehen</translation>
 <translation id="2452225615952836461">Anfragemethoden immer groß schreiben</translation>
 <translation id="2454228136871844693">Für eine optimale Stabilität.</translation>
@@ -2188,6 +2189,7 @@ Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher W
 <translation id="2568488785376704318">Diese Richtlinie ist veraltet. Bitte verwende stattdessen die Richtlinie <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Gesprochenes Feedback deaktivieren</translation>
 <translation id="2570181623957732921"><ph name="DESK_API_NAME" /> für eine Liste von Drittanbieterdomains aktivieren</translation>
+<translation id="2571821662934804440">Nutzung der Funktion ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="2573850437942404034">Nicht zulassen</translation>
 <translation id="2575198840408498393">Erstellung von Roaming-Profilen deaktivieren</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" />-Event-Handler werden nicht mehr unterstützt. Ob sie ausgelöst werden, hängt von <ph name="UNLOAD_EVENT_NAME" />-<ph name="PERMISSIONS_POLICY_NAME" /> ab. Derzeit sind sie standardmäßig durch die Richtlinie zugelassen. Zukünftig werden sie schrittweise standardmäßig deaktiviert. Websites müssen sie dann mithilfe von <ph name="PERMISSIONS_POLICY_NAME" />-Headern explizit aktivieren. Mit dieser Unternehmensrichtlinie kann diese schrittweise Einstellung deaktiviert werden. Dabei wird die Aktivierung als Standardeinstellung erzwungen.
@@ -2862,6 +2864,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Sich
 Der Bericht enthält Status- und Nutzungsinformationen zum Profil, darunter die Betriebssystemversion, die Browserversion, die installierten Erweiterungen und alle angewandten Richtlinien.
 
 Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</translation>
+<translation id="3062559845875011810">Funktion nicht zulassen</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
 <translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>
@@ -4203,6 +4206,19 @@ Wenn diese Richtlinie
 * auf „Websites mit Inhalten nur für Erwachsene filtern“ festgelegt ist, werden als pornografisch eingestufte Websites gefiltert.
 
 Die Richtlinie gilt sowohl für die vom Nutzer aufgerufene URL als auch für iFrames. Die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor dieser Richtlinie und kann verwendet werden, um Ergebnisse der Google Safe Search API zu überschreiben.</translation>
+<translation id="4049706391182174257">Mit dieser Richtlinie wird die Verfügbarkeit der Funktion zur automatischen Passwortänderung von <ph name="PRODUCT_NAME" /> festgelegt.
+
+Wenn diese Option aktiviert ist, kann ein Nutzer einen Prozess auslösen, bei dem der Browser automatisch versucht, sein Passwort auf einer Website zu ändern. Dieser Prozess wird von generativer KI gesteuert. Das neue Passwort wird im Passwortmanager des Browsers gespeichert.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichem Feedback) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die Admin-Konsole verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über Google Workspace verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „GenAiDefaultSettings“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4052529125939620019">Komponentenerweiterung „CryptoToken“ beim Start laden</translation>
 <translation id="4053157306171963473">Melden der Aktivitätszeit auf Geräten deaktivieren</translation>
@@ -4504,6 +4520,7 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="4278656834593750050">Ladetöne aktivieren</translation>
+<translation id="4281322231545828290">Automatische Passwortänderung aktivieren</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-Symbol immer in der Symbolleiste anzeigen</translation>
 <translation id="4285510855646731405">Google Kalender (wird seit Version 135 unterstützt)</translation>
 <translation id="4285674129118156176">Nicht verknüpften Nutzern die Verwendung von ARC gestatten</translation>
@@ -4866,21 +4883,6 @@ Ein Gerät gilt als verwaltet, wenn eine Unternehmensversion des Betriebssystems
 <translation id="4557134566541205630">Standardsuchanbieter-URL für die "Neuer Tab"-Seite</translation>
 <translation id="4558166110367609724">Überspringt automatisch die Nutzungsbedingungen und lädt den Browser.</translation>
 <translation id="4559846397119102037">Verwendung von <ph name="LACROS_NAME" /> zulassen</translation>
-<translation id="456018799964679771">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bei TLS anbietet, unter Verwendung des NIST-Standards ML-KEM. Vor <ph name="PRODUCT_OS_NAME" /> 131 war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
-
-Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_OS_NAME" /> bei TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
-
-Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_OS_NAME" /> bei TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
-
-Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_OS_NAME" /> dem standardmäßigen Roll‑out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
-
-Das Anbieten von Kyber ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
-
-Auf Geräten, auf denen TLS nicht korrekt implementiert wird, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht mit dem Post-Quanten-Algorithmus kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
-
-Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_OS_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob Probleme auftreten, und lässt sich zum Beheben etwaiger Probleme deaktivieren.
-
-Wenn sowohl diese Richtlinie als auch die Richtlinie „PostQuantumKeyAgreementEnabled“ konfiguriert sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="4561560385824323005">Nutzern erlauben, ein vorkonfiguriertes Desktoplayout zum Laden auszuwählen</translation>
 <translation id="4561940244682063697">Nicht zulassen, dass Nutzer auf Websites aufgefordert werden, einen Videostream ihres Bildschirms freizugeben</translation>
 <translation id="4562165737444703281">Nutzern erlauben, Crostini-Portweiterleitung zu aktivieren bzw. zu konfigurieren</translation>
@@ -10036,19 +10038,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
       Diese Richtlinie wurde in Chrome 88 entfernt und wird ignoriert, wenn sie aktiviert wurde.
 
       Weitere Informationen findest du unter https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8137301668000005268">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bei TLS anbietet, unter Verwendung des NIST-Standards ML-KEM. Vor <ph name="PRODUCT_NAME" /> 131 war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
-
-Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_NAME" /> bei TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic ist dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
-
-Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_NAME" /> bei TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
-
-Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Roll‑out-Prozess für das Anbieten einer Post-Quanten-Schlüsselvereinbarung.
-
-Das Anbieten einer Post-Quanten-Schlüsselvereinbarung ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
-
-Auf Geräten, auf denen TLS nicht korrekt implementiert wird, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht mit dem Post-Quanten-Algorithmus kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
-
-Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird irgendwann nach Version 141 von <ph name="PRODUCT_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob Probleme auftreten, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="8137443729340035928">Nutzer bei der Anmeldung fragen, ob die letzte Sitzung wiederhergestellt werden soll.</translation>
 <translation id="8141795997560411818">Diese Richtlinie verhindert nicht, dass der Nutzer die Android Google Drive App verwendet. Wenn du den Zugriff auf Google Drive verhindern möchtest, solltest du auch das Installieren der Android Google Drive App nicht zulassen.</translation>
 <translation id="8142894094385450823">Empfohlene Sprachen für eine verwaltete Sitzung festlegen</translation>

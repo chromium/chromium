@@ -319,6 +319,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4895437082222824641">Open link in new Chrome &amp;tab</translation>
 <translation id="4918844574251943176">Image copied</translation>
 <translation id="492720062778050435">Chrome recommends you review this extension</translation>
+<translation id="4946912144186040233">Chrome understands forms better and can autofill them faster for you. This setting is off.</translation>
 <translation id="4953650215774548573">Set Google Chrome as your default browser</translation>
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex could not sync your data because your account sign-in details are out of date.</translation>
@@ -327,6 +328,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="504867494566807945">Open links in Chrome from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
+<translation id="5049567194145991071">When you click 'Got it', you can save and use passwords and more in your Google Account whenever you're signed in to Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Enter your passphrase to use and save Chrome data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Sign in to Chrome when you sign in to other Google services</translation>
 <translation id="5126049312684316860">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
@@ -515,6 +517,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="749228101751499733">While you're signed in, you can use your passwords and more from your Google Account in Chrome. <ph name="SHORTCUT" /> can change your Google services settings.</translation>
 <translation id="7496017508659652909">Chrome preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome understands forms better and can autofill them faster for you. This setting is on.</translation>
 <translation id="7514258452813684157">Google updater service</translation>
 <translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -547,6 +550,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7825851276765848807">Installation failed due to unspecified error. Please download Google Chrome again.</translation>
+<translation id="7826342993930002256">Your Chrome, everywhere</translation>
 <translation id="7827099906024714326">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
@@ -633,6 +637,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
+<translation id="8958307504142971576">You now have more features available in Chrome</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>

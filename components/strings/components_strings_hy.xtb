@@ -47,6 +47,7 @@
 <translation id="1070333806075222467">Մետաղ (փայլուն)</translation>
 <translation id="1070901266639972381">Գիշեր</translation>
 <translation id="1073690811593784042">Ապակի (գունավոր)</translation>
+<translation id="1074287282535157335">Վճարել ամեն ամիս կամ 4 անգամով (անհրաժեշտ է համապատասխանել պահանջներին)</translation>
 <translation id="1074497978438210769">Անվտանգ չէ</translation>
 <translation id="1074779248866616641">Արդյունք</translation>
 <translation id="1075364221219156102">Օգտագործել մուտքի բանալի</translation>
@@ -660,6 +661,7 @@
 <translation id="2102134110707549001">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="2102495993840063010">Android հավելվածներ</translation>
 <translation id="2102519472192754194">Վեբ դիտարկիչներ</translation>
+<translation id="2103210856015238101">Մշտական հաճախորդի քարտերի ցուցակը, որոնց տվյալները կարող են լրացվել մեկ կոճակի սեղմումով, ցուցադրված է ամբողջ էկրանով։</translation>
 <translation id="2105838220373099643">Դերախաղեր</translation>
 <translation id="2107021941795971877">Տպման աջակցում</translation>
 <translation id="2108755909498034140">Վերագործարկեք համակարգիչը</translation>
@@ -1302,6 +1304,7 @@
 <translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3190736958609431397">Այլևս չհետագծել</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="3201482403106004262">Հարցման հետ կապված սխալ առաջացավ</translation>
@@ -1779,6 +1782,7 @@
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
 <translation id="3965672182149944205">Պահե՞լ հասցեն</translation>
 <translation id="3966044442021752214">Պրոդուկտի անվտանգությունը</translation>
+<translation id="396761677631735618">Մշտական հաճախորդի քարտերի ցուցակը, որոնց տվյալները կարող են լրացվել մեկ կոճակի սեղմումով, ցուցադրված է էկրանի կեսով։</translation>
 <translation id="3969869202926863008">Լոկալ ցանցի հասանելիություն</translation>
 <translation id="3970239200223030389">Թողարկման ամսաթիվը</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
@@ -1897,6 +1901,7 @@
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
 <translation id="4169189393773057143">Կառավարեք մշտական հաճախորդի քարտերի տվյալները կամ անջատեք այս առաջարկները Google Wallet-ում</translation>
 <translation id="4169535189173047238">Չեղարկել</translation>
+<translation id="4170851022123611628">Մշտական հաճախորդի քարտերի ցուցակը փակ է։</translation>
 <translation id="4171400957073367226">Հաստատող ստորագրությունը սխալ է</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Փականներ և փականագործներ</translation>
@@ -1905,6 +1910,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Եվս <ph name="ITEM_COUNT" /> տարր}one{Եվս <ph name="ITEM_COUNT" /> տարր}other{Եվս <ph name="ITEM_COUNT" /> տարր}}</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
+<translation id="4178863275556660738">Վճարեք առանց քարտի վճարման եղանակներով</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
 <translation id="4190446002599583608">ԱԲ-ի միջոցով որոնում այցելությունների պատմությունում</translation>
@@ -2100,6 +2106,7 @@
 <translation id="449126573531210296">Գաղտնագրել համաժամացված գաղտնաբառերը Google հաշվի միջոցով</translation>
 <translation id="4493480324863638523">URL-ն անվավեր է: Պետք է լինի ստանդարտ սխեմայով URL, օր.՝ http://example.com կամ https://example.com։</translation>
 <translation id="4494323206460475851">Կարգավորումներում դուք կարող եք տեսնել գովազդի թեմաները և արգելափակել այն թեմաները, որոնցով դուք չեք ցանկանում կիսվել կայքերի հետ։ Chrome-ը նաև ավտոմատ ջնջում է այն թեմաները, որոնք ավելացվել են առնվազն 4 շաբաթ առաջ։</translation>
+<translation id="4497010149473852018">Մշտական հաճախորդի քարտեր, որոնց տվյալները կարող են լրացվել մեկ կոճակի սեղմումով։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="4500587658229086076">վտանգավոր բովանդակություն</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> հոգի</translation>
 <translation id="450602096898954067">Տվյալները կարող են դիտվել մասնագետների կողմից՝ այս գործառույթը բարելավելու նպատակով</translation>

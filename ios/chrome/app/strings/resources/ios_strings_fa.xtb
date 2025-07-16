@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{‫۱ نشانی}one{‫# نشانی}other{‫# نشانی}}</translation>
 <translation id="1605405588277479165">خاموش - توصیه نمی‌شود</translation>
 <translation id="1605658421715042784">کپی تصویر</translation>
+<translation id="1606899876897213121">بستن خلاصه فعالیت اخیر</translation>
 <translation id="1612754831519568745">«مرور ایمن» درحال‌حاضر خاموش است. از خودتان دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت کنید.</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1622717322707146952">‏«افزودن به تقویم Google» یا «افزودن به تقویم Apple» را انتخاب کنید.</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">گروه برگه، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> برگه.</translation>
 <translation id="2577522251608256362">محله</translation>
 <translation id="2579713773888829241">درایوهای مشترک</translation>
+<translation id="2583688836549072561">گروه زبانه‌ها، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> زبانه، فعالیت جدید.</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
 <translation id="2601778637777010194">کاهش قیمت محصولات را پیگیری کنید</translation>
 <translation id="260378315836159338">در بالای صفحه، روی + تک‌ضرب بزنید</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">سفارشی‌سازی کردن صفحه اصلی</translation>
 <translation id="3277021493514034324">نشانی سایت کپی شد</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
+<translation id="3302837541200840455">‫<ph name="TAB_TITLE" />، فعالیت جدید</translation>
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3312300514034250578">مرور ایمن پیشرفته</translation>
@@ -1602,7 +1605,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7412027924265291969">ادامه</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7417689656810783109">تغییر نام گروه</translation>
-<translation id="7418703176995102827">‏نه مکالمه‌های شما با Gemini و نه داده‌های Google Workspace توسط افراد بازبین بررسی نخواهند شد یا از آن‌ها برای بهبود دادن مدل‌های هوش مصنوعی زایا استفاده نخواهد شد.</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
 <translation id="7425053386765766120">افزودن روش پرداخت…</translation>
 <translation id="7425346204213733349">‏تغییرات در نشانک‌ها، سابقه، گذرواژه و سایر تنظیمات دیگر با حساب Google شما همگام‌سازی نخواهند شد. با این حال، داده‌های موجودتان در حساب Google شما باقی خواهند ماند.</translation>
@@ -1643,6 +1645,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7557508262441527045">از سیستم خارج شدید</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="7561982940498449837">بستن منو</translation>
+<translation id="7566349809380613217">باز کردن <ph name="GROUP_TITLE" />، گروه هم‌رسانی‌شده <ph name="NUMBER_OF_TABS" />،‏ <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">«نشانک‌ها» پنهان شده است</translation>
 <translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="7582666837709186351">با دوربین، نوشتار موجود در عکس‌ها یا محیط اطرافتان را ترجمه کنید.</translation>
@@ -1907,7 +1910,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8560253818350321773">موارد پراستفاده در ابتدا نشان داده می‌شود.</translation>
 <translation id="8561999115126307258">{count,plural, =1{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای گذرواژه در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="8564894539416715395">صفحه برگه جدید</translation>
-<translation id="8569414323292250522">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای بهبود هوش مصنوعی Google استفاده می‌شود. درباره انتخاب‌هایتان بیشتر بدانید. اطلاعات مربوط به مکان شما نیز همراه با فعالیتتان ذخیره می‌شود.</translation>
 <translation id="8569721750632860947">کدام نشانی وب را می‌خواهید به فهرست خواندن اضافه کنید؟</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8577056989960190117">تکمیل خودکار سال انقضا <ph name="YEAR" /></translation>

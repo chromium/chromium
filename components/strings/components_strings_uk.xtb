@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Метал (глянцевий)</translation>
 <translation id="1070901266639972381">Ніч</translation>
 <translation id="1073690811593784042">Скло (кольорове)</translation>
+<translation id="1074287282535157335">Виберіть варіант погашення: щомісяця або 4 платежі на виплат (за умови відповідності вимогам)</translation>
 <translation id="1074497978438210769">Не конфіденційний</translation>
 <translation id="1074779248866616641">Результат</translation>
 <translation id="1075364221219156102">Використовувати ключ доступу</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Запропонувати надійний пароль…</translation>
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2102519472192754194">Вебпереглядачі</translation>
+<translation id="2103210856015238101">Список карток постійного покупця, дані яких заповнюються дотиком, відкрито на всю висоту.</translation>
 <translation id="2105838220373099643">Рольові ігри</translation>
 <translation id="2107021941795971877">Підтримка друку</translation>
 <translation id="2108755909498034140">Перезавантажте комп’ютер</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">Оцінка ефективності реклами</translation>
 <translation id="3190736958609431397">Скасувати відстеження</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> хоче постійно зберігати дані на вашому пристрої</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може запитувати, чи ви активно використовуєте цей пристрій</translation>
 <translation id="3201482403106004262">З опитуванням сталася помилка.</translation>
@@ -1771,6 +1774,7 @@
 <translation id="3963721102035795474">Режим перегляду</translation>
 <translation id="3965672182149944205">Зберегти адресу?</translation>
 <translation id="3966044442021752214">Безпека продукту</translation>
+<translation id="396761677631735618">Список карток постійного покупця, дані яких заповнюються дотиком, відкрито на половину висоти.</translation>
 <translation id="3969869202926863008">Доступ до локальної мережі</translation>
 <translation id="3970239200223030389">Дата випуску</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -1891,6 +1895,7 @@
 <translation id="4165986682804962316">Налаштування сайтів</translation>
 <translation id="4169189393773057143">Керуйте картками постійного покупця або вимкніть ці пропозиції в Google Гаманці</translation>
 <translation id="4169535189173047238">Не дозволяти</translation>
+<translation id="4170851022123611628">Список карток постійного покупця закрито.</translation>
 <translation id="4171400957073367226">Недійсний підпис для підтвердження</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Замки й послуги слюсаря</translation>
@@ -1899,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ще <ph name="ITEM_COUNT" /> елемент}one{ще <ph name="ITEM_COUNT" /> елемент}few{ще <ph name="ITEM_COUNT" /> елементи}many{ще <ph name="ITEM_COUNT" /> елементів}other{ще <ph name="ITEM_COUNT" /> елемента}}</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4177501066905053472">Теми оголошень</translation>
+<translation id="4178863275556660738">Некарткові способи оплати</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Не відстежувати ціну</translation>
 <translation id="4190446002599583608">Пошук в історії за допомогою ШІ</translation>
@@ -2094,6 +2100,7 @@
 <translation id="449126573531210296">Шифрувати синхронізовані паролі за допомогою облікових даних Google</translation>
 <translation id="4493480324863638523">Недійсна URL-адреса. Потрібно вказати URL-адресу зі стандартною схемою, як-от http://example.com або https://example.com.</translation>
 <translation id="4494323206460475851">У налаштуваннях можна блокувати теми оголошень, якими ви не хочете ділитись із сайтами. Chrome також автоматично видаляє теми через 4 тижні.</translation>
+<translation id="4497010149473852018">Картки постійного покупця, дані яких заповнюються дотиком. Клавіатуру сховано.</translation>
 <translation id="4500587658229086076">незахищений контент</translation>
 <translation id="4504850595255879616">Люди в <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Наші спеціалісти можуть переглядати дані, щоб покращувати цю функцію</translation>
@@ -2661,6 +2668,7 @@
 <translation id="5466018172325111652">Не отримали код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
 <translation id="5472588168895083535">Відстеження рук заблоковано</translation>
+<translation id="5479505548832623900">Імовірно, розширення ігнорує це правило.</translation>
 <translation id="547963486735802022">Спробуйте повторно перенести файли</translation>
 <translation id="5481076368049295676">Цей вміст може намагатися встановити на ваш пристрій небезпечну програму, яка викрадає або видаляє інформацію. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Розташування вікон і вкладок</translation>
@@ -3548,6 +3556,7 @@
 <translation id="6970885655016700774">Тканина (архівна)</translation>
 <translation id="6971439137020188025">Швидко створюйте нові презентації в Google Презентаціях</translation>
 <translation id="6972629891077993081">Пристрої HID</translation>
+<translation id="6972867931824045907">Щоб використовувати буфер обміну, відкрийте <ph name="LINK" /> й надайте Chrome відповідний доступ.</translation>
 <translation id="6973656660372572881">Указано фіксовані проксі-сервери та URL-адреса сценарію .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 дюйм.</translation>
 <translation id="6978121630131642226">Пошукові системи</translation>
@@ -3911,6 +3920,7 @@
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Видалити дані кредитної картки з Chrome?</translation>
 <translation id="7569983096843329377">Чорний</translation>
+<translation id="7571813784389228510">Режим ШІ від Google</translation>
 <translation id="7574998639136359461">Обладнання для зимових видів спорту</translation>
 <translation id="7575207903026901870">Кнопка видалення підказки: натисніть Enter, щоб видалити цю підказку</translation>
 <translation id="7575800019233204241">"З’єднання не конфіденційне", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" або "Помилка сертифіката SSL"</translation>

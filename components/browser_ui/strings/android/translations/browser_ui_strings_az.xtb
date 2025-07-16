@@ -63,6 +63,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="1704230497453185209">Saytlara səs oxutmaq icazəsi verməyin</translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717996979683942279">Bu funksiya aktiv olduqda saytlar bütün displeylərdəki pəncərələri idarə etməyə icazə istəyə bilər. Bu funksiya deaktiv edildikdə saytlar bütün displeylərdəki pəncərələri idarə edə bilməz.</translation>
+<translation id="1738912554587725807">Yeni tab səhifəsinin görünüş teması kolleksiyalarına aid aşağıdakı vərəq</translation>
 <translation id="1743802530341753419">Saytlar cihaza qoşulmadan öncə icazə tələb edilsin (məsləhətlidir)</translation>
 <translation id="1777815584158991902">Lentin aşağıdakı vərəqini kəşf edin</translation>
 <translation id="1779089405699405702">Təsvir dekodlaşdırıcısı</translation>
@@ -186,6 +187,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3114012059975132928">Video pleyer</translation>
 <translation id="3115898365077584848">Məlumatı göstərin</translation>
 <translation id="3123473560110926937">Bəzi saytlarda bloklandı</translation>
+<translation id="3132996321662585180">Gündəlik yeniləyin</translation>
 <translation id="3143754809889689516">Başdan oxudun</translation>
 <translation id="3162899666601560689">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər</translation>
 <translation id="3165022941318558018">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verin</translation>
@@ -356,6 +358,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
 <translation id="5116239826668864748">İstənilən vaxt mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chrome istifadə edə bilərsiniz</translation>
 <translation id="5123685120097942451">Anonim tab</translation>
+<translation id="512938610812707830">Yeni tab səhifəsinin görünüş teması kolleksiyalarına aid aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açıq tablarda qiymət düşməsi}other{Açıq tablarda qiymət düşməsi}}</translation>
 <translation id="5186036860380548585">Seçim ekranın yuxarısına yaxın yerdə əlçatandır</translation>
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>

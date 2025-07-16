@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Métal (brillant)</translation>
 <translation id="1070901266639972381">Nuit</translation>
 <translation id="1073690811593784042">Verre (couleur)</translation>
+<translation id="1074287282535157335">Payez en quatre fois ou mensuellement (sous réserve d'éligibilité)</translation>
 <translation id="1074497978438210769">Non sécurisé</translation>
 <translation id="1074779248866616641">Résultat</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
@@ -656,6 +657,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2102134110707549001">Suggérer un mot de passe sécurisé…</translation>
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2102519472192754194">Navigateurs Web</translation>
+<translation id="2103210856015238101">Liste des cartes de fidélité à saisir de façon tactile, ouverte à pleine hauteur.</translation>
 <translation id="2105838220373099643">Jeux de rôles</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrez l'ordinateur</translation>
@@ -1296,6 +1298,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="3194737229810486521"><ph name="URL" /> souhaite stocker des données de façon permanente sur votre appareil</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Peut demander à savoir quand vous utilisez activement cet appareil</translation>
 <translation id="3201482403106004262">Une erreur s'est produite dans l'enquête.</translation>
@@ -1771,6 +1774,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3963721102035795474">Mode lecture</translation>
 <translation id="3965672182149944205">Enregistrer l'adresse ?</translation>
 <translation id="3966044442021752214">Sécurité du produit</translation>
+<translation id="396761677631735618">Liste des cartes de fidélité à saisir de façon tactile, ouverte à mi-hauteur.</translation>
 <translation id="3969869202926863008">Accès au réseau local</translation>
 <translation id="3970239200223030389">Date d'émission</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
@@ -1891,6 +1895,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4169189393773057143">Gérez vos cartes de fidélité ou désactivez ces suggestions dans Google Wallet</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
+<translation id="4170851022123611628">La liste des cartes de fidélité est fermée.</translation>
 <translation id="4171400957073367226">Signature de validation non valide.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Verrous et serrures</translation>
@@ -1899,6 +1904,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> élément supplémentaire}one{<ph name="ITEM_COUNT" /> élément supplémentaire}other{<ph name="ITEM_COUNT" /> éléments supplémentaires}}</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4177501066905053472">Thèmes des annonces</translation>
+<translation id="4178863275556660738">Payer avec des modes de paiement autres que des cartes</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
 <translation id="4190446002599583608">Recherche dans l'historique optimisée par l'IA</translation>
@@ -2094,6 +2100,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4493480324863638523">URL non valide : vous devez saisir une URL avec un schéma standard, comme http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Vous pouvez voir les thèmes d'annonces dans les paramètres, et bloquer ceux que vous ne souhaitez pas partager avec les sites. Par ailleurs, Chrome supprime automatiquement les thèmes d'annonces qui datent de plus de quatre semaines.</translation>
+<translation id="4497010149473852018">Liste des cartes de fidélité à saisir de façon tactile. Clavier masqué.</translation>
 <translation id="4500587658229086076">contenu non sécurisé</translation>
 <translation id="4504850595255879616">Personnes <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Des réviseurs spécialisés peuvent consulter les données pour améliorer cette fonctionnalité</translation>

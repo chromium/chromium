@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">Ekki leyfa vefsvæðum að spila hljóð</translation>
 <translation id="1717218214683051432">Hreyfiskynjarar</translation>
 <translation id="1717996979683942279">Þegar kveikt er á þessu geta vefsvæði beðið um stjórna á gluggum á öllum skjáunum þínum. Þegar slökkt er á þessu geta vefsvæði ekki stjórnað gluggum á skjáunum þínum.</translation>
+<translation id="1738912554587725807">Blað neðst með útlitsþemasöfnum fyrir síðu nýrra flipa</translation>
 <translation id="1743802530341753419">Spyrja áður en vefsvæðum er leyft að tengjast við tæki (mælt með)</translation>
 <translation id="1777815584158991902">Blað neðst á tillögustraumi</translation>
 <translation id="1779089405699405702">Afkóðun mynda</translation>
@@ -186,6 +187,7 @@
 <translation id="3114012059975132928">Myndspilari</translation>
 <translation id="3115898365077584848">Sýna upplýsingar</translation>
 <translation id="3123473560110926937">Útilokaðar á sumum vefsvæðum</translation>
+<translation id="3132996321662585180">Uppfæra daglega</translation>
 <translation id="3143754809889689516">Spila frá byrjun</translation>
 <translation id="3162899666601560689">Vefsvæði geta notað fótspor til að bjóða þér upp á betri vefnotkun, til dæmis að vera áfram skráð(ur) inn eða muna hvað þú setur í innkaupakörfuna</translation>
 <translation id="3165022941318558018">Leyfa vefsvæði að nota fótspor þriðju aðila</translation>
@@ -356,6 +358,7 @@
 <translation id="5100237604440890931">Minnkað – smelltu til að stækka.</translation>
 <translation id="5116239826668864748">Þú getur notað Chrome til að opna tengla úr skilaboðum, skjölum og öðrum forritum hvenær sem er</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
+<translation id="512938610812707830">Blað neðst með útlitsþemasöfnum fyrir síðu nýrra flipa, opið til fulls</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Verðlækkun á opnum flipum}one{Verðlækkanir á opnum flipum}other{Verðlækkanir á opnum flipum}}</translation>
 <translation id="5186036860380548585">Valkosturinn er við efri brún skjásins</translation>
 <translation id="5197729504361054390">Tengiliðunum sem þú valdir verður deilt með <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

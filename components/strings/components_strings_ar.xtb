@@ -1905,6 +1905,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{عنصر (<ph name="ITEM_COUNT" />) آخر}zero{<ph name="ITEM_COUNT" /> عنصر آخر}two{عنصران (<ph name="ITEM_COUNT" />) آخران}few{<ph name="ITEM_COUNT" /> عناصر أخرى}many{<ph name="ITEM_COUNT" /> عنصرًا آخر}other{<ph name="ITEM_COUNT" /> عنصر آخر}}</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
+<translation id="4178863275556660738">طُرق الدفع بدون بطاقات</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">إيقاف تتبُّع السعر</translation>
 <translation id="4190446002599583608">البحث في السجلّ باستخدام الذكاء الاصطناعي</translation>
@@ -3556,6 +3557,7 @@
 <translation id="6970885655016700774">نسيج (أرشفة)</translation>
 <translation id="6971439137020188025">‏إنشاء عرض تقديمي جديد من Google في "العروض التقديمية من Google" بسرعة</translation>
 <translation id="6972629891077993081">‏أجهزة HID</translation>
+<translation id="6972867931824045907">‏لاستخدام الحافظة، يجب منح Chrome إذن الوصول من خلال <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">‏تم تحديد كل من الخوادم الوكيلة الثابتة وعنوان URL للنص البرمجي pac.</translation>
 <translation id="6973988895180423160">3.5 × 5 بوصة</translation>
 <translation id="6978121630131642226">محرّكات البحث</translation>

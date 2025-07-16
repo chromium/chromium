@@ -1903,6 +1903,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> ഇനം കൂടി}other{<ph name="ITEM_COUNT" /> ഇനങ്ങൾ കൂടി}}</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4177501066905053472">പരസ്യ വിഷയങ്ങൾ</translation>
+<translation id="4178863275556660738">കാർഡ് ഇതര പേയ്മെന്റ് രീതികൾ ഉപയോഗിച്ച് പേ ചെയ്യുക</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അവസാനിപ്പിക്കുക</translation>
 <translation id="4190446002599583608">AI ഉപയോഗിച്ച് ചരിത്രം തിരയൽ</translation>
@@ -2666,6 +2667,7 @@
 <translation id="5466018172325111652">നിങ്ങളുടെ കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="5472588168895083535">കൈകൾ ട്രാക്ക് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തു</translation>
+<translation id="5479505548832623900">വിപുലീകരണം അവഗണിച്ചിരിക്കാൻ സാധ്യതയുണ്ട്.</translation>
 <translation id="547963486735802022">നിങ്ങളുടെ ഫയലുകൾ കൈമാറാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5481076368049295676">ഈ ഉള്ളടക്കം, നിങ്ങളുടെ ഉപകരണത്തിൽ വിവരങ്ങൾ മോഷ്‌ടിക്കുകയോ ഇല്ലാതാക്കുയോ ചെയ്യുന്ന തരത്തിലുള്ള സോഫ്‌റ്റ്‌വെയർ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">വിന്‍ഡോകളുടെയും ടാബുകളുടെയും ക്രമീകരണം</translation>
@@ -3553,6 +3555,7 @@
 <translation id="6970885655016700774">ഫാബ്രിക് (ആർക്കൈവൽ)</translation>
 <translation id="6971439137020188025">Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6972629891077993081">HID ഉപകരണങ്ങൾ</translation>
+<translation id="6972867931824045907">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് ഉപയോഗിക്കാൻ, <ph name="LINK" /> എന്നതിൽ Chrome-ന് ആക്‌സസ് നൽകുക.</translation>
 <translation id="6973656660372572881">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകളും ഒരു സ്‌ക്രിപ്റ്റ് URL-ഉം വ്യക്തമാക്കിയിരിക്കുന്നു.</translation>
 <translation id="6973988895180423160">3.5 x 5 ഇഞ്ച്</translation>
 <translation id="6978121630131642226">തിരയൽ യന്ത്രങ്ങൾ</translation>
@@ -3914,6 +3917,7 @@
 <translation id="7569490014721427265">ഗോൾഫ്</translation>
 <translation id="7569952961197462199">Chrome-ൽ നിന്ന് ക്രെഡിറ്റ് കാർഡ് നീക്കംചെയ്യണോ?</translation>
 <translation id="7569983096843329377">കറുപ്പ്</translation>
+<translation id="7571813784389228510">Google AI മോഡ്</translation>
 <translation id="7574998639136359461">വിന്റർ സ്‌പോർട്‌സ് ഉപകരണം</translation>
 <translation id="7575207903026901870">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, ഈ നിർദ്ദേശം നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക</translation>
 <translation id="7575800019233204241">"നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" അല്ലെങ്കിൽ "SSL സർട്ടിഫിക്കറ്റ് പിശക്"</translation>

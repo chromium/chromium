@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (Parlak)</translation>
 <translation id="1070901266639972381">Gece</translation>
 <translation id="1073690811593784042">Cam (Renkli)</translation>
+<translation id="1074287282535157335">4 taksitle veya aylık taksitlerle ödeyin (Uygunluk koşullarına tabidir.)</translation>
 <translation id="1074497978438210769">Güvenli değil</translation>
 <translation id="1074779248866616641">Sonuç</translation>
 <translation id="1075364221219156102">Geçiş Anahtarı Kullanın</translation>
@@ -656,6 +657,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2102134110707549001">Güçlü Şifre Öner…</translation>
 <translation id="2102495993840063010">Android uygulamaları</translation>
 <translation id="2102519472192754194">Web Tarayıcıları</translation>
+<translation id="2103210856015238101">Dokunarak doldurulabilen bağlılık kartları tam ekranda açıldı.</translation>
 <translation id="2105838220373099643">Rol Oyunları</translation>
 <translation id="2107021941795971877">Yazdırma destekleri</translation>
 <translation id="2108755909498034140">Bilgisayarınızı yeniden başlatın</translation>
@@ -1296,6 +1298,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3187472288455401631">Reklam ölçümü</translation>
 <translation id="3190736958609431397">Takibi bırak</translation>
 <translation id="3194737229810486521"><ph name="URL" />, cihazınıza kalıcı olarak veri depolamak istiyor</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> üzerinde <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek isteyebilir</translation>
 <translation id="3201482403106004262">Anketle ilgili bir hata oluştu.</translation>
@@ -1771,6 +1774,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3963721102035795474">Okuyucu Modu</translation>
 <translation id="3965672182149944205">Adres kaydedilsin mi?</translation>
 <translation id="3966044442021752214">Ürün güvenliği</translation>
+<translation id="396761677631735618">Dokunarak doldurulabilen bağlılık kartları ekranın yarısına kadar açıldı.</translation>
 <translation id="3969869202926863008">Yerel ağ erişimi</translation>
 <translation id="3970239200223030389">Veriliş tarihi</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
@@ -1891,6 +1895,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4165986682804962316">Site ayarları</translation>
 <translation id="4169189393773057143">Google Cüzdan'da bağlılık kartlarını yönetin veya bu önerileri devre dışı bırakın</translation>
 <translation id="4169535189173047238">İzin verme</translation>
+<translation id="4170851022123611628">Bağlılık kartları listesi kapatıldı.</translation>
 <translation id="4171400957073367226">Geçersiz doğrulama imzası</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Kilitler ve Çilingirler</translation>
@@ -1899,6 +1904,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> öğe daha}other{<ph name="ITEM_COUNT" /> öğe daha}}</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4177501066905053472">Reklam konuları</translation>
+<translation id="4178863275556660738">Kart harici ödeme yöntemleriyle ödeme yapın</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Fiyat takibini bırak</translation>
 <translation id="4190446002599583608">Yapay zeka destekli geçmişte arama</translation>
@@ -2094,6 +2100,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="449126573531210296">Senkronize edilen şifreleri Google Hesabınızla şifreleyin</translation>
 <translation id="4493480324863638523">Geçersiz URL. Standart şemaya sahip bir URL olmalıdır. Ör. http://example.com veya https://example.com.</translation>
 <translation id="4494323206460475851">Reklam konularını ayarlarda görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz. Ayrıca Chrome, 4 haftadan daha eski reklam konularını otomatik olarak siler.</translation>
+<translation id="4497010149473852018">Dokunarak doldurulabilen bağlılık kartları. Klavye gizli.</translation>
 <translation id="4500587658229086076">güvenli olmayan içerik</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> Kişi</translation>
 <translation id="450602096898954067">Bu özelliğin geliştirilmesi için veriler, eğitimli inceleme uzmanları tarafından görülebilir.</translation>

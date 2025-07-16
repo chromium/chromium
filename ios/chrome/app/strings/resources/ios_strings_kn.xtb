@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ವಿಳಾಸ}one{# ವಿಳಾಸಗಳು}other{# ವಿಳಾಸಗಳು}}</translation>
 <translation id="1605405588277479165">ಆಫ್ - ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="1605658421715042784">ಚಿತ್ರವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
+<translation id="1606899876897213121">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಯ ಸಾರಾಂಶವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1612754831519568745">ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಸದ್ಯಕ್ಕೆ ಆಫ್ ಆಗಿದೆ. ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳಿಂದ ರಕ್ಷಣೆ ಪಡೆಯಿರಿ.</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1622717322707146952">"Google Calendar ಗೆ ಸೇರಿಸಿ" ಅಥವಾ "Apple Calendar ಗೆ ಸೇರಿಸಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">ಟ್ಯಾಬ್‌ ಗುಂಪು, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ಟ್ಯಾಬ್‌ಗಳು.</translation>
 <translation id="2577522251608256362">ನೆರೆಹೊರೆ</translation>
 <translation id="2579713773888829241">ಹಂಚಿಕೊಂಡ ಡ್ರೈವ್‌ಗಳು</translation>
+<translation id="2583688836549072561">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ಟ್ಯಾಬ್‌ಗಳು, ಹೊಸ ಚಟುವಟಿಕೆ.</translation>
 <translation id="2593272815202181319">ಮೊನೋಸ್ಪೇಸ್</translation>
 <translation id="2601778637777010194">ಉತ್ಪನ್ನಗಳ ದರ ಇಳಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="260378315836159338">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ, + ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">ಹೋಮ್‌ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
 <translation id="3277021493514034324">ಸೈಟ್‌ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3280562213547448728">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, ಹೊಸ ಚಟುವಟಿಕೆ</translation>
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3311748811247479259">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="3312300514034250578">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌</translation>
@@ -1602,7 +1605,6 @@
 <translation id="7412027924265291969">ಮುಂದುವರಿಸಿ</translation>
 <translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7417689656810783109">ಗುಂಪನ್ನು ಮರುಹೆಸರಿಸಿ</translation>
-<translation id="7418703176995102827">Gemini ಜೊತೆಗಿನ ನಿಮ್ಮ ಸಂಭಾಷಣೆಗಳನ್ನಾಗಲಿ ಅಥವಾ ನಿಮ್ಮ Google Workspace ಡೇಟಾವನ್ನಾಗಲಿ ಮಾನವ ರಿವ್ಯೂವರ್‌ಗಳು ಪರಿಶೀಲಿಸುವುದಿಲ್ಲ ಅಥವಾ ಜನರೇಟಿವ್ AI ಮಾಡೆಲ್‌ಗಳನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7419565702166471774">ಯಾವಾಗಲೂ ಸುರಕ್ಷಿತವಾದ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="7425053386765766120">ಪಾವತಿ ವಿಧಾನವನ್ನು ಸೇರಿಸಿ…</translation>
 <translation id="7425346204213733349">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮಾಡಲಾಗುವ ಬದಲಾವಣೆಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಿಂಕ್‌ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ.</translation>
@@ -1643,6 +1645,7 @@
 <translation id="7557508262441527045">ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>
 <translation id="7561982940498449837">ಮೆನು ಮುಚ್ಚಿರಿ</translation>
+<translation id="7566349809380613217"><ph name="GROUP_TITLE" /> ಅನ್ನು ತೆರೆಯಿರಿ, <ph name="NUMBER_OF_TABS" /> ಹಂಚಿಕೊಂಡ ಗುಂಪುಗಳು, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7582666837709186351">ಫೋಟೋಗಳಲ್ಲಿನ ಅಥವಾ ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ ಪಠ್ಯವನ್ನು ಅನುವಾದಿಸಲು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ.</translation>
@@ -1907,7 +1910,6 @@
 <translation id="8560253818350321773">ಪದೇ ಪದೇ ಬಳಸುವ ಐಟಂಗಳನ್ನು ಮೊದಲು ತೋರಿಸಿ.</translation>
 <translation id="8561999115126307258">{count,plural, =1{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆ ಲಭ್ಯವಿದೆ.}one{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}other{ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮೇಲ್ಭಾಗದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಾಗಿ {count} ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.}}</translation>
 <translation id="8564894539416715395">ಹೊಸ ಟ್ಯಾಬ್‌ ಪುಟ</translation>
-<translation id="8569414323292250522">ಚಾಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು Google AI ಅನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಆಯ್ಕೆಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ. ನಿಮ್ಮ ಸ್ಥಳದ ಬಗ್ಗೆ ಮಾಹಿತಿಯನ್ನು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯೊಂದಿಗೆ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8569721750632860947">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ನೀವು ಯಾವ URL ಅನ್ನು ಸೇರಿಸಲು ಬಯಸುತ್ತೀರಿ?</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8577056989960190117">ಮುಕ್ತಾಯ ವರ್ಷವನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ <ph name="YEAR" /></translation>

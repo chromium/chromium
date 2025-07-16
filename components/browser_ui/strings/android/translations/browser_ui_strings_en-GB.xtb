@@ -63,6 +63,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1704230497453185209">Don't allow sites to play sound</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1717996979683942279">When on, sites can ask to manage windows on all your displays. When off, sites can't manage windows on all your displays.</translation>
+<translation id="1738912554587725807">New tab page appearance theme collections bottom sheet</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1777815584158991902">Discover feed bottom sheet</translation>
 <translation id="1779089405699405702">Image decoder</translation>
@@ -186,6 +187,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3114012059975132928">Video player</translation>
 <translation id="3115898365077584848">Show info</translation>
 <translation id="3123473560110926937">Blocked on some sites</translation>
+<translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
 <translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
 <translation id="3165022941318558018">Allow a site to use third-party cookies</translation>
@@ -356,6 +358,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
+<translation id="512938610812707830">New tab page appearance theme collections bottom sheet opened at full height</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

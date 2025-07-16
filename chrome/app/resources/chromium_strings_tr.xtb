@@ -3,6 +3,7 @@
 <translationbundle lang="tr">
 <translation id="1026101648481255140">Yüklemeyi Devam Ettir</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS'i güncellemek için yeniden başlat</translation>
+<translation id="103359417695385097">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar kapalı.</translation>
 <translation id="1040916596585577953">Chromium bu uzantıyı incelemenizi öneriyor.</translation>
 <translation id="1042552502243217427">Bir site kendi sayfasındaki bağlantıları gizli olarak önceden yüklemek istediğinde Chromium, Google sunucularını kullanır. Bu şekilde kimliğiniz önceden yüklenmiş siteden gizlenmiş olur, ancak Google hangi sitelerin önceden yüklendiğini öğrenir.</translation>
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
@@ -98,6 +99,7 @@
 <translation id="2241627712206172106">Bir bilgisayarı paylaşıyorsanız arkadaşlarınız ve aileniz ayrı olarak göz atabilir ve Chromium'u tam olarak istedikleri şekilde ayarlayabilir.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium, tarayıcınızı yavaşlatan sekmeyi duraklatmanızı öneriyor}other{Chromium, tarayıcınızı yavaşlatan sekmeleri duraklatmanızı öneriyor}}</translation>
 <translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
+<translation id="232860113504534383">Chromium'unuz her yerde</translation>
 <translation id="2343156876103232566">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chromium'da oturum açın.</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'da oturum açmanızı istiyor</translation>
@@ -275,6 +277,7 @@
 <translation id="4598116752460667024">Listeden herhangi bir işlemi arayın.</translation>
 <translation id="4613863813562375431">ChromiumOS sürümü</translation>
 <translation id="4621240073146040695">Az kaldı! Güncellemeyi tamamlamak için Chromium'u yeniden başlatın.</translation>
+<translation id="4654936675281451226">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar açık.</translation>
 <translation id="4665829708273112819">Uyarı: Chromium, uzantıların tarama geçmişinizi kaydetmesini engelleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="4673151026126227699">Chrome kullanım raporlarını da paylaşıyorsanız, ziyaret ettiğiniz URL'ler de bu raporlar kapsamında paylaşılır</translation>
 <translation id="4677944499843243528">Profilin başka bir bilgisayarda (<ph name="HOST_NAME" />) başka bir Chromium işlemi (<ph name="PROCESS_ID" />) tarafından kullanıldığı anlaşılıyor. Chromium, profili bozulmaması için kilitledi. Bu profili başka hiçbir işlemin kullanmadığından eminseniz profilin kilidini açabilir ve Chromium'u tekrar başlatabilirsiniz.</translation>
@@ -495,6 +498,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7585391435984513350">Son zamanlarda ziyaret etmediniz. Chromium, <ph name="PERMISSION" /> iznini kaldırdı.</translation>
 <translation id="761356813943268536">Chromium kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>
+<translation id="7622753900276619808">Artık Chromium'da daha fazla özellik kullanabilirsiniz</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7686590090926151193">Chromium varsayılan tarayıcınız değil</translation>
@@ -511,6 +515,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
+<translation id="786097294490253281">"Anladım"ı tıkladığınızda Chromium'da oturum açtığınız her zaman şifreleri ve diğer öğeleri Google Hesabınıza kaydedip kullanabilirsiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
 <translation id="7888981273428720788">Chromium'u varsayılan tarayıcınız olarak ayarlayın</translation>

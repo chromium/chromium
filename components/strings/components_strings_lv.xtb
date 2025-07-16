@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metāls (glancēts)</translation>
 <translation id="1070901266639972381">nakts</translation>
 <translation id="1073690811593784042">Stikls (krāsains)</translation>
+<translation id="1074287282535157335">Maksāt, veicot četrus maksājumus vai ikmēneša maksājumus (ir spēkā piemērotības prasības)</translation>
 <translation id="1074497978438210769">Nav droša</translation>
 <translation id="1074779248866616641">Rezultāts</translation>
 <translation id="1075364221219156102">Izmantot piekļuves atslēgu</translation>
@@ -656,6 +657,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2102134110707549001">Ieteikt drošu paroli…</translation>
 <translation id="2102495993840063010">Android lietotnes</translation>
 <translation id="2102519472192754194">Tīmekļa pārlūkprogrammas</translation>
+<translation id="2103210856015238101">Lojalitātes kartes, kas pieejamas aizpildīšanai pieskaroties, ir atvērtas pilnā augstumā.</translation>
 <translation id="2105838220373099643">Lomu spēles</translation>
 <translation id="2107021941795971877">Balsta struktūras drukāšana</translation>
 <translation id="2108755909498034140">Restartējiet datoru</translation>
@@ -1296,6 +1298,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3187472288455401631">Reklāmu novērtēšana</translation>
 <translation id="3190736958609431397">Atcelt izsekošanu</translation>
 <translation id="3194737229810486521">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi glabāt datus jūsu ierīcē.</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> serverī <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Var pieprasīt informāciju par to, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="3201482403106004262">Radās ar aptauju saistīta kļūda.</translation>
@@ -1770,6 +1773,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3963721102035795474">Lasītāja režīms</translation>
 <translation id="3965672182149944205">Vai saglabāt adresi?</translation>
 <translation id="3966044442021752214">Produkta drošība</translation>
+<translation id="396761677631735618">Lojalitātes kartes, kas pieejamas aizpildīšanai pieskaroties, ir atvērtas pusekrāna augstumā.</translation>
 <translation id="3969869202926863008">Piekļuve lokālajā tīklā</translation>
 <translation id="3970239200223030389">Izdošanas datums</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
@@ -1889,6 +1893,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
 <translation id="4169189393773057143">Pārvaldiet lojalitātes kartes vai izslēdziet šos ieteikumus lietotnē Google maks</translation>
 <translation id="4169535189173047238">Neatļaut</translation>
+<translation id="4170851022123611628">Lojalitātes karšu saraksts ir aizvērts.</translation>
 <translation id="4171400957073367226">Verifikācijas paraksts nav derīgs.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" />, <ph name="RESULT_OWNER" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Atslēgas un atslēdznieki</translation>
@@ -1897,6 +1902,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Vēl <ph name="ITEM_COUNT" /> vienums}zero{Vēl <ph name="ITEM_COUNT" /> vienumi}one{Vēl <ph name="ITEM_COUNT" /> vienums}other{Vēl <ph name="ITEM_COUNT" /> vienumi}}</translation>
 <translation id="4176463684765177261">Atspējota</translation>
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
+<translation id="4178863275556660738">Maksāt, izmantojot maksājumu veidus, kas nav kartes</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Atcelt cenas izsekošanu</translation>
 <translation id="4190446002599583608">MI nodrošināta meklēšana vēsturē</translation>
@@ -2092,6 +2098,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
 <translation id="4493480324863638523">Nederīgs URL. Vietrādim URL ir jābūt ar standarta shēmu, piemēram, “http://example.com” vai “https://example.com”.</translation>
 <translation id="4494323206460475851">Varat skatīt reklāmu tēmas iestatījumos un bloķēt tēmas, ko nevēlaties atļaut kopīgot ar vietnēm. Chrome arī regulāri dzēš reklāmu tēmas, kas ir vecākas par četrām nedēļām.</translation>
+<translation id="4497010149473852018">Lojalitātes kartes, kas pieejamas aizpildīšanai pieskaroties. Tastatūra ir paslēpta.</translation>
 <translation id="4500587658229086076">nedrošs saturs</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> personas</translation>
 <translation id="450602096898954067">Datus var skatīt profesionāli pārskatītāji, lai uzlabotu šo funkciju.</translation>

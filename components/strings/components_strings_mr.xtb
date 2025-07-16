@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">मेटल (ग्लॉसी)</translation>
 <translation id="1070901266639972381">रात्रीपर्यंत</translation>
 <translation id="1073690811593784042">ग्लास (कलर्ड)</translation>
+<translation id="1074287282535157335">४ हप्त्यांमध्ये किंवा मासिक पेमेंट करा (पात्रतेच्या अधीन आहे)</translation>
 <translation id="1074497978438210769">सुरक्षित नाही</translation>
 <translation id="1074779248866616641">परिणाम</translation>
 <translation id="1075364221219156102">पासकी वापरा</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">क्लिष्ट पासवर्ड सुचवा…</translation>
 <translation id="2102495993840063010">Android अ‍ॅप्स</translation>
 <translation id="2102519472192754194">वेब ब्राउझर</translation>
+<translation id="2103210856015238101">स्पर्श करून भरण्यासाठी उपलब्ध असलेली लॉयल्‍टी कार्ड पूर्ण उंचीवर उघडली आहेत.</translation>
 <translation id="2105838220373099643">भूमिका बजावण्याशी संबंधित गेम</translation>
 <translation id="2107021941795971877">प्रिंट सपोर्ट</translation>
 <translation id="2108755909498034140">तुमचा कॉंप्युटर रीस्टार्ट करा</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
 <translation id="3201482403106004262">सर्वेक्षणामध्ये एरर आली.</translation>
@@ -1770,6 +1773,7 @@
 <translation id="3963721102035795474">वाचक मोड</translation>
 <translation id="3965672182149944205">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="3966044442021752214">उत्पादन सुरक्षा</translation>
+<translation id="396761677631735618">स्पर्श करून भरण्यासाठी उपलब्ध असलेली लॉयल्‍टी कार्ड अर्ध्या उंचीवर उघडली आहेत.</translation>
 <translation id="3969869202926863008">स्थानिक नेटवर्क अ‍ॅक्सेस</translation>
 <translation id="3970239200223030389">जारी केल्याची तारीख</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
@@ -1890,6 +1894,7 @@
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
 <translation id="4169189393773057143">Google Wallet मध्ये लॉयल्‍टी कार्ड व्यवस्थापित करा किंवा या सूचना बंद करा</translation>
 <translation id="4169535189173047238">अनुमती देऊ नका</translation>
+<translation id="4170851022123611628">लॉयल्‍टी कार्डची सूची बंद आहे.</translation>
 <translation id="4171400957073367226">खराब पडताळणी स्वाक्षरी</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">कुलूप आणि कुलूप बनवणारे</translation>
@@ -1898,6 +1903,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{आणखी <ph name="ITEM_COUNT" /> आयटम}other{आणखी <ph name="ITEM_COUNT" /> आयटम}}</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
+<translation id="4178863275556660738">कार्डचा समावेश नसलेल्या पेमेंट पद्धती वापरून पेमेंट करा</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">किमतीचा बंद ठेवणे बंद करा</translation>
 <translation id="4190446002599583608">AI द्वारे सक्षम केलेले, इतिहास शोध</translation>
@@ -2093,6 +2099,7 @@
 <translation id="449126573531210296">तुमचे Google खाते वापरून सिंक केलेले पासवर्ड एंक्रिप्ट करा</translation>
 <translation id="4493480324863638523">चुकीची URL. URL चा एक ठरावीक फॉरमॅट असणे आवश्यक आहे, उदा. http://example.com or https://example.com.</translation>
 <translation id="4494323206460475851">तुम्ही सेटिंग्जमध्ये जाहिरातीचे विषय पाहू शकता आणि साइटसोबत जे शेअर केले जाऊ नयेत असे तुम्हाला वाटते ते ब्लॉक करू शकता. Chrome हे चार आठवड्यांपेक्षा जुने असलेले जाहिरातीचे विषय ऑटो-डिलीटदेखील करते.</translation>
+<translation id="4497010149473852018">स्पर्श करून भरण्यासाठी लॉयल्‍टी कार्ड उपलब्ध आहेत. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="4500587658229086076">असुरक्षित आशय</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> लोक</translation>
 <translation id="450602096898954067">या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी प्रशिक्षित परीक्षणकर्ते डेटा पाहू शकतात</translation>

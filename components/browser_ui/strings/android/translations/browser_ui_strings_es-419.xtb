@@ -63,6 +63,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717996979683942279">Cuando esta opción está activada, los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas. Cuando está desactivada, los sitios no pueden administrar las ventanas de todas tus pantallas.</translation>
+<translation id="1738912554587725807">Hoja inferior de las colecciones de temas de la apariencia de la página Nueva pestaña</translation>
 <translation id="1743802530341753419">Preguntar antes de permitir que los sitios se conecten a un dispositivo (recomendado)</translation>
 <translation id="1777815584158991902">Hoja inferior del feed de Descubre</translation>
 <translation id="1779089405699405702">Decodificador de imágenes</translation>
@@ -186,6 +187,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3114012059975132928">Reproductor de video</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
+<translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos del carrito de compras.</translation>
 <translation id="3165022941318558018">Permitir que un sitio utilice cookies de terceros</translation>
@@ -356,6 +358,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="5100237604440890931">Contraído; haz clic para expandir.</translation>
 <translation id="5116239826668864748">Puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos y otras apps</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
+<translation id="512938610812707830">La hoja inferior de las colecciones de temas de la apariencia de la página Nueva pestaña está totalmente abierta</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Reducción de precio en las pestañas abiertas}other{Reducciones de precio en las pestañas abiertas}}</translation>
 <translation id="5186036860380548585">Esta opción está disponible cerca de la parte superior de la pantalla.</translation>
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

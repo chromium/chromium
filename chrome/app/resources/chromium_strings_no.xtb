@@ -3,6 +3,7 @@
 <translationbundle lang="no">
 <translation id="1026101648481255140">Fortsett installasjonen</translation>
 <translation id="1029669172902658969">Start på nytt for å oppdatere &amp;ChromiumOS</translation>
+<translation id="103359417695385097">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg. Denne innstillingen er slått av.</translation>
 <translation id="1040916596585577953">Chromium anbefaler at du går gjennom denne utvidelsen</translation>
 <translation id="1042552502243217427">Når nettsteder ber om privat forhåndslasting av linker på sidene sine, bruker Chromium tjenerne til Google. Dermed skjules identiteten din for det forhåndslastede nettstedet, men Google får vite hvilke nettsteder som blir forhåndslastet.</translation>
 <translation id="1051793555070215510">Hjelp oss med å forbedre Inkognito ved å svare på denne undersøkelsen. Det tar ett minutt.</translation>
@@ -99,6 +100,7 @@
 <translation id="2241627712206172106">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chromium akkurat slik de vil.</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chromium anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="2313870531055795960">Kontrollerer nettadresser opp mot en liste i Chromium over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
+<translation id="232860113504534383">Din Chromium, overalt</translation>
 <translation id="2343156876103232566">For å sende numre herfra til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2361918034042471035">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chromium</translation>
@@ -278,6 +280,7 @@
 <translation id="4598116752460667024">Søk etter en prosess på listen.</translation>
 <translation id="4613863813562375431">ChromiumOS-versjon</translation>
 <translation id="4621240073146040695">Nå er oppdateringen snart ferdig! Start Chromium på nytt for å fullføre oppdateringen.</translation>
+<translation id="4654936675281451226">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg. Denne innstillingen er på.</translation>
 <translation id="4665829708273112819">Advarsel: Chromium kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="4677944499843243528">Profilen ser ut til å være i bruk av en annen Chromium-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chromium har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chromium på nytt.</translation>
@@ -498,6 +501,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7585391435984513350">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium bruker kameraet og mikrofonen din.</translation>
 <translation id="7617377681829253106">Nå er Chromium blitt enda bedre</translation>
+<translation id="7622753900276619808">Nå har du flere funksjoner tilgjengelig i Chromium</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7686590090926151193">Chromium er ikke standardnettleseren din</translation>
@@ -514,6 +518,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7828947555739565424">Det finnes allerede en Chromium-profil med denne kontoen på denne enheten</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7859018312476869945">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
+<translation id="786097294490253281">Når du klikker på «Ok», kan du lagre og bruke passord med mer i Google-kontoen din når du er logget på Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>
 <translation id="7872446069773932638">Laster ned … <ph name="SECONDS" /> sekund(er) igjen</translation>
 <translation id="7888981273428720788">Angi Chromium som standard</translation>

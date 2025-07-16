@@ -108,6 +108,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1419753403124156396">¿Quieres reiniciar Chrome?</translation>
 <translation id="1428770807407000502">¿Quieres desactivar la sincronización?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1433478348197382180">Modo de lectura</translation>
 <translation id="1435593198351412143">Abrir archivos PDF de forma automática</translation>
 <translation id="1437543266176261764">Se ejecuta en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizar tus productos con seguimiento en Favoritos</translation>
@@ -265,7 +266,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
-<translation id="223356358902285214">Actividad web y de aplicaciones</translation>
+<translation id="223356358902285214">Actividad web y en aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2238038374973843156">Mover grupo a otra ventana</translation>
 <translation id="2239812875700136898">Controla tus historias desde las opciones del botón Descubre</translation>
@@ -1167,6 +1168,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6255809143828972562">Con las herramientas de Chrome, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6264485186158353794">Volver a un sitio seguro</translation>
+<translation id="6267063201726531683">Hoja del modo de lectura</translation>
 <translation id="6277522088822131679">Se produjo un error al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">La hoja Contraseñas en todos tus dispositivos está cerrada</translation>

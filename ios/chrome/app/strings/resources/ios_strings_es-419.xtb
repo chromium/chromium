@@ -1602,7 +1602,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7417689656810783109">Cambiar el nombre del grupo</translation>
-<translation id="7418703176995102827">Tus conversaciones con Gemini y los datos de Google Workspace no serán analizados por revisores humanos ni se usarán para mejorar modelos de IA generativa.</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
 <translation id="7425053386765766120">Agregar forma de pago…</translation>
 <translation id="7425346204213733349">Los cambios de tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, los datos existentes permanecerán almacenados en tu cuenta de Google.</translation>
@@ -1907,7 +1906,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{Hay {count} opción de contraseña disponible arriba del teclado.}other{Hay {count} opciones de contraseña disponibles arriba del teclado.}}</translation>
 <translation id="8564894539416715395">Página Nueva pestaña</translation>
-<translation id="8569414323292250522">Los chats se revisan y se usan para mejorar la IA de Google. Obtén más información sobre tus elecciones. La información sobre tu ubicación también se almacena junto con tu actividad.</translation>
 <translation id="8569721750632860947">¿Qué URL te gustaría agregar a tu Lista de lectura?</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar el año de vencimiento <ph name="YEAR" /></translation>
@@ -2102,7 +2100,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="959066944189734975">Sigues a <ph name="CHANNEL_NAME" /></translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
-<translation id="963102227019621224">Actividad web y de aplicaciones</translation>
+<translation id="963102227019621224">Actividad web y en aplicaciones</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Únete al grupo de pestañas con <ph name="OWNER_NAME" />}=1{Únete al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} persona más}other{Únete al grupo de pestañas con <ph name="OWNER_NAME" /> y {COUNT} personas más}}</translation>
 <translation id="973493300226275298">Sigue el precio de un producto en diferentes tiendas en línea. Recibirás alertas cuando haya descuentos.</translation>

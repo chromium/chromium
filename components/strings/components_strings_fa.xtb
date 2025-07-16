@@ -1904,6 +1904,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> مورد دیگر}one{<ph name="ITEM_COUNT" /> مورد دیگر}other{<ph name="ITEM_COUNT" /> مورد دیگر}}</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
+<translation id="4178863275556660738">با روش‌های پرداخت بدون کارت پرداخت کنید</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
 <translation id="4190446002599583608">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
@@ -3554,6 +3555,7 @@
 <translation id="6970885655016700774">پارچه (آرشیوی)</translation>
 <translation id="6971439137020188025">‏ایجاد سریع ارائه جدید در «اسلایدنگار Google»</translation>
 <translation id="6972629891077993081">‏دستگاه‌های HID</translation>
+<translation id="6972867931824045907">‏برای استفاده از بریده‌دان، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="6973656660372572881">‏هم سرورهای پروکسی ثابت و هم آدرس اسکریپت pac. مشخص شده‌اند.</translation>
 <translation id="6973988895180423160">۵ × ۳٫۵ اینچ</translation>
 <translation id="6978121630131642226">موتورهای جستجو</translation>

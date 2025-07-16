@@ -1901,6 +1901,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> ਹੋਰ ਆਈਟਮ}one{<ph name="ITEM_COUNT" /> ਹੋਰ ਆਈਟਮ}other{<ph name="ITEM_COUNT" /> ਹੋਰ ਆਈਟਮਾਂ}}</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4177501066905053472">ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ</translation>
+<translation id="4178863275556660738">ਬਿਨਾਂ ਕਾਰਡ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4190446002599583608">ਇਤਿਹਾਸ ਦੀ ਖੋਜ, AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
@@ -3550,6 +3551,7 @@
 <translation id="6970885655016700774">ਕੱਪੜਾ (ਆਰਕਾਈਵਲ)</translation>
 <translation id="6971439137020188025">Slides ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਪੇਸ਼ਕਾਰੀ ਬਣਾਓ</translation>
 <translation id="6972629891077993081">HID ਡੀਵਾਈਸ</translation>
+<translation id="6972867931824045907">ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, <ph name="LINK" /> ਵਿੱਚ ਜਾ ਕੇ Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="6973656660372572881">ਦੋਵੇਂ ਸਥਿਰ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਅਤੇ ਇੱਕ .pac ਸਕ੍ਰਿਪਟ URL ਨਿਰਦਿਸ਼ਟ ਹਨ।</translation>
 <translation id="6973988895180423160">3.5 x 5 ਇੰਚ</translation>
 <translation id="6978121630131642226">ਖੋਜ ਇੰਜਣ</translation>

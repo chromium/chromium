@@ -1901,6 +1901,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> ಹೆಚ್ಚಿನ ಐಟಂ}one{<ph name="ITEM_COUNT" /> ಹೆಚ್ಚಿನ ಐಟಂಗಳು}other{<ph name="ITEM_COUNT" /> ಹೆಚ್ಚಿನ ಐಟಂಗಳು}}</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
+<translation id="4178863275556660738">ಕಾರ್ಡ್ ಅಲ್ಲದ ಪಾವತಿ ವಿಧಾನಗಳ ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4190446002599583608">ಇತಿಹಾಸ ಹುಡುಕಾಟ, AI ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
@@ -3551,6 +3552,7 @@
 <translation id="6970885655016700774">ಬಟ್ಟೆ (ಆರ್ಕೈವಲ್)</translation>
 <translation id="6971439137020188025">Slides ನಲ್ಲಿ ಹೊಸ Google ಪ್ರಸ್ತುತಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="6972629891077993081">HID ಸಾಧನಗಳು</translation>
+<translation id="6972867931824045907">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ಬಳಸಲು, <ph name="LINK" /> ಎಂಬಲ್ಲಿ Chrome ಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ.</translation>
 <translation id="6973656660372572881">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಮತ್ತು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಎರಡನ್ನೂ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="6973988895180423160">3.5 x 5 ಇಂಚು</translation>
 <translation id="6978121630131642226">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>

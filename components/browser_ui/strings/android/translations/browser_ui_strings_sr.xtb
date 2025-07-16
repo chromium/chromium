@@ -63,6 +63,7 @@
 <translation id="1704230497453185209">Не дозвољавај сајтовима да пуштају звук</translation>
 <translation id="1717218214683051432">Сензори покрета</translation>
 <translation id="1717996979683942279">Када је укључено, сајтови могу да траже да управљају прозорима на свим екранима. Када је искључено, сајтови не могу да управљају прозорима на свим екранима.</translation>
+<translation id="1738912554587725807">Доња табела са колекцијама тема за изглед странице нове картице</translation>
 <translation id="1743802530341753419">Питај пре него што дозволиш сајтовима да се повезују са уређајем (препоручено)</translation>
 <translation id="1777815584158991902">Доња табела Discover фида</translation>
 <translation id="1779089405699405702">Декодер слика</translation>
@@ -120,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Одобрене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Сајт који посећујете може да угради садржај са других сајтова, на пример, слике, огласе и текст. Колачићи које постављају ови други сајтови називају се колачићи треће стране.</translation>
+<translation id="2411116727035790889">Укључите пречице</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2434158240863470628">Преузимање је завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Привремено сте дозволили овом сајту да користи колачиће треће стране, што значи мање заштите при прегледању, али је већа вероватноћа да ће функције сајта радити према очекивањима. <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@
 <translation id="3114012059975132928">Видео плејер</translation>
 <translation id="3115898365077584848">Прикажи информације</translation>
 <translation id="3123473560110926937">Блокирано на неким сајтовима</translation>
+<translation id="3132996321662585180">Освежавај дневно</translation>
 <translation id="3143754809889689516">Пусти испочетка</translation>
 <translation id="3162899666601560689">Сајтови могу да користе колачиће за побољшање доживљаја прегледања, на пример, да бисте остали пријављени или да би ставке у вашој корпи за куповину остале сачуване</translation>
 <translation id="3165022941318558018">Дозволите сајту да користи колачиће треће стране</translation>
@@ -356,6 +359,7 @@
 <translation id="5100237604440890931">Скупљено је – Кликните да бисте проширили.</translation>
 <translation id="5116239826668864748">Можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама</translation>
 <translation id="5123685120097942451">Картица без архивирања</translation>
+<translation id="512938610812707830">Доња табела са колекцијама тема за изглед странице нове картице је отворена на целом екрану</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Снижење на отвореним картицама}one{Снижења на отвореним картицама}few{Снижења на отвореним картицама}other{Снижења на отвореним картицама}}</translation>
 <translation id="5186036860380548585">Опција је доступна у врху екрана</translation>
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

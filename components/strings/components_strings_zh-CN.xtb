@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">金属（平滑）</translation>
 <translation id="1070901266639972381">夜间</translation>
 <translation id="1073690811593784042">玻璃（彩色）</translation>
+<translation id="1074287282535157335">分 4 期支付或按月支付（需满足资格要求）</translation>
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1074779248866616641">结果</translation>
 <translation id="1075364221219156102">使用通行密钥</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">建议安全系数高的密码…</translation>
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2102519472192754194">网络浏览器</translation>
+<translation id="2103210856015238101">会员卡列表已以最大高度显示，轻触即可填充。</translation>
 <translation id="2105838220373099643">角色扮演游戏</translation>
 <translation id="2107021941795971877">打印方面的支持</translation>
 <translation id="2108755909498034140">重新启动计算机</translation>
@@ -1294,6 +1296,7 @@
 <translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956">“<ph name="SERVER_NAME" />”上的“<ph name="PRINTER_NAME" />”</translation>
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
 <translation id="3201482403106004262">调查问卷发生错误。</translation>
@@ -1767,6 +1770,7 @@
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3965672182149944205">要保存地址吗？</translation>
 <translation id="3966044442021752214">产品安全</translation>
+<translation id="396761677631735618">会员卡列表已以一半高度显示，轻触即可填充。</translation>
 <translation id="3969869202926863008">本地网络访问权限</translation>
 <translation id="3970239200223030389">签发日期</translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -1887,6 +1891,7 @@
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4169189393773057143">在 Google 钱包中管理会员卡或关闭这些建议</translation>
 <translation id="4169535189173047238">不允许</translation>
+<translation id="4170851022123611628">会员卡列表已关闭。</translation>
 <translation id="4171400957073367226">验证签名无效</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">锁具及相关服务</translation>
@@ -1895,6 +1900,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{另外 <ph name="ITEM_COUNT" /> 项}other{另外 <ph name="ITEM_COUNT" /> 项}}</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4177501066905053472">广告主题</translation>
+<translation id="4178863275556660738">使用非银行卡支付方式付款</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
 <translation id="4190446002599583608">利用 AI 搜索历史记录</translation>
@@ -2090,6 +2096,7 @@
 <translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
 <translation id="4493480324863638523">网址无效。必须是采用标准架构的网址，例如“http://example.com”或“https://example.com”。</translation>
 <translation id="4494323206460475851">您可以在设置中查看广告主题，并屏蔽不想与网站分享的广告主题。Chrome 还会自动删除保留时长超过 4 周的广告主题。</translation>
+<translation id="4497010149473852018">会员卡列表已打开，轻触即可填充。键盘已隐藏。</translation>
 <translation id="4500587658229086076">不安全内容</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" />人</translation>
 <translation id="450602096898954067">专职审核员可能会查看数据，以改进此功能</translation>

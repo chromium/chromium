@@ -588,7 +588,6 @@
 <translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="140723521119632973">सेलुलर सक्रिय गर्ने कार्य</translation>
-<translation id="1407908250220330281">यो प्रोफाइल अब व्यवस्थापन गरिने छ</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> को सम्पादन गर्ने डायलग खोल्न क्लिक गर्नुहोस्</translation>
 <translation id="1408504635543854729">फाइलहरू नामक एपमा यन्त्रको सामग्री अन्वेषण गर्नुहोस्। कुनै प्रशासकद्वारा बन्देज लगाइएको सामग्रीलाई परिमार्जन गर्न सकिँदैन।</translation>
 <translation id="1408980562518920698">व्यक्तिगत जानकारी व्यवस्थित गर्नुहोस्</translation>
@@ -801,7 +800,6 @@
 <translation id="1549966883323105187">आफ्ना सेभ गरिएका पासवर्डहरू अझ छिटो हेर्नुहोस्</translation>
 <translation id="1550656959113606473">डिफल्ट Chrome</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेन्सनले सर्च इन्जिन परिवर्तन गरी <ph name="SEARCH_PROVIDER_DOMAIN" /> बनाएको छ</translation>
-<translation id="1552357433305859738">यो प्रोफाइलसँग सिंक गर्न जारी राख्नुहोस् र उक्त डेटा मर्ज गर्नुहोस्</translation>
 <translation id="1552752544932680961">एक्सटेन्सन व्यवस्थित गर्नुहोस्</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1553947773881524342">आफ्नो Chromebook मा Microsoft 365 का बारेमा <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" />।</translation>
@@ -1082,7 +1080,6 @@
 <translation id="1741190788710022490">एड्याप्टिभ चार्जिङ</translation>
 <translation id="174123615272205933">रोजाइअनुसारको</translation>
 <translation id="1741314857973421784">जारी राख्नुहोस्</translation>
-<translation id="1743970419083351269">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
 <translation id="1744108098763830590">पृष्ठभूमि पृष्ठ</translation>
 <translation id="1745732479023874451">सम्पर्क सूची व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# वटा फाइल यो वेब एपमा खोलेर सम्पादन गर्ने हो?}}</translation>
@@ -1197,6 +1194,7 @@
 <translation id="1822635184853104396">नयाँ ट्याबमा पूर्ण डाउनलोड हिस्ट्री देखाउनुहोस्</translation>
 <translation id="1823768272150895732">फन्ट</translation>
 <translation id="1823781806707127806">व्यवस्थापन गरिएको प्रोफाइलमा हालको ब्राउजिङ डेटा समावेश गर्नुहोस्</translation>
+<translation id="1824499847634940868">एपको अपडेटको समीक्षा गर्नुहोस्</translation>
 <translation id="18245044880483936">डेटा ब्याकअप गर्दा तपाईंका बच्चाको ड्राइभको भण्डारण कोटा प्रयोग हुने छैन।</translation>
 <translation id="1824870205483790748">समूहलाई बुकमार्क बारमा पिन गर्नुहोस्</translation>
 <translation id="1825073796163165618">लिंकहरू अन गर्नुहोस्</translation>
@@ -2229,7 +2227,6 @@
 <translation id="2520961587246779103">स्प्लिट भ्यूसम्बन्धी थप विकल्पहरू</translation>
 <translation id="2521427645491031107">डिभाइसका सेटिङमा गई एपहरू सिंक गर्ने सुविधा अन वा अफ गर्न सकिन्छ</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
-<translation id="2521854691574443804"><ph name="FILE_NAME" /> तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...</translation>
 <translation id="252277619743753687">पासवर्डहरू चयन गर्नुहोस्</translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="2524093372979370955">तपाईंले यसो गर्नुभयो भने सिस्टममा कनेक्ट गरिने सबै नयाँ USB डिभाइसहरूका बारेमा नोटिफिकेसन पठाउने सुविधा अफ गरिने छ। तपाईंले जारी राख्न खोज्नुभएकै हो?</translation>
@@ -2742,7 +2739,6 @@
 <translation id="2876484123356705658">समयावधि तय गर्नुहोस्</translation>
 <translation id="2876556152483133018">साइटमा भएको कुरा खोज्ने सुविधा</translation>
 <translation id="2877467134191447552">तपाईं वेबसाइट तथा एपहरू चलाउनका लागि प्रयोग गर्न सकिने अतिरिक्त खाताहरू थप्न सक्नुहुन्छ।</translation>
-<translation id="2878782256107578644">स्क्यान गर्ने कार्य भइरहेको छ, अहिले नै खोल्ने हो?</translation>
 <translation id="2878889940310164513">सेलुलर नेटवर्क थप्नुहोस्...</translation>
 <translation id="288042212351694283">तपाइँको सर्वव्यापक दोस्रो गुणक यन्त्रहरूमा पहुँच गर्नुहोस्</translation>
 <translation id="2881076733170862447">तपाईंले विस्तारमा क्लिक गर्दा</translation>
@@ -3173,7 +3169,6 @@
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> मा स्क्रिन कास्ट गर्ने कार्य पज गर्नुहोस्</translation>
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">यो डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइन सक्छ</translation>
-<translation id="3204717934117444051">यो डिभाइसमा मात्र सेभ गरिएको डेटा हालको प्रोफाइलमा रहिरहने छ। उक्त डेटा <ph name="EMAIL" /> मा सिंक गरिने छैन</translation>
 <translation id="3206289903841621620">प्रयोगकर्ताले तयार पारेको शब्दकोश <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">तपाईंलाई तपाईंले हालसालै गरेका क्रियाकलापका आधारमा तपाईंलाई मन पर्न सक्ने सिफारिस गरिएका खोज तथा किनमेल गर्दा पाइने छुटसम्बन्धी जानकारी देखाइँदै छ।
         <ph name="BREAK" />
@@ -3400,6 +3395,7 @@
 <translation id="3373196968211632036">Steam for Chromebook (बिटा) बच्चाका Google खाताहरूमा उपलब्ध छैन</translation>
 <translation id="3373701465337594448">यो सेटिङ अन भएका बेला यहाँ तपाईंले खोल्ने त्यस्ता साइटहरूको सूची देखिन्छ जसले तपाईंका रुचिहरू अनुमान लगाउँछन्</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' सारेर '<ph name="NEW_FOLDER_TITLE" />' मा लगियो।</translation>
+<translation id="3376035595160918049">एपको अपडेटको समीक्षा गर्नुहोस्</translation>
 <translation id="3378517653648586174">लोकल सर्टिफिकेटहरू</translation>
 <translation id="3378572629723696641">यो विस्तार दुषित भएको हुन सक्छ।</translation>
 <translation id="3378627645871606983">Steam लाई दिइएका अनुमति Steam मार्फत इन्स्टल गरिएका सबै गेम तथा एपहरूमा पनि लागू हुन्छन्।</translation>
@@ -4220,7 +4216,6 @@
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> फोल्डर खोल्नुहोस्</translation>
 <translation id="3915280005470252504">आवाजद्वारा खोज्नुहोस्</translation>
-<translation id="3916233823027929090">सुरक्षासम्बन्धी जाँचहरू गरिए</translation>
 <translation id="3916445069167113093">यस प्रकारको फाइलले तपाइँको कम्प्युटरलाई हानी गर्न सक्छ। के तपाइँ अझै पनि <ph name="FILE_NAME" /> राख्न चाहनुहुन्छ?</translation>
 <translation id="3917184139185490151">तपाईंको कम्प्युटरमा सुरक्षित मोड्युल समावेश छ। ChromeOS मा सुरक्षासम्बन्धी थुप्रै महत्त्वपूर्ण सुविधाहरू लागू गर्न उक्त मोड्युल प्रयोग गरिन्छ। तपाईं यसका सम्बन्धमा थप जान्न चाहनुहुन्छ भने Chromebook को मद्दत केन्द्रमा जानुहोस्: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="3917644013202553949">तपाईंका फाइलहरू सिंक गर्न भण्डारणमा पर्याप्त खाली ठाउँ छैन। भण्डारणमा ठाउँ खाली गरी हेर्नुहोस्।</translation>
@@ -4257,7 +4252,6 @@
 <translation id="3933121352599513978">अनावश्यक अनुरोधहरू कोल्याप्स गर्नुहोस् (सिफारिस गरिन्छ)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ले तपाईंसँग कुनै Wi-Fi नेटवर्क सेयर गर्दै छ</translation>
 <translation id="3936390757709632190">अडियो नयाँ ट्याबमा &amp;खोल्नुहोस्</translation>
-<translation id="3937110354160507845">यो एपले Chrome मा <ph name="OPENINGS_COUNT" /> वटा नयाँ विन्डो वा ट्याब खोलेको छ। तपाईं "पप-अप तथा रिडिरेक्टहरू" अनुमतिमा गई यो गतिविधि व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="3937640725563832867">प्रमाणपत्र जारीकर्ता वैकल्पिक नाम</translation>
 <translation id="3937734102568271121">जुनसुकै बेला <ph name="LANGUAGE" /> भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="3938128855950761626">विक्रेता <ph name="VENDOR_ID" /> का यन्त्रहरू</translation>
@@ -4357,7 +4351,6 @@
 <translation id="3994878504415702912">&amp;जूम गर्नुहोस्</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
 <translation id="3995963973192100066">प्ले गर्ने बटनको एनिमेसन</translation>
-<translation id="3997537546406230684">नयाँ वर्क प्रोफाइल बनाउनुहोस् र मेरो हालको डेटा छुट्टै राख्नुहोस्</translation>
 <translation id="399788104667917863">टुलबारमा पिन गर्नुहोस्</translation>
 <translation id="3998780825367526465">ट्याबको प्रिभ्यू फोटोहरू देखाउनुहोस्</translation>
 <translation id="3998976413398910035">प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -4379,7 +4372,6 @@
 <translation id="4016762287427926315">तपाईंले <ph name="APP_NAME" /> लाई दिने अनुमति यो एपलाई पनि दिइने छ। <ph name="BEGIN_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">यो लिंकको QR कोड बनाउनुहोस्</translation>
 <translation id="4019983356493507433">बुकमार्कको सूची परिवर्तन गर्नुहोस्</translation>
-<translation id="4020327272915390518">विकल्पहरू नामक मेनु</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="4021727050945670219">तपाईं टाउको थोरै चलाएर आफ्नो कर्सर छिटो सर्न नदिन सक्नुहुन्छ तर यसो गर्दा थोरै ढिलाइ हुन सक्छ।</translation>
 <translation id="402184264550408568">(TCP)</translation>
@@ -5807,7 +5799,6 @@
 <translation id="5059526285558225588">सेयर गरिनु पर्ने जानकारी छनौट गर्नुहोस्</translation>
 <translation id="5060332552815861872">सुरक्षित गर्नका लागि १ प्रिन्टर उपलब्ध छ।</translation>
 <translation id="5060419232449737386">क्याप्सनसम्बन्धी सेटिङ</translation>
-<translation id="5061270227873845372">हाल तपाईंको प्रोफाइलमा <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> र अन्य कुराहरू छन्। तपाईंको सङ्गठनले यो डेटा हेर्न तथा व्यवस्थापन गर्न सक्ने छ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{यस फोल्डरमा एउटा पुस्तक चिन्ह छ। तपाईं निश्चित रूपमा यसलाई मेटाउन चाहनुहुन्छ?}other{यस फोल्डरमा # वटा पुस्तक चिन्हहरू छन्। तपाईं निश्चित रूपमा यसलाई मेटाउन चाहनुहुन्छ?}}</translation>
 <translation id="5061531353537614467">टुन्ड्रा</translation>
 <translation id="5062930723426326933">साइन-इन असफल भयो, कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
@@ -7025,7 +7016,6 @@
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत पेज खोज्नुहोस्</translation>
 <translation id="5942779427914696408">यन्त्रको भिजिबिलिटी</translation>
 <translation id="5943127421590245687">तपाईंको खाता पुष्टि गरिएको छ। आफ्नो लोकल डेटा रिस्टोर गर्न कृपया तपाईंको पुरानो <ph name="DEVICE_TYPE" /> को पासवर्ड हाल्नुहोस्।</translation>
-<translation id="5945002094477276055"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google सुरक्षित ब्राउजिङ नामक सुविधामा पठाउने हो?</translation>
 <translation id="5945192511027649793">टचप्याड अफ गर्नुहोस्</translation>
 <translation id="5945363896952315544">तपाईंको सुरक्षा साँचोमा थप फिंगरप्रिन्ट भण्डारण गर्न मिल्दैन। तपाईंले हाल भण्डारण गरिएको कुनै फिंगरप्रिन्ट मेटाएपछि मात्र तपाईं नयाँ फिंगरप्रिन्ट हाल्न सक्नुहुन्छ।</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -7233,7 +7223,6 @@
 <translation id="6096326118418049043">X.500 नाम</translation>
 <translation id="6097480669505687979">तपाईँले ठाउँ खाली गर्नुभएन भने प्रयोगकर्ता र डेटालाई स्वतः हटाइन सक्छ।</translation>
 <translation id="6097600385983390082">आवाजमार्फत खोजी गर्ने सुविधा बन्द गरियो</translation>
-<translation id="6098793583803863900">खतरापूर्ण सामग्री छ कि भनी पत्ता लगाउन एउटा अज्ञात फाइल स्क्यान गरिँदै छ।</translation>
 <translation id="609892108553214365">यो कार्ड आफ्नो iPhone मा प्रयोग गर्नुहोस्</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> बाट पाठ कपी गरियो</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> लाई तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति सधैँ दिइयोस्</translation>
@@ -7287,7 +7276,6 @@
 <translation id="6134418895482326458">नयाँ ट्याब पेजमा फुटर लुकाउनुहोस्</translation>
 <translation id="6134428719487602109">प्रयोगकर्ताका सबै खाता हटाउनुहोस् र Chromebook रिसेट गरेर पूरै नयाँ जस्तो बनाउनुहोस्।</translation>
 <translation id="6135826623269483856">तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति नदिइएका साइटहरू</translation>
-<translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
 <translation id="6136285399872347291">ब्याकस्पेस</translation>
 <translation id="6136287496450963112">तपाईंको सुरक्षा साँचो PIN प्रयोग गरी सुरक्षित गरिएको छैन। फिंगरप्रिन्ट व्यवस्थापन गर्न सर्वप्रथम PIN बनाउनुहोस्।</translation>
 <translation id="6136872094979134163">Steam को Chromebook मा चल्ने संस्करणसम्बन्धी समाचार प्राप्त गर्न सकिएन।</translation>
@@ -7440,7 +7428,6 @@
 <translation id="6240964651812394252">अपरेटिङ सिस्टममा पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र कम्प्युटरको पासवर्ड म्यानेजर प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="6241530762627360640">तपाईंको सिस्टमसँग पेयर गरिएको ब्लूटुथ डिभाइसहरूको जानकारी पहुँच गर्नुहोस् र नजिकैको ब्लूटुथ यन्त्रहरू खोज्नुहोस्।</translation>
 <translation id="6241844896329831164">पहुँच चाहिँदैन</translation>
-<translation id="6242574558232861452">तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीति अनुकूल छ कि छैन भनी जाँच गरिँदै छ।</translation>
 <translation id="6242589501614145408">आफ्नो सुरक्षा साँचो रिसेट गर्नुहोस्</translation>
 <translation id="6242605626259978229">तपाईं व्यवस्थापन गरिएका ब्राउजर तथा प्रोफाइल प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="6242852299490624841">यो ट्याबमा केन्द्रित गर्नुहोस्</translation>
@@ -7550,7 +7537,6 @@
 <translation id="6316432269411143858">Google ChromeOS का सर्तहरूमा भएको सामग्री</translation>
 <translation id="6317369057005134371">एप सन्झ्याल प्रतिक्षा गर्दै...</translation>
 <translation id="6318125393809743217">पोलिसी कन्फिगुरेसनका साथमा policies.json फाइल समावेश गर्नुहोस्।</translation>
-<translation id="6318407754858604988">डाउनलोड सुरु भयो</translation>
 <translation id="6318944945640833942">प्रिन्टर पत्ता लगाउन सकिएन। कृपया प्रिन्टरको ठेगाना फेरि प्रविष्टि गर्नुहोस्।</translation>
 <translation id="6319278239690147683">सिंक गरिएका सबै डिभाइस र Google खाताबाट ब्राउजिङ डेटा मेटाउन <ph name="BEGIN_LINK" />सिंकसम्बन्धी सेटिङमा जानुहोस्<ph name="END_LINK" />।</translation>
 <translation id="6322370287306604163">फिंगरप्रिन्ट प्रयोग गरी अझ छिटो अनलक गर्नुहोस्</translation>
@@ -7764,7 +7750,6 @@
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="6483485061007832714">डाउनलोड खोल्नुहोस्</translation>
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{ट्याब समूह राखिराख्न चाहनुहुन्छ?}other{ट्याब समूहहरू राखिराख्न चाहनुहुन्छ?}}</translation>
-<translation id="6483805311199035658"><ph name="FILE" /> खोल्दै...</translation>
 <translation id="6486301003991593638">तपाईं पासकी व्यवस्थापन गर्न चाहनुहुन्छ भने Windows को अझ नयाँ संस्करण प्रयोग गर्नुहोस्</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> ले तपाईंका पासवर्डहरू डेटा चोरीका घटनामा खुलासा गरिएका छन् कि छैनन् भन्ने कुरा जाँच गर्न सक्दैन। इन्टरनेट जाँच गरी हेर्नुहोस्।</translation>
 <translation id="6488384360522318064">भाषा छनौट गर्नुहोस्</translation>
@@ -8192,6 +8177,7 @@
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> लाई टाढैबाट थपिएको थियो</translation>
 <translation id="6790820461102226165">व्यक्ति थप्नुहोस्...</translation>
+<translation id="6792351896138862473">प्रयोग गर्न नमिल्ने किअस्क एप सुरु गर्न सकिएन। आफ्ना एड्मिनलाई यो समस्याका बारेमा बताउनुहोस्।</translation>
 <translation id="6793610798874309813">तपाईं ४ वा सोभन्दा बढी वर्णको PIN राख्न सक्नुहुन्छ</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> क्लिपबोर्डमा कपी गरियो</translation>
@@ -9675,7 +9661,6 @@
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
 <translation id="7834832693620032149">अडियो सेयर गर्न यसको साटो ट्याब वा विन्डो सेयर गर्नुहोस्</translation>
 <translation id="7836577093182643605">साइटहरूसँग सेयर गर्न नचाहेका कारण तपाईंले ब्लक गर्नुभएका विषयहरूको सूची</translation>
-<translation id="7836745198769390202">हाल तपाईंको प्रोफाइलमा <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> र अन्य कुराहरू छन्। तपाईंको सङ्गठनले यो डेटा हेर्न तथा व्यवस्थापन गर्न सक्ने छ</translation>
 <translation id="7836850009646241041">आफ्नो सुरक्षा साँचो फेरि छोई हेर्नुहोस्</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> बाट प्राप्त गरिएको '<ph name="NETWORK_NAME" />' को पासवर्ड सेभ गर्न सकिएन</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /><ph name="DEVICE_NAME" /> मा पठाइएको छ}other{<ph name="ATTACHMENTS" /><ph name="DEVICE_NAME" /> मा पठाइएको छ}}</translation>
@@ -10605,7 +10590,6 @@
 <translation id="846205103980293931">{NUM_TABS,plural, =1{एउटा सामग्री भएको सूची बाकस}other{{NUM_TABS} वटा सामग्री भएको सूची बाकस}}</translation>
 <translation id="8463001014623882202">अनुमति दिइएको छैन</translation>
 <translation id="8463348458784127076">आफ्नो Chrome प्रोफाइलमा गई पासकीहरू व्यवस्थापन गर्नुहोस्</translation>
-<translation id="846374874681391779">डाउनलोडहरूको पट्टी</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> लाई असक्षम पारियो।</translation>
 <translation id="846399539692727039">ChromeOS Flex का डाइग्नोस्टिक परीक्षणहरू गर्ने</translation>
 <translation id="8464132254133862871">यो प्रयोगकर्ता खाता सेवाको लागि योग्य छैन।</translation>
@@ -11466,7 +11450,6 @@
 <translation id="9052404922357793350">रोक लगाइराख्नुहोस्</translation>
 <translation id="90528604757378587">निर्वाध रूपमा स्क्रोल गर्ने सुविधालगायतका ब्याकग्राउन्डमा हुने गतिविधि र केही भिजुअल इफेक्टहरू सीमित हुन सक्छ।</translation>
 <translation id="9053563360605707198">दुवैतिर प्रिन्ट गर्नुहोस्</translation>
-<translation id="9055810458113674066">हाल तपाईंको प्रोफाइलमा <ph name="NUMBERED_ITEM" /> र अन्य कुराहरू छन्। तपाईंको सङ्गठनले यो डेटा हेर्न तथा व्यवस्थापन गर्न सक्ने छ</translation>
 <translation id="9056788090206401048">अर्को डिभाइसमा पासकी प्रयोग गर्न ब्लुटुथ अन हुनु पर्छ। तपाईं जुनसुकै बेला सेटिङमा गई यो कुरा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="9056810968620647706">जोडाहरू भेटिएन।</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> निम्न सामग्री हेर्न चाहनुहुन्छ:</translation>
@@ -11583,7 +11566,6 @@
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> को सेटिङ पृष्ठ खोल्नुहोस्</translation>
 <translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9129562557082598582">सबै <ph name="CERT_GROUP" /> एक्स्पोर्ट गर्नुहोस्</translation>
-<translation id="9129857793923570143"><ph name="APP_NAME" /> ले एकभन्दा बढी विन्डो खोलेको छ।</translation>
 <translation id="9130015405878219958">अवैध मोड प्रविष्ट गरियो।</translation>
 <translation id="9130135798965366513"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />सेवाका सर्तहरू<ph name="END_LINK2" /> हेर्नुहोस्।</translation>
 <translation id="9130208109420587135"><ph name="NAME" /> नामक समूहको नाम परिवर्तन गर्नुहोस्</translation>

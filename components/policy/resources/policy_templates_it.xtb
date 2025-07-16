@@ -1655,6 +1655,17 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
+<translation id="2170953111275398079">Questa policy consente di configurare se <ph name="PRODUCT_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard NIST ML-KEM. Prima di <ph name="PRODUCT_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questa policy viene attivata o non viene impostata, <ph name="PRODUCT_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questa policy viene disattivata, <ph name="PRODUCT_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+L'offerta di un accordo chiave post-quantistico è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questa policy è una misura temporanea e verrà rimossa in un momento successivo alla versione 145 di <ph name="PRODUCT_NAME" />. Potrebbe essere attivata per consentirti di testare i problemi e potrebbe essere disattivata durante la risoluzione di questi ultimi.</translation>
 <translation id="2172201084331314152">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria, Terminal, Registratore, processi di stampa, key_shortcuts, Gmail, google_docs, google_slides, google_sheets, google_drive, google_keep, google_calendar, google_chat, YouTube, google_maps, Calcolatrice e text_editor da disattivare</translation>
 <translation id="2174946221763588594">Consente di stabilire se i siti visitati dagli utenti possono creare sessioni di realtà aumentata immersive usando l'<ph name="WEBXR_API_NAME" />.
 
@@ -2079,6 +2090,7 @@ Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialm
 <translation id="2436302465999055995">Imposta <ph name="LACROS_NAME" /> come unico browser disponibile (opzione non ancora implementata)</translation>
 <translation id="2439187682308339104">Non consentire a nessun sito di richiedere l'accesso ai dispositivi HID tramite l'API WebHID</translation>
 <translation id="2439733504887695659">Attiva la possibilità di ignorare gli avvisi relativi alle password compromesse per le credenziali inserite</translation>
+<translation id="2446029789419870019">Consenti l'utilizzo della funzionalità e il miglioramento dei modelli di AI</translation>
 <translation id="2446244536806499267">Non considerare l'utente inattivo durante la riproduzione di audio</translation>
 <translation id="2452225615952836461">Metodi di richiesta sempre in maiuscolo</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
@@ -2251,6 +2263,7 @@ Se questa policy viene impostata su False, la funzionalità di insiemi di siti w
 <translation id="2568488785376704318">Questa policy è deprecata. Usa la policy <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Disattiva feedback vocale</translation>
 <translation id="2570181623957732921">Attiva <ph name="DESK_API_NAME" /> per un elenco di domini di terze parti</translation>
+<translation id="2571821662934804440">Consenti l'utilizzo della funzionalità senza migliorare i modelli di AI</translation>
 <translation id="2573850437942404034">Non consentire</translation>
 <translation id="2575198840408498393">Disattiva la creazione di profili di roaming</translation>
 <translation id="25765864042030871">I gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> sono in fase di ritiro. La loro attivazione dipende dal valore <ph name="UNLOAD_EVENT_NAME" /> della policy <ph name="PERMISSIONS_POLICY_NAME" />. Attualmente sono consentiti per impostazione predefinita in base alla policy. In futuro passeranno gradualmente allo stato non consentito per impostazione predefinita e i siti dovranno attivarli in modo esplicito tramite le intestazioni <ph name="PERMISSIONS_POLICY_NAME" />. Questa policy aziendale può essere utilizzata per disattivare questo ritiro graduale. Per farlo, è necessario mantenere attiva l'impostazione predefinita.
@@ -2929,6 +2942,7 @@ Se questo criterio viene impostato su Disabled o se non viene configurato, la ra
 Il report include informazioni sull'utilizzo e sullo stato del profilo, incluse, a titolo esemplificativo, la versione del sistema operativo, la versione del browser, le estensioni installate e i criteri applicati.
 
 Questo criterio può essere impostato soltanto come policy per gli utenti cloud.</translation>
+<translation id="3062559845875011810">Non consentire la funzionalità</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -4287,6 +4301,19 @@ Se la policy viene impostata su:
 * Filtra i siti di contenuti per adulti, i siti pornografici vengono filtrati
 
 La policy viene applicata sia all'URL a cui l'utente accede sia agli iframe. La policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza su questa policy e può essere utilizzata per ignorare i giudizi dell'API Google Safe Search.</translation>
+<translation id="4049706391182174257">Questa policy controlla la disponibilità della funzionalità di modifica automatica della password di <ph name="PRODUCT_NAME" />.
+
+Se viene attivata, un utente può avviare una procedura in cui il browser tenta di modificare automaticamente la password su un sito web. Questa procedura è gestita dall'AI generativa. La nuova password viene salvata in Gestore delle password del browser.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti dalla Console di amministrazione Google e per gli account Education gestiti da Google Workspace.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy GenAiDefaultSettings.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
@@ -4601,6 +4628,7 @@ Questa policy è stata utilizzata per disattivare l'upgrade automatico dei conte
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="4275048399551500192">Non mostrare i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="4278656834593750050">Attiva i suoni di ricarica</translation>
+<translation id="4281322231545828290">Abilita la modifica automatica delle password</translation>
 <translation id="4282243913059705499">Mostra sempre l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti</translation>
 <translation id="4285510855646731405">Google Calendar (supportato a partire dalla versione 135)</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
@@ -4964,21 +4992,6 @@ Un dispositivo è considerato gestito utilizza una versione aziendale del sistem
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
 <translation id="4558166110367609724">Salta automaticamente TdS e carica il browser</translation>
 <translation id="4559846397119102037">Consenti l'utilizzo di <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">Questa policy a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard ML-KEM NIST. Prima di <ph name="PRODUCT_OS_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
-
-Se questa policy viene attivata, <ph name="PRODUCT_OS_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
-
-Se questa policy viene disattivata, <ph name="PRODUCT_OS_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
-
-Se questa policy non viene configurata, <ph name="PRODUCT_OS_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
-
-L'offerta di Kyber è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
-
-Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
-
-Questa policy è una misura temporanea e verrà rimossa in un momento successivo alla versione 141 di <ph name="PRODUCT_OS_NAME" />. Potrebbe essere attivata per consentirti di testare i problemi e potrebbe essere disattivata durante la risoluzione di questi ultimi.
-
-Se vengono impostate sia questa policy sia la policy PostQuantumKeyAgreementEnabled, questa policy avrà la precedenza.</translation>
 <translation id="4561560385824323005">Consente agli utenti di selezionare un layout desktop preconfigurato da caricare</translation>
 <translation id="4561940244682063697">Non consentire ai siti di richiedere all'utente la condivisione di un video stream del suo schermo</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
@@ -9377,6 +9390,19 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
 
       Se la norma non viene impostata, o viene impostata su false, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene attivata. Se viene impostata su true, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene disattivata.</translation>
 <translation id="7427607504279694910">I log eventi di installazione di app per Android non vengono condivisi con Google</translation>
+<translation id="7431456748240652287">Questa policy a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard ML-KEM NIST. Prima di <ph name="PRODUCT_OS_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questa policy viene attivata o non viene impostata, <ph name="PRODUCT_OS_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questa policy viene disattivata, <ph name="PRODUCT_OS_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+L'offerta di Kyber è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questa policy è una misura temporanea e verrà rimossa in un momento successivo alla versione 145 di <ph name="PRODUCT_OS_NAME" />. Potrebbe essere attivata per consentirti di testare i problemi e potrebbe essere disattivata durante la risoluzione di questi ultimi.
+
+Se vengono impostati sia questa policy sia PostQuantumKeyAgreementEnabled, questa policy avrà la precedenza.</translation>
 <translation id="7433253680989311514">Attiva il layout Hindi Inscript</translation>
 <translation id="7433714841194914373">Abilita Instant</translation>
 <translation id="7434202861148928348">Configura i nomi di dominio richiesti per i client di accesso remoto</translation>
@@ -10225,19 +10251,6 @@ Questa policy non avrà alcun effetto se la policy <ph name="SCREENSAVER_LOCK_SC
       Questa policy è stata rimossa nella versione 88 di Chrome e viene ignorata se viene impostata.
 
       Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8137301668000005268">Questa policy consente di configurare se <ph name="PRODUCT_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard NIST ML-KEM. Prima di <ph name="PRODUCT_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
-
-Se questa policy viene attivata, <ph name="PRODUCT_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
-
-Se questa policy viene disattivata, <ph name="PRODUCT_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
-
-Se questa policy non viene configurata, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
-
-L'offerta di un accordo chiave post-quantistico è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
-
-Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
-
-Questa policy è una misura temporanea e verrà rimossa in un momento successivo alla versione 141 di <ph name="PRODUCT_NAME" />. Potrebbe essere attivata per consentirti di testare i problemi e potrebbe essere disattivata durante la risoluzione di questi ultimi.</translation>
 <translation id="8137443729340035928">Chiedi all'utente all'accesso se ripristinare l'ultima sessione.</translation>
 <translation id="8141795997560411818">Questa norma non impedisce all'utente di utilizzare l'app Google Drive per Android. Se vuoi impedire l'accesso a Google Drive, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="8142894094385450823">Questa norma consente di impostare le impostazioni internazionali consigliate per una sessione gestita</translation>

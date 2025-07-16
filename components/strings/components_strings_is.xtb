@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Málmur (glans)</translation>
 <translation id="1070901266639972381">Nótt</translation>
 <translation id="1073690811593784042">Gler (litað)</translation>
+<translation id="1074287282535157335">Skiptu greiðslunni í fernt eða greiddu mánaðarlega (háð gjaldgengi)</translation>
 <translation id="1074497978438210769">Ekki öruggt</translation>
 <translation id="1074779248866616641">Niðurstaða</translation>
 <translation id="1075364221219156102">Nota aðgangslykil</translation>
@@ -656,6 +657,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2102134110707549001">Tillaga að traustu aðgangsorði…</translation>
 <translation id="2102495993840063010">Android forrit</translation>
 <translation id="2102519472192754194">Vafrar</translation>
+<translation id="2103210856015238101">Tryggðarkort sem hægt er að fylla út með einni snertingu, opin til fulls.</translation>
 <translation id="2105838220373099643">Hlutverkaleikir</translation>
 <translation id="2107021941795971877">Prentstuðningur</translation>
 <translation id="2108755909498034140">Endurræstu tölvuna</translation>
@@ -1296,6 +1298,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3187472288455401631">Auglýsingamælingar</translation>
 <translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill fá að geyma gögn varanlega í tækinu þínu</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> á <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Getur beðið um að fá að vita hvenær þú ert að nota tækið</translation>
 <translation id="3201482403106004262">Villa kom upp í könnuninni.</translation>
@@ -1771,6 +1774,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3963721102035795474">Lestrarstilling</translation>
 <translation id="3965672182149944205">Vista heimilisfang?</translation>
 <translation id="3966044442021752214">Öryggi vörunnar</translation>
+<translation id="396761677631735618">Tryggðarkort sem hægt er að fylla út með einni snertingu, opin til hálfs.</translation>
 <translation id="3969869202926863008">Aðgangur að staðarneti</translation>
 <translation id="3970239200223030389">Útgáfudagur</translation>
 <translation id="397105322502079400">Reiknar...</translation>
@@ -1891,6 +1895,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
 <translation id="4169189393773057143">Stjórnaðu tryggðarkortunum þínum eða slökktu á þessum tillögum í Google-veski</translation>
 <translation id="4169535189173047238">Ekki leyfa</translation>
+<translation id="4170851022123611628">Listi yfir tryggðarkort er lokaður.</translation>
 <translation id="4171400957073367226">Röng staðfestingarundirskrift</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Lásar og lásasmiðir</translation>
@@ -1899,6 +1904,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> atriði í viðbót}one{<ph name="ITEM_COUNT" /> atriði í viðbót}other{<ph name="ITEM_COUNT" /> atriði í viðbót}}</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
+<translation id="4178863275556660738">Borgaðu með öðrum greiðslumátum en korti</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Hætta að vakta verð</translation>
 <translation id="4190446002599583608">Leit í ferli með gervigreind</translation>
@@ -2094,6 +2100,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="449126573531210296">Dulkóða samstillt aðgangsorð með Google reikningnum þínum</translation>
 <translation id="4493480324863638523">Ógild vefslóð. Verður að vera vefslóð með hefðbundinni framsetningu, t.d. http://example.com or https://example.com.</translation>
 <translation id="4494323206460475851">Þú getur séð umfjöllunarefni auglýsinga í stillingunum og lokað á þau sem þú vilt ekki deila með vefsvæðum. Chrome eyðir einnig umfjöllunarefnum auglýsinga sem eru eldri en 4 vikna sjálfkrafa.</translation>
+<translation id="4497010149473852018">Tryggðarkort sem hægt er að fylla út með einni snertingu. Lyklaborð er falið.</translation>
 <translation id="4500587658229086076">óöruggt efni</translation>
 <translation id="4504850595255879616">Notendur <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Þjálfaðir yfirlesarar munu hugsanlega geta skoðað gögnin þín til að bæta eiginleikann</translation>

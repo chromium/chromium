@@ -985,7 +985,7 @@
 <translation id="4970724460420203313">使用受管理的账号登录 Chrome 有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
-<translation id="4985921635659180565">一旦安排删除文件，便无法取消。</translation>
+<translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
@@ -1128,7 +1128,7 @@
 <translation id="5581786858144165447">询问 AI 模式</translation>
 <translation id="5585019845078534178">卡片</translation>
 <translation id="5595485650161345191">修改地址</translation>
-<translation id="559567008082979829">设置在一个月后自动删除下载内容。</translation>
+<translation id="559567008082979829">设置为在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5611398002774823980">保存到账号</translation>
@@ -1602,7 +1602,6 @@
 <translation id="7412027924265291969">继续</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7417689656810783109">重命名分组</translation>
-<translation id="7418703176995102827">您与 Gemini 的对话以及您的 Google Workspace 数据不会经过人工审核，也不会用于改进生成式 AI 模型。</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
 <translation id="7425053386765766120">添加支付方式…</translation>
 <translation id="7425346204213733349">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但现有数据将继续存储在您的 Google 账号中。</translation>
@@ -1907,7 +1906,6 @@
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8561999115126307258">{count,plural, =1{键盘上方显示了 {count} 个密码选项。}other{键盘上方显示了 {count} 个密码选项。}}</translation>
 <translation id="8564894539416715395">新标签页</translation>
-<translation id="8569414323292250522">对话内容会接受审核，并用于改进 Google AI。了解您有哪些选择。与您所在位置有关的信息也会存储在活动记录中。</translation>
 <translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
@@ -1919,7 +1917,7 @@
 <translation id="8605219856220328675">关闭标签页。</translation>
 <translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
-<translation id="8620640915598389714">编辑</translation>
+<translation id="8620640915598389714">修改</translation>
 <translation id="8625706492572042370">修改主屏幕</translation>
 <translation id="8631370184731241854">锁定无痕式标签页</translation>
 <translation id="8633025649649592204">近期活动</translation>

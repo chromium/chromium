@@ -1899,6 +1899,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ yana <ph name="ITEM_COUNT" /> ta}other{ yana <ph name="ITEM_COUNT" /> ta}}</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
 <translation id="4177501066905053472">Reklamadagi mavzular</translation>
+<translation id="4178863275556660738">Kartasiz toʻlov usullari bilan toʻlash</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
 <translation id="4190446002599583608">AI yordamida brauzer tarixidan qidirish</translation>
@@ -2662,6 +2663,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5466018172325111652">Kod kelmadimi? <ph name="BEGIN_LINK" />Yangi kod oling<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">O‘zgarishlarni &amp;qaytarish</translation>
 <translation id="5472588168895083535">Qoʻllar holatini kuzatish bloklandi</translation>
+<translation id="5479505548832623900">Kengaytma tomonidan inkor etilgan koʻrinadi.</translation>
 <translation id="547963486735802022">Fayllarni qaytadan yuboring</translation>
 <translation id="5481076368049295676">Bu kontent zararli dastur o‘rnatishga yoki shaxsiy ma’lumotlaringizni o‘g‘irlashga urinishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" />.</translation>
 <translation id="5481604577800516617">Oynalar va varaqlarni moslash</translation>
@@ -3548,6 +3550,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6970885655016700774">Mato (arxiv)</translation>
 <translation id="6971439137020188025">Google Slidesda yangi taqdimotni tez yaratish</translation>
 <translation id="6972629891077993081">HID qurilmalar</translation>
+<translation id="6972867931824045907">Vaqtinchalik xotiradan foydalanishi uchun <ph name="LINK" />da Chromega ruxsat bering.</translation>
 <translation id="6973656660372572881">Sozlangan proksi-serverlar va PAC-skriptlar URL manzillari ko‘rsatilgan</translation>
 <translation id="6973988895180423160">3.5 x 5 in</translation>
 <translation id="6978121630131642226">Qidiruv tizimlari</translation>
@@ -3910,6 +3913,7 @@ Batafsil axborot:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Bu kredit karta Chrome’dan o‘chirib tashlansinmi?</translation>
 <translation id="7569983096843329377">Qora</translation>
+<translation id="7571813784389228510">Google AI rejimi</translation>
 <translation id="7574998639136359461">Qishki sport jihozlari</translation>
 <translation id="7575207903026901870">Taklifni olib tashlash tugmasi, bu taklifni olib tashlash uchun Enter tugmasini bosing</translation>
 <translation id="7575800019233204241">“Ulanishingiz himoyalanmagan” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” yoki “&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” yoki “SSL sertifikati xatoligi”</translation>

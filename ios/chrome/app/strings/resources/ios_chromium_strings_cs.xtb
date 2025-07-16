@@ -251,6 +251,7 @@ Co je třeba zvážit:
 
 Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Oznámení prohlížeče Chromium jsou aktuálně v nastavení zařízení vypnutá.</translation>
+<translation id="7195217321165708458">Gemini v Chromiu</translation>
 <translation id="7219205286115692265">Získejte rychlejší přístup k Chromiu z Docku na ploše iPadu.</translation>
 <translation id="7222001353246886083">Vyhledat ${searchPhrase} v prohlížeči Chromium</translation>
 <translation id="7228180817326917122">Tip pro Chromium: Vyberte si umístění adresního řádku</translation>

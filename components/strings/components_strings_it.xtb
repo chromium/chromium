@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metallo (lucido)</translation>
 <translation id="1070901266639972381">Notte</translation>
 <translation id="1073690811593784042">Vetro (colorato)</translation>
+<translation id="1074287282535157335">Paga in 4 rate o mensilmente (condizioni soggette a idoneità)</translation>
 <translation id="1074497978438210769">Non sicuro</translation>
 <translation id="1074779248866616641">Risultato</translation>
 <translation id="1075364221219156102">Usa una passkey</translation>
@@ -656,6 +657,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2102134110707549001">Suggerisci password efficace…</translation>
 <translation id="2102495993840063010">App Android</translation>
 <translation id="2102519472192754194">Browser web</translation>
+<translation id="2103210856015238101">Carte fedeltà che è possibile compilare tramite tocco aperte a schermo intero.</translation>
 <translation id="2105838220373099643">Giochi di ruolo</translation>
 <translation id="2107021941795971877">Supporti di stampa</translation>
 <translation id="2108755909498034140">Riavvia il computer</translation>
@@ -1293,6 +1295,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul dispositivo</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Può chiedere di sapere quando stai utilizzando attivamente questo dispositivo</translation>
 <translation id="3201482403106004262">Si è verificato un errore con il sondaggio.</translation>
@@ -1768,6 +1771,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3963721102035795474">Modalità Reader</translation>
 <translation id="3965672182149944205">Salvare l'indirizzo?</translation>
 <translation id="3966044442021752214">Sicurezza del prodotto</translation>
+<translation id="396761677631735618">Carte fedeltà che è possibile compilare tramite tocco aperte nella parte inferiore dello schermo.</translation>
 <translation id="3969869202926863008">Accesso alla rete locale</translation>
 <translation id="3970239200223030389">Data di emissione</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -1888,6 +1892,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4165986682804962316">Impostazioni sito</translation>
 <translation id="4169189393773057143">Gestisci le carte fedeltà o disattiva questi suggerimenti in Google Wallet</translation>
 <translation id="4169535189173047238">Non consentire</translation>
+<translation id="4170851022123611628">L'elenco delle carte fedeltà è chiuso.</translation>
 <translation id="4171400957073367226">Firma di verifica non valida</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Serrature e fabbri</translation>
@@ -1896,6 +1901,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> altro elemento}other{Altri <ph name="ITEM_COUNT" /> elementi}}</translation>
 <translation id="4176463684765177261">Disattivato</translation>
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
+<translation id="4178863275556660738">Paga con metodi di pagamento diversi dalle carte</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annulla monitoraggio prezzo</translation>
 <translation id="4190446002599583608">Ricerca nella cronologia basata sull'AI</translation>
@@ -2091,6 +2097,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
 <translation id="4494323206460475851">Puoi vedere gli argomenti degli annunci nelle impostazioni e bloccare quelli che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti degli annunci più vecchi di 4 settimane.</translation>
+<translation id="4497010149473852018">Carte fedeltà che è possibile compilare tramite tocco. Tastiera nascosta.</translation>
 <translation id="4500587658229086076">contenuti non sicuri</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> persone</translation>
 <translation id="450602096898954067">I dati potrebbero essere esaminati da revisori esperti per migliorare questa funzionalità</translation>
@@ -2658,6 +2665,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5466018172325111652">Non hai ricevuto il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Ripeti modifica</translation>
 <translation id="5472588168895083535">Tracciamento delle mani bloccato</translation>
+<translation id="5479505548832623900">Probabilmente ignorate dall'estensione.</translation>
 <translation id="547963486735802022">Prova a trasferire nuovamente i file</translation>
 <translation id="5481076368049295676">Questi contenuti potrebbero cercare di installare sul tuo dispositivo software pericoloso che si impossessa delle tue informazioni o le elimina. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Disposizione di finestre e schede</translation>
@@ -3055,7 +3063,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6151417162996330722">Il certificato del server ha un periodo di validità troppo lungo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corsa e camminata</translation>
-<translation id="6157079899699705880">La compilazione automatica con l'AI comprende meglio i moduli e può compilarli automaticamente e in modo più rapido al tuo posto</translation>
+<translation id="6157079899699705880">La compilazione automatica con l'AI comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido</translation>
 <translation id="6157754950574419155">Rimuovi tutto dalla cronologia</translation>
 <translation id="6157877588268064908">Seleziona un indirizzo per conoscere i requisiti e i metodi di spedizione</translation>
 <translation id="6159554577634054750">Disinfestazione</translation>
@@ -3907,6 +3915,7 @@ Ulteriori dettagli:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Rimuovere la carta di credito da Chrome?</translation>
 <translation id="7569983096843329377">Nero</translation>
+<translation id="7571813784389228510">Google AI Mode</translation>
 <translation id="7574998639136359461">Attrezzature e articoli per sport invernali</translation>
 <translation id="7575207903026901870">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere questo suggerimento</translation>
 <translation id="7575800019233204241">"La connessione non è privata", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Errore certificato SSL"</translation>

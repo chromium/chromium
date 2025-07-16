@@ -1898,6 +1898,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Nog <ph name="ITEM_COUNT" /> item}other{Nog <ph name="ITEM_COUNT" /> items}}</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
+<translation id="4178863275556660738">Betalen met andere betaalmethoden dan kaarten</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prijs volgen</translation>
 <translation id="4190446002599583608">Zoeken in geschiedenis, mogelijk gemaakt door AI</translation>
@@ -2661,6 +2662,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5466018172325111652">Heb je de code niet gekregen? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
 <translation id="5472588168895083535">Handen volgen geblokkeerd</translation>
+<translation id="5479505548832623900">Waarschijnlijk genegeerd door de extensie.</translation>
 <translation id="547963486735802022">Probeer je bestanden opnieuw over te zetten</translation>
 <translation id="5481076368049295676">Deze content probeert mogelijk gevaarlijke software op je apparaat te installeren die je gegevens steelt of verwijdert. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Indeling van vensters en tabbladen</translation>
@@ -3547,6 +3549,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6970885655016700774">Stof (archief)</translation>
 <translation id="6971439137020188025">Snel een nieuwe Google-presentatie in Presentaties maken</translation>
 <translation id="6972629891077993081">HID-apparaten</translation>
+<translation id="6972867931824045907">Geef Chrome toegang via <ph name="LINK" /> om je klembord te gebruiken.</translation>
 <translation id="6973656660372572881">Zowel vaste proxyservers als een pac-script-URL worden gespecificeerd.</translation>
 <translation id="6973988895180423160">3,5 x 5 inch</translation>
 <translation id="6978121630131642226">Zoekmachines</translation>
@@ -3910,6 +3913,7 @@ Aanvullende informatie:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
 <translation id="7569983096843329377">Zwart</translation>
+<translation id="7571813784389228510">Google AI-modus</translation>
 <translation id="7574998639136359461">Benodigdheden voor wintersport</translation>
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
 <translation id="7575800019233204241">'Je verbinding is niet privé' of '&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;' of '&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;' of '&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;' of 'SSL-certificaatfout'</translation>

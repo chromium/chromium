@@ -48,6 +48,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje}=1{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i bezbednosti u Chromium-u</translation>
 <translation id="1640672724030957280">Preuzimanje...</translation>
+<translation id="1689003475830815471">Da bi vam obeleživači, lozinke i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chromium</translation>
 <translation id="1709772298389099340">Pruža pune privilegije za <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Da bi poboljšao ove funkcije, Chromium Google-u šalje vaše interakcije sa njima. Osobe koje pregledaju mogu da čitaju, obrađuju i komentarišu ove podatke.</translation>
 <translation id="1722488837206509557">To će vam omogućiti da birate sa dostupnih uređaja i da prikazujete sadržaj na njima.</translation>
@@ -503,6 +504,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7585391435984513350">Niste skoro posećivali sajt. Chromium je uklonio dozvolu <ph name="PERMISSION" /></translation>
 <translation id="761356813943268536">Chromium koristi kameru i mikrofon.</translation>
 <translation id="7617377681829253106">Upravo smo poboljšali Chromium</translation>
+<translation id="7622753900276619808">Sada imate još funkcija dostupnih u Chromium-u</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7686590090926151193">Chromium nije podrazumevani pregledač</translation>

@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 అడ్రస్}other{# అడ్రస్‌లు}}</translation>
 <translation id="1605405588277479165">ఆఫ్‌లో ఉంది - సిఫార్సు చేయడం లేదు</translation>
 <translation id="1605658421715042784">ఇమేజ్‌ను కాపీ చేయండి</translation>
+<translation id="1606899876897213121">ఇటీవలి యాక్టివిటీకి సంబంధించిన సారాంశాన్ని మూసివేయండి</translation>
 <translation id="1612754831519568745">మీ సురక్షిత బ్రౌజింగ్ ప్రస్తుతం ఆఫ్‌లో ఉంది. హానికరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందండి.</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1622717322707146952">"Google Calendarకు జోడించు" లేదా "Apple Calendarకు జోడించు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">ట్యాబ్ గ్రూప్, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ట్యాబ్‌లు.</translation>
 <translation id="2577522251608256362">పరిసరాలు</translation>
 <translation id="2579713773888829241">షేర్ చేసిన డ్రైవ్‌లు</translation>
+<translation id="2583688836549072561">ట్యాబ్ గ్రూప్, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ట్యాబ్‌లు, కొత్త యాక్టివిటీ.</translation>
 <translation id="2593272815202181319">మోనోస్పేస్</translation>
 <translation id="2601778637777010194">ప్రోడక్ట్‌లకు సంబంధించిన ధర తగ్గుదలను ట్రాక్ చేయండి</translation>
 <translation id="260378315836159338">స్క్రీన్‌కు ఎగువున ఉన్న, + చిహ్నాన్ని ట్యాప్ చేయండి</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">మీ మొదటి స్క్రీన్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3277021493514034324">సైట్ అడ్రస్‌ కాపీ చేయబడింది</translation>
 <translation id="3280562213547448728">వాయిస్ సెర్చ్</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, కొత్త యాక్టివిటీ</translation>
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="3312300514034250578">మెరుగైన సురక్షిత బ్రౌజింగ్</translation>
@@ -1602,7 +1605,6 @@
 <translation id="7412027924265291969">కొనసాగించండి</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
 <translation id="7417689656810783109">గ్రూప్ పేరుమార్చు</translation>
-<translation id="7418703176995102827">Geminiతో మీ సంభాషణలను గానీ లేదా మీ Google Workspace డేటాను గానీ రివ్యూవర్‌లు రివ్యూ చేయరు, వాటిని జెనరేటివ్ AI మోడల్స్‌ను మెరుగుపరచడానికి ఉపయోగించడం జరగదు.</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7425053386765766120">పేమెంట్ ఆప్షన్‌ను జోడించండి…</translation>
 <translation id="7425346204213733349">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌లకు చేసే మార్పులు ఇకపై మీ Google ఖాతాకు సింక్ చేయ‌బడవు. అయితే, ఇప్పటికే ఉన్న మీ డేటా మీ Google ఖాతాలో అలాగే స్టోరేజ్‌ చేయబడి ఉంటుంది.</translation>
@@ -1643,6 +1645,7 @@
 <translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయండి</translation>
+<translation id="7566349809380613217"><ph name="NUMBER_OF_TABS" /> షేర్డ్ గ్రూప్ అయిన <ph name="GROUP_TITLE" />‌ను తెరవండి, ఇది <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">బుక్‌మార్క్‌లు దాచబడ్డాయి</translation>
 <translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="7582666837709186351">మీ కెమెరాను ఉపయోగించి, మీ ఫోటోలు లేదా మీ పరిసరాలలోని టెక్స్ట్‌ను అనువదించండి.</translation>
@@ -1907,7 +1910,6 @@
 <translation id="8560253818350321773">తరచుగా ఉపయోగించే ఐటెమ్‌లను ముందుగా చూపండి.</translation>
 <translation id="8561999115126307258">{count,plural, =1{పాస్‌వర్డ్ కోసం {count} ఆప్షన్ మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{పాస్‌వర్డ్ కోసం {count} ఆప్షన్‌లు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="8564894539416715395">కొత్త ట్యాబ్ పేజీ</translation>
-<translation id="8569414323292250522">చాట్‌లను రివ్యూ చేస్తాము, ఆపై వాటిని Googleకు చెందిన AI టెక్నాలజీలను మెరుగుపరచడానికి ఉపయోగిస్తాము. మీ ఎంపికల గురించి తెలుసుకోండి. మీ యాక్టివిటీతో పాటు మీ లొకేషన్ గురించిన సమాచారం కూడా స్టోర్ అవుతుంది.</translation>
 <translation id="8569721750632860947">మీరు మీ చదవాల్సిన లిస్ట్‌కు ఏ URLను జోడించాలనుకుంటున్నారు?</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8577056989960190117">గడువు ముగింపు సంవత్సరాన్ని <ph name="YEAR" />‌తో ఆటోఫిల్ చేయండి</translation>

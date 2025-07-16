@@ -63,6 +63,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="1704230497453185209">Niet toestaan dat sites geluid afspelen</translation>
 <translation id="1717218214683051432">Bewegingssensoren</translation>
 <translation id="1717996979683942279">Als deze optie aanstaat, kunnen sites vragen of ze vensters mogen beheren op al je schermen. Staat de optie uit, dan kunnen sites geen vensters beheren op al je schermen.</translation>
+<translation id="1738912554587725807">Blad onderaan voor themacollecties voor het uiterlijk van de pagina Nieuw tabblad</translation>
 <translation id="1743802530341753419">Vragen of sites verbinding mogen maken met een apparaat (aanbevolen)</translation>
 <translation id="1777815584158991902">Blad onderaan voor Discover-feed</translation>
 <translation id="1779089405699405702">Image Decoder</translation>
@@ -120,6 +121,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> toegestaan}}</translation>
 <translation id="2410940059315936967">Een site die je bezoekt, kan content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Cookies die door deze andere sites worden ingesteld, worden cookies van derden genoemd.</translation>
+<translation id="2411116727035790889">Sneltoetsen aanzetten</translation>
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2434158240863470628">Download voltooid <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Je hebt deze site tijdelijk toestemming gegeven om cookies van derden te gebruiken. Je krijgt dan minder bescherming terwijl je browst, maar het is waarschijnlijker dat de sitefuncties werken zoals verwacht. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3114012059975132928">Videospeler</translation>
 <translation id="3115898365077584848">Informatie bekijken</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
+<translation id="3132996321662585180">Dagelijks vernieuwen</translation>
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
 <translation id="3162899666601560689">Sites mogen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden</translation>
 <translation id="3165022941318558018">Toestaan dat een site cookies van derden gebruikt</translation>
@@ -356,6 +359,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5100237604440890931">Samengevouwen; klik om uit te vouwen.</translation>
 <translation id="5116239826668864748">Je kunt Chrome gebruiken als je op links in berichten, documenten en andere apps tikt</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
+<translation id="512938610812707830">Blad onderaan voor themacollecties voor het uiterlijk van de pagina Nieuw tabblad is op volledige hoogte geopend</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prijsdaling op je geopende tabbladen}other{Prijsdalingen op je geopende tabbladen}}</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

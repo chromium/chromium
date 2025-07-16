@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">মেটেল (গ্লছযুক্ত)</translation>
 <translation id="1070901266639972381">নিশা</translation>
 <translation id="1073690811593784042">কাচ (ৰঙীন)</translation>
+<translation id="1074287282535157335">৪ টা কিস্তিত বা মাহে মাহে পৰিশোধ কৰক (যোগ্যতাৰ ভিত্তিত)</translation>
 <translation id="1074497978438210769">সুৰক্ষিত নহয়</translation>
 <translation id="1074779248866616641">ফলাফল</translation>
 <translation id="1075364221219156102">এটা পাছকী ব্যৱহাৰ কৰক</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">শক্তিশালী পাছৱৰ্ডৰ প্ৰস্তাৱ দিয়ক…</translation>
 <translation id="2102495993840063010">Android এপ্‌</translation>
 <translation id="2102519472192754194">ৱেব ব্ৰাউজাৰ</translation>
+<translation id="2103210856015238101">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ লয়েল্টী কাৰ্ডসমূহ সম্পূৰ্ণ উচ্চতাত খোল খাইছে।</translation>
 <translation id="2105838220373099643">চৰিত্ৰাভিনয় কৰা গে’ম</translation>
 <translation id="2107021941795971877">প্ৰিণ্টৰ সমৰ্থন</translation>
 <translation id="2108755909498034140">আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰক</translation>
@@ -1294,6 +1296,7 @@
 <translation id="3187472288455401631">বিজ্ঞাপনৰ জোখ-মাখ</translation>
 <translation id="3190736958609431397">ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="3194737229810486521">আপোনাৰ ডিভাইচত <ph name="URL" />এ স্থায়ীভাৱে ডেটা ষ্ট’ৰ কৰিব খোজে</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />ত <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">আপুনি এই ডিভাইচটো কেতিয়া সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থাকে সেয়া জানিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="3201482403106004262">সমীক্ষাটোত কিবা আসোঁৱাহ হৈছে।</translation>
@@ -1768,6 +1771,7 @@
 <translation id="3963721102035795474">ৰীডাৰ ম’ড</translation>
 <translation id="3965672182149944205">ঠিকনাটো ছেভ কৰিবনে?</translation>
 <translation id="3966044442021752214">প্ৰ’ডাক্টৰ সুৰক্ষা</translation>
+<translation id="396761677631735618">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ লয়েল্টী কাৰ্ডসমূহ অৰ্ধ উচ্চতাত খোল খাইছে।</translation>
 <translation id="3969869202926863008">স্থানীয় নেটৱৰ্কৰ এক্সেছ</translation>
 <translation id="3970239200223030389">জাৰি কৰা তাৰিখ</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
@@ -1888,6 +1892,7 @@
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
 <translation id="4169189393773057143">লয়েল্টী কাৰ্ড পৰিচালনা কৰক বা Google Walletত এই পৰামৰ্শসমূহ অফ কৰক</translation>
 <translation id="4169535189173047238">অনুমতি নিদিব</translation>
+<translation id="4170851022123611628">লয়েল্টী কাৰ্ডৰ সূচীখন বন্ধ কৰা আছে।</translation>
 <translation id="4171400957073367226">সত্যাপনৰ স্বাক্ষৰটো বেয়া</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">লক আৰু লকস্মিথ</translation>
@@ -1896,6 +1901,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{আৰু <ph name="ITEM_COUNT" />টা বস্তু}one{আৰু <ph name="ITEM_COUNT" />টা বস্তু}other{আৰু <ph name="ITEM_COUNT" />টা বস্তু}}</translation>
 <translation id="4176463684765177261">অক্ষম আছে</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনৰ বিষয়বস্তু</translation>
+<translation id="4178863275556660738">কাৰ্ডৰ বাহিৰে অন্য কোনো পৰিশোধ পদ্ধতিৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">মূল্য ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="4190446002599583608">ইতিহাস সন্ধান, AIৰ দ্বাৰা সঞ্চালিত</translation>
@@ -2090,6 +2096,7 @@
 <translation id="449126573531210296">আপোনাৰ Google একাউণ্টৰ সৈতে ছিংক কৰি ৰখা পাছৱৰ্ড এনক্ৰিপ্ট কৰক</translation>
 <translation id="4493480324863638523">অমান্য URL। URLটোৰ এটা মানক স্কীম থাকিবই লাগিব, যেনে, http://example.com বা https://example.com।</translation>
 <translation id="4494323206460475851">আপুনি ছেটিঙত বিজ্ঞাপনৰ বিষয়বস্তু চাব পাৰে আৰু আপুনি ছাইটসমূহৰ সৈতে শ্বেয়াৰ কৰিব নিবিচৰা বিষয়বস্তু অৱৰোধ কৰিব পাৰে। Chromeএ লগতে ৪ সপ্তাহতকৈ পুৰণি হোৱা বিজ্ঞাপনৰ বিষয়বস্তুসমূহ স্বয়ংক্ৰিয়ভাৱে মচে।</translation>
+<translation id="4497010149473852018">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া লয়েল্টী কাৰ্ড। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
 <translation id="4500587658229086076">অসুৰক্ষিত সমল</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" />ৰ লোকসকল</translation>
 <translation id="450602096898954067">এই সুবিধাটো উন্নত কৰিবলৈ প্ৰশিক্ষিত পৰ্যালোচকে ডেটা দেখা পাব পাৰে</translation>

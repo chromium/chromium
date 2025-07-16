@@ -1602,7 +1602,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7412027924265291969">Continuer</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
 <translation id="7417689656810783109">Renommer le groupe</translation>
-<translation id="7418703176995102827">Vos conversations avec Gemini et vos données Google Workspace ne seront pas examinées par des réviseurs humains ni utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et aux autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, vos données actuelles resteront stockées dans votre compte Google.</translation>
@@ -1907,7 +1906,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8560253818350321773">Affichez les éléments fréquemment utilisés en premier.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe accessible au-dessus de votre clavier.}one{{count} option de mot de passe accessible au-dessus de votre clavier.}other{{count} options de mot de passe accessibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>
-<translation id="8569414323292250522">Les clavardages sont examinés et utilisés pour améliorer l'IA de Google. Apprenez-en plus au sujet de vos choix. Les renseignements sur votre position sont également stockés avec votre activité.</translation>
 <translation id="8569721750632860947">Quelle URL souhaitez-vous ajouter à votre Liste de lecture?</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8577056989960190117">Remplir automatiquement l'année d'expiration <ph name="YEAR" /></translation>

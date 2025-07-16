@@ -63,6 +63,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1717218214683051432">Bevegelsessensorer</translation>
 <translation id="1717996979683942279">Når dette er på, kan nettsteder be om å få administrere vinduer på alle skjermene dine. Når dette er av, kan ikke nettsteder administrere vinduer på alle skjermene dine.</translation>
+<translation id="1738912554587725807">Feltet nederst for temasamlinger for utseende på Ny fane-side</translation>
 <translation id="1743802530341753419">Spør før nettsteder kan koble til en enhet (anbefales)</translation>
 <translation id="1777815584158991902">Feltet nederst for Discover-feeden</translation>
 <translation id="1779089405699405702">Bildedekoder</translation>
@@ -120,6 +121,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er tillatt}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er tillatt}}</translation>
 <translation id="2410940059315936967">Et nettsted du besøker, kan bygge inn innhold fra andre nettsteder, for eksempel bilder, annonser og tekst. Informasjonskapsler som angis av disse andre nettstedene, kalles informasjonskapsler fra tredjeparter.</translation>
+<translation id="2411116727035790889">Slå på hurtigtaster</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2434158240863470628">Nedlasting fullført <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Du har midlertidig tillatt dette nettstedet å bruke informasjonskapsler fra tredjeparter, noe som innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
@@ -186,6 +188,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3114012059975132928">Videospiller</translation>
 <translation id="3115898365077584848">Vis informasjon</translation>
 <translation id="3123473560110926937">Blokkert på enkelte nettsteder</translation>
+<translation id="3132996321662585180">Oppdater daglig</translation>
 <translation id="3143754809889689516">Spill av fra begynnelsen</translation>
 <translation id="3162899666601560689">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din</translation>
 <translation id="3165022941318558018">La et nettsted bruke informasjonskapsler fra tredjeparter.</translation>
@@ -356,6 +359,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5100237604440890931">Minimert – klikk for å utvide</translation>
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="512938610812707830">Feltet nederst for temasamlinger for utseende på Ny fane-side er åpnet i full høyde</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Avslag på de åpne fanene dine}other{Avslag på de åpne fanene dine}}</translation>
 <translation id="5186036860380548585">Alternativet finner du nesten øverst på skjermen</translation>
 <translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

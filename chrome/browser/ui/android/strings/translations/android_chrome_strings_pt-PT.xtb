@@ -108,6 +108,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1419753403124156396">Reiniciar o Chrome?</translation>
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1433478348197382180">Modo de leitura</translation>
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -719,6 +720,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4306489587293957491">Introduzir</translation>
 <translation id="4307992518367153382">Noções básicas</translation>
 <translation id="4311652497846705514">Abrir o PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possível spam}other{Possível spam (#)}}</translation>
 <translation id="4320177379694898372">Sem ligação à Internet</translation>
 <translation id="4326079409704643112">Para usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade</translation>
 <translation id="433213510553688132">A seguir…</translation>
@@ -1057,6 +1059,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="580893287573699959">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Há # hora}other{Há # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostrar notificação}other{Mostrar notificações}}</translation>
 <translation id="5814749351757353073">Mantenha-se a par dos seus sites favoritos</translation>
 <translation id="5823093032261493462">Quer transferir "<ph name="FILE_NAME" />" de <ph name="DOWNLOAD_DOMAIN" /> mesmo assim?</translation>
 <translation id="5828921839638612740">Pode eliminar os dados nas Definições do Chrome</translation>

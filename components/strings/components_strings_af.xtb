@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metaal (glans)</translation>
 <translation id="1070901266639972381">Nag</translation>
 <translation id="1073690811593784042">Glas (gekleurd)</translation>
+<translation id="1074287282535157335">Betaal in 4 of maandeliks (onderworpe aan geskiktheid)</translation>
 <translation id="1074497978438210769">Nie veilig nie</translation>
 <translation id="1074779248866616641">Resultaat</translation>
 <translation id="1075364221219156102">Gebruik ’n toegangsleutel</translation>
@@ -656,6 +657,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2102134110707549001">Stel sterk wagwoord voor …</translation>
 <translation id="2102495993840063010">Android-programme</translation>
 <translation id="2102519472192754194">Webblaaiers</translation>
+<translation id="2103210856015238101">Lojaliteitskaarte wat beskikbaar is om met aanraking in te vul, word teen volle hoogte oopgemaak.</translation>
 <translation id="2105838220373099643">Rolspelspeletjies</translation>
 <translation id="2107021941795971877">Drukondersteuning</translation>
 <translation id="2108755909498034140">Herbegin jou rekenaar</translation>
@@ -1296,6 +1298,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3187472288455401631">Advertensiemeting</translation>
 <translation id="3190736958609431397">Stop nasporing</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wil data permanent op jou toestel berg</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vra om te weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="3201482403106004262">Daar was ’n fout met die opname.</translation>
@@ -1771,6 +1774,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3963721102035795474">Lesermodus</translation>
 <translation id="3965672182149944205">Stoor adres?</translation>
 <translation id="3966044442021752214">Produkveiligheid</translation>
+<translation id="396761677631735618">Lojaliteitskaarte wat beskikbaar is om met aanraking in te vul, word teen halwe hoogte oopgemaak.</translation>
 <translation id="3969869202926863008">Plaaslike netwerktoegang</translation>
 <translation id="3970239200223030389">Uitreikingdatum</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
@@ -1891,6 +1895,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4165986682804962316">Werfinstellings</translation>
 <translation id="4169189393773057143">Bestuur lojaliteitskaarte of skakel hierdie voorstelle in Google Wallet af</translation>
 <translation id="4169535189173047238">Moenie toelaat nie</translation>
+<translation id="4170851022123611628">Lys lojaliteitskaarte is toegemaak.</translation>
 <translation id="4171400957073367226">Swak verifiëringhandtekening</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Slotte en slotmakers</translation>
@@ -1899,6 +1904,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Nog <ph name="ITEM_COUNT" /> item}other{Nog <ph name="ITEM_COUNT" /> items}}</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
 <translation id="4177501066905053472">Advertensie-onderwerpe</translation>
+<translation id="4178863275556660738">Betaal met betaalmetodes wat nie ’n kaart behels nie</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Stop prysnasporing</translation>
 <translation id="4190446002599583608">Geskiedenissoektog, aangedryf deur AI</translation>
@@ -2094,6 +2100,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
 <translation id="4493480324863638523">Ongeldige URL. Moet 'n URL met 'n standaardskema wees, byvoorbeeld, http://example.com of https://example.com.</translation>
 <translation id="4494323206460475851">Jy kan advertensie-onderwerpe in instellings sien en dié onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook advertensie-onderwerpe wat ouer as 4 weke is, outomaties uit.</translation>
+<translation id="4497010149473852018">Lojaliteitskaarte is beskikbaar om met aanraking in te vul. Sleutelbord is versteek.</translation>
 <translation id="4500587658229086076">onveilige inhoud</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> mense</translation>
 <translation id="450602096898954067">Data kan deur opgeleide nasieners gesien word om hierdie kenmerk te verbeter</translation>

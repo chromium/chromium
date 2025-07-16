@@ -63,6 +63,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="1704230497453185209">Neļaut vietnēm atskaņot skaņu</translation>
 <translation id="1717218214683051432">Kustību sensori</translation>
 <translation id="1717996979683942279">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju pārvaldīt logus visos jūsu displejos. Kad šis slēdzis ir izslēgts, vietnes nevar pārvaldīt logus visos jūsu displejos.</translation>
+<translation id="1738912554587725807">Jaunas cilnes lapas izskata motīvu kolekciju ekrāna apakšdaļas lapa</translation>
 <translation id="1743802530341753419">Jautāt, pirms atļaut vietnēm izveidot savienojumu ar ierīci (ieteicams)</translation>
 <translation id="1777815584158991902">Discover plūsmas ekrāna apakšdaļas lapa</translation>
 <translation id="1779089405699405702">Attēlu dekodētājs</translation>
@@ -186,6 +187,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3114012059975132928">Videoklipu atskaņotājs</translation>
 <translation id="3115898365077584848">Rādīt informāciju</translation>
 <translation id="3123473560110926937">Bloķētas dažās vietnēs</translation>
+<translation id="3132996321662585180">Atsvaidzināt katru dienu</translation>
 <translation id="3143754809889689516">Atskaņot no sākuma</translation>
 <translation id="3162899666601560689">Vietnes drīkst izmantot sīkfailus, lai uzlabotu pārlūkošanas pieredzi, piemēram, lai nodrošinātu ilgstošu pierakstīšanos vai saglabātu pirkumu grozā ievietotās preces.</translation>
 <translation id="3165022941318558018">Atļaujiet vietnei izmantot trešo pušu sīkfailus.</translation>
@@ -356,6 +358,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
 <translation id="5116239826668864748">Varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
+<translation id="512938610812707830">Jaunas cilnes lapas izskata motīvu kolekciju ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Cenas kritums atvērtajās cilnēs}zero{Cenu kritumi atvērtajās cilnēs}one{Cenu kritumi atvērtajās cilnēs}other{Cenu kritumi atvērtajās cilnēs}}</translation>
 <translation id="5186036860380548585">Opcija pieejama ekrāna augšdaļā</translation>
 <translation id="5197729504361054390">Atlasīto kontaktpersonu dati tiks kopīgoti ar vietni <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

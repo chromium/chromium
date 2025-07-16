@@ -63,6 +63,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1704230497453185209">Jangan izinkan situs memutar suara</translation>
 <translation id="1717218214683051432">Sensor gerakan</translation>
 <translation id="1717996979683942279">Jika diaktifkan, situs dapat meminta untuk mengelola jendela di semua layar Anda. Jika dinonaktifkan, situs tidak dapat mengelola jendela di semua layar Anda.</translation>
+<translation id="1738912554587725807">Panel bawah kumpulan tema tampilan halaman tab baru</translation>
 <translation id="1743802530341753419">Tanya sebelum mengizinkan situs terhubung ke perangkat (disarankan)</translation>
 <translation id="1777815584158991902">Panel bawah feed Discover</translation>
 <translation id="1779089405699405702">Pendekode gambar</translation>
@@ -186,6 +187,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3114012059975132928">Pemutar video</translation>
 <translation id="3115898365077584848">Tampilkan Info</translation>
 <translation id="3123473560110926937">Diblokir di beberapa situs</translation>
+<translation id="3132996321662585180">Perbarui tiap hari</translation>
 <translation id="3143754809889689516">Putar dari awal</translation>
 <translation id="3162899666601560689">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda</translation>
 <translation id="3165022941318558018">Izinkan situs menggunakan cookie pihak ketiga</translation>
@@ -356,6 +358,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5100237604440890931">Diciutkan - klik untuk memperluas.</translation>
 <translation id="5116239826668864748">Anda dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="5123685120097942451">Tab samaran</translation>
+<translation id="512938610812707830">Panel bawah kumpulan tema tampilan halaman tab baru terbuka sepenuhnya</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga di tab yang terbuka}other{Penurunan harga di tab yang terbuka}}</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>

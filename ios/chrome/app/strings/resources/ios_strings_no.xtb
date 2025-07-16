@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
 <translation id="1605405588277479165">Av – anbefales ikke</translation>
 <translation id="1605658421715042784">Kopiér bildet</translation>
+<translation id="1606899876897213121">Lukk sammendraget av nylig aktivitet</translation>
 <translation id="1612754831519568745">Safe Browsing er av. Få beskyttelse mot farlige nettsteder, nedlastinger og utvidelser.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Velg «Legg til i Google Kalender» eller «Legg til i Apple-kalenderen».</translation>
@@ -407,6 +408,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2559843230610279254">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
 <translation id="2577522251608256362">Nabolag</translation>
 <translation id="2579713773888829241">Delte disker</translation>
+<translation id="2583688836549072561">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner, ny aktivitet.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Spor avslag for produkter</translation>
 <translation id="260378315836159338">Trykk på + øverst på skjermen</translation>
@@ -572,6 +574,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3273510436356991673">Tilpass startskjermen</translation>
 <translation id="3277021493514034324">Nettstedsadressen er kopiert</translation>
 <translation id="3280562213547448728">Talesøk</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, ny aktivitet</translation>
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3312300514034250578">Safe Browsing med økt beskyttelse</translation>
@@ -1602,7 +1605,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7412027924265291969">Fortsett</translation>
 <translation id="741204030948306876">Ja, jeg er med</translation>
 <translation id="7417689656810783109">Gi gruppen nytt navn</translation>
-<translation id="7418703176995102827">Verken samtalene dine med Gemini eller dataene dine i Google Workspace gjennomgås av menneskelige evaluerere eller brukes på andre måter for å forbedre generativ AI-modeller.</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="7425053386765766120">Legg til betalingsmåte…</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
@@ -1643,6 +1645,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
+<translation id="7566349809380613217">Åpne <ph name="GROUP_TITLE" />, delt gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bokmerkene er skjult</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="7582666837709186351">Oversett tekst i bilder eller omgivelsene med kameraet.</translation>
@@ -1907,7 +1910,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8560253818350321773">Vis elementene som brukes ofte, først.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} alternativ for passord er tilgjengelig over tastaturet.}other{{count} alternativer for passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="8564894539416715395">Ny fane-siden</translation>
-<translation id="8569414323292250522">Chatter gjennomgås og brukes for å forbedre AI fra Google. Finn ut mer om valgene dine. Informasjon om posisjonen din lagres også sammen med aktiviteten din.</translation>
 <translation id="8569721750632860947">Hvilken nettadresse vil du legge til på leselisten?</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8577056989960190117">Autofyll utløpsåret <ph name="YEAR" /></translation>

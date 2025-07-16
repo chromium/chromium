@@ -252,6 +252,7 @@ Points à prendre en compte :
 
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Les notifications Chromium sont actuellement désactivées dans les paramètres de votre appareil.</translation>
+<translation id="7195217321165708458">Gemini dans Chromium</translation>
 <translation id="7219205286115692265">Accédez plus rapidement à Chromium depuis le dock de l'écran d'accueil de votre iPad.</translation>
 <translation id="7222001353246886083">Rechercher ${searchPhrase} dans Chromium</translation>
 <translation id="7228180817326917122">Astuce Chromium : choisissez la position de la barre d'adresse</translation>

@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Metal (brillante)</translation>
 <translation id="1070901266639972381">Noche</translation>
 <translation id="1073690811593784042">Cristal (color)</translation>
+<translation id="1074287282535157335">Paga en 4 cuotas o mensualmente (sujeto a requisitos)</translation>
 <translation id="1074497978438210769">No es seguro</translation>
 <translation id="1074779248866616641">Resultado</translation>
 <translation id="1075364221219156102">Usa una llave de acceso</translation>
@@ -656,6 +657,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2102134110707549001">Sugerir contraseña segura…</translation>
 <translation id="2102495993840063010">Aplicaciones de Android</translation>
 <translation id="2102519472192754194">Navegadores web</translation>
+<translation id="2103210856015238101">Las tarjetas de fidelización que puedes rellenar con un toque están abiertas a altura completa.</translation>
 <translation id="2105838220373099643">Juegos de rol</translation>
 <translation id="2107021941795971877">Soportes de impresión</translation>
 <translation id="2108755909498034140">Reinicia el ordenador</translation>
@@ -1296,6 +1298,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quiere almacenar datos de forma permanente en tu dispositivo</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> de <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Puede solicitar permiso para saber cuándo usas activamente este dispositivo</translation>
 <translation id="3201482403106004262">Se ha producido un error en la encuesta.</translation>
@@ -1771,6 +1774,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3965672182149944205">¿Guardar dirección?</translation>
 <translation id="3966044442021752214">Seguridad del producto</translation>
+<translation id="396761677631735618">Las tarjetas de fidelización que puedes rellenar con un toque están abiertas a media altura.</translation>
 <translation id="3969869202926863008">Acceso a la red local</translation>
 <translation id="3970239200223030389">Fecha de emisión</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1891,6 +1895,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4165986682804962316">Configuración del sitio</translation>
 <translation id="4169189393773057143">Gestiona las tarjetas de fidelización o desactiva estas sugerencias en Google Wallet</translation>
 <translation id="4169535189173047238">No permitir</translation>
+<translation id="4170851022123611628">La lista de tarjetas de fidelización está cerrada.</translation>
 <translation id="4171400957073367226">La firma de verificación no es válida</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Cerraduras y cerrajeros</translation>
@@ -1899,6 +1904,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> elemento más}other{<ph name="ITEM_COUNT" /> elementos más}}</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4177501066905053472">Temas de anuncios</translation>
+<translation id="4178863275556660738">Usa métodos de pago sin tarjeta</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Dejar de seguir precio</translation>
 <translation id="4190446002599583608">Búsqueda en el historial con la tecnología de IA</translation>
@@ -2094,6 +2100,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="449126573531210296">Cifrar contraseñas sincronizadas con tu cuenta de Google</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con una estructura estándar, como "http://example.com" o "https://example.com".</translation>
 <translation id="4494323206460475851">Puedes ver los temas de anuncios en la configuración y bloquear los que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas de anuncios que tienen una antigüedad superior a 4 semanas.</translation>
+<translation id="4497010149473852018">Tarjetas de fidelización que puedes rellenar con un toque. Teclado oculto.</translation>
 <translation id="4500587658229086076">contenido no seguro</translation>
 <translation id="4504850595255879616">Personas de <ph name="ENGINE" /></translation>
 <translation id="450602096898954067">Puede que los datos los vean revisores especializados para mejorar esta función</translation>
@@ -3548,6 +3555,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6970885655016700774">Tela (archivo)</translation>
 <translation id="6971439137020188025">Crea una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
+<translation id="6972867931824045907">Para usar el portapapeles, concede acceso a Chrome en <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Se especifican tanto servidores proxy fijos como una URL de secuencia de comandos .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 pulgadas</translation>
 <translation id="6978121630131642226">Buscadores</translation>

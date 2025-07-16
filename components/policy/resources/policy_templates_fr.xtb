@@ -2016,6 +2016,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2436302465999055995">Faire de <ph name="LACROS_NAME" /> le seul navigateur disponible (pas encore implémenté)</translation>
 <translation id="2439187682308339104">Interdire à tous les sites de demander l'accès aux appareils HID via l'API WebHID</translation>
 <translation id="2439733504887695659">Activer la fermeture des alertes de mot de passe compromis pour les identifiants saisis</translation>
+<translation id="2446029789419870019">Autoriser l'utilisation de la fonctionnalité et l'amélioration des modèles d'IA</translation>
 <translation id="2446244536806499267">Ne pas considérer l'utilisateur comme inactif pendant la lecture audio</translation>
 <translation id="2452225615952836461">Toujours utiliser des méthodes de requête en majuscules</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
@@ -2188,6 +2189,7 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2568488785376704318">Cette règle est obsolète. Veuillez utiliser la règle <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" /> à la place.</translation>
 <translation id="2570059561924004903">Désactiver la lecture vocale</translation>
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
+<translation id="2571821662934804440">Autoriser l'utilisation de la fonctionnalité sans améliorer les modèles d'IA</translation>
 <translation id="2573850437942404034">Ne pas autoriser</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
 <translation id="25765864042030871">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
@@ -2862,6 +2864,7 @@ Si cette règle est désactivée ou n'est pas configurée, la collecte et l'impo
 Le rapport contient l'état du profil ainsi que des informations sur l'utilisation, y compris, mais sans s'y limiter, la version de l'OS et du navigateur, les extensions installées et les règles applicables.
 
 Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
+<translation id="3062559845875011810">Ne pas autoriser la fonctionnalité</translation>
 <translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
 <translation id="3063307261083019730">Interdire le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache amélioré.</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
@@ -4200,6 +4203,19 @@ Principe de cette règle :
 * Si cette règle est définie sur "Filtrer les sites de contenus réservés aux adultes", les sites pornographiques sont filtrés
 
 Cette règle s'applique à la fois à l'URL vers laquelle l'utilisateur navigue et aux iFrames. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur cette règle et peut être utilisée pour ignorer les évaluations de l'API Google Safe Search.</translation>
+<translation id="4049706391182174257">Cette règle contrôle la disponibilité de la fonctionnalité de changement automatique de mot de passe de <ph name="PRODUCT_NAME" />.
+
+Si elle est activée, un utilisateur peut déclencher un processus lors duquel le navigateur tente de modifier automatiquement son mot de passe sur un site Web. Ce processus est géré par l'IA générative. Le nouveau mot de passe est enregistré dans le gestionnaire de mots de passe du navigateur.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par la console d'administration Google et pour les comptes Education gérés par Google Workspace.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle GenAiDefaultSettings.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4051723201852944592">Détecter les fenêtres recouvertes</translation>
 <translation id="4052529125939620019">Charger l'extension du composant CryptoToken au démarrage</translation>
 <translation id="4053157306171963473">Désactiver les rapports sur le temps d'activité de l'appareil</translation>
@@ -4501,6 +4517,7 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="4275048399551500192">Ne pas afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
 <translation id="4278656834593750050">Activer les sons de recharge</translation>
+<translation id="4281322231545828290">Activer la modification automatique du mot de passe</translation>
 <translation id="4282243913059705499">Toujours afficher l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils</translation>
 <translation id="4285510855646731405">Google Agenda (compatible depuis la version 135)</translation>
 <translation id="4285674129118156176">Autoriser les utilisateurs non affiliés à utiliser ARC</translation>
@@ -4866,21 +4883,6 @@ Un appareil est considéré comme géré s'il utilise une version d'entreprise d
 <translation id="4557134566541205630">URL de la page Nouvel onglet du moteur de recherche par défaut</translation>
 <translation id="4558166110367609724">Ignorer les conditions d'utilisation et charger le navigateur automatiquement.</translation>
 <translation id="4559846397119102037">Autoriser l'utilisation de <ph name="LACROS_NAME" /></translation>
-<translation id="456018799964679771">Cette règle au niveau de l'appareil définit si <ph name="PRODUCT_OS_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique dans TLS, en utilisant la norme ML-KEM du NIST. Avant <ph name="PRODUCT_OS_NAME" /> 131, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrements ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur sera protégé contre les ordinateurs quantiques lorsqu'il communiquera avec des serveurs compatibles.
-
-Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
-
-La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_OS_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.
-
-Cette règle prévaut sur la règle PostQuantumKeyAgreementEnabled si les deux sont configurées.</translation>
 <translation id="4561560385824323005">Autoriser les utilisateurs à sélectionner l'interface de bureau préconfigurée à charger</translation>
 <translation id="4561940244682063697">Ne pas autoriser les sites à inviter l'utilisateur à partager un flux vidéo de son écran</translation>
 <translation id="4562165737444703281">Autoriser les utilisateurs à [activer/configurer] le transfert de port Crostini</translation>
@@ -10059,19 +10061,6 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_LOCK_S
       Cette règle a été supprimée dans Chrome 88 et est ignorée si elle est définie.
 
       Pour en savoir plus, consultez l'article https://www.chromestatus.com/feature/5989473649164288.</translation>
-<translation id="8137301668000005268">Cette règle définit si <ph name="PRODUCT_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique dans TLS, en utilisant la norme ML-KEM du NIST. Avant <ph name="PRODUCT_NAME" /> 131, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrements ultérieurs par des ordinateurs quantiques.
-
-Si cette règle est activée, <ph name="PRODUCT_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur sera protégé contre les ordinateurs quantiques lorsqu'il communiquera avec des serveurs compatibles.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
-
-La proposition d'un accord de clé post-quantique est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
-
-Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
-
-Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="8137443729340035928">À la connexion, demandez à l'utilisateur s'il veut restaurer la dernière session.</translation>
 <translation id="8141795997560411818">Cette règle n'empêche pas l'utilisateur de se servir de l'application Google Drive pour Android. Pour ce faire, vous devez également annuler l'autorisation d'installation de cette application.</translation>
 <translation id="8142894094385450823">Définir les paramètres régionaux recommandés pour une session gérée</translation>

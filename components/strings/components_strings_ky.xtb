@@ -43,6 +43,7 @@
 <translation id="1070333806075222467">Металл (жылтырак)</translation>
 <translation id="1070901266639972381">Түн</translation>
 <translation id="1073690811593784042">Айнек (түстүү)</translation>
+<translation id="1074287282535157335">4 жолу же ай сайын төлөө (жарамдуулукка жараша)</translation>
 <translation id="1074497978438210769">Коопсуз эмес</translation>
 <translation id="1074779248866616641">Натыйжа</translation>
 <translation id="1075364221219156102">Киргизүүчү ачкычты колдонуу</translation>
@@ -656,6 +657,7 @@
 <translation id="2102134110707549001">Татаал сырсөз сунушталсын…</translation>
 <translation id="2102495993840063010">Android Колдонмолору</translation>
 <translation id="2102519472192754194">Веб серепчилер</translation>
+<translation id="2103210856015238101">Тийип толтурула турган туруктуу кардардын карталары толугу менен ачылды.</translation>
 <translation id="2105838220373099643">Ролдоштурулган оюндар</translation>
 <translation id="2107021941795971877">Басып чыгарууну колдоо</translation>
 <translation id="2108755909498034140">Компьютериңизди өчүрүп-күйгүзүңүз</translation>
@@ -1296,6 +1298,7 @@
 <translation id="3187472288455401631">Жарнамалардын майнаптуулугун талдоо</translation>
 <translation id="3190736958609431397">Көз салууну токтотуу</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
+<translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты сурай алат</translation>
 <translation id="3201482403106004262">Сурамжылоодо ката кетти.</translation>
@@ -1770,6 +1773,7 @@
 <translation id="3963721102035795474">Окурман режими</translation>
 <translation id="3965672182149944205">Дарек сакталсынбы?</translation>
 <translation id="3966044442021752214">Кызматтын коопсуздугу</translation>
+<translation id="396761677631735618">Тийип толтурула турган туруктуу кардардын карталары жарымына чейин ачылды.</translation>
 <translation id="3969869202926863008">Жергиликтүү тармактан кирүү</translation>
 <translation id="3970239200223030389">Берилген күнү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
@@ -1890,6 +1894,7 @@
 <translation id="4165986682804962316">Сайт параметрлери</translation>
 <translation id="4169189393773057143">Google Капчыкта туруктуу кардардын карталарын тескеп же бул сунуштарды өчүрүп коюңуз</translation>
 <translation id="4169535189173047238">Жок</translation>
+<translation id="4170851022123611628">Туруктуу кардардын карталарынын тизмеси жабылды.</translation>
 <translation id="4171400957073367226">Текшерүү колтамгасы начар</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">Кулпулар жана слесарлар</translation>
@@ -1898,6 +1903,7 @@
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Дагы <ph name="ITEM_COUNT" /> нерсе}other{Дагы <ph name="ITEM_COUNT" /> нерсе}}</translation>
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
+<translation id="4178863275556660738">Картасыз төлөө ыкмаларын колдонуңуз</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баага көз салууну токтотуу</translation>
 <translation id="4190446002599583608">ЖИ менен таржымалдан издөө</translation>
@@ -2093,6 +2099,7 @@
 <translation id="449126573531210296">Шайкештирилген сырсөздөрдү Google аккаунтуңуз менен шифрлеңиз</translation>
 <translation id="4493480324863638523">Жараксыз URL. URL дареги стандарттык үлгүдө болушу керек, мис., http://example.com же https://example.com.</translation>
 <translation id="4494323206460475851">Параметрлерден жарнама темаларын көрүп, сайттар менен бөлүшкүңүз келбегендерин жашыра аласыз. Ошондой эле, Chrome 4 апта мурун пайда болгон жарнама темаларын автоматтык түрдө өчүрүп турат.</translation>
+<translation id="4497010149473852018">Тийип толтурула турган туруктуу кардардын карталары. Баскычтоп жашырылган.</translation>
 <translation id="4500587658229086076">кооптуу мазмун</translation>
 <translation id="4504850595255879616"><ph name="ENGINE" /> адам</translation>
 <translation id="450602096898954067">Бул функцияны жакшыртуу үчүн даярдалган текшерүүчүлөр маалыматты көрүшү мүмкүн</translation>
@@ -3703,7 +3710,7 @@
 <translation id="7237454422623102448">Тутум параметрлери</translation>
 <translation id="7237492777898608035">Бул билдирүү ушул сайтта экинчи көрсөтүлбөсүн</translation>
 <translation id="7240120331469437312">Тастыктама темасынын кошумча аталышы</translation>
-<translation id="7241863998525879494">Кандай өзгөрүү болот</translation>
+<translation id="7241863998525879494">Эмнелер өзгөрөт</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">Бизнес иштери</translation>

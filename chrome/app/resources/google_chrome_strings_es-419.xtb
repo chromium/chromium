@@ -315,6 +315,7 @@
 <translation id="4895437082222824641">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
 <translation id="4918844574251943176">Se copió la imagen</translation>
 <translation id="492720062778050435">Chrome te recomienda revisar esta extensión</translation>
+<translation id="4946912144186040233">Chrome comprende mejor los formularios y puede autocompletarlos más rápido. Este parámetro de configuración está desactivado.</translation>
 <translation id="4953650215774548573">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="495931528404527476">En Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
@@ -323,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Haz clic en "Administrador de contraseñas de Google"</translation>
 <translation id="504867494566807945">Abre vínculos en Chrome desde cualquier app. Además, para facilitar el acceso, se fija en la barra de tareas.</translation>
+<translation id="5049567194145991071">Cuando hagas clic en "Entendido", podrás guardar y usar contraseñas y otros datos en tu Cuenta de Google cada vez que accedas a Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Ingresa tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ingresa a Chrome cuando accedas a otros servicios de Google</translation>
 <translation id="5126049312684316860">Chrome precarga más páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
@@ -507,6 +509,7 @@
 <translation id="7481213027396403996">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="749228101751499733">Mientras tengas acceso, puedes usar las contraseñas y otros elementos de tu Cuenta de Google en Chrome. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
 <translation id="7496017508659652909">Chrome precarga páginas, lo que agiliza la navegación y las búsquedas. <ph name="BEGIN_LINK" />Obtén más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome comprende mejor los formularios y puede autocompletarlos más rápido. Este parámetro de configuración está activado.</translation>
 <translation id="7514258452813684157">Servicio de Google Updater</translation>
 <translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -539,6 +542,7 @@
 <translation id="7801699035218095297">Google Chrome está intentando copiar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="7808348361785373670">Eliminar de Chrome…</translation>
 <translation id="7825851276765848807">La instalación falló debido a un error no especificado. Descarga Google Chrome otra vez.</translation>
+<translation id="7826342993930002256">Tu navegador Chrome, en todos lados</translation>
 <translation id="7827099906024714326">Chrome debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
@@ -625,6 +629,7 @@
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número de <ph name="ORIGIN" /> a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos. Chrome te recomienda quitarla.</translation>
+<translation id="8958307504142971576">Ahora tienes más funciones disponibles en Chrome</translation>
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8992769679401294069">Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="8999117580775242387">Cuando HTTPS no esté disponible, Chrome usará una conexión no segura sin advertirte</translation>

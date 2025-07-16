@@ -315,6 +315,7 @@
 <translation id="4895437082222824641">Åbn linket i en ny Chrome-&amp;fane</translation>
 <translation id="4918844574251943176">Billedet er kopieret</translation>
 <translation id="492720062778050435">Chrome anbefaler, at du gennemgår denne udvidelse</translation>
+<translation id="4946912144186040233">Chrome forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er deaktiveret.</translation>
 <translation id="4953650215774548573">Angiv Google Chrome som din standardbrowser</translation>
 <translation id="495931528404527476">I Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex kunne ikke synkronisere dine data, da loginoplysningerne for din konto er forældede.</translation>
@@ -323,6 +324,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klik på "Google Adgangs­kode­admin­istrator"</translation>
 <translation id="504867494566807945">Åbn links i Chrome fra en hvilken som helst app. Den fastgøres også til proceslinjen, så du nemt kan tilgå den.</translation>
+<translation id="5049567194145991071">Når du klikker på "OK", kan du gemme og bruge adgangskoder m.m. på din Google-konto, når du er logget ind i Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Log ind i Chrome, når du logger ind i andre Google-tjenester</translation>
 <translation id="5126049312684316860">Chrome forudindlæser endnu flere sider, som du sandsynligvis vil besøge, så de indlæses hurtigere, når du besøger dem</translation>
@@ -507,6 +509,7 @@
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
 <translation id="7496017508659652909">Chrome forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
+<translation id="7510927761955779701">Chrome forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er aktiveret.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
@@ -539,6 +542,7 @@
 <translation id="7801699035218095297">Google Chrome forsøger at kopiere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="7808348361785373670">Fjern fra Chrome...</translation>
 <translation id="7825851276765848807">Installationen mislykkedes på grund af en uspecificeret fejl. Download Google Chrome igen.</translation>
+<translation id="7826342993930002256">Dit Chrome – overalt</translation>
 <translation id="7827099906024714326">Chrome skal verificere din identitet, før visse data kan gemmes på din Google-konto og bruges på alle dine enheder. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
@@ -625,6 +629,7 @@
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8948460679427074738">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chrome anbefaler, at du fjerner den.</translation>
+<translation id="8958307504142971576">Du har nu flere tilgængelige funktioner i Chrome</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8992769679401294069">Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="8999117580775242387">Når HTTPS er utilgængelig, anvender Chrome en usikker forbindelse uden at advare dig</translation>
