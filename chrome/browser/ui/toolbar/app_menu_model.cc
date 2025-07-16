@@ -789,6 +789,11 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
   }
 }
 
+bool ArePromotionsEnabled() {
+  PrefService* local_state = g_browser_process->local_state();
+  return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1893,7 +1898,8 @@ void AppMenuModel::Build() {
   }
 
   // Extensions sub menu.
-  if (base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
+  if (ArePromotionsEnabled() &&
+      base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
       !extensions::ui_util::HasManageableExtensions(browser_->profile())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_FIND_EXTENSIONS,
                                      IDS_FIND_EXTENSIONS,
