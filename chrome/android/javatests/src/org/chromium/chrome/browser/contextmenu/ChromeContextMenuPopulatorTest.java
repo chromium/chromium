@@ -2121,6 +2121,99 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    public void testCustomContentActions_ImageLink_DoesNotSetPageUri()
+            throws PendingIntent.CanceledException {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        final int imageActionId = 202;
+        final String imageDescription = "Custom Image Action";
+        PendingIntent mockPendingIntent =
+                PendingIntent.getBroadcast(
+                        ContextUtils.getApplicationContext(),
+                        1,
+                        new Intent(),
+                        PendingIntent.FLAG_IMMUTABLE);
+        CustomContentAction imageAction =
+                new CustomContentAction.Builder(
+                                imageActionId,
+                                imageDescription,
+                                mockPendingIntent,
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE)
+                        .build();
+
+        List<CustomContentAction> customActions = List.of(imageAction);
+
+        ContextMenuParams imageParams =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.IMAGE,
+                        new GURL(PAGE_URL),
+                        new GURL(LINK_URL),
+                        "",
+                        GURL.emptyGURL(),
+                        new GURL(IMAGE_SRC_URL),
+                        IMAGE_TITLE_TEXT,
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        false,
+                        0,
+                        null);
+
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, imageParams, customActions);
+
+        mPopulator.setPendingIntentSenderForTesting(mMockPendingIntentSender);
+
+        doAnswer(
+                        (invocation) -> {
+                            Callback<Uri> callback = invocation.getArgument(1);
+                            callback.onResult(RETRIEVED_IMAGE_URI);
+                            return null;
+                        })
+                .when(mNativeDelegate)
+                .retrieveImageForShare(eq(ContextMenuImageFormat.ORIGINAL), any());
+
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+        assertFalse("Menu should contain at least one group", menuState.isEmpty());
+
+        ListItem customItem = findItemWithTitle(menuState, imageDescription);
+        assertNotNull(
+                "Custom image item with title '" + imageDescription + "' was not found.",
+                customItem);
+
+        int customItemId = customItem.model.get(MENU_ITEM_ID);
+        assertTrue(
+                "Custom item ID should be == the starting ID",
+                customItemId == ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting());
+
+        var imageHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ChromeContextMenuPopulator
+                                .getContextualCustomActionTypeSelectedHistogramForTesting(),
+                        ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE);
+        assertTrue(
+                "Clicking custom image item should be handled.",
+                mPopulator.onItemSelected(
+                        ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting()));
+        imageHistogramWatcher.assertExpected();
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mMockPendingIntentSender)
+                .send(eq(mockPendingIntent), any(Context.class), eq(0), intentCaptor.capture());
+
+        Intent capturedIntent = intentCaptor.getValue();
+        assertNull(
+                "The page uri should not be set for image-link items.", capturedIntent.getData());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_enforcesLimitWithMixedActionTypes() {
         FirstRunStatus.setFirstRunFlowComplete(true);
 

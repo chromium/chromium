@@ -756,7 +756,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             intent.putExtra(
                                     CustomTabsIntent.EXTRA_CONTEXT_IMAGE_ALT_TEXT,
                                     getTitleOrGuessIfNotPresent());
-                            intent.setData(Uri.parse(mItemDelegate.getPageUrl().getSpec()));
+                            // We do not return the page url for image-link items since there is not
+                            // enough room in the context menu to display the page url along with
+                            // the other existing urls.
+                            if (!mParams.isAnchor()) {
+                                intent.setData(Uri.parse(mItemDelegate.getPageUrl().getSpec()));
+                            }
                             try {
                                 mPendingIntentSender.send(pendingIntent, mContext, 0, intent);
                             } catch (PendingIntent.CanceledException e) {
