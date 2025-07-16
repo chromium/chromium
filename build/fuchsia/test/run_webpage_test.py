@@ -46,7 +46,7 @@ class WebpageTestRunner(TestRunner):
                  target_id: Optional[str], logs_dir: Optional[str]) -> None:
         super().__init__(out_dir, test_args, ['web_engine_shell'], target_id)
         self._runner = browser_runner.BrowserRunner(
-            browser_runner.WEB_ENGINE_SHELL, target_id, out_dir)
+            browser_runner.WEB_ENGINE_SHELL, target_id, out_dir, logs_dir)
         if logs_dir:
             self.port_file = os.path.join(logs_dir, _DEVTOOLS_PORT_FILE)
         else:

@@ -6,7 +6,6 @@
 import os
 import re
 import subprocess
-import tempfile
 import time
 from typing import List, Optional
 from urllib.parse import urlparse
@@ -24,7 +23,8 @@ class BrowserRunner:
     def __init__(self,
                  browser_type: str,
                  target_id: Optional[str] = None,
-                 output_dir: Optional[str] = None):
+                 output_dir: Optional[str] = None,
+                 logs_dir: Optional[str] = None):
         self._browser_type = browser_type
         assert self._browser_type in [WEB_ENGINE_SHELL, CAST_STREAMING_SHELL]
         self._target_id = target_id
@@ -33,7 +33,9 @@ class BrowserRunner:
         self._browser_proc = None
         self._symbolizer_proc = None
         self._devtools_port = None
-        self._log_fs = None
+        if not logs_dir:
+            logs_dir = os.environ.get('ISOLATED_OUTDIR', '/tmp')
+        self._log_fs = open(os.path.join(logs_dir, 'browser.log'), 'w')
 
         output_root = os.path.join(self._output_dir, 'gen', 'fuchsia_web')
         if self._browser_type == WEB_ENGINE_SHELL:
@@ -146,7 +148,7 @@ class BrowserRunner:
             stderr=subprocess.STDOUT,
             target_id=self._target_id)
         # The stdout will be forwarded to the symbolizer, then to the _log_fs.
-        self._log_fs = tempfile.NamedTemporaryFile()
+        assert self._log_fs
         self._symbolizer_proc = run_symbolizer(self._id_files,
                                                self._browser_proc.stdout,
                                                self._log_fs)
