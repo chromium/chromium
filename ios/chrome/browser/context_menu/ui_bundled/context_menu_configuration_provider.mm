@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/photos/model/photos_availability.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -179,8 +180,19 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   if (base::FeatureList::IsEnabled(kEnableLensOverlay) && _baseWebState) {
     return _baseWebState.get();
   }
-  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
-                      : nullptr;
+  web::WebState* activeWebState =
+      self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
+                   : nullptr;
+  if (activeWebState) {
+    // Check if there is an alternate webState.
+    ReaderModeTabHelper* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(activeWebState);
+    if (readerModeTabHelper &&
+        readerModeTabHelper->IsReaderModeWebStateAvailable()) {
+      return readerModeTabHelper->GetReaderModeWebState();
+    }
+  }
+  return activeWebState;
 }
 
 #pragma mark - Private

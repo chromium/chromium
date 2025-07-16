@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/dom_distiller/model",
   "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/crash_report/model",
+  "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/web_selection/model/web_selection_tab_helper.h",
   "+third_party/dom_distiller_js",

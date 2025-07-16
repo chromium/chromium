@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -318,6 +320,7 @@ void RelaunchApp() {
   config.features_enabled.push_back(kShareInWebContextMenuIOS);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  config.features_enabled.push_back(kEnableReaderMode);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }
@@ -964,6 +967,47 @@ void RelaunchApp() {
   if (error) {
     GREYFail([error description]);
   }
+}
+
+- (void)testOpenContextMenuFromReadingMode {
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  // Make sure the context menu appeared.
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+      assertWithMatcher:grey_notNil()];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Tap the tools menu to dismiss the popover.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
+        performAction:grey_tap()];
+  }
+  // Tap the drop shadow to dismiss the popover.
+  chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
+
+  // Make sure the context menu disappeared.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the context menu to disappear");
 }
 
 @end

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -56,6 +57,9 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
             main_tab_edit_menu_builder_tab_helper->GetEditMenuBuilder());
     WebSelectionTabHelper::CreateForWebState(web_state());
   }
+
+  OverlayRequestQueue::CreateForWebState(web_state());
+  web_state()->SetDelegate(original_web_state->GetDelegate());
 }
 
 #pragma mark - WebStatePolicyDecider
