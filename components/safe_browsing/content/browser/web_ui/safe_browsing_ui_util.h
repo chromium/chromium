@@ -17,6 +17,9 @@
 #include "components/sync/protocol/user_event_specifics.pb.h"
 
 namespace safe_browsing {
+namespace internal {
+struct ReferringAppInfo;
+}  // namespace internal
 class SafeBrowsingUIHandler;
 }  // namespace safe_browsing
 
@@ -137,6 +140,13 @@ std::string SerializeJson(base::ValueView value);
 base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event);
 base::Value::Dict SerializeSecurityEvent(
     const sync_pb::GaiaPasswordReuse& event);
+#if BUILDFLAG(IS_ANDROID)
+// This serializes the internal::ReferringAppInfo struct (not to be confused
+// with the protobuf message ReferringAppInfo), which contains intermediate
+// information obtained from Java.
+base::Value::Dict SerializeReferringAppInfo(
+    const internal::ReferringAppInfo& info);
+#endif
 
 }  // namespace safe_browsing::web_ui
 

@@ -605,24 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-// This serializes the internal::ReferringAppInfo struct (not to be confused
-// with the protobuf message ReferringAppInfo), which contains intermediate
-// information obtained from Java.
-base::Value::Dict SerializeReferringAppInfo(
-    const internal::ReferringAppInfo& info) {
-  base::Value::Dict dict;
-  dict.Set("referring_app_source",
-           ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
-  dict.Set("referring_app_info", info.referring_app_name);
-  dict.Set("target_url", info.target_url.spec());
-  // Do not bother serializing referring_webapk_* here, because they are only
-  // populated for a WebAPK, and it is not possible to launch
-  // chrome://safe-browsing in a WebAPK, so they will never show up here.
-  return dict;
-}
-#endif
-
 std::string SerializePGPing(
     const web_ui::LoginReputationClientRequestAndToken& request_and_token) {
   base::Value::Dict request_dict =
@@ -1224,7 +1206,7 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   internal::ReferringAppInfo info =
       WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());
-  referring_app_value = SerializeReferringAppInfo(info);
+  referring_app_value = web_ui::SerializeReferringAppInfo(info);
 
   std::string referring_app_serialized =
       web_ui::SerializeJson(referring_app_value);

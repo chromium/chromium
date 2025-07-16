@@ -10,6 +10,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 
 using sync_pb::GaiaPasswordReuse;
@@ -398,5 +399,20 @@ base::Value::Dict SerializeSecurityEvent(
   result.Set("message", SerializeJson(event_dict));
   return result;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::Value::Dict SerializeReferringAppInfo(
+    const internal::ReferringAppInfo& info) {
+  base::Value::Dict dict;
+  dict.Set("referring_app_source",
+           ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
+  dict.Set("referring_app_info", info.referring_app_name);
+  dict.Set("target_url", info.target_url.spec());
+  // Do not bother serializing referring_webapk_* here, because they are only
+  // populated for a WebAPK, and it is not possible to launch
+  // chrome://safe-browsing in a WebAPK, so they will never show up here.
+  return dict;
+}
+#endif
 
 }  // namespace safe_browsing::web_ui

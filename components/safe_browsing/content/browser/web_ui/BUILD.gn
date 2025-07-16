@@ -63,6 +63,7 @@ source_set("util") {
     "//base",
     "//base:i18n",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_extras",
