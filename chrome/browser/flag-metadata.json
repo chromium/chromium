@@ -5867,11 +5867,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "ios-passkeys-m2",
-    "owners": [ "noemies@google.com", "rgod@google.com", "sugoi@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "ios-password-bottom-sheet-autofocus",
     "owners": ["sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 140

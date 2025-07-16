@@ -191,8 +191,4 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
       });
 }
 
-+ (bool)isPasskeysM2FeatureEnabled {
-  return IOSPasskeysM2Enabled();
-}
-
 @end

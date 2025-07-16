@@ -877,12 +877,6 @@ extern const std::string_view
 // Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled.
 bool FRESignInSecondaryActionLabelUpdate();
 
-// Enables passkey syncing follow-up features.
-BASE_DECLARE_FEATURE(kIOSPasskeysM2);
-
-// Helper function returning the status of `kIOSPasskeysM2`.
-bool IOSPasskeysM2Enabled();
-
 // Enables Profile-specific push notification handling logic. When enabled, this
 // routes incoming notifications to the PushNotificationClientManager associated
 // with the current Profile, rather than using a single global manager. This

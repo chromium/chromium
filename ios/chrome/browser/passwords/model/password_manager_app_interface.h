@@ -46,9 +46,6 @@
 // Returns the number of stored credentials.
 + (int)storedCredentialsCount;
 
-// Returns true if the Passkeys M2 feature is enabled.
-+ (bool)isPasskeysM2FeatureEnabled;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_APP_INTERFACE_H_

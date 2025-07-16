@@ -34,11 +34,6 @@ std::string TurnOnCredentialProviderExtensionPromptSourceToString(
 }  // namespace
 
 void OpenIOSCredentialProviderSettings() {
-  if (!IOSPasskeysM2Enabled()) {
-    ios::provider::PasswordsInOtherAppsOpensSettings();
-    return;
-  }
-
   // If available, use the API that allows to directly open the iOS credential
   // provider settings.
   if (@available(iOS 17.0, *)) {

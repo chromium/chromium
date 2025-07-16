@@ -418,9 +418,6 @@ extern const char kIOSMiniMapUniversalLinkDescription[];
 extern const char kIOSOneTapMiniMapRestrictionsName[];
 extern const char kIOSOneTapMiniMapRestrictionsDescription[];
 
-extern const char kIOSPasskeysM2Name[];
-extern const char kIOSPasskeysM2Description[];
-
 extern const char kIOSPasswordBottomSheetAutofocusName[];
 extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 

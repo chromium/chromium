@@ -734,11 +734,6 @@ const char kIOSOneTapMiniMapRestrictionsName[] =
 const char kIOSOneTapMiniMapRestrictionsDescription[] =
     "Different restrictions to block false positive for one tap Mini Map.";
 
-const char kIOSPasskeysM2Name[] = "Enable the passkey syncing follow-ups";
-const char kIOSPasskeysM2Description[] =
-    "When enabled, the passkey syncing-related features will be available in "
-    "the app.";
-
 const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
