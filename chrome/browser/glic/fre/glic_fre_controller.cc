@@ -132,6 +132,8 @@ void GlicFreController::ShowFreDialog(Browser* browser,
   } else {
     // Sign-in required and handled by AuthController. In this case, do not
     // record the FRE load time metric.
+    base::RecordAction(
+        base::UserMetricsAction("Glic.Fre.CheckAuthBeforeShowSync"));
     show_start_time_ = base::TimeTicks();
   }
 }

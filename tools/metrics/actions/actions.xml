@@ -12517,6 +12517,15 @@ should be able to be added at any place in this file.
   <description>Logged if the FRE is accepted.</description>
 </action>
 
+<action name="Glic.Fre.CheckAuthBeforeShowSync" not_user_triggered="true">
+  <owner>birnie@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Recorded each time the Glic FRE flow triggers the synchronous authentication
+    check.
+  </description>
+</action>
+
 <action name="Glic.Fre.ErrorPanelClosed">
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
