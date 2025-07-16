@@ -5885,8 +5885,14 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   }));
 }
 
+// TODO(crbug.com/423881729): Flaky on Win ASAN
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Histograms DISABLED_Histograms
+#else
+#define MAYBE_Histograms Histograms
+#endif
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
-                       Histograms) {
+                       MAYBE_Histograms) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
 
