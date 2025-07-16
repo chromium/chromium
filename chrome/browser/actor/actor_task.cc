@@ -94,6 +94,10 @@ void ActorTask::Act(const optimization_guide::proto::BrowserAction& action,
     std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskPaused));
     return;
   }
+  if (state_ == State::kFinished) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kTaskWentAway));
+    return;
+  }
   SetState(State::kActing);
   execution_engine_->Act(
       action,

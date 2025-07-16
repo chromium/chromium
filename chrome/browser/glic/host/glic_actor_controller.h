@@ -64,11 +64,6 @@ class GlicActorController {
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       optimization_guide::proto::BrowserStartTaskResult result);
 
-  // Core logic to execute an action.
-  void ActImpl(const optimization_guide::proto::BrowserAction& action,
-               const mojom::GetTabContextOptions& options,
-               mojom::WebClientHandler::ActInFocusedTabCallback callback) const;
-
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
       actor::TaskId task_id,
@@ -85,8 +80,6 @@ class GlicActorController {
   class OngoingRequest;
 
   raw_ptr<Profile> profile_;
-  // True if and only if a task is in the process of being started.
-  bool starting_task_ = false;
   std::unique_ptr<OngoingRequest> current_request_;
   base::WeakPtrFactory<GlicActorController> weak_ptr_factory_{this};
 };

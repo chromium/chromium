@@ -19,6 +19,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace base {
@@ -42,16 +43,22 @@ optimization_guide::proto::BrowserAction MakeClick(
     content::RenderFrameHost& rfh,
     int content_node_id);
 optimization_guide::proto::BrowserAction MakeClick(
+    tabs::TabHandle tab_handle,
     const gfx::Point& click_point);
-optimization_guide::proto::BrowserAction MakeHistoryBack();
-optimization_guide::proto::BrowserAction MakeHistoryForward();
+optimization_guide::proto::BrowserAction MakeHistoryBack(
+    tabs::TabHandle tab_handle);
+optimization_guide::proto::BrowserAction MakeHistoryForward(
+    tabs::TabHandle tab_handle);
 optimization_guide::proto::BrowserAction MakeMouseMove(
     content::RenderFrameHost& rfh,
     int content_node_id);
 optimization_guide::proto::BrowserAction MakeMouseMove(
     const gfx::Point& move_point);
 optimization_guide::proto::BrowserAction MakeNavigate(
+    tabs::TabHandle tab_handle,
     std::string_view target_url);
+optimization_guide::proto::BrowserAction MakeCreateTab(SessionID window_id,
+                                                       bool foreground);
 optimization_guide::proto::BrowserAction MakeType(content::RenderFrameHost& rfh,
                                                   int content_node_id,
                                                   std::string_view text,

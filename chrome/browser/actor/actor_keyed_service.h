@@ -86,15 +86,6 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 
-  // TODO(crbug.com/411462297): DEPRECATED - to be replaced with CreateTask
-  // above.
-  // Starts a new task using the execution engine and fires
-  // `callback` when the task is ready. Implicitly calls AddTask.
-  void StartTask(
-      optimization_guide::proto::BrowserStartTask task,
-      base::OnceCallback<
-          void(optimization_guide::proto::BrowserStartTaskResult)> callback);
-
   // Stops a task by its ID.
   void StopTask(TaskId task_id);
 
@@ -126,14 +117,6 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(TabObservationResult)> callback);
 
  private:
-  // Start task is currently asynchronous.
-  // TODO(crbug.com/411462297): This is a short term hack. Eventually StartTask
-  // will become synchronous.
-  void FinishStartTask(
-      tabs::TabHandle handle,
-      base::OnceCallback<
-          void(optimization_guide::proto::BrowserStartTaskResult)> callback);
-
   // Called when the actor coordinator has finished an action which required
   // task creation.
   void OnActionFinished(
