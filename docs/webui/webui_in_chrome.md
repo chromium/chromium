@@ -347,7 +347,26 @@ if the approach above using `WebUIConfig` does not work, and notify WebUI
 You're done! Assuming no errors (because everyone gets their code perfect the first time) you should be able to compile
 and run chrome and navigate to `chrome://hello-world/` and see your nifty welcome text!
 
+### Registering the URL for Metrics
+To track overall usage, a core metric `WebUI.CreatedForUrl` is automatically
+recorded when a new WebUIController instance is created.
 
+To support this, you must add your new URL's hash to a central list located in
+[tools/metrics/histograms/metadata/ui/enums.xml][enums-xml].
+
+[WebUIUrlHashesBrowserTest][hashes-test] includes a check that ensures all known
+URLs are in this list. The easiest way to calculate the hash for your new WebUI
+page is to run this test and look at the error output.
+
+```
+autoninja -C out/Default browser_tests && ./out/Default/browser_tests --gtest_filter="WebUIUrlHashesBrowserTest.UrlsInHistogram"
+```
+
+The test is expected to fail. The error message will provide the exact line you
+need. Copy the line and add it to `<enum name="WebUIUrlHashes">`
+
+[enums-xml]: https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/ui/enums.xml;drc=d31ce80b7f6c4a57ee7964be72fcfe761588c776;l=579
+[hashes-test]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/webui_url_hashes_browsertest.cc
 ## Making a WebUI Dialog
 
 Instead of having a full page for your WebUI, you might want a dialog in order to have a fully independent window.  To
