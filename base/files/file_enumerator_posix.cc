@@ -41,25 +41,21 @@ bool GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   return true;
 }
 
+bool ShouldShowSymLinks(int file_type) {
 #if BUILDFLAG(IS_FUCHSIA)
-bool ShouldShowSymLinks(int file_type) {
   return false;
-}
 #else
-bool ShouldShowSymLinks(int file_type) {
   return file_type & FileEnumerator::SHOW_SYM_LINKS;
-}
 #endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
+bool ShouldTrackVisitedDirectories(int file_type) {
 #if BUILDFLAG(IS_FUCHSIA)
-bool ShouldTrackVisitedDirectories(int file_type) {
   return false;
-}
 #else
-bool ShouldTrackVisitedDirectories(int file_type) {
   return !(file_type & FileEnumerator::SHOW_SYM_LINKS);
-}
 #endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
 }  // namespace
 
@@ -70,8 +66,8 @@ FileEnumerator::FileInfo::FileInfo() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-FileEnumerator::FileInfo::FileInfo(base::FilePath content_uri,
-                                   base::FilePath filename,
+FileEnumerator::FileInfo::FileInfo(FilePath content_uri,
+                                   FilePath filename,
                                    bool is_directory,
                                    off_t size,
                                    Time time)
@@ -96,7 +92,7 @@ int64_t FileEnumerator::FileInfo::GetSize() const {
 }
 
 base::Time FileEnumerator::FileInfo::GetLastModifiedTime() const {
-  return base::Time::FromTimeT(stat_.st_mtime);
+  return Time::FromTimeT(stat_.st_mtime);
 }
 
 // FileEnumerator --------------------------------------------------------------
@@ -168,7 +164,7 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
   }
 
   if (recursive && ShouldTrackVisitedDirectories(file_type_)) {
-    if (stat_wrapper_t st; GetStat(root_path, false, &st)) {
+    if (stat_wrapper_t st; GetStat(root_path, /*show_links=*/false, &st)) {
       MarkVisited(st);
     }
   }
