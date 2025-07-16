@@ -3785,7 +3785,7 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
   // radio buttons.
   AXObject* parent = ParentObjectUnignored();
   if (parent && parent->RoleValue() == ax::mojom::blink::Role::kRadioGroup) {
-    for (AXObject* child : parent->UnignoredChildren()) {
+    for (AXObject* child : parent->UnignoredChildrenSlow()) {
       DCHECK(child);
       if (child->RoleValue() == ax::mojom::blink::Role::kRadioButton &&
           child->IsIncludedInTree()) {

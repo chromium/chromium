@@ -1083,10 +1083,10 @@ TEST_F(AccessibilitySelectionTest,
       GetAXObjectByElementId("contenteditable");
   ASSERT_NE(nullptr, ax_contenteditable);
   ASSERT_EQ(ax::mojom::Role::kTextField, ax_contenteditable->RoleValue());
-  ASSERT_EQ(3, ax_contenteditable->UnignoredChildCount())
+  ASSERT_EQ(3, ax_contenteditable->UnignoredChildCountSlow())
       << "The content editable should have two lines with a line break between "
          "them.";
-  const AXObject* ax_static_text_2 = ax_contenteditable->UnignoredChildAt(2);
+  const AXObject* ax_static_text_2 = ax_contenteditable->UnignoredChildAtSlow(2);
   ASSERT_NE(nullptr, ax_static_text_2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text_2->RoleValue());
 

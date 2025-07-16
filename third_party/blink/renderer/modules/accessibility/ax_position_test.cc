@@ -1550,14 +1550,14 @@ TEST_F(AccessibilityTest, DISABLED_PositionInCSSContent) {
   ASSERT_TRUE(ax_quote->IsIgnored());
   const AXObject* ax_quote_parent = ax_quote->ParentObjectUnignored();
   ASSERT_NE(nullptr, ax_quote_parent);
-  ASSERT_EQ(4, ax_quote_parent->UnignoredChildCount());
-  const AXObject* ax_css_before = ax_quote_parent->UnignoredChildAt(0);
+  ASSERT_EQ(4, ax_quote_parent->UnignoredChildCountSlow());
+  const AXObject* ax_css_before = ax_quote_parent->UnignoredChildAtSlow(0);
   ASSERT_NE(nullptr, ax_css_before);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_css_before->RoleValue());
-  const AXObject* ax_text = ax_quote_parent->UnignoredChildAt(1);
+  const AXObject* ax_text = ax_quote_parent->UnignoredChildAtSlow(1);
   ASSERT_NE(nullptr, ax_text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
-  const AXObject* ax_css_after = ax_quote_parent->UnignoredChildAt(2);
+  const AXObject* ax_css_after = ax_quote_parent->UnignoredChildAtSlow(2);
   ASSERT_NE(nullptr, ax_css_after);
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_css_after->RoleValue());
 
@@ -1986,7 +1986,7 @@ TEST_F(AccessibilityTest, ToPositionWithAffinityWithMultipleInlineTextBoxes) {
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
   ax_static_text->LoadInlineTextBoxes();
-  ASSERT_EQ(3, ax_static_text->UnignoredChildCount());
+  ASSERT_EQ(3, ax_static_text->UnignoredChildCountSlow());
 
   // The last inline text box should be:
   // "InlineTextBox" name="world"

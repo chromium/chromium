@@ -2979,7 +2979,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
   if (!listbox_candidate && RoleValue() == ax::mojom::blink::Role::kTextField &&
       ParentObject()->RoleValue() ==
           ax::mojom::blink::Role::kComboBoxGrouping) {
-    listbox_candidate = UnignoredNextSibling();
+    listbox_candidate = UnignoredNextSiblingSlow();
   }
 
   // Heuristic: try the next sibling, but we are very strict about this in
@@ -2992,7 +2992,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() const {
             GetElement(), html_names::kAriaActivedescendantAttr)) {
       return nullptr;
     }
-    listbox_candidate = UnignoredNextSibling();
+    listbox_candidate = UnignoredNextSiblingSlow();
     if (!listbox_candidate)
       return nullptr;
     // Require that the next sibling is not a <select>.
@@ -3156,7 +3156,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // accessible children have not been calculated. Rather than force calculation
   // there, wait until we have the full tree.
   if (role_ == ax::mojom::blink::Role::kSvgRoot &&
-      IsIncludedInTree() && !UnignoredChildCount()) {
+      IsIncludedInTree() && !UnignoredChildCountSlow()) {
     return ax::mojom::blink::Role::kImage;
   }
 
@@ -6307,11 +6307,11 @@ const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() {
   return children_;
 }
 
-const AXObject::AXObjectVector AXObject::UnignoredChildren() const {
-  return const_cast<AXObject*>(this)->UnignoredChildren();
+const AXObject::AXObjectVector AXObject::UnignoredChildrenSlow() const {
+  return const_cast<AXObject*>(this)->UnignoredChildrenSlow();
 }
 
-const AXObject::AXObjectVector AXObject::UnignoredChildren() {
+const AXObject::AXObjectVector AXObject::UnignoredChildrenSlow() {
   UpdateChildrenIfNecessary();
 
   if (!IsIncludedInTree()) {
@@ -6534,18 +6534,18 @@ AXObject* AXObject::FirstObjectWithRole(ax::mojom::blink::Role role) const {
   return object;
 }
 
-int AXObject::UnignoredChildCount() const {
-  return static_cast<int>(UnignoredChildren().size());
+int AXObject::UnignoredChildCountSlow() const {
+  return static_cast<int>(UnignoredChildrenSlow().size());
 }
 
-AXObject* AXObject::UnignoredChildAt(int index) const {
-  const AXObjectVector unignored_children = UnignoredChildren();
+AXObject* AXObject::UnignoredChildAtSlow(int index) const {
+  const AXObjectVector unignored_children = UnignoredChildrenSlow();
   if (index < 0 || index >= static_cast<int>(unignored_children.size()))
     return nullptr;
   return unignored_children[index].Get();
 }
 
-AXObject* AXObject::UnignoredNextSibling() const {
+AXObject* AXObject::UnignoredNextSiblingSlow() const {
   if (IsIgnored()) {
     // TODO(crbug.com/1407397): Make sure this no longer fires then turn this
     // block into CHECK(!IsIgnored());
@@ -6590,7 +6590,7 @@ AXObject* AXObject::UnignoredNextSibling() const {
   return nullptr;
 }
 
-AXObject* AXObject::UnignoredPreviousSibling() const {
+AXObject* AXObject::UnignoredPreviousSiblingSlow() const {
   if (IsIgnored()) {
     NOTREACHED() << "We don't support finding unignored siblings for ignored "
                     "objects because it is not clear whether to search for the "
@@ -6632,7 +6632,7 @@ AXObject* AXObject::UnignoredPreviousSibling() const {
   return nullptr;
 }
 
-AXObject* AXObject::UnignoredNextInPreOrder() const {
+AXObject* AXObject::UnignoredNextInPreOrderSlow() const {
   AXObject* next = NextInPreOrderIncludingIgnored();
   while (next && next->IsIgnored()) {
     next = next->NextInPreOrderIncludingIgnored();
@@ -6640,7 +6640,7 @@ AXObject* AXObject::UnignoredNextInPreOrder() const {
   return next;
 }
 
-AXObject* AXObject::UnignoredPreviousInPreOrder() const {
+AXObject* AXObject::UnignoredPreviousInPreOrderSlow() const {
   AXObject* previous = PreviousInPreOrderIncludingIgnored();
   while (previous && previous->IsIgnored()) {
     previous = previous->PreviousInPreOrderIncludingIgnored();

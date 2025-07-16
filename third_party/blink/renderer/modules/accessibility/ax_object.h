@@ -896,6 +896,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // xml-roles object attribute.
   const AtomicString& GetRoleStringForSerialization(ui::AXNodeData* node_data) const;
 
+  // Returns the first object (using pre-order search) that has the given role
+  // in the subtree rooted at this object.
+  AXObject* FirstObjectWithRole(ax::mojom::blink::Role role) const;
+
   // ARIA attributes.
   bool ElementHasAnyAriaAttribute(
       bool does_undo_role_presentation = false) const;
@@ -1065,6 +1069,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AncestorsIterator UnignoredAncestorsBegin() const;
   AncestorsIterator UnignoredAncestorsEnd() const;
 
+  // ------------ Fast methods for retrieving the cached children_ -------------
   // Returns the number of children, including children that are included in the
   // accessibility tree but are accessibility ignored.
   //
@@ -1086,19 +1091,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // accessibility tree.
   const AXObjectVector& ChildrenIncludingIgnored() const;
   const AXObjectVector& ChildrenIncludingIgnored();
-
-  // Returns the node's unignored descendants that are one level deeper than
-  // this node, after removing all accessibility ignored nodes from the tree.
-  //
-  // Flattens accessibility ignored nodes, so each unignored child will have the
-  // same unignored parent, but may have a different parent in tree.
-  //
-  // Can be called on all nodes that are included in the accessibility tree,
-  // including those that are accessibility ignored.
-  // TODO(accessibility) This actually returns ignored children when they are
-  // included in the tree. A better name would be ChildrenIncludedInTree().
-  const AXObjectVector UnignoredChildren() const;
-  const AXObjectVector UnignoredChildren();
 
   // Returns the first child for this object.
   // Works for all nodes that are included in the accessibility tree, and may
@@ -1155,9 +1147,21 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* PreviousInPostOrderIncludingIgnored(
       const AXObject* within = nullptr) const;
 
-  // Returns the first object (using pre-order search) that has the given role
-  // in the subtree rooted at this object.
-  AXObject* FirstObjectWithRole(ax::mojom::blink::Role role) const;
+  // --------------------------------------------------------------------------
+
+  // Returns the node's unignored descendants that are one level deeper than
+  // this node, after removing all accessibility ignored nodes from the tree.
+  //
+  // Flattens accessibility ignored nodes, so each unignored child will have the
+  // same unignored parent, but may have a different parent in tree.
+  //
+  // Can be called on all nodes that are included in the accessibility tree,
+  // including those that are accessibility ignored.
+  // This does more work than simply returning the cached children, because the
+  // the cached children are those that are included in the tree, and can
+  // contain ignored nodes (if IsIgnoredButIncludedInTree() is true).
+  const AXObjectVector UnignoredChildrenSlow() const;
+  const AXObjectVector UnignoredChildrenSlow();
 
   // Returns the number of children that are not accessibility ignored.
   //
@@ -1166,7 +1170,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // Can be called on all nodes that are included in the accessibility tree,
   // including those that are accessibility ignored.
-  int UnignoredChildCount() const;
+  int UnignoredChildCountSlow() const;
 
   // Returns the unignored child with the given index.
   //
@@ -1175,7 +1179,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // Can be called on all nodes that are included in the accessibility tree,
   // including those that are accessibility ignored.
-  AXObject* UnignoredChildAt(int index) const;
+  AXObject* UnignoredChildAtSlow(int index) const;
 
   // Next sibling for this object that's not accessibility ignored.
   //
@@ -1183,7 +1187,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // same unignored parent, but may have a different parent in tree.
   //
   // Doesn't work with nodes that are accessibility ignored.
-  AXObject* UnignoredNextSibling() const;
+  AXObject* UnignoredNextSiblingSlow() const;
 
   // Previous sibling for this object that's not accessibility ignored.
   //
@@ -1191,17 +1195,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // same unignored parent, but may have a different parent in tree.
   //
   // Doesn't work with nodes that are accessibility ignored.
-  AXObject* UnignoredPreviousSibling() const;
+  AXObject* UnignoredPreviousSiblingSlow() const;
 
   // Next object in tree using depth-first pre-order traversal that's
   // not accessibility ignored.
   // Doesn't work with nodes that are accessibility ignored.
-  AXObject* UnignoredNextInPreOrder() const;
+  AXObject* UnignoredNextInPreOrderSlow() const;
 
   // Previous object in tree using depth-first pre-order traversal that's
   // not accessibility ignored.
   // Doesn't work with nodes that are accessibility ignored.
-  AXObject* UnignoredPreviousInPreOrder() const;
+  AXObject* UnignoredPreviousInPreOrderSlow() const;
 
   // Get the parent of this object.
   //
