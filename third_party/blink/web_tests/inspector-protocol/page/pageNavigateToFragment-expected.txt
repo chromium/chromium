@@ -3,6 +3,7 @@ Tests Page.navigate returns for fragment navigation.
     id : <number>
     result : {
         frameId : <string>
+        isDownload : false
         loaderId : <string>
     }
     sessionId : <string>
@@ -11,6 +12,7 @@ Tests Page.navigate returns for fragment navigation.
     id : <number>
     result : {
         frameId : <string>
+        isDownload : false
     }
     sessionId : <string>
 }

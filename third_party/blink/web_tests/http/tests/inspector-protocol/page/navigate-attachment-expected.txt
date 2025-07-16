@@ -1,10 +1,10 @@
-Tests that Page.navigate returns error when server responds with HTTP 204.
+Tests that Page.navigate returns isDownload when server responds with Content-Disposition: attachment.
 {
     id : <number>
     result : {
         errorText : net::ERR_ABORTED
         frameId : <string>
-        isDownload : false
+        isDownload : true
         loaderId : <string>
     }
     sessionId : <string>
