@@ -195,7 +195,7 @@ char32_t ReadLastUnicodeCharacter(NSString* characters) {
   // Use uint16_t instead of char16_t to suppress a compiler warning.
   uint16_t trail = [characters characterAtIndex:characters.length - 1];
   if (CBU16_IS_SINGLE(trail)) {
-    return trail;
+    return static_cast<char32_t>(trail);
   }
   if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
     return 0;
