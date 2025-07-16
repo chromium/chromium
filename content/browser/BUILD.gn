@@ -1562,6 +1562,8 @@ source_set("browser") {
     "permissions/embedded_permission_control_checker.h",
     "permissions/permission_controller_impl.cc",
     "permissions/permission_controller_impl.h",
+    "permissions/permission_overrides.cc",
+    "permissions/permission_overrides.h",
     "permissions/permission_service_context.cc",
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",

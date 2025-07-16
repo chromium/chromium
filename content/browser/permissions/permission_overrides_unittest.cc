@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/permission_overrides.h"
+#include "content/browser/permissions/permission_overrides.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ TEST(PermissionOverridesTest, GetOriginNoOverrides) {
   EXPECT_FALSE(overrides.Get(url, PermissionType::GEOLOCATION).has_value());
 }
 
-TEST(PermissionOverridesTests, SetMidi) {
+TEST(PermissionOverridesTest, SetMidi) {
   PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/"));
   overrides.Set(url, PermissionType::MIDI_SYSEX, PermissionStatus::GRANTED);

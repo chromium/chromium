@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
-#define CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
+#ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_OVERRIDES_H_
+#define CONTENT_BROWSER_PERMISSIONS_PERMISSION_OVERRIDES_H_
 
 #include <optional>
 #include <variant>
@@ -92,4 +92,4 @@ class CONTENT_EXPORT PermissionOverrides {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
+#endif  // CONTENT_BROWSER_PERMISSIONS_PERMISSION_OVERRIDES_H_

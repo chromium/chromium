@@ -11,9 +11,9 @@
 
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
+#include "content/browser/permissions/permission_overrides.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_overrides.h"
 #include "content/public/browser/permission_request_description.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"

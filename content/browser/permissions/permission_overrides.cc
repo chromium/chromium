@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/permission_overrides.h"
+#include "content/browser/permissions/permission_overrides.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
