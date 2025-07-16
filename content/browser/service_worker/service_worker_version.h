@@ -735,12 +735,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
   }
 
   void SetResponseHeadForSyntheticResponse(
-      const network::mojom::URLResponseHead& response_head) {
-    synthetic_response_head_ = response_head.Clone();
+      network::mojom::URLResponseHeadPtr response_head) {
+    synthetic_response_head_ = std::move(response_head);
   }
 
-  network::mojom::URLResponseHeadPtr GetResponseHeadForSyntheticResponse() {
-    return synthetic_response_head_.Clone();
+  const network::mojom::URLResponseHeadPtr&
+  GetResponseHeadForSyntheticResponse() const {
+    return synthetic_response_head_;
   }
 
   // Timeout for a request to be handled.

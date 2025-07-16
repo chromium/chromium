@@ -71,7 +71,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
                          mojo::ScopedDataPipeConsumerHandle body);
   void OnComplete(const network::URLLoaderCompletionStatus& status);
 
-  void MaybeSetResponseHead(network::mojom::URLResponseHeadPtr response_head);
+  void MaybeSetResponseHead(
+      const network::mojom::URLResponseHead& response_head);
 
   // Read response data from the data pipe which has the actual response from
   // the network, and keep it in buffer.

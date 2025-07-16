@@ -63,33 +63,32 @@ constexpr std::string_view kOptInHeaderValue = "?1";
 //
 // TODO(crbug.com/352578800): Ensure converted fields are really sufficient.
 blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    const network::mojom::URLResponseHead& head) {
   CHECK(IsBypassSyntheticResponseHeaderCheckEnabled() ||
-        head->headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
+        head.headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
   auto out_response = blink::mojom::FetchAPIResponse::New();
   out_response->status_code = net::HTTP_OK;
   out_response->response_time = base::Time::Now();
-  out_response->url_list = head->url_list_via_service_worker;
-  out_response->response_type = head->response_type;
-  out_response->padding = head->padding;
-  out_response->mime_type.emplace(head->mime_type);
-  out_response->response_source = head->service_worker_response_source;
-  out_response->cache_storage_cache_name.emplace(
-      head->cache_storage_cache_name);
-  out_response->cors_exposed_header_names = head->cors_exposed_header_names;
-  out_response->parsed_headers = head->parsed_headers.Clone();
-  out_response->connection_info = head->connection_info;
-  out_response->alpn_negotiated_protocol = head->alpn_negotiated_protocol;
-  out_response->was_fetched_via_spdy = head->was_fetched_via_spdy;
-  out_response->has_range_requested = head->has_range_requested;
-  out_response->auth_challenge_info = head->auth_challenge_info;
+  out_response->url_list = head.url_list_via_service_worker;
+  out_response->response_type = head.response_type;
+  out_response->padding = head.padding;
+  out_response->mime_type.emplace(head.mime_type);
+  out_response->response_source = head.service_worker_response_source;
+  out_response->cache_storage_cache_name.emplace(head.cache_storage_cache_name);
+  out_response->cors_exposed_header_names = head.cors_exposed_header_names;
+  out_response->parsed_headers = head.parsed_headers.Clone();
+  out_response->connection_info = head.connection_info;
+  out_response->alpn_negotiated_protocol = head.alpn_negotiated_protocol;
+  out_response->was_fetched_via_spdy = head.was_fetched_via_spdy;
+  out_response->has_range_requested = head.has_range_requested;
+  out_response->auth_challenge_info = head.auth_challenge_info;
 
   // Parse headers.
   size_t iter = 0;
   std::string header_name;
   std::string header_value;
   while (
-      head->headers->EnumerateHeaderLines(&iter, &header_name, &header_value)) {
+      head.headers->EnumerateHeaderLines(&iter, &header_name, &header_value)) {
     if (out_response->headers.contains(header_name)) {
       // TODO(crbug.com/352578800): Confirm if other headers work with comma
       // separated values. We need to handle multiple Accept-CH headers, but
@@ -129,7 +128,8 @@ class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override {
-    receive_response_callback_.Run(response_head.Clone(), std::move(body));
+    std::move(receive_response_callback_)
+        .Run(std::move(response_head), std::move(body));
   }
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
@@ -216,10 +216,10 @@ void ServiceWorkerSyntheticResponseManager::StartSyntheticResponse(
   CHECK_EQ(status_, SyntheticResponseStatus::kReady);
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::StartSyntheticResponse");
-  auto response_head = version_->GetResponseHeadForSyntheticResponse();
+  const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
   CHECK(response_head);
   blink::mojom::FetchAPIResponsePtr response =
-      GetFetchAPIResponse(response_head.Clone());
+      GetFetchAPIResponse(*response_head);
   CHECK(response);
   auto stream_handle = blink::mojom::ServiceWorkerStreamHandle::New();
   stream_handle->stream = write_buffer_manager_->ReleaseConsumerHandle();
@@ -235,21 +235,21 @@ void ServiceWorkerSyntheticResponseManager::StartSyntheticResponse(
 }
 
 void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
-    network::mojom::URLResponseHeadPtr response_head) {
-  if (!network::IsSuccessfulStatus(response_head->headers->response_code())) {
+    const network::mojom::URLResponseHead& response_head) {
+  if (!network::IsSuccessfulStatus(response_head.headers->response_code())) {
     // If the response is not successful, do not update the response head.
     return;
   }
   if (!IsBypassSyntheticResponseHeaderCheckEnabled() &&
-      !response_head->headers->HasHeaderValue(kOptInHeaderName,
-                                              kOptInHeaderValue)) {
+      !response_head.headers->HasHeaderValue(kOptInHeaderName,
+                                             kOptInHeaderValue)) {
     // If there is no opt-in header, do not update the response head.
     return;
   }
   version_->SetMainScriptResponse(
       std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
-          *response_head.Clone()));
-  version_->SetResponseHeadForSyntheticResponse(*response_head.Clone());
+          response_head));
+  version_->SetResponseHeadForSyntheticResponse(response_head.Clone());
 }
 
 void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
@@ -285,7 +285,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
       break;
     }
     case SyntheticResponseStatus::kNotReady:
-      MaybeSetResponseHead(response_head.Clone());
+      MaybeSetResponseHead(*response_head);
       std::move(response_callback_)
           .Run(std::move(response_head), std::move(body));
       break;
@@ -309,7 +309,8 @@ void ServiceWorkerSyntheticResponseManager::OnCloneCompleted() {
 
 bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  CHECK(version_->GetResponseHeadForSyntheticResponse());
+  const auto& response_head = version_->GetResponseHeadForSyntheticResponse();
+  CHECK(response_head);
   // TODO(crbug.com/352578800): Handle other necessary headers e.g. encoding.
   base::flat_set<std::string> ignored_headers = {"date", "alt-svc"};
   if (IsBypassSyntheticResponseHeaderCheckEnabled()) {
@@ -335,8 +336,7 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
         return collected;
       };
   auto incoming_headers = collect_significant_headers(*headers);
-  auto stored_headers = collect_significant_headers(
-      *version_->GetResponseHeadForSyntheticResponse()->headers);
+  auto stored_headers = collect_significant_headers(*response_head->headers);
 
   return incoming_headers == stored_headers;
 }
