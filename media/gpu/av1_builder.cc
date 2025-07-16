@@ -331,9 +331,8 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
           ret.WriteBool(lr_unit_shift > 0);
         } else {
           ret.WriteBool(lr_unit_shift > 0);
-          lr_unit_shift--;
           if (lr_unit_shift) {
-            ret.WriteBool(lr_unit_shift);
+            ret.WriteBool(lr_unit_shift > 1);
           }
         }
 

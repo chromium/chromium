@@ -628,13 +628,13 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithLoopRestoration) {
   auto frame_header = parser->frame_header();
   EXPECT_EQ(frame_header.loop_restoration.type[0],
             libgav1::LoopRestorationType::kLoopRestorationTypeWiener);
-  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[0], 8);
+  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[0], 7);
   EXPECT_EQ(frame_header.loop_restoration.type[1],
             libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj);
-  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[1], 7);
+  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[1], 6);
   EXPECT_EQ(frame_header.loop_restoration.type[2],
             libgav1::LoopRestorationType::kLoopRestorationTypeSwitchable);
-  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[2], 7);
+  EXPECT_EQ(frame_header.loop_restoration.unit_size_log2[2], 6);
 }
 
 TEST_F(AV1BuilderTest, BuildFrameOBUWithReferenceSelect) {
