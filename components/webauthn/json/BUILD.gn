@@ -24,4 +24,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//device/fido",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
