@@ -147,6 +147,9 @@ base::Value::Dict SerializeSecurityEvent(
 base::Value::Dict SerializeReferringAppInfo(
     const internal::ReferringAppInfo& info);
 #endif
+std::string SerializePGPing(
+    const LoginReputationClientRequestAndToken& request_and_token);
+std::string SerializePGResponse(const LoginReputationClientResponse& response);
 
 }  // namespace safe_browsing::web_ui
 

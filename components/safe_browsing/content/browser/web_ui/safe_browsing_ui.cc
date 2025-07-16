@@ -605,18 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-std::string SerializePGPing(
-    const web_ui::LoginReputationClientRequestAndToken& request_and_token) {
-  base::Value::Dict request_dict =
-      Serialize(request_and_token.request);
-  request_dict.Set("scoped_oauth_token", request_and_token.token);
-  return web_ui::SerializeJson(request_dict);
-}
-
-std::string SerializePGResponse(const LoginReputationClientResponse& response) {
-  return web_ui::SerializeJson(Serialize(response));
-}
-
 std::string SerializeURTLookupPing(const web_ui::URTLookupRequest& ping) {
   base::Value::Dict request_dict = Serialize(ping.request);
   request_dict.Set("scoped_oauth_token", ping.token);
@@ -1080,7 +1068,8 @@ void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
   for (const auto& token_and_response : responses) {
     base::Value::List response_entry;
     response_entry.Append(token_and_response.first);
-    response_entry.Append(SerializePGResponse(token_and_response.second));
+    response_entry.Append(
+        web_ui::SerializePGResponse(token_and_response.second));
     responses_sent.Append(std::move(response_entry));
   }
 
@@ -1425,7 +1414,7 @@ void SafeBrowsingUIHandler::NotifyPGResponseJsListener(
     const LoginReputationClientResponse& response) {
   base::Value::List response_list;
   response_list.Append(token);
-  response_list.Append(SerializePGResponse(response));
+  response_list.Append(web_ui::SerializePGResponse(response));
 
   AllowJavascript();
   FireWebUIListener("pg-responses-update", response_list);

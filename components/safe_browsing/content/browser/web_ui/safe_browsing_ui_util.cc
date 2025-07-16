@@ -415,4 +415,15 @@ base::Value::Dict SerializeReferringAppInfo(
 }
 #endif
 
+std::string SerializePGPing(
+    const LoginReputationClientRequestAndToken& request_and_token) {
+  base::Value::Dict request_dict = Serialize(request_and_token.request);
+  request_dict.Set("scoped_oauth_token", request_and_token.token);
+  return SerializeJson(request_dict);
+}
+
+std::string SerializePGResponse(const LoginReputationClientResponse& response) {
+  return SerializeJson(Serialize(response));
+}
+
 }  // namespace safe_browsing::web_ui
