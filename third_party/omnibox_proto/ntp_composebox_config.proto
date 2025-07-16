@@ -11,11 +11,16 @@ option java_outer_classname = 'NtpComposeboxConfigProto';
 package omnibox;
 
 // Configuration for customizing the NTP Composebox.
-// Next ID: 2
+// Next ID: 3
 message NTPComposeboxConfig {
   // Next ID: 2
   message EntryPoint {
     optional int32 num_page_load_animations = 1;
   }
   optional EntryPoint entry_point = 1;
+  message Composebox {
+    optional bool close_by_escape = 1;
+    optional bool close_by_click_outside = 2;
+  }
+  optional Composebox composebox = 2;
 }

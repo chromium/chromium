@@ -80,6 +80,9 @@ export class ComposeboxElement extends CrLitElement {
   private pageHandler_: PageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
 
+  private composeboxCloseByEscape_: boolean =
+      loadTimeData.getBoolean('composeboxCloseByEscape');
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
@@ -198,7 +201,7 @@ export class ComposeboxElement extends CrLitElement {
   }
 
   protected onKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
       this.notifySessionAbandoned_();
     }
   }
