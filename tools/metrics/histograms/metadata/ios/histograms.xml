@@ -2044,6 +2044,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.FRE.ConsentAction" enum="IOSGeminiFREAction"
+    expires_after="2026-06-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records the user's selection on the Gemini FRE consent screen.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.FRE.EntryPoint" enum="IOSGeminiEntryPoint"
     expires_after="2026-02-01">
   <owner>sebsg@chromium.org</owner>
@@ -2054,7 +2063,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Gemini.FRE.PromoAction" enum="IOSGeminiFREPromoAction"
+<histogram name="IOS.Gemini.FRE.PromoAction" enum="IOSGeminiFREAction"
     expires_after="2026-06-01">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>

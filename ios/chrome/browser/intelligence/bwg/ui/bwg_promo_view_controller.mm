@@ -404,13 +404,13 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
 // Did tap Primary Button.
 - (void)didTapPrimaryButton:(UIButton*)sender {
-  RecordFREPromoAction(IOSGeminiFREPromoAction::kAccept);
+  RecordFREPromoAction(IOSGeminiFREAction::kAccept);
   [self.BWGPromoDelegate didAcceptPromo];
 }
 
 // Did tap Secondary Button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
-  RecordFREPromoAction(IOSGeminiFREPromoAction::kDismiss);
+  RecordFREPromoAction(IOSGeminiFREAction::kDismiss);
   [self.mutator didCloseBWGPromo];
 }
 

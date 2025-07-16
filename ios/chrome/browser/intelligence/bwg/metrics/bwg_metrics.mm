@@ -14,6 +14,12 @@ const char kFREEntryPointHistogram[] = "IOS.Gemini.FRE.EntryPoint";
 
 const char kPromoActionHistogram[] = "IOS.Gemini.FRE.PromoAction";
 
-void RecordFREPromoAction(IOSGeminiFREPromoAction action) {
+const char kConsentActionHistogram[] = "IOS.Gemini.FRE.ConsentAction";
+
+void RecordFREPromoAction(IOSGeminiFREAction action) {
+  base::UmaHistogramEnumeration(kPromoActionHistogram, action);
+}
+
+void RecordFREConsentAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
 }

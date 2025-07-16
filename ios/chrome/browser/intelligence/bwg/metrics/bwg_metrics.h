@@ -17,16 +17,22 @@ extern const char kFREEntryPointHistogram[];
 // UMA histogram key for IOS.Gemini.FRE.PromoAction.
 extern const char kPromoActionHistogram[];
 
-// Enum for the IOS.Gemini.FRE.PromoAction histogram.
-// LINT.IfChange(IOSGeminiFREPromoAction)
-enum class IOSGeminiFREPromoAction {
+// UMA histogram key for IOS.Gemini.FRE.ConsentAction.
+extern const char kConsentActionHistogram[];
+
+// Enum for the IOS.Gemini.FRE.PromoAction and IOS.Gemini.FRE.ConsentAction
+// histograms. LINT.IfChange(IOSGeminiFREAction)
+enum class IOSGeminiFREAction {
   kAccept = 0,
   kDismiss = 1,
   kMaxValue = kDismiss,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFREPromoAction)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFREAction)
 
 // Records the user action on the FRE Promo.
-void RecordFREPromoAction(IOSGeminiFREPromoAction action);
+void RecordFREPromoAction(IOSGeminiFREAction action);
+
+// Records the user action on the FRE Consent Screen.
+void RecordFREConsentAction(IOSGeminiFREAction action);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_

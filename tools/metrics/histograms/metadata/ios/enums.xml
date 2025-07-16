@@ -577,14 +577,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:EntryPoint) -->
 
-<!-- LINT.IfChange(IOSGeminiFREPromoAction) -->
+<!-- LINT.IfChange(IOSGeminiFREAction) -->
 
-<enum name="IOSGeminiFREPromoAction">
+<enum name="IOSGeminiFREAction">
   <int value="0" label="Accept"/>
   <int value="1" label="Dismiss"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFREPromoAction) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFREAction) -->
 
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
