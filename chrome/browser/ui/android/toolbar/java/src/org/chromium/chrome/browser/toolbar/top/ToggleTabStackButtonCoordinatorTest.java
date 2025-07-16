@@ -39,6 +39,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -48,6 +50,9 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.HashSet;
@@ -71,6 +76,9 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
@@ -126,6 +134,10 @@ public class ToggleTabStackButtonCoordinatorTest {
         when(mToggleTabStackButton.isShown()).thenReturn(true);
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(false);
         mCoordinator = newToggleTabStackButtonCoordinator(mToggleTabStackButton);
+
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)).thenReturn(false);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
     }
 
     private ToggleTabStackButtonCoordinator newToggleTabStackButtonCoordinator(
@@ -140,7 +152,8 @@ public class ToggleTabStackButtonCoordinatorTest {
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mTopUIThemeProvider,
-                        mIncognitoStateProvider);
+                        mIncognitoStateProvider,
+                        () -> mProfile);
 
         coordinator.initializeWithNative(
                 mOnClickListener,

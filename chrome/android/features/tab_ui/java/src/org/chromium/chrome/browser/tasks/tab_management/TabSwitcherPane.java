@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tab_ui.VersionUpdateIphHandler.maybeShowTabGroupPaneButtonIph;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -109,6 +111,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     private @Nullable TabGroupSyncService mTabGroupSyncService;
     private final TabSwitcherDrawable mTabSwitcherDrawable;
     private final @Nullable ArchivedTabsAutoDeletePromoManager mArchivedTabsAutoDeletePromoManager;
+    private @Nullable ProfileProvider mProfileProvider;
 
     /**
      * @param context The activity context.
@@ -298,6 +301,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     private void onProfileProviderAvailable(ProfileProvider profileProvider) {
+        mProfileProvider = profileProvider;
         Profile profile = profileProvider.getOriginalProfile();
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
 
@@ -351,6 +355,11 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         if (mTabGroupSyncService.getAllGroupIds().length == 0) return;
 
         if (getIsAnimatingSupplier().get()) return;
+
+        if (mProfileProvider != null) {
+            maybeShowTabGroupPaneButtonIph(
+                    mUserEducationHelper, mTabGroupModelFilterSupplier.get(), anchorView);
+        }
 
         IphCommand command =
                 new IphCommandBuilder(

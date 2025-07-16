@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tab_ui.VersionUpdateIphHandler.maybeShowTabSwitcherButtonIph;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -22,12 +23,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -66,6 +69,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final CurrentTabObserver mPageLoadObserver;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
     private final Callback<TabModelDotInfo> mNotificationDotObserver =
             this::onUpdateNotificationDot;
@@ -92,6 +96,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param activityTabSupplier Supplier of the activity tab.
      * @param tabModelSelectorSupplier Supplier for @{@link TabModelSelector}.
+     * @param versionUpdateIphHandler Aids in showing the version update IPH.
      */
     public ToggleTabStackButtonCoordinator(
             Context context,
@@ -102,13 +107,15 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
             ObservableSupplier<@Nullable Tab> activityTabSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ThemeColorProvider themeColorProvider,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            Supplier<Profile> profileSupplier) {
         super(themeColorProvider, incognitoStateProvider);
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mProfileSupplier = profileSupplier;
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
@@ -398,6 +405,12 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
     private void onUpdateNotificationDot(TabModelDotInfo tabModelDotInfo) {
         mToggleTabStackButton.onUpdateNotificationDot(tabModelDotInfo);
         if (tabModelDotInfo.showDot && mUserEducationHelper != null) {
+            maybeShowTabSwitcherButtonIph(
+                    mUserEducationHelper,
+                    mToggleTabStackButton,
+                    mProfileSupplier.get(),
+                    tabModelDotInfo);
+
             String tabGroupTitle = tabModelDotInfo.tabGroupTitle;
             String contentString =
                     mContext.getString(R.string.tab_group_update_iph_text, tabGroupTitle);
