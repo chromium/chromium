@@ -646,8 +646,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+// TODO(crbug.com/432011571): Flaky test.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       ConfirmSensitiveEntryAccess_BlockChildrenNested) {
+       DISABLED_ConfirmSensitiveEntryAccess_BlockChildrenNested) {
   base::FilePath user_data_dir = temp_dir_.GetPath().AppendASCII("user");
   base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
                                               user_data_dir, true, true);
