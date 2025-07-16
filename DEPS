@@ -2960,7 +2960,7 @@ deps = {
   'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@03b20856e3e5dae1d1741e0372e106414c294415',
 
   'src/third_party/vulkan_memory_allocator':
-    Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
+    Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'cb0597213b0fcb999caa9ed08c2f88dc45eb7d50',
 
   # Display server protocol for Linux.
   'src/third_party/wayland/src': {
