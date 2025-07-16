@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -16,10 +17,23 @@
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_model.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
+
+namespace {
+
+const char kExampleOrigin[] = "https://example.com";
+const int kShowOriginalNotification = 1;
+const int kUnsubscribe = 2;
+const int kAlwaysAllow = 3;
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -75,7 +89,7 @@ class NotificationContentDetectionUtilTest : public testing::Test {
     ASSERT_EQ(expected_origin_str, logged_notification_contents.url());
   }
 
- private:
+ protected:
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
@@ -94,7 +108,8 @@ TEST_F(NotificationContentDetectionUtilTest, TestLoggingWithValidMetadata) {
   database_data.notification_data.title = title;
   database_data.notification_data.body = body;
   database_data.origin = origin;
-  database_data.serialized_metadata[safe_browsing::kMetadataDictionaryKey] =
+  database_data.serialized_metadata
+      [safe_browsing::kNotificationContentDetectionMetadataDictionaryKey] =
       NotificationContentDetectionModel::GetSerializedMetadata(
           false, false, suspicious_score);
 
@@ -139,7 +154,8 @@ TEST_F(NotificationContentDetectionUtilTest,
   database_data.notification_data.title = title;
   database_data.notification_data.body = body;
   database_data.origin = origin;
-  database_data.serialized_metadata[safe_browsing::kMetadataDictionaryKey] =
+  database_data.serialized_metadata
+      [safe_browsing::kNotificationContentDetectionMetadataDictionaryKey] =
       NotificationContentDetectionModel::GetSerializedMetadata(false, false,
                                                                std::nullopt);
 
@@ -201,7 +217,8 @@ TEST_F(NotificationContentDetectionUtilTest,
   database_data.notification_data.title = title;
   database_data.notification_data.body = body;
   database_data.origin = origin;
-  database_data.serialized_metadata[safe_browsing::kMetadataDictionaryKey] =
+  database_data.serialized_metadata
+      [safe_browsing::kNotificationContentDetectionMetadataDictionaryKey] =
       "Invalid";
 
   base::test::TestFuture<void> log_uploaded_signal;
@@ -232,7 +249,8 @@ TEST_F(NotificationContentDetectionUtilTest, TestNoLoggingWhenSuccessFalse) {
   database_data.notification_data.title = title;
   database_data.notification_data.body = body;
   database_data.origin = origin;
-  database_data.serialized_metadata[safe_browsing::kMetadataDictionaryKey] =
+  database_data.serialized_metadata
+      [safe_browsing::kNotificationContentDetectionMetadataDictionaryKey] =
       NotificationContentDetectionModel::GetSerializedMetadata(
           false, false, suspicious_score);
 
@@ -243,6 +261,133 @@ TEST_F(NotificationContentDetectionUtilTest, TestNoLoggingWhenSuccessFalse) {
       /*success=*/false, database_data);
   const auto& logs = uploaded_logs();
   ASSERT_EQ(0u, logs.size());
+}
+
+class NotificationContentDetectionUkmUtilTest
+    : public NotificationContentDetectionUtilTest {
+ public:
+  content::PlatformNotificationContext* GetPlatformNotificationContext(
+      GURL origin) {
+    return profile_->GetStoragePartitionForUrl(origin)
+        ->GetPlatformNotificationContext();
+  }
+
+  void WriteNotificationDataAndMetadataToDatabase(bool is_on_global_cache_list,
+                                                  bool is_allowlisted_by_user,
+                                                  double suspicious_score) {
+    // Store notification data in `NotificationDatabase`.
+    const int64_t kFakeServiceWorkerRegistrationId = 42;
+    int notification_id = 1;
+    GURL origin(kExampleOrigin);
+    content::NotificationDatabaseData notification_database_data;
+    notification_database_data.origin = origin;
+    GetPlatformNotificationContext(origin)->WriteNotificationData(
+        notification_id, kFakeServiceWorkerRegistrationId, origin,
+        notification_database_data, base::DoNothing());
+    task_environment_.RunUntilIdle();
+
+    // Store metadata in `NotificationDatabase`.
+    std::string notification_id_str =
+        "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+    std::string serialized_metadata =
+        "{\"" +
+        std::string(safe_browsing::kMetadataIsOriginAllowlistedByUserKey) +
+        "\":" + (is_allowlisted_by_user ? "true" : "false") + ",\"" +
+        std::string(safe_browsing::kMetadataIsOriginOnGlobalCacheListKey) +
+        "\":" + (is_on_global_cache_list ? "true" : "false") + ",\"" +
+        std::string(safe_browsing::kMetadataSuspiciousScoreKey) +
+        "\":" + base::NumberToString(suspicious_score) + "}";
+    GetPlatformNotificationContext(origin)->WriteNotificationMetadata(
+        notification_id_str, origin,
+        safe_browsing::kNotificationContentDetectionMetadataDictionaryKey,
+        serialized_metadata, base::DoNothing());
+  }
+
+  void RecordSuspiciousNotificationInteractionUkmUntilIdle(
+      int interaction_type,
+      std::string notification_id,
+      Profile* profile) {
+    NotificationContentDetectionUkmUtil::
+        RecordSuspiciousNotificationInteractionUkm(
+            interaction_type, GURL(kExampleOrigin), notification_id, profile);
+    task_environment_.RunUntilIdle();
+  }
+
+  std::string GetFullNotificationId(GURL origin, int notification_id) {
+    return "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+  }
+};
+
+TEST_F(NotificationContentDetectionUkmUtilTest,
+       TestRecordSuspiciousNotificationInteractionUkmNullProfile) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  RecordSuspiciousNotificationInteractionUkmUntilIdle(
+      kShowOriginalNotification, GetFullNotificationId(GURL(kExampleOrigin), 1),
+      /*profile=*/nullptr);
+
+  // Check UKM is logged with suspicious score.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType", kShowOriginalNotification);
+  EXPECT_FALSE(
+      test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore"));
+}
+
+TEST_F(NotificationContentDetectionUkmUtilTest,
+       TestRecordSuspiciousNotificationInteractionUkmNullNotificationId) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  RecordSuspiciousNotificationInteractionUkmUntilIdle(
+      kAlwaysAllow, /*notification_id=*/"", profile_);
+
+  // Check UKM is logged with suspicious score.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType", kAlwaysAllow);
+  EXPECT_FALSE(
+      test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore"));
+}
+
+TEST_F(
+    NotificationContentDetectionUkmUtilTest,
+    TestRecordSuspiciousNotificationInteractionUkmNoNotificationDatabaseDataFound) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  RecordSuspiciousNotificationInteractionUkmUntilIdle(
+      kUnsubscribe, GetFullNotificationId(GURL(kExampleOrigin), 1), profile_);
+
+  // Check UKM is logged with suspicious score.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType", kUnsubscribe);
+  EXPECT_FALSE(
+      test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore"));
+}
+
+TEST_F(NotificationContentDetectionUkmUtilTest,
+       TestRecordSuspiciousNotificationInteractionUkmWithSuspiciousScoreFound) {
+  // Add suspicious score data to database.
+  double suspicious_score = 55.0;
+  WriteNotificationDataAndMetadataToDatabase(/*is_on_global_cache_list=*/false,
+                                             /*is_allowlisted_by_user=*/false,
+                                             suspicious_score);
+
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  RecordSuspiciousNotificationInteractionUkmUntilIdle(
+      kUnsubscribe, GetFullNotificationId(GURL(kExampleOrigin), 1), profile_);
+
+  // Check UKM is logged with suspicious score.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType", kUnsubscribe);
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "SuspiciousScore",
+                                      suspicious_score);
 }
 
 }  // namespace safe_browsing

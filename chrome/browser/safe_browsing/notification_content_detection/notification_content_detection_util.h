@@ -8,6 +8,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_UTIL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -45,7 +46,16 @@ class NotificationContentDetectionUkmUtil {
  public:
   static void RecordSuspiciousNotificationInteractionUkm(
       int suspicious_interaction_type,
-      const GURL& requesting_origin);
+      const GURL& requesting_origin,
+      std::string notification_id,
+      Profile* profile);
+
+ private:
+  static void DoRecordSuspiciousNotificationInteractionUkm(
+      int suspicious_interaction_type,
+      const GURL& requesting_origin,
+      bool is_database_data_found,
+      const content::NotificationDatabaseData& notification_database_data);
 };
 
 }  // namespace safe_browsing

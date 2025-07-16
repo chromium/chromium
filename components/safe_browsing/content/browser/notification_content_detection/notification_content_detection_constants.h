@@ -21,8 +21,8 @@ extern const char kIsAllowlistedByUserKey[];
 extern const char kSuspiciousNotificationIdsKey[];
 
 // MQLS metadata dictionary.
-extern const char kMetadataDictionaryKey[];
-extern const char kMetadataSuspiciousKey[];
+extern const char kNotificationContentDetectionMetadataDictionaryKey[];
+extern const char kMetadataSuspiciousScoreKey[];
 extern const char kMetadataIsOriginOnGlobalCacheListKey[];
 extern const char kMetadataIsOriginAllowlistedByUserKey[];
 

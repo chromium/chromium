@@ -885,12 +885,13 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
       ReadNotificationDataAndRecordInteractionSynchronous(
           GetPlatformNotificationContext(origin),
           base::NumberToString(notification_id), origin);
-  ASSERT_TRUE(
-      data.serialized_metadata.contains(safe_browsing::kMetadataDictionaryKey));
+  ASSERT_TRUE(data.serialized_metadata.contains(
+      safe_browsing::kNotificationContentDetectionMetadataDictionaryKey));
   ASSERT_EQ(
       safe_browsing::NotificationContentDetectionModel::GetSerializedMetadata(
           is_on_global_cache_list, is_allowlisted_by_user, suspicious_score),
-      data.serialized_metadata.at(safe_browsing::kMetadataDictionaryKey));
+      data.serialized_metadata.at(
+          safe_browsing::kNotificationContentDetectionMetadataDictionaryKey));
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
   base::Value cur_value(hcsm->GetWebsiteSetting(

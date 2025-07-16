@@ -62,6 +62,9 @@ void NotificationHandler::ReportUnwarnedNotificationAsSpam(
   NOTREACHED();
 }
 
-void NotificationHandler::RecordShowOriginalNotification(const GURL& url) {
+void NotificationHandler::OnShowOriginalNotification(
+    const GURL& url,
+    const std::string& notification_id,
+    Profile* profile) {
   NOTREACHED();
 }

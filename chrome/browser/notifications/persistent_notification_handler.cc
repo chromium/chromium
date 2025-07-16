@@ -364,15 +364,17 @@ void PersistentNotificationHandler::ReportUnwarnedNotificationAsSpam(
                 /*did_user_unsubscribe=*/true);
 }
 
-void PersistentNotificationHandler::RecordShowOriginalNotification(
-    const GURL& url) {
+void PersistentNotificationHandler::OnShowOriginalNotification(
+    const GURL& url,
+    const std::string& notification_id,
+    Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   safe_browsing::NotificationContentDetectionUkmUtil::
       RecordSuspiciousNotificationInteractionUkm(
           static_cast<int>(
               safe_browsing::SuspiciousNotificationWarningInteractions::
                   kShowOriginalNotification),
-          url);
+          url, notification_id, profile);
 #endif
 }
 

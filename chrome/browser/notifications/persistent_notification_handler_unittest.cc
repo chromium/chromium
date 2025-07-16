@@ -263,7 +263,9 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
 #if BUILDFLAG(IS_ANDROID)
-  handler->RecordShowOriginalNotification(origin_);
+  handler->OnShowOriginalNotification(origin_, "dummy-notification-id",
+                                      profile_.get());
+  task_environment_.RunUntilIdle();
 #endif
   handler->DisableNotifications(
       profile_.get(), origin_,
@@ -299,12 +301,16 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::SuspiciousNotificationInteraction::kEntryName);
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(1u, ukm_entries.size());
+  ASSERT_EQ(1u, ukm_entries.size());
   test_ukm_recorder.ExpectEntryMetric(
       ukm_entries[0], "SuspiciousInteractionType",
       static_cast<int>(
           safe_browsing::SuspiciousNotificationWarningInteractions::
               kShowOriginalNotification));
+  // No suspicious score has been previously stored in the database, so UKM
+  // should not log a suspicious score.
+  EXPECT_FALSE(
+      test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore"));
 #else
   EXPECT_EQ(0u, ukm_entries.size());
 #endif
@@ -332,16 +338,21 @@ TEST_F(PersistentNotificationHandlerTest,
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
   handler->DisableNotifications(profile_.get(), origin_, suspicious_id);
+  task_environment_.RunUntilIdle();
 
   // Disabling notifications after a warning was shown should log the UKM.
   auto ukm_entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::SuspiciousNotificationInteraction::kEntryName);
-  EXPECT_EQ(1u, ukm_entries.size());
+  ASSERT_EQ(1u, ukm_entries.size());
   test_ukm_recorder.ExpectEntryMetric(
       ukm_entries[0], "SuspiciousInteractionType",
       static_cast<int>(
           safe_browsing::SuspiciousNotificationWarningInteractions::
               kUnsubscribe));
+  // No suspicious score has been previously stored in the database, so UKM
+  // should not log a suspicious score.
+  EXPECT_FALSE(
+      test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore"));
 }
 #endif
 
@@ -474,7 +485,7 @@ class
     GetPlatformNotificationContext(origin)->WriteNotificationData(
         notification_id, kFakeServiceWorkerRegistrationId, origin,
         notification_database_data, base::DoNothing());
-    base::RunLoop().RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Store metadata in `NotificationDatabase`.
     std::string notification_id_str =
@@ -485,10 +496,11 @@ class
         "\":" + (is_allowlisted_by_user ? "true" : "false") + ",\"" +
         std::string(safe_browsing::kMetadataIsOriginOnGlobalCacheListKey) +
         "\":" + (is_on_global_cache_list ? "true" : "false") + ",\"" +
-        std::string(safe_browsing::kMetadataSuspiciousKey) +
+        std::string(safe_browsing::kMetadataSuspiciousScoreKey) +
         "\":" + base::NumberToString(suspicious_score) + "}";
     GetPlatformNotificationContext(origin)->WriteNotificationMetadata(
-        notification_id_str, origin, safe_browsing::kMetadataDictionaryKey,
+        notification_id_str, origin,
+        safe_browsing::kNotificationContentDetectionMetadataDictionaryKey,
         serialized_metadata, base::DoNothing());
   }
 
@@ -673,3 +685,39 @@ TEST_F(
   const auto& logs = uploaded_logs();
   ASSERT_EQ(0u, logs.size());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(
+    PersistentNotificationHandlerWithNotificationContentDetectionLowLoggingRateTest,
+    LogSuspiciousNotificationInteractionWithSuspiciousScore) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  double suspicious_score = 70.0;
+  WriteNotificationDataAndMetadataToDatabase(
+      /*is_url_on_allowlist=*/true, /*did_user_always_allow_url=*/false,
+      suspicious_score);
+  int notification_id = 1;
+
+  GURL origin(origin_);
+  std::string notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+
+  base::test::TestFuture<void> log_uploaded_signal;
+  logs_uploader()->WaitForLogUpload(log_uploaded_signal.GetCallback());
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+  handler->OnShowOriginalNotification(origin_, notification_id_str, profile());
+  task_environment_.RunUntilIdle();
+
+  // Check UKM is logged with suspicious score.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::SuspiciousNotificationInteraction::kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], "SuspiciousInteractionType",
+      static_cast<int>(
+          safe_browsing::SuspiciousNotificationWarningInteractions::
+              kShowOriginalNotification));
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "SuspiciousScore",
+                                      suspicious_score);
+}
+#endif

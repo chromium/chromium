@@ -800,7 +800,7 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
       if (notification_context) {
         notification_context->WriteNotificationMetadata(
             notification.id(), notification.origin_url(),
-            safe_browsing::kMetadataDictionaryKey,
+            safe_browsing::kNotificationContentDetectionMetadataDictionaryKey,
             serialized_content_detection_metadata.value(), std::move(callback));
         return;
       }

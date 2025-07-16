@@ -181,7 +181,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
                                                 profile_);
       break;
     case NotificationOperation::kShowOriginalNotification:
-      handler->RecordShowOriginalNotification(origin);
+      handler->OnShowOriginalNotification(origin, notification_id, profile_);
       break;
   }
 }

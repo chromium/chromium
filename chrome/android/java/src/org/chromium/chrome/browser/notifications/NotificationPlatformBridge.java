@@ -1781,6 +1781,7 @@ public class NotificationPlatformBridge {
                 .onNotificationAlwaysAllowFromOrigin(
                         mNativeNotificationPlatformBridge,
                         NotificationPlatformBridge.this,
+                        identifyingAttributes.notificationId,
                         identifyingAttributes.origin,
                         identifyingAttributes.profileId,
                         identifyingAttributes.incognito);
@@ -1926,6 +1927,7 @@ public class NotificationPlatformBridge {
         void onNotificationAlwaysAllowFromOrigin(
                 long nativeNotificationPlatformBridgeAndroid,
                 NotificationPlatformBridge caller,
+                @JniType("std::string") String notificationId,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
                 boolean incognito);

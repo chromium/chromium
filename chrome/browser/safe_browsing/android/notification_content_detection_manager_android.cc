@@ -74,7 +74,7 @@ void MaybeLogSuspiciousNotificationUnsubscribeUkm(HostContentSettingsMap* hcsm,
         RecordSuspiciousNotificationInteractionUkm(
             static_cast<int>(
                 SuspiciousNotificationWarningInteractions::kUnsubscribe),
-            origin);
+            origin, notification_id, profile);
   }
 }
 

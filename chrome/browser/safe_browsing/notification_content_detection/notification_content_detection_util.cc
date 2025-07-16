@@ -6,9 +6,12 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -39,6 +42,29 @@ optimization_guide::proto::SiteEngagementScore EngagementLevelToProtoScore(
           SITE_ENGAGEMENT_SCORE_MAX;
   }
   NOTREACHED();
+}
+
+// Extracts the notification content detection metadata dictionary from the
+// notification database data. Returns std::nullopt if the metadata is not
+// present or cannot be parsed.
+std::optional<base::Value::Dict> GetNotificationContentMetadata(
+    const content::NotificationDatabaseData& notification_database_data) {
+  const auto& metadata_it = notification_database_data.serialized_metadata.find(
+      safe_browsing::kNotificationContentDetectionMetadataDictionaryKey);
+  if (metadata_it == notification_database_data.serialized_metadata.end()) {
+    return std::nullopt;
+  }
+
+  JSONStringValueDeserializer deserializer(metadata_it->second);
+  std::unique_ptr<base::Value> metadata_value =
+      deserializer.Deserialize(nullptr, nullptr);
+
+  if (!metadata_value || !metadata_value->is_dict()) {
+    DVLOG(1) << "Failed to parse notification content metadata.";
+    return std::nullopt;
+  }
+
+  return std::move(*metadata_value).TakeDict();
 }
 
 }  // namespace
@@ -89,33 +115,25 @@ void SendNotificationContentDetectionDataToMQLSServer(
       optimization_guide::proto::NotificationContentDetectionQuality>();
 
   // Add metadata to log if it's defined in the `notification_database_data`.
-  if (notification_database_data.serialized_metadata.contains(
-          safe_browsing::kMetadataDictionaryKey)) {
-    JSONStringValueDeserializer deserializer(
-        notification_database_data.serialized_metadata.at(
-            safe_browsing::kMetadataDictionaryKey));
-    std::unique_ptr<base::Value> metadata =
-        deserializer.Deserialize(nullptr, nullptr);
-    if (!metadata.get() || !metadata->is_dict()) {
-      DVLOG(1) << "Failed to parse metadata.";
-    } else {
-      auto metadata_dict = std::move(*metadata).TakeDict();
-      if (metadata_dict.FindBool(kMetadataIsOriginAllowlistedByUserKey)
-              .has_value()) {
-        ncd_quality->set_did_user_always_allow_url(
-            metadata_dict.FindBool(kMetadataIsOriginAllowlistedByUserKey)
-                .value());
-      }
-      if (metadata_dict.FindBool(kMetadataIsOriginOnGlobalCacheListKey)
-              .has_value()) {
-        ncd_quality->set_is_url_on_allowlist(
-            metadata_dict.FindBool(kMetadataIsOriginOnGlobalCacheListKey)
-                .value());
-      }
-      if (metadata_dict.FindDouble(kMetadataSuspiciousKey).has_value()) {
-        ncd_response->set_suspicious_score(
-            metadata_dict.FindDouble(kMetadataSuspiciousKey).value());
-      }
+  std::optional<base::Value::Dict> metadata_dict =
+      GetNotificationContentMetadata(notification_database_data);
+  if (metadata_dict.has_value()) {
+    std::optional<bool> is_origin_allowlisted_by_user =
+        metadata_dict->FindBool(kMetadataIsOriginAllowlistedByUserKey);
+    if (is_origin_allowlisted_by_user.has_value()) {
+      ncd_quality->set_did_user_always_allow_url(
+          is_origin_allowlisted_by_user.value());
+    }
+    std::optional<bool> is_origin_on_global_cache_list =
+        metadata_dict->FindBool(kMetadataIsOriginOnGlobalCacheListKey);
+    if (is_origin_on_global_cache_list.has_value()) {
+      ncd_quality->set_is_url_on_allowlist(
+          is_origin_on_global_cache_list.value());
+    }
+    std::optional<double> suspicious_score =
+        metadata_dict->FindDouble(kMetadataSuspiciousScoreKey);
+    if (suspicious_score.has_value()) {
+      ncd_response->set_suspicious_score(suspicious_score.value());
     }
   }
   ncd_quality->set_was_user_shown_warning(mqls_metadata.did_show_warning_);
@@ -142,11 +160,56 @@ void SendNotificationContentDetectionDataToMQLSServer(
 
 void NotificationContentDetectionUkmUtil::
     RecordSuspiciousNotificationInteractionUkm(int suspicious_interaction_type,
-                                               const GURL& requesting_origin) {
+                                               const GURL& requesting_origin,
+                                               std::string notification_id,
+                                               Profile* profile) {
+  if (profile && profile->GetStoragePartitionForUrl(requesting_origin) &&
+      profile->GetStoragePartitionForUrl(requesting_origin)
+          ->GetPlatformNotificationContext() &&
+      !notification_id.empty()) {
+    auto* notification_context =
+        profile->GetStoragePartitionForUrl(requesting_origin)
+            ->GetPlatformNotificationContext();
+    notification_context->ReadNotificationDataAndRecordInteraction(
+        notification_id, requesting_origin,
+        content::PlatformNotificationContext::Interaction::NONE,
+        base::BindOnce(&NotificationContentDetectionUkmUtil::
+                           DoRecordSuspiciousNotificationInteractionUkm,
+                       suspicious_interaction_type, requesting_origin));
+  } else {
+    DoRecordSuspiciousNotificationInteractionUkm(
+        suspicious_interaction_type, requesting_origin,
+        /*is_database_data_found=*/false, content::NotificationDatabaseData());
+  }
+}
+
+void NotificationContentDetectionUkmUtil::
+    DoRecordSuspiciousNotificationInteractionUkm(
+        int suspicious_interaction_type,
+        const GURL& requesting_origin,
+        bool is_database_data_found,
+        const content::NotificationDatabaseData& notification_database_data) {
+  // Setup builder for logging the UKM.
   ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
       base::PassKey<NotificationContentDetectionUkmUtil>(), requesting_origin);
   ukm::builders::SuspiciousNotificationInteraction builder(source_id);
   builder.SetSuspiciousInteractionType(suspicious_interaction_type);
+
+  // If a suspicious score can be found in `notification_database_data`, then
+  // set the value on the UKM builder.
+  if (is_database_data_found) {
+    std::optional<base::Value::Dict> metadata_dict =
+        GetNotificationContentMetadata(notification_database_data);
+    if (metadata_dict.has_value()) {
+      std::optional<double> suspicious_score =
+          metadata_dict->FindDouble(kMetadataSuspiciousScoreKey);
+      if (suspicious_score.has_value()) {
+        builder.SetSuspiciousScore(suspicious_score.value());
+      }
+    }
+  }
+
+  // Log the UKM.
   builder.Record(ukm::UkmRecorder::Get());
 }
 

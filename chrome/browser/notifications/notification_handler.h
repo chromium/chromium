@@ -95,7 +95,9 @@ class NotificationHandler {
 
   // Called when a user taps to show the original contents of a notification
   // after being shown a suspicious notification warning.
-  virtual void RecordShowOriginalNotification(const GURL& url);
+  virtual void OnShowOriginalNotification(const GURL& url,
+                                          const std::string& notification_id,
+                                          Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_HANDLER_H_

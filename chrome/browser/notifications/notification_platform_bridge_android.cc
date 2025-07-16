@@ -365,6 +365,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_object,
+    std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
     jboolean incognito) {
@@ -376,7 +377,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
       GetProfileBaseNameFromProfileId(profile_id), incognito,
       base::BindOnce(
           &NotificationPlatformBridgeAndroid::AlwaysAllowNotifications,
-          weak_factory_.GetWeakPtr(), url));
+          weak_factory_.GetWeakPtr(), url, notification_id));
 }
 
 void NotificationPlatformBridgeAndroid::Display(
@@ -504,6 +505,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationProcessed(
 
 void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
     const GURL& url,
+    const std::string& notification_id,
     Profile* profile) {
   // Always allow suspicious notifications from `url`.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile);
@@ -523,7 +525,7 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
           static_cast<int>(
               safe_browsing::SuspiciousNotificationWarningInteractions::
                   kAlwaysAllow),
-          url);
+          url, notification_id, profile);
 
   // Send a new notification to tell the user that Chrome will no longer hide
   // notifications from `url`.
