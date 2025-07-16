@@ -167,6 +167,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       id="rateMenu"
       .settingsPrefs="${this.settingsPrefs}"
       @rate-change="${this.onRateChange_}">
+  </rate-menu>
   <highlight-menu
       id="highlightMenu"
       .settingsPrefs="${this.settingsPrefs}"
