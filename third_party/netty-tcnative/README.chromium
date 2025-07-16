@@ -3,7 +3,7 @@ Short Name: netty-tcnative
 URL: https://github.com/netty/netty-tcnative.git
 Version: 2.0.0.Final
 Date: 2017-03-09
-Revision: 28d9d70090f1b18927f4554621648cc1922d6e05
+Revision: b21c6eee658866b83122c674e3c0da054e09a3d7
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no
