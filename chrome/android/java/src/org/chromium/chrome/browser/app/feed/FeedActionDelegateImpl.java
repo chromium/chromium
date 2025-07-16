@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.app.feed;
 import android.app.Activity;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -50,6 +50,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 /** Implements some actions for the Feed */
+@NullMarked
 public class FeedActionDelegateImpl implements FeedActionDelegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -79,9 +80,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void downloadPage(String url) {
-        RequestCoordinatorBridge.getForProfile(mProfile)
-                .savePageLater(
-                        url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
+        RequestCoordinatorBridge requestCoordinatorBridge =
+                RequestCoordinatorBridge.getForProfile(mProfile);
+        assert requestCoordinatorBridge != null;
+        requestCoordinatorBridge.savePageLater(
+                url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
     }
 
     @Override
@@ -188,8 +191,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.NONE)
                         .build();
-        @Nullable
-        Intent intent =
+
+        @Nullable Intent intent =
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createBottomSheetSigninIntentOrShowError(
                                 mActivity, mProfile, config, signinAccessPoint);
@@ -217,8 +220,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 HistorySyncConfig.OptInMode.NONE)
                         .build();
-        @Nullable
-        Intent intent =
+
+        @Nullable Intent intent =
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createBottomSheetSigninIntentOrShowError(
                                 mActivity, mProfile, config, signinAccessPoint);

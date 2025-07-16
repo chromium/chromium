@@ -46,7 +46,7 @@ public class FeedSurfaceRendererBridge {
                 Renderer renderer,
                 FeedReliabilityLoggingBridge reliabilityLoggingBridge,
                 @StreamKind int streamKind,
-                SingleWebFeedParameters webFeedParameters) {
+                @Nullable SingleWebFeedParameters webFeedParameters) {
             return new FeedSurfaceRendererBridge(
                     profile, renderer, reliabilityLoggingBridge, streamKind, webFeedParameters);
         }
@@ -57,10 +57,11 @@ public class FeedSurfaceRendererBridge {
             Renderer renderer,
             FeedReliabilityLoggingBridge reliabilityLoggingBridge,
             @StreamKind int streamKind,
-            SingleWebFeedParameters webFeedParameters) {
+            @Nullable SingleWebFeedParameters webFeedParameters) {
         mProfile = profile;
         mRenderer = renderer;
         if (streamKind == StreamKind.SINGLE_WEB_FEED) {
+            assert webFeedParameters != null;
             mNativeSurfaceRenderer =
                     FeedSurfaceRendererBridgeJni.get()
                             .initWebFeed(

@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.feed;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,11 +25,12 @@ import org.chromium.url.GURL;
 /**
  * Manages the lifecycle of a {@link FeedSurfaceCoordinator} associated with a Tab in an Activity.
  */
+@NullMarked
 public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager {
     /** Key for the Feed instance state that may be stored in a navigation entry. */
     private static final String FEED_SAVED_INSTANCE_STATE_KEY = "FeedSavedInstanceState";
 
-    private static PrefService sPrefServiceForTesting;
+    private static @Nullable PrefService sPrefServiceForTesting;
 
     /** The {@link Tab} that {@link #mCoordinator} is attached to. */
     private final Tab mTab;

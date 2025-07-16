@@ -713,7 +713,7 @@ public class FeedStream implements Stream {
             FeedActionDelegate actionDelegate,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
             StreamsMediator streamsMediator,
-            SingleWebFeedParameters singleWebFeedParameters,
+            @Nullable SingleWebFeedParameters singleWebFeedParameters,
             FeedSurfaceRendererBridge.Factory feedSurfaceRendererBridgeFactory) {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mBridge =

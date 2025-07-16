@@ -17,9 +17,7 @@ import org.jspecify.annotations.Nullable;
  */
 @NullMarked
 public interface SurfaceScope {
-    default @Nullable HybridListRenderer provideListRenderer() {
-        return null;
-    }
+    HybridListRenderer provideListRenderer();
 
     default @Nullable SurfaceRenderer provideSurfaceRenderer() {
         return null;

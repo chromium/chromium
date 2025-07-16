@@ -124,7 +124,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
      * Enables the swipe gesture.
      * @param scrollableContainerDelegate Delegate for the scrollable container.
      */
-    public void enableSwipe(ScrollableContainerDelegate scrollableContainerDelegate) {
+    public void enableSwipe(@Nullable ScrollableContainerDelegate scrollableContainerDelegate) {
         if (isEnabled()) return;
         setEnabled(true);
 

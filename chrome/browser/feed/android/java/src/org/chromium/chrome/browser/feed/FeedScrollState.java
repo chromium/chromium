@@ -47,7 +47,7 @@ public class FeedScrollState {
     }
 
     /** Reads from json to recover a FeedScrollState object. */
-    static @Nullable FeedScrollState fromJson(String json) {
+    static @Nullable FeedScrollState fromJson(@Nullable String json) {
         if (json == null) return null;
         FeedScrollState result = new FeedScrollState();
         try {

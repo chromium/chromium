@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** {@link SuggestionsUiDelegate} implementation. */
+@NullMarked
 public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
     private final List<DestructionObserver> mDestructionObservers = new ArrayList<>();
     private final SuggestionsNavigationDelegate mSuggestionsNavigationDelegate;
@@ -35,7 +35,6 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
         mHost = host;
     }
 
-    @Nullable
     @Override
     public SuggestionsNavigationDelegate getNavigationDelegate() {
         return mSuggestionsNavigationDelegate;
