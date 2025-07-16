@@ -199,10 +199,13 @@ cr-progress,
 }
 </if>
 
- #print,
- #more {
-   margin-inline-start: 4px;
- }
+<if expr="enable_pdf_save_to_drive">
+viewer-download-controls::part(button),
+</if>
+#print,
+#more {
+  margin-inline-start: 4px;
+}
 
 .dropdown-item {
   padding-inline-end: 16px;

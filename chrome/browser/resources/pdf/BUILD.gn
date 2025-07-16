@@ -141,6 +141,13 @@ build_webui("build") {
     ]
   }
 
+  if (enable_pdf_save_to_drive) {
+    ts_files += [
+      "elements/viewer_save_to_drive_controls.html.ts",
+      "elements/viewer_save_to_drive_controls.ts",
+    ]
+  }
+
   css_files = [
     "elements/pdf_shared.css",
     "elements/shared_vars.css",

@@ -34,6 +34,10 @@ class TestElement extends TestElementBase {
   override getSaveButton(): CrIconButtonElement {
     return this.$.save;
   }
+
+  override getSaveEventType(): string {
+    return 'save';
+  }
 }
 
 const tests = [

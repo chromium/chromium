@@ -495,6 +495,11 @@
     <message name="IDS_AX_ROLE_DESCRIPTION_PDF_POPUP_NOTE" desc="Accessibility role description for popup note annotation associated with a PDF highlight">
       Note
     </message>
+    <if expr="enable_pdf_save_to_drive">
+      <message name="IDS_PDF_TOOLTIP_SAVE_TO_DRIVE" desc="Button tooltip for saving a PDF document to Google Drive">
+        Save to Google Drive
+      </message>
+    </if>
   </if>
   <if expr="enable_screen_ai_service">
     <message name="IDS_PDF_OCR_FEATURE_ALERT" is_accessibility_with_no_ui="true" desc="Notification of the PDF OCR feature when the user encounters an inaccessible PDF.">

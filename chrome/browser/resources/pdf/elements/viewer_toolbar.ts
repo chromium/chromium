@@ -8,6 +8,9 @@ import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 import './icons.html.js';
 import './viewer_download_controls.js';
 import './viewer_page_selector.js';
+// <if expr="enable_pdf_save_to_drive">
+import './viewer_save_to_drive_controls.js';
+// </if>
 import './shared_vars.css.js';
 // <if expr="enable_ink">
 import './viewer_annotations_bar.js';
@@ -125,6 +128,10 @@ export class ViewerToolbarElement extends CrLitElement {
       canUndoAnnotation_: {type: Boolean},
       pdfTextAnnotationsEnabled_: {type: Boolean},
       // </if>
+
+      // <if expr="enable_pdf_save_to_drive">
+      pdfSaveToDriveEnabled: {type: Boolean},
+      // </if> enable_pdf_save_to_drive
     };
   }
 
@@ -160,6 +167,10 @@ export class ViewerToolbarElement extends CrLitElement {
   private accessor pdfInk1AnnotationsEnabled_: boolean = false;
   protected accessor showAnnotationsModeDialog_: boolean = false;
   // </if>
+
+  // <if expr="enable_pdf_save_to_drive">
+  accessor pdfSaveToDriveEnabled: boolean = false;
+  // </if> enable_pdf_save_to_drive
 
   // <if expr="enable_pdf_ink2">
   // Ink2 reactive properties

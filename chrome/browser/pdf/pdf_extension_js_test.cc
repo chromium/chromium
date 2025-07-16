@@ -212,6 +212,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SaveToDriveControls) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("save_to_drive_controls_test.js", "test.pdf");
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
   RunTestsInJsModule("title_test.js", "test-title.pdf");
 }

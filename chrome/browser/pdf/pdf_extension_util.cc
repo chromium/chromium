@@ -120,6 +120,9 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
       {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},
       {"zoomTextInputAriaLabel", IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL},
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+      {"tooltipSaveToDrive", IDS_PDF_TOOLTIP_SAVE_TO_DRIVE},
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PDF_INK2)
       {"tooltipAnnotate", IDS_PDF_ANNOTATION_ANNOTATE},
       {"annotationDocumentTooLarge", IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE},

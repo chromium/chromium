@@ -31,6 +31,9 @@ import {AnnotationMode} from './constants.js';
 <if expr="enable_pdf_ink2">
     .pdfInk2Enabled="${this.pdfInk2Enabled_}"
 </if>
+<if expr="enable_pdf_save_to_drive">
+    .pdfSaveToDriveEnabled="${this.pdfSaveToDriveEnabled_}"
+</if>
     @change-page="${this.onChangePage_}"
     @display-annotations-changed="${this.onDisplayAnnotationsChanged_}"
     @fit-to-changed="${this.onFitToChanged}"
@@ -47,6 +50,9 @@ import {AnnotationMode} from './constants.js';
     @annotation-mode-updated="${this.onAnnotationModeUpdated_}"
 </if>
     @print="${this.onPrint_}" @save="${this.onToolbarSave_}"
+<if expr="enable_pdf_save_to_drive">
+    @save-to-drive="${this.onSaveToDrive_}"
+</if>
 <if expr="enable_pdf_ink2">
     @strokes-updated="${this.onStrokesUpdated_}"
 </if>

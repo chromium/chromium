@@ -84,6 +84,14 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
       assertNotReached();
     }
 
+    /**
+     * Client code should override this method to return the appropriate save
+     * event type.
+     */
+    getSaveEventType(): string {
+      assertNotReached();
+    }
+
     onSaveClick() {
       this.waitForEdits_().then(hasEdits => {
         if (hasEdits) {
@@ -116,8 +124,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     }
 
     private dispatchSaveEvent_(type: SaveRequestType) {
-      this.dispatchEvent(new CustomEvent(
-          'save', {detail: type, bubbles: true, composed: true}));
+      this.fire(this.getSaveEventType(), type);
     }
 
     private hasEditsToSave_(): boolean {
@@ -142,7 +149,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     /**
      * @return The value for the aria-haspopup attribute for the button.
      */
-    saveButtonHasPopup(): string {
+    getAriaHasPopup(): string {
       return this.hasEditsToSave_() ? 'menu' : 'false';
     }
   }
@@ -153,10 +160,11 @@ export interface ViewerSaveControlsMixinInterface {
   hasEdits: boolean;
   hasEnteredAnnotationMode: boolean;
   isFormFieldFocused: boolean;
+  getAriaHasPopup(): string;
   getMenu(): CrActionMenuElement;
   getSaveButton(): CrIconButtonElement;
+  getSaveEventType(): string;
   onSaveClick(): void;
   onSaveEditedClick(): void;
   onSaveOriginalClick(): void;
-  saveButtonHasPopup(): string;
 }
