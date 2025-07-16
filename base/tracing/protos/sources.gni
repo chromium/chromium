@@ -9,3 +9,8 @@
 # first in order to be useful.
 # TODO(b/181318121): Implement the support in Perfetto and remove the warning.
 chrome_track_event_sources = [ "chrome_track_event.proto" ]
+
+# protoc can generate a descriptor file from a single .proto file. If
+# `chrome_track_event_sources` contains multiple files, add a single wrapper
+# file that imports them all to generate the descriptor.
+chrome_track_event_descriptor_source = "chrome_track_event_import_wrapper.proto"

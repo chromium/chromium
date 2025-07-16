@@ -7,16 +7,32 @@ import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 import("sources.gni")
 
+# Generates only a proto descriptor. This must only have a single entry in
+# `sources`, because `generate_descriptor` adds a `--dependency_out` argument to
+# protoc. With multiple sources protoc fails with the error: "Can only process
+# one input file when using --dependency_out=FILE."
 proto_library("chrome_track_event") {
   proto_in_dir = "//"
   proto_out_dir = "base/tracing/protos"
-  import_dirs = [ "//third_party/perfetto/" ]
-  sources = chrome_track_event_sources
+  sources = [
+    # Wrapper file importing all files in `chrome_track_event_sources`.
+    chrome_track_event_descriptor_source,
+  ]
+  import_dirs = [
+    # `chrome_track_event_descriptor_source` imports protos from the current dir.
+    "//base/tracing/protos/",
+    "//third_party/perfetto/",
+  ]
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
-  deps =
-      [ "//third_party/perfetto/protos/perfetto/trace/track_event:source_set" ]
+  deps = [
+    # To track build dependencies, this must depend on a proto library target
+    # listing  `chrome_track_event_descriptor_source`'s imports as sources.
+    # Conveniently `chrome_track_event_zero` is just such a library.
+    ":chrome_track_event_zero",
+    "//third_party/perfetto/protos/perfetto/trace/track_event:source_set",
+  ]
 }
 
 protozero_library("chrome_track_event_zero") {
