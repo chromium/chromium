@@ -30,6 +30,15 @@ inline bool PostDelayedCrossThreadTask(base::SequencedTaskRunner& task_runner,
       location, ConvertToBaseOnceCallback(std::move(task)), delay);
 }
 
+inline bool PostCrossThreadTaskAndReply(base::SequencedTaskRunner& task_runner,
+                                        const base::Location& location,
+                                        WTF::CrossThreadOnceClosure task,
+                                        WTF::CrossThreadOnceClosure reply) {
+  return task_runner.PostTaskAndReply(
+      location, ConvertToBaseOnceCallback(std::move(task)),
+      ConvertToBaseOnceCallback(std::move(reply)));
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_POST_CROSS_THREAD_TASK_H_
