@@ -30,7 +30,9 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state) {
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
-  CHECK(!active_task_id_);
+  // TODO(crbug.com/432121373): Enable this check again once StoppedActingOnTab
+  // events are dispatched.
+  // CHECK(!active_task_id_);
   active_task_id_ = task_id;
 }
 
