@@ -236,6 +236,10 @@ source_set("cronet_static") {
   if (!use_platform_icu_alternatives) {
     deps += [ "//base:i18n" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("hide_all_but_jni_onload_and_cronet") {
@@ -1189,6 +1193,10 @@ shared_library("cronet_tests") {
 
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 android_resources("cronet_test_apk_resources") {
