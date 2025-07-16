@@ -134,7 +134,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_ReturnsCorrectUiState) {
   // Create a task.
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
-  actor_ui_state_manager()->OnUiEvent(start_task_event, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
@@ -164,7 +164,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidStateChanges_Debounced) {
   // 1. Create a task.
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
-  actor_ui_state_manager()->OnUiEvent(start_task_event, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
 
   // Immediately pause and resume without waiting for the debounce delay.
   actor_keyed_service()->GetTask(task_id)->Pause();
@@ -185,7 +185,7 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidStateChanges_Debounced) {
 TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
-  actor_ui_state_manager()->OnUiEvent(start_task_event, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
@@ -199,7 +199,7 @@ TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
   TaskId task_id2 = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event2(task_id2);
   MockTabInterface mock_tab2;
-  actor_ui_state_manager()->OnUiEvent(start_task_event2, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event2);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
 
@@ -214,7 +214,7 @@ TEST_F(ActorUiStateManagerTest,
        MultiTask_OneTaskComplete_ReturnsCorrectUiState) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
-  actor_ui_state_manager()->OnUiEvent(start_task_event, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
@@ -227,7 +227,7 @@ TEST_F(ActorUiStateManagerTest,
   // Create another task.
   TaskId task_id2 = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event2(task_id2);
-  actor_ui_state_manager()->OnUiEvent(start_task_event2, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event2);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
 
@@ -247,14 +247,14 @@ TEST_F(ActorUiStateManagerTest,
        MultiTask_MultipleTasksComplete_ReturnsCorrectUiState) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event(task_id);
-  actor_ui_state_manager()->OnUiEvent(start_task_event, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
   // Create another task.
   TaskId task_id2 = actor_keyed_service()->CreateTaskForTesting();
   StartTask start_task_event2(task_id2);
-  actor_ui_state_manager()->OnUiEvent(start_task_event2, base::DoNothing());
+  actor_ui_state_manager()->OnUiEvent(start_task_event2);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 

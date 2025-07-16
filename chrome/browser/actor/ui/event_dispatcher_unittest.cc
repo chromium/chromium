@@ -120,6 +120,21 @@ TEST_F(EventDispatcherTest, SyncActorTaskChange_OneEvent) {
       .new_state = ActorTask::State::kPausedByClient});
 }
 
+TEST_F(EventDispatcherTest, SyncActorTaskChange_NewTask) {
+  EXPECT_CALL(*mock_state_manager_, OnUiEvent(VariantWith<StartTask>(Field(
+                                        &StartTask::task_id, TaskId(222)))))
+      .Times(1);
+  EXPECT_CALL(*mock_state_manager_,
+              OnUiEvent(VariantWith<TaskStateChanged>(AllOf(
+                  Field(&TaskStateChanged::task_id, TaskId(222)),
+                  Field(&TaskStateChanged::state, ActorTask::State::kActing)))))
+      .Times(1);
+  dispatcher_->OnActorTaskSyncChange(UiEventDispatcher::ChangeTaskState{
+      .task_id = TaskId(222),
+      .old_state = ActorTask::State::kCreated,
+      .new_state = ActorTask::State::kActing});
+}
+
 TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
   EXPECT_CALL(*mock_state_manager_,
               OnUiEvent(VariantWith<StartingToActOnTab>(_), _))

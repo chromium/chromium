@@ -75,9 +75,7 @@ constexpr Visitor PostToolEventsFn{
 // TODO(crbug.com/425784083): Remove FirstActEventsFn once functionality moves
 // to ActorTaskChangeFn.
 constexpr Visitor FirstActEventsFn{
-    [](const UiEventDispatcher::FirstActInfo& info) {
-      return EventSequence<AsyncUiEvent>{StartTask(info.task_id)};
-    },
+    NoUiEvents<UiEventDispatcher::FirstActInfo>,
 };
 
 constexpr Visitor ActorTaskAsyncChangeFn{
@@ -89,10 +87,13 @@ constexpr Visitor ActorTaskAsyncChangeFn{
 
 constexpr Visitor ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::ChangeTaskState& c) {
-      // TODO(crbug.com/425784083): Dispatch StartTask if state transition is
-      // Created -> Acting.
-      return EventSequence<SyncUiEvent>{
-          TaskStateChanged(c.task_id, c.new_state)};
+      auto seq = EventSequence<SyncUiEvent>{};
+      if (c.old_state == ActorTask::State::kCreated &&
+          c.new_state == ActorTask::State::kActing) {
+        seq.push_back(StartTask(c.task_id));
+      }
+      seq.push_back(TaskStateChanged(c.task_id, c.new_state));
+      return seq;
     },
 };
 

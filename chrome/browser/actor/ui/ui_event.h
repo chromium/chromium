@@ -80,17 +80,14 @@ struct MouseClick {
 // ActorUiStateManager must complete the async callback with a result.  Callers
 // may wait for the result callback to allow ActorUiStateManager to finish async
 // work before proceeding.
-using AsyncUiEvent = std::variant<StartTask,
-                                  StartingToActOnTab,
-                                  StoppedActingOnTab,
-                                  MouseClick,
-                                  MouseMove>;
+using AsyncUiEvent =
+    std::variant<StartingToActOnTab, StoppedActingOnTab, MouseClick, MouseMove>;
 
 // SyncUiEvents may be sent to ActorUiStateManager's synchronous handler.
 // There's no affordance for ActorUiStateManager to report errors processing
 // these events or for callers to wait for ActorUiStateManager to finish async
 // work before proceeding.
-using SyncUiEvent = std::variant<TaskStateChanged>;
+using SyncUiEvent = std::variant<StartTask, TaskStateChanged>;
 
 using UiEvent = std::variant<StartTask,
                              StartingToActOnTab,

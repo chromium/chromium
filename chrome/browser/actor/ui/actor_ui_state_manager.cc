@@ -52,13 +52,9 @@ struct TabUiUpdate {
   UiTabState ui_tab_state;
 };
 
-struct ProfileUiUpdate {};
-using UiUpdate = std::variant<TabUiUpdate, ProfileUiUpdate>;
-
 auto GetNewUiStateFn(ActorUiStateManager& manager) {
   return Visitor{
-      [](const StartTask& e) -> UiUpdate { return ProfileUiUpdate{}; },
-      [&manager](const StartingToActOnTab& e) -> UiUpdate {
+      [&manager](const StartingToActOnTab& e) -> TabUiUpdate {
         auto* tab = e.tab_handle.Get();
         manager.RunOnUiTabController(
             tab, base::BindOnce(
@@ -69,7 +65,7 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
                      e.task_id));
         return TabUiUpdate{tab, GetAgentControlledUiTabState()};
       },
-      [&manager](const StoppedActingOnTab& e) -> UiUpdate {
+      [&manager](const StoppedActingOnTab& e) -> TabUiUpdate {
         auto* tab = e.tab_handle.Get();
         manager.RunOnUiTabController(
             tab,
@@ -78,12 +74,12 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
             }));
         return TabUiUpdate{tab, GetCompletedUiTabState()};
       },
-      [](const MouseClick& e) -> UiUpdate {
+      [](const MouseClick& e) -> TabUiUpdate {
         UiTabState ui_tab_state = GetAgentControlledUiTabState();
         ui_tab_state.actor_overlay.mouse_down = true;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
       },
-      [](const MouseMove& e) -> UiUpdate {
+      [](const MouseMove& e) -> TabUiUpdate {
         UiTabState ui_tab_state = GetAgentControlledUiTabState();
         ui_tab_state.actor_overlay.mouse_target = e.target;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
@@ -169,33 +165,28 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
-  const UiUpdate new_ui_state = std::visit(GetNewUiStateFn(*this), event);
+  const TabUiUpdate new_ui_state = std::visit(GetNewUiStateFn(*this), event);
   // TODO(crbug.com/424495020): Return a callback from the Ui state once
   // successful.
-  std::visit(
-      Visitor{[this](const TabUiUpdate& ret) {
-                RunOnUiTabController(
-                    ret.tab,
-                    base::BindOnce(
-                        [](const UiTabState& ui_tab_state,
-                           ActorUiTabControllerInterface& tab_controller) {
-                          tab_controller.OnUiTabStateChange(ui_tab_state);
-                        },
-                        ret.ui_tab_state));
-              },
-              [this](const ProfileUiUpdate& ret) {
-                this->MaybeUpdateProfileScopedUiState();
-              }},
-      new_ui_state);
+  RunOnUiTabController(new_ui_state.tab,
+                       base::BindOnce(
+                           [](const UiTabState& ui_tab_state,
+                              ActorUiTabControllerInterface& tab_controller) {
+                             tab_controller.OnUiTabStateChange(ui_tab_state);
+                           },
+                           new_ui_state.ui_tab_state));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
-  std::visit(Visitor{[this](const TaskStateChanged& ret) {
-               this->OnActorTaskStateChange(ret.task_id, ret.state);
-             }},
+  std::visit(Visitor{[this](const StartTask& e) {
+                       this->MaybeUpdateProfileScopedUiState();
+                     },
+                     [this](const TaskStateChanged& ret) {
+                       this->OnActorTaskStateChange(ret.task_id, ret.state);
+                     }},
              event);
 }
 
