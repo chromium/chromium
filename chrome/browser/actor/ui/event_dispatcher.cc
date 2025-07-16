@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/check_deref.h"
+#include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -33,13 +34,16 @@ template <typename T>
 inline constexpr bool is_variant = is_variant_t<T>::value;
 
 template <typename T>
-auto NoUiEvents = [](const T& tr) -> std::deque<AsyncUiEvent> {
-  return std::deque<AsyncUiEvent>();
+using EventSequence = base::circular_deque<T>;
+
+template <typename T>
+auto NoUiEvents = [](const T& tr) -> EventSequence<AsyncUiEvent> {
+  return EventSequence<AsyncUiEvent>();
 };
 
 constexpr Visitor PreToolEventsFn{
     [](const ClickToolRequest& tr) {
-      return std::deque<AsyncUiEvent>{
+      return EventSequence<AsyncUiEvent>{
           MouseMove(tr.GetTabHandle(), tr.GetTarget()),
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
@@ -49,7 +53,7 @@ constexpr Visitor PreToolEventsFn{
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
     [](const MoveMouseToolRequest& tr) {
-      return std::deque<AsyncUiEvent>{
+      return EventSequence<AsyncUiEvent>{
           MouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
     NoUiEvents<NavigateToolRequest>,
@@ -72,13 +76,14 @@ constexpr Visitor PostToolEventsFn{
 // to ActorTaskChangeFn.
 constexpr Visitor FirstActEventsFn{
     [](const UiEventDispatcher::FirstActInfo& info) {
-      return std::deque<AsyncUiEvent>{StartTask(info.task_id)};
+      return EventSequence<AsyncUiEvent>{StartTask(info.task_id)};
     },
 };
 
 constexpr Visitor ActorTaskAsyncChangeFn{
     [](const UiEventDispatcher::AddTab& c) {
-      return std::deque<AsyncUiEvent>{StartingToActOnTab(c.handle, c.task_id)};
+      return EventSequence<AsyncUiEvent>{
+          StartingToActOnTab(c.handle, c.task_id)};
     },
 };
 
@@ -86,7 +91,8 @@ constexpr Visitor ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::ChangeTaskState& c) {
       // TODO(crbug.com/425784083): Dispatch StartTask if state transition is
       // Created -> Acting.
-      return std::deque<SyncUiEvent>{TaskStateChanged(c.task_id, c.new_state)};
+      return EventSequence<SyncUiEvent>{
+          TaskStateChanged(c.task_id, c.new_state)};
     },
 };
 
@@ -209,13 +215,14 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
 
  private:
   raw_ref<ActorUiStateManagerInterface> ui_state_manager_;
-  std::variant<std::deque<AsyncUiEvent>, std::deque<SyncUiEvent>> events_;
+  std::variant<EventSequence<AsyncUiEvent>, EventSequence<SyncUiEvent>> events_;
   UiCompleteCallback overall_callback_;
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
   void ResetAndComplete(mojom::ActionResultPtr result) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    std::visit([]<typename T>(std::deque<T>& e) { return e.clear(); }, events_);
+    std::visit([]<typename T>(EventSequence<T>& e) { return e.clear(); },
+               events_);
     if (!overall_callback_.is_null()) {
       std::move(overall_callback_).Run(std::move(result));
     } else {
@@ -246,7 +253,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   template <Visitor V, typename EventT, typename ConvertedInputT>
   void GenerateAndSend(const ConvertedInputT& converted,
                        UiCompleteCallback callback) {
-    CHECK(std::visit([]<typename T>(std::deque<T>& e) { return e.empty(); },
+    CHECK(std::visit([]<typename T>(EventSequence<T>& e) { return e.empty(); },
                      events_))
         << "Unexpected: unprocessed UiEvents remaining";
     if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
@@ -282,7 +289,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
       ResetAndComplete(std::move(result));
       return;
     }
-    auto& events = std::get<std::deque<AsyncUiEvent>>(events_);
+    auto& events = std::get<EventSequence<AsyncUiEvent>>(events_);
     if (events.empty()) {
       ResetAndComplete(MakeOkResult());
       return;
@@ -301,7 +308,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   // Synchronously send events.
   template <Visitor V>
   void SendAllEvents() {
-    auto& events = std::get<std::deque<SyncUiEvent>>(events_);
+    auto& events = std::get<EventSequence<SyncUiEvent>>(events_);
     while (!events.empty()) {
       const SyncUiEvent event = std::move(events.front());
       events.pop_front();
