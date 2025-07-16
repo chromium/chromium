@@ -63,6 +63,7 @@ constexpr base::cstring_view kOpTypeErf = "Erf";
 constexpr base::cstring_view kOpTypeReciprocal = "Reciprocal";
 constexpr base::cstring_view kOpTypeCast = "Cast";
 
+constexpr base::cstring_view kOpTypeBatchNormalization = "BatchNormalization";
 constexpr base::cstring_view kOpTypeClamp = "Clip";
 constexpr base::cstring_view kOpTypeConcat = "Concat";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
@@ -77,6 +78,8 @@ constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeHardSigmoid = "HardSigmoid";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
+constexpr base::cstring_view kOpTypeInstanceNormalization =
+    "InstanceNormalization";
 constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeMatMul = "MatMul";
 constexpr base::cstring_view kOpTypePad = "Pad";
@@ -364,31 +367,77 @@ std::string GraphBuilderOrt::CreateInt64InitializerForUint32Array(
   return CreateInitializer<int64_t>(array_dims, array_value);
 }
 
-std::string GraphBuilderOrt::CreateScalarInitializerForFloat(
+std::string GraphBuilderOrt::CreateInitializerForFloat(
     OperandDataType data_type,
+    base::span<const int64_t> shape,
     float value) {
+  base::CheckedNumeric<size_t> checked_operand_size =
+      std::accumulate(shape.begin(), shape.end(),
+                      base::CheckedNumeric<size_t>(1), std::multiplies());
+  size_t operand_size = checked_operand_size.ValueOrDie();
   switch (data_type) {
-    case OperandDataType::kFloat32:
-      return CreateScalarInitializer(value);
-    case OperandDataType::kFloat16:
-      return CreateScalarInitializer(fp16_ieee_from_fp32_value(value));
-    case OperandDataType::kInt32:
-      return CreateScalarInitializer(base::saturated_cast<int32_t>(value));
-    case OperandDataType::kUint32:
-      return CreateScalarInitializer(base::saturated_cast<uint32_t>(value));
-    case OperandDataType::kInt64:
-      return CreateScalarInitializer(base::saturated_cast<int64_t>(value));
-    case OperandDataType::kUint64:
-      return CreateScalarInitializer(base::saturated_cast<uint64_t>(value));
-    case OperandDataType::kInt8:
-      return CreateScalarInitializer(base::saturated_cast<int8_t>(value));
-    case OperandDataType::kUint8:
-      return CreateScalarInitializer(base::saturated_cast<uint8_t>(value));
+    case OperandDataType::kFloat32: {
+      base::FixedArray<float> data(operand_size, value);
+      return CreateInitializer<float>(shape, data);
+    }
+    case OperandDataType::kFloat16: {
+      base::FixedArray<uint16_t> data(operand_size,
+                                      fp16_ieee_from_fp32_value(value));
+      return CreateInitializer<uint16_t>(shape, data);
+    }
+    case OperandDataType::kInt32: {
+      base::FixedArray<int32_t> data(operand_size,
+                                     base::saturated_cast<int32_t>(value));
+      return CreateInitializer<int32_t>(shape, data);
+    }
+    case OperandDataType::kUint32: {
+      base::FixedArray<uint32_t> data(operand_size,
+                                      base::saturated_cast<uint32_t>(value));
+      return CreateInitializer<uint32_t>(shape, data);
+    }
+    case OperandDataType::kInt64: {
+      base::FixedArray<int64_t> data(operand_size,
+                                     base::saturated_cast<int64_t>(value));
+      return CreateInitializer<int64_t>(shape, data);
+    }
+    case OperandDataType::kUint64: {
+      base::FixedArray<uint64_t> data(operand_size,
+                                      base::saturated_cast<uint64_t>(value));
+      return CreateInitializer<uint64_t>(shape, data);
+    }
+    case OperandDataType::kInt8: {
+      base::FixedArray<int8_t> data(operand_size,
+                                    base::saturated_cast<int8_t>(value));
+      return CreateInitializer<int8_t>(shape, data);
+    }
+    case OperandDataType::kUint8: {
+      base::FixedArray<uint8_t> data(operand_size,
+                                     base::saturated_cast<uint8_t>(value));
+      return CreateInitializer<uint8_t>(shape, data);
+    }
     case OperandDataType::kInt4:
     case OperandDataType::kUint4: {
       NOTREACHED();
     }
   }
+}
+
+std::string GraphBuilderOrt::CreateScalarInitializerForFloat(
+    OperandDataType data_type,
+    float value) {
+  return CreateInitializerForFloat(data_type, /*shape=*/{}, value);
+}
+
+std::string GraphBuilderOrt::CreateOneInitializer(
+    OperandDataType data_type,
+    base::span<const int64_t> shape) {
+  return CreateInitializerForFloat(data_type, shape, 1.0f);
+}
+
+std::string GraphBuilderOrt::CreateZeroInitializer(
+    OperandDataType data_type,
+    base::span<const int64_t> shape) {
+  return CreateInitializerForFloat(data_type, shape, 0.0f);
 }
 
 void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
@@ -641,6 +690,73 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
     CHECK_EQ(output_data_type, OperandDataType::kInt32);
     InsertCastNode(int64_output, output, WebnnToOnnxDataType(output_data_type));
   }
+}
+
+void GraphBuilderOrt::AddBatchNormalizationOperation(
+    const mojom::BatchNormalization& batch_normalization) {
+  const std::string node_name = GenerateNodeName(batch_normalization.label);
+  const std::string input =
+      GetOperandNameById(batch_normalization.input_operand_id);
+  const std::string mean =
+      GetOperandNameById(batch_normalization.mean_operand_id);
+  const std::string variance =
+      GetOperandNameById(batch_normalization.variance_operand_id);
+  const std::string output =
+      GetOperandNameById(batch_normalization.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  CHECK(data_type_limits.batch_normalization_input.Supports(
+      GetOperand(batch_normalization.input_operand_id).descriptor));
+  CHECK(data_type_limits.batch_normalization_mean.Supports(
+      GetOperand(batch_normalization.mean_operand_id).descriptor));
+  // TODO(crbug.com/431952809): Rename DataTypeLimits fields to be more generic
+  // or encompassing.
+  CHECK(data_type_limits.batch_normalization_mean.Supports(
+      GetOperand(batch_normalization.variance_operand_id).descriptor));
+
+  const OperandDescriptor& input_descriptor =
+      GetOperand(batch_normalization.input_operand_id).descriptor;
+  const OperandDataType input_data_type = input_descriptor.data_type();
+  const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+  // ONNX BatchNormalization expects NCHW layout, channel is at index 1. In
+  // addition it also accepts single dimension input of size N in which case C
+  // is assumed to be 1.
+  // https://onnx.ai/onnx/operators/onnx__BatchNormalization.html#inputs
+  uint32_t input_channels = 1;
+  if (input_shape.size() > 1) {
+    input_channels = input_shape[1];
+  }
+  std::vector<int64_t> scale_and_bias_shape = {
+      base::checked_cast<int64_t>(input_channels)};
+
+  // ONNX BatchNormalization requires 5 inputs: input, scale, bias, mean and
+  // variance. WebNN allows optional scale/bias, so create default ones if not
+  // provided. Default scale = 1.0 (no scaling), default bias = 0.0 (no offset).
+  std::string scale, bias;
+  if (batch_normalization.scale_operand_id) {
+    CHECK(data_type_limits.batch_normalization_mean.Supports(
+        GetOperand(batch_normalization.scale_operand_id.value()).descriptor));
+    scale = GetOperandNameById(batch_normalization.scale_operand_id.value());
+  } else {
+    scale = CreateOneInitializer(input_data_type, scale_and_bias_shape);
+  }
+  if (batch_normalization.bias_operand_id) {
+    CHECK(data_type_limits.batch_normalization_mean.Supports(
+        GetOperand(batch_normalization.bias_operand_id.value()).descriptor));
+    bias = GetOperandNameById(batch_normalization.bias_operand_id.value());
+  } else {
+    bias = CreateZeroInitializer(input_data_type, scale_and_bias_shape);
+  }
+
+  std::array<const char*, 5> inputs = {input.c_str(), scale.c_str(),
+                                       bias.c_str(), mean.c_str(),
+                                       variance.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  constexpr base::cstring_view kEpsilon = "epsilon";
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kEpsilon, batch_normalization.epsilon)};
+  model_editor_.AddNode(kOpTypeBatchNormalization, node_name, inputs, outputs,
+                        attributes);
 }
 
 void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
@@ -1263,6 +1379,57 @@ void GraphBuilderOrt::AddHardSigmoidOperation(
       model_editor_.CreateAttribute(kAttrBeta, hard_sigmoid.beta)};
   model_editor_.AddNode(kOpTypeHardSigmoid, node_name, inputs, outputs,
                         attributes);
+}
+
+void GraphBuilderOrt::AddInstanceNormalizationOperation(
+    const mojom::InstanceNormalization& instance_normalization) {
+  const std::string node_name = GenerateNodeName(instance_normalization.label);
+  const std::string input =
+      GetOperandNameById(instance_normalization.input_operand_id);
+  const std::string output =
+      GetOperandNameById(instance_normalization.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  CHECK(data_type_limits.instance_normalization_input.Supports(
+      GetOperand(instance_normalization.input_operand_id).descriptor));
+  const OperandDescriptor& input_descriptor =
+      GetOperand(instance_normalization.input_operand_id).descriptor;
+  const OperandDataType input_data_type = input_descriptor.data_type();
+  const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+  // ONNX InstanceNormalization expects NCHW layout, channel is at index 1.
+  CHECK_EQ(input_shape.size(), 4u);
+  uint32_t input_channels = input_shape[1];
+  std::vector<int64_t> scale_and_bias_shape = {
+      base::checked_cast<int64_t>(input_channels)};
+
+  // ONNX InstanceNormalization requires 3 inputs: input, scale and bias.
+  // WebNN allows optional scale/bias, so create default ones if not provided
+  // Default scale = 1.0 (no scaling), default bias = 0.0 (no offset).
+  std::string scale, bias;
+  if (instance_normalization.scale_operand_id) {
+    CHECK(data_type_limits.instance_normalization_scale.Supports(
+        GetOperand(instance_normalization.scale_operand_id.value())
+            .descriptor));
+    scale = GetOperandNameById(instance_normalization.scale_operand_id.value());
+  } else {
+    scale = CreateOneInitializer(input_data_type, scale_and_bias_shape);
+  }
+  if (instance_normalization.bias_operand_id) {
+    CHECK(data_type_limits.instance_normalization_scale.Supports(
+        GetOperand(instance_normalization.bias_operand_id.value()).descriptor));
+    bias = GetOperandNameById(instance_normalization.bias_operand_id.value());
+  } else {
+    bias = CreateZeroInitializer(input_data_type, scale_and_bias_shape);
+  }
+
+  std::array<const char*, 3> inputs = {input.c_str(), scale.c_str(),
+                                       bias.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+  constexpr base::cstring_view kAttrEpsilon = "epsilon";
+  std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
+      kAttrEpsilon, instance_normalization.epsilon)};
+  model_editor_.AddNode(kOpTypeInstanceNormalization, node_name, inputs,
+                        outputs, attributes);
 }
 
 void GraphBuilderOrt::AddLeakyReluOperation(
@@ -1935,6 +2102,10 @@ GraphBuilderOrt::BuildModel() {
         AddArgMinMaxOperation(*operation->get_arg_min_max());
         break;
       }
+      case mojom::Operation::Tag::kBatchNormalization: {
+        AddBatchNormalizationOperation(*operation->get_batch_normalization());
+        break;
+      }
       case mojom::Operation::Tag::kClamp: {
         AddClampOperation(*operation->get_clamp());
         break;
@@ -2010,6 +2181,11 @@ GraphBuilderOrt::BuildModel() {
             GetOperand(operation->get_hard_swish()->input_operand_id)
                 .descriptor));
         AddUnaryOperation(*operation->get_hard_swish(), kOpTypeHardSwish);
+        break;
+      }
+      case mojom::Operation::Tag::kInstanceNormalization: {
+        AddInstanceNormalizationOperation(
+            *operation->get_instance_normalization());
         break;
       }
       case mojom::Operation::Tag::kLeakyRelu: {
@@ -2120,11 +2296,9 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kInstanceNormalization:
       case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:

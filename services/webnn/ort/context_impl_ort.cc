@@ -79,8 +79,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        // ONNX ArgMin/Max only supports int64 output, int32 output is supported
        // by inserting a cast operator.
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
-       /*batch_normalization_input=*/{},
-       /*batch_normalization_mean=*/{},
+       /*batch_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxNonScalarRank},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cast_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*clamp_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
@@ -169,8 +171,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gru_cell_bias=*/{},
        /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*instance_normalization_input=*/{},
-       /*instance_normalization_scale=*/{},
+       /*instance_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*instance_normalization_scale=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*layer_normalization_input=*/{},
        /*leaky_relu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
