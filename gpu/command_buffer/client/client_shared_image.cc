@@ -28,13 +28,13 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
@@ -54,7 +54,7 @@ namespace gpu {
 
 namespace {
 
-class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
+class FakeGpuMemoryBuffer : public GpuMemoryBufferImpl {
  public:
   FakeGpuMemoryBuffer() = delete;
   FakeGpuMemoryBuffer(
@@ -62,7 +62,8 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
       gfx::BufferFormat format,
       bool premapped,
       const ClientSharedImage::AsyncMapInvokedCallback& callback)
-      : size_(size),
+      : GpuMemoryBufferImpl(size, format),
+        size_(size),
         format_(format),
         premapped_(premapped),
         async_map_invoked_callback_(callback) {
