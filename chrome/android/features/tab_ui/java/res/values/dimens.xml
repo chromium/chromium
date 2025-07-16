@@ -18,6 +18,10 @@ found in the LICENSE file.
     <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_size">24dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_padding_from_card">8dp</dimen>
+    <dimen name="tab_grid_empty_thumbnail_lr_inset">8dp</dimen>
+    <dimen name="tab_grid_empty_thumbnail_top_inset">40dp</dimen>
+    <dimen name="tab_grid_empty_thumbnail_bottom_inset">8dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>

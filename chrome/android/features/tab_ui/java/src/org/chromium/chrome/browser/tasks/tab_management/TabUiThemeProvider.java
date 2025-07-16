@@ -15,10 +15,13 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Utility class that provides theme related attributes for Tab UI. */
 @NullMarked
@@ -531,5 +534,22 @@ public class TabUiThemeProvider {
                 ? ContextCompat.getColor(
                         context, R.color.tab_group_color_picker_selection_bg_incognito)
                 : SemanticColorUtils.getDialogBgColor(context);
+    }
+
+    /**
+     * Returns the color used for an empty thumbnail.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
+     * @return The color for the empty thumbnail.
+     */
+    public static @ColorInt int getEmptyThumbnailColor(
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
+        return TabCardThemeUtil.getCardViewBackgroundColor(
+                context, isIncognito, isSelected, colorId);
     }
 }

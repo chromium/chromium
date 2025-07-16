@@ -44,7 +44,9 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 @NullMarked
 public class TabThumbnailView extends ImageView {
     /** Placeholder drawable constants. */
-    private static final float SIZE_PERCENTAGE = 0.42f;
+    private static final float WIDTH_PERCENTAGE = 0.80f;
+
+    private static final float HEIGHT_PERCENTAGE = 0.45f;
 
     private static @MonotonicNonNull Integer sVerticalOffsetPx;
 
@@ -190,7 +192,7 @@ public class TabThumbnailView extends ImageView {
             mIconDrawable =
                     (VectorDrawable)
                             AppCompatResources.getDrawable(
-                                    getContext(), R.drawable.ic_tab_placeholder);
+                                    getContext(), R.drawable.empty_thumbnail_background);
         }
         setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         // External callers either change this or use MATRIX there is no need to reset this.
@@ -290,21 +292,24 @@ public class TabThumbnailView extends ImageView {
             final int width = getMeasuredWidth();
             final int height = getMeasuredHeight();
 
-            // Vector graphic is square so width or height doesn't matter.
-            final int vectorEdgeLength = mIconDrawable.getIntrinsicWidth();
+            final int vectorEdgeHeight = mIconDrawable.getIntrinsicHeight();
+            final int vectorEdgeWidth = mIconDrawable.getIntrinsicWidth();
 
-            // Shortest edge of thumbnail region * SIZE_PERCENTAGE.
-            final int edgeLength = Math.round(SIZE_PERCENTAGE * Math.min(width, height));
-            final float scale = (float) edgeLength / (float) vectorEdgeLength;
+            final float effectiveWidth = WIDTH_PERCENTAGE * width;
+            final float effectiveHeight = HEIGHT_PERCENTAGE * height;
+
+            final float scaleX = effectiveWidth / vectorEdgeWidth;
+            final float scaleY = effectiveHeight / vectorEdgeHeight;
+
             mIconMatrix.reset();
-            mIconMatrix.postScale(scale, scale);
+            mIconMatrix.postScale(scaleX, scaleY);
 
             // Center and offset vertically by sVerticalOffsetPx to account for optical illusion of
             // centering.
             assumeNonNull(sVerticalOffsetPx);
             mIconMatrix.postTranslate(
-                    (float) (width - edgeLength) / 2f,
-                    (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
+                    (width - effectiveWidth) / 2f,
+                    (height - effectiveHeight) / 2f - sVerticalOffsetPx);
             setImageMatrix(mIconMatrix);
         }
     }

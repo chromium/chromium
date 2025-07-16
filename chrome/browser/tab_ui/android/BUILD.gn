@@ -87,6 +87,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/empty_thumbnail_background.xml",
     "java/res/drawable/ic_tab_placeholder.xml",
     "java/res/drawable/iph_drag_and_drop_animated_drawable.xml",
     "java/res/drawable/tab_strip_favicon_circle.xml",
