@@ -87,6 +87,7 @@ using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
 constexpr char kPasswordChangeSubmissionOutcomeHistogram[] =
     "PasswordManager.PasswordChangeSubmissionOutcome";
 constexpr char kMainHost[] = "example.com";
+constexpr char kDifferentHost[] = "foo.com";
 constexpr char kChangePasswordURL[] = "https://example.com/password/";
 
 class MockPasswordChangeDelegateObserver
@@ -1031,4 +1032,47 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch", true,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       CrossOriginNavigationDetected) {
+  base::HistogramTester histogram_tester;
+
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(Return(https_test_server().GetURL(
+          kMainHost, "/password/update_form_empty_fields.html")));
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+
+  // Verify the delegate is created.
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(WebContents())
+          ->AsWeakPtr();
+  ASSERT_TRUE(delegate);
+
+  // Verify delegate is waiting for change password form when password change
+  // starts.
+  delegate->StartPasswordChangeFlow();
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kChangingPassword;
+  }));
+
+  GURL url = https_test_server().GetURL(kDifferentHost,
+                                        "/password/simple_password.html");
+  (void)content::NavigateToURL(
+      static_cast<PasswordChangeDelegateImpl*>(delegate.get())->executor(),
+      url);
+
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordChangeFailed;
+  }));
 }

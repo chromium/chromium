@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -223,6 +225,11 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 
   executor_ = CreateWebContents(profile_, change_password_url_);
   CHECK(executor_);
+  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
+      executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
+          weak_ptr_factory_.GetWeakPtr()));
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
       executor_.get(),
@@ -453,6 +460,26 @@ std::u16string PasswordChangeDelegateImpl::GetDisplayOrigin() const {
                                   : change_password_url_;
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+}
+
+void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
+  navigation_observer_.reset();
+
+  // Navigation happened when looking for a change password form, password
+  // change can be terminated safely with `kChangePasswordFormNotFound`.
+  if (form_finder_) {
+    OnPasswordChangeFormFound(/*form_manager=*/nullptr);
+    return;
+  }
+  // Navigation happened when submitting the form. Terminate flow with a failure
+  // message.
+  if (submission_verifier_) {
+    OnChangeFormSubmissionVerified(false);
+    return;
+  }
+
+  // This shouldn't happen, just stop the flow immediately.
+  Stop();
 }
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {

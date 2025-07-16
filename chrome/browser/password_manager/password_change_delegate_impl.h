@@ -28,6 +28,7 @@ class PasswordFormManager;
 
 class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
+class CrossOriginNavigationObserver;
 class ModelQualityLogsUploader;
 class PasswordChangeUIController;
 class PasswordChangeHats;
@@ -95,6 +96,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   std::u16string GetDisplayOrigin() const;
 
+  void OnCrossOriginNavigationDetected();
+
   const GURL change_password_url_;
   const std::u16string username_;
   const std::u16string original_password_;
@@ -132,6 +135,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   // Helper class for handling happiness tracking surveys.
   std::unique_ptr<PasswordChangeHats> password_change_hats_;
+
+  std::unique_ptr<CrossOriginNavigationObserver> navigation_observer_;
 
   // URL of the last committed page in `originator_` on the password change flow
   // startup.
