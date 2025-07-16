@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -74,6 +75,10 @@
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
+
+namespace FeedbackConstants {
+const char kThumbsDownFeedbackPrefix[] = "Response feedback thumbs down - ";
+}
 
 namespace mojo {
 
@@ -1308,8 +1313,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             std::move(uploader), ContentTracingManager::Get());
     auto journal = journal_handler_.GetSnapshot(false);
 
-    // TODO(430054430): Fetch and include system data to the feedback.
-    feedback_data->set_description("Response feedback thumbs down.");
+    // TODO(b/430054430): Fetch and include system data to the feedback.
+    feedback_data->set_description(
+        FeedbackConstants::kThumbsDownFeedbackPrefix +
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     feedback_data->set_product_id(feedback::kGeminiWebProductId);
     feedback_data->set_category_tag(
         std::string(feedback::kGeminiWebJournalCategoryTag));
