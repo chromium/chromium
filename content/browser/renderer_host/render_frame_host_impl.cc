@@ -3707,10 +3707,6 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
                                             : PageVisibilityState::kVisible;
 }
 
-bool RenderFrameHostImpl::Send(IPC::Message* message) {
-  return GetAgentSchedulingGroup().Send(message);
-}
-
 bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   // Only process messages if the RenderFrame is alive.
   if (!is_render_frame_created())

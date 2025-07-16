@@ -712,9 +712,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // renderers with the newly computed value).
   blink::web_pref::WebPreferences GetOrCreateWebPreferences();
 
-  // IPC::Sender
-  bool Send(IPC::Message* msg) override;
-
   // IPC::Listener
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnAssociatedInterfaceRequest(
