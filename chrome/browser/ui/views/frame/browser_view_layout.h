@@ -123,27 +123,32 @@ class BrowserViewLayout : public views::LayoutManager {
   // of the bottom of the control, for laying out the next control.
   int LayoutTitleBarForWebApp(int top);
   int LayoutTabStripRegion(int top);
-  int LayoutWebUITabStrip(int top);
-  int LayoutToolbar(int top);
-  int LayoutBookmarkAndInfoBars(int top, int browser_view_y);
-  int LayoutBookmarkBar(int top);
-  int LayoutInfoBar(int top);
+  int LayoutWebUITabStrip(int top, const gfx::Rect& browser_view_bounds);
+  int LayoutToolbar(int top, const gfx::Rect& browser_view_bounds);
+  int LayoutBookmarkAndInfoBars(int top,
+                                int browser_view_y,
+                                const gfx::Rect& browser_view_bounds);
+  int LayoutBookmarkBar(int top, const gfx::Rect& browser_view_bounds);
+  int LayoutInfoBar(int top, const gfx::Rect& browser_view_bounds);
 
   // Helper struct and function for LayoutContentsContainerView that calculates
   // bounds for |contents_container_| and |unified_side_panel_|.
   struct ContentsContainerLayoutResult;
   ContentsContainerLayoutResult CalculateContentsContainerLayout(
       int top,
-      int bottom) const;
+      int bottom,
+      const gfx::Rect& browser_view_bounds) const;
 
   // Layout the |contents_container_| view between the coordinates |top| and
   // |bottom|. See browser_view.h for details of the relationship between
   // |contents_container_| and other views. Also lays out |unified_side_panel_|.
-  void LayoutContentsContainerView(int top, int bottom);
+  void LayoutContentsContainerView(int top,
+                                   int bottom,
+                                   const gfx::Rect& browser_view_bounds);
 
   // Updates |top_container_|'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
-  void UpdateTopContainerBounds();
+  void UpdateTopContainerBounds(const gfx::Rect& browser_view_bounds);
 
   // Layout the contents border, which indicates the tab is being captured.
   void LayoutContentBorder();
@@ -188,12 +193,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // TODO(crbug.com/393551539): reset the pointer at appropriate time and
   // remove the DanglingUntriaged tag.
   raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
-
-  // The bounds within which the vertically-stacked contents of the BrowserView
-  // should be laid out within. This is just the local bounds of the
-  // BrowserView.
-  // TODO(jamescook): Remove this and just use browser_view_->GetLocalBounds().
-  gfx::Rect vertical_layout_rect_;
 
   // The host for use in positioning the web contents modal dialog.
   std::unique_ptr<WebContentsModalDialogHostViews> dialog_host_;
