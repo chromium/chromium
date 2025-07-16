@@ -2,6 +2,7 @@ include_rules = [
   "+components/google/core",
   "+components/image_fetcher/core",
   "+components/keyed_service/core",
+  "+components/omnibox/common/omnibox_features.h",
   "+components/search_engines",
   "+components/signin/public",
   "+components/sync_preferences/testing_pref_service_syncable.h",

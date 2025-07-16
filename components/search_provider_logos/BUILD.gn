@@ -28,6 +28,7 @@ static_library("search_provider_logos") {
   deps = [
     "//components/image_fetcher/core",
     "//components/keyed_service/core",
+    "//components/omnibox/common",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//net",
