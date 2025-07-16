@@ -1020,6 +1020,7 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     // kInconsistentDataError because both mean that the locally-cached policy
     // does not match the server's database.
     LOG(ERROR) << "Server response contains error: " << backend_error.error()
+               << ". Debug message: " << backend_error.debug_message()
                << GetLogInfoBlock();
     FINAL_STATE_EXPECTED(UpdateState(
         FROM_HERE, CertProvisioningWorkerState::kInconsistentDataError));

@@ -336,6 +336,7 @@ CertProvisioningClient::Error BackendError(
     em::CertProvBackendError::Error error) {
   em::CertProvBackendError backend_error;
   backend_error.set_error(error);
+  backend_error.set_debug_message("Test debug message");
   return {policy::DM_STATUS_SUCCESS, backend_error};
 }
 
