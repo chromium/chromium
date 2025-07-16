@@ -35,6 +35,7 @@ bool SessionError::IsFatal() const {
     case kInvalidScopeOrigin:
     case kMismatchedSessionId:
     case kInvalidRefreshInitiators:
+    case kInvalidScopeRule:
       return true;
 
     case kNetError:
@@ -67,6 +68,7 @@ bool SessionError::IsServerError() const {
     case kTransientHttpError:
     case kMismatchedSessionId:
     case kInvalidRefreshInitiators:
+    case kInvalidScopeRule:
       return true;
   }
 }

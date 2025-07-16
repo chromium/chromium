@@ -170,8 +170,48 @@ TEST_F(SessionTest, NonSecureUrl) {
     params.fetcher_url = GURL("http://localhost:8080/index.html");
     params.refresh_url = "http://localhost:8080/registration";
     params.scope.origin = "http://localhost:8080";
+    // localhost can't use the default cookies, which are only for example.test.
+    params.credentials = {
+        SessionParams::Credential{"test_cookie",
+                                  /*attributes=*/"Domain=localhost"}};
     EXPECT_TRUE(Session::CreateIfValid(params).has_value());
   }
+}
+
+TEST_F(SessionTest, CreateSiteScopedWithSessionRule) {
+  auto params = CreateValidParams();
+  params.scope.include_site = true;
+  params.scope.specifications.push_back(
+      {SessionParams::Scope::Specification::Type::kExclude,
+       "subdomain.example.test", "/index.html"});
+  EXPECT_TRUE(Session::CreateIfValid(params).has_value());
+}
+
+TEST_F(SessionTest, CreateOriginScopedWithSessionRules) {
+  auto params = CreateValidParams();
+  params.scope.include_site = false;
+  params.scope.specifications.push_back(
+      {SessionParams::Scope::Specification::Type::kExclude,
+       "subdomain.example.test", "/index.html"});
+  EXPECT_EQ(Session::CreateIfValid(params).error().type,
+            SessionError::ErrorType::kInvalidScopeRule);
+}
+
+TEST_F(SessionTest, CreateWithInvalidCredential) {
+  auto params = CreateValidParams();
+  // Try to create a cookie on the wrong domain.
+  params.credentials = {SessionParams::Credential{
+      "test_cookie",
+      /*attributes=*/"Domain=some-other-domain.test"}};
+  EXPECT_EQ(Session::CreateIfValid(params).error().type,
+            SessionError::ErrorType::kInvalidCredentials);
+
+  // Try to create a cookie with no name.
+  params.credentials = {
+      SessionParams::Credential{"",
+                                /*attributes=*/"Domain=example.test"}};
+  EXPECT_EQ(Session::CreateIfValid(params).error().type,
+            SessionError::ErrorType::kInvalidCredentials);
 }
 
 TEST_F(SessionTest, ToFromProto) {
@@ -320,31 +360,6 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   bool is_deferred =
       session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(is_deferred);
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
-}
-
-TEST_F(SessionTest, NotDeferredIncludedSubdomain) {
-  // Unless include site is specified, only same origin will be
-  // matched even if the spec adds an include for a different
-  // origin.
-  const char subdomain[] = "https://test.example.test/index.html";
-  const GURL url_subdomain(subdomain);
-  auto params = CreateValidParams();
-  SessionParams::Scope::Specification spec;
-  spec.type = SessionParams::Scope::Specification::Type::kInclude;
-  spec.domain = "test.example.test";
-  spec.path = "/index.html";
-  params.scope.specifications.push_back(spec);
-  auto session_or_error = Session::CreateIfValid(params);
-  ASSERT_TRUE(session_or_error.has_value());
-  std::unique_ptr<Session> session = std::move(*session_or_error);
-  ASSERT_TRUE(session);
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_FALSE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 

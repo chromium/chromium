@@ -145,31 +145,43 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
       Id(params.session_id), scope_origin, candidate_refresh_endpoint));
 
   session->inclusion_rules_.SetIncludeSite(params.scope.include_site);
+
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
           spec.type == SessionParams::Scope::Specification::Type::kExclude
               ? SessionInclusionRules::InclusionResult::kExclude
               : SessionInclusionRules::InclusionResult::kInclude;
-      session->inclusion_rules_.AddUrlRuleIfValid(inclusion_result, spec.domain,
-                                                  spec.path);
+      if (!session->inclusion_rules_.AddUrlRuleIfValid(
+              inclusion_result, spec.domain, spec.path)) {
+        return base::unexpected(
+            SessionError{SessionError::ErrorType::kInvalidScopeRule});
+      }
     }
   }
 
   // Sessions should never include the refresh endpoint, since that would
-  // prevent them from ever refreshing when a cookie expires.
+  // prevent them from ever refreshing when a cookie expires.  We intentionally
+  // don't check here because a refresh URL is allowed to be outside an
+  // origin-scoped session.
   session->inclusion_rules_.AddUrlRuleIfValid(
       SessionInclusionRules::InclusionResult::kExclude,
       candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
 
   for (const auto& cred : params.credentials) {
-    if (!cred.name.empty()) {
-      std::optional<CookieCraving> craving =
-          CookieCraving::Create(params.fetcher_url, cred.name, cred.attributes,
-                                base::Time::Now(), std::nullopt);
-      if (craving) {
-        session->cookie_cravings_.push_back(*craving);
-      }
+    if (cred.name.empty()) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidCredentials});
+    }
+
+    std::optional<CookieCraving> craving =
+        CookieCraving::Create(params.fetcher_url, cred.name, cred.attributes,
+                              base::Time::Now(), std::nullopt);
+    if (craving) {
+      session->cookie_cravings_.push_back(*craving);
+    } else {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidCredentials});
     }
   }
 
@@ -491,6 +503,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kInvalidScopeOrigin:
     case kMismatchedSessionId:
     case kInvalidRefreshInitiators:
+    case kInvalidScopeRule:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum
