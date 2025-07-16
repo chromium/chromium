@@ -950,7 +950,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1640235262200048077">O <ph name="IME_NAME" /> ainda não funciona com aplicativos do Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 com criptografia RSA</translation>
-<translation id="1641113438599504367">Navegação segura</translation>
+<translation id="1641113438599504367">Navegação Segura</translation>
 <translation id="1641496881756082050">Mais ações para a rede <ph name="NETWORK_NAME" /></translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 outra senha não foi importada porque está formatada incorretamente}one{{NUM_PASSWORDS} outra senha não foi importada porque está formatada incorretamente}other{{NUM_PASSWORDS} outras senhas não foram importadas porque estão formatadas incorretamente}}</translation>
 <translation id="1642299742557467312">Este arquivo pode danificar seu dispositivo</translation>
@@ -1961,7 +1961,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2331334586452217517">O conteúdo deste site é enviado ao Google e pode ser acessado por revisores humanos. Sobre a <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="2332115969598251205">Não é possível carregar os dispositivos salvos em <ph name="PRIMARY_EMAIL" />. Verifique sua conexão de Internet e tente novamente.</translation>
 <translation id="2332131598580221120">Ver na loja</translation>
-<translation id="2332515770639153015">O Navegação segura com proteção reforçada está ativado</translation>
+<translation id="2332515770639153015">A Navegação Segura com Maior Proteção está ativada</translation>
 <translation id="2332742915001411729">Redefinir para os valores padrão</translation>
 <translation id="2333166365943957309">Hierarquia da interface</translation>
 <translation id="233375395665273385">Excluir e sair</translation>
@@ -4337,7 +4337,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3979093622823535817">Participar da reunião <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">Nova extensão adicionada (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Ativar <ph name="NETWORKDEVICE" /></translation>
-<translation id="398095528354975981">Ocultar essas guias</translation>
+<translation id="398095528354975981">Ocultar estas guias</translation>
 <translation id="3981058120448670012">Visível para dispositivos próximos como <ph name="DEVICE_NAME" /> por <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Tipo de salvamento inválido digitado.</translation>
 <translation id="3983400541576569538">Os dados de alguns apps podem ter sido perdidos</translation>
@@ -4706,7 +4706,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4254813446494774748">Idioma de tradução:</translation>
 <translation id="4255016471934258618">Abrir bem a boca</translation>
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (um valor negativo significa que a bateria está sendo carregada)</translation>
-<translation id="4255841059940367080">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos baseados nos dados de navegação enviados ao Google</translation>
+<translation id="4255841059940367080">Proteção com tecnologia de IA em tempo real contra sites, extensões e downloads perigosos com base nos seus dados de navegação enviados ao Google</translation>
 <translation id="4256316378292851214">Sal&amp;var vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de arquivos</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Manter grupo}one{Manter grupo}other{Manter grupos}}</translation>
@@ -4817,7 +4817,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4332976768901252016">Configurar o controle dos pais</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 com criptografia RSA</translation>
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> não vai aparecer de novo</translation>
-<translation id="4335835283689002019">O Navegação segura está desativado</translation>
+<translation id="4335835283689002019">A Navegação Segura está desativada</translation>
 <translation id="4338034474804311322">Para voltar a salvar senhas no Gerenciador de senhas do Google, atualize o Google Play Services</translation>
 <translation id="4338363401382232853">Sugestão de janela de tela dividida</translation>
 <translation id="4339203724549370495">Desinstalar app</translation>
@@ -6117,7 +6117,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5264252276333215551">Conecte-se à Internet para iniciar seu aplicativo no modo quiosque.</translation>
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
-<translation id="5267572070504076962">Ative o recurso Navegação segura para ter proteção contra sites perigosos</translation>
+<translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
 <translation id="5269977353971873915">Falha ao imprimir</translation>
 <translation id="5271578170655641944">Remover o acesso ao Google Drive?</translation>
 <translation id="5273806377963980154">Editar URL do site</translation>
@@ -7212,7 +7212,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6077189836672154517">Dicas e atualizações sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Fale para digitar</translation>
 <translation id="6078121669093215958">{0,plural, =1{Visitante}one{# janela de visitante aberta}other{# janelas de visitante abertas}}</translation>
-<translation id="6078323886959318429">Add atalho</translation>
+<translation id="6078323886959318429">Adicionar atalho</translation>
 <translation id="6078752646384677957">Verifique seu microfone e os níveis de áudio.</translation>
 <translation id="608029822688206592">Nenhuma rede encontrada. Insira o chip e tente novamente.</translation>
 <translation id="6080689532560039067">Verifique a hora do seu sistema</translation>
@@ -7857,7 +7857,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6549038875972762904">Reconfigurar</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6550790536557204077">Seu <ph name="BEGIN_LINK" />perfil é gerenciado<ph name="END_LINK" /> por <ph name="MANAGER" /></translation>
-<translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações de Navegação segura em outros produtos do Google não serão afetadas.</translation>
+<translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações da Navegação Segura em outros produtos do Google não serão afetadas.</translation>
 <translation id="65513682072153627">Este ícone de gerenciado vai ser mostrado quando uma configuração ou recurso for gerenciado pelo administrador.</translation>
 <translation id="6551508934388063976">Comando não disponível. Pressione "Control-N" para abrir uma nova janela.</translation>
 <translation id="6551606359270386381">Ferramenta de elipse</translation>
@@ -9954,7 +9954,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8022466874160067884">Digite sua senha e sua Conta do Google</translation>
 <translation id="8023133589013344428">Gerenciar idiomas nas configurações do ChromeOS Flex</translation>
 <translation id="8023801379949507775">Atualizar extensões agora</translation>
-<translation id="8024161440284949905">Continue com estas guias</translation>
+<translation id="8024161440284949905">Continuar com estas guias</translation>
 <translation id="8025151549289123443">Tela de bloqueio e login</translation>
 <translation id="8025291188699172126">Sobre as atualizações</translation>
 <translation id="8026471514777758216">Todos os seus dispositivos</translation>
@@ -10684,7 +10684,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8528962588711550376">Fazendo login.</translation>
 <translation id="8531367864749403520">Selecione "Ocultar grupo" para remover o grupo da sua barra de guias</translation>
 <translation id="8531701051932785007">O Navegação segura com proteção reforçada está desativado</translation>
-<translation id="8533670235862049797">A Navegação segura está ativada</translation>
+<translation id="8533670235862049797">A Navegação Segura está ativada</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="EMAIL" />}one{As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="EMAIL" />}other{As guias vão continuar abertas neste dispositivo, mas os grupos serão excluídos de todos os dispositivos conectados à conta <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL da renovação do certificado do Netscape</translation>
 <translation id="8536810348276651776">Desconecta você da maioria dos sites. Sua Conta do Google vai continuar conectada para que as configurações do Family Link para o Chrome sejam aplicadas.</translation>
