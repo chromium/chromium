@@ -53,6 +53,7 @@ class PixAccountLinkingManager {
   // Callback for when the payments request to check pix account linking
   // eligibility is completed.
   void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+      base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       bool is_eligible_for_pix_account_linking);
 

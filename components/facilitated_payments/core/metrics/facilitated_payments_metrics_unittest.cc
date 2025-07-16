@@ -196,6 +196,25 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptShown) {
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
+     LogGetDetailsForCreatePaymentInstrumentResultAndLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
+      true, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
      LogEwalletInitiatePurchaseActionResultAndLatency_DeviceBound) {
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,

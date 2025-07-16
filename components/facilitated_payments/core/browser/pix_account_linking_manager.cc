@@ -54,7 +54,7 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
             base::BindOnce(
                 &PixAccountLinkingManager::
                     OnGetDetailsForCreatePaymentInstrumentResponseReceived,
-                weak_ptr_factory_.GetWeakPtr()),
+                weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
             client_->GetPaymentsDataManager()->app_locale());
   }
   // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
@@ -164,10 +164,11 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
 
 void PixAccountLinkingManager::
     OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+        base::TimeTicks start_time,
         autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
         bool is_eligible_for_pix_account_linking) {
-  // TODO(crbug.com/419108993): Log the result and eligibility for account
-  // linking.
+  LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
+      is_eligible_for_pix_account_linking, base::TimeTicks::Now() - start_time);
   is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
 }
 

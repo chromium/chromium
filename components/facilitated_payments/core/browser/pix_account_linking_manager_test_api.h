@@ -29,6 +29,13 @@ class PixAccountLinkingManagerTestApi {
   void OnUiScreenEvent(UiEvent ui_event_type) {
     manager_->OnUiScreenEvent(ui_event_type);
   }
+  void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+      base::TimeTicks start_time,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      bool is_eligible_for_pix_account_linking) {
+    manager_->OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+        start_time, result, is_eligible_for_pix_account_linking);
+  }
   void Reset() { manager_->Reset(); }
 
  private:

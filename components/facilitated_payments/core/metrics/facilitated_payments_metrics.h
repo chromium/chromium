@@ -280,6 +280,12 @@ void LogFopSelectorShownLatency(
 // Logs that the Pix account linking prompt was shown.
 void LogPixAccountLinkingPromptShown();
 
+// Logs the result and latency for GetDetailsForCreatePaymentInstrument
+// endpoint.
+void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
+    bool is_eligible,
+    base::TimeDelta latency);
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_

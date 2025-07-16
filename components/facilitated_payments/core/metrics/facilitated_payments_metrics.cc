@@ -388,4 +388,17 @@ void LogPixAccountLinkingPromptShown() {
                             /*sample=*/true);
 }
 
+void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
+    bool is_eligible,
+    base::TimeDelta latency) {
+  base::UmaHistogramBoolean(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Result",
+      is_eligible);
+  base::UmaHistogramLongTimes(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Latency",
+      latency);
+}
+
 }  // namespace payments::facilitated

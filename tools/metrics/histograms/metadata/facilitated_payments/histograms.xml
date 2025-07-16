@@ -293,6 +293,36 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram
+    name="FacilitatedPayments.Pix.AccountLinking.GetDetailsForCreatePaymentInstrument.Latency"
+    units="ms" expires_after="2026-06-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the amount of time that it takes to receive a response from the
+    server endpoint that checks the Pix account linking eligibility
+    (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once per Pix
+    account linking flow. [Trigger] The histogram is logged when the server
+    endpoint returns a response.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Pix.AccountLinking.GetDetailsForCreatePaymentInstrument.Result"
+    enum="BooleanEligible" expires_after="2026-06-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the eligibility response received from the server endpoint that
+    checks the Pix account linking eligibility
+    (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once per Pix
+    account linking flow. [Trigger] The histogram is logged when the server
+    endpoint returns a response.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.AccountLinkingPromptShown"
     enum="BooleanShown" expires_after="2026-06-01">
   <owner>longsheng@google.com</owner>

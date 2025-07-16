@@ -305,4 +305,33 @@ TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
       /*expected_bucket_count=*/0);
 }
 
+class PixAccountLinkingManagerParameterizedTest
+    : public PixAccountLinkingManagerTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(PixAccountLinkingManagerParameterizedTest,
+       GetDetailsForCreatePaymentInstrument_ResultAndLatencyLogged) {
+  base::HistogramTester histogram_tester;
+
+  test_api().OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+      base::TimeTicks::Now() - base::Seconds(2),
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*is_eligible_for_pix_account_linking=*/GetParam());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Result",
+      /*sample=*/GetParam(),
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(PixAccountLinkingManagerTestSuite,
+                         PixAccountLinkingManagerParameterizedTest,
+                         testing::Bool());
+
 }  // namespace payments::facilitated
