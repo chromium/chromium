@@ -218,6 +218,7 @@ ALWAYS_INLINE void AtomicWriteSwap(T& lhs, T& rhs) {
 namespace blink {
 using WTF::AsAtomicPtr;
 using WTF::AtomicMemzero;
+using WTF::AtomicReadMemcpy;
 using WTF::AtomicWriteMemcpy;
 using WTF::AtomicWriteSwap;
 }  // namespace blink

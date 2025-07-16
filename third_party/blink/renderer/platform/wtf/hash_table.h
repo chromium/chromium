@@ -2346,4 +2346,10 @@ inline void RemoveAll(Collection1& collection,
 
 }  // namespace WTF
 
+namespace blink {
+using WTF::HashTable;
+using WTF::HashTableConstIteratorAdapter;
+using WTF::HashTableIteratorAdapter;
+}  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_

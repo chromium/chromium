@@ -42,7 +42,7 @@
 // mark the file to ignore instead.
 GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
 
-namespace WTF {
+namespace blink {
 
 template <typename KeyTraits, typename MappedTraits>
 struct HashMapValueTraits;
@@ -83,13 +83,13 @@ struct KeyValuePairExtractor {
 // the restriction with a custom key hash traits. See hash_traits.h for how to
 // define hash traits.
 // Commonly used key types define their key hash traits separately from the
-// class itself, so e.g if you want a `WTF::HashMap<WTF::String, ...>` you must
-// include `string_hash.h`.
+// class itself, so e.g if you want a `blink::HashMap<blink::String, ...>` you
+// must include `string_hash.h`.
 template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = WTF::PartitionAllocator>
 class HashMap {
   USE_ALLOCATOR(HashMap, Allocator);
   template <typename T, typename U, typename V>
@@ -336,12 +336,10 @@ class HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::
 };
 
 template <typename KeyTraits, typename ValueTraits>
-struct HashMapValueTraits
-    : blink::KeyValuePairHashTraits<KeyTraits, ValueTraits> {
-  using P =
-      typename blink::KeyValuePairHashTraits<KeyTraits, ValueTraits>::TraitType;
+struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, ValueTraits> {
+  using P = typename KeyValuePairHashTraits<KeyTraits, ValueTraits>::TraitType;
   static bool IsEmptyValue(const P& value) {
-    return blink::IsHashTraitsEmptyValue<KeyTraits>(value.key);
+    return IsHashTraitsEmptyValue<KeyTraits>(value.key);
   }
   // HashTable should never use the following functions/flags of this traits
   // type. They make sense in the KeyTraits only.
@@ -566,7 +564,7 @@ auto HashMap<T, U, V, W, X>::Take(KeyPeekInType key) -> MappedType {
 template <typename T, typename U, typename V, typename W, typename X>
 template <typename IncomingKeyType>
 inline bool HashMap<T, U, V, W, X>::IsValidKey(const IncomingKeyType& key) {
-  return !blink::IsHashTraitsEmptyOrDeletedValue<KeyTraits>(key);
+  return !IsHashTraitsEmptyOrDeletedValue<KeyTraits>(key);
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
@@ -594,10 +592,15 @@ inline bool operator!=(const HashMap<T, U, V, W, X>& a,
   return !(a == b);
 }
 
-}  // namespace WTF
+template <typename T, typename U, typename V, typename W, typename X>
+inline void swap(HashMap<T, U, V, W, X>& a, HashMap<T, U, V, W, X>& b) {
+  a.swap(b);
+}
 
-namespace blink {
-using WTF::HashMap;
 }  // namespace blink
+
+namespace WTF {
+using blink::HashMap;
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
