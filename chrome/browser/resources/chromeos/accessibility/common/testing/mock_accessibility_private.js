@@ -678,7 +678,7 @@ class MockAccessibilityPrivate {
       return;
     }
 
-    return Promise.resolve(his.displayBounds_);
+    return Promise.resolve(this.displayBounds_);
   }
 
   /**
