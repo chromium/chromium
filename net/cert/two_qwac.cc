@@ -444,7 +444,7 @@ bool TwoQwacCertBinding::VerifySignature() {
   // attempt to apply the processes that it describes generically for AdES
   // signatures, we encounter a problem in the cryptographic validation building
   // block in clause 5.2.7.4. That clause states that the technical details on
-  // how to perform the cryptogrpahic validation are out of scope, and to see
+  // how to perform the cryptographic validation are out of scope, and to see
   // other documents for details. None of the listed documents provide any
   // details about JAdES signatures or JWSs.
   //
