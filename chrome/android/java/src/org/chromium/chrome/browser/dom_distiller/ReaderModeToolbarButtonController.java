@@ -13,10 +13,12 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -24,33 +26,48 @@ import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvide
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /** Responsible for providing UI resources for showing a reader mode button on toolbar. */
 @NullMarked
 public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     private final Context mContext;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
     private final ButtonSpec mExitPointSpec;
+    private final BottomSheetController mBottomSheetController;
+    // Created as needed.
+    private @Nullable ReaderModeBottomSheetCoordinator mReaderModeBottomSheetCoordinator;
+    // Only populated when the TabSupplierObserver events fire.
+    private @Nullable GURL mTabLastUrlSeen;
 
     /**
      * Creates a new instance of {@code ReaderModeToolbarButtonController}.
      *
      * @param context The context for retrieving string resources.
+     * @param profileSupplier Supplies the current profile.
      * @param activityTabSupplier Supplier for the current active tab.
      * @param modalDialogManager Modal dialog manager, used to disable the button when a dialog is
      *     visible. Can be null to disable this behavior.
+     * @param bottomSheetController The bottom sheet controller, used to show the reader mode bottom
+     *     sheet.
      */
     public ReaderModeToolbarButtonController(
             Context context,
+            ObservableSupplier<Profile> profileSupplier,
             ActivityTabProvider activityTabProvider,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            BottomSheetController bottomSheetController) {
         super(
                 activityTabProvider,
                 modalDialogManager,
@@ -63,17 +80,24 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 /* tooltipTextResId= */ Resources.ID_NULL);
 
         mContext = context;
+        mProfileSupplier = profileSupplier;
         mActivityTabProvider = activityTabProvider;
+        mBottomSheetController = bottomSheetController;
         mActivityTabObserver =
                 new TabSupplierObserver(mActivityTabProvider) {
                     @Override
                     public void onUrlUpdated(@Nullable Tab tab) {
-                        maybeRefreshButton();
+                        maybeRefreshButton(tab);
+
+                        GURL currentUrl = tab == null ? null : tab.getUrl();
+                        if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
+                        mTabLastUrlSeen = currentUrl;
+                        maybeShowBottomSheet(tab);
                     }
 
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
-                        maybeRefreshButton();
+                        maybeRefreshButton(tab);
                     }
                 };
 
@@ -102,6 +126,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     @Override
     public void destroy() {
         mActivityTabObserver.destroy();
+        if (mReaderModeBottomSheetCoordinator != null) {
+            mReaderModeBottomSheetCoordinator.destroy();
+        }
         super.destroy();
     }
 
@@ -135,10 +162,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         return iphCommandBuilder;
     }
 
-    private void maybeRefreshButton() {
+    private void maybeRefreshButton(@Nullable Tab tab) {
         if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
 
-        Tab tab = mActivityTabProvider.get();
         if (tab != null && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             mButtonData.setButtonSpec(mExitPointSpec);
         } else {
@@ -146,6 +172,18 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         }
 
         notifyObservers(mButtonData.canShow());
+    }
+
+    private void maybeShowBottomSheet(@Nullable Tab tab) {
+        if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
+        if (tab == null || !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
+
+        if (mReaderModeBottomSheetCoordinator == null) {
+            mReaderModeBottomSheetCoordinator =
+                    new ReaderModeBottomSheetCoordinator(
+                            mContext, mProfileSupplier.get(), mBottomSheetController);
+        }
+        mReaderModeBottomSheetCoordinator.show();
     }
 
     // Testing-specific functions

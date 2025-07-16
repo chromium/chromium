@@ -18,7 +18,7 @@ import java.util.Map;
 /** Wrapper for the dom_distiller::DistilledPagePrefs. */
 @JNINamespace("dom_distiller::android")
 @NullMarked
-public final class DistilledPagePrefs {
+public class DistilledPagePrefs {
 
     private final long mDistilledPagePrefsAndroid;
     private final Map<Observer, DistilledPagePrefsObserverWrapper> mObserverMap;

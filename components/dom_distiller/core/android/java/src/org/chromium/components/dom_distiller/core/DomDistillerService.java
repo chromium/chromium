@@ -14,7 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 /** Wrapper for native dom_distiller::DomDistillerService. */
 @JNINamespace("dom_distiller::android")
 @NullMarked
-public final class DomDistillerService {
+public class DomDistillerService {
 
     private final DistilledPagePrefs mDistilledPagePrefs;
 

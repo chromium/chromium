@@ -73,14 +73,13 @@ public class ReaderModeBottomSheetCoordinator {
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
 
-    // Private methods.
-
-    private void destroy() {
+    /** Destroys the coordinator. */
+    public void destroy() {
         mDestroyChecker.destroy();
         mChangeProcessor.destroy();
     }
 
-    private class ReaderModeBottomSheetContent implements BottomSheetContent {
+    private static class ReaderModeBottomSheetContent implements BottomSheetContent {
         private final View mContentView;
 
         ReaderModeBottomSheetContent(View contentView) {
@@ -104,7 +103,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public void destroy() {
-            ReaderModeBottomSheetCoordinator.this.destroy();
+            // Note: This bottom sheet can be hidden/shown multiple times without re-creation.
         }
 
         @Override
@@ -151,6 +150,11 @@ public class ReaderModeBottomSheetCoordinator {
         public int getPeekHeight() {
             return mContentView.findViewById(R.id.drag_handle).getHeight()
                     + mContentView.findViewById(R.id.title).getHeight();
+        }
+
+        @Override
+        public boolean hideOnScroll() {
+            return true;
         }
     }
 
