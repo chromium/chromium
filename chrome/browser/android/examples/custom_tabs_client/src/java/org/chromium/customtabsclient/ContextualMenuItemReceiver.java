@@ -88,6 +88,11 @@ public class ContextualMenuItemReceiver extends BroadcastReceiver {
             htmlBuilder.append("<b>Image URI:</b> (data URI present)<br>");
         }
 
+        String imageUrl = casd.getImageUrl();
+        if (imageUrl != null) {
+            htmlBuilder.append("<b>Image URL:</b> ").append(imageUrl).append("<br>");
+        }
+
         Uri pageUrl = casd.getPageUrl();
         if (pageUrl != null) {
             htmlBuilder.append("<b>Page URL:</b> ").append(pageUrl.toString());
