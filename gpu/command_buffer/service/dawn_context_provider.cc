@@ -265,9 +265,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::TransientAttachments,
 
       wgpu::FeatureName::DawnLoadResolveTexture,
-      // TODO(431071275): DawnPartialLoadResolveTexture causes regression in
-      // some benchmarks. Re-enable it once they are resolved.
-      // wgpu::FeatureName::DawnPartialLoadResolveTexture,
+      wgpu::FeatureName::DawnPartialLoadResolveTexture,
       wgpu::FeatureName::DawnTexelCopyBufferRowAlignment,
       wgpu::FeatureName::FlexibleTextureViews,
   };
