@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -86,6 +87,7 @@
 
 namespace glic {
 namespace {
+using ::base::test::RunOnceCallback;
 using testing::_;
 using testing::Contains;
 using testing::Pair;
@@ -944,6 +946,28 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
       .Times(1);
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestionsMultipleNavigations) {
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+      .Times(1);
+  ExecuteJsTest();
+
+  // Navigate to another page in the existing tab.
+  std::vector<std::string> suggestions = {"suggestion1", "suggestion2",
+                                          "suggestion3"};
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(suggestions));
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+
+  // Confirm that the observer is notified through getZeroStateSuggestions of
+  // the second page navigation.
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,

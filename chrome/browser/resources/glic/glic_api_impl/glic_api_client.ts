@@ -90,8 +90,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     suggestions: ZeroStateSuggestionsV2,
     options: ZeroStateSuggestionsOptions,
   }): void {
-    this.host.getZeroStateSuggestions?.(payload.options)
-        .assignAndSignal(payload.suggestions);
+    this.host.currentZeroStateObserver?.assignAndSignal(payload.suggestions);
   }
 
   glicWebClientCanAttachStateChanged(payload: {canAttach: boolean}): void {
@@ -208,7 +207,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     isFirstRun: false,
     supportedTools: [],
   };
-  private currentZeroStateObserver =
+  currentZeroStateObserver =
       ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>();
   private hostCapabilities: Set<HostCapability> = new Set();
 

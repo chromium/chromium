@@ -342,6 +342,22 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(0, suggestions.suggestions.length);
   }
 
+  async testGetZeroStateSuggestionsMultipleNavigations() {
+    // Initial state.
+    assertTrue(!!this.host.getZeroStateSuggestions);
+    const sequence = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions = await sequence.next();
+    assertTrue(!!suggestions);
+    assertEquals(0, suggestions.suggestions.length);
+
+    // After a second navigation occurs.
+    await this.advanceToNextStep();
+    const suggestions2 = await sequence.next();
+    assertTrue(!!suggestions2);
+    assertEquals(3, suggestions2.suggestions.length);
+  }
+
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
     const sequence =
