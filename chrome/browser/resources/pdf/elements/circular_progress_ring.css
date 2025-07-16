@@ -1,0 +1,50 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: contents;
+}
+
+#progressRing {
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  transform: rotate(-90deg);
+}
+
+#innerProgress,
+#progressTrack {
+  r: 90;
+  cx: 100;
+  cy: 100;
+  fill: transparent;
+  stroke-width: 16px;
+}
+
+#progressTrack {
+  /* Force dark mode colors even in light mode. */
+  stroke: rgb(117, 117, 117);
+
+  @media (prefers-color-scheme: dark) {
+    stroke: var(--cr-fallback-color-neutral-outline);
+  }
+}
+
+#innerProgress {
+  stroke-linecap: round;
+  stroke-dasharray: 565.48px;
+
+  /* The following is to force using the same dark mode color even
+   * in light mode. */
+  stroke: var(--cr-fallback-color-inverse-primary);
+
+  @media (prefers-color-scheme: dark) {
+    stroke: var(--cr-fallback-color-primary);
+  }
+}

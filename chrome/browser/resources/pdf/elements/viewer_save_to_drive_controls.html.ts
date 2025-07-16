@@ -8,10 +8,15 @@ import type {ViewerSaveToDriveControlsElement} from './viewer_save_to_drive_cont
 
 export function getHtml(this: ViewerSaveToDriveControlsElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button id="save" iron-icon="pdf:add-to-drive"
+<cr-icon-button id="save"
+    iron-icon="${this.getIronIcon()}"
     @click="${this.onSaveClick}" aria-label="$i18n{tooltipSaveToDrive}"
     aria-haspopup="${this.getAriaHasPopup()}"
     title="$i18n{tooltipSaveToDrive}"></cr-icon-button>
+  ${this.uploading ? html`
+    <circular-progress-ring .value="${this.progress}">
+    </circular-progress-ring>
+  ` : ''}
 <cr-action-menu id="menu">
   <button id="save-edited" class="dropdown-item"
       @click="${this.onSaveEditedClick}">

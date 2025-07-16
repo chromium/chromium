@@ -213,6 +213,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
 }
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, CircularProgressRing) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("circular_progress_ring_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SaveToDriveControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.

@@ -5,7 +5,7 @@
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 import {SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 const tests = [
   /**
@@ -44,6 +44,38 @@ const tests = [
     buttons[1]!.click();
     e = await onSave;
     chrome.test.assertEq(SaveRequestType.ORIGINAL, e.detail);
+
+    chrome.test.succeed();
+  },
+
+  /**
+   * Test that the upload progress ring is shown and updated correctly.
+   */
+  async function testShowUploadProgress() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const element = document.createElement('viewer-save-to-drive-controls');
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    // Initially the button should be in non-uploading state
+    chrome.test.assertEq('pdf:add-to-drive', element.$.save.ironIcon);
+    chrome.test.assertFalse(
+        !!element.shadowRoot.querySelector('circular-progress-ring'));
+
+    // Once we start showing the upload progress, the icon will change
+    element.showUploadProgress(10);
+    await microtasksFinished();
+    chrome.test.assertEq('pdf:arrow-upward-alt', element.$.save.ironIcon);
+    chrome.test.assertTrue(
+        !!element.shadowRoot.querySelector('circular-progress-ring'));
+
+
+    // If we reset the button, it should go back to the initial state
+    element.reset();
+    await microtasksFinished();
+    chrome.test.assertEq('pdf:add-to-drive', element.$.save.ironIcon);
+    chrome.test.assertFalse(
+        !!element.shadowRoot.querySelector('circular-progress-ring'));
 
     chrome.test.succeed();
   },
