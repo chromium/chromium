@@ -7528,9 +7528,10 @@ class HttpStreamPoolAltSvcQuicPreconnectTest
 
     sockets_.emplace_back(std::make_unique<SequencedSocketData>(reads, writes));
     socket_factory()->AddSocketDataProvider(sockets_.back().get());
-    ssls_.emplace_back(std::make_unique<SSLSocketDataProvider>(ASYNC, OK));
-    ssls_.back()->next_proto = NextProto::kProtoHTTP2;
-    socket_factory()->AddSSLSocketDataProvider(ssls_.back().get());
+    auto& back =
+        ssls_.emplace_back(std::make_unique<SSLSocketDataProvider>(ASYNC, OK));
+    back->next_proto = NextProto::kProtoHTTP2;
+    socket_factory()->AddSSLSocketDataProvider(back.get());
 
     StreamRequester requester(stream_key);
     requester.RequestStream(pool());
@@ -7541,26 +7542,18 @@ class HttpStreamPoolAltSvcQuicPreconnectTest
 
   void SetAltSvcQuicPreconnectCallback() {
     pool().SetAltSvcQuicPreconnectCallbackForTesting(
-        base::BindLambdaForTesting([&](int result) {
-          preconnect_result_ = result;
-          preconnect_callback_run_loop_.Quit();
-        }));
+        preconnect_future_.GetCallback());
   }
 
   int WaitForAltSvcQuicPreconnectCompletion() {
-    if (preconnect_result_.has_value()) {
-      return preconnect_result_.value();
-    }
-    preconnect_callback_run_loop_.Run();
-    return preconnect_result_.value();
+    return preconnect_future_.Get();
   }
 
  private:
   std::vector<std::unique_ptr<SequencedSocketData>> sockets_;
   std::vector<std::unique_ptr<SSLSocketDataProvider>> ssls_;
 
-  base::RunLoop preconnect_callback_run_loop_;
-  std::optional<int> preconnect_result_;
+  base::test::TestFuture<int> preconnect_future_;
 };
 
 // Test that when an SpdySession is established and then Alt-Svc advertises
