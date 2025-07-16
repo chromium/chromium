@@ -108,14 +108,6 @@ CharacterRange CachingWordShaper::GetCharacterRange(const TextRun& run,
                                   total_width, from, to);
 }
 
-HeapVector<ShapeResult::RunFontData> CachingWordShaper::GetRunFontData(
-    const TextRun& run) const {
-  ShapeResultBuffer buffer;
-  ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);
-
-  return buffer.GetRunFontData();
-}
-
 GlyphData CachingWordShaper::EmphasisMarkGlyphData(
     const TextRun& emphasis_mark_run) const {
   ShapeResultBuffer buffer;

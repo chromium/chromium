@@ -131,17 +131,6 @@ CharacterRange ShapeResultBuffer::GetCharacterRange(
                         context.max_y);
 }
 
-HeapVector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
-  HeapVector<ShapeResult::RunFontData> font_data;
-  for (const auto& result : results_)
-    result->GetRunFontData(&font_data);
-  return font_data;
-}
-
-ShapeResultView* ShapeResultBuffer::ViewAt(wtf_size_t index) const {
-  return ShapeResultView::Create(results_[index]);
-}
-
 GlyphData ShapeResultBuffer::EmphasisMarkGlyphData(
     const FontDescription& font_description) const {
   for (const auto& result : results_) {

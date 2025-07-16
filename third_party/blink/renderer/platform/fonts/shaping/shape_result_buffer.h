@@ -39,11 +39,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
                                    unsigned from,
                                    unsigned to) const;
 
-  HeapVector<ShapeResult::RunFontData> GetRunFontData() const;
-
-  wtf_size_t ShapeResultSize() const { return results_.size(); }
-  ShapeResultView* ViewAt(wtf_size_t index) const;
-
   GlyphData EmphasisMarkGlyphData(const FontDescription&) const;
 
   struct CharacterRangeContext {
