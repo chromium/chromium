@@ -14,12 +14,15 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/handle.h"
-#include "gin/public/gin_embedders.h"
+#include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -286,23 +289,24 @@ CreateMojomClearMethodFromParameters(
 }
 
 // SharedStorageMethod represents a method for modifying shared storage. This
-// class inherits from gin::DeprecatedWrappable to leverage gin's JavaScript
+// class inherits from gin::Wrappable to leverage gin's JavaScript
 // object lifetime management capabilities. When the JavaScript object is
 // garbage collected, the corresponding C++ object will be properly cleaned up.
-class SharedStorageMethod
-    : public gin::DeprecatedWrappable<SharedStorageMethod> {
+class SharedStorageMethod : public gin::Wrappable<SharedStorageMethod> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kSharedStorageMethod};
 
+  // Make public for cppgc::MakeGarbageCollected.
   SharedStorageMethod(
       v8::Isolate* isolate,
       v8::Local<v8::Object> obj,
       network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method)
       : mojom_method_(std::move(mojom_method)) {
-    gin::Handle<SharedStorageMethod> handler = gin::CreateHandle(isolate, this);
-    // Use an index that won't interfere with gin's reserved indexes.
-    obj->SetInternalField(gin::kNumberOfInternalFields, handler.ToV8());
+    SetWrapper(isolate, obj);
   }
+
+  ~SharedStorageMethod() override = default;
 
   const network::mojom::SharedStorageModifierMethodWithOptionsPtr&
   mojom_method() const {
@@ -310,11 +314,19 @@ class SharedStorageMethod
   }
 
  private:
+  // gin::WrappableBase
+  gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
+      v8::Isolate* isolate) override {
+    return gin::Wrappable<SharedStorageMethod>::GetObjectTemplateBuilder(
+        isolate);
+  }
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
+
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method_;
 };
-
-gin::DeprecatedWrapperInfo SharedStorageMethod::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 }  // namespace
 
@@ -399,7 +411,7 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
                                   &SharedStorageBindings::SetMethodConstructor,
                                   v8_this);
     set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields + 1);
+        gin::kNumberOfInternalFields);
     set_method_ctor_template->Inherit(base_modifier_method_template);
     set_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageSetMethodName));
@@ -416,7 +428,7 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::AppendMethodConstructor, v8_this);
     append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields + 1);
+        gin::kNumberOfInternalFields);
     append_method_ctor_template->Inherit(base_modifier_method_template);
     append_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageAppendMethodName));
@@ -434,7 +446,7 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::DeleteMethodConstructor, v8_this);
     delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields + 1);
+        gin::kNumberOfInternalFields);
     delete_method_ctor_template->Inherit(base_modifier_method_template);
     delete_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageDeleteMethodName));
@@ -452,7 +464,7 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::ClearMethodConstructor, v8_this);
     clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields + 1);
+        gin::kNumberOfInternalFields);
     clear_method_ctor_template->Inherit(base_modifier_method_template);
     clear_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageClearMethodName));
@@ -566,27 +578,12 @@ void SharedStorageBindings::BatchUpdate(
              mojom_methods,
          v8::Local<v8::Value> method_val) -> IdlConvert::Status {
         v8::Isolate* isolate = v8_helper->isolate();
-        v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
         static constexpr char kTypeConversionError[] =
             "Failed to convert value to 'SharedStorageModifierMethod'";
 
-        v8::Local<v8::Object> method_obj;
-        if (!method_val->ToObject(context).ToLocal(&method_obj)) {
-          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
-        }
-
-        if (method_obj->InternalFieldCount() !=
-            gin::kNumberOfInternalFields + 1) {
-          return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
-        }
-
-        v8::Local<v8::Value> internal_val =
-            method_obj->GetInternalField(gin::kNumberOfInternalFields)
-                .As<v8::Value>();
-
         SharedStorageMethod* modifier_method = nullptr;
-        if (!gin::ConvertFromV8(isolate, internal_val, &modifier_method)) {
+        if (!gin::ConvertFromV8(isolate, method_val, &modifier_method)) {
           return IdlConvert::Status::MakeErrorMessage(kTypeConversionError);
         }
 
@@ -700,7 +697,9 @@ void SharedStorageBindings::SetMethodConstructor(
   }
 
   v8::Local<v8::Object> obj = args.This();
-  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  cppgc::MakeGarbageCollected<SharedStorageMethod>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, obj,
+      std::move(mojom_method));
   args.GetReturnValue().Set(obj);
 }
 
@@ -727,7 +726,9 @@ void SharedStorageBindings::AppendMethodConstructor(
   }
 
   v8::Local<v8::Object> obj = args.This();
-  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  cppgc::MakeGarbageCollected<SharedStorageMethod>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, obj,
+      std::move(mojom_method));
   args.GetReturnValue().Set(obj);
 }
 
@@ -754,7 +755,9 @@ void SharedStorageBindings::DeleteMethodConstructor(
   }
 
   v8::Local<v8::Object> obj = args.This();
-  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  cppgc::MakeGarbageCollected<SharedStorageMethod>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, obj,
+      std::move(mojom_method));
   args.GetReturnValue().Set(obj);
 }
 
@@ -781,7 +784,9 @@ void SharedStorageBindings::ClearMethodConstructor(
   }
 
   v8::Local<v8::Object> obj = args.This();
-  new SharedStorageMethod(isolate, obj, std::move(mojom_method));
+  cppgc::MakeGarbageCollected<SharedStorageMethod>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, obj,
+      std::move(mojom_method));
   args.GetReturnValue().Set(obj);
 }
 

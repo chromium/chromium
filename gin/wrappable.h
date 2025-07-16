@@ -86,6 +86,7 @@ class GIN_EXPORT WrappableBase : public v8::Object::Wrappable {
   virtual const WrapperInfo* wrapper_info() const = 0;
 
   v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate);
+  void SetWrapper(v8::Isolate* isolate, v8::Local<v8::Object> wrapper);
 
  protected:
   explicit WrappableBase() = default;
@@ -94,6 +95,8 @@ class GIN_EXPORT WrappableBase : public v8::Object::Wrappable {
   virtual ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate);
 
  private:
+  void AssociateWithWrapper(v8::Isolate* isolate,
+                            v8::Local<v8::Object> wrapper);
   v8::TracedReference<v8::Object> wrapper_;
 };
 
