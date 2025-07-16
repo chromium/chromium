@@ -43,6 +43,7 @@ CLANG_REVISION = 'llvmorg-21-init-16348-gbd809ffb'
 CLANG_SUB_REVISION = 13
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
+# TODO(crbug.com/432036065): Bump to 22 in next Clang roll.
 RELEASE_VERSION = '21'
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',
@@ -332,6 +333,11 @@ def main():
                       help=('Print current clang release version (e.g. 9.0.0) '
                             'and exit.'))
   args = parser.parse_args()
+
+  # TODO(crbug.com/432036065): Remove in next Clang roll.
+  if args.llvm_force_head_revision:
+    global RELEASE_VERSION
+    RELEASE_VERSION = '22'
 
   if args.print_clang_version:
     print(RELEASE_VERSION)

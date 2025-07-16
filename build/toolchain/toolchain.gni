@@ -35,7 +35,10 @@ declare_args() {
 declare_args() {
   if (llvm_android_mainline) {  # https://crbug.com/1481060
     clang_version = "17"
+  } else if (llvm_force_head_revision) {
+    clang_version = "22"
   } else {
+    # TODO(crbug.com/432036065): Remove in the next Clang roll.
     clang_version = "21"
   }
 }
