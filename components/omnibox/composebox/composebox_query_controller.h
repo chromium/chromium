@@ -268,6 +268,9 @@ class ComposeboxQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
   CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
 
+  // Resets the request cluster info state.
+  void ResetRequestClusterInfoState();
+
   // Gets an OAuth token for the cluster info request and proceeds with sending
   // a LensOverlayServerClusterInfoRequest to get the cluster info.
   void FetchClusterInfo();

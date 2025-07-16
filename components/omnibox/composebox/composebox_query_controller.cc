@@ -350,6 +350,29 @@ ComposeboxQueryController::CreateOAuthHeadersAndContinue(
   return nullptr;
 }
 
+void ComposeboxQueryController::ResetRequestClusterInfoState() {
+  cluster_info_access_token_fetcher_.reset();
+  cluster_info_endpoint_fetcher_.reset();
+  cluster_info_.reset();
+  request_id_generator_.ResetRequestId();
+
+  // Iterate through any existing files and mark them as expired.
+  // TODO(crbug.com/432125987): Handle file reupload after cluster info
+  // expiration.
+  for (const auto& [file_token, file_info] : active_files_) {
+    // Stop the file upload request if it is in progress.
+    file_info->file_upload_endpoint_fetcher_.reset();
+    if (file_info->upload_status_ != FileUploadStatus::kValidationFailed) {
+      UpdateFileUploadStatus(file_token, FileUploadStatus::kUploadExpired,
+                             std::nullopt);
+    }
+  }
+  SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
+
+  // Fetch new cluster info.
+  FetchClusterInfo();
+}
+
 void ComposeboxQueryController::FetchClusterInfo() {
   SetQueryControllerState(QueryControllerState::kAwaitingClusterInfoResponse);
 
@@ -426,6 +449,14 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   for (const auto& [file_token, file_info] : active_files_) {
     MaybeSendFileUploadNetworkRequest(file_token);
   }
+
+  // Clear the cluster info after its lifetime expires.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ComposeboxQueryController::ResetRequestClusterInfoState,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(
+          lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 }
 
 void ComposeboxQueryController::SetQueryControllerState(
@@ -565,6 +596,7 @@ void ComposeboxQueryController::MaybeSendFileUploadNetworkRequest(
 
   if (file_info->request_headers_ && file_info->request_body_ &&
       cluster_info_.has_value() &&
+      file_info->upload_status_ == FileUploadStatus::kProcessing &&
       query_controller_state_ == QueryControllerState::kClusterInfoReceived) {
     SendFileUploadNetworkRequest(file_info);
   }

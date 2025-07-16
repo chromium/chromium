@@ -97,12 +97,16 @@ class ComposeboxQueryControllerTest
     controller_->set_fake_cluster_info_response(cluster_info_response);
 
     controller().set_on_query_controller_state_changed_callback(
-        controller_state_future_.GetRepeatingCallback());
+        base::BindRepeating(
+            &ComposeboxQueryControllerTest::OnQueryControllerStateChanged,
+            base::Unretained(this)));
   }
 
   void TearDown() override {
     controller_->RemoveObserver(this);
-    controller_state_future_.Clear();
+    while (!controller_state_future_.IsEmpty()) {
+      controller_state_future_.Take();
+    }
     while (!file_upload_status_future_.IsEmpty()) {
       file_upload_status_future_.Take();
     }
@@ -190,6 +194,10 @@ class ComposeboxQueryControllerTest
 
   TestComposeboxQueryController& controller() { return *controller_; }
 
+  void OnQueryControllerStateChanged(QueryControllerState new_state) {
+    controller_state_future_.AddValue(new_state);
+  }
+
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
@@ -239,7 +247,11 @@ class ComposeboxQueryControllerTest
     return std::nullopt;
   }
 
-  base::test::TestFuture<QueryControllerState> controller_state_future_;
+  // Returns the task environment.
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
+  base::test::RepeatingTestFuture<QueryControllerState>
+      controller_state_future_;
   base::test::RepeatingTestFuture<base::UnguessableToken,
                                   FileUploadStatus,
                                   std::optional<FileUploadErrorType>>
@@ -549,6 +561,35 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token);
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadFileAndWaitForClusterInfoExpire) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Wait 1 hour.
+  task_environment().FastForwardBy(base::Hours(1));
+
+  // Assert: Validate file upload request and status changes.
+
+  FileUploadStatusTuple expired_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(expired_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kUploadExpired,
+            std::get<1>(expired_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<2>(expired_file_upload_status));
 }
 
 TEST_F(ComposeboxQueryControllerTest,
