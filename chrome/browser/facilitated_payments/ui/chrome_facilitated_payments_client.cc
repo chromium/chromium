@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -194,6 +195,15 @@ void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
     base::OnceCallback<void()> on_declined) {
   facilitated_payments_controller_->ShowPixAccountLinkingPrompt(
       std::move(on_accepted), std::move(on_declined));
+}
+
+bool ChromeFacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
+  device_reauth::DeviceAuthParams params(
+      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
+  auto authenticator = ChromeDeviceAuthenticatorFactory::GetForProfile(
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
+      GetWebContents().GetTopLevelNativeWindow(), params);
+  return authenticator->CanAuthenticateWithBiometricOrScreenLock();
 }
 
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {

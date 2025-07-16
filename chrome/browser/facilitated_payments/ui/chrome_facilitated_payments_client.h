@@ -99,6 +99,7 @@ class ChromeFacilitatedPaymentsClient
   void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;
+  bool HasScreenlockOrBiometricSetup() final;
 
   // Register any allowlists with the OptimizationGuide framework, so that
   // individual features can later request to check whether the current main

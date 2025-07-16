@@ -49,6 +49,10 @@ void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {}
 
+bool FacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
+  return false;
+}
+
 void FacilitatedPaymentsClient::SetPixAccountLinkingManagerForTesting(
     std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager) {
   pix_account_linking_manager_ = std::move(pix_account_linking_manager);

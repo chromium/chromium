@@ -77,6 +77,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
     ON_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
         .WillByDefault(
             [](base::OnceClosure callback) { std::move(callback).Run(); });
+    ON_CALL(client_, HasScreenlockOrBiometricSetup)
+        .WillByDefault(testing::Return(true));
   }
 
   void TearDown() override {
@@ -303,6 +305,15 @@ TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
       "FacilitatedPayments.Pix.AccountLinkingPromptShown",
       /*sample=*/true,
       /*expected_bucket_count=*/0);
+}
+
+TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_PromptNotShown) {
+  ON_CALL(client(), HasScreenlockOrBiometricSetup)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
 }
 
 class PixAccountLinkingManagerParameterizedTest

@@ -37,6 +37,12 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
            ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
     return;
   }
+
+  if (!client_->HasScreenlockOrBiometricSetup()) {
+    // TODO(crbug.com/419108993): Add metrics.
+    return;
+  }
+
   // Make a request to payments backend to check if user is eligible for pix
   // account linking.
   auto billing_customer_id = autofill::payments::GetBillingCustomerId(

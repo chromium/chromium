@@ -136,6 +136,10 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined);
 
+  // Check whether the device has the screenlock or biometric set up which is
+  // required for Pix account linking in Wallet.
+  virtual bool HasScreenlockOrBiometricSetup();
+
   void SetPixAccountLinkingManagerForTesting(
       std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager);
 
