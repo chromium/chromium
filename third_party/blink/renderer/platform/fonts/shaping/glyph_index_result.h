@@ -13,9 +13,6 @@ struct GlyphIndexResult {
   STACK_ALLOCATED();
 
  public:
-  // The total number of characters of runs_[0..run_index - 1].
-  unsigned characters_on_left_runs = 0;
-
   // Those are the left and right character indexes of the group of glyphs
   // that were selected by OffsetForPosition.
   unsigned left_character_index = 0;

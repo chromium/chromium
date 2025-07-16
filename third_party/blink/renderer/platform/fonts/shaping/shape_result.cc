@@ -596,7 +596,6 @@ void ShapeResult::OffsetForPosition(float target_x,
     if (offset_for_run >= 0 && offset_for_run < run->width_) {
       // The x value in question is within this script run.
       run->CharacterIndexForXPosition(offset_for_run, break_glyphs, result);
-      result->characters_on_left_runs = characters_so_far;
       if (IsRtl()) {
         result->left_character_index =
             characters_so_far + result->left_character_index;
@@ -625,8 +624,6 @@ void ShapeResult::OffsetForPosition(float target_x,
     result->left_character_index += characters_so_far;
     result->right_character_index += characters_so_far;
   }
-
-  result->characters_on_left_runs = characters_so_far;
 
   DCHECK_LE(result->left_character_index, NumCharacters());
   DCHECK_LE(result->right_character_index, NumCharacters() + 1);
