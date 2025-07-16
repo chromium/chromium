@@ -685,7 +685,7 @@
     "args": [
       "--enable-features=DevToolsImprovedNetworkError"
     ],
-    "expires": "Mar 1, 2025",
+    "expires": "Jan 1, 2026",
     "owners": [
       "bmeurer@google.com",
       "changhaohan@google.com"
