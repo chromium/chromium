@@ -224,6 +224,9 @@ source_set("unit_tests") {
     "disruptive_notification_permissions_manager_unittest.cc",
     "menu_notification_service_unittest.cc",
     "menu_notification_unittest.cc",
+    "notification_permission_review_result_unittest.cc",
+    "password_status_check_result_unittest.cc",
+    "revoked_permissions_result_unittest.cc",
     "safe_browsing_result_unittest.cc",
     "safety_hub_result_unittest.cc",
     "safety_hub_service_unittest.cc",
@@ -267,6 +270,8 @@ source_set("unit_tests") {
   } else {
     sources += [
       "extensions_result_unittest.cc",
+      "notification_permission_review_service_unittest.cc",
+      "password_status_check_service_unittest.cc",
       "revoked_permissions_service_unittest.cc",
       "safety_hub_hats_service_unittest.cc",
     ]
