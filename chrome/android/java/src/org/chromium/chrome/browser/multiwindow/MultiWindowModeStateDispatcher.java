@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -86,7 +87,7 @@ public interface MultiWindowModeStateDispatcher {
      * Returns the activity to use when handling "open in other window" or "move to other window".
      * Returns null if the current activity doesn't support opening/moving tabs to another activity.
      */
-    Class<? extends Activity> getOpenInOtherWindowActivity();
+    @Nullable Class<? extends Activity> getOpenInOtherWindowActivity();
 
     /**
      * Generates an intent to use when handling "open in other window" or "move to other window" on
@@ -95,7 +96,7 @@ public interface MultiWindowModeStateDispatcher {
      * @return An intent with the proper class, flags, and extras for opening a tab or link in the
      *     other window.
      */
-    Intent getOpenInOtherWindowIntent();
+    @Nullable Intent getOpenInOtherWindowIntent();
 
     /**
      * @return The number of Chrome instances that can switch to or launch.

@@ -71,6 +71,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
 
+        assumeNonNull(windowAndroid.getContext().get());
         if (MultiWindowUtils.getInstance()
                 .areMultipleChromeInstancesRunning(windowAndroid.getContext().get())) {
             sShouldShowOnRestore = false;
@@ -89,7 +90,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
                             sShouldShowOnRestore = false;
                         }
 
-                        Context context = windowAndroid.getContext().get();
+                        Context context = assumeNonNull(windowAndroid.getContext().get());
                         boolean runAudit =
                                 context == null
                                         || !MultiWindowUtils.getInstance()

@@ -23,8 +23,6 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -42,6 +40,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
@@ -81,6 +81,7 @@ import java.util.Set;
  *
  * <p>Thread-safe: This class may be accessed from any thread.
  */
+@NullMarked
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
@@ -94,18 +95,18 @@ public class MultiWindowUtils implements ActivityStateListener {
             ".ExistingInstance";
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
-    protected static Supplier<Activity> sActivitySupplierForTesting;
+    protected static @Nullable Supplier<Activity> sActivitySupplierForTesting;
 
-    private static Integer sMaxInstancesForTesting;
-    private static Integer sInstanceCountForTesting;
-    private static Boolean sMultiInstanceApi31EnabledForTesting;
+    private static @Nullable Integer sMaxInstancesForTesting;
+    private static @Nullable Integer sInstanceCountForTesting;
+    private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
     private final boolean mMultiInstanceApi31Enabled;
-    private static Boolean sIsMultiInstanceApi31Enabled;
+    private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
-    private Boolean mTabbedActivity2TaskRunning;
-    private WeakReference<ChromeTabbedActivity> mLastResumedTabbedActivity;
+    private @Nullable Boolean mTabbedActivity2TaskRunning;
+    private @Nullable WeakReference<ChromeTabbedActivity> mLastResumedTabbedActivity;
     private boolean mIsInMultiWindowModeForTesting;
 
     @IntDef({
@@ -240,7 +241,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param activity The {@link Activity} to check.
      * @return Whether or not {@code activity} is currently in Android N+ multi-window mode.
      */
-    public boolean isInMultiWindowMode(Activity activity) {
+    public boolean isInMultiWindowMode(@Nullable Activity activity) {
         if (mIsInMultiWindowModeForTesting) return true;
         if (activity == null) return false;
 
@@ -262,7 +263,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /** Returns whether the given activity currently supports opening tabs to the other window. */
-    public boolean isOpenInOtherWindowSupported(Activity activity) {
+    public boolean isOpenInOtherWindowSupported(@Nullable Activity activity) {
+        if (activity == null) return false;
         if (!isInMultiWindowMode(activity) && !isInMultiDisplayMode(activity)) return false;
         // Automotive is currently restricted to a single window.
         if (BuildInfo.getInstance().isAutomotive) return false;
@@ -332,10 +334,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     /**
      * See if Chrome can get itself into multi-window mode.
      *
-     * @param activity The {@link Activity} to check.
      * @return {@code True} if Chrome can get itself into multi-window mode.
      */
-    public boolean canEnterMultiWindowMode(Activity activity) {
+    public boolean canEnterMultiWindowMode() {
         // Automotive is currently restricted to a single window.
         if (BuildInfo.getInstance().isAutomotive) return false;
 
@@ -359,7 +360,8 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Returns the activity to use when handling "open in other window" or "move to other window".
      * Returns null if the current activity doesn't support opening/moving tabs to another activity.
      */
-    public Class<? extends Activity> getOpenInOtherWindowActivity(Activity current) {
+    public @Nullable Class<? extends Activity> getOpenInOtherWindowActivity(
+            @Nullable Activity current) {
         // Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
         if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
         if (current instanceof ChromeTabbedActivity2) {
@@ -501,7 +503,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return ChromeTabbedActivity instance of the task running adjacently to the current one.
      *     {@code null} if there is no such task.
      */
-    public static Activity getAdjacentWindowActivity(Activity current) {
+    public static @Nullable Activity getAdjacentWindowActivity(Activity current) {
         if (sActivitySupplierForTesting != null) {
             return sActivitySupplierForTesting.get();
         }
@@ -662,7 +664,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param activity The Activity whose visibility to test.
      * @return True iff the given Activity is currently visible.
      */
-    public static boolean isActivityVisible(Activity activity) {
+    public static boolean isActivityVisible(@Nullable Activity activity) {
         if (activity == null) return false;
         int activityState = ApplicationStatus.getStateForActivity(activity);
         // In Android N multi-window mode, only one activity is resumed at a time. The other
@@ -741,7 +743,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     @VisibleForTesting
-    public Boolean getTabbedActivity2TaskRunning() {
+    public @Nullable Boolean getTabbedActivity2TaskRunning() {
         return mTabbedActivity2TaskRunning;
     }
 
@@ -965,7 +967,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         int totalCount = 0;
         for (TabModel model : models) {
             for (int i = 0; i < model.getCount(); i++) {
-                Tab tab = model.getTabAt(i);
+                Tab tab = model.getTabAtChecked(i);
                 if (!TabPersistentStore.shouldSkipTab(tab)) {
                     totalCount++;
                 }
@@ -1017,9 +1019,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the message was shown.
      */
     public static boolean maybeShowInstanceRestorationMessage(
-            MessageDispatcher messageDispatcher,
-            @NonNull Context context,
-            @NonNull Runnable primaryActionRunnable) {
+            @Nullable MessageDispatcher messageDispatcher,
+            Context context,
+            Runnable primaryActionRunnable) {
         if (messageDispatcher == null) return false;
 
         // Show the message only when the number of persisted instances exceeds the instance limit.

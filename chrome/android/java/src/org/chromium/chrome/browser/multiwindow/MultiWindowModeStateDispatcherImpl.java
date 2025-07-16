@@ -8,9 +8,12 @@ import android.app.Activity;
 import android.content.Intent;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Implementation of {@link MultiWindowModeStateDispatcher}. */
+@NullMarked
 public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateDispatcher {
     private final Activity mActivity;
     private final ObserverList<MultiWindowModeObserver> mObservers;
@@ -77,16 +80,16 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
 
     @Override
     public boolean canEnterMultiWindowMode() {
-        return MultiWindowUtils.getInstance().canEnterMultiWindowMode(mActivity);
+        return MultiWindowUtils.getInstance().canEnterMultiWindowMode();
     }
 
     @Override
-    public Class<? extends Activity> getOpenInOtherWindowActivity() {
+    public @Nullable Class<? extends Activity> getOpenInOtherWindowActivity() {
         return MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(mActivity);
     }
 
     @Override
-    public Intent getOpenInOtherWindowIntent() {
+    public @Nullable Intent getOpenInOtherWindowIntent() {
         Class<? extends Activity> targetActivity = getOpenInOtherWindowActivity();
         if (targetActivity == null) return null;
 

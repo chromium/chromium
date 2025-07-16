@@ -132,7 +132,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean canEnterMultiWindowMode() {
-        return MultiWindowUtils.getInstance().canEnterMultiWindowMode(TabUtils.getActivity(mTab));
+        return MultiWindowUtils.getInstance().canEnterMultiWindowMode();
     }
 
     @Override

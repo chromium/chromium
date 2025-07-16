@@ -259,7 +259,7 @@ public class MultiWindowUtilsUnitTest {
             assertEquals(
                     " api-s: " + mIsAutosplitSupported + " vendor: " + mCustomMultiWindowSupported,
                     canEnter,
-                    mUtils.canEnterMultiWindowMode(null));
+                    mUtils.canEnterMultiWindowMode());
         }
     }
 
@@ -282,7 +282,7 @@ public class MultiWindowUtilsUnitTest {
                             + " multi-instance: "
                             + mIsMultipleInstanceRunning,
                     openInOtherWindow,
-                    mUtils.isOpenInOtherWindowSupported(null));
+                    mUtils.isOpenInOtherWindowSupported(mock(Activity.class)));
         }
     }
 
@@ -1056,8 +1056,8 @@ public class MultiWindowUtilsUnitTest {
         // Test if recordTabCountForRelaunchWhenActivityPaused() returns the correct value for
         // standard tabs.
         when(mNormalTabModel.getCount()).thenReturn(2);
-        when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mNormalTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mNormalTabModel.getTabAtChecked(0)).thenReturn(mTab1);
+        when(mNormalTabModel.getTabAtChecked(1)).thenReturn(mTab2);
         when(mTab1.isNativePage()).thenReturn(false);
         when(mTab1.getUrl()).thenReturn(TEST_GURL);
         when(mTab2.isNativePage()).thenReturn(false);
@@ -1069,7 +1069,7 @@ public class MultiWindowUtilsUnitTest {
 
         // Test the case of adding a non-NTP tab to the tab model.
         when(mNormalTabModel.getCount()).thenReturn(3);
-        when(mNormalTabModel.getTabAt(2)).thenReturn(mTab3);
+        when(mNormalTabModel.getTabAtChecked(2)).thenReturn(mTab3);
         when(mTab3.isNativePage()).thenReturn(false);
         when(mTab3.getUrl()).thenReturn(TEST_GURL);
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);

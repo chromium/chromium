@@ -540,6 +540,6 @@ public class MultiWindowUtilsTest {
                 .when(mMultiWindowUtils)
                 .customMultiWindowModeSupported();
 
-        return mMultiWindowUtils.canEnterMultiWindowMode(mActivityTestRule.getActivity());
+        return mMultiWindowUtils.canEnterMultiWindowMode();
     }
 }
