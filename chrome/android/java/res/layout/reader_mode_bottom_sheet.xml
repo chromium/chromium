@@ -17,6 +17,7 @@ found in the LICENSE file.
     android:background="@drawable/bottom_sheet_background">
 
     <ImageView
+            android:id="@+id/drag_handle"
             android:layout_width="32dp"
             android:layout_height="4dp"
             android:layout_marginTop="12dp"

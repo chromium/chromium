@@ -146,6 +146,12 @@ public class ReaderModeBottomSheetCoordinator {
         public boolean hasCustomScrimLifecycle() {
             return false;
         }
+
+        @Override
+        public int getPeekHeight() {
+            return mContentView.findViewById(R.id.drag_handle).getHeight()
+                    + mContentView.findViewById(R.id.title).getHeight();
+        }
     }
 
     // For testing methods.
