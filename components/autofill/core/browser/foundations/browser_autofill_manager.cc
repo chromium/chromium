@@ -2201,6 +2201,11 @@ void BrowserAutofillManager::DidShowSuggestions(
         AutofillMetrics::SCAN_CARD_ITEM_SHOWN);
   }
 
+  if (shown_suggestion_types.contains(
+          SuggestionType::kSaveAndFillCreditCardEntry)) {
+    metrics_->credit_card_form_event_logger.OnSaveAndFillSuggestionShown();
+  }
+
   if (std::ranges::none_of(
           shown_suggestion_types,
           AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {

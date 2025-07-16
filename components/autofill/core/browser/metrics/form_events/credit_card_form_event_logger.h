@@ -139,6 +139,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Logging when a BNPL suggestion was accepted.
   void OnDidAcceptBnplSuggestion();
 
+  // Called by BrowserAutofillManager after the Save and Fill suggestion is
+  // shown.
+  void OnSaveAndFillSuggestionShown();
+
   std::optional<CreditCard> GetFilledCreditCardForTesting();
 
  protected:
@@ -232,6 +236,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the metrics for a form submitted with a BNPL issuer VCN were
   // already logged and should not log again.
   bool has_logged_form_submitted_with_bnpl_vcn_ = false;
+  // If true, the Save and Fill suggestion has already been logged as shown and
+  // should not be logged again.
+  bool has_logged_save_and_fill_suggestion_shown_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

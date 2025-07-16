@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_info_retrieval_enrolled_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -571,6 +572,13 @@ void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
   if (!has_logged_bnpl_suggestion_accepted_) {
     LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAccepted);
     has_logged_bnpl_suggestion_accepted_ = true;
+  }
+}
+
+void CreditCardFormEventLogger::OnSaveAndFillSuggestionShown() {
+  if (!has_logged_save_and_fill_suggestion_shown_) {
+    LogSaveAndFillFormEvent(SaveAndFillFormEvent::kSuggestionShown);
+    has_logged_save_and_fill_suggestion_shown_ = true;
   }
 }
 

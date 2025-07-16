@@ -3284,6 +3284,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.SaveAndFill"
+    enum="SaveAndFillFormEvent" expires_after="2026-06-01">
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram logs form events related to the Save and Fill suggestion on
+    credit card forms. Logged once per page load when the suggestion is shown.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.FormEvents.CreditCard.WithBenefits.{CardBenefitSource}"
     enum="AutofillFormEvent" expires_after="2026-06-01">

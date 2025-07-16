@@ -4021,6 +4021,14 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="User-edited select field"/>
 </enum>
 
+<!-- LINT.IfChange(SaveAndFillFormEvent) -->
+
+<enum name="SaveAndFillFormEvent">
+  <int value="0" label="The Save and Fill suggestion was shown."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFormEvent) -->
+
 <!-- LINT.IfChange(SaveCreditCardPromptResultIOS) -->
 
 <enum name="SaveCreditCardPromptResultIOS">
