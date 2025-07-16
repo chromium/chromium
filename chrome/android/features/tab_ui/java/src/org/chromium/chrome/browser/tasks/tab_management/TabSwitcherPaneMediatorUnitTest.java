@@ -242,7 +242,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         assertFalse(dialogVisibilitySupplier.get());
 
         when(mTabListEditorController.isVisible()).thenReturn(true);
-        observer.multipleTabsPendingClosure(null, false);
+        observer.multipleTabsPendingClosure(null, false, TabClosingSource.UNKNOWN);
         assertTrue(dialogVisibilitySupplier.get());
     }
 

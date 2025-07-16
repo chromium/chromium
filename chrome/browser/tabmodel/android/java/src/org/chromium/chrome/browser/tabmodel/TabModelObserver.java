@@ -127,8 +127,10 @@ public interface TabModelObserver {
      *
      * @param tabs The tabs that are pending closure.
      * @param isAllTabs Whether |tabs| are all the tabs.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
      */
-    default void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {}
+    default void multipleTabsPendingClosure(
+            List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {}
 
     /**
      * Called when a tab closure is undone.

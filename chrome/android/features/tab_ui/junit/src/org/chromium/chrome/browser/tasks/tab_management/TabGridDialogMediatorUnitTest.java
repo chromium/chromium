@@ -905,7 +905,8 @@ public class TabGridDialogMediatorUnitTest {
 
         mTabModelObserverCaptor
                 .getValue()
-                .multipleTabsPendingClosure(Arrays.asList(mTab1, mTab2), false);
+                .multipleTabsPendingClosure(
+                        Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
@@ -914,7 +915,9 @@ public class TabGridDialogMediatorUnitTest {
     public void multipleTabsPendingClosure_singleTab_DialogVisible() {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().multipleTabsPendingClosure(Arrays.asList(mTab1), false);
+        mTabModelObserverCaptor
+                .getValue()
+                .multipleTabsPendingClosure(Arrays.asList(mTab1), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
@@ -925,7 +928,8 @@ public class TabGridDialogMediatorUnitTest {
 
         mTabModelObserverCaptor
                 .getValue()
-                .multipleTabsPendingClosure(Arrays.asList(mTab1, mTab2), false);
+                .multipleTabsPendingClosure(
+                        Arrays.asList(mTab1, mTab2), false, TabClosingSource.UNKNOWN);
 
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }

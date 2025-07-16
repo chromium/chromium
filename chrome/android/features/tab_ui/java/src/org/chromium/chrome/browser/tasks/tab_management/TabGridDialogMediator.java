@@ -426,7 +426,9 @@ public class TabGridDialogMediator
 
                     @Override
                     public void multipleTabsPendingClosure(
-                            List<Tab> closedTabs, boolean isAllTabs) {
+                            List<Tab> closedTabs,
+                            boolean isAllTabs,
+                            @TabClosingSource int closingSource) {
                         if (!isVisible() || mSnackbarManager == null) return;
 
                         // TODO(b/338447134): This shouldn't show a snackbar if the tabs aren't in

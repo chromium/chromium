@@ -121,7 +121,10 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
-                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                    public void multipleTabsPendingClosure(
+                            List<Tab> tabs,
+                            boolean isAllTabs,
+                            @TabClosingSource int closingSource) {
                         if (disableUndo(true)) return;
                         queueUndoBar(new TabClosureEvent(tabs, isAllTabs));
                     }

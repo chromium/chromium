@@ -595,7 +595,9 @@ public class TabModelImpl extends TabModelJniBridge {
         if (allowUndo) {
             assumeNonNull(mPendingTabClosureManager);
             mPendingTabClosureManager.addTabClosureEvent(tabs, undoRunnable);
-            for (TabModelObserver obs : mObservers) obs.multipleTabsPendingClosure(tabs, false);
+            for (TabModelObserver obs : mObservers) {
+                obs.multipleTabsPendingClosure(tabs, false, tabClosingSource);
+            }
         }
     }
 
@@ -660,7 +662,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (supportsPendingClosures()) {
             mPendingTabClosureManager.addTabClosureEvent(closedTabs, undoRunnable);
             for (TabModelObserver obs : mObservers) {
-                obs.multipleTabsPendingClosure(closedTabs, true);
+                obs.multipleTabsPendingClosure(closedTabs, true, tabClosingSource);
             }
         }
     }

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -688,7 +689,10 @@ public class ChromeTabUtils {
         final TabModelObserver observer =
                 new TabModelObserver() {
                     @Override
-                    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                    public void multipleTabsPendingClosure(
+                            List<Tab> tabs,
+                            boolean isAllTabs,
+                            @TabClosingSource int closingSource) {
                         closeCallback.notifyCalled();
                     }
                 };
