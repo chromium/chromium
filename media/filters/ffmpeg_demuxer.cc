@@ -64,8 +64,6 @@ namespace media {
 
 namespace {
 
-constexpr int64_t kInvalidPTSMarker = static_cast<int64_t>(0x8000000000000000);
-
 void SetAVStreamDiscard(AVStream* stream, AVDiscard discard) {
   DCHECK(stream);
   stream->discard = discard;
@@ -280,19 +278,12 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
     : demuxer_(demuxer),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       stream_(stream),
-      start_time_(kNoTimestamp),
+      stream_start_time_(
+          ConvertStreamTimestamp(stream->time_base, stream->start_time)),
       audio_config_(audio_config.release()),
       video_config_(video_config.release()),
       media_log_(media_log),
-      end_of_stream_(false),
-      last_packet_timestamp_(kNoTimestamp),
-      last_packet_duration_(kNoTimestamp),
-      is_enabled_(true),
-      waiting_for_keyframe_(false),
-      aborted_(false),
-      fixup_negative_timestamps_(false),
-      fixup_chained_ogg_(false),
-      num_discarded_packet_warnings_(0),
+      duration_(ConvertStreamTimestamp(stream->time_base, stream->duration)),
       last_packet_pos_(AV_NOPTS_VALUE),
       last_packet_dts_(AV_NOPTS_VALUE) {
   DCHECK(demuxer_);
@@ -314,9 +305,6 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
     default:
       NOTREACHED();
   }
-
-  // Calculate the duration.
-  duration_ = ConvertStreamTimestamp(stream->time_base, stream->duration);
 
   if (is_encrypted) {
     AVDictionaryEntry* key =
@@ -1575,13 +1563,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
     if (codec_type == AVMEDIA_TYPE_AUDIO && start_time.is_negative() &&
         is_opus_or_vorbis) {
       needs_negative_timestamp_fixup = true;
-
-      // Fixup the seeking information to avoid selecting the audio stream
-      // simply because it has a lower starting time.
-      start_time = base::TimeDelta();
     }
-
-    streams_[i]->set_start_time(start_time);
   }
 
   if (media_tracks->tracks().empty()) {
@@ -1722,10 +1704,12 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindStreamWithLowestStartTimestamp(
   for (const auto& stream : streams_) {
     if (!stream || stream->IsEnabled() != enabled)
       continue;
-    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
+    if (stream->stream_start_time() == kNoTimestamp) {
       continue;
+    }
     if (!lowest_start_time_stream ||
-        stream->start_time() < lowest_start_time_stream->start_time()) {
+        stream->stream_start_time() <
+            lowest_start_time_stream->stream_start_time()) {
       lowest_start_time_stream = stream.get();
     }
   }
@@ -1737,20 +1721,21 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
   // If we have a selected/enabled video stream and its start time is lower
   // than the |seek_time| or unknown, then always prefer it for seeking.
   for (const auto& stream : streams_) {
-    if (!stream)
+    if (!stream) {
       continue;
-
-    if (stream->type() != DemuxerStream::VIDEO)
+    }
+    if (stream->type() != DemuxerStream::VIDEO) {
       continue;
-
-    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
+    }
+    if (stream->stream_start_time() == kNoTimestamp) {
       continue;
-
-    if (!stream->IsEnabled())
+    }
+    if (!stream->IsEnabled()) {
       continue;
-
-    if (stream->start_time() <= seek_time)
+    }
+    if (stream->stream_start_time() <= seek_time) {
       return stream.get();
+    }
   }
 
   // If video stream is not present or |seek_time| is lower than the video start
@@ -1758,7 +1743,7 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
   FFmpegDemuxerStream* lowest_start_time_enabled_stream =
       FindStreamWithLowestStartTimestamp(true);
   if (lowest_start_time_enabled_stream &&
-      lowest_start_time_enabled_stream->start_time() <= seek_time) {
+      lowest_start_time_enabled_stream->stream_start_time() <= seek_time) {
     return lowest_start_time_enabled_stream;
   }
 
@@ -1767,7 +1752,7 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
   FFmpegDemuxerStream* lowest_start_time_disabled_stream =
       FindStreamWithLowestStartTimestamp(false);
   if (lowest_start_time_disabled_stream &&
-      lowest_start_time_disabled_stream->start_time() <= seek_time) {
+      lowest_start_time_disabled_stream->stream_start_time() <= seek_time) {
     return lowest_start_time_disabled_stream;
   }
 

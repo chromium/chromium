@@ -140,8 +140,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   AVStream* av_stream() const { return stream_; }
 
-  base::TimeDelta start_time() const { return start_time_; }
-  void set_start_time(base::TimeDelta time) { start_time_ = time; }
+  base::TimeDelta stream_start_time() const { return stream_start_time_; }
 
  private:
   friend class FFmpegDemuxerTest;
@@ -172,7 +171,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   raw_ptr<FFmpegDemuxer> demuxer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<AVStream> stream_;
-  base::TimeDelta start_time_;
+  base::TimeDelta stream_start_time_ = kNoTimestamp;
   std::optional<base::TimeDelta> initial_start_padding_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
@@ -180,13 +179,13 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   Type type_ = UNKNOWN;
   StreamLiveness liveness_ = StreamLiveness::kUnknown;
   base::TimeDelta duration_;
-  bool end_of_stream_;
-  base::TimeDelta last_packet_timestamp_;
-  base::TimeDelta last_packet_duration_;
+  bool end_of_stream_ = false;
+  base::TimeDelta last_packet_timestamp_ = kNoTimestamp;
+  base::TimeDelta last_packet_duration_ = kNoTimestamp;
   Ranges<base::TimeDelta> buffered_ranges_;
-  bool is_enabled_;
-  bool waiting_for_keyframe_;
-  bool aborted_;
+  bool is_enabled_ = true;
+  bool waiting_for_keyframe_ = false;
+  bool aborted_ = false;
 
   DecoderBufferQueue buffer_queue_;
   ReadCB read_cb_;
@@ -196,10 +195,10 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 #endif
 
   std::string encryption_key_id_;
-  bool fixup_negative_timestamps_;
-  bool fixup_chained_ogg_;
+  bool fixup_negative_timestamps_ = false;
+  bool fixup_chained_ogg_ = false;
 
-  int num_discarded_packet_warnings_;
+  int num_discarded_packet_warnings_ = 0;
   int64_t last_packet_pos_;
   int64_t last_packet_dts_;
   // Requested buffer count. The actual returned buffer count could be less
