@@ -299,7 +299,7 @@ impl<T> Consumer<T> {
 
     /// Begin two-phase read. Returns a ReadDataBuffer to perform read and
     /// commit.
-    pub fn begin(&self) -> Result<ReadDataBuffer<T>, MojoResult> {
+    pub fn begin(&self) -> Result<ReadDataBuffer<'_, '_, T>, MojoResult> {
         let mut buffer_num_bytes: u32 = 0;
         let mut buffer_ptr: *const ffi::c_void = ptr::null();
         let r = MojoResult::from_code(unsafe {
@@ -372,7 +372,7 @@ impl<T> Producer<T> {
 
     /// Begin two-phase write. Returns a WriteDataBuffer to perform write and
     /// commit.
-    pub fn begin(&self) -> Result<WriteDataBuffer<T>, MojoResult> {
+    pub fn begin(&self) -> Result<WriteDataBuffer<'_, '_, T>, MojoResult> {
         let mut buffer_num_bytes: u32 = 0;
         let mut buffer_ptr: *mut ffi::c_void = ptr::null_mut();
         let r = MojoResult::from_code(unsafe {
