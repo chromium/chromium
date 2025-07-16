@@ -278,6 +278,10 @@ source_set("unit_tests") {
     sources += [ "android/template_url_service_android_unittest.cc" ]
     deps += [ "//components/search_engines/android:jni_headers" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
