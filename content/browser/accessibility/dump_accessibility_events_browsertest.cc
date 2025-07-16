@@ -122,10 +122,11 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump() {
   do {
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
-    auto [go_results, event_logs] = CaptureEvents(
-        base::BindOnce([](RenderFrameHostImpl* frame,
-                          std::string script) { return EvalJs(frame, script); },
-                       web_contents->GetPrimaryMainFrame(), "go()"));
+    auto [go_results, event_logs] = CaptureEvents(base::BindOnce(
+        [](RenderFrameHostImpl* frame, std::string script) {
+          return EvalJs(frame, script).TakeValue();
+        },
+        web_contents->GetPrimaryMainFrame(), "go()"));
     run_go_again = go_results == true;
     // Save a copy of the final accessibility tree (as a text dump); we'll
     // log this for the user later if the test fails.

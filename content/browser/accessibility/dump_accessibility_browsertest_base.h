@@ -177,8 +177,8 @@ class DumpAccessibilityTestBase
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
   // Returns a list of captured events fired after the invoked action.
-  using InvokeAction = base::OnceCallback<EvalJsResult()>;
-  std::pair<EvalJsResult, std::vector<std::string>> CaptureEvents(
+  using InvokeAction = base::OnceCallback<base::Value()>;
+  std::pair<base::Value, std::vector<std::string>> CaptureEvents(
       InvokeAction invoke_action);
 
   // Test scenario loaded from the test file.

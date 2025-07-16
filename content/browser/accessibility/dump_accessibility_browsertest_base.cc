@@ -654,7 +654,7 @@ std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
   return AXInspectFactory::CreateFormatter(GetParam());
 }
 
-std::pair<EvalJsResult, std::vector<std::string>>
+std::pair<base::Value, std::vector<std::string>>
 DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // Create a new Event Recorder for the run.
   ui::BrowserAccessibilityManager* manager = GetManager();
@@ -684,7 +684,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // If an action was performed, we already waited for the kClicked event in
   // PerformAndWaitForDefaultActions(), which means the action is already
   // completed.
-  EvalJsResult action_result = std::move(invoke_action).Run();
+  base::Value action_result = std::move(invoke_action).Run();
 
   // If we didn't already wait for a default action to complete, then
   // wait for at least one event. This may unblock either when |waiter|
