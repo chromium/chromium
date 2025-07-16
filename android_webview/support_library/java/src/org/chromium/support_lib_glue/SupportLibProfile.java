@@ -160,15 +160,6 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     }
 
     @Override
-    public void clearPrefetch(
-            String url,
-            Executor callbackExecutor,
-            /* PrefetchOperationCallback */ InvocationHandler callback) {
-        recordApiCall(ApiCall.CLEAR_PREFETCH);
-        mProfileImpl.clearPrefetch(url, createOperationCallback(callback));
-    }
-
-    @Override
     public void setSpeculativeLoadingConfig(
             /* SpeculativeLoadingConfig */ InvocationHandler config) {
         recordApiCall(ApiCall.SET_SPECULATIVE_LOADING_CONFIG);

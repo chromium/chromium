@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
   <int value="108" label="Profile.prefetchUrl"/>
   <int value="109" label="Profile.prefetchUrlWithParams"/>
-  <int value="110" label="Profile.clearPrefetch"/>
+  <int value="110" label="Profile.clearPrefetch (Deprecated)"/>
   <int value="111" label="Profile.cancelPrefetch"/>
   <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
   <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
