@@ -7,7 +7,6 @@
 struct S {
   S(int* ptr) : ptr_(ptr) {}
   int* get();
-  // TODO: Currently return type is rewritten to: const base::span<int>
   // Expected rewrite:
   // static inline base::span<const int>
   // SetWrapperInInlineStorage(base::span<int> isolate, int* object);
@@ -16,7 +15,6 @@ struct S {
   raw_ptr<int> ptr_;
 };
 
-// TODO: Currently return type is rewritten to: const base::span<int>
 // Expected rewrite:
 // base::span<const int> SetWrapperInInlineStorage(base::span<int> isolate, int*
 // object);

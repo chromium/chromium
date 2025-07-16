@@ -646,12 +646,59 @@ static std::string getNodeFromPointerTypeLoc(
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
+
   // We are in the case of a function return type loc.
   // This doesn't always generate the right range since type_loc doesn't
   // account for qualifiers (like const). Didn't find a proper way for now
   // to get the location with type qualifiers taken into account.
-  clang::SourceRange replacement_range = {
-      type_loc->getBeginLoc(), type_loc->getEndLoc().getLocWithOffset(1)};
+  //
+  // We may simply be hosed:
+  // *  `PointerTypeLoc` inherits from unqualified types.
+  // *  `QualifiedTypeLoc` deliberately does not provide source locations
+  //    for qualifiers [1].
+  //
+  // As a best effort, if we bound `qualified_type_loc`, we abuse the
+  // Lexer to back up one token behind `type_loc`. Take a deep breath
+  // and hope that it's the `const` qualifier.
+  //
+  // [1]
+  // https://github.com/llvm/llvm-project/blob/6cf656eca717890a43975c026d0ae34c16c6c455/clang/include/clang/AST/TypeLoc.h#L288
+  clang::SourceRange replacement_range = [type_loc, &result, &source_manager,
+                                          &lang_opts]() {
+    const auto* qualified_type_loc =
+        result.Nodes.getNodeAs<clang::QualifiedTypeLoc>("qualified_type_loc");
+    clang::SourceRange result = {type_loc->getBeginLoc(),
+                                 type_loc->getEndLoc().getLocWithOffset(1)};
+    if (!qualified_type_loc ||
+        !qualified_type_loc->getType().isConstQualified()) {
+      return result;
+    }
+    std::optional<clang::Token> previous_token =
+        clang::Lexer::findPreviousToken(type_loc->getBeginLoc(), source_manager,
+                                        lang_opts, /*IncludeComments=*/false);
+    // If we can't find the previous token, bail out to the previous
+    // behavior.
+    if (!previous_token.has_value()) {
+      return result;
+    }
+    std::string_view hopefully_const_qualifier = clang::Lexer::getSourceText(
+        clang::CharSourceRange::getCharRange(
+            {previous_token->getLocation(), previous_token->getEndLoc()}),
+        source_manager, lang_opts);
+    if (hopefully_const_qualifier != "const") {
+      // A patch hitting this will likely fail to compile.
+      llvm::errs() << "WARNING: `getNodeFromPointerTypeLoc()` expected "
+                      "`const`, but got: "
+                   << hopefully_const_qualifier << " instead.\n";
+      return result;
+    }
+
+    // Extend the replacement range leftward to include `const` in the
+    // type to be rewritten.
+    result.setBegin(previous_token->getLocation());
+    return result;
+  }();
+
   std::string initial_text =
       clang::Lexer::getSourceText(
           clang::CharSourceRange::getCharRange(replacement_range),
@@ -2813,7 +2860,11 @@ class Spanifier {
 
     // Matches a pointer type loc without a restriction like `pointer_type`,
     // which excludes certain pointer types.
-    auto pointer_type_loc = pointerTypeLoc();
+    //
+    // If the pointee is qualified (e.g. `const`), make a note of that
+    // for use in `getNodeFromPointerTypeLoc()`.
+    auto pointer_type_loc = pointerTypeLoc(optionally(
+        hasPointeeLoc(qualifiedTypeLoc().bind("qualified_type_loc"))));
 
     auto raw_ptr_type = qualType(
         hasDeclaration(classTemplateSpecializationDecl(hasName("raw_ptr"))));

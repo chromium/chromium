@@ -193,15 +193,13 @@ void fct() {
 }  // namespace malloc_tests
 
 namespace function_params_and_return {
-// TODO: Wrong rewrite generated here.
-// Rewrites to: const base::span<int>
-// Should rewrite to: base::span<const int>
-const base::span<int> get_buf();
+// Expected rewrite:
+// base::span<const int> get_buf();
+base::span<const int> get_buf();
 
-// TODO: Wrong rewrite generated here.
 // Expected rewrite:
 // base::span<const int> get_buf() {
-const base::span<int> get_buf() {
+base::span<const int> get_buf() {
   static std::vector<int> buf;
   return buf;
 }
