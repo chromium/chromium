@@ -271,6 +271,10 @@ bool ComposeboxQueryController::DeleteFile(
   return !!active_files_.erase(file_token);
 }
 
+void ComposeboxQueryController::ClearFiles() {
+  active_files_.clear();
+}
+
 std::unique_ptr<EndpointFetcher>
 ComposeboxQueryController::CreateEndpointFetcher(
     std::string request_string,

@@ -704,3 +704,29 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {
 
   EXPECT_FALSE(deleted);
 }
+
+TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Check that file is in cache.
+  EXPECT_TRUE(controller().GetFileInfo(file_token));
+
+  // Clear files.
+  controller().ClearFiles();
+
+  // Check that file is no longer in cache.
+  EXPECT_FALSE(controller().GetFileInfo(file_token));
+}

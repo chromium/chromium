@@ -60,6 +60,8 @@ interface PageHandler {
   // Notify handler of file deletion. This removes the file from the
   // browser-side cache.
   DeleteFile(mojo_base.mojom.UnguessableToken token);
+  // Clears all files from cache.
+  ClearFiles();
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

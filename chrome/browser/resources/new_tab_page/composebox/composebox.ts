@@ -183,9 +183,9 @@ export class ComposeboxElement extends CrLitElement {
   protected onCancelClick_() {
     if (this.$.input.value.trim().length > 0) {
       this.$.input.value = '';
-      // TODO(rtatum@): Send request to handler to clear file cache.
       this.files_ = new Map();
       this.submitEnabled_ = false;
+      this.pageHandler_.clearFiles();
     } else {
       this.notifySessionAbandoned_();
     }

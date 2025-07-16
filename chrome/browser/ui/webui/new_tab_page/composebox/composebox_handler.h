@@ -44,6 +44,7 @@ class ComposeboxHandler
                mojo_base::BigBuffer file_bytes,
                AddFileCallback callback) override;
   void DeleteFile(const base::UnguessableToken& file_token) override;
+  void ClearFiles() override;
 
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(

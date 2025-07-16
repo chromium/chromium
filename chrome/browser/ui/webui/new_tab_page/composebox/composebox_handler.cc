@@ -99,6 +99,10 @@ void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
   }
 }
 
+void ComposeboxHandler::ClearFiles() {
+  query_controller_->ClearFiles();
+}
+
 void ComposeboxHandler::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     composebox_query::mojom::FileUploadStatus file_upload_status,

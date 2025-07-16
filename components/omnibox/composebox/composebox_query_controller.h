@@ -226,6 +226,9 @@ class ComposeboxQueryController {
   // Removes file from file cache.
   virtual bool DeleteFile(const base::UnguessableToken& file_token);
 
+  // Clear entire file cache.
+  virtual void ClearFiles();
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.

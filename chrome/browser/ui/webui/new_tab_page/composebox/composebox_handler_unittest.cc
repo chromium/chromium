@@ -94,6 +94,7 @@ class MockQueryController : public TestComposeboxQueryController {
        scoped_refptr<base::RefCountedBytes> file_data,
        std::optional<composebox::ImageEncodingOptions> image_options));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&));
+  MOCK_METHOD(void, ClearFiles, ());
 
   void NotifySessionStartedBase() {
     TestComposeboxQueryController::NotifySessionStarted();
@@ -206,14 +207,14 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   testing::NiceMock<MockPage> mock_page_;
 
  private:
-  std::unique_ptr<ComposeboxHandler> handler_;
-  std::unique_ptr<FakeVariationsClient> fake_variations_client_;
+  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  raw_ptr<MockQueryController> query_controller_;
   TestWebContentsDelegate delegate_;
   raw_ptr<TemplateURLService> template_url_service_;
-  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
+  std::unique_ptr<FakeVariationsClient> fake_variations_client_;
+  raw_ptr<MockQueryController> query_controller_;
+  std::unique_ptr<ComposeboxHandler> handler_;
 };
 
 TEST_F(ComposeboxHandlerTest, NotifySessionStarted) {
@@ -346,6 +347,11 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {
 
   EXPECT_EQ("An invalid file token was sent to DeleteFile",
             obs.WaitForBadMessage());
+}
+
+TEST_F(ComposeboxHandlerTest, ClearFiles) {
+  EXPECT_CALL(query_controller(), ClearFiles);
+  handler().ClearFiles();
 }
 
 class ComposeboxHandlerFileUploadStatusTest

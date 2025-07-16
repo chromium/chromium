@@ -87,6 +87,9 @@ suite('NewTabPageComposeboxTest', () => {
     $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
     await microtasksFinished();
 
+    // Assert
+    assertEquals(handler.getCallCount('clearFiles'), 1);
+
     // Check submit button disabled and files empty.
     assertEquals(
         window
