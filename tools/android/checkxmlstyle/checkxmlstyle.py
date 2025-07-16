@@ -91,6 +91,8 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckImportantForAccessibility(input_api, output_api))
   result.extend(_CheckBadStyleReference(input_api, output_api))
   result.extend(_CheckThemeColorAttributes(input_api, output_api))
+  result.extend(_CheckAttrFileChanges(input_api, output_api))
+  result.extend(_CheckAttrReferenceInUi(input_api, output_api))
   # Add more checks here
   return result
 
@@ -756,5 +758,53 @@ def _CheckThemeColorAttributes(input_api, output_api):
 
       If a suitable semantic color does not exist, you may need to define one.
       ''', warnings)
+    ]
+  return []
+
+
+### attr resources below ###
+def _CheckAttrFileChanges(input_api, output_api):
+  """
+  Checks if any attr.xml file is changed and fires a warning.
+  """
+  warnings = []
+
+  for f in IncludedFiles(input_api, helpers.UI_PATHS):
+    if f.LocalPath().endswith('attr.xml'):
+      warnings.append('  %s\n' % (f.LocalPath()))
+  if warnings:
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+  Attr File Change in //ui Warning:
+    Changes to attr.xml files were detected. It is uncommon and risky
+    to use "?attr/" in UI resource files as the code is shared with webview.
+    Please refer to //docs/ui/android/overview.md for guidelines on using attributes.
+  ''', warnings)
+    ]
+  return []
+
+
+def _CheckAttrReferenceInUi(input_api, output_api):
+  """
+  Checks for new usage of "?attr/" in any of the resource files under //ui.
+  """
+  warnings = []
+  attr_pattern = re.compile(r'\?attr/')
+
+  for f in IncludedFiles(input_api, helpers.UI_PATHS):
+    for line_number, line in f.ChangedContents():
+      if attr_pattern.search(line):
+        warnings.append('  %s:%d\n    \t%s' %
+                        (f.LocalPath(), line_number, line.strip()))
+  if warnings:
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+  New ?attr/ Usage in UI Resources Warning:
+    New usage of "?attr/" was detected in UI resource files. It is risky
+    to use "?attr/" in UI resource files as the code is shared with webview.
+    Please refer to //docs/ui/android/overview.md for guidelines on using attributes.
+  ''', warnings)
     ]
   return []

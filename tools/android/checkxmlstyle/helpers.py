@@ -66,3 +66,5 @@ COLOR_STATE_LIST_DIRS = {
 KNOWN_STYLE_ATTRIBUTE = re.compile(
     r' (android:theme|android:textAppearance|style)=\"(.*)\"')
 STYLE_REF_PREFIX = re.compile(r'^(@style|\?attr|\?android:attr)/')
+
+UI_PATHS = [r'^ui[\\/].*\.xml']
