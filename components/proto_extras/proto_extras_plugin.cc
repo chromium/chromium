@@ -206,12 +206,17 @@ void CreateToValueSerializationDefinitions(
       R"(
 base::DictValue Serialize(const $message_type$& message) {
   base::DictValue dict;
-  // For MessageLite, unknown_fields() returns std::string.
-  // For Message, unknown_fields() returns UnknownFieldSet.
-  // The appropriate SerializeUnknownFields overload will be called.
   ::proto_extras::SerializeUnknownFields(message, dict);
   $serialize_fields$
   return dict;
+}
+void MaybeSerialize(const std::optional<$message_type$>& opt_message,
+                    std::string_view name,
+                    base::DictValue& output_dictionary) {
+  if (!opt_message.has_value()) {
+    return;
+  }
+  output_dictionary.Set(name, Serialize(*opt_message));
 }
 )");
 }
@@ -430,6 +435,10 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
                if (generator_options.generate_stream_operator) {
                  h_printer.Print("#include <iosfwd>\n\n");
                }
+               if (generator_options.generate_to_value_serialization) {
+                 h_printer.Print(
+                     "#include <optional>\n#include <string_view>\n\n");
+               }
              }},
             {"forward_declarations", forward_declarations},
             {"function_declarations",
@@ -551,8 +560,14 @@ $function_definitions$
     }
     std::string message_type = ClassName(&message);
     if (options.generate_to_value_serialization) {
-      printer->Print("base::DictValue Serialize(const $m$& message);\n", "m",
+      printer->Print("base::DictValue Serialize(const $m$& message);", "m",
                      message_type);
+      printer->Print(
+          R"(
+void MaybeSerialize(const std::optional<$m$>& opt_message,
+                    std::string_view output_dictionary_field_name,
+                    base::DictValue& output_dictionary);
+)", "m", message_type);
     }
     if (options.generate_stream_operator) {
       printer->Print(

@@ -12,8 +12,10 @@
 # is intended to be used in conjunction with proto_library, not on its own.
 #
 # Conversion to `base::DictValue` support:
-# - The generated method is `Serialize(const ProtoMessage& message)`, and
-#   resides in the namespace of the proto message.
+# - The main generated method is `Serialize(const ProtoMessage& message)`, and
+#   resides in the namespace of the proto message. There is a helper method as
+#   well to facilitate the serialization of optional messages, called
+#   `MaybeSerialize`.
 # - Include via <name>.to_value.h.
 # - Disable via `omit_to_value_serialization` (default is false)
 # - Caveats:

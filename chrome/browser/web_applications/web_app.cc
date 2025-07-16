@@ -1156,11 +1156,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("latest_install_time", base::ToString(latest_install_time_));
 
-  if (generated_icon_fix_.has_value()) {
-    root.Set("generated_icon_fix", proto::Serialize(*generated_icon_fix_));
-  } else {
-    root.Set("generated_icon_fix", base::Value());
-  }
+  proto::MaybeSerialize(generated_icon_fix_, "generated_icon_fix", root);
 
   root.Set("supported_links_offer_ignore_count",
            supported_links_offer_ignore_count_);
@@ -1176,12 +1172,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("related_applications",
            RelatedApplicationsToDebugValue(related_applications_));
 
-  if (pending_update_info_.has_value()) {
-    root.Set("pending_update_info",
-             proto::Serialize(*pending_update_info_));
-  } else {
-    root.Set("pending_update_info", base::Value());
-  }
+  proto::MaybeSerialize(pending_update_info_, "pending_update_info", root);
 
   return base::Value(std::move(root));
 }
