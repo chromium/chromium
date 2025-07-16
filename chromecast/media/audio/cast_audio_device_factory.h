@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "chromecast/base/bitstream_audio_codecs.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
@@ -29,6 +30,9 @@ class CastAudioDeviceFactory final : public blink::AudioDeviceFactory {
       const blink::LocalFrameToken& frame_token,
       const blink::FrameToken& main_frame_token,
       const ::media::AudioSinkParameters& params) override;
+
+  void SetSupportedBitstreamAudioCodec(BitstreamAudioCodecsInfo);
+  BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
 };
 
 }  // namespace media
