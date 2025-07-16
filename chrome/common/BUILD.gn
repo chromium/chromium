@@ -460,6 +460,7 @@ static_library("non_code_constants") {
 
   public_deps = [
     "//build:branding_buildflags",
+    "//extensions/buildflags",
     "//printing/buildflags",
     "//ui/base:buildflags",
   ]

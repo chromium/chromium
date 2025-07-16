@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
 
@@ -221,6 +222,10 @@ extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
 extern const char kRequestDesktopSites[];
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+extern const char kCastMirroringTargetPlayoutDelay[];
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCroshCommand[];

@@ -45,6 +45,10 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/webrtc_logging_private",
   ]
 
+  if (enable_service_discovery) {
+    public_deps += [ "//chrome/browser/extensions/api/mdns" ]
+  }
+
   if (enable_extensions) {
     # APIs supported on Win/Mac/Linux but NOT desktop Android go here.
     # TODO(crbug.com/40245282): Add more API implementations here.
@@ -78,10 +82,6 @@ group("api_implementations") {
 
     if (enable_pdf) {
       public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
-    }
-
-    if (enable_service_discovery) {
-      public_deps += [ "//chrome/browser/extensions/api/mdns" ]
     }
 
     if (is_chromeos) {

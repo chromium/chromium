@@ -38,6 +38,10 @@ schema_sources_ = [
   "windows.json",
 ]
 
+if (enable_service_discovery) {
+  schema_sources_ += [ "mdns.idl" ]
+}
+
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
@@ -140,10 +144,6 @@ if (enable_extensions) {
 
   if (is_linux || is_win || is_chromeos) {
     schema_sources_ += [ "input_ime.json" ]
-  }
-
-  if (enable_service_discovery) {
-    schema_sources_ += [ "mdns.idl" ]
   }
 
   if (enable_pdf) {

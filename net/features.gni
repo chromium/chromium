@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 declare_args() {
   # Disables support for file URLs.  File URL support requires use of icu.
@@ -27,8 +29,9 @@ declare_args() {
   # TODO: https://crbug.com/40282397 - Consider dropping once Cronet default enables zstd.
   disable_zstd_filter = false
 
-  # Multicast DNS.
-  enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple
+  # Multicast DNS. Enabled on desktop Android for the chrome.mdns extension API.
+  enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple ||
+                enable_desktop_android_extensions
 
   # Reporting not used on iOS.
   enable_reporting = !is_ios

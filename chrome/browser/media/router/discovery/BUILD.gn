@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+import("//build/config/chrome_build.gni")
+
+assert(!is_android || is_desktop_android, "Not supported on mobile")
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 static_library("discovery") {

@@ -280,11 +280,6 @@ const char kCastStreamingForceDisableHardwareVp9[] =
 const char kCastStreamingForceEnableHardwareVp9[] =
     "cast-streaming-force-enable-hardware-vp9";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kCastMirroringTargetPlayoutDelay[] =
-    "cast-mirroring-target-playout-delay";
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace switches
 
 namespace media {

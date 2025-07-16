@@ -9705,10 +9705,13 @@ test("unit_tests") {
   }
 
   if (enable_service_discovery) {
-    sources += [
-      "../browser/devtools/device/cast_device_provider_unittest.cc",
-      "../browser/local_discovery/service_discovery_device_lister_unittest.cc",
-    ]
+    # TODO(crbug.com/429684535): Port these tests to desktop Android.
+    if (!is_android) {
+      sources += [
+        "../browser/devtools/device/cast_device_provider_unittest.cc",
+        "../browser/local_discovery/service_discovery_device_lister_unittest.cc",
+      ]
+    }
 
     if (is_mac) {
       sources += [

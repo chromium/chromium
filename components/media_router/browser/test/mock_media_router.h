@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_base.h"
@@ -19,14 +20,15 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #include "components/media_router/browser/issue_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 namespace content {
 class BrowserContext;
@@ -106,7 +108,7 @@ class MockMediaRouter : public MediaRouterBase {
                std::unique_ptr<media::FlingingController>(
                    const MediaRoute::Id& route_id));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   MOCK_METHOD1(GetMirroringMediaControllerHost,
                MirroringMediaControllerHost*(const MediaRoute::Id& route_id));
   IssueManager* GetIssueManager() override { return &issue_manager_; }
@@ -122,7 +124,8 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_CONST_METHOD0(GetState, base::Value::Dict());
   MOCK_METHOD0(GetLogger, LoggerImpl*());
   MOCK_METHOD(MediaRouterDebugger&, GetDebugger, (), (override));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
+
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&
                         callback));
@@ -149,9 +152,9 @@ class MockMediaRouter : public MediaRouterBase {
   base::ObserverList<MediaRoutesObserver> routes_observers_;
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   IssueManager issue_manager_;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 };
 
 }  // namespace media_router

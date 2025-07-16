@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/uuid.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/media_routes_observer.h"
@@ -20,6 +21,7 @@
 #include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -374,6 +376,52 @@ std::unique_ptr<media::FlingingController>
 MediaRouterAndroid::GetFlingingController(const MediaRoute::Id& route_id) {
   return bridge_->GetFlingingController(route_id);
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+MirroringMediaControllerHost*
+MediaRouterAndroid::GetMirroringMediaControllerHost(
+    const MediaRoute::Id& route_id) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+IssueManager* MediaRouterAndroid::GetIssueManager() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void MediaRouterAndroid::GetMediaController(
+    const MediaRoute::Id& route_id,
+    mojo::PendingReceiver<mojom::MediaController> controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Value MediaRouterAndroid::GetLogs() const {
+  return base::Value();
+}
+
+base::Value::Dict MediaRouterAndroid::GetState() const {
+  return base::Value::Dict();
+}
+
+void MediaRouterAndroid::GetProviderState(
+    mojom::MediaRouteProviderId provider_id,
+    mojom::MediaRouteProvider::GetStateCallback callback) const {
+  // Nothing sensible to return, just crash.
+  NOTREACHED();
+}
+
+LoggerImpl* MediaRouterAndroid::GetLogger() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+MediaRouterDebugger& MediaRouterAndroid::GetDebugger() {
+  // Nothing sensible to return, just crash.
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 void MediaRouterAndroid::OnPresentationConnectionError(
     const std::string& route_id) {

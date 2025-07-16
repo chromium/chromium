@@ -720,8 +720,6 @@
   "mdns": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "1BFB3A47AA4A1E1C4714D919217602685CDD0FA7",  // http://crbug.com/574600
       "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6",  // http://crbug.com/1328114
@@ -732,14 +730,11 @@
   {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    // "desktop_android" is not supported.
     "platforms": ["chromeos", "linux", "mac", "win"]
   },
   {
     "channel": "dev",
-    "extension_types": ["extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "extension_types": ["extension"]
   }],
   "notifications": [{
     // The chrome.notifications functionality listed in notifications.idl is

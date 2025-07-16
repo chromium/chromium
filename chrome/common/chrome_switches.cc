@@ -5,6 +5,7 @@
 #include "chrome/common/chrome_switches.h"
 
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 namespace switches {
@@ -761,6 +762,15 @@ const char kMarketUrlForTesting[] = "market-url-for-testing";
 // Force enable user agent overrides to request desktop sites in Clank.
 const char kRequestDesktopSites[] = "request-desktop-sites";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// If enabled, overrides the target playout delay for a casting mirroring
+// session. The value will be parsed as milliseconds. Lowering this value will
+// result in a lower end to end latency, but could come at the cost of other
+// quality standards such as dropped frames or FPS.
+const char kCastMirroringTargetPlayoutDelay[] =
+    "cast-mirroring-target-playout-delay";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Custom crosh command.

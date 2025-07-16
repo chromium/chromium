@@ -4,6 +4,8 @@
 
 source_set("browser") {
   sources = [
+    "issue_manager.cc",
+    "issue_manager.h",
     "media_router.h",
     "media_router_base.cc",
     "media_router_base.h",
@@ -63,8 +65,10 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
+    "//build:android_buildflags",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
+    "//extensions/buildflags",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -82,8 +86,6 @@ source_set("browser") {
     deps += [ "android:jni_headers" ]
   } else {
     sources += [
-      "issue_manager.cc",
-      "issue_manager.h",
       "issues_observer.cc",
       "issues_observer.h",
       "log_util.cc",
@@ -114,7 +116,10 @@ source_set("test_support") {
     "//content/public/browser",
     "//testing/gmock",
   ]
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//build:android_buildflags",
+  ]
 }
 
 source_set("unit_tests") {

@@ -86,6 +86,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionNotificationDisplayHelperFactory::GetInstance();
   extensions::FontSettingsAPI::GetFactoryInstance();
   extensions::HistoryAPI::GetFactoryInstance();
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+  extensions::MDnsAPI::GetFactoryInstance();
+#endif
   extensions::OmniboxAPI::GetFactoryInstance();
   extensions::PermissionsEventRouterFactory::GetInstance();
   extensions::PreferenceAPI::GetFactoryInstance();
@@ -110,9 +113,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   extensions::image_writer::OperationManager::GetFactoryInstance();
   extensions::LanguageSettingsPrivateDelegateFactory::GetInstance();
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  extensions::MDnsAPI::GetFactoryInstance();
-#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto networking_private_ui_delegate_factory =
       std::make_unique<extensions::NetworkingPrivateUIDelegateFactoryImpl>();

@@ -45,7 +45,10 @@ static_library("media_router_feature") {
     "media_router_feature.cc",
     "media_router_feature.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//extensions/buildflags",
+  ]
   deps = [
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -384,7 +387,6 @@ source_set("unittests") {
       ":logger_list",
       ":test_support",
       "//chrome/browser/media/router/discovery",
-      "//chrome/browser/media/router/discovery:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
@@ -396,6 +398,11 @@ source_set("unittests") {
       "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]
+  }
+
+  # Traditional desktop platforms and desktop android with extensions support.
+  if (!is_android || enable_desktop_android_extensions) {
+    deps += [ "//chrome/browser/media/router/discovery:test_support" ]
   }
 
   if (enable_openscreen_protocol) {
