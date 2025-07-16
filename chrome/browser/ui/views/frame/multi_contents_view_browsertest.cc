@@ -290,8 +290,17 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
-                       EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice) {
+// TODO(crbug.com/429495554): Flaky on Mac and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice \
+  DISABLED_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice
+#else
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice \
+  EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice
+#endif
+IN_PROC_BROWSER_TEST_F(
+    MultiContentsViewWebContentsReLayoutBrowserTest,
+    MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice) {
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/429495554): Investigate why this test failed on wayland.
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
