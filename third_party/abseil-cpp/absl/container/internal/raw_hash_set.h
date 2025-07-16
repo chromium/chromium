@@ -1377,13 +1377,6 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
 
   if (SwisstableGenerationsEnabled()) {
     if (ABSL_PREDICT_TRUE(generation_ptr_a == generation_ptr_b)) return;
-    // Users don't need to know whether the tables are SOO so don't mention SOO
-    // in the debug message.
-    const bool a_is_soo = IsSooControl(ctrl_a);
-    const bool b_is_soo = IsSooControl(ctrl_b);
-    fail_if(a_is_soo != b_is_soo || (a_is_soo && b_is_soo),
-            "Comparing iterators from different hashtables.");
-
     const bool a_is_empty = IsEmptyGeneration(generation_ptr_a);
     const bool b_is_empty = IsEmptyGeneration(generation_ptr_b);
     fail_if(a_is_empty != b_is_empty,
@@ -1428,15 +1421,6 @@ inline probe_seq<Group::kWidth> probe(size_t capacity, size_t hash) {
 inline probe_seq<Group::kWidth> probe(const CommonFields& common, size_t hash) {
   return probe(common.capacity(), hash);
 }
-
-// Probes an array of control bits using a probe sequence derived from `hash`,
-// and returns the offset corresponding to the first deleted or empty slot.
-//
-// Behavior when the entire table is full is undefined.
-//
-// NOTE: this function must work with tables having both empty and deleted
-// slots in the same group. Such tables appear during `erase()`.
-FindInfo find_first_non_full(const CommonFields& common, size_t hash);
 
 constexpr size_t kProbedElementIndexSentinel = ~size_t{};
 
@@ -2007,19 +1991,19 @@ class raw_hash_set {
 
     // PRECONDITION: not an end() iterator.
     reference operator*() const {
-      AssertIsFull(ctrl_, generation(), generation_ptr(), "operator*()");
+      assert_is_full("operator*()");
       return unchecked_deref();
     }
 
     // PRECONDITION: not an end() iterator.
     pointer operator->() const {
-      AssertIsFull(ctrl_, generation(), generation_ptr(), "operator->");
+      assert_is_full("operator->");
       return &operator*();
     }
 
     // PRECONDITION: not an end() iterator.
     iterator& operator++() {
-      AssertIsFull(ctrl_, generation(), generation_ptr(), "operator++");
+      assert_is_full("operator++");
       ++ctrl_;
       ++slot_;
       skip_empty_or_deleted();
@@ -2070,6 +2054,10 @@ class raw_hash_set {
     explicit iterator(const GenerationType* generation_ptr)
         : HashSetIteratorGenerationInfo(generation_ptr), ctrl_(nullptr) {}
 
+    void assert_is_full(const char* operation) const {
+      AssertIsFull(ctrl_, generation(), generation_ptr(), operation);
+    }
+
     // Fixes up `ctrl_` to point to a full or sentinel by advancing `ctrl_` and
     // `slot_` until they reach one.
     void skip_empty_or_deleted() {
@@ -2091,6 +2079,18 @@ class raw_hash_set {
       }
     }
 
+    // An equality check which skips ABSL Hardening iterator invalidation
+    // checks.
+    // Should be used when the lifetimes of the iterators are well-enough
+    // understood to prove that they cannot be invalid.
+    bool unchecked_equals(const iterator& b) const {
+      return ctrl_ == b.control();
+    }
+
+    // Dereferences the iterator without ABSL Hardening iterator invalidation
+    // checks.
+    reference unchecked_deref() const { return PolicyTraits::element(slot_); }
+
     ctrl_t* control() const { return ctrl_; }
     slot_type* slot() const { return slot_; }
 
@@ -2102,16 +2102,6 @@ class raw_hash_set {
     union {
       slot_type* slot_;
     };
-
-    // An equality check which skips ABSL Hardening iterator invalidation
-    // checks.
-    // Should be used when the lifetimes of the iterators are well-enough
-    // understood to prove that they cannot be invalid.
-    bool unchecked_equals(const iterator& b) { return ctrl_ == b.control(); }
-
-    // Dereferences the iterator without ABSL Hardening iterator invalidation
-    // checks.
-    reference unchecked_deref() const { return PolicyTraits::element(slot_); }
   };
 
   class const_iterator {
@@ -2152,14 +2142,13 @@ class raw_hash_set {
                    const GenerationType* gen)
         : inner_(const_cast<ctrl_t*>(ctrl), const_cast<slot_type*>(slot), gen) {
     }
+    bool unchecked_equals(const const_iterator& b) const {
+      return inner_.unchecked_equals(b.inner_);
+    }
     ctrl_t* control() const { return inner_.control(); }
     slot_type* slot() const { return inner_.slot(); }
 
     iterator inner_;
-
-    bool unchecked_equals(const const_iterator& b) {
-      return inner_.unchecked_equals(b.inner_);
-    }
   };
 
   using node_type = node_handle<Policy, hash_policy_traits<Policy>, Alloc>;
@@ -2700,7 +2689,7 @@ class raw_hash_set {
   void erase(iterator it) {
     ABSL_SWISSTABLE_ASSERT(capacity() > 0);
     AssertNotDebugCapacity();
-    AssertIsFull(it.control(), it.generation(), it.generation_ptr(), "erase()");
+    it.assert_is_full("erase()");
     destroy(it.slot());
     erase_meta_only(it);
   }
@@ -2766,8 +2755,7 @@ class raw_hash_set {
 
   node_type extract(const_iterator position) {
     AssertNotDebugCapacity();
-    AssertIsFull(position.control(), position.inner_.generation(),
-                 position.inner_.generation_ptr(), "extract()");
+    position.inner_.assert_is_full("extract()");
     allocator_type alloc(char_alloc_ref());
     auto node = CommonAccess::Transfer<node_type>(alloc, position.slot());
     erase_meta_only(position);

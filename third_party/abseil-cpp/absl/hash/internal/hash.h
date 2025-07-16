@@ -492,8 +492,9 @@ std::enable_if_t<std::is_pointer<T>::value, H> AbslHashValue(H hash_state,
   auto v = reinterpret_cast<uintptr_t>(ptr);
   // Due to alignment, pointers tend to have low bits as zero, and the next few
   // bits follow a pattern since they are also multiples of some base value.
-  // Mix pointers twice to ensure we have good entropy in low bits.
-  return H::combine(std::move(hash_state), v, v);
+  // The PointerAlignment test verifies that our mixing is good enough to handle
+  // these cases.
+  return H::combine(std::move(hash_state), v);
 }
 
 // AbslHashValue() for hashing nullptr_t

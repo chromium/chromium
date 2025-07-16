@@ -170,6 +170,18 @@ FindInfo find_first_non_full_from_h1(const ctrl_t* ctrl, size_t h1,
   }
 }
 
+// Probes an array of control bits using a probe sequence derived from `hash`,
+// and returns the offset corresponding to the first deleted or empty slot.
+//
+// Behavior when the entire table is full is undefined.
+//
+// NOTE: this function must work with tables having both empty and deleted
+// slots in the same group. Such tables appear during `erase()`.
+FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
+  return find_first_non_full_from_h1(common.control(), H1(hash),
+                                     common.capacity());
+}
+
 // Whether a table fits in half a group. A half-group table fits entirely into a
 // probing group, i.e., has a capacity < `Group::kWidth`.
 //
@@ -244,11 +256,6 @@ void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   // Copy the cloned ctrl bytes.
   std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
-}
-
-FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
-  return find_first_non_full_from_h1(common.control(), H1(hash),
-                                     common.capacity());
 }
 
 void IterateOverFullSlots(const CommonFields& c, size_t slot_size,

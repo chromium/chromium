@@ -192,8 +192,9 @@ TEST(HashValueTest, PointerAlignment) {
     constexpr size_t kMask = (1 << (kLog2NumValues + 7)) - 1;
     size_t stuck_bits = (~bits_or | bits_and) & kMask;
     int stuck_bit_count = absl::popcount(stuck_bits);
-    // Test that there are at most 4 stuck bits.
-    EXPECT_LE(stuck_bit_count, 4) << "0x" << std::hex << stuck_bits;
+    size_t max_stuck_bits = 5;
+    EXPECT_LE(stuck_bit_count, max_stuck_bits)
+        << "0x" << std::hex << stuck_bits;
 
     total_stuck_bit_count += stuck_bit_count;
     ++test_count;
