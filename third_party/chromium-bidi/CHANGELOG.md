@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.1.0...chromium-bidi-v7.1.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* associate preflight network request with context ([#3572](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3572)) ([0751fa9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0751fa96b3ad3e79da2396084f3d15ea12011bca))
+
 ## [7.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.0.0...chromium-bidi-v7.1.0) (2025-07-09)
 
 
