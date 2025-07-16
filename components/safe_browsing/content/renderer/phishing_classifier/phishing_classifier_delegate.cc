@@ -389,11 +389,11 @@ void PhishingClassifierDelegate::OnRetryTimeout() {
 }
 
 void PhishingClassifierDelegate::RecordEvent(SBPhishingClassifierEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.Classifier.Event", event);
+  base::UmaHistogramEnumeration("SBClientPhishing.Classifier.Event", event);
   if (request_type_.has_value()) {
-    UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.Classifier.Event." +
-                                  GetRequestTypeName(request_type_.value()),
-                              event);
+    base::UmaHistogramEnumeration("SBClientPhishing.Classifier.Event." +
+                                      GetRequestTypeName(request_type_.value()),
+                                  event);
   }
 }
 
