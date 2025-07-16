@@ -42,9 +42,6 @@ NSString* const kReviewsActionHighlightedIdentifier =
 
 NSString* const kReviewsActionIdentifier = @"kReviewsActionIdentifier";
 
-NSString* const kOmniboxPopupRowSearchWithAimAccessibilityIdentifier =
-    @"OmniboxPopupRowSearchWithAimAccessibilityIdentifier";
-
 @implementation OmniboxPopupAccessibilityIdentifierHelper
 
 + (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath {

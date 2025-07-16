@@ -280,8 +280,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
          forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
   [self.tableView registerClass:[UITableViewCell class]
          forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
-  [self.tableView registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:OmniboxPopupAIModeRowCellReuseIdentifier];
   [self.tableView registerClass:[UITableViewHeaderFooterView class]
       forHeaderFooterViewReuseIdentifier:NSStringFromClass(
                                              [UITableViewHeaderFooterView
@@ -903,14 +901,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
                                                     forIndexPath:indexPath];
         configuration =
             [OmniboxPopupActionsRowContentConfiguration cellConfiguration];
-      } else if (suggestion.isSearchWithAim) {
-        // Use a specific reusable cell to cache the AIM animation progress,
-        // preventing it from restarting when the aim suggestion position is
-        // shifted.
-        cell = [self.tableView dequeueReusableCellWithIdentifier:
-                                   OmniboxPopupAIModeRowCellReuseIdentifier
-                                                    forIndexPath:indexPath];
-        configuration = [OmniboxPopupRowContentConfiguration cellConfiguration];
       } else {
         cell = [self.tableView
             dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
