@@ -50,7 +50,8 @@ public class ReaderModeBottomSheetRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_READER_MODE)
-                    .setRevision(1)
+                    .setRevision(2)
+                    .setDescription("Added rounded corners")
                     .build();
 
     private ReaderModeBottomSheetCoordinator mCoordinator;
