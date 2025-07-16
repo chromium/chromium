@@ -105,7 +105,7 @@ public class TileGroupTest {
         List<SiteSuggestion> siteSuggestionsAfterRemoval =
                 mSiteSuggestions.subList(1, mSiteSuggestions.size());
         var pair =
-                tile.openContextMenuAndSelectRemove(siteSuggestionsAfterRemoval, mMostVisitedSites);
+                tile.openContextMenu().selectRemove(siteSuggestionsAfterRemoval, mMostVisitedSites);
         assertTrue(mMostVisitedSites.isUrlBlocklisted(new GURL(mSiteSuggestionUrls[0])));
 
         return pair.second;

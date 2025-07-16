@@ -22,7 +22,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.modelutil.MVCListAdapter;
 
-/** Station represents a opened context menu on a webpage. */
+/** Station represents a opened list menu (for example, a context menu). */
 public class ContextMenuFacility extends ScrollableFacility<WebPageStation> {
     public ViewElement<View> menuListElement;
 

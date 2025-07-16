@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -37,8 +39,9 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         default void onPopupMenuDismissed() {}
     }
 
+    @VisibleForTesting
     @FunctionalInterface
-    interface PopupMenuHelper {
+    public interface PopupMenuHelper {
         /**
          * Called when the popup menu is requested to be shown or dismissed, then inject a test
          * value.
@@ -247,7 +250,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         }
     }
 
-    static void setMenuChangedListenerForTesting(PopupMenuHelper listener) {
+    public static void setMenuChangedListenerForTesting(PopupMenuHelper listener) {
         sPopupMenuHelperForTesting = listener;
         ResettersForTesting.register(() -> sPopupMenuHelperForTesting = null);
     }

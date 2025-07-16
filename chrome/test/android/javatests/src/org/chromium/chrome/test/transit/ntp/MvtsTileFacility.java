@@ -4,19 +4,12 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import android.util.Pair;
-
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.ui.listmenu.ListMenuTestUtils;
-
-import java.util.List;
 
 /** Facility for a Most Visited Tiles tile displayed on the screen. */
 public class MvtsTileFacility extends Facility<RegularNewTabPageStation> {
@@ -45,31 +38,14 @@ public class MvtsTileFacility extends Facility<RegularNewTabPageStation> {
                                 .build());
     }
 
-    /**
-     * Open the tile context menu and select "Remove" to remove the tile.
-     *
-     * @param siteSuggestionsAfterRemoval The site suggestions after removal.
-     * @param fakeMostVisitedSites The fake most visited sites.
-     * @return The new {@link MvtsFacility} after removal and the Undo Snackbar.
-     */
-    public Pair<MvtsFacility, MvtRemovedSnackbarFacility> openContextMenuAndSelectRemove(
-            List<SiteSuggestion> siteSuggestionsAfterRemoval,
-            FakeMostVisitedSites fakeMostVisitedSites) {
-        var mvtsAfterRemoval = new MvtsFacility(siteSuggestionsAfterRemoval);
-        var snackbar = new MvtRemovedSnackbarFacility(mMvtsFacility, mvtsAfterRemoval);
-        runTo(
-                        () -> {
-                            // TODO(crbug.com/420700079): Replace this with ListMenuFacility
-                            ListMenuTestUtils.longClickAndWaitForListMenu(tileElement.get());
-                            ListMenuTestUtils.invokeMenuItem("Remove");
+    /** Open the context menu for the tile. */
+    public MvtsTileContextMenuFacility openContextMenu() {
+        return tileElement
+                .longPressTo()
+                .enterFacility(new MvtsTileContextMenuFacility(mMvtsFacility, this));
+    }
 
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () ->
-                                            fakeMostVisitedSites.setTileSuggestions(
-                                                    siteSuggestionsAfterRemoval));
-                        })
-                .exitFacilitiesAnd(mMvtsFacility, this)
-                .enterFacilities(mvtsAfterRemoval, snackbar);
-        return Pair.create(mvtsAfterRemoval, snackbar);
+    SiteSuggestion getSiteSuggestion() {
+        return mSiteSuggestion;
     }
 }
