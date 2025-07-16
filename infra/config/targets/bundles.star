@@ -5467,7 +5467,7 @@ targets.bundle(
     per_test_modifications = {
         "ios_chrome_bookmarks_eg2tests_module": targets.mixin(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 3,
             ),
         ),
         "ios_chrome_settings_eg2tests_module": [
