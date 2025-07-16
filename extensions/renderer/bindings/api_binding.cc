@@ -25,8 +25,9 @@
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "extensions/renderer/bindings/declarative_event.h"
 #include "gin/arguments.h"
-#include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -553,12 +554,11 @@ void APIBinding::GetEventObject(
           context, event_data->full_name, &retval)) {
     // A custom event was created; our work is done.
   } else if (event_data->supports_rules) {
-    gin::Handle<DeclarativeEvent> event = gin::CreateHandle(
-        isolate, new DeclarativeEvent(
-                     event_data->full_name, event_data->binding->type_refs_,
-                     event_data->binding->request_handler_, event_data->actions,
-                     event_data->conditions, 0));
-    retval = event.ToV8();
+    auto* event = cppgc::MakeGarbageCollected<DeclarativeEvent>(
+        isolate->GetCppHeap()->GetAllocationHandle(), event_data->full_name,
+        event_data->binding->type_refs_, event_data->binding->request_handler_,
+        event_data->actions, event_data->conditions, 0);
+    retval = event->GetWrapper(isolate).ToLocalChecked();
   } else {
     retval = event_data->binding->event_handler_->CreateEventInstance(
         event_data->full_name, event_data->supports_filters,

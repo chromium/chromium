@@ -103,9 +103,6 @@ std::unique_ptr<APISignature> BuildAddRulesSignature(
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo DeclarativeEvent::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 DeclarativeEvent::DeclarativeEvent(
     const std::string& name,
     APITypeReferenceMap* type_refs,
@@ -142,18 +139,21 @@ DeclarativeEvent::~DeclarativeEvent() = default;
 
 gin::ObjectTemplateBuilder DeclarativeEvent::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<DeclarativeEvent>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::Wrappable<DeclarativeEvent>::GetObjectTemplateBuilder(isolate)
       .SetMethod("addRules", &DeclarativeEvent::AddRules)
       .SetMethod("removeRules", &DeclarativeEvent::RemoveRules)
       .SetMethod("getRules", &DeclarativeEvent::GetRules);
 }
 
-const char* DeclarativeEvent::GetTypeName() {
+const char* DeclarativeEvent::GetHumanReadableName() const {
   // NOTE(devlin): Currently, our documentation does not differentiate between
   // "normal" events and declarative events. Use "Event" here so that developers
   // don't think there's separate documentation to look for.
   return "Event";
+}
+
+const gin::WrapperInfo* DeclarativeEvent::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 void DeclarativeEvent::AddRules(gin::Arguments* arguments) {

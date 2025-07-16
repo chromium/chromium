@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 
@@ -19,31 +20,33 @@ namespace extensions {
 class APIRequestHandler;
 class APITypeReferenceMap;
 
-// A gin::DeprecatedWrappable object for declarative events (i.e., events that
+// A gin::Wrappable object for declarative events (i.e., events that
 // support "rules"). Unlike regular events, these do not have associated
 // listeners, and extensions register an action to perform when the event
-// happens.
-class DeclarativeEvent final
-    : public gin::DeprecatedWrappable<DeclarativeEvent> {
+// happens. This class is garbage collected.
+class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kDeclarativeEvent};
+
   DeclarativeEvent(const std::string& name,
                    APITypeReferenceMap* type_refs,
                    APIRequestHandler* request_handler,
                    const std::vector<std::string>& actions_list,
                    const std::vector<std::string>& conditions_list,
                    int webview_instance_id);
-  DeclarativeEvent(const DeclarativeEvent&) = delete;
-  DeclarativeEvent& operator=(const DeclarativeEvent&) = delete;
   ~DeclarativeEvent() override;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  DeclarativeEvent(const DeclarativeEvent&) = delete;
+  DeclarativeEvent& operator=(const DeclarativeEvent&) = delete;
 
+ private:
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
-  const char* GetTypeName() override;
+  const char* GetHumanReadableName() const override;
+  const gin::WrapperInfo* wrapper_info() const final;
 
- private:
   // Bound methods for the JS object.
   void AddRules(gin::Arguments* arguments);
   void RemoveRules(gin::Arguments* arguments);

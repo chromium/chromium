@@ -25,6 +25,7 @@ enum WrappablePointerTag : uint16_t {
   kAPIBindingBridge,                 // extensions::APIBindingBridge
   kAutomationPosition,               // ui::AutomationPosition
   kChromePluginPlaceholder,          // ChromePluginPlaceholder
+  kDeclarativeEvent,                   // extensions::DeclarativeEvent
   kDomAutomationController,          // content::DomAutomationController
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings

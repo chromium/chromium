@@ -21,6 +21,8 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "extensions/renderer/bindings/test_interaction_provider.h"
 #include "gin/handle.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -123,12 +125,13 @@ TEST_F(DeclarativeEventTest, TestRulesSchema) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  gin::Handle<DeclarativeEvent> emitter = gin::CreateHandle(
-      v8::Isolate::GetCurrent(),
-      new DeclarativeEvent("declEvent", type_refs(), request_handler(),
-                           {"action1", "action2"}, {"condition"}, 0));
+  auto* emitter = cppgc::MakeGarbageCollected<DeclarativeEvent>(
+      isolate()->GetCppHeap()->GetAllocationHandle(), "declEvent", type_refs(),
+      request_handler(), std::vector<std::string>{"action1", "action2"},
+      std::vector<std::string>{"condition"}, 0);
 
-  v8::Local<v8::Value> emitter_value = emitter.ToV8();
+  v8::Local<v8::Object> emitter_value =
+      emitter->GetWrapper(isolate()).ToLocalChecked();
 
   const char kAddRules[] =
       "(function(event) {\n"
