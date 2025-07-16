@@ -711,10 +711,12 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
+  FormFieldData triggering_field;
+  triggering_field.set_label(u"Street address");
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile}, {ADDRESS_HOME_STREET_ADDRESS}, SuggestionType::kAddressEntry,
-      ADDRESS_HOME_STREET_ADDRESS);
+      ADDRESS_HOME_STREET_ADDRESS, triggering_field);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
             suggestions[0].main_text.value);
@@ -723,10 +725,12 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
 TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsUsingEmailOverride) {
   AutofillProfile profile1 = test::GetFullProfile();
   AutofillProfile profile2 = test::GetFullProfile2();
+  FormFieldData triggering_field;
+  triggering_field.set_label(u"Email");
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile1, profile2}, {EMAIL_ADDRESS}, SuggestionType::kAddressEntry,
-      EMAIL_ADDRESS, "en-US", "plus-address-override@me.com",
+      EMAIL_ADDRESS, triggering_field, "en-US", "plus-address-override@me.com",
       base::UTF16ToUTF8(profile2.GetRawInfo(EMAIL_ADDRESS)));
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(profile1.GetRawInfo(EMAIL_ADDRESS), suggestions[0].main_text.value);
@@ -740,10 +744,12 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
+  FormFieldData triggering_field;
+  triggering_field.set_label(u"Phone");
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile}, {PHONE_HOME_WHOLE_NUMBER}, SuggestionType::kAddressEntry,
-      PHONE_HOME_WHOLE_NUMBER);
+      PHONE_HOME_WHOLE_NUMBER, triggering_field);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
 }
@@ -866,9 +872,12 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
   test_api(profile_work)
       .set_record_type(AutofillProfile::RecordType::kAccountWork);
 
+  FormFieldData triggering_field_name;
+  triggering_field_name.set_label(u"Name");
+
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, NAME_FIRST);
+      SuggestionType::kAddressEntry, NAME_FIRST, triggering_field_name);
 
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
@@ -879,9 +888,12 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
           AllOf(HasIcon(Suggestion::Icon::kHome), HasIphFeature(kIphFeature)),
           AllOf(HasIcon(Suggestion::Icon::kWork), HasIphFeature(kIphFeature))));
 
+  FormFieldData triggering_field_email;
+  triggering_field_email.set_label(u"Email");
+
   suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, EMAIL_ADDRESS);
+      SuggestionType::kAddressEntry, EMAIL_ADDRESS, triggering_field_email);
 
   // If trigger field is email address, don't show home and work icons.
   EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kEmail),
@@ -904,9 +916,12 @@ TEST_F(AddressSuggestionGeneratorTest,
   test_api(profile_work)
       .set_record_type(AutofillProfile::RecordType::kAccountWork);
 
+  FormFieldData triggering_field_name;
+  triggering_field_name.set_label(u"Name");
+
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, NAME_FIRST);
+      SuggestionType::kAddressEntry, NAME_FIRST, triggering_field_name);
 
   // Default icons are expected.
   EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kAccount),
@@ -1001,11 +1016,13 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_PartialNameFieldHasFullNameMainText) {
   base::test::ScopedFeatureList features(features::kAutofillImprovedLabels);
   AutofillProfile profile = test::GetFullProfile();
+  FormFieldData triggering_field;
+  triggering_field.set_label(u"Name");
 
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest({profile}, {NAME_FIRST, NAME_LAST},
                                            SuggestionType::kAddressEntry,
-                                           NAME_FIRST),
+                                           NAME_FIRST, triggering_field),
       SuggestionVectorMainTextsAre(Suggestion::Text(
           profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
 }
@@ -1025,15 +1042,77 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
   profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"あおい");
   profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまもと");
   profile.FinalizeAfterImport();
+  FormFieldData triggering_field;
+  triggering_field.set_label(u"Name");
 
   // Suggestions for alternative name fields should have the alternative name
   // as the main text.
   EXPECT_THAT(CreateSuggestionsFromProfilesForTest(
                   {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
-                  SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME),
+                  SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+                  triggering_field),
               SuggestionVectorMainTextsAre(
                   Suggestion::Text(profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
                                    Suggestion::Text::IsPrimary(true))));
+}
+
+// Tests that suggestions for alternative name fields with Katakana labels
+// are transliterated to Katakana.
+TEST_F(
+    AddressLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_TransliteratesHiraganaToKatakana_WhenLabelInKatakana) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillImprovedLabels,
+                             features::kAutofillSupportPhoneticNameForJP},
+                            {});
+  AutofillProfile profile(AddressCountryCode("JP"));
+  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
+                       "mail@mail.com", "company", "line1", "line2", "city",
+                       "state", "zip", "JP", "phone");
+  const std::u16string hiragana = u"はるか";
+  const std::u16string katakana = u"ハルカ";
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, hiragana);
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, hiragana);
+  profile.FinalizeAfterImport();
+  FormFieldData triggering_field_with_katakana_label;
+  triggering_field_with_katakana_label.set_label(katakana);
+
+  const std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
+      SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+      triggering_field_with_katakana_label);
+
+  EXPECT_THAT(suggestions, SuggestionVectorMainTextsAre(Suggestion::Text(
+                               katakana, Suggestion::Text::IsPrimary(true))));
+}
+
+// Tests that suggestions for alternative name fields with Hiragana labels
+// are not transliterated to Katakana.
+TEST_F(
+    AddressLabelSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_DoesNotTransliterateHiraganaToKatakana_WhenLabelInHiragana) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillImprovedLabels,
+                             features::kAutofillSupportPhoneticNameForJP},
+                            {});
+  AutofillProfile profile(AddressCountryCode("JP"));
+  test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
+                       "mail@mail.com", "company", "line1", "line2", "city",
+                       "state", "zip", "JP", "phone");
+  const std::u16string hiragana = u"はるか";
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, hiragana);
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, hiragana);
+  profile.FinalizeAfterImport();
+  FormFieldData triggering_field_with_hiragana_label;
+  triggering_field_with_hiragana_label.set_label(hiragana);
+
+  const std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
+      SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
+      triggering_field_with_hiragana_label);
+
+  EXPECT_THAT(suggestions, SuggestionVectorMainTextsAre(Suggestion::Text(
+                               hiragana, Suggestion::Text::IsPrimary(true))));
 }
 
 // Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
@@ -1045,11 +1124,12 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
   FieldType triggering_field_type = GetTriggeringFieldType();
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile);
+  FormFieldData ignored;
 
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-          SuggestionType::kAddressEntry, triggering_field_type),
+          SuggestionType::kAddressEntry, triggering_field_type, ignored),
       ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
 }
 
@@ -1067,11 +1147,12 @@ TEST_P(
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile1) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+  FormFieldData ignored;
 
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type),
+          SuggestionType::kAddressEntry, triggering_field_type, ignored),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
@@ -1092,11 +1173,12 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
   const std::u16string full_form_filling_label =
       GetFullFormFillingLabel(profile1) +
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+  FormFieldData ignored;
 
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type),
+          SuggestionType::kAddressEntry, triggering_field_type, ignored),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));

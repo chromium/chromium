@@ -119,17 +119,35 @@ std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
   return base::UTF8ToUTF16(formatted_phone_number);
 }
 
+bool ShouldTransliterateMainTextToKatakana(
+    const AutofillProfile& profile,
+    const FormFieldData& trigger_field,
+    const FieldType& trigger_field_type) {
+  return IsAlternativeNameType(trigger_field_type) &&
+         data_util::HasKatakanaCharacter(trigger_field.label()) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillSupportPhoneticNameForJP);
+}
+
 // In addition to just getting the values out of the profile, this function
 // handles type-specific formatting.
-std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
-                                            const std::string& app_locale,
-                                            FieldType trigger_field_type) {
+std::u16string GetProfileSuggestionMainText(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    const FormFieldData& trigger_field,
+    const FieldType trigger_field_type) {
   if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
         *i18n::CreateAddressDataFromAutofillProfile(profile, app_locale),
         &street_address_line);
     return base::UTF8ToUTF16(street_address_line);
+  }
+  if (ShouldTransliterateMainTextToKatakana(profile, trigger_field,
+                                            trigger_field_type)) {
+    return TransliterateAlternativeName(
+        profile.GetInfo(trigger_field_type, app_locale),
+        /*inverse_transliteration=*/true);
   }
   return profile.GetInfo(trigger_field_type, app_locale);
 }
@@ -395,13 +413,13 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
     FieldType trigger_field_type,
     const FieldTypeSet& field_types) {
   // Get the profiles with text to suggest, which are already sorted.
-  std::vector<ProfileWithText> profiles_to_suggest = base::ToVector(
-      address_data.GetProfilesToSuggest(),
-      [&](const AutofillProfile* profile) -> ProfileWithText {
-        return {profile,
-                GetProfileSuggestionMainText(
-                    *profile, address_data.app_locale(), trigger_field_type)};
-      });
+  std::vector<ProfileWithText> profiles_to_suggest =
+      base::ToVector(address_data.GetProfilesToSuggest(),
+                     [&](const AutofillProfile* profile) -> ProfileWithText {
+                       return {profile, GetProfileSuggestionMainText(
+                                            *profile, address_data.app_locale(),
+                                            trigger_field, trigger_field_type)};
+                     });
 
   // Erase profiles which has empty value for the trigger field type.
   std::erase_if(profiles_to_suggest, [](const ProfileWithText& profile) {
@@ -476,6 +494,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
+    const FormFieldData& trigger_field,
     std::optional<std::string> plus_address_email_override,
     const std::string& app_locale) {
   if (profiles.empty()) {
@@ -520,8 +539,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   for (size_t i = 0; i < profiles.size(); ++i) {
     const AutofillProfile& profile = profiles[i];
     // Compute the main text to be displayed in the suggestion bubble.
-    std::u16string main_text =
-        GetProfileSuggestionMainText(profile, app_locale, main_text_field_type);
+    std::u16string main_text = GetProfileSuggestionMainText(
+        profile, app_locale, trigger_field, main_text_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetFormattedPhoneNumber(
           profile, app_locale,
@@ -723,7 +742,7 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
           .email;
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
-      trigger_field_type, std::move(plus_address_email_override),
+      trigger_field_type, trigger_field, std::move(plus_address_email_override),
       client.GetAppLocale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
@@ -763,12 +782,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
+    const FormFieldData& trigger_field,
     const std::string& app_locale,
     std::optional<std::string> plus_address_email_override,
     const std::string& gaia_email) {
-  return CreateSuggestionsFromProfiles(
-      std::move(profiles), gaia_email, field_types, suggestion_type,
-      trigger_field_type, plus_address_email_override, app_locale);
+  return CreateSuggestionsFromProfiles(std::move(profiles), gaia_email,
+                                       field_types, suggestion_type,
+                                       trigger_field_type, trigger_field,
+                                       plus_address_email_override, app_locale);
 }
 
 }  // namespace autofill
