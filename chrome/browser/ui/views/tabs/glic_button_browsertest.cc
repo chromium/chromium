@@ -33,7 +33,8 @@ class GlicButtonTest : public InProcessBrowserTest {
  public:
   GlicButtonTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicRollout},
         /*disabled_features=*/{});
   }
 
@@ -101,7 +102,6 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, UnpinCommand) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextForOpening) {
-  // expect window closed
   EXPECT_FALSE(glic_service()->IsWindowOrFreShowing());
   EXPECT_EQ(glic_button()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
@@ -121,13 +121,15 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
 }
 
 // Tests using programmatic window activation are flaky on Linux.
+
+// TODO(crbug.com/428742560): De-flake for Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_TooltipAndA11yTextWhileGlicWindowOpen \
   DISABLED_TooltipAndA11yTextWhileGlicWindowOpen
 #else
 #define MAYBE_TooltipAndA11yTextWhileGlicWindowOpen \
   TooltipAndA11yTextWhileGlicWindowOpen
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlicButtonTest,
                        MAYBE_TooltipAndA11yTextWhileGlicWindowOpen) {
   // Toggle to open the glic window.
