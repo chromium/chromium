@@ -11,6 +11,7 @@ source_set("aim_availability") {
     "//components/omnibox/browser",
     "//components/search",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ui/base",
   ]
   public_deps = [

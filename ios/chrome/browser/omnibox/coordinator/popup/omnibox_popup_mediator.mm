@@ -16,6 +16,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
@@ -48,6 +50,12 @@ namespace {
 /// Maximum number of suggest tile types we want to record. Anything beyond this
 /// will be reported in the overflow bucket.
 const NSUInteger kMaxSuggestTileTypePosition = 15;
+
+/// The entrypoint id associated with aim being invoked from the omnibox
+/// shortcut. Used for logging purposes.
+/// Do not change without changing IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT in
+/// chrome_aim_entry_point.proto
+const std::string kShortcutEntrypointAimID = "62";
 }  // namespace
 
 @interface OmniboxPopupMediator ()
@@ -243,7 +251,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         (AutocompleteMatchFormatter*)suggestion;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
-    if (match.has_tab_match.value_or(false)) {
+    if (suggestion.isSearchWithAim) {
+      AutocompleteMatch aimMatch = match;
+      GURL aimURL =
+          GetUrlForAim(self.templateURLService, kShortcutEntrypointAimID,
+                       /*query_start_time=*/base::Time::Now(), match.contents);
+      aimMatch.destination_url = aimURL;
+      [self.omniboxAutocompleteController
+          selectMatchForOpening:aimMatch
+                          inRow:row
+                         openIn:WindowOpenDisposition::CURRENT_TAB];
+    } else if (match.has_tab_match.value_or(false)) {
       [self.omniboxAutocompleteController
           selectMatchForOpening:match
                           inRow:row

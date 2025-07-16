@@ -11,6 +11,8 @@
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/omnibox_client.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/aim/model/aim_availability.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/pedal_section_extractor.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/suggest_action.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -36,6 +39,8 @@
   NSArray<id<AutocompleteSuggestionGroup>>* _nonPedalSuggestionsGroups;
   /// The omnibox client.
   base::WeakPtr<OmniboxClient> _omniboxClient;
+  /// Whether aim shortcut is available.
+  BOOL _aimShortcutAvailable;
 }
 
 - (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient {
@@ -51,6 +56,7 @@
 - (void)disconnect {
   _searchEngineObserver.reset();
   _omniboxClient = nullptr;
+  self.profilePrefService = nullptr;
 }
 
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
@@ -108,6 +114,11 @@
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+  if (self.profilePrefService) {
+    _aimShortcutAvailable =
+        base::FeatureList::IsEnabled(kIOSOmniboxAimShortcut) &&
+        IsAIMAvailable(self.profilePrefService, templateURLService);
+  }
 }
 
 #pragma mark - Private
@@ -122,6 +133,7 @@
   formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
   formatter.isMultimodal = self.hasThumbnail;
+  formatter.aimShortcutAvailable = _aimShortcutAvailable;
 
   if (formatter.suggestionGroupId) {
     omnibox::GroupId groupId =

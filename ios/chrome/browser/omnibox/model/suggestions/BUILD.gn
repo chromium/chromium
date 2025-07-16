@@ -53,6 +53,7 @@ source_set("suggestions") {
     "//components/omnibox/common",
     "//components/password_manager/core/browser/ui",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/public",

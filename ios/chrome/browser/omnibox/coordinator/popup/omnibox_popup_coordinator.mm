@@ -113,6 +113,7 @@
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+  self.mediator.templateURLService = templateURLService;
   self.mediator.protocolProvider = self;
   self.mediator.sharingDelegate = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]

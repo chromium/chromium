@@ -14,6 +14,7 @@
 class AutocompleteResult;
 class OmniboxClient;
 @class OmniboxPedalAnnotator;
+class PrefService;
 class TemplateURLService;
 
 // The autocomplete match wrapper. This class is responsible for wrapping
@@ -40,6 +41,9 @@ class TemplateURLService;
 
 /// Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
+
+/// profile pref Service.
+@property(nonatomic, assign) PrefService* profilePrefService;
 
 /// Disconnects the wrapper.
 - (void)disconnect;

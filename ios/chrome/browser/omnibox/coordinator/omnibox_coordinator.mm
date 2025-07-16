@@ -245,6 +245,7 @@
   AutocompleteResultWrapper* autocompleteResultWrapper =
       [[AutocompleteResultWrapper alloc] initWithOmniboxClient:_client.get()];
   autocompleteResultWrapper.pedalAnnotator = annotator;
+  autocompleteResultWrapper.profilePrefService = self.profile->GetPrefs();
   autocompleteResultWrapper.templateURLService = templateURLService;
   autocompleteResultWrapper.incognito = incognito;
   autocompleteResultWrapper.delegate = _omniboxAutocompleteController;

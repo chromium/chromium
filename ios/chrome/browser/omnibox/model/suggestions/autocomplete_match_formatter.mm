@@ -388,7 +388,8 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isSearchWithAim {
-  return _match.IsVerbatimType() && !_match.IsVerbatimUrlSuggestion();
+  return self.aimShortcutAvailable && _match.IsVerbatimType() &&
+         !_match.IsVerbatimUrlSuggestion();
 }
 
 - (id<OmniboxPedal>)pedal {
