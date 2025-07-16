@@ -92,9 +92,9 @@ class ActorTask {
 
   ExecutionEngine* GetExecutionEngine() const;
 
-  // Ensures the given tab handle is added (or already exists) in the set of
-  // tabs this task operates over.
-  void AddToTabSet(tabs::TabHandle tab);
+  // Add the given TabHandle to the set of tabs this task is operating over
+  // and notify the UI if this is a new tab for the task.
+  void AddTab(tabs::TabHandle tab, ActionResultCallback callback);
 
   // Returns true if the given tab is part of this task's acting set.
   bool HasActedOnTab(tabs::TabHandle tab) const;
@@ -138,6 +138,7 @@ class ActorTask {
   // The set of all tabs this task has acted upon.
   absl::flat_hash_set<tabs::TabHandle> tab_handles_;
 
+  base::WeakPtrFactory<ui::UiEventDispatcher> ui_weak_ptr_factory_;
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
 };
 

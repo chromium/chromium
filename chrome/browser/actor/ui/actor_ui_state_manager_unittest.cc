@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 
+#include "base/test/bind.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -11,6 +12,8 @@
 #include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/mock_event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -291,7 +294,16 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
        OnActorTaskState_UpdateTabScopedUi) {
   TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
   MockTabInterface mock_tab;
-  actor_keyed_service()->GetTask(task_id)->AddToTabSet(mock_tab.GetHandle());
+
+  base::RunLoop loop;
+  actor_keyed_service()->GetTask(task_id)->AddTab(
+      mock_tab.GetHandle(),
+      base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
   auto [task_state, expected_ui_tab_state] = GetParam();
   actor_ui_state_manager()->OnUiEvent(TaskStateChanged(task_id, task_state));
   EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_ui_tab_state);

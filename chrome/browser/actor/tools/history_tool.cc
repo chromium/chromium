@@ -116,9 +116,7 @@ std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer()
 
 void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                          InvokeCallback callback) const {
-  // TODO(crbug.com/425784083): Pass callback to AddToTabSet
-  task.AddToTabSet(tab_handle_);
-  std::move(callback).Run(MakeOkResult());
+  task.AddTab(tab_handle_, std::move(callback));
 }
 
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {

@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -25,14 +26,16 @@ ActorTask::ActorTask(Profile* profile,
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(ui::NewUiEventDispatcher(
-          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {}
+          ActorKeyedService::Get(profile)->GetActorUiStateManager())),
+      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
 
 ActorTask::ActorTask(Profile* profile,
                      std::unique_ptr<ExecutionEngine> execution_engine,
                      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
-      ui_event_dispatcher_(std::move(ui_event_dispatcher)) {}
+      ui_event_dispatcher_(std::move(ui_event_dispatcher)),
+      ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {}
 
 ActorTask::~ActorTask() = default;
 
@@ -167,8 +170,21 @@ base::Time ActorTask::GetEndTime() const {
   return end_time_;
 }
 
-void ActorTask::AddToTabSet(tabs::TabHandle tab_handle) {
+void ActorTask::AddTab(tabs::TabHandle tab_handle,
+                       ActionResultCallback callback) {
+  if (tab_handles_.contains(tab_handle)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+    return;
+  }
+  // Notify the UI of the new tab.
   tab_handles_.insert(tab_handle);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskAsyncChange,
+                                ui_weak_ptr_factory_.GetWeakPtr(),
+                                ui::UiEventDispatcher::AddTab{
+                                    .task_id = id_, .handle = tab_handle},
+                                std::move(callback)));
 }
 
 bool ActorTask::HasActedOnTab(tabs::TabHandle tab) const {

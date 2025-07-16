@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -282,7 +283,14 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PrerenderBlockedSite) {
   EXPECT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setBlockedSite($1);", blocked_url)));
 
-  actor_task().AddToTabSet(active_tab()->GetHandle());
+  base::RunLoop loop;
+  actor_task().AddTab(
+      active_tab()->GetHandle(),
+      base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
 
   // While we have an active task, cancel any prerenders which would be to a
   // blocked site.

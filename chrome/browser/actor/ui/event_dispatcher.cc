@@ -72,12 +72,7 @@ constexpr Visitor PostToolEventsFn{
 // to ActorTaskChangeFn.
 constexpr Visitor FirstActEventsFn{
     [](const UiEventDispatcher::FirstActInfo& info) {
-      auto events = std::deque<AsyncUiEvent>{StartTask(info.task_id)};
-      if (info.tab_handle.has_value()) {
-        events.emplace_back(
-            StartingToActOnTab(info.tab_handle.value(), info.task_id));
-      }
-      return events;
+      return std::deque<AsyncUiEvent>{StartTask(info.task_id)};
     },
 };
 

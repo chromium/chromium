@@ -92,9 +92,7 @@ NavigateTool::GetObservationDelayer() const {
 
 void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                           InvokeCallback callback) const {
-  // TODO(crbug.com/425784083): Pass callback to AddToTabSet
-  task.AddToTabSet(tab_handle_);
-  std::move(callback).Run(MakeOkResult());
+  task.AddTab(tab_handle_, std::move(callback));
 }
 
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {

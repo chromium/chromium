@@ -43,6 +43,7 @@ using testing::Invoke;
 using testing::Property;
 using testing::VariantWith;
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
+using AddTab = ui::UiEventDispatcher::AddTab;
 
 namespace {
 constexpr int kFakeContentNodeId = 123;
@@ -264,7 +265,9 @@ TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
       *task_mock_ui_event_dispatcher_,
       OnActorTaskSyncChange(VariantWith<ChangeTaskState>(AllOf(
           Field(&ChangeTaskState::old_state, ActorTask::State::kActing),
-          Field(&ChangeTaskState::new_state, ActorTask::State::kReflecting)))))
+          Field(&ChangeTaskState::new_state, ActorTask::State::kReflecting)))));
+  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+              OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
       .Times(1);
   EXPECT_TRUE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
@@ -310,6 +313,18 @@ TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(1);
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _))
       .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
+          base::BindRepeating(MakeErrorResult))));
+  EXPECT_FALSE(
+      Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
+  histograms_.ExpectUniqueSample(kActionResultHistogram,
+                                 mojom::ActionResultCode::kError, 1);
+}
+
+TEST_F(ExecutionEngineTest, ActFailsWhenAddTabFails) {
+  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+              OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
+      .WillOnce(Invoke(UiEventDispatcherCallback<
+                       ui::UiEventDispatcher::ActorTaskAsyncChange>(
           base::BindRepeating(MakeErrorResult))));
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));

@@ -114,6 +114,15 @@ void OnFetchPageContext(
   std::move(callback).Run(std::move(result));
 }
 
+void LogAddTabError(actor::mojom::ActionResultPtr result) {
+  if (!actor::IsOk(*result)) {
+    LOG(DFATAL)
+        << "Unexpected error when calling AddTab from GlicActorController::Act "
+           "(crbug.com/431239173): "
+        << actor::ToDebugString(*result);
+  }
+}
+
 }  // namespace
 
 // A wrapper class around actor::AggregatedJournal::PendingAsyncEntry for
@@ -167,7 +176,10 @@ void GlicActorController::Act(
           browser = Browser::Create(
               Browser::CreateParams(profile_, /*user_gesture=*/false));
         }
-        task->AddToTabSet(browser->GetActiveTabInterface()->GetHandle());
+        // TODO(crbug.com/431239173): We should remove this call as the UI has
+        // no mechanism for reporting errors when launching on this tab.
+        task->AddTab(browser->GetActiveTabInterface()->GetHandle(),
+                     base::BindOnce(&LogAddTabError));
       }
     }
   }
