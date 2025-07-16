@@ -152,6 +152,10 @@ if (enable_nocompile_tests) {
 
         # Always treat warnings as errors.
         "-Werror",
+
+        # TODO(crbug.com/430317494): disabled on chromeos to unblock a libc++ roll, so
+        # enable it explicitly here until everything is fixed.
+        "-Wthread-safety",
       ]
 
       if (!is_win) {
