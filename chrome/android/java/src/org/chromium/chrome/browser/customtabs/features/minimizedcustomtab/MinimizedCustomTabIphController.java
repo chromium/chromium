@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -28,6 +30,8 @@ import org.chromium.url.GURL;
 @NullMarked
 public class MinimizedCustomTabIphController
         implements MinimizedCustomTabFeatureEngagementDelegate {
+    // Ratio of the highlight circle diameter against the width of the containing view.
+    private static final float HIGHLIGHT_CIRCLE_MIN_SCALE = 0.64f;
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final UserEducationHelper mUserEducationHelper;
@@ -91,6 +95,30 @@ public class MinimizedCustomTabIphController
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         if (!tracker.isInitialized()) return;
         if (!tracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
+        float startingRadiusPx =
+                button.getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_button_width)
+                        / 2f
+                        * HIGHLIGHT_CIRCLE_MIN_SCALE;
+
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        PulseDrawable.Bounds circleBounds =
+                new PulseDrawable.Bounds() {
+                    @Override
+                    public float getMaxRadiusPx(Rect bounds) {
+                        // Radius of PulseDrawable circle when expanded. See {@link
+                        // PulseDrawable#createCircle().
+                        return startingRadiusPx * 1.2f;
+                    }
+
+                    @Override
+                    public float getMinRadiusPx(Rect bounds) {
+                        return startingRadiusPx;
+                    }
+                };
+        params.setCircleRadius(circleBounds);
+        params.setBoundsRespectPadding(true);
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 mActivity.getResources(),
@@ -98,7 +126,7 @@ public class MinimizedCustomTabIphController
                                 R.string.custom_tab_minimize_button_iph_bubble_text,
                                 R.string.custom_tab_minimize_button_iph_bubble_text)
                         .setAnchorView(button)
-                        .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
+                        .setHighlightParams(params)
                         .build());
     }
 
