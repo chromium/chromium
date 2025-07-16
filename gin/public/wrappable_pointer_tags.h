@@ -41,10 +41,11 @@ enum WrappablePointerTag : uint16_t {
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder
   kPluginPlaceholder,                // plugins::PluginPlaceholder
   kReadAnythingAppController,        // ReadAnythingAppController
-  kSearchBoxBindings,                // SearchBoxBindings
-  kSessionStorageArea,               // extensions::SessionStorageArea
-  kSkiaBenchmarking,                 // content::SkiaBenchmarking
-  kStatsCollectionController,        // content::StatsCollectionController
+  kSecurityInterstitialPageController, // SecurityInterstitialPageController
+  kSearchBoxBindings,                  // SearchBoxBindings
+  kSessionStorageArea,                 // extensions::SessionStorageArea
+  kSkiaBenchmarking,                   // content::SkiaBenchmarking
+  kStatsCollectionController,          // content::StatsCollectionController
   kSupervisedUserErrorPageController,  // SupervisedUserErrorPageController
   kSyncStorageArea,                    // extensions::SyncStorageArea
   kTestGinWrappable,                   // GinWrappable
