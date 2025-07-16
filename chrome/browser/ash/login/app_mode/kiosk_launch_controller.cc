@@ -50,12 +50,13 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -387,12 +388,6 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
   accelerator_disabler_ =
       std::make_unique<ScopedAcceleratorDisabler>(*accelerator_controller_);
-
-  if (host_ && host_->GetWebUILoginView()) {
-    host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
-  } else if (!host_) {
-    CHECK_IS_TEST();
-  }
 
   if (auto_launch && kiosk_app_id().type == KioskAppType::kChromeApp) {
     CHECK(KioskChromeAppManager::IsInitialized());
