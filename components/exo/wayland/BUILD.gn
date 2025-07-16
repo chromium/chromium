@@ -223,6 +223,10 @@ source_set("wayland") {
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("ui_controls_protocol") {
@@ -350,6 +354,10 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/wm/public",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("client_support_config") {
@@ -637,6 +645,10 @@ source_set("wayland_client_test_helper") {
     "//ui/events:gesture_detection",
     "//ui/wm",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("wayland_client_tests") {
