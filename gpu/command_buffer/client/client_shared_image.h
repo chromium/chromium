@@ -329,6 +329,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   friend class RasterScopedAccess;
   friend class TestSharedImageInterface;
   friend class media::VideoFrame;
+  friend class WebGPUTextureScopedAccess;
+
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageInfo& info,
                     const SyncToken& sync_token,
@@ -551,7 +553,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUTextureScopedAccess {
   friend class ClientSharedImage;
   WebGPUTextureScopedAccess(
       webgpu::WebGPUInterface* webgpu,
-      const scoped_refptr<ClientSharedImage>& shared_image,
+      ClientSharedImage* shared_image,
       const SyncToken& sync_token,
       const wgpu::dawn::wire::client::Device& device,
       const wgpu::dawn::wire::client::TextureDescriptor& desc,
@@ -560,11 +562,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUTextureScopedAccess {
 
   const raw_ptr<webgpu::WebGPUInterface> webgpu_;
   std::unique_ptr<wgpu::dawn::wire::client::Texture> texture_;
+  raw_ptr<gpu::ClientSharedImage> shared_image_;
   uint32_t device_id_ = 0;
   uint32_t device_generation_ = 0;
   uint32_t texture_id_ = 0;
   uint32_t texture_generation_ = 0;
   bool needs_present_ = false;
+  bool readonly_;
 };
 
 }  // namespace gpu

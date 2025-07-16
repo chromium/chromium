@@ -1020,13 +1020,13 @@ SyncToken RasterScopedAccess::EndAccess(
 
 WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
     webgpu::WebGPUInterface* webgpu,
-    const scoped_refptr<ClientSharedImage>& shared_image,
+    ClientSharedImage* shared_image,
     const SyncToken& sync_token,
     const wgpu::dawn::wire::client::Device& device,
     const wgpu::dawn::wire::client::TextureDescriptor& desc,
     uint64_t usage,
     webgpu::MailboxFlags mailbox_flags)
-    : webgpu_(webgpu) {
+    : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the image.
   webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 
@@ -1035,6 +1035,13 @@ WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
       device.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
   DCHECK(reservation.texture);
 
+  // If either |desc.usage| or |usage| contains the following flags, the access
+  // is not read-only.
+  const wgpu::TextureUsage write_flags = wgpu::TextureUsage::CopyDst |
+                                         wgpu::TextureUsage::RenderAttachment |
+                                         wgpu::TextureUsage::StorageBinding;
+  readonly_ = !((desc.usage | wgpu::TextureUsage{usage}) & write_flags);
+  shared_image_->BeginAccess(readonly_);
   texture_ = base::WrapUnique(
       new wgpu::Texture(wgpu::Texture::Acquire(reservation.texture)));
   device_id_ = reservation.deviceId;
@@ -1067,6 +1074,7 @@ SyncToken WebGPUTextureScopedAccess::EndAccess(
                               scoped_access->texture_generation_);
   }
 
+  scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
   webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
   return finished_access_token;
 }
