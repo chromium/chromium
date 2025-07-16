@@ -202,7 +202,8 @@ class MapFileParserGold:
         self._section_ranges[section_name] = (section_address, section_size)
         if (section_name in models.BSS_SECTIONS
             or section_name in (models.SECTION_RODATA, models.SECTION_TEXT)
-            or section_name.startswith(models.SECTION_DATA)):
+            or section_name.startswith(
+                (models.SECTION_DATA, models.SECTION_TDATA))):
           logging.info('Parsing %s', section_name)
           if section_name in models.BSS_SECTIONS:
             # Common symbols have no address.
@@ -527,7 +528,8 @@ class MapFileParserLld:
           cur_section_is_useful = (
               cur_section in models.BSS_SECTIONS
               or cur_section in (models.SECTION_RODATA, models.SECTION_TEXT)
-              or cur_section.startswith(models.SECTION_DATA))
+              or cur_section.startswith(
+                  (models.SECTION_DATA, models.SECTION_TDATA)))
 
       elif cur_section_is_useful:
         # Level 2 data match the "In" column. They specify object paths and

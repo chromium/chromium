@@ -346,11 +346,15 @@ SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
       ret = SectionId::kRoData;
     } else if (!strcmp(section_name, ".data")) {
       ret = SectionId::kData;
+    } else if (!strcmp(section_name, ".tdata")) {
+      ret = SectionId::kData;
     } else if (!strcmp(section_name, ".data.rel.ro")) {
       ret = SectionId::kDataRelRo;
     } else if (!strcmp(section_name, ".bss")) {
       ret = SectionId::kBss;
     } else if (!strcmp(section_name, ".bss.rel.ro")) {
+      ret = SectionId::kBss;
+    } else if (!strcmp(section_name, ".tbss")) {
       ret = SectionId::kBss;
     } else if (!strcmp(section_name, ".pak.nontranslated")) {
       ret = SectionId::kPakNontranslated;

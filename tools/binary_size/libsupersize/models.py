@@ -54,6 +54,8 @@ SECTION_PAK_TRANSLATIONS = '.pak.translations'
 SECTION_PART_END = '.part.end'
 SECTION_RELRO_PADDING = '.relro_padding'
 SECTION_RODATA = '.rodata'
+SECTION_TBSS = '.tbss'
+SECTION_TDATA = '.tdata'
 SECTION_TEXT = '.text'
 # Used by SymbolGroup when they contain a mix of sections.
 SECTION_MULTIPLE = '.*'
@@ -75,10 +77,12 @@ NATIVE_SECTIONS = (
     SECTION_DATA_REL_RO_LOCAL,
     SECTION_PART_END,
     SECTION_RODATA,
+    SECTION_TDATA,
     SECTION_TEXT,
 )
 BSS_SECTIONS = (
     SECTION_BSS,
+    SECTION_TBSS,
     SECTION_BSS_REL_RO,
     SECTION_PART_END,
     SECTION_RELRO_PADDING,
@@ -106,6 +110,8 @@ SECTION_NAME_TO_SECTION = {
     SECTION_PAK_TRANSLATIONS: 'p',
     SECTION_RELRO_PADDING: 'b',
     SECTION_RODATA: 'r',
+    SECTION_TBSS: 'b',
+    SECTION_TDATA: 'd',
     SECTION_TEXT: 't',
     SECTION_MULTIPLE: '*',
 }

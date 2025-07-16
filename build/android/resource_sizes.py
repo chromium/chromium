@@ -67,7 +67,8 @@ _RC_HEADER_RE = re.compile(r'^#define (?P<name>\w+).* (?P<id>\d+)\)?$')
 _RE_NON_LANGUAGE_PAK = re.compile(r'^assets/.*(resources|percent)\.pak$')
 _READELF_SIZES_METRICS = {
     'text': ['.text'],
-    'data': ['.data', '.rodata', '.data.rel.ro', '.data.rel.ro.local'],
+    'data':
+    ['.data', '.rodata', '.data.rel.ro', '.data.rel.ro.local', '.tdata'],
     'relocations':
     ['.rel.dyn', '.rel.plt', '.rela.dyn', '.rela.plt', '.relr.dyn'],
     'unwind': [
@@ -560,7 +561,7 @@ def _AnalyzeInternal(apk_path,
       continue
     section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename)
     native_code_unaligned_size += sum(v for k, v in section_sizes.items()
-                                      if k != 'bss')
+                                      if k not in ('bss', 'tbss'))
     # Size of main .so vs remaining.
     if lib_info == main_lib_info:
       main_lib_size = lib_info.file_size
