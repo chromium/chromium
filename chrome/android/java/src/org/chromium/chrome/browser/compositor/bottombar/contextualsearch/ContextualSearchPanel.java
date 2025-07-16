@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
@@ -15,12 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -56,11 +59,13 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controls the Contextual Search Panel, primarily the Bar - the {@link ContextualSearchBarControl}
  * - and the content area that shows the Search Result.
  */
+@NullMarked
 public class ContextualSearchPanel extends OverlayPanel {
     /** Allows controls that appear in this panel to call back with requests or notifications. */
     interface ContextualSearchPanelSectionHost {
@@ -125,19 +130,19 @@ public class ContextualSearchPanel extends OverlayPanel {
      * A ScrimManager for adjusting the Status Bar's brightness when a scrim is present (when the
      * panel is open).
      */
-    private ScrimManager mScrimManager;
+    private @Nullable ScrimManager mScrimManager;
 
     /**
      * Params that configure our use of the ScrimManager for adjusting the Status Bar's brightness
      * when a scrim is present (when the panel is open).
      */
-    private PropertyModel mScrimProperties;
+    private @Nullable PropertyModel mScrimProperties;
 
     /** Whether we have started collapsing the panel. */
     private boolean mDidStartCollapsing;
 
     /** Used for requesting in-product-help. */
-    @Nullable private UserEducationHelper mUserEducationHelper;
+    private @Nullable UserEducationHelper mUserEducationHelper;
 
     // ============================================================================================
     // Constructor
@@ -161,20 +166,20 @@ public class ContextualSearchPanel extends OverlayPanel {
      *     browser controls heights.
      */
     public ContextualSearchPanel(
-            @NonNull Context context,
-            @NonNull LayoutManagerImpl layoutManager,
-            @NonNull OverlayPanelManager panelManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull Profile profile,
-            @NonNull CompositorViewHolder compositorViewHolder,
+            Context context,
+            LayoutManagerImpl layoutManager,
+            OverlayPanelManager panelManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            WindowAndroid windowAndroid,
+            Profile profile,
+            CompositorViewHolder compositorViewHolder,
             float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager,
+            ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
-            @NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            Supplier<@Nullable Tab> currentTabSupplier,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            BottomControlsStacker bottomControlsStacker) {
         super(
                 context,
                 layoutManager,
@@ -253,12 +258,11 @@ public class ContextualSearchPanel extends OverlayPanel {
      *
      * @param delegate The {@code ContextualSearchManagementDelegate}.
      */
+    @Initializer
     public void setManagementDelegate(ContextualSearchManagementDelegate delegate) {
-        if (mManagementDelegate != delegate) {
-            mManagementDelegate = delegate;
-            if (delegate != null) {
-                setActivity(mManagementDelegate.getActivity());
-            }
+        mManagementDelegate = delegate;
+        if (delegate != null) {
+            setActivity(mManagementDelegate.getActivity());
         }
     }
 
@@ -337,7 +341,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         super.onClosed(reason);
 
         if (mSceneLayer != null) mSceneLayer.hideTree();
-        if (mScrimManager != null) {
+        if (mScrimManager != null && mScrimProperties != null) {
             mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
         }
 
@@ -538,16 +542,16 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     @VisibleForTesting
     public void animatePanelToState(
-            @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
+            @PanelState @Nullable Integer state, @StateChangeReason int reason, long duration) {
         // If the in bar chip showing animation is running, do not run the new panel animation
         // unless it needs to animate to a different state.
-        if (state == getPanelState()
+        if (Objects.equals(state, getPanelState())
                 && haveSearchBarControl()
                 && getSearchBarControl().inBarRelatedSearchesAnimationIsRunning()) {
             return;
         }
 
-        if (state == PanelState.PEEKED
+        if (Objects.equals(state, PanelState.PEEKED)
                 && (getPanelState() == PanelState.EXPANDED
                         || getPanelState() == PanelState.MAXIMIZED)) {
             mManagementDelegate.onPanelCollapsing();
@@ -870,7 +874,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                 (maxBrightness - basePageBrightness) / (maxBrightness - minBrightness);
         if (!getCanHideAndroidBrowserControls()) scrimAndroidToolbar(statusBarAlpha);
         if (statusBarAlpha == 0.0) {
-            if (mScrimManager != null) {
+            if (mScrimManager != null && mScrimProperties != null) {
                 mScrimManager.hideScrim(mScrimProperties, /* animate= */ false);
             }
             mScrimProperties = null;
@@ -960,7 +964,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     // ContextualSearchBarControl
     // ============================================================================================
 
-    private ContextualSearchBarControl mSearchBarControl;
+    private @Nullable ContextualSearchBarControl mSearchBarControl;
 
     /**
      * Creates the ContextualSearchBarControl, if needed. The Views are set to INVISIBLE, because
@@ -1063,8 +1067,8 @@ public class ContextualSearchPanel extends OverlayPanel {
     // Promo
     // ============================================================================================
 
-    private ContextualSearchPromoControl mPromoControl;
-    private ContextualSearchPromoHost mPromoHost;
+    private @Nullable ContextualSearchPromoControl mPromoControl;
+    private @Nullable ContextualSearchPromoHost mPromoHost;
 
     /**
      * @return Height of the promo in pixels.
@@ -1130,8 +1134,9 @@ public class ContextualSearchPanel extends OverlayPanel {
         return mPromoHost;
     }
 
-    private ViewGroup getCoordinatorView() {
+    private @Nullable ViewGroup getCoordinatorView() {
         ViewGroup result = mContainerView;
+        assumeNonNull(mContainerView);
         // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
         ViewGroup coordinator = mContainerView.findViewById(org.chromium.chrome.R.id.coordinator);
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
@@ -1143,8 +1148,8 @@ public class ContextualSearchPanel extends OverlayPanel {
     // The Related Searches Control that appears in the Bar
     // ============================================================================================
 
-    private RelatedSearchesControl mRelatedSearchesInBarControl;
-    private RelatedSearchesSectionHost mRelatedSearchesInBarHost;
+    private @Nullable RelatedSearchesControl mRelatedSearchesInBarControl;
+    private @Nullable RelatedSearchesSectionHost mRelatedSearchesInBarHost;
 
     /** Creates the RelatedSearchesControl to be shown in the Bar, if needed. */
     @VisibleForTesting

@@ -28,7 +28,7 @@ public interface SceneOverlay extends BackPressHandler {
      * @return A {@link SceneOverlayLayer} that represents an scene overlay. Or {@code null} if this
      *     {@link SceneOverlay} doesn't have a tree.
      */
-    SceneOverlayLayer getUpdatedSceneOverlayTree(
+    @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset);
 
     /** Notify the {@link SceneOverlayLayer} that it should be removed from its parent. */

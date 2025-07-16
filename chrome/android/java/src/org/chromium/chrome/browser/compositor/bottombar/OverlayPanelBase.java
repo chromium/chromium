@@ -10,8 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -19,6 +17,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -36,6 +36,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** Base abstract class for the Overlay Panel. */
+@NullMarked
 abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderObserver {
     /** The side padding of Bar icons in dps. */
     private static final float BAR_ICON_SIDE_PADDING_DP = 12.f;
@@ -152,7 +153,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     protected ObserverList<OverlayPanelStateProvider.Observer> mObservers = new ObserverList<>();
 
     // State provider for Desktop Window.
-    private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BottomControlsStacker mBottomControlsStacker;
     private float mAppHeaderHeightDp;
@@ -173,9 +174,9 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     public OverlayPanelBase(
             Context context,
             float toolbarHeightDp,
-            DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            BottomControlsStacker bottomControlsStacker) {
         mContext = context;
         mToolbarHeightDp = toolbarHeightDp;
         mDesktopWindowStateManager = desktopWindowStateManager;
@@ -828,9 +829,9 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The previous state.
      */
     private @PanelState int getPreviousPanelState(@PanelState int state) {
-        @Nullable
+
         @PanelState
-        Integer prevState =
+        @Nullable Integer prevState =
                 state >= PanelState.PEEKED && state <= PanelState.MAXIMIZED ? state - 1 : null;
 
         return prevState != null ? prevState : PanelState.UNDEFINED;
@@ -1237,8 +1238,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     // Resource Loader
     // ============================================================================================
 
-    protected ViewGroup mContainerView;
-    protected DynamicResourceLoader mResourceLoader;
+    protected @Nullable ViewGroup mContainerView;
+    protected @Nullable DynamicResourceLoader mResourceLoader;
 
     /**
      * @param resourceLoader The {@link DynamicResourceLoader} to register and unregister the view.

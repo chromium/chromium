@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
@@ -12,6 +14,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -20,6 +23,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * ordering when the initial text fragment is short.
  * Details in this issue: crbug.com/651389.
  */
+@NullMarked
 public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepaddingTextView
         implements OnLayoutChangeListener {
     private static final float SHORTNESS_FACTOR = 0.5f;
@@ -94,7 +98,7 @@ public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepadding
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
         view.addOnLayoutChangeListener(this);
     }
 

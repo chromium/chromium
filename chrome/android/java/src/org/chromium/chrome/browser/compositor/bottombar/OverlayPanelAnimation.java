@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
@@ -22,7 +24,10 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
+import java.util.Objects;
+
 /** Base abstract class for animating the Overlay Panel. */
+@NullMarked
 public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     /**
      * The base duration of animations in milliseconds. This value is based on
@@ -46,7 +51,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     private @StateChangeReason int mAnimatingStateReason;
 
     /** The animator responsible for moving the sheet up and down. */
-    private CompositorAnimator mHeightAnimator;
+    private @Nullable CompositorAnimator mHeightAnimator;
 
     /** The {@link LayoutUpdateHost} used to request a new frame to be updated and rendered. */
     private final LayoutUpdateHost mUpdateHost;
@@ -69,9 +74,9 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
             Context context,
             LayoutUpdateHost updateHost,
             float toolbarHeightDp,
-            DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull BottomControlsStacker bottomControlsStacker) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            BottomControlsStacker bottomControlsStacker) {
         super(
                 context,
                 toolbarHeightDp,
@@ -132,7 +137,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
     protected void closePanel(@StateChangeReason int reason, boolean animate) {
         if (animate) {
             // Only animates the closing action if not doing that already.
-            if (mAnimatingState != PanelState.CLOSED) {
+            if (!Objects.equals(mAnimatingState, PanelState.CLOSED)) {
                 animatePanelToState(PanelState.CLOSED, reason);
             }
         } else {
@@ -178,8 +183,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
             // has the effect of destroying the Views used by the Panel (which are
             // children of the CompositorViewHolder), and if we do that synchronously
             // it will cause a crash in {@link FrameLayout#layoutChildren()}.
-            mContainerView
-                    .getHandler()
+            assumeNonNull(mContainerView);
+            assumeNonNull(mContainerView.getHandler())
                     .post(
                             new Runnable() {
                                 @Override
@@ -218,7 +223,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param reason The reason for the change of panel state.
      */
     private void animatePanelToState(
-            @Nullable @PanelState Integer state, @StateChangeReason int reason) {
+            @PanelState @Nullable Integer state, @StateChangeReason int reason) {
         animatePanelToState(state, reason, BASE_ANIMATION_DURATION_MS);
     }
 
@@ -230,7 +235,7 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param duration The animation duration in milliseconds.
      */
     protected void animatePanelToState(
-            @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
+            @PanelState @Nullable Integer state, @StateChangeReason int reason, long duration) {
         mAnimatingState = state;
         mAnimatingStateReason = reason;
 

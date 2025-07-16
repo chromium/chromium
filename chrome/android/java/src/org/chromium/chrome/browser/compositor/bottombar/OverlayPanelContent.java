@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
@@ -11,7 +13,6 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -21,6 +22,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.RequiredCallback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
@@ -49,6 +52,7 @@ import org.chromium.url.Origin;
  * WebContents displayed inside of a panel and exposes a simple API relevant to actions a
  * panel has.
  */
+@NullMarked
 public class OverlayPanelContent {
     /** The {@link CompositorViewHolder} for the current activity, used to add/remove views. */
     private final ViewGroup mCompositorViewHolder;
@@ -57,7 +61,7 @@ public class OverlayPanelContent {
     private final WindowAndroid mWindowAndroid;
 
     /** Supplies the current activity {@link Tab}. */
-    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
 
     /** Used for progress bar events. */
     private final WebContentsDelegateAndroid mWebContentsDelegate;
@@ -66,22 +70,22 @@ public class OverlayPanelContent {
     private final Profile mProfile;
 
     /** The WebContents that this panel will display. */
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /** The container view that this panel uses. */
-    private ViewGroup mContainerView;
+    private @Nullable ViewGroup mContainerView;
 
     /** The pointer to the native version of this class. */
     private long mNativeOverlayPanelContentPtr;
 
     /** The activity that this content is contained in. */
-    private final Activity mActivity;
+    private final @Nullable Activity mActivity;
 
     /** Observer used for tracking loading and navigation. */
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsObserver mWebContentsObserver;
 
     /** The URL that was directly loaded using the {@link #loadUrl(String)} method. */
-    private String mLoadedUrl;
+    private @Nullable String mLoadedUrl;
 
     /** Whether the content has started loading a URL. */
     private boolean mDidStartLoadingUrl;
@@ -115,11 +119,11 @@ public class OverlayPanelContent {
     private final OverlayPanelContentProgressObserver mProgressObserver;
 
     /** If a URL is set to delayed load (load on user interaction), it will be stored here. */
-    private String mPendingUrl;
+    private @Nullable String mPendingUrl;
 
     // http://crbug.com/522266 : An instance of InterceptNavigationDelegateImpl should be kept in
     // java layer. Otherwise, the instance could be garbage-collected unexpectedly.
-    private InterceptNavigationDelegate mInterceptNavigationDelegate;
+    private @Nullable InterceptNavigationDelegate mInterceptNavigationDelegate;
 
     /** The desired size of the {@link ContentView} associated with this panel content. */
     private int mContentViewWidth;
@@ -163,7 +167,7 @@ public class OverlayPanelContent {
     // TODO(jeremycho): Consider creating a Tab with the Panel's WebContents.
     // which would also handle functionality like long-press-to-paste.
     private class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
-        final ExternalNavigationHandler mExternalNavHandler;
+        final @Nullable ExternalNavigationHandler mExternalNavHandler;
 
         public InterceptNavigationDelegateImpl() {
             Tab tab = mCurrentTabSupplier.get();
@@ -202,11 +206,12 @@ public class OverlayPanelContent {
         }
 
         @Override
-        public GURL handleSubframeExternalProtocol(
+        public @Nullable GURL handleSubframeExternalProtocol(
                 GURL escapedUrl,
                 @PageTransition int transition,
                 boolean hasUserGesture,
                 Origin initiatorOrigin) {
+            if (mExternalNavHandler == null) return null;
             mContentDelegate.shouldInterceptNavigation(
                     mExternalNavHandler,
                     escapedUrl,
@@ -238,14 +243,14 @@ public class OverlayPanelContent {
      * @param currentTabSupplier Supplies the current activity {@link Tab}.
      */
     public OverlayPanelContent(
-            @NonNull OverlayPanelContentDelegate contentDelegate,
-            @NonNull OverlayPanelContentProgressObserver progressObserver,
-            @NonNull Activity activity,
-            @NonNull Profile profile,
+            OverlayPanelContentDelegate contentDelegate,
+            OverlayPanelContentProgressObserver progressObserver,
+            Activity activity,
+            Profile profile,
             float barHeight,
-            @NonNull ViewGroup compositorViewHolder,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull Supplier<Tab> currentTabSupplier) {
+            ViewGroup compositorViewHolder,
+            WindowAndroid windowAndroid,
+            Supplier<@Nullable Tab> currentTabSupplier) {
         mNativeOverlayPanelContentPtr = OverlayPanelContentJni.get().init(this);
         mContentDelegate = contentDelegate;
         mProgressObserver = progressObserver;
@@ -329,7 +334,7 @@ public class OverlayPanelContent {
             mLoadedUrl = url;
             mDidStartLoadingUrl = true;
             mIsProcessingPendingNavigation = true;
-            mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+            assumeNonNull(mWebContents).getNavigationController().loadUrl(new LoadUrlParams(url));
         }
     }
 
@@ -592,14 +597,14 @@ public class OverlayPanelContent {
     /**
      * @return The associated {@link WebContents}.
      */
-    public WebContents getWebContents() {
+    public @Nullable WebContents getWebContents() {
         return mWebContents;
     }
 
     /**
      * @return The associated {@link ContentView}.
      */
-    public ViewGroup getContainerView() {
+    public @Nullable ViewGroup getContainerView() {
         return mContainerView;
     }
 
@@ -610,7 +615,7 @@ public class OverlayPanelContent {
         OverlayPanelContentJni.get()
                 .onPhysicalBackingSizeChanged(
                         mNativeOverlayPanelContentPtr, webContents, mContentViewWidth, viewHeight);
-        mWebContents.setSize(mContentViewWidth, viewHeight);
+        assumeNonNull(mWebContents).setSize(mContentViewWidth, viewHeight);
     }
 
     /** Destroy the native component of this class. */
@@ -625,7 +630,7 @@ public class OverlayPanelContent {
         }
     }
 
-    public InterceptNavigationDelegate getInterceptNavigationDelegateForTesting() {
+    public @Nullable InterceptNavigationDelegate getInterceptNavigationDelegateForTesting() {
         return mInterceptNavigationDelegate;
     }
 
