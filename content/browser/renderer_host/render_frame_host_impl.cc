@@ -18684,13 +18684,23 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
   if (must_be_replaced_for_crash() || must_be_replaced_for_webtest()) {
     return true;
   }
-  if (!GetContentClient()->browser()->ShouldAllowSameSiteRenderFrameHostChange(
-          *this)) {
+
+  ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChangeResult
+      client_result = GetContentClient()
+                          ->browser()
+                          ->ShouldAllowSameSiteRenderFrameHostChange(*this);
+  if (client_result ==
+      ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChangeResult::
+          kNotAllowed) {
     return false;
   }
+
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
       is_main_frame(), is_local_root(), has_committed_any_navigation(),
-      must_be_replaced_for_crash());
+      must_be_replaced_for_crash(),
+      /*client_overrides_level=*/client_result ==
+          ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChangeResult::
+              kAllowedOverrideLevel);
 }
 
 bool RenderFrameHostImpl::CanReadFromSharedStorage() {

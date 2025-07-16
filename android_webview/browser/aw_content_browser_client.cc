@@ -882,11 +882,14 @@ bool AwContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
   return false;
 }
 
-bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
+content::ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChangeResult
+AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
     const content::RenderFrameHost& rfh) {
   if (!base::FeatureList::IsEnabled(features::kWebViewRenderDocument)) {
-    return false;
+    return content::ContentBrowserClient::
+        ShouldAllowSameSiteRenderFrameHostChangeResult::kNotAllowed;
   }
+
   content::RenderFrameHost* rfh_ptr =
       const_cast<content::RenderFrameHost*>(&rfh);
   content::WebContents* web_contents =
@@ -895,8 +898,18 @@ bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
   // Don't allow same-site RFH swap on non-crashed frames if the initial page
   // scale is non-default. See the comment in `AwSettings` about this for more
   // details.
-  return !aw_settings || !rfh_ptr->IsRenderFrameLive() ||
-         !aw_settings->initial_page_scale_is_non_default();
+  if (aw_settings && rfh_ptr->IsRenderFrameLive() &&
+      aw_settings->initial_page_scale_is_non_default()) {
+    return content::ContentBrowserClient::
+        ShouldAllowSameSiteRenderFrameHostChangeResult::kNotAllowed;
+  }
+
+  // The WebViewRenderDocument flag is enabled and we're not in an unsupported
+  // case. Force the same-site RenderFrameHost change regardless of the state
+  // of the RenderDocument flag, so that we only need to enable the
+  // WebViewRenderDocument flag to enable RenderDocument on all frames.
+  return content::ContentBrowserClient::
+      ShouldAllowSameSiteRenderFrameHostChangeResult::kAllowedOverrideLevel;
 }
 
 std::unique_ptr<content::LoginDelegate>

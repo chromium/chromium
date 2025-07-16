@@ -2299,8 +2299,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Whether same-site RenderFrameHost swaps due to RenderDocument is allowed
   // for navigations from `rfh`. Embedders can choose to disallow this if there
   // are cases that are not correctly supported yet.
-  virtual bool ShouldAllowSameSiteRenderFrameHostChange(
-      const content::RenderFrameHost& rfh);
+  enum ShouldAllowSameSiteRenderFrameHostChangeResult {
+    // The embedder doesn't allow the same-site RenderFrameHost change.
+    kNotAllowed,
+    // The embedder allows the same-site RenderFrameHost change. Depending on
+    // the RenderDocument feature flag state in //content, this might not
+    // actually result in a RenderFrameHost change.
+    kAllowed,
+    // The embedder allows a same-site RenderFrameHost change on both main
+    // frames and subframes, regardless of the RenderDocument feature flag or
+    // parameter state in //content. This allows embedders to fully control
+    // RenderDocument behavior without setting RenderDocument feature flag or
+    // parameter.
+    kAllowedOverrideLevel
+  };
+
+  virtual ShouldAllowSameSiteRenderFrameHostChangeResult
+  ShouldAllowSameSiteRenderFrameHostChange(const content::RenderFrameHost& rfh);
 
   // Called on IO or UI thread to determine whether or not to allow load and
   // render MHTML page from http/https URLs.

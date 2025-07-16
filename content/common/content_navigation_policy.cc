@@ -115,12 +115,18 @@ bool ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
     bool is_main_frame,
     bool is_local_root,
     bool has_committed_any_navigation,
-    bool must_be_replaced) {
+    bool must_be_replaced,
+    bool client_overrides_level) {
   if (must_be_replaced) {
     return true;
   }
   if (!has_committed_any_navigation) {
     return false;
+  }
+  if (client_overrides_level) {
+    // If the client overrides the level, allow swapping regardless of the
+    // level.
+    return true;
   }
   RenderDocumentLevel level = GetRenderDocumentLevel();
   if (is_main_frame) {

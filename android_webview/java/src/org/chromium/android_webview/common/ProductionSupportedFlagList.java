@@ -562,7 +562,7 @@ public final class ProductionSupportedFlagList {
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
         Flag.baseFeature(
-                ContentFeatures.RENDER_DOCUMENT,
+                AwFeatures.WEBVIEW_RENDER_DOCUMENT,
                 "If enabled, same-site navigations will change RenderFrameHosts"),
         Flag.baseFeature(
                 ContentFeatures.RENDER_DOCUMENT_COMPOSITOR_REUSE,

@@ -180,7 +180,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
   bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override;
-  bool ShouldAllowSameSiteRenderFrameHostChange(
+
+  content::ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChangeResult
+  ShouldAllowSameSiteRenderFrameHostChange(
       const content::RenderFrameHost& rfh) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
