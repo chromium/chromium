@@ -18,7 +18,7 @@ their code bases with large performance wins.
 the build system.
 
 We're currently experimenting with modules for libc++ and they can be enabled
-with the GN arg `use_libcxx_modules. Using this arg is not currently
+with the GN arg `use_clang_modules. Using this arg is not currently
 recommended, due to the limitations mentioned below.
 It is only interesting to people working on the feature.
 

@@ -6,7 +6,7 @@ if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
 
-if (use_libcxx_modules) {
+if (use_clang_modules) {
   if (is_linux || is_chromeos) {
     sysroot_modulemap = "//build/linux/amd64/module.modulemap"
   } else if (is_mac) {

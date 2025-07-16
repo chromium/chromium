@@ -22,7 +22,7 @@ target(libcxxabi_target_type, "libc++abi") {
     deps += [ "//buildtools/third_party/libunwind" ]
   }
 
-  if (use_libcxx_modules) {
+  if (use_clang_modules) {
     deps += [
       "//buildtools/third_party/libc++:copy_custom_headers",
       "//buildtools/third_party/libc++:copy_libcxx_headers",

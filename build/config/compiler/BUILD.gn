@@ -1666,7 +1666,7 @@ config("compiler_deterministic") {
     }
   }
 
-  if (use_libcxx_modules) {
+  if (use_clang_modules) {
     cflags += [
       # This removes absolute paths from .pcm files.
       "-Xclang",
@@ -1836,7 +1836,7 @@ config("compiler_arm") {
 }
 
 config("libcxx_module") {
-  if (use_libcxx_modules) {
+  if (use_clang_modules) {
     cflags_cc =
         [
           "-fmodules",
@@ -2659,9 +2659,9 @@ if (is_win) {
     common_optimize_on_ldflags += [ "-Wl,--gc-sections" ]
   }
 
-  # Do not add -fno-math-errno when `is_debug` is true and `use_libcxx_modules` is true,
+  # Do not add -fno-math-errno when `is_debug` is true and `use_clang_modules` is true,
   # as this flag is incompatible with debug builds using modules.
-  if (!is_debug || !use_libcxx_modules) {
+  if (!is_debug || !use_clang_modules) {
     # We cannot rely on errno being set after math functions,
     # especially since glibc does not set it. Thus, use -fno-math-errno
     # so that the compiler knows it can inline math functions.

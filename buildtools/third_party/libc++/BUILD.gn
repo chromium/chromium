@@ -69,7 +69,7 @@ configs_to_remove = [
   "//build/config/coverage:default_coverage",
 ]
 
-if (use_libcxx_modules) {
+if (use_clang_modules) {
   template("modulemap") {
     source_set(target_name) {
       forward_variables_from(invoker,
@@ -1038,7 +1038,7 @@ target(libcxx_target_type, "libc++") {
 
   deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
 
-  if (use_libcxx_modules) {
+  if (use_clang_modules) {
     # TODO(https://github.com/llvm/llvm-project/issues/127012): We don't enable
     # Clang modules for libc++ as libc++'s iostream.cpp has ODR issue
     # (https://crbug.com/40440396#comment81). Also we don't take care about the
