@@ -437,7 +437,7 @@ void WaylandEventSource::OnPointerMotionEvent(
     bool is_synthesized) {
   pointer_location_ = location;
 
-  int flags = pointer_flags_ | keyboard_modifiers_;
+  int flags = pointer_flags_ | keyboard_modifiers_ | tablet_tool_buttons_;
   if (is_synthesized) {
     flags |= EF_IS_SYNTHESIZED;
   }
@@ -578,6 +578,10 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
                    tablet_tool_location_, time, keyboard_modifiers_, 0,
                    details);
   SetTargetAndDispatchEvent(&event, window);
+  if (tablet_tool_buttons_) {
+    // Release any buttons that were pressed during a DnD session.
+    OnTabletToolButton(tablet_tool_buttons_, /*pressed=*/false, details, time);
+  }
 }
 
 void WaylandEventSource::OnTabletToolProximityOut(base::TimeTicks time) {
@@ -589,7 +593,8 @@ void WaylandEventSource::OnTabletToolProximityOut(base::TimeTicks time) {
                    tablet_tool_location_, time, keyboard_modifiers_, 0);
   SetTargetAndDispatchEvent(&event, tablet_tool_focused_window_.get());
   tablet_tool_focused_window_ = nullptr;
-  tablet_tool_buttons_ = 0;
+  // Intentionally not resetting `tablet_tool_buttons_` since the button state
+  // should still be treated as pressed during a DnD.
 }
 
 void WaylandEventSource::OnTabletToolMotion(const gfx::PointF& location,
@@ -623,8 +628,10 @@ void WaylandEventSource::OnTabletToolButton(int32_t button,
     tablet_tool_buttons_ &= ~button;
   }
 
+  // `button` should be included in `flags` even for button release events.
+  int flags = keyboard_modifiers_ | tablet_tool_buttons_ | button;
   MouseEvent event(type, tablet_tool_location_, tablet_tool_location_, time,
-                   keyboard_modifiers_ | tablet_tool_buttons_, button, details);
+                   flags, button, details);
   SetTargetAndDispatchEvent(&event, tablet_tool_focused_window_.get());
 }
 

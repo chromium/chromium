@@ -44,8 +44,8 @@ void WaylandTabletSeat::ToolAdded(void* data,
                                   zwp_tablet_seat_v2* seat,
                                   zwp_tablet_tool_v2* id) {
   auto* self = static_cast<WaylandTabletSeat*>(data);
-  auto tool = std::make_unique<WaylandTabletTool>(id, self, self->connection_,
-                                                  self->event_source_);
+  auto tool = std::make_unique<WaylandTabletTool>(
+      id, self, self->connection_, self->event_source_, self->event_source_);
   self->tools_[tool->id()] = std::move(tool);
 }
 
