@@ -337,6 +337,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.{Operation}"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records whether a Large Blob {Operation} operation succeeded during a
+    successful WebAuthn getAssertion request that used the Enclave authenticator
+    (Google Password Manager).
+  </summary>
+  <token key="Operation">
+    <variant name="Read" summary="read"/>
+    <variant name="Write" summary="write"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.GPM.MakeCredential"
     enum="GPMMakeCredentialEvents" expires_after="2025-11-16">
   <owner>natiahlyi@google.com</owner>

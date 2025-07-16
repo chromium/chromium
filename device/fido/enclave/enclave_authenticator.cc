@@ -504,6 +504,16 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
 
 void EnclaveAuthenticator::ReturnGetAssertionSuccess(
     AuthenticatorGetAssertionResponse resp) {
+  if (pending_get_assertion_request_->options.large_blob_read) {
+    base::UmaHistogramBoolean(
+        "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Read",
+        resp.large_blob.has_value());
+  } else if (pending_get_assertion_request_->options.large_blob_write
+                 .has_value()) {
+    base::UmaHistogramBoolean(
+        "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Write",
+        resp.large_blob_written);
+  }
   std::vector<AuthenticatorGetAssertionResponse> response;
   response.emplace_back(std::move(resp));
   RecordRequestResult("GetAssertion", EnclaveRequestResult::kSuccess);

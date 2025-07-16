@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
@@ -4221,6 +4222,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        GetAssertion_LargeBlobWriteThenRead) {
+  base::HistogramTester histogram_tester;
+
   // New empty vault.
   SetTrustedVaultEmpty();
 
@@ -4267,11 +4270,17 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string write_js = base::ReplaceStringPlaceholders(
       kGetAssertionWriteLargeBlob, {cred_id_b64}, nullptr);
   EXPECT_EQ(run_get_and_confirm(write_js), "\"write ok\"");
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Write",
+      /*sample=*/true, /*expected_count=*/1);
 
   // Read it back and verify contents.
   std::string read_js = base::ReplaceStringPlaceholders(
       kGetAssertionReadLargeBlob, {cred_id_b64}, nullptr);
   EXPECT_EQ(run_get_and_confirm(read_js), "\"read hello world\"");
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Read",
+      /*sample=*/true, /*expected_count=*/1);
 }
 
 // Disable large blob for GPM feature flag.
