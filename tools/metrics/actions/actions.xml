@@ -45812,6 +45812,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabSwitcher.GroupSuggest">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a group suggestion is shown in the tab switcher.
+  </description>
+</action>
+
 <action name="TaskManagement.OpenInChromeActionButtonClicked">
   <obsolete>The button option was removed and code deleted.</obsolete>
   <owner>dfalcantara@chromium.org</owner>
@@ -50780,6 +50788,19 @@ should be able to be added at any place in this file.
   <suffix name="Yes"
       label="Recorded when user opts into auto delete through the promo."/>
   <affected-action name="Tabs.ArchivedTabAutoDeletePromo"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Accepted"
+      label="Recorded when user accepts the group suggestion."/>
+  <suffix name="Dismissed"
+      label="Recorded when user dismisses the group suggestion."/>
+  <suffix name="Ignored"
+      label="Recorded when user ignores the group suggestion."/>
+  <suffix name="Invalidated"
+      label="Recorded when a group suggestion is considered invalid."/>
+  <suffix name="Shown" label="Recorded when a group suggestion is shown."/>
+  <affected-action name="TabSwitcher.GroupSuggest"/>
 </action-suffix>
 
 </actions>

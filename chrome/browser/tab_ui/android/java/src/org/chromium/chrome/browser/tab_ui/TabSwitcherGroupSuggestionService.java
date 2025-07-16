@@ -11,6 +11,7 @@ import static java.util.Comparator.comparingInt;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,6 +43,8 @@ import java.util.Map;
 /** Orchestrates fetching and showing tab group suggestions in the Tab Switcher. */
 @NullMarked
 public class TabSwitcherGroupSuggestionService {
+    public static final String USER_ACTION_PREFIX = "TabSwitcher.GroupSuggest";
+
     /* Tab gaps equal to this or beyond will not be permitted to be shown. */
     private static final int TAB_GAP_LIMIT = 2;
     private static final int NUM_TABS_IN_FORCED_SUGGESTION = 3;
@@ -232,6 +235,8 @@ public class TabSwitcherGroupSuggestionService {
         List<Tab> tabsSortedByIndex = getTabsSortedByIndex(tabModel, tabIdsToIndices, suggestion);
 
         if (tabsSortedByIndex == null || !canShowSuggestion(tabIdsToIndices, tabsSortedByIndex)) {
+            RecordUserAction.record(
+                    TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Invalidated");
             return;
         }
 

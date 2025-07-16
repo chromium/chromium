@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -64,14 +65,31 @@ public class TabSwitcherGroupSuggestionServiceFactory {
                     }
 
                     @Override
+                    public void onSuggestionAccepted() {
+                        RecordUserAction.record(
+                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Accepted");
+                    }
+
+                    @Override
+                    public void onSuggestionDismissed() {
+                        RecordUserAction.record(
+                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX
+                                        + ".Dismissed");
+                    }
+
+                    @Override
                     public void onSuggestionIgnored() {
                         messageService.dismissMessage(CallbackUtils.emptyRunnable());
+                        RecordUserAction.record(
+                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Ignored");
                     }
 
                     @Override
                     public void onShowSuggestion(List<@TabId Integer> tabIdsSortedByIndex) {
                         tabListHighlighter.highlightTabs(new HashSet<>(tabIdsSortedByIndex));
                         messageService.addGroupMessageForTabs(tabIdsSortedByIndex, handler);
+                        RecordUserAction.record(
+                                TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Shown");
                     }
                 };
         handler.initialize(observer);
