@@ -6,11 +6,6 @@
 #define IPC_MESSAGE_IMPL
 #include "chrome/common/common_message_generator.h"
 
-// Generate constructors.
-#include "ipc/ipc_message_null_macros.h"
-#include "chrome/common/safe_browsing/ipc_protobuf_message_null_macros.h"
-#include "chrome/common/common_message_generator.h"
-
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
 #include "chrome/common/safe_browsing/protobuf_message_write_macros.h"

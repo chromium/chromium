@@ -535,11 +535,6 @@ void ParamTraits<net::SchemefulSite>::Log(const net::SchemefulSite& p,
 
 // Generation of IPC definitions.
 
-// Generate constructors.
-#undef SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
-#include "ipc/ipc_message_null_macros.h"
-#include "net_ipc_param_traits.h"
-
 // Generate param traits write methods.
 #undef SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 #include "ipc/param_traits_write_macros.h"
