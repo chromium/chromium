@@ -2179,7 +2179,7 @@ config("default_warnings") {
       # TODO(crbug.com/40031409): We are migrating towards making this warning
       # enabled by default, and once that is completed, the warning
       # should always be added for clang builds.
-      cflags = [ "-Wexit-time-destructors" ]
+      cflags += [ "-Wexit-time-destructors" ]
     }
   }
 
