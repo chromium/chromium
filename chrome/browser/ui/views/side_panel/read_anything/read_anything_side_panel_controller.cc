@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 
 #include <algorithm>
+#include <climits>
 #include <memory>
 
 #include "base/check_is_test.h"
@@ -57,7 +58,10 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
                           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      // Use the max width allowed.
+      // BrowserViewLayout::CalculateContentsContainerLayout will clamp the
+      // value to the max allowed.
+      SHRT_MAX);
   side_panel_entry->AddObserver(this);
   side_panel_registry_->Register(std::move(side_panel_entry));
 
