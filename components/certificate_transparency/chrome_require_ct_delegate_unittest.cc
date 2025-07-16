@@ -20,6 +20,7 @@
 #include "net/cert/require_ct_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -259,6 +260,103 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
     EXPECT_EQ(test.expected,
               delegate->IsCTRequiredForHost("google.com", leaf.get(), hashes));
   }
+}
+
+TEST_F(ChromeRequireCTDelegateTest, OrgRestrictionsMatchCorrectCert) {
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
+  scoped_refptr<ChromeRequireCTDelegate> delegate =
+      base::MakeRefCounted<ChromeRequireCTDelegate>();
+
+  auto [leaf, i1, i2] = net::CertBuilder::CreateSimpleChain3();
+
+  // SEQUENCE {
+  //   SET {
+  //     SEQUENCE {
+  //       # organizationName
+  //       OBJECT_IDENTIFIER { 2.5.4.10 }
+  //       UTF8String { "O1" }
+  //     }
+  //   }
+  //   SET {
+  //     SEQUENCE {
+  //       # commonName
+  //       OBJECT_IDENTIFIER { 2.5.4.3 }
+  //       UTF8String { "Leaf" }
+  //     }
+  //   }
+  // }
+  constexpr uint8_t leaf_subject[] = {
+      0x30, 0x1c, 0x31, 0x0b, 0x30, 0x09, 0x06, 0x03, 0x55, 0x04,
+      0x0a, 0x0c, 0x02, 0x4f, 0x31, 0x31, 0x0d, 0x30, 0x0b, 0x06,
+      0x03, 0x55, 0x04, 0x03, 0x0c, 0x04, 0x4c, 0x65, 0x61, 0x66};
+
+  // SEQUENCE {
+  //   SET {
+  //     SEQUENCE {
+  //       # organizationName
+  //       OBJECT_IDENTIFIER { 2.5.4.10 }
+  //       UTF8String { "O1" }
+  //     }
+  //   }
+  // }
+  constexpr uint8_t o1_subject[] = {0x30, 0x0d, 0x31, 0x0b, 0x30,
+                                    0x09, 0x06, 0x03, 0x55, 0x04,
+                                    0x0a, 0x0c, 0x02, 0x4f, 0x31};
+
+  // SEQUENCE {
+  //   SET {
+  //     SEQUENCE {
+  //       # organizationName
+  //       OBJECT_IDENTIFIER { 2.5.4.10 }
+  //       UTF8String { "O2" }
+  //     }
+  //   }
+  // }
+  constexpr uint8_t o2_subject[] = {0x30, 0x0d, 0x31, 0x0b, 0x30,
+                                    0x09, 0x06, 0x03, 0x55, 0x04,
+                                    0x0a, 0x0c, 0x02, 0x4f, 0x32};
+
+  leaf->SetSubjectTLV(leaf_subject);
+  i1->SetSubjectTLV(o1_subject);
+  i2->SetSubjectTLV(o2_subject);
+
+  net::SHA256HashValue leaf_spki_hash;
+  ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(leaf->GetCertBuffer(),
+                                                      &leaf_spki_hash));
+  net::SHA256HashValue i1_spki_hash;
+  ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(i1->GetCertBuffer(),
+                                                      &i1_spki_hash));
+  net::SHA256HashValue i2_spki_hash;
+  ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(i2->GetCertBuffer(),
+                                                      &i2_spki_hash));
+
+  std::vector<net::SHA256HashValue> hashes;
+  hashes.push_back(leaf_spki_hash);
+  hashes.push_back(i1_spki_hash);
+  hashes.push_back(i2_spki_hash);
+
+  // The default setting should require CT.
+  delegate->UpdateCTPolicies({}, {});
+  EXPECT_EQ(
+      CTRequirementLevel::REQUIRED,
+      delegate->IsCTRequiredForHost(
+          "google.com", leaf->GetX509CertificateFullChain().get(), hashes));
+
+  // If the SPKI for the intermediate with O1 is excluded, CT should not be
+  // required.
+  delegate->UpdateCTPolicies({}, {net::HashValue(i1_spki_hash).ToString()});
+  EXPECT_EQ(
+      CTRequirementLevel::NOT_REQUIRED,
+      delegate->IsCTRequiredForHost(
+          "google.com", leaf->GetX509CertificateFullChain().get(), hashes));
+
+  // If the SPKI for the intermediate with O2 is excluded, CT should still be
+  // required.
+  delegate->UpdateCTPolicies({}, {net::HashValue(i2_spki_hash).ToString()});
+  EXPECT_EQ(
+      CTRequirementLevel::REQUIRED,
+      delegate->IsCTRequiredForHost(
+          "google.com", leaf->GetX509CertificateFullChain().get(), hashes));
 }
 
 }  // namespace
