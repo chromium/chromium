@@ -938,8 +938,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
-  CanvasResourceProvider* resource_provider =
-      element->GetResourceProviderForCanvas2D();
+  CanvasResourceProvider* resource_provider = GetResourceProviderForCanvas2D();
   if (resource_provider) {
     resource_provider->SetResourceRecyclingEnabled(page_is_visible);
   }
