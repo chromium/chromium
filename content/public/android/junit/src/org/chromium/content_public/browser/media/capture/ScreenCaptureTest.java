@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
@@ -193,6 +195,7 @@ public class ScreenCaptureTest {
             Handler handler) {
         final var imageReader = mock(ImageReader.class);
         final var surface = mock(Surface.class);
+        when(imageReader.getMaxImages()).thenReturn(2);
         when(imageReader.getSurface()).thenReturn(surface);
 
         final var imageHandler = new ImageHandler(captureState, delegate, handler, imageReader);
@@ -413,5 +416,78 @@ public class ScreenCaptureTest {
         assertEquals(1, mImageHandlerStates.size());
         verify(mVirtualDisplay, never()).resize(anyInt(), anyInt(), anyInt());
         verify(mVirtualDisplay, never()).setSurface(any());
+    }
+
+    @Test
+    public void testImageHandlerRecreatesOnFormatError() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        assertEquals(1, mImageHandlerStates.size());
+        final var state0 = mImageHandlerStates.get(0);
+        assertEquals(PixelFormat.RGBA_8888, state0.imageHandler.getCaptureState().format);
+
+        // Simulate producer error causing UnsupportedOperationException on frame acquire.
+        when(state0.imageReader.acquireLatestImage())
+                .thenThrow(new UnsupportedOperationException());
+        state0.imageHandler.onImageAvailable(state0.imageReader);
+
+        // ImageHandler should be recreated.
+        assertEquals(2, mImageHandlerStates.size());
+        final var state1 = mImageHandlerStates.get(1);
+
+        // Should be recreated in YUV.
+        assertEquals(ImageFormat.YUV_420_888, state1.imageHandler.getCaptureState().format);
+        final Surface surface1 = state1.imageHandler.getSurface();
+        verify(mVirtualDisplay).setSurface(surface1);
+    }
+
+    @Test
+    public void testImageHandlerFormatFallbackPersistsAcrossResizes() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        assertEquals(PixelFormat.RGBA_8888, handler0.getCaptureState().format);
+
+        // Trigger a fallback to YUV.
+        when(reader0.acquireLatestImage()).thenThrow(new UnsupportedOperationException());
+        handler0.onImageAvailable(reader0);
+        assertEquals(2, mImageHandlerStates.size());
+        assertEquals(
+                ImageFormat.YUV_420_888,
+                mImageHandlerStates.get(1).imageHandler.getCaptureState().format);
+
+        // Trigger a resize.
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+        assertEquals(3, mImageHandlerStates.size());
+
+        // Verify the third handler is still using YUV.
+        assertEquals(
+                ImageFormat.YUV_420_888,
+                mImageHandlerStates.get(2).imageHandler.getCaptureState().format);
+    }
+
+    @Test
+    public void testOnStopAfterDestroy() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+        MediaProjection.Callback callback = getMediaProjectionCallback();
+
+        mScreenCapture.destroy();
+        verify(mMediaProjection).stop();
+        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
+
+        // Trigger onStop after destroy and check we don't try to call the native side.
+        callback.onStop();
+        verify(mNativeMock, never()).onStop(NATIVE_POINTER);
     }
 }
