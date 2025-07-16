@@ -38,7 +38,6 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_capability_type.h"
@@ -123,6 +122,7 @@ class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
 class GuestPageHolder;
+class PrerenderHandle;
 class RenderFrameHost;
 class RenderViewHost;
 class RenderWidgetHost;
