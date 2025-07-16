@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/footer_context_menu.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -133,7 +134,15 @@ class FooterContextMenuEnterpriseTest : public FooterContextMenuBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FooterContextMenuEnterpriseTest,
-                       HidesCustomizeChromeMenuItem) {
+  ShowsMenuItemsByDefault) {
+  EXPECT_TRUE(IsCommandIdVisible(kHideMenuItem));
+  EXPECT_TRUE(IsCommandIdVisible(kCustomizeMenuItem));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterContextMenuEnterpriseTest, PolicyDisablesHideMenuOption) {
+  g_browser_process->local_state()->SetString(
+      prefs::kEnterpriseCustomLabelForBrowser, "Custom label");
+
   EXPECT_FALSE(IsCommandIdVisible(kHideMenuItem));
   EXPECT_TRUE(IsCommandIdVisible(kCustomizeMenuItem));
 }

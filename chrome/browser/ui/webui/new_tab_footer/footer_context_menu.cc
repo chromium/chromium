@@ -62,9 +62,10 @@ FooterContextMenu::~FooterContextMenu() = default;
 bool FooterContextMenu::IsCommandIdVisible(int command_id) const {
   switch (command_id) {
     case COMMAND_CLOSE_FOOTER: {
-      bool is_managed =
-          enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
-      return !is_managed;
+      bool is_controlled_by_policy =
+          enterprise_util::GetManagementNoticeStateForNTPFooter(profile_) ==
+          enterprise_util::BrowserManagementNoticeState::kEnabledByPolicy;
+      return !is_controlled_by_policy;
     };
   }
   return true;

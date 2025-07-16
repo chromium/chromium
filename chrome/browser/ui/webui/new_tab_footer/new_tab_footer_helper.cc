@@ -46,11 +46,4 @@ bool IsNtp(const GURL& url,
          search::NavEntryIsInstantNTP(web_contents, entry) ||
          ntp_footer::IsExtensionNtp(url, profile);
 }
-
-bool WillShowManagementNotice(const GURL& url,
-                              content::WebContents* web_contents,
-                              Profile* profile) {
-  return IsNtp(url, web_contents, profile) &&
-         enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile);
-}
 }  // namespace ntp_footer

@@ -517,19 +517,19 @@ void CustomizeChromePageHandler::UpdateFooterSettings() {
   management_notice_state->can_be_shown = false;
   management_notice_state->enabled_by_policy = false;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!policy::ManagementServiceFactory::GetForProfile(profile_)
-           ->IsBrowserManaged() ||
-      !g_browser_process->local_state()->GetBoolean(
-          prefs::kNTPFooterManagementNoticeEnabled)) {
-    // Do nothing.
-  } else if (enterprise_util::IsCustomEnterpriseBadgingForNTPFooter()) {
-    management_notice_state->can_be_shown = true;
-    management_notice_state->enabled_by_policy = true;
-  } else if (!base::FeatureList::IsEnabled(
-                 features::kEnterpriseBadgingForNtpFooter)) {
-    // Do nothing.
-  } else {
-    management_notice_state->can_be_shown = true;
+  enterprise_util::BrowserManagementNoticeState state =
+      enterprise_util::GetManagementNoticeStateForNTPFooter(profile_);
+  switch (state) {
+    case enterprise_util::BrowserManagementNoticeState::kNotApplicable:
+      break;
+    case enterprise_util::BrowserManagementNoticeState::kEnabled:
+    case enterprise_util::BrowserManagementNoticeState::kDisabled:
+      management_notice_state->can_be_shown = true;
+      break;
+    case enterprise_util::BrowserManagementNoticeState::kEnabledByPolicy:
+      management_notice_state->can_be_shown = true;
+      management_notice_state->enabled_by_policy = true;
+      break;
   }
 #endif
 

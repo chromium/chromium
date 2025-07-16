@@ -187,9 +187,17 @@ bool NewTabFooterController::ContentsViewFooterCotroller::
   if (ShouldSkipForErrorPage()) {
     return false;
   }
-  return ntp_footer::IsNtp(url, web_contents(), owner_->profile_) &&
-         enterprise_util::CanShowEnterpriseBadgingForNTPFooter(
-             owner_->profile_);
+
+  enterprise_util::BrowserManagementNoticeState state =
+      enterprise_util::GetManagementNoticeStateForNTPFooter(owner_->profile_);
+  switch (state) {
+    case enterprise_util::BrowserManagementNoticeState::kNotApplicable:
+    case enterprise_util::BrowserManagementNoticeState::kDisabled:
+      return false;
+    case enterprise_util::BrowserManagementNoticeState::kEnabled:
+    case enterprise_util::BrowserManagementNoticeState::kEnabledByPolicy:
+      return ntp_footer::IsNtp(url, web_contents(), owner_->profile_);
+  }
 }
 
 bool NewTabFooterController::ContentsViewFooterCotroller::
