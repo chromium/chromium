@@ -531,6 +531,9 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
     }
     if (update.tree_data.tree_id == ui::AXTreeIDUnknown()) {
       VLOG(1) << "unserializing an update with an unknown tree ID";
+    } else {
+      VLOG(1) << "Unserializing an update with a known tree ID: "
+              << update.tree_data.tree_id;
     }
     tree->Unserialize(update);
   }
@@ -602,10 +605,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
     }
     // We need to unserialize old updates before we can unserialize the new
     // ones.
+    VLOG(1) << "AccessibilityEventReceived- tree ID is the active tree";
     UnserializePendingUpdates(tree_id);
     UnserializeUpdates(updates, tree_id);
     ProcessNonGeneratedEvents(events);
-    VLOG(1) << "AccessibilityEventReceived- tree ID is the active tree";
   } else {
     VLOG(1) << "AccessibilityEventReceived- tree ID is not the active tree";
     UnserializeUpdates(updates, tree_id);
