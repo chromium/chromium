@@ -29,7 +29,9 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -48,19 +50,20 @@ public class PriceNotificationSettingsFragmentTest {
     public final SettingsActivityTestRule<PriceNotificationSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(PriceNotificationSettingsFragment.class);
 
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
     @Mock private IdentityManager mIdentityManager;
 
     @Mock private PrefService mPrefs;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         // Make sure the browser is set up correctly prior to mocking everything for settings.
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         when(mIdentityManager.getPrimaryAccountInfo(anyInt()))
                 .thenReturn(

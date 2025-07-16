@@ -144,6 +144,7 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/commerce/core/android:core_java",
     "//net/android:net_java_test_support",

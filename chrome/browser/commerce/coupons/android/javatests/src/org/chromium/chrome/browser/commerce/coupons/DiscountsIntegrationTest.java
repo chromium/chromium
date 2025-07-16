@@ -37,7 +37,9 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
@@ -45,7 +47,6 @@ import org.chromium.components.commerce.core.DiscountInfo;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.DiscountInfoCallback;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -58,15 +59,12 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.ENABLE_DISCOUNT_INFO_API})
 @Batch(Batch.PER_CLASS)
 public class DiscountsIntegrationTest {
-    private static final int TEST_PORT = 12345;
     private static final String TEST_PAGE_URL_WITH_DISCOUNTS =
             "/chrome/test/data/android/test.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public final EmbeddedTestServerRule sEmbeddedTestServerRule = new EmbeddedTestServerRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -81,6 +79,7 @@ public class DiscountsIntegrationTest {
 
     private EmbeddedTestServer mTestServer;
     private GURL mTestPageWithDiscounts;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
@@ -90,10 +89,10 @@ public class DiscountsIntegrationTest {
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isDiscountInfoApiEnabled(anyLong());
 
-        mTestServer = sEmbeddedTestServerRule.getServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mTestPageWithDiscounts = new GURL(mTestServer.getURL(TEST_PAGE_URL_WITH_DISCOUNTS));
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mockShoppingServiceDiscountsResponse();
     }
 
