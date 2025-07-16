@@ -1711,8 +1711,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
                FieldTypeGroup::kCreditCard) {
       autofill_manager().FillOrPreviewForm(
           mojom::ActionPersistence::kFill, form, first_field.global_id(),
-          personal_data().payments_data_manager().GetCreditCardByGUID(
-              "10000000-0000-0000-0000-000000000001"),
+          paydm().GetCreditCardByGUID("10000000-0000-0000-0000-000000000001"),
           AutofillTriggerSource::kPopup);
     } else {
       // Autofill should not be simulated on a field that is not autofillable.

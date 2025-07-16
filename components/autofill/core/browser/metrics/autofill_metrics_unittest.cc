@@ -689,9 +689,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
   // Disable mandatory reauth as it is not part of this test and will
   // interfere with the card retrieval flow.
-  personal_data()
-      .payments_data_manager()
-      .SetPaymentMethodsMandatoryReauthEnabled(false);
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
@@ -821,8 +819,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form,
         form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
+        paydm().GetCreditCardByGUID(kTestLocalCardId),
         AutofillTriggerSource::kPopup);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_FilledCreditCardSuggestion"));
@@ -1223,8 +1220,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
+        paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     histogram_tester.ExpectTotalCount(
@@ -1247,8 +1243,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
+        paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, std::string());
     histogram_tester.ExpectTotalCount(
@@ -1271,8 +1266,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
+        paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kClientSideTimeout, std::string());
     histogram_tester.ExpectTotalCount(
@@ -1307,8 +1301,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
+        paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup);
     OnDidGetRealPanWithNonHttpOkResponse();
     histogram_tester.ExpectTotalCount(

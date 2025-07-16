@@ -122,8 +122,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       .set_credit_card_save_manager(
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
   payments_autofill_client().set_autofill_offer_manager(
-      std::make_unique<AutofillOfferManager>(
-          &personal_data().payments_data_manager()));
+      std::make_unique<AutofillOfferManager>(&paydm()));
 
   auto browser_autofill_manager =
       std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
@@ -290,7 +289,7 @@ void AutofillMetricsBaseTest::CreateCreditCards(
       local_credit_card.set_cvc(u"123");
 #endif
     }
-    personal_data().payments_data_manager().AddCreditCard(local_credit_card);
+    paydm().AddCreditCard(local_credit_card);
   }
   if (include_masked_server_credit_card) {
     CreditCard masked_server_credit_card(
@@ -319,7 +318,7 @@ void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
   local_credit_card.SetNumber(u"5454545454545454" /* Mastercard */);
   std::string local_card_guid(kTestDuplicateLocalCardId);
   local_credit_card.set_guid(local_card_guid);
-  personal_data().payments_data_manager().AddCreditCard(local_credit_card);
+  paydm().AddCreditCard(local_credit_card);
 
   // Duplicate masked server card with same card information as local card.
   CreditCard masked_server_credit_card = test::GetCreditCard();

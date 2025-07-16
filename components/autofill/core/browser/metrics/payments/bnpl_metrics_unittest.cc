@@ -296,8 +296,7 @@ class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
                                       {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
                            .action = ""});
 
-    personal_data().test_payments_data_manager().AddBnplIssuer(
-        test::GetTestLinkedBnplIssuer());
+    test_paydm().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
   }
 
   void TearDown() override { TearDownHelper(); }
