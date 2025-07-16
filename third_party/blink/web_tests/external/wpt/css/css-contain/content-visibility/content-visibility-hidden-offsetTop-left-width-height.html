@@ -1,10 +1,9 @@
 <!doctype HTML>
 <html>
 <meta charset="utf8">
-<title>Content Visibility: clientLeft/clientTop/clientWidth/clientHeight measure correctly</title>
-<link rel="author" title="Rob Buis" href="mailto:rbuis@igalia.com">
+<title>Content Visibility: offsetLeft/offsetTop/offsetWidth/offsetHeight measure correctly</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
-<meta name="assert" content="clientLeft/clientTop/clientWidth/clientHeight measure correctly in content-visibility hidden subtree">
+<meta name="assert" content="offsetLeft/offsetTop/offsetWidth/offsetHeight measure correctly in content-visibility hidden subtree">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,8 +21,7 @@ body {
   content-visibility: hidden;
 }
 #inner {
-  border-left: 25px black solid;
-  border-top: 25px black solid;
+  border: 25px black solid;
   margin: 25px;
   width: 50px;
   height: 50px;
@@ -39,17 +37,17 @@ body {
 test(() => {
   const inner = document.getElementById("inner");
 
-  inner.style.borderLeftWidth = "20px";
-  assert_equals(inner.clientLeft, 20, "left");
+  inner.style.marginLeft = "20px";
+  assert_equals(inner.offsetLeft, 20, "left");
 
-  inner.style.borderTopWidth = "20px";
-  assert_equals(inner.clientTop, 20, "top");
+  inner.style.marginTop = "20px";
+  assert_equals(inner.offsetTop, 20, "top");
 
   inner.style.width = "40px";
-  assert_equals(inner.clientWidth, 40, "width");
+  assert_equals(inner.offsetWidth, 90, "width");
 
   inner.style.height = "40px";
-  assert_equals(inner.clientHeight, 40, "height");
+  assert_equals(inner.offsetHeight, 90, "height");
 });
 
 </script>
