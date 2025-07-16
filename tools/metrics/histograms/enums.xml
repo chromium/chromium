@@ -8072,6 +8072,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="720107264" label="es-PE"/>
   <int value="729519028" label="or"/>
   <int value="729888861" label="hsb"/>
+  <int value="769713961" label="he-IL"/>
   <int value="796588925" label="yo"/>
   <int value="804120371" label="jv"/>
   <int value="806431033" label="mgh"/>
