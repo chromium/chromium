@@ -282,7 +282,9 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   if ([self shouldDisplayPasskeyUpgradesSwitch]) {
     [model addSectionWithIdentifier:
                SectionIdentifierAutomaticPasskeyUpgradesSwitch];
-    [model addItem:[self createAutomaticPasskeyUpgradesSwitchItem]
+    _automaticPasskeyUpgradesSwitchItem =
+        [self createAutomaticPasskeyUpgradesSwitchItem];
+    [model addItem:_automaticPasskeyUpgradesSwitchItem
         toSectionWithIdentifier:
             SectionIdentifierAutomaticPasskeyUpgradesSwitch];
   }
@@ -570,6 +572,8 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   automaticPasskeyUpgradesSwitchItem.detailText =
       l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE);
   automaticPasskeyUpgradesSwitchItem.on = _automaticPasskeyUpgradesEnabled;
+  automaticPasskeyUpgradesSwitchItem.accessibilityIdentifier =
+      kPasswordSettingsAutomaticPasskeyUpgradeToggleId;
   return automaticPasskeyUpgradesSwitchItem;
 }
 
