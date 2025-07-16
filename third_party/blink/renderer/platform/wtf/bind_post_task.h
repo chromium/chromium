@@ -17,7 +17,7 @@
 
 // See base::BindPostTask() for docs, this is the WTF cross-thread version.
 
-namespace WTF {
+namespace blink {
 
 namespace internal {
 
@@ -52,7 +52,7 @@ class CrossThreadBindPostTaskTrampoline {
   template <typename... Args>
   void RunOnce(Args... args) {
     task_runner_->PostTask(
-        location_, ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
+        location_, ConvertToBaseOnceCallback(CrossThreadBindOnce(
                        std::move(callback_), std::forward<Args>(args)...)));
   }
 
@@ -61,7 +61,7 @@ class CrossThreadBindPostTaskTrampoline {
     // Safe since the destruction of `this` is posted to `task_runner_`.
     task_runner_->PostTask(
         location_,
-        ConvertToBaseOnceCallback(blink::CrossThreadBindOnce(
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &RunOnTaskRunner<Args...>, CrossThreadUnretained(&callback_),
             std::forward<Args>(args)...)));
   }
@@ -91,8 +91,8 @@ CrossThreadOnceFunction<void(Args...)> BindPostTask(
   std::unique_ptr<Helper, base::OnTaskRunnerDeleter> helper(
       new Helper(task_runner, location, std::move(callback)),
       base::OnTaskRunnerDeleter(task_runner));
-  return blink::CrossThreadBindOnce(&Helper::template RunOnce<Args...>,
-                                    std::move(helper));
+  return CrossThreadBindOnce(&Helper::template RunOnce<Args...>,
+                             std::move(helper));
 }
 
 template <typename ReturnType, typename... Args>
@@ -107,10 +107,10 @@ CrossThreadFunction<void(Args...)> BindPostTask(
   std::unique_ptr<Helper, base::OnTaskRunnerDeleter> helper(
       new Helper(task_runner, location, std::move(callback)),
       base::OnTaskRunnerDeleter(task_runner));
-  return blink::CrossThreadBindRepeating(
-      &Helper::template RunRepeating<Args...>, std::move(helper));
+  return CrossThreadBindRepeating(&Helper::template RunRepeating<Args...>,
+                                  std::move(helper));
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BIND_POST_TASK_H_

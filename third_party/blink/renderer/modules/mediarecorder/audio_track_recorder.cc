@@ -80,12 +80,12 @@ AudioTrackRecorder::AudioTrackRecorder(
       encoder_task_runner_(std::move(encoder_task_runner)),
       encoder_(CreateAudioEncoder(
           codec,
-          WTF::BindPostTask(
+          BindPostTask(
               main_thread_task_runner,
               CrossThreadBindRepeating(
                   &CallbackInterface::OnEncodedAudio,
                   MakeUnwrappingCrossThreadHandle(callback_interface))),
-          WTF::BindPostTask(
+          BindPostTask(
               main_thread_task_runner,
               CrossThreadBindOnce(
                   &CallbackInterface::OnAudioEncodingError,

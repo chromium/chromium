@@ -12,10 +12,7 @@
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
-
-using blink::CrossThreadBindOnce;
-using blink::CrossThreadBindRepeating;
+namespace blink {
 
 namespace {
 
@@ -278,4 +275,4 @@ TEST_F(BindPostTaskTest, RepeatingNotRunDestroyedOnBound) {
   EXPECT_TRUE(destroyed_on_main);
 }
 
-}  // namespace WTF
+}  // namespace blink

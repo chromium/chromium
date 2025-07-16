@@ -979,12 +979,12 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
     // TODO(crbug.com/1441395): This should be handled by using
     // media::VideoEncoderFallback. This should be achieved after refactoring
     // VideoTrackRecorder to call media::VideoEncoder directly.
-    on_error_cb = WTF::BindPostTask(
+    on_error_cb = BindPostTask(
         main_thread_task_runner_,
         CrossThreadBindOnce(&VideoTrackRecorderImpl::OnHardwareEncoderError,
                             weak_factory_.GetWeakPtr()));
   } else {
-    on_error_cb = WTF::BindPostTask(
+    on_error_cb = BindPostTask(
         main_thread_task_runner_,
         CrossThreadBindOnce(
             &CallbackInterface::OnVideoEncodingError,
@@ -998,11 +998,10 @@ void VideoTrackRecorderImpl::CreateMediaVideoEncoder(
           ? GetCreateHardwareVideoEncoderCallback(
                 codec_profile.codec_id, Platform::Current()->GetGpuFactories())
           : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
-      WTF::BindPostTask(
-          main_thread_task_runner_,
-          CrossThreadBindRepeating(
-              &CallbackInterface::OnEncodedVideo,
-              MakeUnwrappingCrossThreadHandle(callback_interface()))),
+      BindPostTask(main_thread_task_runner_,
+                   CrossThreadBindRepeating(
+                       &CallbackInterface::OnEncodedVideo,
+                       MakeUnwrappingCrossThreadHandle(callback_interface()))),
       std::move(on_error_cb));
 }
 
