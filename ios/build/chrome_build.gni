@@ -82,7 +82,7 @@ declare_args() {
   # Enable iOS 17 widgets improvements to support multi profile.
   ios_enable_widgets_for_mim = false
 
-  # Disable iOS 26 liquid glass until reasonably supported.
+  # Enable iOS 26 liquid glass.
   ios_enable_liquid_glass = true
 
   # Value of the encryption export compliance code. See "Cryptography and
