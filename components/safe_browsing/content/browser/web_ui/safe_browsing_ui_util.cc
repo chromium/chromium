@@ -469,4 +469,18 @@ std::string SerializeHPRTLookupResponse(
   return SerializeJson(Serialize(response));
 }
 
+base::Value::Dict SerializeLogMessage(base::Time timestamp,
+                                      const std::string& message) {
+  base::Value::Dict result;
+  result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
+  result.Set("message", message);
+  return result;
+}
+
+base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
+  base::Value::Dict result;
+  result.Set("message", SerializeJson(event));
+  return result;
+}
+
 }  // namespace safe_browsing::web_ui

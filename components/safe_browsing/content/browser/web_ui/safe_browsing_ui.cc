@@ -605,20 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-base::Value::Dict SerializeLogMessage(base::Time timestamp,
-                                      const std::string& message) {
-  base::Value::Dict result;
-  result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
-  result.Set("message", message);
-  return result;
-}
-
-base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
-  base::Value::Dict result;
-  result.Set("message", web_ui::SerializeJson(event));
-  return result;
-}
-
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
@@ -1186,7 +1172,7 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
   base::Value::List messages_received;
   for (const auto& message : log_messages) {
     messages_received.Append(
-        SerializeLogMessage(message.first, message.second));
+        web_ui::SerializeLogMessage(message.first, message.second));
   }
 
   AllowJavascript();
@@ -1428,13 +1414,14 @@ void SafeBrowsingUIHandler::NotifyLogMessageJsListener(
     const std::string& message) {
   AllowJavascript();
   FireWebUIListener("log-messages-update",
-                    SerializeLogMessage(timestamp, message));
+                    web_ui::SerializeLogMessage(timestamp, message));
 }
 
 void SafeBrowsingUIHandler::NotifyReportingEventJsListener(
     const base::Value::Dict& event) {
   AllowJavascript();
-  FireWebUIListener("reporting-events-update", SerializeReportingEvent(event));
+  FireWebUIListener("reporting-events-update",
+                    web_ui::SerializeReportingEvent(event));
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

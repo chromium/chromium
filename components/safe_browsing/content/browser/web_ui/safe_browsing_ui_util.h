@@ -155,6 +155,9 @@ std::string SerializeURTLookupResponse(const RTLookupResponse& response);
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping);
 std::string SerializeHPRTLookupResponse(
     const V5::SearchHashesResponse& response);
+base::Value::Dict SerializeLogMessage(base::Time timestamp,
+                                      const std::string& message);
+base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event);
 
 }  // namespace safe_browsing::web_ui
 
