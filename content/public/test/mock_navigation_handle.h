@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -138,6 +139,9 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(IsExternalProtocol, bool());
   net::Error GetNetErrorCode() override { return net_error_code_; }
   int GetNetExtendedErrorCode() override { return net_extended_error_code_; }
+  std::optional<ErrorNavigationTrigger> GetErrorNavigationTrigger() override {
+    return error_navigation_trigger_;
+  }
   RenderFrameHost* GetRenderFrameHost() const override {
     return render_frame_host_;
   }
@@ -295,6 +299,10 @@ class MockNavigationHandle : public NavigationHandle {
   void set_net_extended_error_code(int net_extended_error_code) {
     net_extended_error_code_ = net_extended_error_code;
   }
+  void set_error_navigation_trigger(
+      std::optional<ErrorNavigationTrigger> error_navigation_trigger) {
+    error_navigation_trigger_ = error_navigation_trigger;
+  }
   void set_render_frame_host(RenderFrameHost* render_frame_host) {
     render_frame_host_ = render_frame_host;
   }
@@ -373,6 +381,7 @@ class MockNavigationHandle : public NavigationHandle {
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
   int net_extended_error_code_ = 0;
+  std::optional<ErrorNavigationTrigger> error_navigation_trigger_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;

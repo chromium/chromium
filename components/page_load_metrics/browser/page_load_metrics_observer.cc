@@ -54,10 +54,12 @@ FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(
     base::TimeDelta interval,
     net::Error error,
     int net_extended_error_code,
+    std::optional<content::ErrorNavigationTrigger> error_navigation_trigger,
     content::NavigationDiscardReason discard_reason)
     : time_to_failed_provisional_load(interval),
       error(error),
       net_extended_error_code(net_extended_error_code),
+      error_navigation_trigger(error_navigation_trigger),
       discard_reason(discard_reason) {}
 
 FailedProvisionalLoadInfo::~FailedProvisionalLoadInfo() = default;

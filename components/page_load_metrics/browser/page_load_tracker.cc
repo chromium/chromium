@@ -694,6 +694,7 @@ void PageLoadTracker::FailedProvisionalLoad(
       failed_load_time - navigation_handle->NavigationStart(),
       navigation_handle->GetNetErrorCode(),
       navigation_handle->GetNetExtendedErrorCode(),
+      navigation_handle->GetErrorNavigationTrigger(),
       navigation_handle->GetNavigationDiscardReason().value());
 }
 

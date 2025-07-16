@@ -43,6 +43,7 @@
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -236,59 +237,6 @@ class CONTENT_EXPORT NavigationRequest
     kPostCommit,
   };
 
-  // A detailed reason on why errors in navigation happened, to be assigned in
-  // the extended error code field. Mostly focusing on `net::ERR_ABORTED`
-  // failures.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(ErrorNavigationTrigger)
-  enum class ErrorNavigationTrigger {
-    // An unknown trigger caused navigation abort.
-    kUnknown = 0,
-
-    // Caused by the cancelation from the navigation throttle.
-    kNavigationThrottleCancel,
-
-    // Caused by being blocked by the navigation throtle.
-    kNavigationThrottleBlock,
-
-    // Caused by the redirect not allowed due to the security policy.
-    kRedirectNotAllowed,
-
-    // Caused by the Credentialed subresource check blocked.
-    kCredentialedSubresourceBlocked,
-
-    // Caused by the embedder-initiated navigation of FencedFrame being blocked.
-    kFencedFrameEmbedderInitiatedNavigation,
-
-    // Caused by the permission policy of fenced frames being blocked.
-    kFencedFramesPermissionPolicyBlocked,
-
-    // Caused by the content decoder data pipe creation failing.
-    kContentDecoderDataPipeCreationFailed,
-
-    // The response should not be rendered (e.g. a download).
-    kShouldNotRenderResponse,
-
-    // The embedder overrides/blocks the URL load.
-    kShouldOverrideUrlLoading,
-
-    // The render initiated cross process navigation is not allowed, and blocked
-    // the navigation.
-    kRenderInitiatedCrossProcessNavigationNotAllowed,
-
-    // The render initiated navigation could not request the URL.
-    kRendererInitiatedCanNotRequestURL,
-
-    // The response rendered fallback content, due to e.g. Http errors.
-    kShouldRenderFallbackContent,
-
-    kMaxValue = kShouldRenderFallbackContent,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:ErrorNavigationTrigger)
-
   // Creates a request for a browser-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateBrowserInitiated(
       FrameTreeNode* frame_tree_node,
@@ -449,6 +397,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsExternalProtocol() override;
   net::Error GetNetErrorCode() override;
   int GetNetExtendedErrorCode() override;
+  std::optional<ErrorNavigationTrigger> GetErrorNavigationTrigger() override;
   RenderFrameHostImpl* GetRenderFrameHost() const override;
   bool IsSameDocument() const override;
   bool IsHistory() const override;
@@ -1512,6 +1461,17 @@ class CONTENT_EXPORT NavigationRequest
       NavigationDiscardReason navigation_discard_reason) {
     CHECK(!navigation_discard_reason_.has_value());
     navigation_discard_reason_ = navigation_discard_reason;
+  }
+
+  void set_extended_error_code(int extended_error_code) {
+    CHECK(!extended_error_code_);
+    extended_error_code_ = extended_error_code;
+  }
+
+  void set_error_navigation_trigger(
+      ErrorNavigationTrigger error_navigation_trigger) {
+    CHECK(!error_navigation_trigger_.has_value());
+    error_navigation_trigger_ = error_navigation_trigger;
   }
 
   // Returns the type of this navigation (e.g. history, browser-initiated, etc)
@@ -2602,6 +2562,9 @@ class CONTENT_EXPORT NavigationRequest
   bool has_stale_copy_in_cache_ = false;
   net::Error net_error_ = net::OK;
   int extended_error_code_ = 0;
+
+  // The trigger for the error navigation.
+  std::optional<ErrorNavigationTrigger> error_navigation_trigger_;
 
   // Detailed host resolution error information. The error code in
   // |resolve_error_info_.error| should be consistent with (but not necessarily

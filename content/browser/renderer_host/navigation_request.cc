@@ -2789,8 +2789,8 @@ void NavigationRequest::BeginNavigationImpl() {
     // for aborted loads).
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code =
-        static_cast<int32_t>(ErrorNavigationTrigger::kShouldOverrideUrlLoading);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kShouldOverrideUrlLoading;
     OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
                             std::nullopt /*error_page_content*/,
                             false /*collapse_frame*/);
@@ -2828,8 +2828,8 @@ void NavigationRequest::BeginNavigationImpl() {
     StartNavigation();
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code = static_cast<int32_t>(
-        ErrorNavigationTrigger::kCredentialedSubresourceBlocked);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kCredentialedSubresourceBlocked;
     OnRequestFailedInternal(completion_status, false /* skip_throttles  */,
                             std::nullopt /* error_page_content */,
                             false /* collapse_frame */);
@@ -3497,8 +3497,8 @@ void NavigationRequest::OnRequestRedirected(
 
   if (should_override_url_loading) {
     net_error_ = net::ERR_ABORTED;
-    extended_error_code_ =
-        static_cast<int32_t>(ErrorNavigationTrigger::kShouldOverrideUrlLoading);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kShouldOverrideUrlLoading;
     common_params_->url = redirect_info.new_url;
     common_params_->method = redirect_info.new_method;
     // Update the navigation handle to point to the new url to ensure
@@ -3520,8 +3520,7 @@ void NavigationRequest::OnRequestRedirected(
     // edge case to silently cancel navigations. See https://crbug.com/941653.
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code =
-        static_cast<int32_t>(ErrorNavigationTrigger::kRedirectNotAllowed);
+    error_navigation_trigger_ = ErrorNavigationTrigger::kRedirectNotAllowed;
     OnRequestFailedInternal(completion_status, false /* skip_throttles */,
                             std::nullopt /* error_page_content */,
                             false /* collapse_frame */);
@@ -3547,8 +3546,8 @@ void NavigationRequest::OnRequestRedirected(
              << redirect_info.new_url.possibly_invalid_spec();
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code = static_cast<int32_t>(
-        ErrorNavigationTrigger::kRendererInitiatedCanNotRequestURL);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kRendererInitiatedCanNotRequestURL;
     // TODO(arthursonzogni): This case uses ERR_ABORTED to be consistent with
     // the javascript URL redirect case above, though ideally it would use
     // net::ERR_UNSAFE_REDIRECT and an error page. See https://crbug.com/941653.
@@ -3683,8 +3682,8 @@ void NavigationRequest::OnRequestRedirected(
       CredentialedSubresourceCheckResult::BLOCK_REQUEST) {
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code = static_cast<int32_t>(
-        ErrorNavigationTrigger::kCredentialedSubresourceBlocked);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kCredentialedSubresourceBlocked;
     OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
                             std::nullopt /*error_page_content*/,
                             false /*collapse_frame*/);
@@ -4594,8 +4593,8 @@ void NavigationRequest::OnResponseStarted(
 
   if (!response_should_be_rendered_) {
     net_error_ = net::ERR_ABORTED;
-    extended_error_code_ =
-        static_cast<int32_t>(ErrorNavigationTrigger::kShouldNotRenderResponse);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kShouldNotRenderResponse;
     SelectFrameHostForOnResponseStarted(std::move(url_loader_client_endpoints),
                                         is_download,
                                         std::move(subresource_loader_params));
@@ -4636,8 +4635,8 @@ void NavigationRequest::OnResponseStarted(
         "disabled.");
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code = static_cast<int32_t>(
-        ErrorNavigationTrigger::kFencedFrameEmbedderInitiatedNavigation);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kFencedFrameEmbedderInitiatedNavigation;
     OnRequestFailedInternal(completion_status,
                             /*skip_throttles=*/false,
                             /*error_page_content=*/std::nullopt,
@@ -4795,9 +4794,8 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
              ->ShouldAllowRendererInitiatedCrossProcessNavigation(
                  frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
-      extended_error_code_ = static_cast<int32_t>(
-          ErrorNavigationTrigger::
-              kRenderInitiatedCrossProcessNavigationNotAllowed);
+      error_navigation_trigger_ = ErrorNavigationTrigger::
+          kRenderInitiatedCrossProcessNavigationNotAllowed;
       frame_tree_node_->ResetNavigationRequest(
           NavigationDiscardReason::kInternalCancellation);
       return;
@@ -4984,8 +4982,8 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
       !CheckPermissionsPoliciesForFencedFrames(GetOriginToCommit().value())) {
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-    completion_status.extended_error_code = static_cast<int32_t>(
-        ErrorNavigationTrigger::kFencedFramesPermissionPolicyBlocked);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kFencedFramesPermissionPolicyBlocked;
     OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
                             std::nullopt /*error_page_content*/,
                             false /*collapse_frame*/);
@@ -5398,11 +5396,11 @@ void NavigationRequest::OnStartChecksComplete(
         network::URLLoaderCompletionStatus(result.net_error_code());
     if (result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
         result.action() == NavigationThrottle::CANCEL) {
-      completion_status.extended_error_code =
-          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kNavigationThrottleCancel;
     } else {
-      completion_status.extended_error_code =
-          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleBlock);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kNavigationThrottleBlock;
     }
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -5731,8 +5729,8 @@ void NavigationRequest::OnRedirectChecksComplete(
            result.net_error_code() == net::ERR_ABORTED);
     auto completion_status =
         network::URLLoaderCompletionStatus(result.net_error_code());
-    completion_status.extended_error_code =
-        static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kNavigationThrottleCancel;
     OnRequestFailedInternal(std::move(completion_status),
                             true /* skip_throttles */,
                             result.error_page_content(), collapse_frame);
@@ -5748,8 +5746,8 @@ void NavigationRequest::OnRedirectChecksComplete(
     auto completion_status =
         network::URLLoaderCompletionStatus(result.net_error_code());
     if (result.net_error_code() == net::ERR_ABORTED) {
-      completion_status.extended_error_code =
-          static_cast<int>(ErrorNavigationTrigger::kNavigationThrottleBlock);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kNavigationThrottleBlock;
     }
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(result.net_error_code()),
@@ -5990,8 +5988,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           // request.
           auto completion_status =
               network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-          completion_status.extended_error_code = static_cast<int32_t>(
-              ErrorNavigationTrigger::kContentDecoderDataPipeCreationFailed);
+          error_navigation_trigger_ =
+              ErrorNavigationTrigger::kContentDecoderDataPipeCreationFailed;
           OnRequestFailedInternal(completion_status,
                                   /*skip_throttles=*/false,
                                   /*error_page_content=*/std::nullopt,
@@ -6015,8 +6013,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-      completion_status.extended_error_code = static_cast<int32_t>(
-          ErrorNavigationTrigger::kShouldNotRenderResponse);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kShouldNotRenderResponse;
       OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
                               std::nullopt /*error_page_content*/,
                               false /*collapse_frame*/);
@@ -6049,8 +6047,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       // is logically still pending.
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-      completion_status.extended_error_code = static_cast<int32_t>(
-          ErrorNavigationTrigger::kShouldRenderFallbackContent);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kShouldRenderFallbackContent;
       ObjectNavigationFallbackBodyLoader::CreateAndStart(
           *this, std::move(response_body_),
           std::move(url_loader_client_endpoints_),
@@ -6079,8 +6077,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
     if (!response_should_be_rendered_) {
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
-      completion_status.extended_error_code = static_cast<int32_t>(
-          ErrorNavigationTrigger::kShouldNotRenderResponse);
+      error_navigation_trigger_ =
+          ErrorNavigationTrigger::kShouldNotRenderResponse;
       OnRequestFailedInternal(completion_status, true /* skip_throttles */,
                               std::nullopt /* error_page_content */,
                               false /* collapse_frame */);
@@ -6094,8 +6092,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
            result.net_error_code() == net::ERR_ABORTED);
     auto completion_status =
         network::URLLoaderCompletionStatus(result.net_error_code());
-    completion_status.extended_error_code =
-        static_cast<int32_t>(ErrorNavigationTrigger::kNavigationThrottleCancel);
+    error_navigation_trigger_ =
+        ErrorNavigationTrigger::kNavigationThrottleCancel;
     OnRequestFailedInternal(completion_status, true /* skip_throttles */,
                             result.error_page_content(),
                             false /* collapse_frame */);
@@ -9316,6 +9314,11 @@ net::Error NavigationRequest::GetNetErrorCode() {
 
 int NavigationRequest::GetNetExtendedErrorCode() {
   return extended_error_code_;
+}
+
+std::optional<ErrorNavigationTrigger>
+NavigationRequest::GetErrorNavigationTrigger() {
+  return error_navigation_trigger_;
 }
 
 // The RenderFrameHost that will commit the navigation or an error page.

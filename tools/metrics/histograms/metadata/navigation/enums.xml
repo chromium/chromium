@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kShouldRenderFallbackContent"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_request.h:ErrorNavigationTrigger) -->
+<!-- LINT.ThenChange(//content/public/browser/error_navigation_trigger.h:ErrorNavigationTrigger) -->
 
 <enum name="FencedFrameAutomaticBeaconEventType">
   <int value="0" label="reserved.top_navigation"/>

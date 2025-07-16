@@ -15,6 +15,7 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
@@ -307,6 +308,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // The details why `net::Error` was emitted.
   virtual int GetNetExtendedErrorCode() = 0;
+
+  // The trigger for early cancellation of a navigation. Note that despite the
+  // name, this might be set even when `GetNetErrorCode()` is returning
+  // `net::OK`, and this might not be set even when `GetNetErrorCode()` is not
+  // returning `net::OK`. Currently, this returns non-nullopt in mostly
+  // `net::ERR_ABORTED` cases or navigation discards caused by
+  // `kInternalCancellation` for investigation purposes.
+  virtual std::optional<ErrorNavigationTrigger> GetErrorNavigationTrigger() = 0;
 
   // Returns the RenderFrameHost this navigation is committing in.  The
   // RenderFrameHost returned will be the final host for the navigation. (Use

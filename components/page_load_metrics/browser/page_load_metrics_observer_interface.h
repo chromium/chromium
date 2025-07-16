@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/auction_result.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -106,15 +107,18 @@ struct ExtraRequestCompleteInfo {
 
 // Information related to failed provisional loads.
 struct FailedProvisionalLoadInfo {
-  FailedProvisionalLoadInfo(base::TimeDelta interval,
-                            net::Error error,
-                            int net_extended_error_code,
-                            content::NavigationDiscardReason discard_reason);
+  FailedProvisionalLoadInfo(
+      base::TimeDelta interval,
+      net::Error error,
+      int net_extended_error_code,
+      std::optional<content::ErrorNavigationTrigger> error_navigation_trigger,
+      content::NavigationDiscardReason discard_reason);
   ~FailedProvisionalLoadInfo();
 
   base::TimeDelta time_to_failed_provisional_load;
   net::Error error;
   int net_extended_error_code;
+  std::optional<content::ErrorNavigationTrigger> error_navigation_trigger;
   content::NavigationDiscardReason discard_reason;
 };
 
