@@ -10681,6 +10681,7 @@ from previous Chrome versions.
   <int value="-1250299966" label="SuspiciousSiteDetectionRTLookups:enabled"/>
   <int value="-1250240035" label="NearbySharingOnePageOnboarding:enabled"/>
   <int value="-1250222445" label="WebMidi:enabled"/>
+  <int value="-1250151947" label="LensOverlayEduActionChip:enabled"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
   <int value="-1249142697" label="NtpWallpaperSearchButtonAnimation:enabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
@@ -13899,6 +13900,7 @@ from previous Chrome versions.
   <int value="-50050190" label="PaintHoldingCrossOrigin:enabled"/>
   <int value="-50021298" label="ash-adjustable-large-cursor"/>
   <int value="-49441721" label="NtpModulesRedesigned:enabled"/>
+  <int value="-49364545" label="LensOverlayEduActionChip:disabled"/>
   <int value="-49124128" label="CastEnableStreamingWithHiDPI:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
   <int value="-48187847" label="OneTimePermission:enabled"/>

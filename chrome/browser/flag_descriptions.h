@@ -1545,6 +1545,9 @@ extern const char kLensOverlayDescription[];
 extern const char kLensOverlayBackToPageName[];
 extern const char kLensOverlayBackToPageDescription[];
 
+extern const char kLensOverlayEduActionChipName[];
+extern const char kLensOverlayEduActionChipDescription[];
+
 extern const char kLensOverlayImageContextMenuActionsName[];
 extern const char kLensOverlayImageContextMenuActionsDescription[];
 
