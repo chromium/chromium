@@ -1,22 +1,19 @@
 <!doctype html>
 <html>
   <head>
-    <title>Test Biquad Tail-Time</title>
+    <title>Test Biquad Tail-Time with Peaking Filter</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/biquad-filters.js"></script>
     <script src="test-tail-time.js"></script>
   </head>
 
   <body>
     <script>
-      let audit = Audit.createTaskRunner();
-
-      let sampleRate = 16384;
-      let renderSeconds = 1;
-      let renderFrames = renderSeconds * sampleRate;
+      const sampleRate = 16384;
+      const renderSeconds = 1;
+      const renderFrames = renderSeconds * sampleRate;
 
       // For a peaking filter:
       //   b0 = 1 - alpha*A
@@ -39,7 +36,7 @@
 
       // Array of tests to run.  |descripton| is the task description for
       // audit.define.  |parameters| is option for |testTailTime|.
-      let tests = [
+      const tests = [
         {
           descripton:
               {label: 'peaking-complex-roots', description: 'complex roots'},
@@ -83,7 +80,6 @@
             // Node computed tail frame is 0 frames, which matches the actual
             // tail, so tail output should be exactly zero.
             threshold: 0
-
           }
         },
         {
@@ -101,40 +97,30 @@
         }
       ];
 
-      // Define an appropriate task for each test.
       tests.forEach(entry => {
-        audit.define(entry.descripton, (task, should) => {
-          let context = new OfflineAudioContext(1, renderFrames, sampleRate);
-          testTailTime(should, context, entry.parameters).then(() => task.done());
-        });
+        promise_test(async (t) => {
+          const context = new OfflineAudioContext(1, renderFrames, sampleRate);
+          await testTailTimeModern(context, entry.parameters);
+        }, `${entry.descripton.label}: ${entry.descripton.description}`);
       });
 
-      audit.define(
-          {label: 'peaking-unstable', description: 'Roots on unit circle'},
-          async (task, should) => {
-            let context = new OfflineAudioContext(
-                {length: renderFrames, sampleRate: sampleRate});
-            let src = new OscillatorNode(context);
-            // See https://crbug.com/1172332 for the values here.
-            let f = new BiquadFilterNode(context, {
-              type: 'peaking',
-              frequency: 27,
-              Q: 2993.82007,
-              gain: 1340,
-              detune: -145229
-            });
-            src.connect(f).connect(context.destination);
-            src.start();
-
-            let buffer = await context.startRendering();
-
-            // This is testing that a DCHECK doesn't happen, so the
-            // results aren't important.
-            should(true, 'Rendering finished successfully').beTrue();
-            task.done();
-          });
-
-      audit.run();
+      promise_test(async () => {
+        const context
+            = new OfflineAudioContext({ length: renderFrames, sampleRate });
+        let src = new OscillatorNode(context);
+        // See https://crbug.com/1172332 for the values here.
+        let f = new BiquadFilterNode(context, {
+          type: 'peaking',
+          frequency: 27,
+          Q: 2993.82007,
+          gain: 1340,
+          detune: -145229
+        });
+        src.connect(f).connect(context.destination);
+        src.start();
+        await context.startRendering();
+        assert_true(true, 'Rendering finished successfully');
+      }, 'peaking-unstable: Roots on unit circle');
     </script>
   </body>
 </html>
