@@ -661,10 +661,7 @@ chromium-metrics-reviews@google.com.
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Logged when New Tab Footer visibility is toggled via Customize Chrome. Note:
-    Prior to M140, NewTabPage.Footer.ToggledVisibility exclusively recorded
-    consumer enablement. NewTabPage.Footer.ToggledVisibility.Consumer did not
-    exist at the time.
+    Logged when New Tab Footer visibility is toggled via Customize Chrome.
   </summary>
   <token key="FooterToggleSource">
     <variant name=""/>
