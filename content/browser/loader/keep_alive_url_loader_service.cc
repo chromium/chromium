@@ -168,7 +168,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   void ClearKeepAliveURLLoadersAttemptingRetry() {
     std::vector<mojo::ReceiverId> loader_ids_to_remove;
     for (const auto& [loader_id, weak_ptr_loader] : weak_ptr_loaders_) {
-      if (weak_ptr_loader && weak_ptr_loader->IsAttemptingRetry()) {
+      if (weak_ptr_loader &&
+          weak_ptr_loader->IsAttemptingRetry(/*include_failed_retry=*/true)) {
         loader_ids_to_remove.push_back(loader_id);
       }
     }
@@ -204,10 +205,10 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   size_t NumDisconnectedLoadersForTesting() const {
     return disconnected_loaders_.size();
   }
-  size_t NumLoadersAttemptingRetryForTesting() const {
+  size_t NumLoadersAttemptingRetryForTesting(bool include_failed_retry) const {
     int count = 0;
     for (const auto& [_, weak_ptr_loader] : weak_ptr_loaders_) {
-      if (weak_ptr_loader->IsAttemptingRetry()) {
+      if (weak_ptr_loader->IsAttemptingRetry(include_failed_retry)) {
         count++;
       }
     }
@@ -696,11 +697,12 @@ size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
              ->NumDisconnectedLoadersForTesting();  // IN-TEST
 }
 
-size_t KeepAliveURLLoaderService::NumLoadersAttemptingRetryForTesting() const {
-  return url_loader_factories_
-             ->NumLoadersAttemptingRetryForTesting() +  // IN-TEST
-         fetch_later_loader_factories_
-             ->NumLoadersAttemptingRetryForTesting();  // IN-TEST
+size_t KeepAliveURLLoaderService::NumLoadersAttemptingRetryForTesting(
+    bool include_failed_retry) const {
+  return url_loader_factories_->NumLoadersAttemptingRetryForTesting(
+             include_failed_retry) +  // IN-TEST
+         fetch_later_loader_factories_->NumLoadersAttemptingRetryForTesting(
+             include_failed_retry);  // IN-TEST
 }
 
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(
