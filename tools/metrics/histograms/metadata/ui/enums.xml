@@ -721,6 +721,7 @@ chromium-metrics-reviews@google.com.
   <int value="-566908909" label="chrome://suggestions/"/>
   <int value="-548156607" label="chrome://feedback/"/>
   <int value="-543577801" label="chrome://history-side-panel.top-chrome/"/>
+  <int value="-543094310" label="chrome://watermark/"/>
   <int value="-532669066" label="chrome://traces/"/>
   <int value="-528306235" label="chrome://sync/"/>
   <int value="-525954994" label="chrome-untrusted://lens/"/>

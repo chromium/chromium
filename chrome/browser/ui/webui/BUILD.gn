@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -93,6 +94,13 @@ source_set("configs") {
     deps += [
       "//chrome/browser/ui/webui/ash/config",
       "//chromeos/constants",
+    ]
+  }
+
+  if (enterprise_watermark) {
+    deps += [
+      "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/ui/webui/watermark",
     ]
   }
 

@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_watermark)
+
+static_library("watermark") {
+  sources = [
+    "watermark_ui.cc",
+    "watermark_ui.h",
+  ]
+
+  deps = [
+    "//chrome/browser/enterprise/watermark:watermark_view_lib",
+    "//chrome/browser/resources/watermark:resources_grit",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui:webui",
+  ]
+}

@@ -8,6 +8,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -545,6 +546,11 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/glic:resources",
         "//chrome/browser/resources/glic/fre:resources",
       ]
+    }
+
+    if (enterprise_watermark) {
+      sources += [ "$root_gen_dir/chrome/watermark_resources.pak" ]
+      deps += [ "//chrome/browser/resources/watermark:resources" ]
     }
 
     if (is_win || is_mac || is_linux) {

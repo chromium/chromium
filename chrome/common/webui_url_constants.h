@@ -19,6 +19,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
@@ -623,6 +624,11 @@ inline constexpr char kChromeUISessionServiceInternalsPath[] =
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 inline constexpr char kChromeUITabStripHost[] = "tab-strip.top-chrome";
 inline constexpr char kChromeUITabStripURL[] = "chrome://tab-strip.top-chrome";
+#endif
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+inline constexpr char kChromeUIWatermarkHost[] = "watermark";
+inline constexpr char kChromeUIWatermarkURL[] = "chrome://watermark/";
 #endif
 
 // Settings sub-pages.

@@ -735,6 +735,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [5220],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/watermark/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5230],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

@@ -79,6 +79,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/tab_group_home:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
     "//chrome/browser/resources/user_education_internals:build_ts",
+    "//chrome/browser/resources/watermark:build_ts",
     "//chrome/browser/resources/webui_gallery:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",
     "//chrome/test/data/pdf:build_ts",

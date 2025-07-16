@@ -5,6 +5,7 @@
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -173,6 +174,10 @@ group("resources") {
       "glic:resources",
       "glic/fre:resources",
     ]
+  }
+
+  if (enterprise_watermark) {
+    public_deps += [ "watermark:resources" ]
   }
 }
 

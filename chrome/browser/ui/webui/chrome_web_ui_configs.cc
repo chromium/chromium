@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
 #include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
@@ -206,6 +207,10 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/ui/webui/safe_browsing/chrome_safe_browsing_ui.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/ui/webui/watermark/watermark_ui.h"
 #endif
 
 void RegisterChromeWebUIConfigs() {
@@ -426,5 +431,9 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   map.AddWebUIConfig(
       std::make_unique<safe_browsing::ChromeSafeBrowsingUIConfig>());
+#endif
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  map.AddWebUIConfig(std::make_unique<WatermarkUIConfig>());
 #endif
 }

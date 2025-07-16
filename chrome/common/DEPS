@@ -21,6 +21,7 @@ include_rules = [
   "+components/embedder_support/android/common",
   "+components/embedder_support/origin_trials",
   "+components/embedder_support/user_agent_utils.h",
+  "+components/enterprise/buildflags",
   "+components/favicon_base",
   "+components/gcm_driver",
   "+components/google/core/common",

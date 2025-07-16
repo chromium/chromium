@@ -510,6 +510,7 @@ static_library("url_constants") {
     "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
+    "//components/enterprise/buildflags",
     "//components/signin/public/base:signin_buildflags",
     "//components/supervised_user/core/common:buildflags",
     "//content/public/common",
