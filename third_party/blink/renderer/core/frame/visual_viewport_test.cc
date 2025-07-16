@@ -1753,7 +1753,7 @@ TEST_P(VisualViewportTest, visualViewportIsInert) {
   EXPECT_EQ(10, visual_viewport.GetScrollOffset().x());
   EXPECT_EQ(15, visual_viewport.GetScrollOffset().y());
 
-  window->scrollTo(5000, 5000);
+  window->scrollToForTesting(5000, 5000);
   EXPECT_EQ(600, html->scrollLeft());
   EXPECT_EQ(500, html->scrollTop());
   EXPECT_EQ(10, visual_viewport.GetScrollOffset().x());

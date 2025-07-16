@@ -980,7 +980,7 @@ TEST_F(LayoutShiftTrackerTest,
   // In the next frame, we scroll it onto the screen, but it still doesn't
   // count for CLS, and its subtree is not yet unskipped, because the
   // intersection observation takes effect on the subsequent frame.
-  GetDocument().domWindow()->scrollTo(0, 100000);
+  GetDocument().domWindow()->scrollToForTesting(0, 100000);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 1), target->Size());
@@ -1066,7 +1066,7 @@ TEST_F(LayoutShiftTrackerTest,
   // In the next frame, we scroll it onto the screen, but it still doesn't
   // count for CLS, and its subtree is not yet unskipped, because the
   // intersection observation takes effect on the subsequent frame.
-  GetDocument().domWindow()->scrollTo(0, 100000 + 100);
+  GetDocument().domWindow()->scrollToForTesting(0, 100000 + 100);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 1), offscreen->Size());
@@ -1096,7 +1096,7 @@ TEST_F(LayoutShiftTrackerTest,
   EXPECT_GT(score, 0);
 
   // Now scroll the element back off-screen.
-  GetDocument().domWindow()->scrollTo(0, 0);
+  GetDocument().domWindow()->scrollToForTesting(0, 0);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
@@ -1195,7 +1195,7 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
   auto* target_element = GetElementById("target");
 
   // Scroll the window which accumulates a scroll in the layout shift tracker.
-  GetDocument().domWindow()->scrollBy(0, 1000);
+  GetDocument().domWindow()->scrollByForTesting(0, 1000);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());

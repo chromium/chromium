@@ -91,7 +91,7 @@ TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
     </body>
   )HTML");
   GetDocument().GetFrame()->SetLayoutZoomFactor(2);
-  Window().scrollTo(100, 100);
+  Window().scrollToForTesting(100, 100);
 
   GetEventHandler().HandlePointerEvent(
       CreateTouchPointerEvent(WebInputEvent::Type::kPointerDown),

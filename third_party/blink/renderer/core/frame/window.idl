@@ -135,12 +135,12 @@
     [HighEntropy=Direct, MeasureAs=WindowPageXOffset, Replaceable] readonly attribute double pageXOffset;
     [HighEntropy=Direct, MeasureAs=WindowScrollY, Replaceable] readonly attribute double scrollY;
     [HighEntropy=Direct, MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
-    [ImplementedAs=scrollTo] void scroll(optional ScrollToOptions options = {});
-    [ImplementedAs=scrollTo] void scroll(unrestricted double x, unrestricted double y);
-    void scrollTo(optional ScrollToOptions options = {});
-    void scrollTo(unrestricted double x, unrestricted double y);
-    void scrollBy(optional ScrollToOptions options = {});
-    void scrollBy(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(optional ScrollToOptions options = {});
+    [ImplementedAs=scrollTo, CallWith=ScriptState] Promise<undefined> scroll(unrestricted double x, unrestricted double y);
+    [CallWith=ScriptState] Promise<undefined> scrollTo(optional ScrollToOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> scrollTo(unrestricted double x, unrestricted double y);
+    [CallWith=ScriptState] Promise<undefined> scrollBy(optional ScrollToOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> scrollBy(unrestricted double x, unrestricted double y);
 
     // Visual Viewport API
     // https://github.com/WICG/ViewportAPI

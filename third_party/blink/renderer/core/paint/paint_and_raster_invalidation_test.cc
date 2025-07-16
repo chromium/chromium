@@ -810,7 +810,7 @@ TEST_P(PaintAndRasterInvalidationTest, DelayedFullPaintInvalidation) {
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
   // Scroll target into view.
-  GetDocument().domWindow()->scrollTo(0, 4000);
+  GetDocument().domWindow()->scrollToForTesting(0, 4000);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(
       GetRasterInvalidationTracking()->Invalidations(),

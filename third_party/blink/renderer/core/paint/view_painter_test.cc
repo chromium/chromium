@@ -199,7 +199,7 @@ TEST_P(ViewPainterTest, TouchActionRect) {
     <div id='forcescroll' style='width: 0; height: 2900px;'></div>
   )HTML");
 
-  GetFrame().DomWindow()->scrollBy(0, 100);
+  GetFrame().DomWindow()->scrollByForTesting(0, 100);
   UpdateAllLifecyclePhasesForTest();
 
   auto* view = &GetLayoutView();

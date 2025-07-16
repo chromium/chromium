@@ -2183,7 +2183,7 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
   // Make sure the scrolling coordinator is active.
   ASSERT_TRUE(GetFrame().GetPage()->GetScrollingCoordinator());
 
-  GetFrame().DomWindow()->scrollBy(0, 300);
+  GetFrame().DomWindow()->scrollByForTesting(0, 300);
 
   // Snapshotted scroll offset update requires animation frame.
   SimulateFrame();

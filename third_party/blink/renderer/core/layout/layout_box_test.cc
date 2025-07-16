@@ -874,7 +874,7 @@ TEST_F(LayoutBoxTest, DelayedInvalidationLayoutViewScrolled) {
   EXPECT_TRUE(layout_view->MayNeedPaintInvalidationAnimatedBackgroundImage());
 
   // Scroll down at least by a viewport height.
-  GetDocument().domWindow()->scrollBy(0, 10000);
+  GetDocument().domWindow()->scrollByForTesting(0, 10000);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(layout_view->ShouldDelayFullPaintInvalidation());

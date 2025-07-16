@@ -444,7 +444,7 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   window_option->setLeft(0);
   window_option->setTop(0);
   window_option->setBehavior("smooth");
-  Window().scrollTo(window_option);
+  Window().scrollTo(nullptr, window_option);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
@@ -843,7 +843,7 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   ASSERT_NEAR(Window().scrollY(), 299, 1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
-  Window().scrollTo(0, 0);
+  Window().scrollToForTesting(0, 0);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);

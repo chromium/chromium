@@ -894,7 +894,7 @@ TEST_P(PrintContextFrameTest, WithScrolledSubframe) {
       AbsoluteBlockHtmlForLink(850, 860, 70, 80,
                                "http://another.invisible.com"));
 
-  ChildDocument().domWindow()->scrollTo(100, 100);
+  ChildDocument().domWindow()->scrollToForTesting(100, 100);
 
   MockPageContextCanvas canvas;
   PrintSinglePage(canvas);

@@ -76,7 +76,7 @@ TEST_F(CullRectUpdaterTest, VerticalRLWritingModeDocument) {
     </div>
   )HTML");
 
-  GetDocument().domWindow()->scrollTo(-5000, 0);
+  GetDocument().domWindow()->scrollToForTesting(-5000, 0);
   UpdateAllLifecyclePhasesForTest();
 
   // A scroll by -5000px is equivalent to a scroll by (10000 - 5000 - 800)px =
@@ -438,7 +438,7 @@ TEST_F(CullRectUpdaterTest, FixedPositionUnderClipPath) {
 
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect("fixed").Rect());
 
-  GetDocument().GetFrame()->DomWindow()->scrollTo(0, 1000);
+  GetDocument().GetFrame()->DomWindow()->scrollToForTesting(0, 1000);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect("fixed").Rect());
 
@@ -459,7 +459,7 @@ TEST_F(CullRectUpdaterTest, FixedPositionUnderClipPathWillChangeTransform) {
 
   EXPECT_EQ(gfx::Rect(-4000, -4000, 8800, 8600), GetCullRect("fixed").Rect());
 
-  GetDocument().GetFrame()->DomWindow()->scrollTo(0, 1000);
+  GetDocument().GetFrame()->DomWindow()->scrollToForTesting(0, 1000);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(-4000, -4000, 8800, 8600), GetCullRect("fixed").Rect());
 
@@ -886,7 +886,7 @@ TEST_F(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {
             layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetContentsCullRect(layer).Rect());
 
-  GetDocument().domWindow()->scrollBy(0, 300);
+  GetDocument().domWindow()->scrollByForTesting(0, 300);
   UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
   EXPECT_FALSE(layer.NeedsCullRectUpdate());
   UpdateAllLifecyclePhasesForTest();
@@ -894,7 +894,7 @@ TEST_F(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {
             layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetContentsCullRect(layer).Rect());
 
-  GetDocument().domWindow()->scrollBy(0, 300);
+  GetDocument().domWindow()->scrollByForTesting(0, 300);
   UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
   EXPECT_TRUE(layer.NeedsCullRectUpdate());
   UpdateAllLifecyclePhasesForTest();
@@ -902,7 +902,7 @@ TEST_F(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {
             layer.GetScrollableArea()->LastCullRectUpdateScrollPosition());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 5016), GetContentsCullRect(layer).Rect());
 
-  GetDocument().domWindow()->scrollBy(0, 300);
+  GetDocument().domWindow()->scrollByForTesting(0, 300);
   UpdateAllLifecyclePhasesExceptPaint(/*update_cull_rects*/ false);
   EXPECT_FALSE(layer.NeedsCullRectUpdate());
   UpdateAllLifecyclePhasesForTest();

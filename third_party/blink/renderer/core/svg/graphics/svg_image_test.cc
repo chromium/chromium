@@ -418,7 +418,7 @@ TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
   // "image changed" notification, which (re)sets the delay-invalidation
   // flag. The following begin-frame then observes that the image is not
   // visible.
-  GetDocument().domWindow()->scrollBy(0, 10000);
+  GetDocument().domWindow()->scrollByForTesting(0, 10000);
   test::RunDelayedTasks(base::Milliseconds(1) + timer.NextFireInterval());
   Compositor().BeginFrame();
   EXPECT_TRUE(timer.IsActive());
@@ -434,7 +434,7 @@ TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
   // Scroll back up to make the image visible. The following paint observes
   // that the image is now visible, and triggers a paint that resume the image
   // animation.
-  GetDocument().domWindow()->scrollBy(0, -10000);
+  GetDocument().domWindow()->scrollByForTesting(0, -10000);
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
@@ -500,7 +500,7 @@ TEST_F(SVGImageSimTest, AnimationsResumedWhenImageScrolledIntoView) {
 
   // Scroll down to make the image appear in the viewport, and then wait for
   // the animation timer to fire.
-  GetDocument().domWindow()->scrollBy(0, 10000);
+  GetDocument().domWindow()->scrollByForTesting(0, 10000);
   Compositor().BeginFrame();
 
   EXPECT_FALSE(svg_image_chrome_client.IsSuspended());
