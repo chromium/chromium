@@ -15,6 +15,7 @@
       var(--cr-fallback-color-inverse-primary));
   --cr-toast-text-color: var(--color-toast-foreground,
       var(--cr-fallback-color-inverse-on-surface));
+  --cr-focus-outline-color: var(--cr-focus-outline-inverse-color);
 }
 
 :host {

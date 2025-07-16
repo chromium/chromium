@@ -263,6 +263,8 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                 : SetAlpha({kColorRefPrimary70}, 0x52)};
   mixer[kColorSysStateFocusRing] = {dark_mode ? kColorRefPrimary80
                                               : kColorRefPrimary40};
+  mixer[kColorSysStateFocusRingInverse] = {dark_mode ? kColorRefPrimary40
+                                                     : kColorRefPrimary80};
   mixer[kColorSysStateTextHighlight] = {dark_mode ? kColorRefPrimary80
                                                   : kColorRefPrimary40};
   mixer[kColorSysStateOnTextHighlight] = {dark_mode ? kColorRefNeutral0

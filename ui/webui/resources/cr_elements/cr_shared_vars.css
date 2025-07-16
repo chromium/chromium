@@ -310,6 +310,8 @@ html {
 
   --cr-focus-outline-color: var(--color-sys-state-focus-ring,
       var(--cr-fallback-color-primary));
+  --cr-focus-outline-inverse-color: var(--color-sys-state-focus-ring-inverse,
+      var(--cr-fallback-color-inverse-primary));
 
   /* Typography */
   --cr-primary-text-color: var(--color-primary-foreground,
