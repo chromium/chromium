@@ -39,6 +39,9 @@ NSSet<NSString*>* ConvertClearBrowsingDataMask(ClearBrowsingDataMask types) {
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveCookies)) {
     [result addObject:WKWebsiteDataTypeCookies];
   }
+  if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveOriginPrivateFileSystem)) {
+    [result addObject:WKWebsiteDataTypeFileSystem];
+  }
   return result;
 }
 

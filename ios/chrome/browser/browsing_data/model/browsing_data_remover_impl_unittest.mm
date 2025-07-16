@@ -40,7 +40,8 @@ constexpr BrowsingDataRemoveMask kRemoveMask =
     BrowsingDataRemoveMask::REMOVE_WEBSQL |
     BrowsingDataRemoveMask::REMOVE_CACHE_STORAGE |
     BrowsingDataRemoveMask::REMOVE_VISITED_LINKS |
-    BrowsingDataRemoveMask::REMOVE_LAST_USER_ACCOUNT;
+    BrowsingDataRemoveMask::REMOVE_LAST_USER_ACCOUNT |
+    BrowsingDataRemoveMask::REMOVE_ORIGIN_PRIVATE_FILE_SYSTEM;
 
 const char kFullDeletionHistogram[] =
     "History.ClearBrowsingData.Duration.FullDeletion";
