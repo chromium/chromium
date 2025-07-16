@@ -123,11 +123,11 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
-  }
 
-  if (DesktopResizerX11::supportsHighDpiResize()) {
-    capabilities += " ";
-    capabilities += protocol::kHighDpiCapability;
+    if (DesktopResizerX11::supportsHighDpiResize()) {
+      capabilities += " ";
+      capabilities += protocol::kHighDpiCapability;
+    }
   }
 #elif BUILDFLAG(IS_MAC)
   capabilities += " ";
