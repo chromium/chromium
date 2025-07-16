@@ -2714,7 +2714,7 @@ BASE_FEATURE(kSingleCaCertVerificationPhase0,
 // fallback to the previous config.
 BASE_FEATURE(kSingleCaCertVerificationPhase1,
              "SingleCaCertVerificationPhase1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a single CA cert for the EAP network if CA cert was selected, no
 // fallback.
