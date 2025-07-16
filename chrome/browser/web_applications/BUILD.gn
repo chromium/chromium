@@ -808,6 +808,10 @@ source_set("web_applications_test_support") {
       "//chromeos/ash/experiences/system_web_apps/types",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # This has to be a separate target to avoid circular dependencies with
@@ -1078,6 +1082,10 @@ source_set("web_applications_unit_tests") {
   if (is_win || is_mac || is_linux) {
     deps += [ "//components/services/app_service" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 group("unit_tests") {
@@ -1240,6 +1248,10 @@ source_set("web_applications_browser_tests") {
       "//components/system_media_controls",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 group("browser_tests") {
