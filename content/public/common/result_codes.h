@@ -5,6 +5,10 @@
 #ifndef CONTENT_PUBLIC_COMMON_RESULT_CODES_H_
 #define CONTENT_PUBLIC_COMMON_RESULT_CODES_H_
 
+#include <string>
+
+#include "content/common/content_export.h"
+
 namespace content {
 
 // This file consolidates all the return codes for the browser and renderer
@@ -51,6 +55,10 @@ static_assert(RESULT_CODE_KILLED_BAD_MESSAGE == 3,
 
 static_assert(RESULT_CODE_LAST_CODE == 5,
               "This enum is frozen - see the IMPORTANT note above.");
+
+// Return a string describing the error code. Keep in sync with the
+// CrashExitCodes in /tools/metrics/histograms/enums.xml.
+CONTENT_EXPORT std::string CrashExitCodeToString(int exit_code);
 
 }  // namespace content
 

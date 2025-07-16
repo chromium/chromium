@@ -2813,8 +2813,9 @@ Called by update_net_error_codes.py.-->
 <!-- These are abs() raw exit codes, so they are always positive. See the
 MapCrashExitCodeForHistogram function and the WindowsExitCode enum.
 
-When adding to this list, update the ErrorToString function in sad_tab_view.cc
-to ensure that the crash string is shown properly on the user-facing crash UI.
+When adding to this list, update the CrashExitCodeToString function in
+//content/public/common/result_codes.cc to ensure that the crash string is
+shown properly on the user-facing crash UI.
 -->
 
   <int value="1" label="RESULT_CODE_KILLED"/>
