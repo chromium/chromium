@@ -337,7 +337,7 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
           .inline_offset;
   unsigned offset_in_item =
       hit_item->TextShapeResult()->CreateShapeResult()->OffsetForPosition(
-          hit_item->ScaleInlineOffset(inline_offset), BreakGlyphsOption(true));
+          hit_item->ScaleInlineOffset(inline_offset));
   return addressable_code_unit_count + offset_in_item;
 }
 

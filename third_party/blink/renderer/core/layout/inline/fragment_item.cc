@@ -1240,7 +1240,7 @@ unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
     // TODO(layout-dev): Move caret logic out of ShapeResult into separate
     // support class for code health and to avoid this copy.
     return shape_result->CreateShapeResult()->CaretOffsetForHitTest(
-               scaled_offset, Text(items), BreakGlyphsOption(true)) +
+               scaled_offset, Text(items)) +
            StartOffset();
   }
 

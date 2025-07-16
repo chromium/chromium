@@ -218,23 +218,15 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Returns the offset, relative to StartIndex, whose (origin,
   // origin+advance) contains |x|.
-  unsigned OffsetForPosition(float x, BreakGlyphsOption) const;
+  unsigned OffsetForPosition(float x) const;
   // Returns the offset whose glyph boundary is nearest to |x|. Depends on
   // whether |x| is on the left-half or the right-half of the glyph, it
   // determines the left-boundary or the right-boundary, then computes the
   // offset from the bidi direction.
-  unsigned CaretOffsetForHitTest(float x,
-                                 const StringView& text,
-                                 BreakGlyphsOption) const;
+  unsigned CaretOffsetForHitTest(float x, const StringView& text) const;
   // Returns the offset that can fit to between |x| and the left or the right
   // edge. The side of the edge is determined by |line_direction|.
   unsigned OffsetToFit(float x, TextDirection line_direction) const;
-  // TODO(ikilpatrick): Remove this method.
-  unsigned OffsetForPosition(float x,
-                             const StringView& text,
-                             BreakGlyphsOption break_glyphs) const {
-    return CaretOffsetForHitTest(x, text, break_glyphs);
-  }
 
   // Returns the position for a given offset, relative to StartIndex.
   float PositionForOffset(unsigned offset,

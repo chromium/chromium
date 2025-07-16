@@ -632,10 +632,9 @@ void ShapeResult::OffsetForPosition(float target_x,
   DCHECK_LE(result->right_character_index, NumCharacters() + 1);
 }
 
-unsigned ShapeResult::OffsetForPosition(float x,
-                                        BreakGlyphsOption break_glyphs) const {
+unsigned ShapeResult::OffsetForPosition(float x) const {
   GlyphIndexResult result;
-  OffsetForPosition(x, break_glyphs, &result);
+  OffsetForPosition(x, BreakGlyphsOption(true), &result);
 
   // For LTR, the offset is always the left one.
   if (IsLtr())
@@ -649,15 +648,12 @@ unsigned ShapeResult::OffsetForPosition(float x,
   return result.right_character_index;
 }
 
-unsigned ShapeResult::CaretOffsetForHitTest(
-    float x,
-    const StringView& text,
-    BreakGlyphsOption break_glyphs_option) const {
-  if (break_glyphs_option)
-    EnsureGraphemes(text);
+unsigned ShapeResult::CaretOffsetForHitTest(float x,
+                                            const StringView& text) const {
+  EnsureGraphemes(text);
 
   GlyphIndexResult result;
-  OffsetForPosition(x, break_glyphs_option, &result);
+  OffsetForPosition(x, BreakGlyphsOption(true), &result);
 
   if (x - result.origin_x <= result.advance / 2)
     return result.left_character_index;

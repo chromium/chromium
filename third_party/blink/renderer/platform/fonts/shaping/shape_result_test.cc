@@ -715,8 +715,8 @@ TEST_P(CaretPositionForOffsetTest, CaretPositionForOffsets) {
   }
 }
 
-// Tests for OffsetForPosition
-struct CaretOffsetForPositionTestData {
+// Tests for CaretOffsetForHitTest
+struct CaretOffsetForHitTestTestData {
   // The string that should be processed.
   const UChar* string;
   // Text direction to test
@@ -727,8 +727,6 @@ struct CaretOffsetForPositionTestData {
   std::vector<wtf_size_t> offsets;
   // The font to use
   ShapeResultTest::FontType font;
-  // BreakGlyphsOption value
-  BreakGlyphsOption break_glyphs_option;
 } caret_offset_for_position_test_data[] = {
 
     {u"مَ1مَمَ2مَمَمَ3",
@@ -736,115 +734,56 @@ struct CaretOffsetForPositionTestData {
 #if BUILDFLAG(IS_APPLE)
      {1,  2,  3,  9,  10, 15, 16, 21, 22, 27,
       28, 34, 35, 40, 41, 45, 46, 51, 52, 55},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
-#elif BUILDFLAG(IS_WIN)
-     {1,  3,  4,  9,  10, 16, 17, 21, 22, 27,
-      28, 34, 35, 39, 40, 44, 45, 50, 51, 53},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
-#else
-     {1,  3,  4,  9,  10, 16, 17, 23, 24, 29,
-      30, 36, 37, 42, 43, 48, 49, 54, 55, 57},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
-#endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(false)},
-
-    {u"مَ1مَمَ2مَمَمَ3",
-     TextDirection::kLtr,
-#if BUILDFLAG(IS_APPLE)
-     {1,  2,  3,  9,  10, 15, 16, 21, 22, 27,
-      28, 34, 35, 40, 41, 45, 46, 51, 52, 55},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+     {0, 0, 2, 2, 3, 3, 5, 5, 7, 7, 8, 8, 10, 10, 12, 12, 14, 14, 15, 15},
 #elif BUILDFLAG(IS_WIN)
      {1,  3,  4,  9,  10, 16, 17, 21, 22, 27,
       28, 34, 35, 39, 40, 44, 45, 50, 51, 54},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+     {0, 0, 2, 2, 3, 3, 5, 5, 7, 7, 8, 8, 10, 10, 12, 12, 14, 14, 15, 15},
 #else
      {1,  3,  4,  9,  10, 16, 17, 23, 24, 29,
       30, 36, 37, 42, 43, 48, 49, 54, 55, 57},
-     {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
-      8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+     {0, 0, 2, 2, 3, 3, 5, 5, 7, 7, 8, 8, 10, 10, 12, 12, 14, 14, 15, 15},
 #endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(true)},
+     ShapeResultTest::kArabicFont},
 
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
      {1,  3,  4,  10, 11, 15, 16, 20, 21, 27,
       28, 33, 34, 39, 40, 45, 46, 52, 53, 55},
-     {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
-      7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+     {15, 15, 14, 14, 12, 12, 10, 10, 8, 8, 7, 7, 5, 5, 3, 3, 2, 2, 0, 0},
 #elif BUILDFLAG(IS_WIN)
      {1,  3,  4,  10, 11, 15, 16, 20, 21, 26,
       27, 33, 34, 38, 39, 44, 45, 51, 52, 53},
-     {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
-      7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+     {15, 15, 14, 14, 12, 12, 10, 10, 8, 8, 7, 7, 5, 5, 3, 3, 2, 2, 0, 0},
 #else
      {1,  3,  4,  10, 11, 16, 17, 22, 23, 28,
       29, 35, 36, 42, 43, 48, 49, 55, 56, 57},
-     {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
-      7,  7,  5,  5,  3,  3,  2,  2,  0, 0},
+     {15, 15, 14, 14, 12, 12, 10, 10, 8, 8, 7, 7, 5, 5, 3, 3, 2, 2, 0, 0},
 #endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(true)},
+     ShapeResultTest::kArabicFont},
 
     {u"あ1あمَ2あمَあ",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
      {1, 6, 7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 67, 68, 73},
-     {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+     {0, 0, 1, 1, 2, 2, 3, 3, 5, 5, 6, 6, 7, 7, 9, 9, 10, 10},
 #else
      {1, 6, 7, 15, 16, 25, 26, 34, 35, 40, 41, 50, 51, 59, 60, 68, 69, 73},
-     {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+     {0, 0, 1, 1, 2, 2, 3, 3, 5, 5, 6, 6, 7, 7, 9, 9, 10, 10},
 #endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(false)},
-
-    {u"あ1あمَ2あمَあ",
-     TextDirection::kLtr,
-#if BUILDFLAG(IS_APPLE)
-     {1, 6, 7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 67, 68, 73},
-     {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
-#else
-     {1, 6, 7, 15, 16, 25, 26, 34, 35, 40, 41, 50, 51, 59, 60, 68, 69, 73},
-     {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
-#endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(true)},
+     ShapeResultTest::kArabicFont},
 
     {u"あ1あمَ2あمَあ",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
-     {1,  6,  7, 14, 15, 23, 24, 33, 34, 39, 40, 48, 49, 58, 59, 67, 68, 73},
-     {10, 10, 9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+     {1, 6, 7, 14, 15, 23, 24, 33, 34, 39, 40, 48, 49, 58, 59, 67, 68, 73},
+     {10, 10, 9, 9, 7, 7, 6, 6, 5, 5, 3, 3, 2, 2, 1, 1, 0, 0},
 #else
-     {1,  6,  7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 68, 69, 73},
-     {10, 10, 9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+     {1, 6, 7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 68, 69, 73},
+     {10, 10, 9, 9, 7, 7, 6, 6, 5, 5, 3, 3, 2, 2, 1, 1, 0, 0},
 #endif
-     ShapeResultTest::kArabicFont,
-     BreakGlyphsOption(true)},
-
-    {u"楽しいドライブ、0",
-     TextDirection::kLtr,
-#if BUILDFLAG(IS_APPLE)
-     {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
-      55, 66, 67, 78, 79, 90, 91, 99, 100, 103},
-     {0,  0,  1,  1,  2,  2,  3,  3,  4,   4,
-      5,  5,  6,  6,  7,  7,  8,  8,  9,   9},
-#else
-     {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
-      55, 66, 67, 78, 79, 90, 91, 99, 100, 102},
-     {0,  0,  1,  1,  2,  2,  3,  3,  4,   4,
-      5,  5,  6,  6,  7,  7,  8,  8,  9,   9},
-#endif
-     ShapeResultTest::kCJKFont,
-     BreakGlyphsOption(true)},
+     ShapeResultTest::kArabicFont},
 
     {u"楽しいドライブ、0",
      TextDirection::kLtr,
@@ -857,34 +796,30 @@ struct CaretOffsetForPositionTestData {
       55, 66, 67, 78, 79, 90, 91, 99, 100, 102},
      {0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9},
 #endif
-     ShapeResultTest::kCJKFont,
-     BreakGlyphsOption(false)},
+     ShapeResultTest::kCJKFont},
 
     {u"楽しいドライブ、0",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
      {1,  3,  4,  13, 14, 25, 26, 37, 38, 49,
       50, 61, 62, 73, 74, 85, 86, 97, 98, 103},
-     {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
-      4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+     {9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0},
 #else
      {1,  3,  4,  13, 14, 25, 26, 37, 38, 49,
       50, 61, 62, 73, 74, 85, 86, 97, 98, 102},
-     {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
-      4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+     {9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0},
 #endif
-     ShapeResultTest::kCJKFont,
-     BreakGlyphsOption(true)},
+     ShapeResultTest::kCJKFont},
 };
-class CaretOffsetForPositionTest
+class CaretOffsetForHitTestTest
     : public ShapeResultTest,
-      public testing::WithParamInterface<CaretOffsetForPositionTestData> {};
+      public testing::WithParamInterface<CaretOffsetForHitTestTestData> {};
 INSTANTIATE_TEST_SUITE_P(
     ShapeResult,
-    CaretOffsetForPositionTest,
+    CaretOffsetForHitTestTest,
     testing::ValuesIn(caret_offset_for_position_test_data));
 
-TEST_P(CaretOffsetForPositionTest, OffsetForPositions) {
+TEST_P(CaretOffsetForHitTestTest, CaretOffsetForHitTest) {
   ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
 
   const auto& test_data = GetParam();
@@ -896,33 +831,24 @@ TEST_P(CaretOffsetForPositionTest, OffsetForPositions) {
 
   float text_width = result->Width();
   if (IsLtr(test_data.direction)) {
-    EXPECT_EQ(0u, result->OffsetForPosition(-1, text_view,
-                                            test_data.break_glyphs_option));
-    EXPECT_EQ(0u, result->OffsetForPosition(0, text_view,
-                                            test_data.break_glyphs_option));
+    EXPECT_EQ(0u, result->CaretOffsetForHitTest(-1, text_view));
+    EXPECT_EQ(0u, result->CaretOffsetForHitTest(0, text_view));
     EXPECT_EQ(text_string.length(),
-              result->OffsetForPosition(text_width, text_view,
-                                        test_data.break_glyphs_option));
+              result->CaretOffsetForHitTest(text_width, text_view));
     EXPECT_EQ(text_string.length(),
-              result->OffsetForPosition(text_width + 10, text_view,
-                                        test_data.break_glyphs_option));
+              result->CaretOffsetForHitTest(text_width + 10, text_view));
   } else {
-    EXPECT_EQ(0u, result->OffsetForPosition(text_width + 10, text_view,
-                                            test_data.break_glyphs_option));
-    EXPECT_EQ(0u, result->OffsetForPosition(text_width, text_view,
-                                            test_data.break_glyphs_option));
-    EXPECT_EQ(
-        text_string.length(),
-        result->OffsetForPosition(0, text_view, test_data.break_glyphs_option));
+    EXPECT_EQ(0u, result->CaretOffsetForHitTest(text_width + 10, text_view));
+    EXPECT_EQ(0u, result->CaretOffsetForHitTest(text_width, text_view));
     EXPECT_EQ(text_string.length(),
-              result->OffsetForPosition(-1, text_view,
-                                        test_data.break_glyphs_option));
+              result->CaretOffsetForHitTest(0, text_view));
+    EXPECT_EQ(text_string.length(),
+              result->CaretOffsetForHitTest(-1, text_view));
   }
 
   for (wtf_size_t i = 0; i < test_data.positions.size(); i++) {
     EXPECT_EQ(test_data.offsets[i],
-              result->OffsetForPosition(test_data.positions[i], text_view,
-                                        test_data.break_glyphs_option))
+              result->CaretOffsetForHitTest(test_data.positions[i], text_view))
         << "index " << i;
   }
 }

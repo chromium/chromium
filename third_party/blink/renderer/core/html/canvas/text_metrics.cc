@@ -623,7 +623,7 @@ unsigned TextMetrics::getIndexFromOffset(double x) {
     if (riter->x_position_ <= target_x) {
       float run_x = target_x - riter->x_position_;
       unsigned run_offset = riter->shape_result_->CaretOffsetForHitTest(
-          run_x, StringView(riter->text_), BreakGlyphsOption(true));
+          run_x, StringView(riter->text_));
       if (direction_ != riter->direction_) {
         return CorrectForMixedBidi(riter, run_offset);
       }
