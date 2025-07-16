@@ -759,12 +759,12 @@ class SessionRestoreImpl : public BrowserListObserver {
         browser->SetWindowUserTitle(window->user_title);
       }
 
-      // Track TYPE_APP browsers.
+      // 3. Track TYPE_APP browsers.
       if (window->type == sessions::SessionWindow::TYPE_APP) {
         last_app_browser = browser;
       }
 
-      // 3. Determine whether the currently active tab should be closed.
+      // 4. Determine whether the currently active tab should be closed.
       WebContents* active_tab =
           browser->tab_strip_model()->GetActiveWebContents();
       int initial_tab_count = browser->tab_strip_model()->count();
@@ -800,18 +800,22 @@ class SessionRestoreImpl : public BrowserListObserver {
       (*tab_count) += (browser->tab_strip_model()->count() - initial_tab_count);
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
+      // restore the visual data.
+      RestoreSplitTabVisualData(browser, window->split_tabs);
+
+      // 7. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       //    restore the groups' visual data.
       //    Note, this may delete some of the WebContents created earlier.
       RestoreTabGroupMetadata(browser, new_group_ids, window->tab_groups);
 
-      // 7. Notify SessionService of restored tabs, so they can be saved to the
+      // 8. Notify SessionService of restored tabs, so they can be saved to the
       //    current session.
       // TODO(fdoray): This seems redundant with the call to
       // SessionService::TabRestored() at the end of chrome::AddRestoredTab().
       // Consider removing it.
       NotifySessionServiceOfRestoredTabs(browser, initial_tab_count);
 
-      // 8. Close the tab that was active in the window prior to session
+      // 9. Close the tab that was active in the window prior to session
       //    restore, if needed.
       if (close_active_tab) {
         chrome::CloseWebContents(browser, active_tab, true);
@@ -1027,6 +1031,31 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
     ShowBrowser(browser, browser->tab_strip_model()->GetIndexOfWebContents(
                              web_contents));
+  }
+
+  void RestoreSplitTabVisualData(
+      const Browser* browser,
+      const std::vector<std::unique_ptr<sessions::SessionSplitTab>>&
+          split_tabs) {
+    if (!features::IsRestoringSplitViewEnabled()) {
+      return;
+    }
+
+    for (const std::unique_ptr<sessions::SessionSplitTab>& session_split_tab :
+         split_tabs) {
+      if (!browser->tab_strip_model()->ListSplits().contains(
+              session_split_tab->id_)) {
+        continue;
+      }
+
+      CHECK(browser->tab_strip_model()->GetSplitData(session_split_tab->id_));
+      browser->tab_strip_model()->UpdateSplitLayout(
+          session_split_tab->id_,
+          session_split_tab->split_visual_data_.split_layout());
+      browser->tab_strip_model()->UpdateSplitRatio(
+          session_split_tab->id_,
+          session_split_tab->split_visual_data_.split_ratio());
+    }
   }
 
   void RestoreTabGroupMetadata(
