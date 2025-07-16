@@ -1097,11 +1097,9 @@ void WaitForFakeJoinFlowView() {
 
   // Open clear browsing data page.
   [ChromeEarlGreyUI openToolsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityLabel(l10n_util::GetNSString(
+                             IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
                                    l10n_util::GetNSString(
