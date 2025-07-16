@@ -34,6 +34,33 @@ ScopedBoostPriority::~ScopedBoostPriority() {
   }
 }
 
+TaskMonitoringScopedBoostPriority::TaskMonitoringScopedBoostPriority(
+    ThreadType target_thread_type,
+    RepeatingCallback<bool()> should_boost_callback)
+    : target_thread_type_(target_thread_type),
+      should_boost_callback_(std::move(should_boost_callback)) {
+  CHECK(should_boost_callback_);
+}
+
+TaskMonitoringScopedBoostPriority::~TaskMonitoringScopedBoostPriority() {
+  scoped_boost_priority_.reset();
+}
+
+void TaskMonitoringScopedBoostPriority::WillProcessTask(
+    const PendingTask& pending_task,
+    bool was_blocked_or_low_priority) {
+  bool should_boost = should_boost_callback_.Run();
+  if (scoped_boost_priority_.has_value() == should_boost) {
+    return;
+  }
+
+  if (should_boost) {
+    scoped_boost_priority_.emplace(target_thread_type_);
+  } else {
+    scoped_boost_priority_.reset();
+  }
+}
+
 namespace internal {
 
 ScopedMayLoadLibraryAtBackgroundPriority::

@@ -43,6 +43,8 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void BindToCurrentThread() override;
 
+  void AddTaskObserver(base::TaskObserver* observer) override;
+
   bool allow_blocking_for_testing() const {
     return allow_blocking_for_testing_;
   }

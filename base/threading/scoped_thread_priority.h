@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/task_observer.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -64,6 +65,31 @@ class BASE_EXPORT ScopedBoostPriority {
 
  private:
   std::optional<ThreadType> original_thread_type_;
+};
+
+// This wraps ScopedBoostPriority with a callback to determine whether
+// the priority should be boosted or not before every task execution.
+class BASE_EXPORT TaskMonitoringScopedBoostPriority : public TaskObserver {
+ public:
+  explicit TaskMonitoringScopedBoostPriority(
+      ThreadType target_thread_type,
+      RepeatingCallback<bool()> should_boost_callback);
+  ~TaskMonitoringScopedBoostPriority() override;
+
+  TaskMonitoringScopedBoostPriority(const TaskMonitoringScopedBoostPriority&) =
+      delete;
+  TaskMonitoringScopedBoostPriority& operator=(
+      const TaskMonitoringScopedBoostPriority&) = delete;
+
+  // TaskObserver implementation:
+  void WillProcessTask(const PendingTask& pending_task,
+                       bool was_blocked_or_low_priority) override;
+  void DidProcessTask(const PendingTask& pending_task) override {}
+
+ private:
+  std::optional<ScopedBoostPriority> scoped_boost_priority_;
+  ThreadType target_thread_type_;
+  RepeatingCallback<bool()> should_boost_callback_;
 };
 
 namespace internal {

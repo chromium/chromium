@@ -102,6 +102,10 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
         std::move(message_pump_factory_).Run());
   }
 
+  void AddTaskObserver(TaskObserver* observer) override {
+    sequence_manager_->AddTaskObserver(observer);
+  }
+
  private:
   std::unique_ptr<sequence_manager::internal::SequenceManagerImpl>
       sequence_manager_;
@@ -125,7 +129,8 @@ Thread::Options::Options(Options&& other)
       stack_size(std::move(other.stack_size)),
       thread_type(std::move(other.thread_type)),
       joinable(std::move(other.joinable)),
-      sequence_manager_settings(std::move(other.sequence_manager_settings)) {
+      sequence_manager_settings(std::move(other.sequence_manager_settings)),
+      task_observer(std::move(other.task_observer)) {
   other.moved_from = true;
 }
 
@@ -138,6 +143,7 @@ Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
   stack_size = std::move(other.stack_size);
   thread_type = std::move(other.thread_type);
   joinable = std::move(other.joinable);
+  task_observer = std::move(other.task_observer);
   other.moved_from = true;
 
   return *this;
@@ -205,6 +211,10 @@ bool Thread::StartWithOptions(Options options) {
         BindOnce([](MessagePumpType type) { return MessagePump::Create(type); },
                  options.message_pump_type),
         std::move(options.sequence_manager_settings));
+  }
+
+  if (options.task_observer) {
+    delegate_->AddTaskObserver(options.task_observer);
   }
 
   start_event_.Reset();

@@ -568,6 +568,10 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
         MessagePump::Create(MessagePumpType::DEFAULT));
   }
 
+  void AddTaskObserver(TaskObserver* observer) override {
+    sequence_manager_->AddTaskObserver(observer);
+  }
+
  private:
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
   TaskQueue::Handle task_queue_;

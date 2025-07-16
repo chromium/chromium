@@ -67,6 +67,10 @@ class IOThreadDelegate : public base::Thread::Delegate {
     return default_task_runner_;
   }
 
+  void AddTaskObserver(base::TaskObserver* observer) override {
+    owned_sequence_manager_->AddTaskObserver(observer);
+  }
+
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager>
       owned_sequence_manager_;

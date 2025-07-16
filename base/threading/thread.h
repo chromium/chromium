@@ -32,6 +32,7 @@ struct SequenceManagerSettings;
 
 class MessagePump;
 class RunLoop;
+class TaskObserver;
 
 // IMPORTANT: Instead of creating a base::Thread, consider using
 // base::ThreadPool::Create(Sequenced|SingleThread)TaskRunner().
@@ -72,6 +73,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Binds a RunLoop::Delegate and task runner CurrentDefaultHandle to the
     // thread.
     virtual void BindToCurrentThread() = 0;
+
+    // Adds a TaskObserver to the sequence manager of the thread.
+    virtual void AddTaskObserver(TaskObserver* observer) = 0;
   };
 
   struct BASE_EXPORT Options {
@@ -120,6 +124,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Allows overriding default SequenceManager behavior.
     std::unique_ptr<base::sequence_manager::SequenceManagerSettings>
         sequence_manager_settings;
+
+    // A TaskObserver needed be added at the start of a thread.
+    raw_ptr<TaskObserver> task_observer = nullptr;
 
     bool IsValid() const { return !moved_from; }
 
