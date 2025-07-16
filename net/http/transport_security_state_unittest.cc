@@ -175,9 +175,9 @@ class TransportSecurityStateTest : public ::testing::Test,
     return spki_hashes;
   }
 
-  static HashValue GetSampleSPKIHash(uint8_t value) {
-    HashValue hash(HASH_VALUE_SHA256);
-    std::ranges::fill(hash.span(), value);
+  static SHA256HashValue GetSampleSPKIHash(uint8_t value) {
+    SHA256HashValue hash;
+    hash.fill(value);
     return hash;
   }
 
@@ -643,20 +643,20 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
   state.AddHPKP("example.com", expiry, true, HashValueVector(1, hash1));
 
   ASSERT_TRUE(state.GetDynamicPKPState("foo.example.com", &pkp_state));
-  ASSERT_EQ(1u, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], hash1);
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(hash1.sha256hashvalue()));
 
   state.AddHPKP("foo.example.com", expiry, false, HashValueVector(1, hash2));
 
   ASSERT_TRUE(state.GetDynamicPKPState("foo.example.com", &pkp_state));
-  ASSERT_EQ(1u, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], hash2);
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(hash2.sha256hashvalue()));
 
   state.AddHPKP("foo.example.com", expiry, false, HashValueVector(1, hash3));
 
   ASSERT_TRUE(state.GetDynamicPKPState("foo.example.com", &pkp_state));
-  ASSERT_EQ(1u, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], hash3);
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(hash3.sha256hashvalue()));
 }
 
 // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
@@ -785,10 +785,10 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedSingle) {
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
             sts_state.upgrade_mode);
   EXPECT_TRUE(pkp_state.include_subdomains);
-  ASSERT_EQ(1u, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x1));
-  ASSERT_EQ(1u, pkp_state.bad_spki_hashes.size());
-  EXPECT_EQ(pkp_state.bad_spki_hashes[0], GetSampleSPKIHash(0x2));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
+  EXPECT_THAT(pkp_state.bad_spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x2)));
 }
 
 // More advanced test for the HSTS preload process where the trie (generated
@@ -821,8 +821,8 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultiplePrefix) {
       GetStaticDomainState(&state, "hpkp.example.com", &sts_state, &pkp_state));
   EXPECT_TRUE(sts_state == TransportSecurityState::STSState());
   EXPECT_TRUE(pkp_state.include_subdomains);
-  EXPECT_EQ(1U, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x1));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
   EXPECT_EQ(0U, pkp_state.bad_spki_hashes.size());
 
   sts_state = TransportSecurityState::STSState();
@@ -833,10 +833,10 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultiplePrefix) {
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
             sts_state.upgrade_mode);
   EXPECT_TRUE(pkp_state.include_subdomains);
-  EXPECT_EQ(1U, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x2));
-  EXPECT_EQ(1U, pkp_state.bad_spki_hashes.size());
-  EXPECT_EQ(pkp_state.bad_spki_hashes[0], GetSampleSPKIHash(0x1));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x2)));
+  EXPECT_THAT(pkp_state.bad_spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
 }
 
 // More advanced test for the HSTS preload process where the trie (generated
@@ -871,8 +871,8 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
       GetStaticDomainState(&state, "hpkp.example.com", &sts_state, &pkp_state));
   EXPECT_TRUE(sts_state == TransportSecurityState::STSState());
   EXPECT_TRUE(pkp_state.include_subdomains);
-  EXPECT_EQ(1U, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x1));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
   EXPECT_EQ(0U, pkp_state.bad_spki_hashes.size());
 
   sts_state = TransportSecurityState::STSState();
@@ -890,8 +890,8 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
       GetStaticDomainState(&state, "badssl.com", &sts_state, &pkp_state));
   EXPECT_TRUE(sts_state == TransportSecurityState::STSState());
   EXPECT_TRUE(pkp_state.include_subdomains);
-  EXPECT_EQ(1U, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x1));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
   EXPECT_EQ(0U, pkp_state.bad_spki_hashes.size());
 
   sts_state = TransportSecurityState::STSState();
@@ -902,10 +902,10 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
             sts_state.upgrade_mode);
   EXPECT_TRUE(pkp_state.include_subdomains);
-  EXPECT_EQ(1U, pkp_state.spki_hashes.size());
-  EXPECT_EQ(pkp_state.spki_hashes[0], GetSampleSPKIHash(0x2));
-  EXPECT_EQ(1U, pkp_state.bad_spki_hashes.size());
-  EXPECT_EQ(pkp_state.bad_spki_hashes[0], GetSampleSPKIHash(0x1));
+  EXPECT_THAT(pkp_state.spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x2)));
+  EXPECT_THAT(pkp_state.bad_spki_hashes,
+              testing::UnorderedElementsAre(GetSampleSPKIHash(0x1)));
 
   sts_state = TransportSecurityState::STSState();
   pkp_state = TransportSecurityState::PKPState();

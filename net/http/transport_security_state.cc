@@ -71,20 +71,21 @@ TransportSecurityState::HashedHost HashHost(
 
 // Returns true if the intersection of |a| and |b| is not empty. If either
 // |a| or |b| is empty, returns false.
-// TODO(crbug.com/41286522): this is O(n*m). Change the key pinning lists to be
-// stored as a flat_hash_set so that this is only O(n).
-bool HashesIntersect(const HashValueVector& a,
+bool HashesIntersect(const absl::flat_hash_set<SHA256HashValue>& a,
                      const std::vector<SHA256HashValue>& b) {
-  for (const auto& hash : a) {
-    if (hash.tag() == HASH_VALUE_SHA256 && base::Contains(b, hash.span())) {
+  for (const auto& hash : b) {
+    if (a.contains(hash)) {
       return true;
     }
   }
   return false;
 }
 
-bool AddHash(base::span<const uint8_t> sha256_hash, HashValueVector& out) {
-  out.emplace_back(sha256_hash);
+bool AddHash(base::span<const uint8_t> sha256_hash,
+             absl::flat_hash_set<SHA256HashValue>& out) {
+  SHA256HashValue value;
+  base::span(value).copy_from(sha256_hash);
+  out.insert(value);
   return true;
 }
 
@@ -443,7 +444,11 @@ void TransportSecurityState::AddHPKPInternal(std::string_view host,
   pkp_state.last_observed = last_observed;
   pkp_state.expiry = expiry;
   pkp_state.include_subdomains = include_subdomains;
-  pkp_state.spki_hashes = hashes;
+  for (const auto& hash : hashes) {
+    if (hash.tag() == HASH_VALUE_SHA256) {
+      pkp_state.spki_hashes.insert(hash.sha256hashvalue());
+    }
+  }
 
   // Only store new state when HPKP is explicitly enabled. If it is
   // disabled, remove the state from the enabled hosts.
@@ -721,6 +726,8 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
         &g_hsts_source->pinsets[result.pinset_id];
 
     if (pinset->accepted_pins) {
+      // TODO(crbug.com/41286522): Try to change the preload code generator to
+      // generate the pins as `constexpr array<uint8_t, 32>` to simplify this.
       const char* const* sha256_hash = pinset->accepted_pins;
       while (*sha256_hash) {
         AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
@@ -915,7 +922,7 @@ bool TransportSecurityState::PKPState::CheckPublicKeyPins(
 }
 
 bool TransportSecurityState::PKPState::HasPublicKeyPins() const {
-  return spki_hashes.size() > 0 || bad_spki_hashes.size() > 0;
+  return !spki_hashes.empty() || !bad_spki_hashes.empty();
 }
 
 bool TransportSecurityState::IsStaticPKPListTimely() const {
