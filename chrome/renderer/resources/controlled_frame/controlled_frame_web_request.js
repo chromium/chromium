@@ -173,11 +173,10 @@ class ControlledFrameWebRequest {
     }
     if (options.includeHeaders !== undefined &&
         !$Array.includes(
-            $Array.self('none', 'same-origin', 'cross-origin'),
-            options.includeHeaders)) {
+            $Array.self('none', 'cors', 'all'), options.includeHeaders)) {
       throw new TypeError(
           'If defined, "includeHeaders" must equal the string ' +
-          '"none", "same-origin", or "cross-origin".');
+          '"none", "cors", or "all".');
     }
     return new WebRequestInterceptor(this.#webRequest, options);
   }
@@ -243,10 +242,10 @@ class WebRequestInterceptor extends EventTarget {
     if (options.includeRequestBody === true) {
       $Array.push(this.#extraInfoSpec, 'requestBody');
     }
-    if (options.includeHeaders === 'same-origin') {
+    if (options.includeHeaders === 'cors') {
       $Array.push(this.#extraInfoSpec, 'requestHeaders');
       $Array.push(this.#extraInfoSpec, 'responseHeaders');
-    } else if (options.includeHeaders === 'cross-origin') {
+    } else if (options.includeHeaders === 'all') {
       $Array.push(this.#extraInfoSpec, 'requestHeaders');
       $Array.push(this.#extraInfoSpec, 'responseHeaders');
       $Array.push(this.#extraInfoSpec, 'extraHeaders');

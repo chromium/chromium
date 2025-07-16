@@ -636,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsWebRequest) {
       frame.savedAddEventListener('loadstop', () => {
         frame.request.createWebRequestInterceptor({
           urlPatterns: ['<all_urls>'],
-          includeHeaders: 'cross-origin',
+          includeHeaders: 'all',
         }).addEventListener('completed', (e) => {
           resolve();
         });

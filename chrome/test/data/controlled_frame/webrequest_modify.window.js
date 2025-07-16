@@ -111,7 +111,7 @@ promise_test(async (test) => {
   const interceptor = controlledframe.request.createWebRequestInterceptor({
     urlPatterns: [targetUrl.toString()],
     blocking: true,
-    includeHeaders: 'same-origin',
+    includeHeaders: 'cors',
   });
   interceptor.addEventListener('headersreceived', (e) => {
     const customHeaders = new Headers();

@@ -118,7 +118,7 @@ promise_test(async (test) => {
   let requestHeaders = null;
   controlledframe.request.createWebRequestInterceptor({
     urlPatterns: [targetUrl.toString()],
-    includeHeaders: 'same-origin',
+    includeHeaders: 'cors',
   }).addEventListener('sendheaders', (e) => {
     requestHeaders = e.request.headers;
   });
@@ -126,7 +126,7 @@ promise_test(async (test) => {
   let requestHeadersExtra = null;
   controlledframe.request.createWebRequestInterceptor({
     urlPatterns: [targetUrl.toString()],
-    includeHeaders: 'cross-origin',
+    includeHeaders: 'all',
   }).addEventListener('sendheaders', (e) => {
     requestHeadersExtra = e.request.headers;
   });
@@ -149,7 +149,7 @@ promise_test(async (test) => {
   let responseHeaders = null;
   controlledframe.request.createWebRequestInterceptor({
     urlPatterns: [targetUrl.toString()],
-    includeHeaders: 'same-origin',
+    includeHeaders: 'cors',
   }).addEventListener('headersreceived', (e) => {
     responseHeaders = e.response.headers;
   });
