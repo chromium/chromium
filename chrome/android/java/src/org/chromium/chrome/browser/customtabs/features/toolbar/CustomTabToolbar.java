@@ -809,6 +809,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 maybeAdjustButtonSpacingForCloseButtonPosition();
             }
             return;
+        } else if (!mButtonVisibilityRule.isSuppressed(ButtonId.MINIMIZE)
+                && mMinimizeButton.getVisibility() == View.GONE) {
+            mMinimizeButton.setVisibility(View.VISIBLE);
+            mButtonVisibilityRule.update(ButtonId.MINIMIZE, true);
         }
         updateToolbarLayoutMargin();
     }
