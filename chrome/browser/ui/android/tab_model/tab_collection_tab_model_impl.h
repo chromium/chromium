@@ -113,7 +113,7 @@ class TabCollectionTabModelImpl {
  private:
   // Returns a safe index for adding or moving a single tab without it changing
   // state.
-  size_t GetSafeIndex(bool is_move,
+  size_t GetSafeIndex(const std::optional<size_t>& current_index,
                       size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;

@@ -115,8 +115,8 @@ int TabCollectionTabModelImpl::MoveTabRecursive(
     bool new_is_pinned) {
   std::optional<TabGroupId> new_tab_group_id =
       tab_groups::TabGroupId::FromOptionalToken(token);
-  new_index = GetSafeIndex(/*is_move=*/true, new_index, new_tab_group_id,
-                           new_is_pinned);
+  new_index =
+      GetSafeIndex(current_index, new_index, new_tab_group_id, new_is_pinned);
 
   tab_strip_collection_->MoveTabRecursive(current_index, new_index,
                                           new_tab_group_id, new_is_pinned);
@@ -134,7 +134,7 @@ void TabCollectionTabModelImpl::AddTabRecursive(
   std::optional<TabGroupId> tab_group_id =
       tab_groups::TabGroupId::FromOptionalToken(token);
 
-  index = GetSafeIndex(/*is_move=*/false, index, tab_group_id, is_pinned);
+  index = GetSafeIndex(std::nullopt, index, tab_group_id, is_pinned);
 
   auto tab_interface_android = ToTabInterface(tab_android);
   tab_strip_collection_->AddTabRecursive(std::move(tab_interface_android),
@@ -185,16 +185,20 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetTabsInGroup(
 }
 
 void TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
-                                               const base::Token& tab_group_id,
+                                               const base::Token& token,
                                                int to_index) {
+  TabGroupId tab_group_id = TabGroupId::FromRawToken(token);
+  TabGroupTabCollection* group_collection =
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
+  CHECK(group_collection);
+  gfx::Range range = group_collection->GetTabGroup()->ListTabs();
   // Don't pass the `tab_group_id` since we don't want to constrain the index
   // range to that of the group. Instead we are moving the entirety of the
   // group to any valid position that an ungrouped tab could be moved to.
-  to_index = GetSafeIndex(/*is_move=*/true, to_index,
+  to_index = GetSafeIndex(range.start(), to_index,
                           /*tab_group_id=*/std::nullopt,
                           /*is_pinned=*/false);
-  tab_strip_collection_->MoveTabGroupTo(
-      tab_groups::TabGroupId::FromRawToken(tab_group_id), to_index);
+  tab_strip_collection_->MoveTabGroupTo(tab_group_id, to_index);
 }
 
 void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
@@ -252,12 +256,20 @@ void TabCollectionTabModelImpl::CloseDetachedTabGroup(
 }
 
 size_t TabCollectionTabModelImpl::GetSafeIndex(
-    bool is_move,
+    const std::optional<size_t>& current_index,
     size_t proposed_index,
     const std::optional<TabGroupId>& tab_group_id,
     bool is_pinned) const {
+  bool is_move = current_index.has_value();
   size_t first_non_pinned_index =
       tab_strip_collection_->IndexOfFirstNonPinnedTab();
+  if (is_move && *current_index < first_non_pinned_index) {
+    // Moving a tab that is inside the pinned section should decrement the first
+    // non-pinned index by one to either keep the pinned tabs together or move
+    // to the new first non-pinned tab index after unpinning.
+    first_non_pinned_index--;
+  }
+
   if (is_pinned) {
     return std::min(proposed_index, first_non_pinned_index);
   }

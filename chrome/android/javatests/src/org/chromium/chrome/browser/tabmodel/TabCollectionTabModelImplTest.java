@@ -154,6 +154,41 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testPinAndUnpinTab() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        assertFalse(tab0.getIsPinned());
+        assertFalse(tab1.getIsPinned());
+        assertFalse(tab2.getIsPinned());
+
+        verifyPinOrUnpin(tab1, /* isPinned= */ true, /* willMove= */ true);
+        assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+
+        verifyPinOrUnpin(tab2, /* isPinned= */ true, /* willMove= */ true);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        // Ensure pinned tabs stay in the first two indices and unpinned tabs remain outside the
+        // pinned range even if the index would cross over the pinned range boundary.
+        moveTab(tab1, 10);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab0));
+
+        moveTab(tab1, 0);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        moveTab(tab0, 0);
+        assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+
+        verifyPinOrUnpin(tab1, /* isPinned= */ false, /* willMove= */ true);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab0));
+
+        verifyPinOrUnpin(tab2, /* isPinned= */ false, /* willMove= */ false);
+        assertTabsInOrderAre(List.of(tab2, tab1, tab0));
+    }
+
+    @Test
+    @MediumTest
     public void testRemoveTab_LastTab() throws Exception {
         assertEquals(1, getCount());
         Tab tab0 = getCurrentTab();
@@ -992,5 +1027,54 @@ public class TabCollectionTabModelImplTest {
 
     private Tab createTab() {
         return mActivityTestRule.loadUrlInNewTab(mTestUrl, /* incognito= */ false);
+    }
+
+    private void verifyPinOrUnpin(Tab changedTab, boolean isPinned, boolean willMove)
+            throws Exception {
+        CallbackHelper willChangePinStateHelper = new CallbackHelper();
+        CallbackHelper didChangePinStateHelper = new CallbackHelper();
+        CallbackHelper didMoveTabHelper = new CallbackHelper();
+        TabModelObserver observer =
+                new TabModelObserver() {
+                    @Override
+                    public void willChangePinState(Tab tab) {
+                        assertEquals(changedTab, tab);
+                        willChangePinStateHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        assertEquals(changedTab, tab);
+                        didChangePinStateHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void didMoveTab(Tab tab, int newIndex, int oldIndex) {
+                        assertEquals(changedTab, tab);
+                        if (willMove) {
+                            didMoveTabHelper.notifyCalled();
+                        } else {
+                            fail("didMoveTab should not be called.");
+                        }
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRegularModel.addObserver(observer);
+                    if (isPinned) {
+                        mRegularModel.pinTab(changedTab.getId());
+                    } else {
+                        mRegularModel.unpinTab(changedTab.getId());
+                    }
+                    mRegularModel.removeObserver(observer);
+                    assertEquals(isPinned, changedTab.getIsPinned());
+                });
+
+        willChangePinStateHelper.waitForOnly();
+        didChangePinStateHelper.waitForOnly();
+        if (willMove) {
+            didMoveTabHelper.waitForOnly();
+        }
     }
 }

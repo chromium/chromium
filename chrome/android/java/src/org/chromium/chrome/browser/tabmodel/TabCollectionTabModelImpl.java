@@ -358,12 +358,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void pinTab(int tabId) {
-        // TODO(crbug.com/426530785): Implement this method.
+        updatePinnedState(tabId, /* isPinned= */ true);
     }
 
     @Override
     public void unpinTab(int tabId) {
-        // TODO(crbug.com/426530785): Implement this method.
+        updatePinnedState(tabId, /* isPinned= */ false);
     }
 
     @Override
@@ -745,7 +745,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // TODO(crbug.com/429145597): Investigate using mergeTabsToGroup instead.
         Token tabGroupId = createDetachedTabGroup();
         int index = indexOf(tab);
-        updateGroupForTab(tab, index, index, tabGroupId);
+        moveTabInternal(tab, index, index, tabGroupId, /* isPinned= */ false);
 
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didCreateNewGroup(tab, this);
@@ -991,8 +991,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         } else {
             approximateIndex = indexOf(tabsInGroup.get(0));
         }
-        updateGroupForTab(
-                sourceTab, indexOf(sourceTab), approximateIndex, /* newTabGroupId= */ null);
+        moveTabInternal(
+                sourceTab,
+                indexOf(sourceTab),
+                approximateIndex,
+                /* newTabGroupId= */ null,
+                /* isPinned= */ false);
     }
 
     // Internal methods.
@@ -1073,25 +1077,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
     }
 
-    private int moveTabInternal(
-            Tab tab, int currentIndex, int newIndex, @Nullable Token tabGroupId, boolean isPinned) {
-        int finalIndex =
-                TabCollectionTabModelImplJni.get()
-                        .moveTabRecursive(
-                                mNativeTabCollectionTabModelImplPtr,
-                                currentIndex,
-                                newIndex,
-                                tabGroupId,
-                                isPinned);
-
-        if (currentIndex != finalIndex) {
-            for (TabModelObserver obs : mTabModelObservers) {
-                obs.didMoveTab(tab, finalIndex, currentIndex);
-            }
-        }
-        return finalIndex;
-    }
-
     private IndexAndTab getCurrentRepresentativeIndexAndTab() {
         // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
         Tab currentTab = mCurrentTabSupplier.get();
@@ -1111,25 +1096,42 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return new IndexAndTab(TabList.INVALID_TAB_INDEX, null);
     }
 
-    private Token createDetachedTabGroup() {
-        Token tabGroupId = Token.createRandom();
-        @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+    private void updatePinnedState(int tabId, boolean isPinned) {
+        Tab tab = getTabById(tabId);
+        if (tab == null || isPinned == tab.getIsPinned()) return;
 
-        TabCollectionTabModelImplJni.get()
-                .createTabGroup(
-                        mNativeTabCollectionTabModelImplPtr,
-                        tabGroupId,
-                        /* title= */ "",
-                        colorId,
-                        /* isCollapsed= */ false);
-        return tabGroupId;
+        int currentIndex = indexOf(tab);
+        if (currentIndex == TabList.INVALID_TAB_INDEX) return;
+
+        // The C++ side will adjust to a valid index.
+        moveTabInternal(
+                tab, currentIndex, currentIndex, /* newTabGroupId= */ null, isPinned);
     }
 
-    private int updateGroupForTab(
-            Tab tab, int index, int approximateIndex, @Nullable Token newTabGroupId) {
+    /**
+     * Moves a tab to a new index. Firing observer events for any changes in pinned or tab group
+     * state.
+     *
+     * @param tab The tab to move.
+     * @param index The current index of the tab.
+     * @param newIndex The new index of the tab. This might be adjusted in C++ to a valid index.
+     * @param newTabGroupId The new tab group id of the tab.
+     * @param isPinned Whether the tab is pinned.
+     * @return The final index of the tab.
+     */
+    private int moveTabInternal(
+            Tab tab, int index, int newIndex, @Nullable Token newTabGroupId, boolean isPinned) {
         Token oldTabGroupId = tab.getTabGroupId();
         boolean isMovingOutOfGroup = oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId);
         boolean isMergingIntoGroup = newTabGroupId != null;
+        boolean isChangingPinState = tab.getIsPinned() != isPinned;
+
+        if (isChangingPinState) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.willChangePinState(tab);
+            }
+        }
+
         if (isMovingOutOfGroup) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.willMoveTabOutOfGroup(tab, newTabGroupId);
@@ -1143,7 +1145,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         int finalIndex =
-                moveTabInternal(tab, index, approximateIndex, newTabGroupId, /* isPinned= */ false);
+                TabCollectionTabModelImplJni.get()
+                        .moveTabRecursive(
+                                mNativeTabCollectionTabModelImplPtr,
+                                index,
+                                newIndex,
+                                newTabGroupId,
+                                isPinned);
+
+        if (index != finalIndex) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didMoveTab(tab, finalIndex, index);
+            }
+        }
+
+        if (isChangingPinState) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didChangePinState(tab);
+            }
+        }
 
         if (isMovingOutOfGroup) {
             assumeNonNull(oldTabGroupId);
@@ -1166,6 +1186,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         return finalIndex;
+    }
+
+    private Token createDetachedTabGroup() {
+        Token tabGroupId = Token.createRandom();
+        @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+
+        TabCollectionTabModelImplJni.get()
+                .createTabGroup(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tabGroupId,
+                        /* title= */ "",
+                        colorId,
+                        /* isCollapsed= */ false);
+        return tabGroupId;
     }
 
     /**
