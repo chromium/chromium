@@ -33,7 +33,6 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/telemetry_extension/diagnostics/diagnostics_service_ash.h"
-#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_ash.h"
@@ -96,8 +95,6 @@ CrosapiAsh::CrosapiAsh()
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
-      telemetry_event_service_ash_(
-          std::make_unique<ash::TelemetryEventServiceAsh>()),
       telemetry_management_service_ash_(
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
@@ -249,11 +246,6 @@ void CrosapiAsh::BindSensorHalClient(
 void CrosapiAsh::BindTelemetryDiagnosticRoutinesService(
     mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver) {
   telemetry_diagnostic_routine_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindTelemetryEventService(
-    mojo::PendingReceiver<mojom::TelemetryEventService> receiver) {
-  telemetry_event_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTelemetryManagementService(

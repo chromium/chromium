@@ -27,7 +27,6 @@ namespace ash {
 class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
-class TelemetryEventServiceAsh;
 class TelemetryManagementServiceAsh;
 class VideoConferenceManagerAsh;
 
@@ -114,8 +113,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
-  void BindTelemetryEventService(
-      mojo::PendingReceiver<mojom::TelemetryEventService> receiver) override;
   void BindTelemetryManagementService(
       mojo::PendingReceiver<mojom::TelemetryManagementService> receiver)
       override;
@@ -174,7 +171,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
-  std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;
   std::unique_ptr<ash::TelemetryManagementServiceAsh>
       telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;

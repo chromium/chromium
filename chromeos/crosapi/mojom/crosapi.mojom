@@ -268,11 +268,7 @@ interface Crosapi {
   [MinVersion=112] BindTelemetryDiagnosticRoutinesService@115(
     pending_receiver<TelemetryDiagnosticRoutinesService> receiver);
 
-  // Binds the TelemetryEventService interface for registering telemetry events
-  // in Lacros-Chrome.
-  // Added in M114.
-  [MinVersion=106] BindTelemetryEventService@109(
-    pending_receiver<TelemetryEventService> receiver);
+  // BindTelemetryEventService@109 was removed.
 
   // Binds the TelemetryManagementService interface for managing ChromeOS
   // settings in Lacros-Chrome.
