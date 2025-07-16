@@ -6815,6 +6815,8 @@ static_library("browser") {
   if (enterprise_cloud_content_analysis || is_android ||
       safe_browsing_mode == 1) {
     sources += [
+      "enterprise/connectors/analysis/content_analysis_info.cc",
+      "enterprise/connectors/analysis/content_analysis_info.h",
       "enterprise/connectors/common.cc",
       "enterprise/connectors/common.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",
@@ -6849,8 +6851,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/content_analysis_dialog_delegate.h",
       "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
       "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_info.cc",
-      "enterprise/connectors/analysis/content_analysis_info.h",
       "enterprise/connectors/analysis/content_analysis_views.cc",
       "enterprise/connectors/analysis/content_analysis_views.h",
       "enterprise/connectors/analysis/files_request_handler.cc",
