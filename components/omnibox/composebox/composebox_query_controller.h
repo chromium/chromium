@@ -90,7 +90,8 @@ using OAuthHeadersCreatedCallback =
     base::OnceCallback<void(std::vector<std::string>)>;
 // Callback type alias for the request body proto created.
 using RequestBodyProtoCreatedCallback =
-    base::OnceCallback<void(lens::LensOverlayServerRequest)>;
+    base::OnceCallback<void(lens::LensOverlayServerRequest,
+                            std::optional<FileUploadErrorType>)>;
 // Callback type alias for the upload progress.
 using UploadProgressCallback =
     base::RepeatingCallback<void(uint64_t position, uint64_t total)>;
@@ -307,8 +308,10 @@ class ComposeboxQueryController {
       RequestBodyProtoCreatedCallback callback);
 
   // Asynchronous handler for when the file upload request body is ready.
-  void OnUploadFileRequestBodyReady(const base::UnguessableToken& file_token,
-                                    lens::LensOverlayServerRequest request);
+  void OnUploadFileRequestBodyReady(
+      const base::UnguessableToken& file_token,
+      lens::LensOverlayServerRequest request,
+      std::optional<FileUploadErrorType> error_type);
 
   // Asynchronous handler for when the file upload request headers are ready.
   void OnUploadFileRequestHeadersReady(const base::UnguessableToken& file_token,

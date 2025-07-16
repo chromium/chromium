@@ -74,6 +74,7 @@ source_set("unit_tests") {
   sources = [ "composebox_query_controller_unittest.cc" ]
   deps = [
     ":composebox",
+    ":mojo_bindings",
     ":test_support",
     "//base/test:test_support",
     "//components/endpoint_fetcher",

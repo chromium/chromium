@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -125,7 +126,7 @@ void CreateFileUploadRequestProtoWithPayloadAndContinue(
       ->mutable_client_context()
       ->CopyFrom(client_context);
   objects_request->mutable_payload()->CopyFrom(payload);
-  std::move(callback).Run(request);
+  std::move(callback).Run(request, /*error_type=*/std::nullopt);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -146,7 +147,7 @@ void CreateFileUploadRequestProtoWithImageDataAndContinue(
       ->CopyFrom(client_context);
   objects_request->mutable_image_data()->CopyFrom(image_data);
   request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
-  std::move(callback).Run(request);
+  std::move(callback).Run(request, /*error_type=*/std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -460,19 +461,21 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     const SkBitmap& bitmap) {
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
-  // TODO(crbug.com/430053361): Add error handling for when the bitmap is null
-  // or empty.
-  if (!bitmap.isNull() && !bitmap.empty()) {
-    // Downscaling and encoding is done on a background thread to avoid blocking
-    // the main thread.
-    create_request_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&composebox::DownscaleAndEncodeBitmap, bitmap,
-                       ref_counted_logs, image_options),
-        base::BindOnce(&CreateFileUploadRequestProtoWithImageDataAndContinue,
-                       request_id, CreateClientContext(), ref_counted_logs,
-                       std::move(callback)));
+  if (bitmap.isNull() || bitmap.empty()) {
+    std::move(callback).Run(lens::LensOverlayServerRequest(),
+                            FileUploadErrorType::kBrowserProcessingError);
+    return;
   }
+
+  // Downscaling and encoding is done on a background thread to avoid blocking
+  // the main thread.
+  create_request_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&composebox::DownscaleAndEncodeBitmap, bitmap,
+                     ref_counted_logs, image_options),
+      base::BindOnce(&CreateFileUploadRequestProtoWithImageDataAndContinue,
+                     request_id, CreateClientContext(), ref_counted_logs,
+                     std::move(callback)));
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -512,17 +515,25 @@ void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
 #endif  // !BUILDFLAG(IS_IOS)
       break;
     default:
-      // TODO(crbug.com/430053361): Add error handling for unsupported file
-      // types.
+      UpdateFileUploadStatus(file_info->file_token_,
+                             FileUploadStatus::kValidationFailed,
+                             FileUploadErrorType::kBrowserProcessingError);
       break;
   }
 }
 
 void ComposeboxQueryController::OnUploadFileRequestBodyReady(
     const base::UnguessableToken& file_token,
-    lens::LensOverlayServerRequest request) {
+    lens::LensOverlayServerRequest request,
+    std::optional<FileUploadErrorType> error_type) {
   FileInfo* file_info = GetFileInfo(file_token);
   if (!file_info) {
+    return;
+  }
+
+  if (error_type.has_value()) {
+    UpdateFileUploadStatus(file_info->file_token_,
+                           FileUploadStatus::kValidationFailed, error_type);
     return;
   }
 

@@ -5,14 +5,17 @@
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -56,6 +59,10 @@ inline constexpr char kVisualInputTypeParameterKey[] = "vit";
 base::Time kTestQueryStartTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1000);
 
+using FileUploadStatusTuple = std::tuple<base::UnguessableToken,
+                                         FileUploadStatus,
+                                         std::optional<FileUploadErrorType>>;
+
 class ComposeboxQueryControllerTest
     : public testing::Test,
       public ComposeboxQueryController::FileUploadStatusObserver {
@@ -96,7 +103,9 @@ class ComposeboxQueryControllerTest
   void TearDown() override {
     controller_->RemoveObserver(this);
     controller_state_future_.Clear();
-    file_upload_status_future_.Clear();
+    while (!file_upload_status_future_.IsEmpty()) {
+      file_upload_status_future_.Take();
+    }
   }
 
   void WaitForClusterInfo(QueryControllerState expected_state =
@@ -141,29 +150,42 @@ class ComposeboxQueryControllerTest
       const base::UnguessableToken& file_token,
       FileUploadStatus expected_status = FileUploadStatus::kUploadSuccessful,
       std::optional<FileUploadErrorType> expected_error_type = std::nullopt) {
-    EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
+    FileUploadStatusTuple processing_file_upload_status =
+        file_upload_status_future_.Take();
+    EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
     EXPECT_EQ(FileUploadStatus::kProcessing,
-              file_upload_status_future_.Get<1>());
-    EXPECT_EQ(std::nullopt, file_upload_status_future_.Get<2>());
-    file_upload_status_future_.Clear();
+              std::get<1>(processing_file_upload_status));
+    EXPECT_EQ(std::nullopt, std::get<2>(processing_file_upload_status));
 
-    EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
-    EXPECT_EQ(FileUploadStatus::kUploadStarted,
-              file_upload_status_future_.Get<1>());
-    EXPECT_EQ(std::nullopt, file_upload_status_future_.Get<2>());
-    file_upload_status_future_.Clear();
+    if (expected_status != FileUploadStatus::kValidationFailed) {
+      // For client-side validation failures, the state will never change to
+      // kUploadStarted.
+      FileUploadStatusTuple upload_started_file_upload_status =
+          file_upload_status_future_.Take();
+      EXPECT_EQ(file_token, std::get<0>(upload_started_file_upload_status));
+      EXPECT_EQ(FileUploadStatus::kUploadStarted,
+                std::get<1>(upload_started_file_upload_status));
+      EXPECT_EQ(std::nullopt, std::get<2>(upload_started_file_upload_status));
+    }
 
-    EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
-    EXPECT_EQ(expected_status, file_upload_status_future_.Get<1>());
-    EXPECT_EQ(expected_error_type, file_upload_status_future_.Get<2>());
-    file_upload_status_future_.Clear();
+    FileUploadStatusTuple final_file_upload_status =
+        file_upload_status_future_.Take();
+    EXPECT_EQ(file_token, std::get<0>(final_file_upload_status));
+    EXPECT_EQ(expected_status, std::get<1>(final_file_upload_status));
+    EXPECT_EQ(expected_error_type, std::get<2>(final_file_upload_status));
 
-    EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
-    EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
-                testing::Optional(std::string(kTestServerSessionId)));
-    // The file upload request should have the cors variations header.
-    EXPECT_THAT(controller().last_sent_cors_exempt_headers(),
-                testing::Contains(kVariationsHeaderKey));
+    if (expected_status == FileUploadStatus::kValidationFailed) {
+      // For client-side validation failures, the file upload request will not
+      // be sent.
+      EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
+    } else {
+      EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
+      EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
+                  testing::Optional(std::string(kTestServerSessionId)));
+      // The file upload request should have the cors variations header.
+      EXPECT_THAT(controller().last_sent_cors_exempt_headers(),
+                  testing::Contains(kVariationsHeaderKey));
+    }
   }
 
   TestComposeboxQueryController& controller() { return *controller_; }
@@ -173,7 +195,7 @@ class ComposeboxQueryControllerTest
       const base::UnguessableToken& file_token,
       FileUploadStatus file_upload_status,
       const std::optional<FileUploadErrorType>& error_type) override {
-    file_upload_status_future_.SetValue(file_token, file_upload_status,
+    file_upload_status_future_.AddValue(file_token, file_upload_status,
                                         error_type);
   }
 
@@ -218,9 +240,9 @@ class ComposeboxQueryControllerTest
   }
 
   base::test::TestFuture<QueryControllerState> controller_state_future_;
-  base::test::TestFuture<const base::UnguessableToken&,
-                         FileUploadStatus,
-                         const std::optional<FileUploadErrorType>&>
+  base::test::RepeatingTestFuture<base::UnguessableToken,
+                                  FileUploadStatus,
+                                  std::optional<FileUploadErrorType>>
       file_upload_status_future_;
 
  private:
@@ -382,6 +404,30 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 ->long_context_id(),
             0);
 }
+
+TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::vector<uint8_t> image_bytes = std::vector<uint8_t>();
+  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
+                                                 .max_height = 1000,
+                                                 .max_width = 1000,
+                                                 .compression_quality = 30};
+  StartImageFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>(image_bytes),
+      image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, FileUploadStatus::kValidationFailed,
+                    FileUploadErrorType::kBrowserProcessingError);
+}
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
@@ -455,6 +501,29 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
             1);
 }
 
+TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
+      std::make_unique<ComposeboxQueryController::FileInfo>();
+  file_info->file_token_ = file_token;
+  file_info->mime_type_ = lens::MimeType::kUnknown;
+  controller().StartFileUploadFlow(
+      std::move(file_info), base::MakeRefCounted<base::RefCountedBytes>(),
+      /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, FileUploadStatus::kValidationFailed,
+                    FileUploadErrorType::kBrowserProcessingError);
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
   // Arrange: Make primary account available.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -503,10 +572,12 @@ TEST_F(ComposeboxQueryControllerTest,
       /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
 
   // Assert: Validate file upload status change.
-  EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
-  EXPECT_EQ(FileUploadStatus::kProcessing, file_upload_status_future_.Get<1>());
-  EXPECT_EQ(std::nullopt, file_upload_status_future_.Get<2>());
-  file_upload_status_future_.Clear();
+  FileUploadStatusTuple processing_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kProcessing,
+            std::get<1>(processing_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<2>(processing_file_upload_status));
 
   // Act: Send the oauth token for the cluster info or file upload request.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -532,17 +603,19 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 1);
 
   // Assert: Validate file upload request and status changes.
-  EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
+  FileUploadStatusTuple upload_started_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(upload_started_file_upload_status));
   EXPECT_EQ(FileUploadStatus::kUploadStarted,
-            file_upload_status_future_.Get<1>());
-  EXPECT_EQ(std::nullopt, file_upload_status_future_.Get<2>());
-  file_upload_status_future_.Clear();
+            std::get<1>(upload_started_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<2>(upload_started_file_upload_status));
 
-  EXPECT_EQ(file_token, file_upload_status_future_.Get<0>());
+  FileUploadStatusTuple upload_successful_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(upload_successful_file_upload_status));
   EXPECT_EQ(FileUploadStatus::kUploadSuccessful,
-            file_upload_status_future_.Get<1>());
-  EXPECT_EQ(std::nullopt, file_upload_status_future_.Get<2>());
-  file_upload_status_future_.Clear();
+            std::get<1>(upload_successful_file_upload_status));
+  EXPECT_EQ(std::nullopt, std::get<2>(upload_successful_file_upload_status));
 
   EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
   EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
@@ -588,7 +661,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   // Assert: Gsession id is NOT added to unimodal text queries.
   std::string gsession_id_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
-                                         &gsession_id_value));
+                                          &gsession_id_value));
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
