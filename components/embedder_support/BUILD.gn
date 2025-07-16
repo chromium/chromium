@@ -124,4 +124,8 @@ source_set("unit_tests") {
   if (enable_vr) {
     deps += [ "//device/vr/public/cpp:features" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

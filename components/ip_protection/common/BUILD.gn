@@ -410,6 +410,10 @@ source_set("ip_protection_token_direct_fetcher_unittest") {
     "//services/network:test_support",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("ip_protection_token_fetcher") {
@@ -471,6 +475,10 @@ source_set("ip_protection_token_manager_impl_unittest") {
     "//net",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("masked_domain_list_manager") {
@@ -508,6 +516,10 @@ source_set("masked_domain_list_manager_unittest") {
     "//testing/gtest",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("masked_domain_list") {
@@ -580,6 +592,10 @@ source_set("url_matcher_with_bypass_unittest") {
     "//testing/gtest",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("ip_protection_probabilistic_reveal_token_direct_fetcher") {

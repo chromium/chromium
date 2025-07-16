@@ -100,4 +100,8 @@ source_set("unit_tests") {
     sources += [ "spellcheck_provider_mac_unittest.cc" ]
     deps += [ "//third_party/hunspell" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
