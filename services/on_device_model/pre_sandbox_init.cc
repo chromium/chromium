@@ -12,6 +12,7 @@
 
 #if defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
+#include "services/on_device_model/ml/gpu_blocklist.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -92,7 +93,11 @@ bool OnDeviceModelService::PreSandboxInit() {
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers)) {
+  if (base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers)
+#if defined(ENABLE_ML_INTERNAL)
+      && !ml::IsGpuBlocked(ml::ChromeML::Get()->api(), /*log_histogram=*/false)
+#endif
+  ) {
     // Warm any relevant drivers before attempting to bring up the sandbox. For
     // good measure we initialize a device instance for any adapter with an
     // appropriate backend on top of any integrated or discrete GPU.

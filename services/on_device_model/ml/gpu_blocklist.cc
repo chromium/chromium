@@ -134,9 +134,11 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
 }  // namespace
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-bool IsGpuBlocked(const ChromeMLAPI& api) {
+bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram) {
   auto reason = IsGpuBlockedInternal(api);
-  LogGpuBlocked(reason);
+  if (log_histogram) {
+    LogGpuBlocked(reason);
+  }
   return reason != GpuBlockedReason::kNotBlocked;
 }
 

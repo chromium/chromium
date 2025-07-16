@@ -10,9 +10,10 @@
 
 namespace ml {
 
-// Checks if the GPU is on the blocklist.
+// Checks if the GPU is on the blocklist. If `log_histogram` is true a histogram
+// will be logged with the result of the check.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-bool IsGpuBlocked(const ChromeMLAPI& api);
+bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram = true);
 
 }  // namespace ml
 
