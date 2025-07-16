@@ -239,8 +239,7 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
 
   // Should be used in combination with ScrollToAsync*() above.
   auto WaitForScrollToError(mojom::ScrollToErrorReason error_reason) {
-    return Steps(
-        CheckJsResult(kGlicContentsElementId, R"js(
+    return Steps(CheckJsResult(kGlicContentsElementId, R"js(
           () => {
             return new Promise(resolve => {
               window.scrollToPromise.catch(e => {
@@ -249,8 +248,8 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
             });
           }
         )js",
-                      ::testing::Eq(static_cast<int>(error_reason))),  //
-        ExpectErrorRecorded(error_reason));
+                               ::testing::Eq(static_cast<int>(error_reason))),
+                 ExpectErrorRecorded(error_reason));
   }
 
   // Creates a new FakeAnnotationAgentContainer, and updates the remote
@@ -535,25 +534,25 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, ScrollToExactText) {
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  NavigateWebContents(
-                      kActiveTabId, embedded_test_server()->GetURL(
-                                        "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),              //
-                  ScrollTo(ExactTextSelector("Some text")),
-                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollTo(ExactTextSelector("Some text")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, ScrollToTextFragment) {
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  NavigateWebContents(
-                      kActiveTabId, embedded_test_server()->GetURL(
-                                        "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  ScrollTo(TextFragmentSelector("Some", "text")),
-                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollTo(TextFragmentSelector("Some", "text")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoMatchFound) {
@@ -562,8 +561,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoMatchFound) {
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       ScrollToExpectingError(ExactTextSelector("Text does not exist"),
                              mojom::ScrollToErrorReason::kNoMatchFound));
 }
@@ -572,12 +570,11 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoMatchFound) {
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        NavigationAfterScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),              //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
@@ -592,13 +589,12 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        NewTabOpenedAfterScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
       PressButton(kNewTabButtonElementId),
@@ -612,10 +608,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoFocusedTab) {
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(kActiveTabId, GURL("chrome://settings")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      WaitUntilGlicFocusedTabIs(std::nullopt),  //
-      InsertFakeAnnotationService(),            //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      WaitUntilGlicFocusedTabIs(std::nullopt), InsertFakeAnnotationService(),
       ScrollToExpectingError(ExactTextSelector("does not matter"),
                              mojom::ScrollToErrorReason::kNoFocusedTab));
 }
@@ -628,8 +622,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, SecondScrollToRequest) {
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),              //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("Some text")),
       WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
@@ -653,16 +646,14 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, SecondScrollToRequest) {
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightKeptAliveAfterScrollToRequestIsComplete) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -678,23 +669,19 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      FocusWebContents(kGlicContentsElementId),  //
-      InsertFakeAnnotationService(),             //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      FocusWebContents(kGlicContentsElementId), InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
       WaitForEvent(kBrowserViewElementId, kScrollStarted),
-      FocusWebContents(kActiveTabId),  //
-      WaitUntilGlicFocusedTabIs(kActiveTabId),
+      FocusWebContents(kActiveTabId), WaitUntilGlicFocusedTabIs(kActiveTabId),
       Check([&]() { return fake_service()->HighlightIsActive(); },
             "Agent connection should still be alive."));
 }
@@ -703,15 +690,13 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightKeptAfterFocusSwitchesToNewTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(kActiveTabId,
                           embedded_test_server()->GetURL("/title1.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -720,8 +705,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                                         "/scrollable_page_with_content.html")),
       WaitUntilGlicFocusedTabIs(kNewTabId),
       Check([&]() { return fake_service()->HighlightIsActive(); }),
-      SelectTab(kTabStripElementId, 0),  //
-      WaitUntilGlicFocusedTabIs(kActiveTabId),
+      SelectTab(kTabStripElementId, 0), WaitUntilGlicFocusedTabIs(kActiveTabId),
       Check([&]() { return fake_service()->HighlightIsActive(); }));
 }
 
@@ -729,15 +713,13 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightDroppedAfterScrollToInNewTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(kActiveTabId,
                           embedded_test_server()->GetURL("/title1.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -752,32 +734,30 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        TwoSuccessfulScrollToCalls) {
-  RunTestSequence(InstrumentTab(kActiveTabId),  //
-                  NavigateWebContents(
-                      kActiveTabId, embedded_test_server()->GetURL(
-                                        "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),              //
-                  ScrollTo(ExactTextSelector("Some text")),
-                  WaitForJsResult(kActiveTabId, "() => did_scroll"),
-                  ExecuteJs(kActiveTabId, "() => { did_scroll = false; }"),
-                  ScrollTo(ExactTextSelector("Go Down")),
-                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollTo(ExactTextSelector("Some text")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"),
+      ExecuteJs(kActiveTabId, "() => { did_scroll = false; }"),
+      ScrollTo(ExactTextSelector("Go Down")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightDroppedAfterPageIsNavigatedFrom) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -794,9 +774,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, WithDocumentId) {
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(ExactTextSelector("Some text")),
                   WaitForJsResult(kActiveTabId, "() => did_scroll"));
 }
@@ -808,9 +787,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, WithUnknownDocumentId) {
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentIdExpectingError(
                       ExactTextSelector("Some text"),
                       mojom::ScrollToErrorReason::kNoMatchingDocument,
@@ -829,9 +807,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, WithIframeDocumentId) {
                   NavigateWebContents(kActiveTabId,
                                       embedded_test_server()->GetURL(
                                           "/scrollable_page_with_iframe.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentIdExpectingError(
                       ExactTextSelector("Some text"),
                       mojom::ScrollToErrorReason::kNoMatchingDocument,
@@ -845,9 +822,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      GetPageContextFromFocusedTab(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      GetPageContextFromFocusedTab(),
       NavigateWebContents(kActiveTabId,
                           embedded_test_server()->GetURL("/title1.html")),
       ScrollToWithDocumentIdExpectingError(
@@ -861,8 +837,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, TextFocusedAfterScroll) {
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       ExecuteJs(kActiveTabId,
                 "() => { document.getElementById('text').tabIndex = 0; }"),
       ScrollTo(ExactTextSelector("Some text")),
@@ -882,9 +857,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(ExactTextSelector(
                       "Some text", std::move(range_start_id_cb))),
                   WaitForJsResult(kActiveTabId, "() => did_scroll"));
@@ -901,9 +875,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(TextFragmentSelector(
                       "Some", "text", std::move(range_start_id_cb))),
                   WaitForJsResult(kActiveTabId, "() => did_scroll"));
@@ -920,9 +893,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentIdExpectingError(
                       ExactTextSelector("Some text", std::move(invalid_id_cb)),
                       mojom::ScrollToErrorReason::kSearchRangeInvalid));
@@ -941,9 +913,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NodeIdSelector) {
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(NodeIdSelector(std::move(text_node))));
 }
 
@@ -953,9 +924,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),
-                  GetPageContextFromFocusedTab(),  //
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentIdExpectingError(
                       NodeIdSelector(base::BindOnce([]() { return -1; })),
                       mojom::ScrollToErrorReason::kNoMatchFound));
@@ -964,16 +934,14 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightIsDroppedWhenPanelIsClosed) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -985,16 +953,15 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        ScrollToFailsWhenPanelIsClosedBeforeAttachment) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      CloseGlicWindow(),                                              //
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
+      CloseGlicWindow(),
       // We cannot use `WaitForScrollError()` here as `kGlicContentsElementId`
       // is already hidden and `CheckJsResult` doesn't work when the provided
       // contents isn't visible.
@@ -1022,21 +989,18 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightIsDroppedWhenWebClientClosed) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
-      Do([&]() { glic_service()->CloseUI(); }),  //
-      WaitForHide(kGlicViewElementId),           //
+      Do([&]() { glic_service()->CloseUI(); }), WaitForHide(kGlicViewElementId),
       Check([&]() { return !fake_service()->HighlightIsActive(); },
             "Annotations should be dropped"));
 }
@@ -1057,15 +1021,14 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        TabContextPermissionDisabledDuringScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
       SetTabContextPermission(false),
       WaitForScrollToError(
           mojom::ScrollToErrorReason::kTabContextPermissionDisabled));
@@ -1074,16 +1037,14 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightIsDroppedWhenTabContextPermissionIsDisabled) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
@@ -1096,20 +1057,18 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightIsDroppedWhenActiveConversationChanged) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
-      UserSwitchesConversation(),  //
+      UserSwitchesConversation(),
       WaitForEvent(kBrowserViewElementId, kAnnotationAgentDisconnectedByRemote),
       Check([&]() { return !fake_service()->HighlightIsActive(); },
             "Annotations should be dropped"));
@@ -1118,37 +1077,32 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        ActiveConversationChangedDuringScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
-      InsertFakeAnnotationService(),  //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),         //
-      UserSwitchesConversation(),                                            //
-      WaitForScrollToError(mojom::ScrollToErrorReason::kDroppedByWebClient)  //
-  );
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
+      UserSwitchesConversation(),
+      WaitForScrollToError(mojom::ScrollToErrorReason::kDroppedByWebClient));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, RecordsSessionCount) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       ScrollToExpectingError(ExactTextSelector("missing text"),
                              mojom::ScrollToErrorReason::kNoMatchFound),
-      ScrollTo(ExactTextSelector("Some text")),  //
-      Do([&]() {
+      ScrollTo(ExactTextSelector("Some text")), Do([&]() {
         histogram_tester()->ExpectTotalCount("Glic.ScrollTo.SessionCount",
                                              /*expected_count=*/0);
       }),
-      CloseGlicWindow(),  //
-      Do([&]() {
+      CloseGlicWindow(), Do([&]() {
         histogram_tester()->ExpectUniqueSample("Glic.ScrollTo.SessionCount",
                                                /*sample=*/2,
                                                /*expected_bucket_count=*/1);
@@ -1167,22 +1121,19 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        RecordsUserPromptToScrollTime) {
   GlicMetrics* glic_metrics;
   RunTestSequence(
-      InstrumentTab(kActiveTabId),  //
+      InstrumentTab(kActiveTabId),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),              //
-      InsertFakeAnnotationService(),              //
-      Do([&]() {
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      InsertFakeAnnotationService(), Do([&]() {
         glic_metrics = GlicKeyedServiceFactory::GetGlicKeyedService(
                            browser()->GetProfile())
                            ->metrics();
         glic_metrics->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
       }),
-      ScrollToAsync(ExactTextSelector("does not matter")),            //
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         glic_metrics->OnResponseStarted();
         glic_metrics->OnResponseStopped();
       }),
@@ -1200,9 +1151,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       Do([&]() {
         glic_metrics->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
       }),
-      ScrollToAsync(ExactTextSelector("does not matter")),            //
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
-      Do([&]() {
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
         glic_metrics->OnResponseStarted();
         glic_metrics->OnResponseStopped();
       }),
@@ -1210,8 +1160,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
         fake_service()->NotifyAttachment(
             gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
       }),
-      WaitForEvent(kBrowserViewElementId, kScrollStarted),  //
-      Do([&]() {
+      WaitForEvent(kBrowserViewElementId, kScrollStarted), Do([&]() {
         histogram_tester()->ExpectTotalCount(
             "Glic.ScrollTo.UserPromptToScrollTime.Audio",
             /*expected_count=*/1);
@@ -1259,8 +1208,7 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithEnforceDocumentIdUiTest,
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached),  //
-      SetTabContextPermission(true),              //
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
       ScrollToExpectingError(ExactTextSelector("Some text"),
                              mojom::ScrollToErrorReason::kNotSupported));
 }
@@ -1271,9 +1219,8 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithEnforceDocumentIdUiTest,
                   NavigateWebContents(
                       kActiveTabId, embedded_test_server()->GetURL(
                                         "/scrollable_page_with_content.html")),
-                  OpenGlicWindow(GlicWindowMode::kDetached),  //
-                  SetTabContextPermission(true),              //
-                  GetPageContextFromFocusedTab(),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(ExactTextSelector("Some text")));
 }
 
