@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -140,6 +141,33 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::StartWithLock(
       &PrepareAndStoreUpdateCommand::SetPendingUpdateInfo);
 }
 
+void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportVersionValidationFailure(
+    VersionChangeValidationResult validation_result,
+    const base::Version& candidate_version) {
+  CHECK(installed_version_.has_value());
+
+  std::string failure_message;
+  switch (validation_result) {
+    case VersionChangeValidationResult::kSameVersionUpdateDisallowed:
+      failure_message =
+          base::StringPrintf("Installed app is already on version %s.",
+                             installed_version_->GetString().c_str());
+      break;
+    case VersionChangeValidationResult::kDowngradeDisallowed:
+      failure_message = base::StringPrintf(
+          "Version downgrades are not allowed. Installed app "
+          "version %s is newer than the candidate "
+          "version %s.",
+          installed_version_->GetString(), candidate_version.GetString());
+      break;
+    case VersionChangeValidationResult::kAllowed:
+      // This case should never happen in this method.
+      NOTREACHED();
+  }
+
+  ReportFailure(failure_message);
+}
+
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     base::OnceClosure next_step_callback) {
   ASSIGN_OR_RETURN(
@@ -168,15 +196,16 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
       return;
   }
 
-  if (expected_version_ &&
-      ShouldPreventVersionChange(
-          *expected_version_, *installed_version_, allow_downgrades_,
-          same_version_update_allowed_by_key_rotation_)) {
-    ReportFailure(base::StrCat({"Installed app is already on version ",
-                                installed_version_->GetString(),
-                                ". Cannot update to version ",
-                                expected_version_->GetString()}));
-    return;
+  if (expected_version_) {
+    VersionChangeValidationResult validation_result =
+        ValidateVersionChangeFeasibility(
+            *expected_version_, *installed_version_, allow_downgrades_,
+            same_version_update_allowed_by_key_rotation_);
+
+    if (validation_result != VersionChangeValidationResult::kAllowed) {
+      ReportVersionValidationFailure(validation_result, *expected_version_);
+      return;
+    }
   }
 
   if (isolation_data.location().dev_mode() != update_source_->dev_mode()) {
@@ -274,13 +303,14 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::SetPendingUpdateInfo(
                              install_info.isolated_web_app_version.GetString());
   GetMutableDebugValue().Set("app_title", install_info.title);
 
-  if (ShouldPreventVersionChange(
+  VersionChangeValidationResult validation_result =
+      ValidateVersionChangeFeasibility(
           install_info.isolated_web_app_version, *installed_version_,
-          allow_downgrades_, same_version_update_allowed_by_key_rotation_)) {
-    ReportFailure(base::StrCat(
-        {"Installed app is already on version ",
-         installed_version_->GetString(), ". Cannot update to version ",
-         install_info.isolated_web_app_version.GetString()}));
+          allow_downgrades_, same_version_update_allowed_by_key_rotation_);
+
+  if (validation_result != VersionChangeValidationResult::kAllowed) {
+    ReportVersionValidationFailure(validation_result,
+                                   install_info.isolated_web_app_version);
     return;
   }
 

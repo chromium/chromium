@@ -264,8 +264,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
-  EXPECT_THAT(future.Take(), ValueIs(Task::Success::kNoUpdateFound))
-      << task.AsDebugValue();
+  EXPECT_THAT(future.Take(), ErrorIs(Task::Error::kDowngradetNotAllowed));
 }
 
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
@@ -554,7 +553,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
   EXPECT_THAT(future.Take(),
-              ValueIs(Task::Success::kUpdateFoundAndSavedInDatabase))
+              ValueIs(Task::Success::kDowngradeVersionFoundAndSavedInDatabase))
       << task.AsDebugValue();
 }
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
@@ -576,8 +575,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              ValueIs(Task::Success::kUpdateFoundAndSavedInDatabase))
+  EXPECT_THAT(
+      future.Take(),
+      ValueIs(Task::Success::kPinnedVersionUpdateFoundAndSavedInDatabase))
       << task.AsDebugValue();
 
   const WebApp* web_app =

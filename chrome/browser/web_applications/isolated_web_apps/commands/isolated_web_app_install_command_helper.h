@@ -49,6 +49,12 @@ class UnusableSwbnFileError;
 class WebAppDataRetriever;
 class WebAppRegistrar;
 
+enum class VersionChangeValidationResult {
+  kSameVersionUpdateDisallowed,
+  kDowngradeDisallowed,
+  kAllowed
+};
+
 // Copies the file being installed to the profile directory.
 // On success returns a new owned location in the callback.
 void UpdateBundlePathAndCreateStorageLocation(
@@ -106,8 +112,8 @@ KeyRotationData GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data);
 
-// Checks if update should not be finished due to incorrect expected_version.
-bool ShouldPreventVersionChange(
+// Checks if version change is allowed for given arguments.
+VersionChangeValidationResult ValidateVersionChangeFeasibility(
     const base::Version& expected_version,
     const base::Version& installed_version,
     bool allow_downgrades,

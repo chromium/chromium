@@ -380,7 +380,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
     base::test::TestFuture<std::string> update_future;
     handler->UpdateManifestInstalledIsolatedWebApp(
         app_id, update_future.GetCallback<const std::string&>());
-    EXPECT_THAT(update_future.Get(), HasSubstr("Update skipped"));
+    EXPECT_THAT(
+        update_future.Get(),
+        HasSubstr("Update skipped: app is already on the latest version or the "
+                  "updates are disabled due to set `pinned_version` field."));
   }
 
   // Add v2.4.0 to `beta` channel, pin the app to v2.3.0. Expect an update to
@@ -506,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(
         update_future.Get(),
-        HasSubstr("Update failed: Error::kUpdateManifestNoApplicableVersion"));
+        HasSubstr(
+            "Update failed: Error::kPinnedVersionNotFoundInUpdateManifest"));
 
     ASSERT_OK_AND_ASSIGN(
         const WebApp& iwa,
@@ -528,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(
         app_id, update_future.GetCallback<const std::string&>());
     EXPECT_THAT(
         update_future.Get(),
-        HasSubstr("Update failed: Error::kUpdateManifestNoApplicableVersion"));
+        HasSubstr(
+            "Update failed: Error::kPinnedVersionNotFoundInUpdateManifest"));
   }
 }
 

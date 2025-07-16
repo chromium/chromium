@@ -224,6 +224,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Update dry run failed"/>
   <int value="10" label="Update apply failed"/>
   <int value="11" label="System shutdown"/>
+  <int value="12" label="Version pinning is not allowed"/>
+  <int value="13" label="Downgrade is not allowed"/>
 </enum>
 
 <enum name="IwaComponentUpdateError">

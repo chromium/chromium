@@ -184,10 +184,34 @@ void ExpectAppUpdateDiscovered() {
                           kUpdateFoundAndSavedInDatabase));
 }
 
+void ExpectAppDowngradeDiscovered() {
+  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
+              ValueIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Success::
+                          kDowngradeVersionFoundAndSavedInDatabase));
+}
+
+void ExpectAppPinnedVersionDiscovered() {
+  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
+              ValueIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Success::
+                          kPinnedVersionUpdateFoundAndSavedInDatabase));
+}
+
+void ExpectDowngradeNotAllowed() {
+  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
+              ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+                          kDowngradetNotAllowed));
+}
+
 void ExpectNoApplicableVersion() {
   EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
               ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
                           kUpdateManifestNoApplicableVersion));
+}
+
+void ExpectPinnedVersionNotFoundInUpdateManifest() {
+  EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
+              ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+                          kPinnedVersionNotFoundInUpdateManifest));
 }
 
 // Creates a manual launch IWA kiosk with a custom channel.
@@ -571,7 +595,12 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestAtExit) {
 }
 
 struct KioskIwaUpdateChannelChangeTestParams {
-  enum class TestCase { kUpdateApplied, kUpdateSkipped, kUpdateError };
+  enum class TestCase {
+    kUpdateApplied,
+    kUpdateSkipped,
+    kUpdateError,
+    kDowngradeNotAllowed
+  };
 
   TestCase test_case;
   std::string initial_channel_name;
@@ -630,6 +659,10 @@ class KioskIwaUpdateChannelChangeTest
         break;
       case KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateError:
         ExpectNoApplicableVersion();
+        break;
+      case KioskIwaUpdateChannelChangeTestParams::TestCase::
+          kDowngradeNotAllowed:
+        ExpectDowngradeNotAllowed();
         break;
     }
   }
@@ -691,16 +724,17 @@ INSTANTIATE_TEST_SUITE_P(
         // Switching to a channel with an older version skips the update.
         // Switch from "beta" to "default".
         KioskIwaUpdateChannelChangeTestParams{
-            .test_case =
-                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
+            .test_case = KioskIwaUpdateChannelChangeTestParams::TestCase::
+                kDowngradeNotAllowed,
             .initial_channel_name = kChannelNameBeta,
             .expected_initial_version = kAppVersion2,
             .new_channel_name = kChannelNameDefault,
             .expected_new_version = kAppVersion2},
-        // Switch from "alpha" to "default".
+        // Switch from "alpha" (at version 3.0.0) to "default" (latest
+        // version: 2.0, downgrade not possible).
         KioskIwaUpdateChannelChangeTestParams{
-            .test_case =
-                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
+            .test_case = KioskIwaUpdateChannelChangeTestParams::TestCase::
+                kDowngradeNotAllowed,
             .initial_channel_name = kChannelNameAlpha,
             .expected_initial_version = kAppVersion3,
             .new_channel_name = kChannelNameDefault,
@@ -717,7 +751,14 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_new_version = kAppVersion2}));
 
 struct KioskIwaVersionPinningUpdateTestParams {
-  enum class TestCase { kNoUpdateQueued, kUpdateApplied, kUpdateNotFound };
+  enum class TestCase {
+    kNoUpdateQueued,
+    kUpdateApplied,
+    kUpdateToPinnedVersionApplied,
+    kDowngradeToPinnedVersionApplied,
+    kUpdateNotFound,
+    kPinnedVersionNotFound
+  };
 
   TestCase test_case;
   std::string input_pinned_version;
@@ -774,10 +815,24 @@ class KioskIwaVersionPinningUpdateTest
                   0UL);
         break;
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateApplied:
+        ExpectAppPinnedVersionDiscovered();
+        ExpectTestAppUpdatedToVersion(GetExpectedVersion());
+        break;
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::
+          kDowngradeToPinnedVersionApplied:
+        ExpectAppDowngradeDiscovered();
+        ExpectTestAppUpdatedToVersion(GetExpectedVersion());
+        break;
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::
+          kUpdateToPinnedVersionApplied:
         ExpectTestAppUpdatedToVersion(GetExpectedVersion());
         break;
       case KioskIwaVersionPinningUpdateTestParams::TestCase::kUpdateNotFound:
         ExpectNoApplicableVersion();
+        break;
+      case KioskIwaVersionPinningUpdateTestParams::TestCase::
+          kPinnedVersionNotFound:
+        ExpectPinnedVersionNotFoundInUpdateManifest();
         break;
     }
   }
@@ -814,7 +869,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Pinning to the newer version updates the app.
         KioskIwaVersionPinningUpdateTestParams{
             .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
-                kUpdateApplied,
+                kUpdateToPinnedVersionApplied,
             .input_pinned_version = kVersionString3,
             .input_allow_downgrades = false,
             .expected_version = kAppVersion3},
@@ -828,14 +883,14 @@ INSTANTIATE_TEST_SUITE_P(
         // Pinning to the older version with allow_downgrades updates the app.
         KioskIwaVersionPinningUpdateTestParams{
             .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
-                kUpdateApplied,
+                kDowngradeToPinnedVersionApplied,
             .input_pinned_version = kVersionString1,
             .input_allow_downgrades = true,
             .expected_version = kAppVersion1},
         // Pinning to the unknown version skips the update with an error.
         KioskIwaVersionPinningUpdateTestParams{
             .test_case = KioskIwaVersionPinningUpdateTestParams::TestCase::
-                kUpdateNotFound,
+                kPinnedVersionNotFound,
             .input_pinned_version = kVersionStringUnknown,
             .input_allow_downgrades = true,
             .expected_version = kAppVersion2}));

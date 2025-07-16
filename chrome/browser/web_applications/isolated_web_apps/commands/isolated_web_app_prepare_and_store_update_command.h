@@ -152,6 +152,10 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   Profile& profile();
 
+  void ReportVersionValidationFailure(
+      VersionChangeValidationResult validation_result,
+      const base::Version& expected_version);
+
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
   void CopyToProfileDirectory(base::OnceClosure next_step_callback);

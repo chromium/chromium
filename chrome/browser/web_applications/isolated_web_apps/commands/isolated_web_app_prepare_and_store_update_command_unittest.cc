@@ -325,8 +325,10 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 
   auto result = PrepareAndStoreUpdateInfo(url_info, *update_bundle);
-  EXPECT_THAT(result, IsErrorWithMessage(
-                          HasSubstr("Installed app is already on version")));
+  EXPECT_THAT(result, IsErrorWithMessage(HasSubstr(
+                          "Version downgrades are not allowed. Installed app "
+                          "version 3.0.0 is newer than the candidate "
+                          "version 2.0.0.")));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info.app_id());
@@ -352,8 +354,10 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 
   auto result = PrepareAndStoreUpdateInfo(url_info, *update_bundle);
-  EXPECT_THAT(result, IsErrorWithMessage(
-                          HasSubstr("Installed app is already on version")));
+  EXPECT_THAT(result, IsErrorWithMessage(HasSubstr(
+                          "Version downgrades are not allowed. Installed app "
+                          "version 3.0.0 is newer than the candidate "
+                          "version 2.0.0.")));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info.app_id());

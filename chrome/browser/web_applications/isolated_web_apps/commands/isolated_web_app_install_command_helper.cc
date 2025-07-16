@@ -308,19 +308,19 @@ KeyRotationData GetKeyRotationData(
           .pending_update_has_rk = pending_update_has_rk};
 }
 
-bool ShouldPreventVersionChange(
+VersionChangeValidationResult ValidateVersionChangeFeasibility(
     const base::Version& expected_version,
     const base::Version& installed_version,
     bool allow_downgrades,
     bool same_version_update_allowed_by_key_rotation) {
   if (expected_version < installed_version && !allow_downgrades) {
-    return true;
+    return VersionChangeValidationResult::kDowngradeDisallowed;
   }
   if (expected_version == installed_version &&
       !same_version_update_allowed_by_key_rotation) {
-    return true;
+    return VersionChangeValidationResult::kSameVersionUpdateDisallowed;
   }
-  return false;
+  return VersionChangeValidationResult::kAllowed;
 }
 
 // static

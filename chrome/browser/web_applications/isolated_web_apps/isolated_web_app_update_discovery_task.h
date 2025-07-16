@@ -63,7 +63,14 @@ class IsolatedWebAppUpdateDiscoveryTask {
   enum class Success {
     kNoUpdateFound,
     kUpdateAlreadyPending,
-    kUpdateFoundAndSavedInDatabase,
+    kPinnedVersionUpdateFoundAndSavedInDatabase,  // Update to pinned version
+                                                  // was successful. This type
+                                                  // of update can happen only
+                                                  // once, right after the app
+                                                  // is pinned. After that, no
+                                                  // update should happen.
+    kDowngradeVersionFoundAndSavedInDatabase,
+    kUpdateFoundAndSavedInDatabase
   };
 
   enum class Error {
@@ -72,8 +79,13 @@ class IsolatedWebAppUpdateDiscoveryTask {
     kUpdateManifestInvalidJson,
     kUpdateManifestInvalidManifest,
     kUpdateManifestNoApplicableVersion,
-
     kIwaNotInstalled,
+
+    // Version pinning errors
+    kPinnedVersionNotFoundInUpdateManifest,
+
+    // Version downgrade errors
+    kDowngradetNotAllowed,
 
     // Signed Web Bundle download errors
     kDownloadPathCreationFailed,
@@ -153,6 +165,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   const raw_ref<Profile> profile_;
 
   ScopedTempWebBundleFile bundle_;
+  base::Version currently_installed_version_;
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;

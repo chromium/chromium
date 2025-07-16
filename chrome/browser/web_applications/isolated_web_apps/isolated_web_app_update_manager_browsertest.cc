@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
   EXPECT_THAT(initial_update_future.Take(),
               ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
-                          kUpdateManifestNoApplicableVersion));
+                          kPinnedVersionNotFoundInUpdateManifest));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
     EXPECT_THAT(initial_update_future.Take(),
                 ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
-                            kUpdateManifestNoApplicableVersion));
+                            kPinnedVersionNotFoundInUpdateManifest));
   }
 
   EXPECT_THAT(GetIsolatedWebApp(GetAppId()),
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
     EXPECT_THAT(second_update_future.Take(),
                 ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
-                            kUpdateFoundAndSavedInDatabase));
+                            kPinnedVersionUpdateFoundAndSavedInDatabase));
 
     manifest_updated_observer.Wait();
     EXPECT_THAT(
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
     EXPECT_THAT(future.Take(),
                 ErrorIs(IsolatedWebAppUpdateDiscoveryTask::Error::
-                            kUpdateManifestNoApplicableVersion));
+                            kPinnedVersionNotFoundInUpdateManifest));
   }
 
   // Version equal to pinned_version appears in update manifest. The app is

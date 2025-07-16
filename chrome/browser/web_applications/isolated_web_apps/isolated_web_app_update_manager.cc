@@ -685,10 +685,20 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     observer.OnUpdateDiscoveryTaskCompleted(task->url_info().app_id(), status);
   }
 
-  if (status.has_value() && *status ==
-                                IsolatedWebAppUpdateDiscoveryTask::Success::
-                                    kUpdateFoundAndSavedInDatabase) {
-    CreateUpdateApplyWaiter(task->url_info());
+  if (status.has_value()) {
+    switch (*status) {
+      case IsolatedWebAppUpdateDiscoveryTask::Success::
+          kUpdateFoundAndSavedInDatabase:
+      case IsolatedWebAppUpdateDiscoveryTask::Success::
+          kPinnedVersionUpdateFoundAndSavedInDatabase:
+      case IsolatedWebAppUpdateDiscoveryTask::Success::
+          kDowngradeVersionFoundAndSavedInDatabase:
+        CreateUpdateApplyWaiter(task->url_info());
+        break;
+      case IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound:
+      case IsolatedWebAppUpdateDiscoveryTask::Success::kUpdateAlreadyPending:
+        break;
+    }
   }
 
   task_queue_.MaybeStartNextTask();
@@ -1046,6 +1056,11 @@ IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
       return IsolatedWebAppUpdateError::kUpdateManifestNoApplicableVersion;
     case IsolatedWebAppUpdateDiscoveryTask::Error::kIwaNotInstalled:
       return IsolatedWebAppUpdateError::kIwaNotInstalled;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kPinnedVersionNotFoundInUpdateManifest:
+      return IsolatedWebAppUpdateError::kPinnedVersionNotFoundInUpdateManifest;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kDowngradetNotAllowed:
+      return IsolatedWebAppUpdateError::kDowngradeNotAllowed;
     case IsolatedWebAppUpdateDiscoveryTask::Error::kDownloadPathCreationFailed:
       return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;
     case IsolatedWebAppUpdateDiscoveryTask::Error::kBundleDownloadError:

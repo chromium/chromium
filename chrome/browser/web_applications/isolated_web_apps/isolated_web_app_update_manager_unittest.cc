@@ -522,7 +522,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(
       UpdateDiscoveryLog(),
       UnorderedElementsAre(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
+          "result",
+          base::Value(
+              "Success::kPinnedVersionUpdateFoundAndSavedInDatabase"))));
   EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(DictionaryHasValue(
                                     "result", base::Value("Success"))));
 
@@ -603,7 +605,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(
       UpdateDiscoveryLog(),
       UnorderedElementsAre(DictionaryHasValue(
-          "result", base::Value("Error::kUpdateManifestNoApplicableVersion"))));
+          "result",
+          base::Value("Error::kPinnedVersionNotFoundInUpdateManifest"))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
@@ -632,7 +635,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   EXPECT_THAT(
       UpdateDiscoveryLog(),
       UnorderedElementsAre(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
+          "result",
+          base::Value("Success::kDowngradeVersionFoundAndSavedInDatabase"))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), SizeIs(1));
 }

@@ -74,7 +74,9 @@ enum class IsolatedWebAppUpdateError {
   kUpdateDryRunFailed = 9,
   kUpdateApplyFailed = 10,
   kSystemShutdown = 11,
-  kMaxValue = kSystemShutdown
+  kPinnedVersionNotFoundInUpdateManifest = 12,
+  kDowngradeNotAllowed = 13,
+  kMaxValue = kDowngradeNotAllowed
 };
 
 struct IsolatedWebAppUpdateOptions {
