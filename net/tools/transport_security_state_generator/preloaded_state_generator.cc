@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -203,7 +202,7 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
       output.append("\"");
 
       for (size_t j = i * 16; j < ((i + 1) * 16); ++j) {
-        base::StringAppendF(&output, "\\x%02x", UNSAFE_TODO(hash.data()[j]));
+        base::StringAppendF(&output, "\\x%02x", hash.span()[j]);
       }
 
       output.append("\"");

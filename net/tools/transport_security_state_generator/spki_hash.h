@@ -32,8 +32,8 @@ class SPKIHash {
   // Returns the size of the hash in bytes.
   size_t size() const { return data_.size(); }
 
-  uint8_t* data() { return data_.data(); }
-  const uint8_t* data() const { return data_.data(); }
+  base::span<uint8_t> span() { return data_; }
+  base::span<const uint8_t> span() const { return data_; }
 
  private:
   std::array<uint8_t, crypto::hash::kSha256Size> data_;

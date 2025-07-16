@@ -4,7 +4,6 @@
 
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +18,7 @@ TEST(SPKIHashTest, FromString) {
   // Valid SHA256.
   EXPECT_TRUE(
       hash.FromString("sha256/1111111111111111111111111111111111111111111="));
-  std::vector<uint8_t> hash_vector(hash.data(),
-                                   UNSAFE_TODO(hash.data() + hash.size()));
+  std::vector<uint8_t> hash_vector(hash.span().begin(), hash.span().end());
   EXPECT_THAT(
       hash_vector,
       testing::ElementsAreArray(
@@ -31,8 +29,7 @@ TEST(SPKIHashTest, FromString) {
   SPKIHash hash2;
   EXPECT_TRUE(
       hash2.FromString("sha256/4osU79hfY3P2+WJGlT2mxmSL+5FIwLEVxTQcavyBNgQ="));
-  std::vector<uint8_t> hash_vector2(hash2.data(),
-                                    UNSAFE_TODO(hash2.data() + hash2.size()));
+  std::vector<uint8_t> hash_vector2(hash2.span().begin(), hash2.span().end());
   EXPECT_THAT(
       hash_vector2,
       testing::ElementsAreArray(
