@@ -31,6 +31,7 @@ enum WrappablePointerTag : uint16_t {
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
+  kGinPort,                            // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kJsBinding,                        // js_injection::JsBinding
   kJSHookInterface,                  // extensions::JSHookInterface

@@ -15,6 +15,7 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8-forward.h"
 
@@ -26,12 +27,12 @@ namespace extensions {
 class APIEventHandler;
 struct Message;
 
-// A gin::Wrappable implementation of runtime.Port exposed to extensions. This
+// A gin::Wrappable implementation of `runtime.Port` exposed to extensions. This
 // provides a means for extensions to communicate with themselves and each
 // other. This message-passing usually involves IPCs to the browser; we delegate
 // out this responsibility. This class only handles the JS interface (both calls
 // from JS and forward events to JS).
-class GinPort final : public gin::DeprecatedWrappable<GinPort> {
+class GinPort final : public gin::Wrappable<GinPort> {
  public:
   class Delegate {
    public:
@@ -59,12 +60,13 @@ class GinPort final : public gin::DeprecatedWrappable<GinPort> {
 
   ~GinPort() override;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin}, gin::kGinPort};
 
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
-  const char* GetTypeName() override;
+  const char* GetHumanReadableName() const override;
 
   // Dispatches an event to any listeners of the onMessage event.
   void DispatchOnMessage(v8::Local<v8::Context> context,
@@ -85,6 +87,8 @@ class GinPort final : public gin::DeprecatedWrappable<GinPort> {
   bool is_closed_for_testing() const { return state_ == State::kDisconnected; }
 
  private:
+  const gin::WrapperInfo* wrapper_info() const override;
+
   enum class State {
     kActive,        // The port is currently active.
     kDisconnected,  // The port was disconnected by calling port.disconnect().

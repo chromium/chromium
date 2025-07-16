@@ -423,15 +423,16 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
         messaging_util::PARSE_CHANNEL_NAME);
   }
 
-  gin::Handle<GinPort> port = messaging_service_->Connect(
+  GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
       options.channel_name,
       messaging_util::GetSerializationFormat(*script_context));
-  DCHECK(!port.IsEmpty());
+  DCHECK(port);
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = port.ToV8();
+  result.return_value =
+      port->GetWrapper(script_context->isolate()).ToLocalChecked();
   return result;
 }
 
@@ -449,12 +450,13 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
   // Native messaging always uses JSON since a native host doesn't understand
   // structured cloning serialization.
   auto format = mojom::SerializationFormat::kJson;
-  gin::Handle<GinPort> port = messaging_service_->Connect(
+  GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
       std::string(), format);
 
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = port.ToV8();
+  result.return_value =
+      port->GetWrapper(script_context->isolate()).ToLocalChecked();
   return result;
 }
 

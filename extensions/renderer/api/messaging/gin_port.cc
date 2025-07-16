@@ -21,6 +21,7 @@
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 
@@ -54,11 +55,9 @@ GinPort::GinPort(v8::Local<v8::Context> context,
 
 GinPort::~GinPort() = default;
 
-gin::DeprecatedWrapperInfo GinPort::kWrapperInfo = {gin::kEmbedderNativeGin};
-
 gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<GinPort>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<GinPort>::GetObjectTemplateBuilder(isolate)
       .SetMethod("disconnect", &GinPort::DisconnectHandler)
       .SetMethod("postMessage", &GinPort::PostMessageHandler)
       .SetLazyDataProperty("name", &GinPort::GetName)
@@ -67,7 +66,11 @@ gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
       .SetLazyDataProperty("sender", &GinPort::GetSender);
 }
 
-const char* GinPort::GetTypeName() {
+const gin::WrapperInfo* GinPort::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
+const char* GinPort::GetHumanReadableName() const {
   return "Port";
 }
 

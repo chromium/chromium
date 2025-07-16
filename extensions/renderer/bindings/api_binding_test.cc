@@ -130,7 +130,7 @@ void APIBindingTest::RunGarbageCollection() {
   // hopefully clean up all the various paths.
   for (int i = 0; i < 5; ++i) {
     isolate()->RequestGarbageCollectionForTesting(
-        v8::Isolate::kFullGarbageCollection);
+        v8::Isolate::kFullGarbageCollection, v8::StackState::kNoHeapPointers);
   }
 }
 
