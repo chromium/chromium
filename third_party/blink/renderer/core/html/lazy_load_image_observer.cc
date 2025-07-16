@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -63,14 +62,10 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
   if (!lazy_load_intersection_observer_) {
     int margin = GetLazyLoadingImageMarginPx(*root_document);
     IntersectionObserver::Params params = {
+        .scroll_margin = {{/* top & bottom */ Length::Fixed(margin),
+                           /* right & left */ Length::Fixed(margin / 2)}},
         .thresholds = {std::numeric_limits<float>::min()},
     };
-    if (RuntimeEnabledFeatures::LazyLoadScrollMarginEnabled()) {
-      params.scroll_margin = {{/* top & bottom */ Length::Fixed(margin),
-                               /* right & left */ Length::Fixed(margin / 2)}};
-    } else {
-      params.margin = {Length::Fixed(margin)};
-    }
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
         *root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,

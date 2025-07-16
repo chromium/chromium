@@ -2848,20 +2848,6 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
-      // If enabled, the lazy load image observer will use a scroll margin in
-      // its init dictionary instead of a root margin.
-      name: "LazyLoadScrollMargin",
-      public: true,
-      status: "stable",
-    },
-    {
-      // If enabled, the lazy load iframe observer will use a scroll margin in
-      // its init dictionary instead of a root margin.
-      name: "LazyLoadScrollMarginIframe",
-      public: true,
-      status: "stable",
-    },
-     {
       name: "LimitThirdPartyCookies",
       origin_trial_feature_name: "LimitThirdPartyCookies",
       status: "experimental",
