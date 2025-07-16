@@ -204,7 +204,7 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
       optimizedChargingSublabel_: {
         type: String,
         computed:
-            'computeOptimizedChargingSublabel_(adaptiveChargingPref_.value, false)',
+            'computeOptimizedChargingSublabel_(selectedOptimizedChargingStrategy_)',
       },
 
       optimizedChargingHidden_: {
@@ -357,15 +357,16 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   }
 
   private computeOptimizedChargingSublabel_(
-      adaptiveChargingEnabled: boolean, chargeLimitEnabled: boolean): string {
-    if (adaptiveChargingEnabled) {
-      return this.i18n('powerAdaptiveChargingLabel');
+      strategy: OptimizedChargingStrategy): string {
+    switch (strategy) {
+      case OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING:
+        return this.i18n('powerAdaptiveChargingLabel');
+      case OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT:
+        return this.i18n('powerBatteryChargeLimitLabel');
+      default:
+        // Return empty string if no policy is selected.
+        return '';
     }
-    if (chargeLimitEnabled) {
-      return this.i18n('powerBatteryChargeLimitLabel');
-    }
-    // Return empty string if no policy is selected.
-    return '';
   }
 
   private computeOptimizedChargingHidden_(

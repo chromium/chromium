@@ -714,8 +714,7 @@ suite('<settings-power>', () => {
     });
 
     test(
-        'Optimized Charging has correct sublabel for enabled adaptive charging',
-        async () => {
+        'has correct sublabel for adaptive charging strategy', async () => {
           // Setup test with adaptive charging being supported.
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
@@ -723,22 +722,19 @@ suite('<settings-power>', () => {
           });
           await initSubpage();
 
-          // Case 1: Adaptive Charging is enabled.
-          sendPowerManagementSettings({
-            adaptiveCharging: true,
-          });
+          // Case 1: Adaptive Charging is the selected strategy.
+          setStrategyPref(OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING);
 
           const sublabelSpan = queryOptimizedChargingSublabelSpan();
           assertTrue(!!sublabelSpan);
 
           assertEquals(
               powerSubpage.i18n('powerAdaptiveChargingLabel'),
-              sublabelSpan.textContent!.trim());
+              sublabelSpan.innerText.trim());
         });
 
     test(
-        'Optimized Charging has correct sublabel for disabled adaptive charging',
-        async () => {
+        'has correct sublabel for charge limit strategy', async () => {
           // Setup test with adaptive charging being supported.
           loadTimeData.overrideValues({
             isAdaptiveChargingEnabled: true,
@@ -746,19 +742,20 @@ suite('<settings-power>', () => {
           });
           await initSubpage();
 
-          // Case 2: Adaptive Charging is not enabled.
-          sendPowerManagementSettings({
-            adaptiveCharging: false,
-          });
+          // Case 2: Charge Limit is the selected strategy.
+          setStrategyPref(OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
 
           const sublabelSpan = queryOptimizedChargingSublabelSpan();
           assertTrue(!!sublabelSpan);
 
-          assertEquals('', sublabelSpan.textContent!.trim());
+
+          assertEquals(
+              powerSubpage.i18n('powerBatteryChargeLimitLabel'),
+              sublabelSpan.innerText.trim());
         });
 
     test(
-        'Optimized Charging is visible with undefined battery status, and feature enabled.',
+        'is visible with undefined battery status, and feature enabled.',
         async () => {
           // Case 1: batteryStatus is undefined
           await initTestState(undefined, /*featureEnabled=*/ true);
@@ -766,15 +763,14 @@ suite('<settings-power>', () => {
         });
 
     test(
-        'Optimized Charging is hidden with undefined battery status, and feature disabled.',
+        'is hidden with undefined battery status, and feature disabled.',
         async () => {
           await initTestState(undefined, /*featureEnabled=*/ false);
           assertFalse(isVisible(queryOptimizedChargingRow()));
         });
 
     test(
-        'Optimized Charging is visible with a battery present, and feature enabled.',
-        async () => {
+        'is visible with a battery present, and feature enabled.', async () => {
           // Case 2: batteryStatus.present = true
           const mockBatteryStatus: BatteryStatus = {
             present: true,
@@ -789,8 +785,7 @@ suite('<settings-power>', () => {
         });
 
     test(
-        'Optimized Charging is hidden with a battery present, and feature disabled.',
-        async () => {
+        'is hidden with a battery present, and feature disabled.', async () => {
           // Case 2: batteryStatus.present = true
           const mockBatteryStatus: BatteryStatus = {
             present: true,
@@ -805,7 +800,7 @@ suite('<settings-power>', () => {
         });
 
     test(
-        'Optimized Charging is visible without a battery present, and feature enabled.',
+        'is visible without a battery present, and feature enabled.',
         async () => {
           // Case 3: batteryStatus.present = false
           // (This can happen when there is no battery, and a low power adapter
@@ -823,7 +818,7 @@ suite('<settings-power>', () => {
         });
 
     test(
-        'Optimized Charging is hidden without a battery present, and feature disabled.',
+        'is hidden without a battery present, and feature disabled.',
         async () => {
           // Case 3: batteryStatus.present = false
           const mockBatteryStatus = {
@@ -838,7 +833,7 @@ suite('<settings-power>', () => {
           assertFalse(isVisible(queryOptimizedChargingRow()));
         });
 
-    test('Optimized charging is deep-linkable.', async () => {
+    test('is deep-linkable.', async () => {
       loadTimeData.overrideValues({
         isAdaptiveChargingEnabled: true,
         isBatteryChargeLimitAvailable: true,
