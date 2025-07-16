@@ -1401,7 +1401,13 @@ export declare interface Observable<T> {
  *
  * See also comments about Observable.
  */
-export interface ObservableValue<T> extends Observable<T> {}
+export interface ObservableValue<T> extends Observable<T> {
+  /**
+   * Provides synchronous access to the current value. Returns undefined if the
+   * initial value has not yet been populated.
+   */
+  getCurrentValue(): T|undefined;
+}
 
 /** Allows control of a subscription to an Observable. */
 export declare interface Subscriber {
