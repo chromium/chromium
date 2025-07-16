@@ -41,6 +41,10 @@ source_set("test_support") {
     "//services/network/public/cpp",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Repository of test accounts is only supported for platforms that utilize end-to-end tests
@@ -61,6 +65,10 @@ source_set("account_repository") {
     "//base",
     "//components/supervised_user/core/browser/proto",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 source_set("account_repository_unit_tests") {
   testonly = true
