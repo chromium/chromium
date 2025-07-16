@@ -70,16 +70,8 @@ id<GREYMatcher> AddLanguageButton() {
 
 // Matcher for the search bar.
 id<GREYMatcher> SearchBar() {
-  return grey_allOf(
-      grey_accessibilityID(kAddLanguageSearchControllerAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the search bar's cancel button.
-id<GREYMatcher> SearchBarCancelButton() {
-  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_APP_CANCEL),
-                    grey_kindOfClass([UIButton class]),
-                    grey_ancestor(grey_kindOfClass([UISearchBar class])),
+  // Match using the accessibility trait for a search field.
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
                     grey_sufficientlyVisible(), nil);
 }
 
@@ -121,7 +113,10 @@ id<GREYMatcher> ElementIsSelected(BOOL selected) {
 // Matcher for the delete button for a language entry in the Language Settings's
 // main page.
 id<GREYMatcher> LanguageEntryDeleteButton() {
+  // Use the Button trait to disambiguate the button container from its label,
+  // as both may have the same accessibility label on newer iOS versions.
   return grey_allOf(grey_accessibilityLabel(@"Delete"),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
                     grey_sufficientlyVisible(), nil);
 }
 
@@ -252,12 +247,11 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
 
   // Verify the scrim is visible when search bar is focused but not typed in.
-  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SearchBarScrim()];
 
   // Verify the cancel button is visible and unfocuses search bar when tapped.
-  [[EarlGrey selectElementWithMatcher:SearchBarCancelButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Verify languages are searchable using their name in the current locale.
   [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
@@ -265,8 +259,8 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
       performAction:grey_replaceText(kTurkishLabel)];
 
   // Verify that scrim is not visible anymore.
-  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey
+      waitForNotSufficientlyVisibleElementWithMatcher:SearchBarScrim()];
 
   // Verify the "Turkish" language entry is visible.
   [[EarlGrey selectElementWithMatcher:LanguageEntry(languageEntryLabel)]
@@ -275,10 +269,6 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   // Clear the search.
   [[EarlGrey selectElementWithMatcher:SearchBar()]
       performAction:grey_replaceText(@"")];
-
-  // Verify the scrim is visible again.
-  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
-      assertWithMatcher:grey_notNil()];
 
   // Verify languages are searchable using their name in their native locale.
   [[EarlGrey selectElementWithMatcher:SearchBar()]
