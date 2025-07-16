@@ -13,6 +13,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -35,8 +37,6 @@ const CGFloat kChipSymbolPointSize = 15;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.accessibilityIdentifier =
-      kReaderModeChipViewAccessibilityIdentifier;
   self.button = [self configuredButton];
   [self.view addSubview:self.button];
   [NSLayoutConstraint activateConstraints:@[
@@ -70,6 +70,9 @@ const CGFloat kChipSymbolPointSize = 15;
   button.clipsToBounds = YES;
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
+  button.accessibilityIdentifier = kReaderModeChipViewAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL);
 
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
       configurationWithPointSize:kChipSymbolPointSize

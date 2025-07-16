@@ -19,6 +19,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "testing/gmock/include/gmock/gmock-matchers.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using testing::HasSubstr;
 
@@ -254,6 +255,13 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Check that the chip is a button with the expected accessibility label.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      assertWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                            IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL)];
 }
 
 // Tests that theme change is applied to the Reading Mode web page.
@@ -699,6 +707,29 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kReaderModeChipViewAccessibilityIdentifier)]
       assertWithMatcher:grey_hidden(YES)];
+}
+
+// Test accessibility for Reader mode options screen.
+- (void)testReaderModeOptionsAccessibility {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 @end

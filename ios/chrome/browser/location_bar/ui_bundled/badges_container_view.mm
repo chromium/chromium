@@ -52,7 +52,7 @@
     [accessibleElements addObject:self.badgeView];
   }
 
-  if (self.readerModeChipView && !self.readerModeChipView.hidden) {
+  if (self.readerModeChipView) {
     [accessibleElements addObject:self.readerModeChipView];
   }
 
