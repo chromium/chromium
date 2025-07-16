@@ -85,6 +85,27 @@ public class TabUiThemeUtil {
         return SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
     }
 
+    /** Returns the tab strip multi-selected tab color. */
+    public static @ColorInt int getTabStripMultiSelectedTabColor(
+            Context context, boolean isIncognito) {
+        int baseColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+
+        float alpha =
+                ResourcesCompat.getFloat(context.getResources(), R.dimen.multi_selected_tab_alpha);
+        return ColorUtils.setAlphaComponentWithFloat(baseColor, alpha);
+    }
+
+    /** Returns the tab strip multi-selected and hovered tab color. */
+    public static @ColorInt int getTabStripMultiSelectedHoveredTabColor(
+            Context context, boolean isIncognito) {
+        int baseColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+
+        float alpha =
+                ResourcesCompat.getFloat(
+                        context.getResources(), R.dimen.multi_selected_tab_hovered_alpha);
+        return ColorUtils.setAlphaComponentWithFloat(baseColor, alpha);
+    }
+
     /** Returns the tab strip title text color. */
     public static @ColorInt int getTabTextColor(Context context, boolean isIncognito) {
         return context.getColor(

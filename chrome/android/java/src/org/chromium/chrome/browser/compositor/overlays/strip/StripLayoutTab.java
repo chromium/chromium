@@ -453,17 +453,16 @@ public class StripLayoutTab extends StripLayoutView {
      * @return The tint color resource that represents the tab background.
      */
     public @ColorInt int getTint() {
-        // TODO(crbug.com/404074503):
-        //  Add colors for MULTISELECT, MULTISELECT_HOVERED, SELECTED_HOVERED.
         switch (mVisualState) {
             case VisualState.SELECTED_HOVERED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
             case VisualState.SELECTED:
                 return TabUiThemeUtil.getTabStripSelectedTabColor(mContext, isIncognito());
             case VisualState.MULTISELECT_HOVERED:
-                return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
+                return TabUiThemeUtil.getTabStripMultiSelectedHoveredTabColor(
+                        mContext, isIncognito());
             case VisualState.MULTISELECT:
-                return ChromeColors.getDefaultBgColor(mContext, isIncognito());
+                return TabUiThemeUtil.getTabStripMultiSelectedTabColor(mContext, isIncognito());
             case VisualState.HOVERED:
                 return TabUiThemeUtil.getHoveredTabContainerColor(mContext, isIncognito());
             case VisualState.PLACEHOLDER:

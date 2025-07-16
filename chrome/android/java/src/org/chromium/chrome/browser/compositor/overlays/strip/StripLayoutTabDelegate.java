@@ -243,9 +243,10 @@ public class StripLayoutTabDelegate {
         // 2. Update the "folio" lifted effect.
         // It should only apply to non-selected tabs.
         if (!tab.getIsSelected()) {
-            tab.setFolioAttached(!tab.getIsHovered());
+            boolean shouldBeDetached = tab.getIsHovered() || tab.getIsMultiSelected();
+            tab.setFolioAttached(!shouldBeDetached);
             tab.setBottomMargin(
-                    tab.getIsHovered()
+                    shouldBeDetached
                             ? FOLIO_DETACHED_BOTTOM_MARGIN_DP
                             : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
         } else {
