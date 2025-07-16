@@ -136,6 +136,10 @@ BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
 // management UI.
 BASE_DECLARE_FEATURE(kShowRecoveryPassword);
 
+// Shows a tab with password change instead of bubble/settings page after
+// successful password change.
+BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);
+
 // Displays at least the decryptable and never saved logins in the password
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);

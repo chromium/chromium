@@ -350,6 +350,11 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
 
 void PasswordChangeDelegateImpl::OpenPasswordDetails() {
   CHECK(originator_);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kShowTabWithPasswordChangeOnSuccess)) {
+    OpenPasswordChangeTab();
+    return;
+  }
 
   if (last_committed_url_ == originator_->GetLastCommittedURL()) {
     ManagePasswordsUIController::FromWebContents(originator_)

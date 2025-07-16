@@ -147,6 +147,10 @@ BASE_FEATURE(kShowRecoveryPassword,
              "ShowRecoveryPassword",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShowTabWithPasswordChangeOnSuccess,
+             "ShowTabWithPasswordChangeOnSuccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
 #if BUILDFLAG(IS_WIN)
