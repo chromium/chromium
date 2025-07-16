@@ -384,35 +384,50 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyTabUrl, tab_url.spec());
-  event.Set(kKeySource, source);
-  event.Set(kKeyDestination, destination);
-  event.Set(kKeyFileName,
-            GetFileName(file_name, reporting_client_->ShouldIncludeDeviceInfo(
-                                       settings->per_profile)));
-  event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
-  event.Set(kKeyContentType, mime_type);
-  event.Set(kKeyUnscannedReason, reason);
-  // |content_size| can be set to -1 to indicate an unknown size, in
-  // which case the field is not set.
-  if (content_size >= 0) {
-    event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-  }
-  event.Set(kKeyTrigger, trigger);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-  event.Set(kKeyClickedThrough,
-            event_result == enterprise_connectors::EventResult::BYPASSED);
-  if (!content_transfer_method.empty()) {
-    event.Set(kKeyContentTransferMethod, content_transfer_method);
-  }
+  std::string final_file_name = GetFileName(
+      file_name,
+      reporting_client_->ShouldIncludeDeviceInfo(settings->per_profile));
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeyUnscannedFileEvent,
-      std::move(settings.value()), std::move(event), base::Time::Now(),
-      /*include_profile_user_name=*/true);
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_unscanned_file_event() = GetUnscannedFileEvent(
+        url, tab_url, source, destination, final_file_name,
+        download_digest_sha256, mime_type, trigger, reason,
+        content_transfer_method, reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), content_size, event_result);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    event.Set(kKeyTabUrl, tab_url.spec());
+    event.Set(kKeySource, source);
+    event.Set(kKeyDestination, destination);
+    event.Set(kKeyFileName, final_file_name);
+    event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
+    event.Set(kKeyContentType, mime_type);
+    event.Set(kKeyUnscannedReason, reason);
+    // |content_size| can be set to -1 to indicate an unknown size, in
+    // which case the field is not set.
+    if (content_size >= 0) {
+      event.Set(kKeyContentSize, base::Int64ToValue(content_size));
+    }
+    event.Set(kKeyTrigger, trigger);
+    event.Set(kKeyEventResult,
+              enterprise_connectors::EventResultToString(event_result));
+    event.Set(kKeyClickedThrough,
+              event_result == enterprise_connectors::EventResult::BYPASSED);
+    if (!content_transfer_method.empty()) {
+      event.Set(kKeyContentTransferMethod, content_transfer_method);
+    }
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        enterprise_connectors::kKeyUnscannedFileEvent,
+        std::move(settings.value()), std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 // static

@@ -153,6 +153,10 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::string& expected_scan_id);
 
   void ExpectUnscannedFileEvent(
+      chrome::cros::reporting::proto::UnscannedFileEvent
+          expected_unscanned_file_event);
+
+  void ExpectUnscannedFileEvent(
       const std::string& expected_url,
       const std::string& expected_tab_url,
       const std::string& expected_source,

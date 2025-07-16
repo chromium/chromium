@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -40,11 +42,37 @@ using ::testing::_;
 
 namespace enterprise_connectors::test {
 
+using base::test::EqualsProto;
+
 EventReportValidator::EventReportValidator(
     policy::MockCloudPolicyClient* client)
     : EventReportValidatorBase(client) {}
 
 EventReportValidator::~EventReportValidator() = default;
+
+void EventReportValidator::ExpectUnscannedFileEvent(
+    chrome::cros::reporting::proto::UnscannedFileEvent
+        expected_unscanned_file_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_unscanned_file_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_unscanned_file_event());
+            auto unscanned_file_event =
+                request.events().Get(0).unscanned_file_event();
+            EXPECT_THAT(unscanned_file_event,
+                        EqualsProto(expected_unscanned_file_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,

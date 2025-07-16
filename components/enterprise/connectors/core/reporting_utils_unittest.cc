@@ -216,6 +216,42 @@ TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
   ASSERT_EQ(event.platform(), "Windows");
 }
 
+TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
+  auto event = GetUnscannedFileEvent(
+      /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
+      /*source=*/"source", /*destination=*/"destination",
+      /*file_name=*/"encrypted.zip",
+      /*download_digest_sha256=*/"sha256_of_data",
+      /*mime_type=*/"application/zip", /*trigger=*/"FILE_UPLOAD",
+      /*reason=*/"FILE_PASSWORD_PROTECTED",
+      /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*event_result=*/EventResult::ALLOWED);
+
+  ASSERT_EQ(event.url(), "https://google.com/");
+  ASSERT_EQ(event.tab_url(), "about:blank");
+  ASSERT_EQ(event.source(), "source");
+  ASSERT_EQ(event.destination(), "destination");
+  ASSERT_EQ(event.file_name(), "encrypted.zip");
+  ASSERT_EQ(event.download_digest_sha_256(), "sha256_of_data");
+  ASSERT_EQ(event.content_type(), "application/zip");
+  ASSERT_EQ(
+      event.trigger(),
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+  ASSERT_EQ(event.unscanned_reason(),
+            chrome::cros::reporting::proto::UnscannedFileEvent::
+                FILE_PASSWORD_PROTECTED);
+  ASSERT_EQ(
+      event.content_transfer_method(),
+      chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_DRAG_AND_DROP);
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_FALSE(event.content_size());
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+}
+
 TEST(ReportingUtilsTest, TestEventLocalIp) {
   std::vector<std::string> local_ips = GetLocalIpAddresses();
   // TODO(crbug.com//394602691): Remove Android build exclusion once IP address

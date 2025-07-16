@@ -37,6 +37,45 @@ inline constexpr char kEnterpriseWarnedBypassTheatType[] =
 inline constexpr char kEnterpriseBlockedSeenThreatType[] =
     "ENTERPRISE_BLOCKED_SEEN";
 
+// TODO(crbug.com/432065125): Use these constants for event reporting and delete
+// the duplicates.
+inline constexpr char kFilePasswordProtectedUnscannedReason[] =
+    "FILE_PASSWORD_PROTECTED";
+inline constexpr char kFileTooLargeUnscannedReason[] = "FILE_TOO_LARGE";
+inline constexpr char kDlpScanFailedUnscannedReason[] = "DLP_SCAN_FAILED";
+inline constexpr char kMalwareScanFailedUnscannedReason[] =
+    "MALWARE_SCAN_FAILED";
+inline constexpr char kDlpScanUnsupportedFileTypeUnscannedReason[] =
+    "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
+inline constexpr char kMalwareScanUnsupportedFileTypeUnscannedReason[] =
+    "MALWARE_SCAN_UNSUPPORTED_FILE_TYPE";
+inline constexpr char kServiceUnavailableUnscannedReason[] =
+    "SERVICE_UNAVAILABLE";
+inline constexpr char kTooManyRequestsUnscannedReason[] = "TOO_MANY_REQUESTS";
+inline constexpr char kTimeoutUnscannedReason[] = "TIMEOUT";
+
+inline constexpr char kFileDownloadDataTransferEventTrigger[] = "FILE_DOWNLOAD";
+inline constexpr char kFileUploadDataTransferEventTrigger[] = "FILE_UPLOAD";
+inline constexpr char kWebContentUploadDataTransferEventTrigger[] =
+    "WEB_CONTENT_UPLOAD";
+inline constexpr char kPagePrintDataTransferEventTrigger[] = "PAGE_PRINT";
+inline constexpr char kUrlVisitedDataTransferEventTrigger[] = "URL_VISITED";
+inline constexpr char kClipboardCopyDataTransferEventTrigger[] =
+    "CLIPBOARD_COPY";
+inline constexpr char kFileTransferDataTransferEventTrigger[] = "FILE_TRANSFER";
+inline constexpr char kPageLoadDataTransferEventTrigger[] = "PAGE_LOAD";
+inline constexpr char kMutationDataTransferEventTrigger[] = "MUTATION";
+inline constexpr char kMouseActionDataTransferEventTrigger[] = "MOUSE_ACTION";
+
+inline constexpr char kContentTransferMethodUnknown[] =
+    "CONTENT_TRANSFER_METHOD_UNKNOWN";
+inline constexpr char kContentTransferMethodFilePicker[] =
+    "CONTENT_TRANSFER_METHOD_FILE_PICKER";
+inline constexpr char kContentTransferMethodDragAndDrop[] =
+    "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP";
+inline constexpr char kContentTransferMethodFilePaste[] =
+    "CONTENT_TRANSFER_METHOD_FILE_PASTE";
+
 // All the reporting events that can be set in the `enabled_events_names` field
 // of `ReportingSettings`
 inline constexpr std::array<const char*, 9> kAllReportingEnabledEvents = {

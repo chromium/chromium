@@ -763,30 +763,55 @@ TEST_P(ReportingEventRouterTest, TestPasswordChanged) {
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
-  if (use_proto_format()) {
-    return;
-  }
-
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUnscannedFileEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidator validator(client_.get());
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
-  validator.ExpectUnscannedFileEvent(
-      /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
-      /*expected_source=*/"exampleSource",
-      /*expected_destination=*/"exampleDestination",
-      /*expected_filename=*/"encrypted.zip",
-      /*expected_sha256=*/"sha256_of_data", /*expected_trigger=*/"FILE_UPLOAD",
-      /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
-      /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
-      /* expected_result=*/"EVENT_RESULT_ALLOWED",
-      /*expected_profile_username=*/profile_->GetProfileUserName(),
-      /*expected_profile_identifier=*/GetProfileIdentifier(),
-      /*expected_content_transfer_method*/
-      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP");
+  if (use_proto_format()) {
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("tab:about:blank");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_download_digest_sha_256("sha256_of_data");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+
+    expected_event.set_unscanned_reason(
+        chrome::cros::reporting::proto::UnscannedFileEvent::
+            FILE_PASSWORD_PROTECTED);
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_content_transfer_method(
+        chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_DRAG_AND_DROP);
+
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_event));
+  } else {
+    validator.ExpectUnscannedFileEvent(
+        /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
+        /*expected_source=*/"exampleSource",
+        /*expected_destination=*/"exampleDestination",
+        /*expected_filename=*/"encrypted.zip",
+        /*expected_sha256=*/"sha256_of_data",
+        /*expected_trigger=*/"FILE_UPLOAD",
+        /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
+        /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
+        /* expected_result=*/"EVENT_RESULT_ALLOWED",
+        /*expected_profile_username=*/profile_->GetProfileUserName(),
+        /*expected_profile_identifier=*/GetProfileIdentifier(),
+        /*expected_content_transfer_method*/
+        "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP");
+  }
 
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
@@ -796,37 +821,57 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
-  if (use_proto_format()) {
-    return;
-  }
-
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUnscannedFileEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidator validator(client_.get());
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
-  validator.ExpectUnscannedFileEvent(
-      /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
-      /*expected_source=*/"exampleSource",
-      /*expected_destination=*/"exampleDestination",
-      /*expected_filename=*/"encrypted.zip",
-      /*expected_sha256=*/"sha256_of_data",
-      /*expected_trigger=*/"FILE_DOWNLOAD",
-      /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
-      /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
-      /* expected_result=*/"EVENT_RESULT_BLOCKED",
-      /*expected_profile_username=*/profile_->GetProfileUserName(),
-      /*expected_profile_identifier=*/GetProfileIdentifier(),
-      /*expected_content_transfer_method*/
-      "CONTENT_TRANSFER_METHOD_UNKNOWN");
+  if (use_proto_format()) {
+    expected_event.set_url("about:blank");
+    expected_event.set_tab_url("tab:about:blank");
+    expected_event.set_source("exampleSource");
+    expected_event.set_destination("exampleDestination");
+    expected_event.set_file_name("encrypted.zip");
+    expected_event.set_download_digest_sha_256("sha256_of_data");
+    expected_event.set_content_type("application/zip");
+    expected_event.set_content_size(12345);
+
+    expected_event.set_unscanned_reason(
+        chrome::cros::reporting::proto::UnscannedFileEvent::
+            FILE_PASSWORD_PROTECTED);
+    expected_event.set_trigger(chrome::cros::reporting::proto::
+                                   DataTransferEventTrigger::FILE_DOWNLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_event));
+  } else {
+    validator.ExpectUnscannedFileEvent(
+        /*expected_url=*/"about:blank", /*expected_tab_url=*/"tab:about:blank",
+        /*expected_source=*/"exampleSource",
+        /*expected_destination=*/"exampleDestination",
+        /*expected_filename=*/"encrypted.zip",
+        /*expected_sha256=*/"sha256_of_data",
+        /*expected_trigger=*/"FILE_DOWNLOAD",
+        /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
+        /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
+        /* expected_result=*/"EVENT_RESULT_BLOCKED",
+        /*expected_profile_username=*/profile_->GetProfileUserName(),
+        /*expected_profile_identifier=*/GetProfileIdentifier(),
+        /*expected_content_transfer_method*/ std::nullopt);
+  }
 
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
-      "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED",
-      "CONTENT_TRANSFER_METHOD_UNKNOWN", 12345, EventResult::BLOCKED);
+      "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED", "", 12345,
+      EventResult::BLOCKED);
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

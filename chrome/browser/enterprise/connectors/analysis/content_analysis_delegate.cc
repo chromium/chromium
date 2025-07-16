@@ -52,6 +52,7 @@
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/policy/core/common/chrome_schema.h"
@@ -940,13 +941,13 @@ std::string ContentAnalysisDelegate::GetContentTransferMethod() const {
 
     case enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE:
       if (!data_.paths.empty()) {
-        return "CONTENT_TRANSFER_METHOD_FILE_PASTE";
+        return kContentTransferMethodFilePaste;
       }
       break;
     case enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP:
-      return "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP";
+      return kContentTransferMethodDragAndDrop;
     case enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG:
-      return "CONTENT_TRANSFER_METHOD_FILE_PICKER";
+      return kContentTransferMethodFilePicker;
   }
 
   return "";
