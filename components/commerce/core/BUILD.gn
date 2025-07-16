@@ -70,6 +70,10 @@ source_set("feature_list_unittests") {
     "//testing/gtest",
     "//third_party/re2:re2",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("metrics") {
@@ -372,6 +376,10 @@ source_set("shopping_service_unit_tests") {
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("pref_names") {
