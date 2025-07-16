@@ -4,7 +4,10 @@
 
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace content {
 
@@ -35,6 +38,16 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
   if ((frame_token <= last_received_frame_token_) &&
       !(last_received_frame_token_reset_ &&
         last_received_frame_token_reset_ != frame_token)) {
+    // TODO(crbug.com/431761865): Remove after the bug is fixed.
+    SCOPED_CRASH_KEY_STRING32("content", "Frame token",
+                              base::NumberToString(frame_token));
+    SCOPED_CRASH_KEY_STRING32("content", "Frame token (last)",
+                              base::NumberToString(last_received_frame_token_));
+    if (last_received_frame_token_reset_) {
+      SCOPED_CRASH_KEY_STRING32(
+          "content", "Frame token (last reset)",
+          base::NumberToString(last_received_frame_token_reset_));
+    }
     client_->OnInvalidFrameToken(frame_token);
     return;
   }
