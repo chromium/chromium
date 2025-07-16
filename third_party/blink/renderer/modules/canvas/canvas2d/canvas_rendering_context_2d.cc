@@ -1246,7 +1246,60 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   if (!element) [[unlikely]] {
     return nullptr;
   }
-  return element->GetOrCreateCanvasResourceProviderForCanvas2D();
+  return GetOrCreateCanvasResourceProviderForCanvas2D();
+}
+
+CanvasResourceProvider*
+CanvasRenderingContext2D::GetOrCreateCanvasResourceProviderForCanvas2D() {
+  CanvasResourceProvider* resource_provider = GetResourceProviderForCanvas2D();
+  if (isContextLost() && !IsContextBeingRestored()) {
+    DCHECK(!resource_provider);
+    return nullptr;
+  }
+
+  if (resource_provider) {
+    if (!resource_provider->IsValid()) {
+      // The canvas context is not lost but the provider is invalid. This
+      // happens if the GPU process dies in the middle of a render task. The
+      // canvas is notified of GPU context losses via the
+      // `NotifyGpuContextLost` callback and restoration happens in
+      // `TryRestoreContextEvent`. Both callbacks are executed in their own
+      // separate task. If the GPU context goes invalid in the middle of a
+      // render task, the canvas won't immediately know about it and canvas
+      // APIs will continue using the provider that is now invalid. We can
+      // early return here, trying to re-create the provider right away would
+      // just fail. We need to let `TryRestoreContextEvent` wait for the GPU
+      // process to up again.
+      return nullptr;
+    }
+    return resource_provider;
+  }
+
+  if (canvas()->did_fail_to_create_resource_provider()) {
+    return nullptr;
+  }
+
+  if (!canvas()->IsValidImageSize()) {
+    canvas()->set_did_fail_to_create_resource_provider(true);
+    if (!canvas()->Size().IsEmpty()) {
+      LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
+    }
+    return nullptr;
+  }
+
+  canvas()->UpdatePreferred2DRasterMode();
+
+  if (!canvas()->GetHibernationHandler()) {
+    canvas()->RecreateHibernationHandler();
+  }
+
+  resource_provider = canvas()->RecreateCanvasResourceProviderForCanvas2D();
+
+  canvas()->UpdateMemoryUsage();
+
+  canvas()->SetNeedsCompositingUpdate();
+
+  return resource_provider;
 }
 
 std::unique_ptr<CanvasResourceProvider>

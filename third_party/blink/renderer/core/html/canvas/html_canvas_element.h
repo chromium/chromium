@@ -179,6 +179,9 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetOriginTainted() override { origin_clean_ = false; }
 
   CanvasHibernationHandler* GetHibernationHandler() const;
+  void RecreateHibernationHandler() {
+    hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
+  }
 
   unsigned IncrementFramesSinceLastCommit() {
     return ++frames_since_last_commit_;
@@ -285,8 +288,6 @@ class CORE_EXPORT HTMLCanvasElement final
   // method.
   void EnableAccelerationForCanvas2D();
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D();
-
   void DisableAccelerationForCanvas2D();
 
   // ImageBitmapSource implementation
@@ -390,6 +391,20 @@ class CORE_EXPORT HTMLCanvasElement final
     UpdateMemoryUsage();
   }
 
+  bool did_fail_to_create_resource_provider() {
+    return did_fail_to_create_resource_provider_;
+  }
+  void set_did_fail_to_create_resource_provider(bool value) {
+    did_fail_to_create_resource_provider_ = value;
+  }
+
+  // Updates the preferred 2D raster mode based on the state of the context and
+  // GPU acceleration.
+  void UpdatePreferred2DRasterMode();
+
+  // Recreates the resource provider.
+  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -403,12 +418,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void Dispose();
 
-  // Updates the preferred 2D raster mode based on the state of the context and
-  // GPU acceleration.
-  void UpdatePreferred2DRasterMode();
-
-  // Recreates the resource provider.
-  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
   void CreateCanvasResourceProviderForCanvas2D();
 
   void ColorSchemeMayHaveChanged();
