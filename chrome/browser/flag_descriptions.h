@@ -1744,6 +1744,9 @@ extern const char kOmniboxMobileParityUpdateDescription[];
 extern const char kOmniboxMobileParityUpdateV2Name[];
 extern const char kOmniboxMobileParityUpdateV2Description[];
 
+extern const char kOmniboxMultilineEditFieldName[];
+extern const char kOmniboxMultilineEditFieldDescription[];
+
 extern const char kOmniboxNumNtpZpsRecentSearchesName[];
 extern const char kOmniboxNumNtpZpsRecentSearchesDescription[];
 

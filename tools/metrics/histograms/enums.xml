@@ -18134,6 +18134,7 @@ from previous Chrome versions.
   <int value="1509482104"
       label="SupervisedPrefsControlledBySupervisedStore:disabled"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>
+  <int value="1509796175" label="OmniboxMultilineEditField:enabled"/>
   <int value="1509880263"
       label="AccessibilityManageBroadcastReceiverOnBackground:disabled"/>
   <int value="1509901380" label="disable-drive-search-in-app-launcher"/>
@@ -19607,6 +19608,7 @@ from previous Chrome versions.
   <int value="2030086360"
       label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>
   <int value="2030517002" label="HeadlessTabModel:enabled"/>
+  <int value="2030614867" label="OmniboxMultilineEditField:disabled"/>
   <int value="2031620694"
       label="AvoidUnnecessaryNavigationCancellations:enabled"/>
   <int value="2032558514"

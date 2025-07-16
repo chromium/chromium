@@ -2946,6 +2946,10 @@ const char kOmniboxMobileParityUpdateV2Description[] =
     "When set, applies certain assets to match Desktop visuals and "
     "descriptions, version V2";
 
+const char kOmniboxMultilineEditFieldName[] = "Omnibox Multiline edit field";
+const char kOmniboxMultilineEditFieldDescription[] =
+    "When enabled, allows Omnibox input to span across multiple lines";
+
 const char kOmniboxNumNtpZpsRecentSearchesName[] =
     "Omnibox: Recent Searches on new tab page ZPS";
 const char kOmniboxNumNtpZpsRecentSearchesDescription[] =

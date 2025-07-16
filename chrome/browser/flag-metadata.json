@@ -7258,6 +7258,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "omnibox-multiline-edit-field",
+    "owners": [ "ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "omnibox-num-ntp-zps-recent-searches",
     "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
     "expiry_milestone": 300
