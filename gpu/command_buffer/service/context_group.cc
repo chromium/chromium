@@ -127,6 +127,10 @@ ContextGroup::ContextGroup(
       shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
+
+  // Temporary check to ensure nothing is using bind_generates_resource.
+  CHECK(!bind_generates_resource_);
+
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
 

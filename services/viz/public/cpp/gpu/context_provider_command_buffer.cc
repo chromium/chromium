@@ -242,6 +242,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(raster_helper);
   } else {
+    // Temporary check to ensure nothing is using bind_generates_resource.
+    CHECK(!attributes_.bind_generates_resource);
+
     // The GLES2 helper writes the command buffer protocol.
     auto gles2_helper =
         std::make_unique<gpu::gles2::GLES2CmdHelper>(command_buffer_.get());

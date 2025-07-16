@@ -85,6 +85,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   DCHECK(manager);
   memory_tracker_ = CreateMemoryTracker();
 
+  // Temporary check to ensure nothing is using bind_generates_resource.
+  CHECK(!init_params.attribs.bind_generates_resource);
+
   if (share_command_buffer_stub) {
     context_group_ =
         share_command_buffer_stub->decoder_context()->GetContextGroup();
