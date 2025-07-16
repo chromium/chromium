@@ -38,6 +38,7 @@
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
@@ -126,8 +127,8 @@ optimization_guide::OptimizationMetadata GetAboutThisSiteMetadata() {
 
   auto* more_about = site_info->mutable_more_about();
   more_about->set_url("https://example.com/moreinfo");
-
-  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  optimization_metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(metadata));
   return optimization_metadata;
 }
 
@@ -139,7 +140,8 @@ optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
   metadata.set_merchant_details_page_url("https://reviews.test");
   metadata.set_shopper_voice_summary("Test summary");
 
-  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  optimization_metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(metadata));
   return optimization_metadata;
 }
 
@@ -151,7 +153,8 @@ GetMerchantTrustMetadataWithoutSummary() {
   metadata.set_merchant_count_rating(89);
   metadata.set_merchant_details_page_url("https://shopper-reviews.test");
 
-  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  optimization_metadata.set_any_metadata(
+      optimization_guide::AnyWrapProto(metadata));
   return optimization_metadata;
 }
 
