@@ -53,6 +53,9 @@ class CookieControlsController final
   // Called when the web_contents has changed.
   void Update(content::WebContents* web_contents);
 
+  // Updates user bypass visibility and/or highlighting.
+  void UpdateUserBypass();
+
   // Called when the fingerprinting protection filter has blocked a subresource.
   void OnSubresourceBlocked();
 
@@ -184,9 +187,6 @@ class CookieControlsController final
   bool ShowFingerprintingProtection() const;
 
   bool HasOriginSandboxedTopLevelDocument() const;
-
-  // Updates user bypass visibility and/or highlighting.
-  void UpdateUserBypass();
 
   void UpdateLastVisitedSitesMap();
 

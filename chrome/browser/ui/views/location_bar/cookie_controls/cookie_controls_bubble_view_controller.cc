@@ -299,6 +299,10 @@ void CookieControlsBubbleViewController::CloseBubble() {
     bubble_view_->GetContentView()
         ->GetTrackingProtectionsButton()
         ->SetSpinnerVisible(false);
+    // Manually trigger a user bypass update as updates are frozen while
+    // `IsReloadingState` is true. This avoids potential delays between the
+    // bubble closing and the icon / label reflecting the user's new state.
+    controller_->UpdateUserBypass();
   }
   controller_observation_.Reset();
   bubble_view_->CloseWidget();
