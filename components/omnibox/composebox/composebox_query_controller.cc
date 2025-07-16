@@ -553,7 +553,8 @@ void ComposeboxQueryController::MaybeSendFileUploadNetworkRequest(
   }
 
   if (file_info->request_headers_ && file_info->request_body_ &&
-      cluster_info_.has_value()) {
+      cluster_info_.has_value() &&
+      query_controller_state_ == QueryControllerState::kClusterInfoReceived) {
     SendFileUploadNetworkRequest(file_info);
   }
 }
