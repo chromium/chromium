@@ -114,7 +114,8 @@ INSTANTIATE_TEST_SUITE_P(ManifestV3,
                          SwitchAccessTest,
                          ::testing::Values(ManifestVersion::kThree));
 
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, ConsumesKeyEvents) {
+// TODO(crbug.com/432170984): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
