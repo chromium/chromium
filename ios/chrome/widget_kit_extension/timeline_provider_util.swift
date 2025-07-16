@@ -40,37 +40,39 @@ struct Provider: TimelineProvider {
   }
 }
 
-@available(iOS 17, *)
-struct ConfigurableProvider: AppIntentTimelineProvider {
-  typealias Entry = ConfigureWidgetEntry
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  struct ConfigurableProvider: AppIntentTimelineProvider {
+    typealias Entry = ConfigureWidgetEntry
 
-  func placeholder(in: Self.Context) -> Entry {
-    Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil, deleted: false)
+    func placeholder(in: Self.Context) -> Entry {
+      Entry(date: Date(), isPreview: true, avatar: nil, gaiaID: nil, deleted: false)
+    }
+    func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let deleted: Bool = configuration.deleted()
+
+      return Entry(
+        date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
+        deleted: deleted
+      )
+    }
+    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
+      Entry
+    > {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let deleted: Bool = configuration.deleted()
+
+      return Timeline(
+        entries: [
+          Entry(
+            date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
+            deleted: deleted)
+        ], policy: .never
+      )
+    }
+
   }
-  func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
-    let avatar: Image? = configuration.avatar()
-    let gaiaID: String? = configuration.gaia()
-    let deleted: Bool = configuration.deleted()
-
-    return Entry(
-      date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
-      deleted: deleted
-    )
-  }
-  func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
-    Entry
-  > {
-    let avatar: Image? = configuration.avatar()
-    let gaiaID: String? = configuration.gaia()
-    let deleted: Bool = configuration.deleted()
-
-    return Timeline(
-      entries: [
-        Entry(
-          date: Date(), isPreview: context.isPreview, avatar: avatar, gaiaID: gaiaID,
-          deleted: deleted)
-      ], policy: .never
-    )
-  }
-
-}
+#endif

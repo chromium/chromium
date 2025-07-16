@@ -956,9 +956,6 @@ extern const char kWebPageTextZoomIPadDescription[];
 extern const char kWelcomeBackInFirstRunName[];
 extern const char kWelcomeBackInFirstRunDescription[];
 
-extern const char kWidgetsForMultiprofileName[];
-extern const char kWidgetsForMultiprofileDescription[];
-
 extern const char kYoutubeIncognitoName[];
 extern const char kYoutubeIncognitoDescription[];
 

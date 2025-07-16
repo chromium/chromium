@@ -201,6 +201,7 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
@@ -223,6 +224,10 @@
 #import "net/base/url_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -892,8 +897,9 @@ void OnListFamilyMembersResponse(
   }
   self.sceneState.URLContextsToOpen = nil;
 
-  if (IsWidgetsForMultiprofileEnabled() ||
-      IsShareExtensionForMultiprofileEnabled()) {
+  BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
+
+  if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
     if (context) {
@@ -949,8 +955,11 @@ void OnListFamilyMembersResponse(
 }
 
 - (BOOL)widgetURLEligibleForAccountChange:(NSURL*)URL {
-  return (IsWidgetsForMultiprofileEnabled() &&
-          [URL.scheme isEqualToString:@"chromewidgetkit"]);
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  return [URL.scheme isEqualToString:@"chromewidgetkit"];
+#else
+  return NO;
+#endif
 }
 
 - (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {

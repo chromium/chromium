@@ -17,9 +17,6 @@ bool AreSeparateProfilesForManagedAccountsEnabled();
 // YES if the account particle disc on the NTP should open the account menu.
 bool IsIdentityDiscAccountMenuEnabled();
 
-// Whether the feature to have widgets per account is enabled.
-bool IsWidgetsForMultiprofileEnabled();
-
 // YES if Profile-specific push notification handling is enabled.
 bool IsMultiProfilePushNotificationHandlingEnabled();
 

@@ -25,27 +25,29 @@ struct DinoGameWidget: Widget {
   }
 }
 
-@available(iOS 17, *)
-struct DinoGameWidgetConfigurable: Widget {
-  // Changing `kind` or deleting this widget will cause all installed instances of this widget to
-  // stop updating and show the placeholder state.
-  let kind: String = "DinoGameWidget"
-  var body: some WidgetConfiguration {
-    AppIntentConfiguration(
-      kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
-    ) { entry in
-      DinoGameWidgetEntryView(entry: entry)
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  struct DinoGameWidgetConfigurable: Widget {
+    // Changing `kind` or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "DinoGameWidget"
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
+      ) { entry in
+        DinoGameWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME")
+      )
+      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION"))
+      .supportedFamilies([.systemSmall])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
     }
-    .configurationDisplayName(
-      Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DISPLAY_NAME")
-    )
-    .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION"))
-    .supportedFamilies([.systemSmall])
-    .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
   }
-}
+#endif
 
 struct DinoGameWidgetEntryView: View {
   let background = "widget_dino_background"
@@ -54,7 +56,7 @@ struct DinoGameWidgetEntryView: View {
   @Environment(\.redactionReasons) var redactionReasons
   var body: some View {
     // The account to display was deleted (entry.deleted can only be true if
-    // WidgetForMIMAvailable is enabled).
+    // IOS_ENABLE_WIDGETS_FOR_MIM is enabled).
     if entry.deleted && !entry.isPreview {
       SmallWidgetDeletedAccountView()
     } else {
@@ -75,9 +77,9 @@ struct DinoGameWidgetEntryView: View {
                 .fontWeight(.semibold)
                 .font(.subheadline)
               Spacer()
-              if ChromeWidgetsMain.WidgetForMIMAvailable {
+              #if IOS_ENABLE_WIDGETS_FOR_MIM
                 AvatarForDinoGame(entry: entry)
-              }
+              #endif
             }
             .padding([.leading, .bottom], 16)
           }
@@ -93,23 +95,25 @@ struct DinoGameWidgetEntryView: View {
   }
 }
 
-struct AvatarForDinoGame: View {
-  var entry: ConfigureWidgetEntry
-  var body: some View {
-    if entry.isPreview {
-      Circle()
-        .foregroundColor(Color("widget_text_color"))
-        .opacity(0.2)
-        .frame(width: 25, height: 25)
-        .padding(.trailing, 16)
-    } else if let avatar = entry.avatar {
-      avatar
-        .resizable()
-        .clipShape(Circle())
-        .unredacted()
-        .scaledToFill()
-        .frame(width: 25, height: 25)
-        .padding(.trailing, 16)
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  struct AvatarForDinoGame: View {
+    var entry: ConfigureWidgetEntry
+    var body: some View {
+      if entry.isPreview {
+        Circle()
+          .foregroundColor(Color("widget_text_color"))
+          .opacity(0.2)
+          .frame(width: 25, height: 25)
+          .padding(.trailing, 16)
+      } else if let avatar = entry.avatar {
+        avatar
+          .resizable()
+          .clipShape(Circle())
+          .unredacted()
+          .scaledToFill()
+          .frame(width: 25, height: 25)
+          .padding(.trailing, 16)
+      }
     }
   }
-}
+#endif

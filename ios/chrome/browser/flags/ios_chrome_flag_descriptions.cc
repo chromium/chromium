@@ -1637,12 +1637,6 @@ extern const char kWelcomeBackInFirstRunDescription[] =
     "When enabled, returning users will see the Welcome Back screen after the "
     "First Run sequence.";
 
-extern const char kWidgetsForMultiprofileName[] =
-    "Enable Widgets for multiprofile";
-extern const char kWidgetsForMultiprofileDescription[] =
-    "When enabled, returning users will see the new per-account widget "
-    "implementation";
-
 const char kYoutubeIncognitoName[] =
     "Enable the opening of links from Youtube incognito in Chrome incognito";
 const char kYoutubeIncognitoDescription[] =

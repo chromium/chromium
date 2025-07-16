@@ -4,15 +4,10 @@
 
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 
-#import "base/check_is_test.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
@@ -21,7 +16,11 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 
-#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "base/check_is_test.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
 #endif
 
@@ -29,11 +28,9 @@ namespace {
 
 // Updates all widget timelines with the updated data.
 void ReloadAllTimelines() {
-  if (IsWidgetsForMultiprofileEnabled()) {
-#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-    [WidgetTimelinesUpdater reloadAllTimelines];
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  [WidgetTimelinesUpdater reloadAllTimelines];
 #endif
-  }
 }
 
 UIImage* ResizedAvatar(UIImage* image) {
@@ -224,9 +221,7 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {
   // Perform migration only if the flag is enabled.
-  if (!IsWidgetsForMultiprofileEnabled()) {
-    return;
-  }
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   if (!local_state) {
@@ -243,4 +238,5 @@ void SystemAccountUpdater::HandleMigrationIfNeeded() {
   }
   local_state->SetBoolean(prefs::kMigrateWidgetsPrefs, true);
   UpdateLoadedAccounts();
+#endif
 }

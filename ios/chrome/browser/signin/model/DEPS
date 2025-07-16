@@ -32,4 +32,7 @@ specific_include_rules = {
     "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
+  "^system_account_updater_unittests.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
+  ],
 }

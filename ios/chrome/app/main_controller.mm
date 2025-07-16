@@ -224,9 +224,6 @@ NSString* const kAutoDeletionFileRemoval = @"AutoDeletionFileRemoval";
 // Constant for deferred default browser status API check.
 NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 
-// Constant for enabling widgets for multi-profile.
-NSString* const kWidgetsForMultiprofileKey = @"WidgetsForMultiprofileKey";
-
 // Constant for enabling share extension for multi-profile.
 NSString* const kShareExtensionForMultiprofileKey =
     @"ShareExtensionForMultiprofileKey";
@@ -1465,10 +1462,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     kWidgetKitRefreshFiveMinutes : @{
       kFieldTrialValueKey : @([[NSUserDefaults standardUserDefaults]
           boolForKey:kWidgetKitRefreshFiveMinutes]),
-      kFieldTrialVersionKey : @1,
-    },
-    kWidgetsForMultiprofileKey : @{
-      kFieldTrialValueKey : @(IsWidgetsForMultiprofileEnabled()),
       kFieldTrialVersionKey : @1,
     },
     kShareExtensionForMultiprofileKey : @{
