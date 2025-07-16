@@ -3767,6 +3767,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NEW_TAB_RECENT_TABS" desc="The header of the panel containing the list of recently closed tabs and the tabs synced from other devices.[Length: 17em]">
         Recent tabs
       </message>
+      <message name="IDS_IOS_NEW_TAB_SEARCH_ENGINE_LOGO_ACCESSIBILITY_LABEL" desc="Label of the search engine logo shown on the New Tab Page to signal that the name of the current search engine. Read by VoiceOver.">
+        Searching with <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph>
+      </message>
       <message name="IDS_IOS_NON_MODAL_SIGNIN_PROMO_ADD_BOOKMARK" desc="Infobar subtitle for non modal signin promo when user adds a bookmark.">
         Sign in to get your bookmarks and more on all your devices
       </message>
