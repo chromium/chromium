@@ -805,6 +805,8 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     if (base::FeatureList::IsEnabled(features::kPrerender2ReuseHost)) {
       reuse_host = FindPrerenderHostToReuse(attributes);
     }
+    base::UmaHistogramBoolean("Prerender.Experimental.FoundReusePrerenderHost",
+                              reuse_host != nullptr);
     // If we find a reusable prerender host under the same site. We will
     // take over its frame tree and initiate a new navigation to the new
     // prerender URL.

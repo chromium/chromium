@@ -3331,6 +3331,18 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
+<histogram name="Prerender.Experimental.FoundReusePrerenderHost" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether there is a PrerenderHost can be reused when creating a new
+    PrerenderHost. The UMA is recorded each time a new PrerenderHost is
+    constructed.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.Experimental.MatchableHostCountOnActivation"
     units="count" expires_after="2026-01-04">
   <owner>nhiroki@chromium.org</owner>
