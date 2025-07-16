@@ -268,7 +268,7 @@ def main():
         "base/profiler/register_context_registers.h",
 
         # Reproduce on linux-cast-arm-rel
-        "media/parsers/parsers/h264_bit_reader.h",
+        "media/parsers/h264_bit_reader.h",
     ]
     for exclusion in exclusions:
         print("Reverting %s" % exclusion, flush=True)
