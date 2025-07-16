@@ -41,9 +41,10 @@ static_library("lens") {
     "lens_testing_utils.h",
     "lens_url_utils.cc",
     "lens_url_utils.h",
+    "ref_counted_lens_overlay_client_logs.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//components/base32",
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
@@ -58,6 +59,17 @@ static_library("lens") {
     "//url",
   ]
   public_deps = [ ":features" ]
+
+  if (!is_ios) {
+    sources += [
+      "lens_bitmap_processing.cc",
+      "lens_bitmap_processing.h",
+    ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
+  }
 }
 
 component("features") {
@@ -99,6 +111,14 @@ source_set("unit_tests") {
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
+
+  if (!is_ios) {
+    sources += [ "lens_bitmap_processing_unittest.cc" ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
+  }
 }
 
 source_set("enterprise_policy") {

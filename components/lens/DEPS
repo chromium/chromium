@@ -9,6 +9,8 @@ include_rules = [
   "+google_apis",
   "+net",
   "+services/metrics/public/cpp",
+  "+third_party/skia",
   "+third_party/lens_server_proto",
+  "+ui/gfx",
   "+ui/gfx/geometry/size_f.h",
 ]

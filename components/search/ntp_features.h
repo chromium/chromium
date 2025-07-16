@@ -231,6 +231,18 @@ extern const base::FeatureParam<bool>
 
 extern const base::FeatureParam<int>
     kNtpSearchboxComposeEntrypointMaxAnimationsParam;
+// The maximum image size downscaling target (in pixels) for images sent through the composebox.
+extern const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam;
+// The maximum image width downscaling target (in pixels) for images sent through the composebox.
+extern const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam;
+// The maximum image height downscaling target (in pixels) for images sent through the composebox.
+extern const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam;
+// The composition quality to use when encoding images sent through the composebox.
+extern const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointImageCompressionQualityParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

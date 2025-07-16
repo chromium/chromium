@@ -472,6 +472,30 @@ const base::FeatureParam<int> kNtpSearchboxComposeEntrypointMaxAnimationsParam(
     "NtpSearchboxComposeEntrypointMaxAnimationsParam",
     3);
 
+const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam(
+        &ntp_features::kNtpSearchboxComposeEntrypoint,
+        "NtpSearchboxComposeEntrypointDownscaleMaxImageSizeParam",
+        1500000);
+
+const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam(
+        &ntp_features::kNtpSearchboxComposeEntrypoint,
+        "NtpSearchboxComposeEntrypointDownscaleMaxImageWidthParam",
+        1600);
+
+const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam(
+        &ntp_features::kNtpSearchboxComposeEntrypoint,
+        "NtpSearchboxComposeEntrypointDownscaleMaxImageHeightParam",
+        1600);
+
+const base::FeatureParam<int>
+    kNtpSearchboxComposeEntrypointImageCompressionQualityParam(
+        &ntp_features::kNtpSearchboxComposeEntrypoint,
+        "NtpSearchboxComposeEntrypointImageCompressionQualityParam",
+        40);
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,
