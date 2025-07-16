@@ -253,17 +253,18 @@ TEST_F(IOSEnterpriseInterstitialTest, CustomMessageDisplayed) {
   auto block_resource = CreateBlockUnsafeResource();
   AddCustomMessageToResource(
       block_resource, safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
-  EXPECT_NE(IOSEnterpriseInterstitial::CreateBlockingPage(block_resource)
-                ->GetHtmlContents()
-                .find(expected_primary_paragraph),
+
+  auto block_page = CreateBlockingPage(block_resource);
+
+  EXPECT_NE(block_page->GetHtmlContents().find(expected_primary_paragraph),
             std::string::npos);
 
   auto warn_resource = CreateWarnUnsafeResource();
   AddCustomMessageToResource(warn_resource,
                              safe_browsing::RTLookupResponse::ThreatInfo::WARN);
-  EXPECT_NE(CreateWarningPage(warn_resource)
-                ->GetHtmlContents()
-                .find(expected_primary_paragraph),
+  auto warn_page = CreateWarningPage(warn_resource);
+
+  EXPECT_NE(warn_page->GetHtmlContents().find(expected_primary_paragraph),
             std::string::npos);
 }
 
