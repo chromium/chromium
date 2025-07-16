@@ -183,6 +183,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("fake_bulk_leak_check_service") {
