@@ -312,8 +312,8 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
                 IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
-            "count", base::NumberToString(credentialCount), "position",
-            base::NumberToString(i + 1)));
+            "count", base::checked_cast<int>(credentialCount), "position",
+            base::checked_cast<int>(i + 1)));
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                  initWithCredential:credentials[i].manual_fill_credential
