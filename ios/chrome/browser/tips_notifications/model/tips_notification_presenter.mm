@@ -7,10 +7,14 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -21,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_criteria.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 
@@ -84,6 +89,9 @@ void TipsNotificationPresenter::Present(TipsNotificationType type) {
       break;
     case TipsNotificationType::kLensOverlay:
       ShowLensOverlayPromo();
+      break;
+    case TipsNotificationType::kTrustedVaultKeyRetrieval:
+      StartTrustedVaultKeyRetrievalFlow();
       break;
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
@@ -151,6 +159,51 @@ void TipsNotificationPresenter::ShowOmniboxPosition() {
 void TipsNotificationPresenter::ShowLensPromo() {
   [HandlerForProtocol(browser_->GetCommandDispatcher(),
                       BrowserCoordinatorCommands) showLensPromo];
+}
+
+void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfileIfExists(browser_->GetProfile());
+  if (sync_service == nullptr) {
+    // Sync service might be not available for some profiles. If Sync service is
+    // not available, we don't need to do anything.
+    //
+    // For example, this code branch might be activated in the
+    // following scenario:
+    // 1) The tips notification has been displayed for a user without a
+    // trusted vault key.
+    // 2) The user signs-out (and possibly signs-in to some other profile).
+    // 3) Afterwards the user notices the tips notification and clicks "Open".
+    // 4) Since the profile from the step 2 is not guaranteed to have a Sync
+    // service, we need to check if sync_service exists.
+    //
+    // We expect that the described scenario is rare.
+    // TODO(crbug.com/413671723): Publish a metric in this case.
+    return;
+  }
+  if (!sync_service->GetUserSettings()
+           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
+    // The trusted vault key is already available, so we don't need to do
+    // anything.
+    //
+    // For example, this code branch might be activated in the
+    // following scenario:
+    // 1) The tips notification has been displayed for a user without a
+    // trusted vault key.
+    // 2) The user fixed the issue using some in-browser UI (e.g. via the
+    // Password Manager settings UI).
+    // 3) Afterwards the user notices the tips notification and clicks "Open".
+    // 4) Since the key has been retrieved in the step 2 we don't need to
+    // perform the key retrieval anymore.
+    //
+    // We expect that the described scenario is rare.
+    // TODO(crbug.com/413671723): Publish a metric in this case.
+    return;
+  }
+  [HandlerForProtocol(browser_->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands)
+      performReauthToRetrieveTrustedVaultKey:
+          syncer::TrustedVaultUserActionTriggerForUMA::kNotification];
 }
 
 void TipsNotificationPresenter::ShowEnhancedSafeBrowsingPromo() {

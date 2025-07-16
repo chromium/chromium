@@ -2527,6 +2527,11 @@ enum class ToolbarKind {
   [_signinCoordinator start];
 }
 
+- (void)performReauthToRetrieveTrustedVaultKey:
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger {
+  [self showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
+}
+
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
 - (BOOL)showContextualPanelEntrypointIPHWithConfig:

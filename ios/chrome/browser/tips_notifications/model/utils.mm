@@ -64,6 +64,9 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kLensOverlay:
       return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_BODY};
+    case TipsNotificationType::kTrustedVaultKeyRetrieval:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_BODY};
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -212,13 +215,19 @@ int TipsNotificationsEnabledBitfield() {
 std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
     bool for_reactivation) {
   if (for_reactivation) {
+    std::vector<TipsNotificationType> notification_types{
+        TipsNotificationType::kLens,
+        TipsNotificationType::kEnhancedSafeBrowsing,
+        TipsNotificationType::kWhatsNew,
+    };
+    if (IsIOSTrustedVaultNotificationEnabled()) {
+      notification_types.insert(
+          notification_types.begin(),
+          TipsNotificationType::kTrustedVaultKeyRetrieval);
+    }
     return GetFieldTrialParamByFeatureAsVector<TipsNotificationType>(
         kIOSReactivationNotifications, kIOSReactivationNotificationsOrderParam,
-        {
-            TipsNotificationType::kLens,
-            TipsNotificationType::kEnhancedSafeBrowsing,
-            TipsNotificationType::kWhatsNew,
-        });
+        notification_types);
   } else if (IsIOSExpandedTipsEnabled()) {
     return GetFieldTrialParamByFeatureAsVector<TipsNotificationType>(
         kIOSExpandedTips, kIOSExpandedTipsOrderParam,
@@ -272,6 +281,8 @@ NotificationType NotificationTypeForTipsNotificationType(
       return NotificationType::kTipsCPE;
     case TipsNotificationType::kIncognitoLock:
       return NotificationType::kTipsIncognitoLock;
+    case TipsNotificationType::kTrustedVaultKeyRetrieval:
+      return NotificationType::kTipsTrustedVaultKeyRetrieval;
     case TipsNotificationType::kError:
       NOTREACHED();
   }

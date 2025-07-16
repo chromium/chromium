@@ -63,6 +63,9 @@ class TipsNotificationPresenter {
   // Returns true if there are any identities on the device.
   bool HasIdentitiesOnDevice();
 
+  // Starts the trusted Vault key retrieval flow.
+  void StartTrustedVaultKeyRetrievalFlow();
+
   // Contains a non-weak pointer to the browser.
   raw_ptr<Browser> browser_;
 };

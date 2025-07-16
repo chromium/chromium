@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_presenter.h"
 
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
+#import "components/sync/service/sync_user_settings.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -19,6 +24,8 @@
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -26,6 +33,10 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+using ::testing::Return;
+}
 
 // A test fixture for TipsNotificationPresenter.
 class TipsNotificationPresenterTest : public PlatformTest {
@@ -36,8 +47,12 @@ class TipsNotificationPresenterTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    sync_service_mock_ = static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     // Mock the ApplicationCommands protocol to allow the test to proceed.
     application_handler_ = MockHandler(@protocol(ApplicationCommands));
@@ -58,6 +73,7 @@ class TipsNotificationPresenterTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   id application_handler_;
 };
 
@@ -156,5 +172,33 @@ TEST_F(TipsNotificationPresenterTest, TestShowLensOverlayPromo) {
   OCMExpect([mock_handler showSearchWhatYouSeePromo]);
   TipsNotificationPresenter::Present(browser_->AsWeakPtr(),
                                      TipsNotificationType::kLensOverlay);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+}
+
+// Tests that the presenter starts the trusted vault key retrieval flow if the
+// trusted vault key is missing
+TEST_F(TipsNotificationPresenterTest, TestStartTrustedVaultKeyRetrievalFlow) {
+  ON_CALL(*(sync_service_mock_->GetMockUserSettings()),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(Return(true));
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler
+      performReauthToRetrieveTrustedVaultKey:
+          syncer::TrustedVaultUserActionTriggerForUMA::kNotification]);
+  TipsNotificationPresenter::Present(
+      browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+}
+
+// Tests that the presenter doesn't start the trusted vault key retrieval flow
+// if the trusted vault key is available
+TEST_F(TipsNotificationPresenterTest,
+       TestDoesNotStarTrustedVaultKeyRetrievalFlow) {
+  ON_CALL(*(sync_service_mock_->GetMockUserSettings()),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(Return(false));
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  TipsNotificationPresenter::Present(
+      browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }

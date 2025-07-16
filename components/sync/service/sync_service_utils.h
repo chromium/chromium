@@ -46,7 +46,7 @@ enum class TrustedVaultUserActionTriggerForUMA {
   kSettings = 0,
   // Used on desktop platform only.
   kProfileMenu = 1,
-  // Used on Android and ChromeOS, represents OS-level notification.
+  // Used on Android, ChromeOS, and iOS. Represents OS-level notification.
   kNotification = 2,
   // Used on iOS only. Represents Infobar on the New Tab Page.
   // TODO(crbug.com/40131571): record this bucket bucket on Android once

@@ -45,6 +45,7 @@ class TipsNotificationCriteria {
   bool ShouldSendEnhancedSafeBrowsing();
   bool ShouldSendCPE();
   bool ShouldSendLensOverlay();
+  bool ShouldSendTrustedVaultKeyRetrieval();
 
   // Returns true if the Feature Engagement Tracker has ever triggered for the
   // given `feature`.

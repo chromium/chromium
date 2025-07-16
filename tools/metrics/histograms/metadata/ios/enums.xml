@@ -1230,6 +1230,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Lens Overlay"/>
   <int value="10" label="CPE"/>
   <int value="11" label="Incognito Lock"/>
+  <int value="12" label="Trusted Vault Key Retrieval"/>
 </enum>
 
 <enum name="IOSTipsNotificationUserType">
@@ -1377,6 +1378,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Incognito Lock [Tip]"/>
   <int value="14" label="unknown type"/>
   <int value="15" label="Send Tab"/>
+  <int value="16" label="Trusted Vault Key Retrieval [Tip]"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->

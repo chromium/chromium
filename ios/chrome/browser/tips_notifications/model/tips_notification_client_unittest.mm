@@ -705,6 +705,21 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[2], TipsNotificationType::kOmniboxPosition);
 }
 
+// Tests the order of reactivation notifications when the trusted vault
+// notification is enabled.
+TEST_F(TipsNotificationClientTest,
+       TestOrderParam_WhenTrustedVaultNotificationIsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIOSTrustedVaultNotification);
+
+  std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder(true);
+  EXPECT_EQ(order.size(), 4u);
+  EXPECT_EQ(order[0], TipsNotificationType::kTrustedVaultKeyRetrieval);
+  EXPECT_EQ(order[1], TipsNotificationType::kLens);
+  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[3], TipsNotificationType::kWhatsNew);
+}
+
 // Tests that the client handles a CPE Promo notification response.
 TEST_F(TipsNotificationClientTest, CPEHandle) {
   StubPrepareToPresentModal();

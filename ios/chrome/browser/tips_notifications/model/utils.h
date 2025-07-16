@@ -63,7 +63,8 @@ enum class TipsNotificationType {
   kLensOverlay = 9,
   kCPE = 10,
   kIncognitoLock = 11,
-  kMaxValue = kIncognitoLock,
+  kTrustedVaultKeyRetrieval = 12,
+  kMaxValue = kTrustedVaultKeyRetrieval,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

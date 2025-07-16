@@ -10,6 +10,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -22,8 +24,10 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ui/base/device_form_factor.h"
 
@@ -98,6 +102,8 @@ bool TipsNotificationCriteria::ShouldSendNotification(
       return ShouldSendCPE();
     case TipsNotificationType::kLensOverlay:
       return ShouldSendLensOverlay();
+    case TipsNotificationType::kTrustedVaultKeyRetrieval:
+      return ShouldSendTrustedVaultKeyRetrieval();
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -206,6 +212,21 @@ bool TipsNotificationCriteria::ShouldSendLensOverlay() {
   base::Time lens_overlay_last_presented =
       local_state_->GetTime(prefs::kLensOverlayLastPresented);
   return !IsRecent(lens_overlay_last_presented, kLensOverlayRecency);
+}
+
+bool TipsNotificationCriteria::ShouldSendTrustedVaultKeyRetrieval() {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfileIfExists(profile_);
+  if (sync_service == nullptr) {
+    // Sync service might be not available for some profiles. If Sync service is
+    // not available, we don't need to do display this notification.
+    return false;
+  }
+  if (!IsIOSTrustedVaultNotificationEnabled()) {
+    return false;
+  }
+  return sync_service->GetUserSettings()
+      ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
 
 bool TipsNotificationCriteria::FETHasEverTriggered(

@@ -346,6 +346,10 @@ void TipsNotificationClient::RequestNotification(TipsNotificationType type,
         kTipsNotificationId,
         ContentForTipsNotificationType(type, CanSendReactivation(),
                                        profile_name),
+        // TODO(crbug.com/413671723): Implement the logic that uses an almost
+        // instant trigger delta for the notification type
+        // `kTrustedVaultKeyRetrieval` (because we want to ensure that users fix
+        // this issue as soon as possible).
         TipsNotificationTriggerDelta(CanSendReactivation(), user_type_)};
     CheckRateLimitBeforeSchedulingNotification(
         request,
