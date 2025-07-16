@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.IsSitePerProcessOrMoreStrict" enum="Boolean"
+<histogram name="SiteIsolation.IsSitePerProcessOrStricter" enum="Boolean"
     expires_after="2026-06-23">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
