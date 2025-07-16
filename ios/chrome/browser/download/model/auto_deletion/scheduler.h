@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_AUTO_DELETION_SCHEDULER_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_AUTO_DELETION_SCHEDULER_H_
 
+#include <vector>
+
 #import "base/memory/raw_ptr.h"
 
 namespace auto_deletion {
