@@ -33,8 +33,7 @@ class CreditCardFormEventLoggerTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 
   CreditCard GetVirtualCreditCard(const std::string& guid) {
-    CreditCard copy =
-        *personal_data().payments_data_manager().GetCreditCardByGUID(guid);
+    CreditCard copy = *paydm().GetCreditCardByGUID(guid);
     copy.set_record_type(CreditCard::RecordType::kVirtualCard);
     return copy;
   }
@@ -94,6 +93,14 @@ class CreditCardFormEventLoggerTestWithParsedFormLogging
   CreditCardFormEventLoggerTestWithParsedFormLogging() {
     feature_list_.InitWithFeatureState(
         features::kAutofillEnableLogFormEventsToAllParsedFormTypes, GetParam());
+  }
+
+  void SkipOnAutomotive() {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      GTEST_SKIP() << "This test should not run on automotive.";
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
  private:
@@ -507,484 +514,465 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                                      FORM_EVENT_DID_PARSE_FORM, 0);
 }
 
-// Test that we log interacted form event for credit cards related.
+// Test that we log the FORM_EVENT_INTERACTED_ONCE event for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardInteractedFormEvents) {
+       CreditCardInteractedFormEventsTriggerOnce) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulate activating the autofill popup for the credit card field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
-                                        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
+                                      FORM_EVENT_INTERACTED_ONCE, 1);
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardInteractedFormEventsTriggerTwice) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulate activating the autofill popup for the credit card field twice.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
-                                        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
+  // Simulate activating the autofill popup for the credit card field twice.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
+                                      FORM_EVENT_INTERACTED_ONCE, 1);
 }
 
 // Test that we log suggestion shown form events for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardShownFormEvents) {
+       CreditCardShownFormEventShowOnce) {
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating new popup being shown.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/0,
-                               SuggestionType::kCreditCardEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
-                       Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
-  }
+  // Simulate new popup being shown.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kCreditCardEntry);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+                             Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardShownFormEventShowTwice) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating two popups in the same page load.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/0,
-                               SuggestionType::kCreditCardEntry);
-    DidShowAutofillSuggestions(form, /*field_index=*/0,
-                               SuggestionType::kCreditCardEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
-                       Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
-  }
+  // Simulate two popups in the same page load.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kCreditCardEntry);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kCreditCardEntry);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+                             Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardShownFormEventUnrelatedEntries) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating same popup being refreshed.
-    // Suggestions not related to credit cards/addresses should not affect the
-    // histograms.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/0,
-                               SuggestionType::kAutocompleteEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
-                   Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
-  }
+  // Suggestions not related to credit cards/addresses should not affect the
+  // histograms.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kAutocompleteEntry);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsAre(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
+                         Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
 }
 
 // Test that we log specific suggestion shown form events for virtual credit
 // cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       VirtualCreditCardShownFormEvents) {
-  // Creating cards, including a virtual card.
+       VirtualCreditCardShownFormEventShowOnce) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
-                      /*masked_card_is_enrolled_for_virtual_card*/ true);
-
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
   auto [form, field_types] = CreateMonthYearCvcNumberForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulate new popup being shown.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 1),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
-  }
+  // Simulate the new popup being shown.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 1),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       VirtualCreditCardShownFormEventShowTwice) {
+  RecreateCreditCards(/*include_local_credit_card=*/false,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearCvcNumberForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating two popups in the same page load.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 2),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
-  }
+  // Simulate two popups on the same page load.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 2),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       VirtualCreditCardShownFormEventUnrelatedEntries) {
+  RecreateCreditCards(/*include_local_credit_card=*/false,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearCvcNumberForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating same popup being refreshed.
-    // Suggestions not related to credit cards/addresses should not affect the
-    // histograms.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    DidShowAutofillSuggestions(form,
-                               /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kAutocompleteEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0)));
-  }
+  // Suggestions not related to credit cards/addresses should not affect the
+  // histograms.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form,
+                             /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kAutocompleteEntry);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0)));
+}
 
-  // Recreate cards, this time *without* a virtual card.
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       VirtualCreditCardShownFormEventNoVirtualCard) {
+  // Recreate cards *without* a virtual card.
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card*/ false);
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  auto [form, field_types] = CreateMonthYearCvcNumberForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating two popups in the same page load. Suggestions shown should be
-    // logged, but suggestions shown with virtual card should not.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0),
-            Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0)));
-  }
+  // Simulate two popups in the same page load. Suggestions shown should be
+  // logged, but suggestions shown with virtual card should not.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0),
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0)));
 }
 
 // Test that we log selected form event for credit cards.
-// TODO(crbug.com/362889813): Refactor the nested test cases into separate
-// tests.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardSelectedFormEvents) {
-  // Creating all kinds of cards.
+       CreditCardSelectedFormEventsPreviewOnce) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
-  {
-    // Previewing suggestions should not record selected-form-events metrics.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kPreview, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 0),
-            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 0)));
-  }
 
-  {
-    // Simulating selecting a local card suggestion multiple times.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 2),
-            Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
-  }
-  {
-    // Simulating selecting a masked server card suggestion.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
-  }
+  // Previewing suggestions should not record selected-form-events metrics.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 0),
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 0)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSelectedFormEventsFillTwice) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating selecting a masked server card multiple times.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 2),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
-  }
+  // Simulate selecting a local card suggestion multiple times.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 2),
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSelectedFormEventsFillMaskedServerCard) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating selecting a virtual server suggestion by selecting the
-    // option based on the enrolled masked card.
-    base::HistogramTester histogram_tester;
-    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        &virtual_card, AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 1),
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
-  }
+  // Simulate selecting a masked server card suggestion.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSelectedFormEventsFillMaskedServerCardTwice) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating selecting a virtual card multiple times.
-    base::HistogramTester histogram_tester;
-    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        &virtual_card, AutofillTriggerSource::kPopup);
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
-        &virtual_card, AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 2),
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
-  }
+  // Simulate selecting a masked server card multiple times.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 2),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSelectedFormEventsFillVirtualCard) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate selecting a virtual server suggestion by selecting the
+  // option based on the enrolled masked card.
+  base::HistogramTester histogram_tester;
+  CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 1),
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSelectedFormEventsFillVirtualCardTwice) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate selecting a virtual card multiple times.
+  base::HistogramTester histogram_tester;
+  CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[2].global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED, 2),
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE, 1)));
 }
 
 // Test that we log filled form events for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardFilledFormEvents) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Disable mandatory reauth as it is not part of this test and will
-  // interfere with the card retrieval flow.
-  personal_data()
-      .payments_data_manager()
-      .SetPaymentMethodsMandatoryReauthEnabled(false);
-  // Creating all kinds of cards.
+       CreditCardFilledFormEventsPreviewOnly) {
+  SkipOnAutomotive();
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Previewing suggestions should not record filling-form-events metrics.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kPreview, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 0),
-                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 0)));
-  }
+  // Previewing suggestions should not record filling-form-events metrics.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, form,
+      form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 0),
+                     Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 0)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating filling a local card suggestion.
-    base::HistogramTester histogram_tester;
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard);
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
-                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating filling a virtual card suggestion by selecting the option
-    // based on the enrolled masked card.
-    base::HistogramTester histogram_tester;
-    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                         form.fields().front().global_id(),
-                                         &virtual_card,
-                                         AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, 1),
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, 1)));
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating filling a masked card server suggestion.
-    base::HistogramTester histogram_tester;
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424"));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
-  }
-
-  // Recreating cards as the previous test should have upgraded the masked
-  // card to a full card.
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardFilledFormEventsFill) {
+  SkipOnAutomotive();
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating filling multiple times.
-    base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 2),
-                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
-  }
+  // Simulate filling a local card suggestion.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard);
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
+                     Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardFilledFormEventsFillVirtualCard) {
+  SkipOnAutomotive();
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate filling a virtual card suggestion by selecting the option
+  // based on the enrolled masked card.
+  base::HistogramTester histogram_tester;
+  CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, 1),
+                  Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardFilledFormEventsFillMaskedServerCard) {
+  SkipOnAutomotive();
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate filling a masked card server suggestion.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424"));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardFilledFormEventsFillTwice) {
+  SkipOnAutomotive();
+  paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate filling multiple times.
+  base::HistogramTester histogram_tester;
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 2),
+                     Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, 1)));
 }
 
 // Test to log when an unique local card is autofilled, when other duplicated
@@ -1013,8 +1001,7 @@ TEST_P(
   base::HistogramTester histogram_tester;
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      AutofillTriggerSource::kPopup);
+      paydm().GetCreditCardByGUID(local_guid), AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1052,8 +1039,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   // Server card with a duplicate local card present at index 0.
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      AutofillTriggerSource::kPopup);
+      paydm().GetCreditCardByGUID(local_guid), AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form,
                                               form.fields().back().global_id());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
@@ -1104,8 +1090,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
   // Server card with a duplicate local card present at index 0.
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      AutofillTriggerSource::kPopup);
+      paydm().GetCreditCardByGUID(local_guid), AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form,
                                               form.fields().back().global_id());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
@@ -1139,7 +1124,7 @@ TEST_F(CreditCardFormEventLoggerTest,
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown, but not selected.
+  // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1162,7 +1147,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       CreateMonthYearNumberForm(/*number_value=*/"411111111");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown, but not selected.
+  // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1185,7 +1170,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       CreateMonthYearNumberForm(/*number_value=*/"4444444444444444");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown, but not selected.
+  // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1208,7 +1193,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       CreateMonthYearNumberForm(/*number_value=*/"5105105105105100");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown, but not selected.
+  // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1231,7 +1216,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown, but not selected.
+  // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1254,7 +1239,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
       CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulating submission with suggestion shown and selected.
+  // Simulate submission with suggestion shown and selected.
   base::HistogramTester histogram_tester;
   DidShowAutofillSuggestions(form, /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
@@ -1262,8 +1247,7 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
                                               form.fields()[0].global_id());
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(
-          kTestLocalCardId),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
       AutofillTriggerSource::kPopup);
 
   SubmitForm(form);
@@ -1278,468 +1262,450 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 // Test that we log submitted form events for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardSubmittedFormEvents) {
-  // Creating all kinds of cards.
+       CreditCardSubmittedFormEventsNoFilledData) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating submission with no filled data.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    SubmitForm(form);
+  // Simulate submission with no filled data.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
 
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-                       Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
-  }
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+                     Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
+}
 
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with suggestion shown.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
-
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-        {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmTextFieldValueChangedType::kHeuristicTypeName,
-           CREDIT_CARD_NUMBER},
-          {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-           HtmlFieldType::kUnspecified},
-          {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-          {UkmSuggestionsShownType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-          {UkmSuggestionsShownType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
-
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with suggestion shown. Form is submitted and
-    // autofill manager is reset before UploadFormDataAsyncCallback is
-    // triggered.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
-                               SuggestionType::kCreditCardEntry);
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    SubmitForm(form);
-    // Trigger UploadFormDataAsyncCallback.
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
-
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-        {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmTextFieldValueChangedType::kHeuristicTypeName,
-           CREDIT_CARD_NUMBER},
-          {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-           HtmlFieldType::kUnspecified},
-          {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-          {UkmSuggestionsShownType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-          {UkmSuggestionsShownType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
-
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with filled local data.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
-
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-        {{{UkmSuggestionFilledType::kRecordTypeName,
-           base::to_underlying(CreditCard::RecordType::kLocalCard)},
-          {UkmSuggestionFilledType::kIsForCreditCardName, true},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmSuggestionFilledType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields().front()))
-               .value()},
-          {UkmSuggestionFilledType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
-
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with filled virtual card data by selecting the
-    // option based on the enrolled masked card.
-    base::HistogramTester histogram_tester;
-    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                         form.fields().front().global_id(),
-                                         &virtual_card,
-                                         AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
-
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-        {{{UkmSuggestionFilledType::kRecordTypeName,
-           base::to_underlying(CreditCard::RecordType::kVirtualCard)},
-          {UkmSuggestionFilledType::kIsForCreditCardName, true},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmSuggestionFilledType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields().front()))
-               .value()},
-          {UkmSuggestionFilledType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
-
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with a masked card server suggestion.
-    base::HistogramTester histogram_tester;
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424"));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
-
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-        {{{UkmSuggestionFilledType::kRecordTypeName,
-           base::to_underlying(CreditCard::RecordType::kMaskedServerCard)},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmSuggestionFilledType::kIsForCreditCardName, true},
-          {UkmSuggestionFilledType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields().back()))
-               .value()},
-          {UkmSuggestionFilledType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
-
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
-  // Recreating cards as the previous test should have upgraded the masked
-  // card to a full card.
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsSuggestionShown) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
 
-  // Reset the autofill manager state.
+  // Simulate submission with suggestion shown.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
+                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
+
+  VerifyUkm(
+      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
+      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
+         HtmlFieldType::kUnspecified},
+        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
+        {UkmSuggestionsShownType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
+        {UkmSuggestionsShownType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()}}});
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsSuggestionShownDriverReset) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with suggestion shown. Form is submitted and
+  // autofill manager is reset before UploadFormDataAsyncCallback is
+  // triggered.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
+  // Trigger UploadFormDataAsyncCallback.
   test_api(autofill_client().GetAutofillDriverFactory())
       .Reset(autofill_driver());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
+                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
+
+  VerifyUkm(
+      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
+      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
+         HtmlFieldType::kUnspecified},
+        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
+        {UkmSuggestionsShownType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
+        {UkmSuggestionsShownType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()}}});
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsFilledLocalData) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating multiple submissions.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    SubmitForm(form);
-    SubmitForm(form);
+  // Simulate submission with filled local data.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+                     Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
-                   0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
-                   0)));
-  }
+  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
+            {{{UkmSuggestionFilledType::kRecordTypeName,
+               base::to_underlying(CreditCard::RecordType::kLocalCard)},
+              {UkmSuggestionFilledType::kIsForCreditCardName, true},
+              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+              {UkmSuggestionFilledType::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                   .value()},
+              {UkmSuggestionFilledType::kFormSignatureName,
+               Collapse(CalculateFormSignature(form)).value()}}});
+}
 
-  // Reset the autofill manager state and purge UKM logs.
-  PurgeUKM();
-
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsFilledVirtualCard) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating submission with suggestion shown but without previous
-    // interaction.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
-                   0)));
+  // Simulate submission with filled virtual card data by selecting the
+  // option based on the enrolled masked card.
+  base::HistogramTester histogram_tester;
+  CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+          Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-        {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-          {UkmTextFieldValueChangedType::kHeuristicTypeName,
-           CREDIT_CARD_NUMBER},
-          {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-           HtmlFieldType::kUnspecified},
-          {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-          {UkmSuggestionsShownType::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-          {UkmSuggestionsShownType::kFormSignatureName,
-           Collapse(CalculateFormSignature(form)).value()}}});
-  }
+  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
+            {{{UkmSuggestionFilledType::kRecordTypeName,
+               base::to_underlying(CreditCard::RecordType::kVirtualCard)},
+              {UkmSuggestionFilledType::kIsForCreditCardName, true},
+              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+              {UkmSuggestionFilledType::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                   .value()},
+              {UkmSuggestionFilledType::kFormSignatureName,
+               Collapse(CalculateFormSignature(form)).value()}}});
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsFilledMaskedServerCard) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with a masked card server suggestion.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424"));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
+
+  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
+            {{{UkmSuggestionFilledType::kRecordTypeName,
+               base::to_underlying(CreditCard::RecordType::kMaskedServerCard)},
+              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+              {UkmSuggestionFilledType::kIsForCreditCardName, true},
+              {UkmSuggestionFilledType::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form.fields().back()))
+                   .value()},
+              {UkmSuggestionFilledType::kFormSignatureName,
+               Collapse(CalculateFormSignature(form)).value()}}});
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsMultipleSubmissions) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate multiple submissions.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
+  SubmitForm(form);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardSubmittedFormEventsSuggestionShownNoInteraction) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with suggestion shown but without previous
+  // interaction.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                 0)));
+
+  VerifyUkm(
+      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
+      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
+        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
+         HtmlFieldType::kUnspecified},
+        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
+        {UkmSuggestionsShownType::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
+        {UkmSuggestionsShownType::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()}}});
 }
 
 // Test that we log "will submit" and "submitted" form events for credit
 // cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
-       CreditCardWillSubmitFormEvents) {
-  // Creating all kinds of cards.
+       CreditCardWillSubmitFormEventsNoFilledData) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating submission with no filled data.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-                       Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
-  }
+  // Simulate submission with no filled data.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+                     Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with suggestion shown.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/0,
-                               SuggestionType::kCreditCardEntry);
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1),
-                       Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1)));
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with filled local data.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields().front().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestLocalCardId),
-        AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-                       Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with filled virtual card data by selecting the
-    // option based on the enrolled masked card.
-    base::HistogramTester histogram_tester;
-    CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424",
-                                      /*is_virtual_card=*/true));
-        });
-    autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                         form.fields().front().global_id(),
-                                         &virtual_card,
-                                         AutofillTriggerSource::kPopup);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-            Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating submission with a masked card server suggestion.
-    base::HistogramTester histogram_tester;
-    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-        .WillOnce([](const CreditCard* card,
-                     CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
-          std::move(cb).Run(BuildCard(u"6011000990139424"));
-        });
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
-        personal_data().payments_data_manager().GetCreditCardByGUID(
-            kTestMaskedCardId),
-        AutofillTriggerSource::kPopup);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
-  }
-
-  // Recreating cards as the previous test should have upgraded the masked
-  // card to a full card.
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsSuggestionShown) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/true);
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating multiple submissions.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    SubmitForm(form);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
-                   0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE,
-                   0)));
-  }
+  // Simulate submission with suggestion shown.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kCreditCardEntry);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1),
+                     Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1)));
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsLocalDataFilled) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulating submission with suggestion shown but without previous
-    // interaction.
-    base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
-    SubmitForm(form);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0),
-            Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
-            Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
-                   0)));
-  }
+  // Simulate submission with filled local data.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      paydm().GetCreditCardByGUID(kTestLocalCardId),
+      AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+                     Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsVirtualCardFilled) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with filled virtual card data by selecting the
+  // option based on the enrolled masked card.
+  base::HistogramTester histogram_tester;
+  CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424",
+                                    /*is_virtual_card=*/true));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      &virtual_card, AutofillTriggerSource::kPopup);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+          Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsMaskedServerCardFilled) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with a masked card server suggestion.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+      .WillOnce([](const CreditCard* card,
+                   CreditCardAccessManager::OnCreditCardFetchedCallback cb) {
+        std::move(cb).Run(BuildCard(u"6011000990139424"));
+      });
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
+      AutofillTriggerSource::kPopup);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsMultipleSubmissions) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate multiple submissions.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  SubmitForm(form);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0)));
+}
+
+TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
+       CreditCardWillSubmitFormEventsSuggestionShownNoPreviousInteraction) {
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/true,
+                      /*masked_card_is_enrolled_for_virtual_card=*/true);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate submission with suggestion shown but without previous interaction.
+  base::HistogramTester histogram_tester;
+  DidShowAutofillSuggestions(form);
+  SubmitForm(form);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 0),
+          Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 0),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                 0)));
 }
 
 // Test that we log parsed form events for address and cards in the same form.
@@ -1877,80 +1843,71 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 }
 
 // Test that we log interacted form event for credit cards only once.
-TEST_F(CreditCardFormEventLoggerTest, CreditCardFormEventsAreSegmented) {
+TEST_F(CreditCardFormEventLoggerTest, CreditCardFormEventsAreSegmentedNoCard) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
-
   auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulate activating the autofill popup for the credit card field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.CreditCard.WithNoData", FORM_EVENT_INTERACTED_ONCE,
-        1);
-  }
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.WithNoData", FORM_EVENT_INTERACTED_ONCE,
+      1);
+}
 
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  PurgeUKM();
-  autofill_manager().AddSeenForm(form, field_types);
+TEST_F(CreditCardFormEventLoggerTest,
+       CreditCardFormEventsAreSegmentedLocalCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
-
-  {
-    // Simulate activating the autofill popup for the credit card field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
-        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  PurgeUKM();
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
+      FORM_EVENT_INTERACTED_ONCE, 1);
+}
+
+TEST_F(CreditCardFormEventLoggerTest,
+       CreditCardFormEventsAreSegmentedMaskedServerCard) {
   RecreateCreditCards(/*include_local_credit_card=*/false,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
-
-  {
-    // Simulate activating the autofill popup for the credit card field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.CreditCard.WithOnlyServerData",
-        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
-
-  // Reset the autofill manager state.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
-  PurgeUKM();
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
   autofill_manager().AddSeenForm(form, field_types);
+
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.WithOnlyServerData",
+      FORM_EVENT_INTERACTED_ONCE, 1);
+}
+
+TEST_F(CreditCardFormEventLoggerTest,
+       CreditCardFormEventsAreSegmentedLocalAndMaskedServerCard) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
 
-  {
-    // Simulate activating the autofill popup for the credit card field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.FormEvents.CreditCard.WithBothServerAndLocalData",
-        FORM_EVENT_INTERACTED_ONCE, 1);
-  }
+  // Simulate activating the autofill popup for the credit card field.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.WithBothServerAndLocalData",
+      FORM_EVENT_INTERACTED_ONCE, 1);
 }
 
 // Tests that credit card form submissions are logged specially when the form is

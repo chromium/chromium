@@ -280,6 +280,10 @@ class AutofillMetricsBaseTest {
     return autofill_client_->GetPersonalDataManager();
   }
 
+  PaymentsDataManager& paydm() {
+    return personal_data().payments_data_manager();
+  }
+
   ValuablesDataManager& valuables_data_manager() {
     return *autofill_client_->GetValuablesDataManager();
   }
