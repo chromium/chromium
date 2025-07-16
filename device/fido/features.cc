@@ -215,10 +215,10 @@ BASE_FEATURE(kWebAuthnLargeBlobForICloudKeychain,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
-// Not yet enabled by default.
+// Default enabled in M140. Remove in or after M143.
 BASE_FEATURE(kWebAuthnLargeBlobForGPM,
              "WebAuthenticationLargeBlobGPM",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Deprecation flag. Intended to be disabled once the enclave no longer requires
 // a PIN generation number.
