@@ -52,6 +52,8 @@ class ReaderModeMetricsHelper
  private:
   std::unique_ptr<base::ElapsedTimer> heuristic_timer_;
   std::unique_ptr<base::ElapsedTimer> distiller_timer_;
+  std::unique_ptr<base::ElapsedTimer> reading_timer_;
+
   // Tracks the last state that was recorded in the Reading Mode events.
   std::optional<ReaderModeState> last_reader_mode_state_;
   raw_ptr<web::WebState> web_state_;

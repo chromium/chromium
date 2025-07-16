@@ -126,6 +126,7 @@ void ReaderModeMetricsHelper::RecordReaderShown() {
   last_reader_mode_state_.reset();
   base::UmaHistogramEnumeration(kReaderModeStateHistogram,
                                 ReaderModeState::kReaderShown);
+  reading_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void ReaderModeMetricsHelper::Flush() {
@@ -133,6 +134,11 @@ void ReaderModeMetricsHelper::Flush() {
     base::UmaHistogramEnumeration(kReaderModeStateHistogram,
                                   last_reader_mode_state_.value());
     last_reader_mode_state_.reset();
+  }
+  if (reading_timer_) {
+    base::TimeDelta elapsed = reading_timer_->Elapsed();
+    base::UmaHistogramLongTimes100(kReaderModeTimeSpentHistogram, elapsed);
+    reading_timer_.reset();
   }
   distiller_timer_.reset();
   heuristic_timer_.reset();

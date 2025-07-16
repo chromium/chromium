@@ -382,6 +382,8 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
 }
 
 void ReaderModeTabHelper::DestroyReaderModeWebState() {
+  metrics_helper_.Flush();
+
   WebViewProxyTabHelper* tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state_);
   if (tab_helper) {

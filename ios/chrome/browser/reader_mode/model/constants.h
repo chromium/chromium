@@ -123,6 +123,9 @@ extern const char kReaderModeFontScaleCustomizationHistogram[];
 // Histogram name for Reader Mode customization.
 extern const char kReaderModeCustomizationHistogram[];
 
+// Histogram name for time spent in Reader Mode.
+extern const char kReaderModeTimeSpentHistogram[];
+
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();
 

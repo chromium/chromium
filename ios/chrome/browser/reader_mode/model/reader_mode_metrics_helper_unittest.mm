@@ -210,6 +210,19 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateAutomaticallyFlushed) {
               BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
 }
 
+// Tests that the time spent reading is tracked following a call to the reader
+// being shown.
+TEST_F(ReaderModeMetricsHelperTest, ReaderShownStateStartsReadingTime) {
+  metrics_helper()->RecordReaderShown();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kReaderShown, 1)));
+  histogram_tester_.ExpectUniqueTimeSample(kReaderModeTimeSpentHistogram,
+                                           base::Seconds(1), 1);
+}
+
 // Tests that multiple calls to Flush will record all reader mode state events
 // and latency from the last Flush call.
 TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
