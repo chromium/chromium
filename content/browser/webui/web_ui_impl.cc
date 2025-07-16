@@ -40,6 +40,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
@@ -187,6 +188,14 @@ void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
 
 void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
   controller_->WebUIRenderFrameCreated(render_frame_host);
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLoadWebUIfromDisk)) {
+    return;
+  }
+#endif
+
   if (base::FeatureList::IsEnabled(features::kWebUIInProcessResourceLoading)) {
     CHECK(frame_host_);
     frame_host_->UpdateLocalResourceLoader(GetLocalResourceLoaderConfig());
