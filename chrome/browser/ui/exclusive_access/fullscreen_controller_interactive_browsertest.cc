@@ -42,6 +42,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -714,6 +715,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     Reload();
     run_loop.Run();
+    // Wait until the frame is ready to accept input events.
+    content::RenderFrameHost* render_frame_host = browser()
+                                                      ->tab_strip_model()
+                                                      ->GetActiveWebContents()
+                                                      ->GetPrimaryMainFrame();
+    content::WaitForHitTestData(render_frame_host);
   }
 
   // Request to lock the pointer and enter fullscreen.
