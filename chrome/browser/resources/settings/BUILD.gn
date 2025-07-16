@@ -216,7 +216,10 @@ build_webui("build") {
   ]
 
   if (enable_glic) {
-    web_component_files += [ "glic_page/glic_page.ts" ]
+    web_component_files += [
+      "glic_page/glic_page.ts",
+      "glic_page/glic_subpage.ts",
+    ]
   }
 
   if (!is_chromeos) {

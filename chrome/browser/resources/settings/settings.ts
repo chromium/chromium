@@ -64,7 +64,8 @@ export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_
 // </if>
 // <if expr="enable_glic">
 export {GlicBrowserProxy, GlicBrowserProxyImpl} from './glic_page/glic_browser_proxy.js';
-export {SettingsGlicPageElement, SettingsGlicPageFeaturePrefName} from './glic_page/glic_page.js';
+export {SettingsGlicPageElement} from './glic_page/glic_page.js';
+export {SettingsGlicPageFeaturePrefName, SettingsGlicSubpageElement} from './glic_page/glic_subpage.js';
 // </if>
 export {HatsBrowserProxy, HatsBrowserProxyImpl, SafeBrowsingSetting, SecurityPageInteraction, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';

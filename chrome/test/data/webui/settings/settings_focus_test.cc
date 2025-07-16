@@ -68,9 +68,9 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-class SettingsGlicPageFocusTest : public SettingsFocusTest {
+class SettingsGlicSubpageFocusTest : public SettingsFocusTest {
  public:
-  SettingsGlicPageFocusTest() {
+  SettingsGlicSubpageFocusTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
   }
@@ -82,11 +82,11 @@ class SettingsGlicPageFocusTest : public SettingsFocusTest {
 // TODO(crbug.com/424864547): Investigate flakiness and enable on Mac64 and
 // Win64.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_GlicPageFocus DISABLED_GlicPageFocus
+#define MAYBE_GlicSubpageFocus DISABLED_GlicSubpageFocus
 #else
-#define MAYBE_GlicPageFocus GlicPageFocus
+#define MAYBE_GlicSubpageFocus GlicSubpageFocus
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsGlicPageFocusTest, MAYBE_GlicPageFocus) {
-  RunTest("settings/glic_page_focus_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageFocusTest, MAYBE_GlicSubpageFocus) {
+  RunTest("settings/glic_subpage_focus_test.js", "mocha.run()");
 }
 #endif

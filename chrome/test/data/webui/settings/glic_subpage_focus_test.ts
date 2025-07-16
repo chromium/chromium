@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import type {CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import type {SettingsGlicSubpageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -23,7 +23,7 @@ interface Shortcuts {
 }
 
 suite('GlicPageFocusTest', function() {
-  let page: SettingsGlicPageElement;
+  let page: SettingsGlicSubpageElement;
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -53,9 +53,8 @@ suite('GlicPageFocusTest', function() {
         initialShortcuts.focusToggle || '');
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
 
-    page = document.createElement('settings-glic-page');
+    page = document.createElement('settings-glic-subpage');
     page.prefs = settingsPrefs.prefs;
-    Router.getInstance().navigateTo(routes.GEMINI);
     document.body.appendChild(page);
     await flushTasks();
 

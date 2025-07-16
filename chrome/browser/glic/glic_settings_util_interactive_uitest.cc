@@ -104,17 +104,19 @@ class GlicSettingsUtilUiTest
                  WaitForWebContentsNavigation(id));
   }
 
-  const DeepQuery kOsToggleHelpBubbleQuery{"settings-ui",
-                                           "settings-main",
-                                           "settings-basic-page",
-                                           "settings-glic-page",
-                                           "#launcherToggle",
-                                           "help-bubble",
-                                           "#close"};
+  const DeepQuery kOsToggleHelpBubbleQuery{
+      "settings-ui",           "settings-main",
+      "settings-basic-page",   "settings-glic-page",
+      "settings-glic-subpage", "#launcherToggle",
+      "help-bubble",           "#close"};
 
-  const DeepQuery kKeyboardShortcutHelpBubbleQuery{
-      "settings-ui",        "settings-main", "settings-basic-page",
-      "settings-glic-page", "help-bubble",   "#close"};
+  const DeepQuery kKeyboardShortcutHelpBubbleQuery{"settings-ui",
+                                                   "settings-main",
+                                                   "settings-basic-page",
+                                                   "settings-glic-page",
+                                                   "settings-glic-subpage",
+                                                   "help-bubble",
+                                                   "#close"};
 
   const DeepQuery kOpenSettingsButton = {"#openGlicSettings"};
 };
@@ -155,11 +157,11 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, ThrottleOpenOsToggleSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
       WaitForStateChange(
-          kFirstTab,
-          ElementIsVisibleStateChange(
-              kOsToggleIsVisible,
-              {"settings-ui", "settings-main", "settings-basic-page",
-               "settings-glic-page", "#launcherToggle"})),
+          kFirstTab, ElementIsVisibleStateChange(
+                         kOsToggleIsVisible,
+                         {"settings-ui", "settings-main", "settings-basic-page",
+                          "settings-glic-page", "settings-glic-subpage",
+                          "#launcherToggle"})),
       WaitForStateChange(kFirstTab,
                          ElementIsHiddenStateChange(kBubbleIsHidden,
                                                     kOsToggleHelpBubbleQuery)));
@@ -174,12 +176,13 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
   }
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),
-      WaitForStateChange(kSettingsTab,
-                         ElementIsVisibleStateChange(
-                             kKeyboardShortcutIsVisible,
-                             {"settings-ui", "settings-main",
-                              "settings-basic-page", "settings-glic-page",
-                              "#mainShortcutSetting", ".shortcut-input"})),
+      WaitForStateChange(
+          kSettingsTab,
+          ElementIsVisibleStateChange(
+              kKeyboardShortcutIsVisible,
+              {"settings-ui", "settings-main", "settings-basic-page",
+               "settings-glic-page", "settings-glic-subpage",
+               "#mainShortcutSetting", ".shortcut-input"})),
       WaitForStateChange(kSettingsTab, ElementIsHiddenStateChange(
                                            kBubbleIsHidden,
                                            kKeyboardShortcutHelpBubbleQuery)));
