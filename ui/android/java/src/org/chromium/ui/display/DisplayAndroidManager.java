@@ -4,8 +4,11 @@
 
 package org.chromium.ui.display;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
 import android.os.Build;
@@ -23,7 +26,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -59,7 +64,7 @@ public class DisplayAndroidManager {
 
         @Override
         public void onDisplayAdded(int sdkDisplayId) {
-            if (!UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+            if (!isWindowManagementEnabled()) {
                 return;
             }
 
@@ -90,7 +95,7 @@ public class DisplayAndroidManager {
 
         @Override
         public void onDisplayRemoved(int sdkDisplayId) {
-            if (UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+            if (isWindowManagementEnabled()) {
                 mNullDisplayIds.remove(sdkDisplayId);
             }
 
@@ -121,6 +126,25 @@ public class DisplayAndroidManager {
         }
     }
 
+    /**
+     * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
+     * it via the Android DisplayListener API.
+     */
+    class DisplayTopologyListenerBackend
+            implements AconfigFlaggedApiDelegate.DisplayTopologyListener {
+        public void startListening() {
+            assumeNonNull(mAconfigFlaggedApiDelegate)
+                    .registerTopologyListener(
+                            getDisplayManager(), getContext().getMainExecutor(), this);
+        }
+
+        @Override
+        public void onDisplayTopologyChanged(SparseArray<RectF> absoluteCoordinates) {
+            // TODO(crbug.com/429396645): Add reading a new display topology and update all displays
+            // with new global coordinates.
+        }
+    }
+
     private static @Nullable DisplayAndroidManager sDisplayAndroidManager;
 
     private static boolean sDisableHdrSdkRatioCallback;
@@ -129,6 +153,9 @@ public class DisplayAndroidManager {
     private int mMainSdkDisplayId;
     @VisibleForTesting final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
     @VisibleForTesting final DisplayListenerBackend mBackend = new DisplayListenerBackend();
+
+    private final @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate =
+            ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
 
     /* package */ static DisplayAndroidManager getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -206,7 +233,9 @@ public class DisplayAndroidManager {
 
         mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
 
-        if (UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()) {
+        if (isWindowManagementEnabled()) {
+            // TODO(429396645): Use AconfigFlaggedApiDelegate.getAbsoluteBounds() to read the
+            // display topology and initialize all displays with global coordinates.
             for (Display display : getDisplayManager().getDisplays()) {
                 addDisplay(display);
             }
@@ -243,6 +272,12 @@ public class DisplayAndroidManager {
         mIdMap.put(sdkDisplayId, displayAndroid);
         displayAndroid.updateFromDisplay(display);
         return displayAndroid;
+    }
+
+    private boolean isWindowManagementEnabled() {
+        return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
+                && mAconfigFlaggedApiDelegate != null
+                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable();
     }
 
     /* package */ void updateDisplayOnNativeSide(DisplayAndroid displayAndroid) {

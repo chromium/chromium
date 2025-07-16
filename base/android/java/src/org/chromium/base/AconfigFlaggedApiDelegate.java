@@ -7,8 +7,14 @@ package org.chromium.base;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.hardware.display.DisplayManager;
+import android.util.SparseArray;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.concurrent.Executor;
 
 /** Interface to call unreleased Android APIs that are guarded by aconfig flags. */
 @NullMarked
@@ -33,4 +39,48 @@ public interface AconfigFlaggedApiDelegate {
      *     display.
      */
     default void moveTaskTo(AppTask at, int displayId, Rect bounds) {}
+
+    // Helper interfaces and methods for calling the unreleased Display Topology Android API, used
+    // within {@link ui.display.DisplayAndroidManager}.
+
+    /** Interface that is used to subscribe to Display Topology Updates. */
+    public interface DisplayTopologyListener {
+        public void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds);
+    }
+
+    /** Checks if the display topology is available, based on the API level and Aconfig flags. */
+    default boolean isDisplayTopologyAvailable() {
+        return false;
+    }
+
+    /**
+     * Calls the {@link android.hardware.display.DisplayTopology#getAbsoluteBounds()} method if
+     * supported, otherwise returns {@code null}.
+     *
+     * @param displayManager {@link android.hardware.display.DisplayManager} from which Display
+     *     Topology be will be obtained.
+     * @return Map from logical display ID to the display's absolute bounds if method supported,
+     *     otherwise {@code null}.
+     */
+    @Nullable
+    default SparseArray<RectF> getAbsoluteBounds(DisplayManager displayManager) {
+        return null;
+    }
+
+    /**
+     * Calls the {@link android.hardware.display.DisplayTopology#registerTopologyListener(Executor,
+     * Consumer<DisplayTopology> listener)} method if supported.
+     *
+     * @param displayManager {@link android.hardware.display.DisplayManager} on which the method
+     *     should be called.
+     * @param Executor {@link java.util.concurrent.Executor} The executor specifying the thread on
+     *     which the callbacks will be invoked.
+     * @param DisplayTopologyListener The listener to be notified of display topology updates
+     *     through {@link DisplayTopologyListener#onDisplayTopologyChanged(SparseArray<RectF>} about
+     *     every Display Topoloygy updates.
+     */
+    default void registerTopologyListener(
+            DisplayManager displayManager,
+            Executor executor,
+            DisplayTopologyListener displayTopologyListener) {}
 }

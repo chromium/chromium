@@ -4,18 +4,26 @@
 package org.chromium.ui.display;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.Display;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDisplayManager;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -29,8 +37,19 @@ import java.util.HashSet;
 @Config(sdk = Build.VERSION_CODES.S)
 @EnableFeatures({UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API})
 public class DisplayAndroidManagerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
+
+    @Before
+    public void setup() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                AconfigFlaggedApiDelegate.class, mFlaggedApiDelegate);
+        doReturn(true).when(mFlaggedApiDelegate).isDisplayTopologyAvailable();
+    }
+
     @After
-    public void after() {
+    public void teardown() {
         DisplayAndroidManager.resetInstanceForTesting();
     }
 
