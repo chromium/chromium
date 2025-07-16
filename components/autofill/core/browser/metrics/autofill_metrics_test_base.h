@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -278,6 +279,10 @@ class AutofillMetricsBaseTest {
 
   TestPersonalDataManager& personal_data() {
     return autofill_client_->GetPersonalDataManager();
+  }
+
+  TestPaymentsDataManager& test_paydm() {
+    return personal_data().test_payments_data_manager();
   }
 
   PaymentsDataManager& paydm() {

@@ -83,7 +83,7 @@ class CardMetadataFormEventMetricsTest
       card_.set_card_art_url(GURL("https://www.example.com/cardart.png"));
     }
 
-    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
+    test_paydm().AddServerCreditCard(card_);
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -212,7 +212,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
     card2.set_product_description(u"product description");
     card2.set_card_art_url(GURL("https://www.example.com/cardarturl.png"));
   }
-  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
+  test_paydm().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -221,11 +221,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       form(), form().fields().back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
                              SuggestionType::kCreditCardEntry);
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form(),
-      form().fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
+                                       form().fields().back().global_id(),
+                                       paydm().GetCreditCardByGUID(kCardGuid),
+                                       AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion selected had metadata,
@@ -271,11 +270,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       0);
 
   // Select the suggestion again.
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form(),
-      form().fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
+                                       form().fields().back().global_id(),
+                                       paydm().GetCreditCardByGUID(kCardGuid),
+                                       AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -330,11 +328,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
                              SuggestionType::kCreditCardEntry);
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form(),
-      form().fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
+                                       form().fields().back().global_id(),
+                                       paydm().GetCreditCardByGUID(kCardGuid),
+                                       AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -381,11 +378,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form(),
-      form().fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
+                                       form().fields().back().global_id(),
+                                       paydm().GetCreditCardByGUID(kCardGuid),
+                                       AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -422,11 +418,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       form(), form().fields().back().global_id());
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
       .WillOnce(base::test::RunOnceCallback<1>(card()));
-  autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form(),
-      form().fields().back().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      AutofillTriggerSource::kPopup);
+  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
+                                       form().fields().back().global_id(),
+                                       paydm().GetCreditCardByGUID(kCardGuid),
+                                       AutofillTriggerSource::kPopup);
   SubmitForm(form());
 
   // Verify that:
@@ -512,8 +507,7 @@ class CardMetadataLatencyMetricsTest
       masked_server_card.set_card_art_url(
           GURL("https://www.example.com/cardart.png"));
     }
-    personal_data().test_payments_data_manager().AddServerCreditCard(
-        masked_server_card);
+    test_paydm().AddServerCreditCard(masked_server_card);
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -542,8 +536,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().front().global_id(),
-      personal_data().payments_data_manager().GetCreditCardByGUID(
-          kTestMaskedCardId),
+      paydm().GetCreditCardByGUID(kTestMaskedCardId),
       AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
@@ -599,15 +592,14 @@ class CardBenefitFormEventMetricsTest
     CreditCardBenefit benefit = test::GetActiveCreditCardFlatRateBenefit();
     test_api(benefit).SetLinkedCardInstrumentId(
         CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
-    personal_data().payments_data_manager().AddCreditCardBenefitForTest(
-        benefit);
+    paydm().AddCreditCardBenefitForTest(benefit);
   }
 
   // Adding a local card to the client.
   void AddLocalCard() {
     CreditCard local_card = test::GetCreditCard();
     local_card_guid_ = local_card.guid();
-    personal_data().payments_data_manager().AddCreditCard(local_card);
+    paydm().AddCreditCard(local_card);
   }
 
   // Adding an additional card from the same benefit source or issuer with
@@ -621,7 +613,7 @@ class CardBenefitFormEventMetricsTest
     }
     AddBenefitToCard(card);
 
-    personal_data().test_payments_data_manager().AddServerCreditCard(card);
+    test_paydm().AddServerCreditCard(card);
   }
 
   // Simulate showing card suggestinos.
@@ -654,8 +646,7 @@ class CardBenefitFormEventMetricsTest
   }
 
   const CreditCard* GetCreditCard() {
-    return personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-        card_.instrument_id());
+    return paydm().GetCreditCardByInstrumentId(card_.instrument_id());
   }
 
   void SetUp() override {
@@ -678,7 +669,7 @@ class CardBenefitFormEventMetricsTest
     } else {
       card_.set_issuer_id(issuer_id());
     }
-    personal_data().test_payments_data_manager().AddServerCreditCard(card_);
+    test_paydm().AddServerCreditCard(card_);
 
     // Initialize features based on test params.
     scoped_feature_list_.InitWithFeatureStates(
@@ -932,8 +923,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   // Add a server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate activating the autofill popup for the credit card field.
   ShowCardSuggestions();
@@ -993,12 +983,10 @@ TEST_P(
   base::HistogramTester histogram_tester;
 
   // Add a server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard());
 
   // Add another server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate activating the autofill popup for the credit card field.
   ShowCardSuggestions();
@@ -1125,7 +1113,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   CreditCard second_card = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(second_card);
+  test_paydm().AddServerCreditCard(second_card);
 
   // Simulate selecting the card with no benefit.
   ShowSuggestionsAndSelectCard(&second_card);
@@ -1179,7 +1167,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
+  test_paydm().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -1272,7 +1260,7 @@ TEST_P(
 
   // Add a local card.
   CreditCard local_card = test::GetCreditCard();
-  personal_data().payments_data_manager().AddCreditCard(local_card);
+  paydm().AddCreditCard(local_card);
 
   // Simulate selecting the server card with a benefit available.
   ShowSuggestionsAndSelectCard(GetCreditCard());
@@ -1311,8 +1299,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   // Add a server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate selecting the server card with a benefit available.
   ShowSuggestionsAndSelectCard(GetCreditCard());
@@ -1383,12 +1370,10 @@ TEST_P(
 
   // Add a server card without a benefit available.
   CreditCard server_card_without_benefit = test::GetMaskedServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      server_card_without_benefit);
+  test_paydm().AddServerCreditCard(server_card_without_benefit);
 
   // Add another server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate selecting a server card without a benefit available.
   ShowSuggestionsAndSelectCard(&server_card_without_benefit);
@@ -1510,7 +1495,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   CreditCard second_card = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(second_card);
+  test_paydm().AddServerCreditCard(second_card);
 
   // Simulate filling the card with no benefit.
   ShowCardSuggestions();
@@ -1564,14 +1549,13 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
+  test_paydm().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
   // Simulate filling the card with no benefit.
   ShowSuggestionsThenSelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          card2.instrument_id()));
+      paydm().GetCreditCardByInstrumentId(card2.instrument_id()));
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1584,8 +1568,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Fill the card suggestion again.
   ShowSuggestionsThenSelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          card2.instrument_id()));
+      paydm().GetCreditCardByInstrumentId(card2.instrument_id()));
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1623,8 +1606,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Simulate filling with a local card.
   ShowSuggestionsThenSelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByGUID(
-          local_card_guid()));
+      paydm().GetCreditCardByGUID(local_card_guid()));
 
   ASSERT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1700,7 +1682,7 @@ TEST_P(
 
   // Add a local card.
   CreditCard local_card = test::GetCreditCard();
-  personal_data().payments_data_manager().AddCreditCard(local_card);
+  paydm().AddCreditCard(local_card);
 
   // Simulate filling the server card with a benefit available.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
@@ -1737,8 +1719,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   // Add a server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate filling the server card with a benefit available.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
@@ -1804,12 +1785,10 @@ TEST_P(
 
   // Add a server card without a benefit available.
   CreditCard server_card_without_benefit = test::GetMaskedServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      server_card_without_benefit);
+  test_paydm().AddServerCreditCard(server_card_without_benefit);
 
   // Add another server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate filling the server card without a benefit available.
   ShowSuggestionsThenSelectAndFillCard(&server_card_without_benefit);
@@ -1895,7 +1874,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   CreditCard second_card = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(second_card);
+  test_paydm().AddServerCreditCard(second_card);
 
   // Simulate filling the card with no benefit.
   ShowSuggestionsThenSelectAndFillCard(&second_card);
@@ -1948,7 +1927,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Add a second card which has no benefit available.
   CreditCard card2 = test::GetMaskedServerCard2();
-  personal_data().test_payments_data_manager().AddServerCreditCard(card2);
+  test_paydm().AddServerCreditCard(card2);
 
   base::HistogramTester histogram_tester;
 
@@ -1980,8 +1959,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Filling with a local card.
   ShowSuggestionsThenSelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByGUID(
-          local_card_guid()));
+      paydm().GetCreditCardByGUID(local_card_guid()));
   SubmitForm(form());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -2054,7 +2032,7 @@ TEST_P(
 
   // Add a local card.
   CreditCard local_card = test::GetCreditCard();
-  personal_data().payments_data_manager().AddCreditCard(local_card);
+  paydm().AddCreditCard(local_card);
 
   // Simulate submitting the server card with a benefit available.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
@@ -2094,8 +2072,7 @@ TEST_P(
   AddBenefitToCard(card());
 
   // Add a server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate submitting the server card with a benefit available.
   ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
@@ -2152,12 +2129,10 @@ TEST_P(
 
   // Add a server card without a benefit available.
   CreditCard server_card_without_benefit = test::GetMaskedServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      server_card_without_benefit);
+  test_paydm().AddServerCreditCard(server_card_without_benefit);
 
   // Add another server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate submitting the server card without a benefit available.
   ShowSuggestionsThenSelectAndFillCard(&server_card_without_benefit);
@@ -2183,8 +2158,7 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
     CreditCardBenefit benefit = test::GetActiveCreditCardFlatRateBenefit();
     test_api(benefit).SetLinkedCardInstrumentId(
         CreditCardBenefitBase::LinkedCardInstrumentId(card.instrument_id()));
-    personal_data().payments_data_manager().AddCreditCardBenefitForTest(
-        benefit);
+    paydm().AddCreditCardBenefitForTest(benefit);
   }
 
   // Simulate showing card suggestinos.
@@ -2264,7 +2238,7 @@ TEST_F(
   CreditCard server_card = test::GetMaskedServerCard();
   server_card.set_benefit_source("UnknownSource");
   AddBenefitToCard(server_card);
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  test_paydm().AddServerCreditCard(server_card);
 
   // Simulate submitting the server card with an invalid benefit source.
   ShowSuggestionsThenSelectAndFillCard(&server_card);
@@ -2290,12 +2264,10 @@ TEST_F(
   CreditCard server_card_1 = test::GetMaskedServerCard();
   server_card_1.set_benefit_source("UnknownSource");
   AddBenefitToCard(server_card_1);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      server_card_1);
+  test_paydm().AddServerCreditCard(server_card_1);
 
   // Add a second server card without a benefit available.
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      test::GetMaskedServerCard2());
+  test_paydm().AddServerCreditCard(test::GetMaskedServerCard2());
 
   // Simulate submitting the server card with an invalid benefit source.
   ShowSuggestionsThenSelectAndFillCard(&server_card_1);
