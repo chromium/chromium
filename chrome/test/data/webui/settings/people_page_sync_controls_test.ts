@@ -304,6 +304,39 @@ suite('SyncControlsAccountSettingsTest', function() {
     await browserProxy.whenCalled('didNavigateToAccountSettingsPage');
   });
 
+  async function setupPrefs() {
+    const initialPrefs = getSyncAllPrefs();
+    initialPrefs.syncAllDataTypes = false;
+    webUIListenerCallback('sync-prefs-changed', initialPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+  }
+
+  function assertControlsDisabled() {
+    const datatypeControls =
+        syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
+            '.list-item:not([hidden]) > cr-toggle');
+    assertTrue(datatypeControls.length > 0);
+    for (const control of datatypeControls) {
+      assertTrue(control.disabled, 'Control is not disabled.');
+    }
+  }
+
+  function assertSyncDisabledPolicyIndicatorShown(shown: boolean) {
+    const policyIndicator = syncControls.shadowRoot!.querySelector<Element>(
+        '#syncDisabledIndicator');
+    assertEquals(shown, isVisible(policyIndicator));
+  }
+
+  function assertIndividualItemPolicyIndicatorsShown(shown: boolean) {
+    const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
+        'cr-policy-indicator:not(#syncDisabledIndicator)');
+    assertTrue(policyIndicators.length > 0);
+    for (const indicator of policyIndicators) {
+      assertEquals(shown, isVisible(indicator));
+    }
+  }
+
   test('SyncEverythingControlsAreHidden', function() {
     const radioGroup = syncControls.shadowRoot!.querySelector('cr-radio-group');
     const syncEverything = syncControls.shadowRoot!.querySelector(
@@ -317,8 +350,19 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   test('SignedIn', function() {
+    setupPrefs();
+
     // Controls are shown when signed in and there is no error.
     assertFalse(syncControls.hidden);
+
+    // Controls are also not disabled.
+    const datatypeControls =
+        syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
+            '.list-item:not([hidden]) > cr-toggle');
+    assertTrue(datatypeControls.length > 0);
+    for (const control of datatypeControls) {
+      assertFalse(control.disabled);
+    }
   });
 
   test('SignedInError', function() {
@@ -350,12 +394,7 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   test('ChangeDataTypeToggle', async function() {
-    // Set up the prefs.
-    const initialPrefs = getSyncAllPrefs();
-    initialPrefs.syncAllDataTypes = false;
-    webUIListenerCallback('sync-prefs-changed', initialPrefs);
-    await flushTasks();
-    await waitAfterNextRender(syncControls);
+    setupPrefs();
 
     // Make sure that the history toggle is present and can be interacted with.
     const historyToggle =
@@ -383,6 +422,62 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertEquals(pref, UserSelectableType.HISTORY);
     assertTrue(value);
     assertTrue(historyToggle.checked);
+  });
+
+  test(
+      'DisableToggleAndHidePolicyIndicatorWhenSyncPrefsNotLoaded', async () => {
+        webUIListenerCallback('sync-prefs-changed', undefined);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // Controls are still available when prefs are not loaded.
+        assertFalse(syncControls.hidden);
+
+        // However, they are disabled.
+        assertControlsDisabled();
+
+        // Assert that all policy indicators are hidden.
+        assertSyncDisabledPolicyIndicatorShown(false);
+        assertIndividualItemPolicyIndicatorsShown(false);
+      });
+
+  test('DisableToggleAndHidePolicyIndicatorWhenSyncIsDisabled', async () => {
+    setupPrefs();
+
+    syncControls.syncStatus = {
+      disabled: true,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await waitAfterNextRender(syncControls);
+
+    // Controls are still available when sync is disabled.
+    assertFalse(syncControls.hidden);
+
+    // However, they are disabled.
+    assertControlsDisabled();
+
+    // Assert that only the sync disabled policy indicator is shown.
+    assertSyncDisabledPolicyIndicatorShown(true);
+    assertIndividualItemPolicyIndicatorsShown(false);
+  });
+
+  test('DisableToggleAndShowPolicyIndicatorWhenDataTypeIsManaged', async () => {
+    // Set all prefs to managed.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefsManaged());
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Controls are still available when data types are managed.
+    assertFalse(syncControls.hidden);
+
+    // However, they are disabled.
+    assertControlsDisabled();
+
+    // Assert that only individual items' policy indicators are shown.
+    assertSyncDisabledPolicyIndicatorShown(false);
+    assertIndividualItemPolicyIndicatorsShown(true);
   });
 });
 // </if>
@@ -443,8 +538,8 @@ suite('SyncControlsManagedTest', function() {
 
     // Assert that all toggles have the policy indicator icon visible when they
     // are all managed.
-    const policyIndicators =
-        syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
+    const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
+        'cr-policy-indicator:not(#syncDisabledIndicator)');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
       assertTrue(isVisible(indicator));

@@ -83,6 +83,17 @@ export class SettingsSyncControlsElement extends
         type: Object,
         value: UserSelectableType,
       },
+
+      /**
+       * Communicates to the user that the toggles are disabled because sync is
+       * disabled by their administrator.
+       */
+      showSyncDisabledInformation: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSyncDisabledInformation_(syncStatus.disabled)',
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -91,6 +102,7 @@ export class SettingsSyncControlsElement extends
   declare syncStatus: SyncStatus;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private cachedSyncPrefs_: {[key: string]: any}|null;
+  declare showSyncDisabledInformation: boolean;
 
   constructor() {
     super();
@@ -209,8 +221,34 @@ export class SettingsSyncControlsElement extends
   }
 
   private disableTypeCheckBox_(
-      syncAllDataTypes: boolean, dataTypeManaged: boolean): boolean {
+      syncStatus: SyncStatus, syncAllDataTypes: boolean,
+      dataTypeManaged: boolean): boolean {
+    // Toggles should be disabled on the account settings page if sync is
+    // disabled, or if the sync prefs are undefined, which is the case e.g.
+    // right after startup.
+    if (this.isAccountSettingsPage_()) {
+      return syncStatus.disabled || !this.syncPrefs || dataTypeManaged;
+    }
+
     return syncAllDataTypes || dataTypeManaged;
+  }
+
+  private showPolicyIndicator_(
+      syncStatus: SyncStatus, dataTypeManaged: boolean): boolean {
+    // Do not show the indicator on the account settings page if sync is
+    // disabled, as this would make the UI look too crowded and the toggles are
+    // already deactivated. In the sync settings page, the toggles are hidden if
+    // sync is disabled (see `syncControlsHidden_()`), so we do not need to
+    // specify whether we show the indicator or not.
+    if (this.isAccountSettingsPage_()) {
+      return !syncStatus.disabled && dataTypeManaged;
+    }
+
+    return dataTypeManaged;
+  }
+
+  private computeShowSyncDisabledInformation_(syncDisabled: boolean): boolean {
+    return this.isAccountSettingsPage_() && syncDisabled;
   }
 
   // <if expr="is_chromeos">
