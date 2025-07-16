@@ -86,8 +86,6 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
                           size_t offset,
                           size_t stride)
       : GpuMemoryBufferImpl(size, format),
-        size_(size),
-        format_(format),
         region_(std::move(shared_memory_region)),
         offset_(offset),
         stride_(stride),
@@ -98,9 +96,10 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
     DCHECK(!mapped_);
-    DCHECK_EQ(stride_, gfx::RowSizeForBufferFormat(size_.width(), format_, 0));
+    DCHECK_EQ(stride_,
+              gfx::RowSizeForBufferFormat(GetSize().width(), GetFormat(), 0));
     mapping_ = region_.MapAt(
-        0, offset_ + gfx::BufferSizeForBufferFormat(size_, format_));
+        0, offset_ + gfx::BufferSizeForBufferFormat(GetSize(), GetFormat()));
     if (!mapping_.IsValid()) {
       return false;
     }
@@ -109,21 +108,19 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
   }
   void* memory(size_t plane) override {
     DCHECK(mapped_);
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
     return reinterpret_cast<uint8_t*>(mapping_.memory()) + offset_ +
-           gfx::BufferOffsetForBufferFormat(size_, format_, plane);
+           gfx::BufferOffsetForBufferFormat(GetSize(), GetFormat(), plane);
   }
   void Unmap() override {
     DCHECK(mapped_);
     mapping_ = base::WritableSharedMemoryMapping();
     mapped_ = false;
   }
-  gfx::Size GetSize() const override { return size_; }
-  gfx::BufferFormat GetFormat() const override { return format_; }
   int stride(size_t plane) const override {
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
     return base::checked_cast<int>(gfx::RowSizeForBufferFormat(
-        size_.width(), format_, static_cast<int>(plane)));
+        GetSize().width(), GetFormat(), static_cast<int>(plane)));
   }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::SHARED_MEMORY_BUFFER;
@@ -136,8 +133,6 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
   }
 
  private:
-  const gfx::Size size_;
-  gfx::BufferFormat format_;
   base::UnsafeSharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
   size_t offset_;

@@ -63,8 +63,6 @@ class FakeGpuMemoryBuffer : public GpuMemoryBufferImpl {
       bool premapped,
       const ClientSharedImage::AsyncMapInvokedCallback& callback)
       : GpuMemoryBufferImpl(size, format),
-        size_(size),
-        format_(format),
         premapped_(premapped),
         async_map_invoked_callback_(callback) {
     int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
@@ -107,10 +105,6 @@ class FakeGpuMemoryBuffer : public GpuMemoryBufferImpl {
 
   void Unmap() override {}
 
-  gfx::Size GetSize() const override { return size_; }
-
-  gfx::BufferFormat GetFormat() const override { return format_; }
-
   int stride(size_t plane) const override {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
     return gfx::RowSizeForBufferFormat(GetSize().width(), GetFormat(), plane);
@@ -125,8 +119,6 @@ class FakeGpuMemoryBuffer : public GpuMemoryBufferImpl {
   }
 
  private:
-  gfx::Size size_;
-  gfx::BufferFormat format_;
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
