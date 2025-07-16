@@ -358,6 +358,23 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(3, suggestions2.suggestions.length);
   }
 
+  async testGetZeroStateSuggestionsFailsWhenHidden() {
+    // Initial state.
+    assertTrue(!!this.host.getZeroStateSuggestions);
+    const sequence = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions = await sequence.next();
+    assertTrue(!!suggestions);
+    assertEquals(0, suggestions.suggestions.length);
+
+    // Close panel.
+    assertTrue(!!this.host.closePanel);
+    await this.closePanelAndWaitUntilInactive();
+
+    // After next navigation in focused tab occurs.
+    await this.advanceToNextStep();
+  }
+
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
     const sequence =

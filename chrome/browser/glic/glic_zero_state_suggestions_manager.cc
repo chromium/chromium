@@ -9,15 +9,18 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace glic {
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
     GlicSharingManagerImpl* sharing_manager,
+    GlicWindowController* window_controller,
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
     Host* host)
     : sharing_manager_(sharing_manager),
+      window_controller_(window_controller),
       host_(host),
       contextual_cueing_service_(contextual_cueing_service) {}
 
@@ -28,6 +31,10 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const FocusedTabData& focused_tab_data) {
+  if (!window_controller_->IsShowing()) {
+    return;
+  }
+
   content::WebContents* active_web_contents = nullptr;
   if (focused_tab_data.GetFocus().has_value()) {
     active_web_contents = focused_tab_data.GetFocus().value()->GetContents();
@@ -50,6 +57,10 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const std::vector<content::WebContents*>& pinned_tab_data) {
+  if (!window_controller_->IsShowing()) {
+    return;
+  }
+
   if (pinned_tab_data.size() >
       static_cast<size_t>(
           contextual_cueing::kMaxPinnedPagesForTriggeringSuggestions.Get())) {
@@ -60,6 +71,7 @@ void GlicZeroStateSuggestionsManager::
   } else {
     pause_pinned_subscription_updates = false;
   }
+
   if (contextual_cueing_service_) {
     contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
@@ -126,7 +138,6 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
         return;
       }
     }
-
   } else {
     // If is_notifying is false we need to reset the subscriptions.
     Reset();

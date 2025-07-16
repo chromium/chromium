@@ -1096,14 +1096,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         MaybeNotifyFocusedTabChanged(std::move(cached_focused_tab_data_));
         cached_focused_tab_data_ = nullptr;
       }
-
-      if (cached_zero_state_suggestions_) {
-        web_client_->NotifyZeroStateSuggestionsChanged(
-            std::move(cached_zero_state_suggestions_),
-            std::move(cached_zero_state_suggestions_options_));
-        cached_zero_state_suggestions_ = nullptr;
-        cached_zero_state_suggestions_options_ = nullptr;
-      }
     }
   }
 
@@ -1217,8 +1209,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       glic::mojom::ZeroStateSuggestionsV2Ptr suggestions,
       mojom::ZeroStateSuggestionsOptionsPtr options) {
     if (ShouldDoApiActivationGating()) {
-      cached_zero_state_suggestions_ = std::move(suggestions);
-      cached_zero_state_suggestions_options_ = std::move(options);
+      // The zero state suggestions will get updated if needed. No need to cache
+      // here.
       return;
     }
 
@@ -1329,9 +1321,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;
-  glic::mojom::ZeroStateSuggestionsV2Ptr cached_zero_state_suggestions_;
-  glic::mojom::ZeroStateSuggestionsOptionsPtr
-      cached_zero_state_suggestions_options_;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;

@@ -970,6 +970,27 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestionsFailsWhenHidden) {
+  // Initial state.
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+      .Times(1);
+  ExecuteJsTest();
+
+  testing::Mock::VerifyAndClearExpectations(mock_cueing_service());
+
+  // Navigate to another page in the existing tab. Panel should be closed here
+  // so should not get suggestions for tab.
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
+      .Times(0);
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
                        testDeferredFocusedTabStateAtCreation) {
   // Preload a web contents and then navigate.

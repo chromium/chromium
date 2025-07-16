@@ -120,6 +120,7 @@ GlicKeyedService::GlicKeyedService(
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               sharing_manager_.get(),
+              window_controller_.get(),
               contextual_cueing_service,
               host_.get())),
       contextual_cueing_service_(contextual_cueing_service) {
