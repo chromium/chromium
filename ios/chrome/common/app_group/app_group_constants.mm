@@ -107,7 +107,7 @@ NSString* const kEmail = @"email";
 NSString* const kFullName = @"fullName";
 NSString* const kDefaultAccount = @"Default";
 
-NSString* const kYoutubeBundleID = @"com.google.youtube";
+NSString* const kYoutubeBundleID = @"com.google.ios.youtube";
 
 NSString* const kPrimaryAccount = @"ios.primary_account";
 
