@@ -15,7 +15,6 @@
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
