@@ -6,12 +6,48 @@
   <script src="../../webrtc/test_functions.js"></script>
   <script src="../../webrtc/getusermedia.js"></script>
 </head>
+<body>
+  <div id="video-container">
+    <video id="local-view" autoplay muted playsinline></video>
+  </div>
 
-<body></body>
+  <button id="select-document-pip">Use Document PiP</button>
+  <button id="select-video-pip">Use Video PiP</button>
+</body>
 <script>
+  const video = $('local-view');
+  const selectDocumentPipButton = $('select-document-pip');
+  const selectVideoPipButton = $('select-video-pip');
+
+  // Default to 'document' PiP. The buttons will change this value.
+  let selectedPipType = 'document';
+  // Flag to ensure the video is ready at the moment PiP is requested
+  let isVideoMetadataLoaded = false;
+
+  video.addEventListener('loadedmetadata', () => {
+    // Update the flag for the openPip function's internal check.
+    isVideoMetadataLoaded = true;
+    // Change the title to signal the C++ test that it can proceed.
+    document.title = 'VIDEO_PIP_READY';
+  });
+
   function openPip({ width = 300, height = 300, disallowReturnToOpener, preferInitialWindowPlacement } = {}) {
-    documentPictureInPicture.requestWindow({ width, height, disallowReturnToOpener, preferInitialWindowPlacement });
+    if (selectedPipType === "document") {
+      documentPictureInPicture.requestWindow({ width, height, disallowReturnToOpener, preferInitialWindowPlacement });
+    } else {
+      if (isVideoMetadataLoaded) {
+        video.requestPictureInPicture();
+      }
+    }
   }
+
+  selectDocumentPipButton.addEventListener('click', () => {
+    selectedPipType = 'document';
+  });
+
+  selectVideoPipButton.addEventListener('click', () => {
+    selectedPipType = 'video';
+  });
 
   navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
 </script>

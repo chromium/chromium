@@ -418,6 +418,23 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
         content::ISOLATED_WORLD_ID_GLOBAL);
   }
 
+  // Clicks the button to select the document Picture-in-Picture type.
+  // "select-document-pip" is the ID of the button element in `kCameraPage`.
+  // This type is selected by default, so calling this is mainly for test
+  // clarity.
+  void SetPiPTypeToDocument(content::WebContents* web_contents) {
+    ASSERT_TRUE(
+        ExecJs(web_contents,
+               "document.getElementById('select-document-pip').click();"));
+  }
+
+  // Clicks the button to select the video Picture-in-Picture type.
+  // "select-video-pip" is the ID of the button element in `kCameraPage`.
+  void SetPiPTypeToVideo(content::WebContents* web_contents) {
+    ASSERT_TRUE(ExecJs(web_contents,
+                       "document.getElementById('select-video-pip').click();"));
+  }
+
   void OpenPipManually(content::WebContents* web_contents) {
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
@@ -1129,13 +1146,34 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       CanAutopipWithCameraMicrophone) {
+                       CanAutoDocPipWithCameraMicrophone) {
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       CanAutoVideoPipWithCameraMicrophone) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // Click the button to select the "video" PiP type.
+  SetPiPTypeToVideo(web_contents);
+
+  // Wait for the "VIDEO_PIP_READY" signal from the page indicating that the
+  // video element has loaded metadata.
+  const std::u16string pip_ready_title = u"VIDEO_PIP_READY";
+  content::TitleWatcher title_watcher(web_contents, pip_ready_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), pip_ready_title);
+
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
