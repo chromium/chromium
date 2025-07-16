@@ -7,6 +7,17 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  /* Enables us to add screenreader-only headers. */
+  .sr-only {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
 </style>
 <div id="explanationText" class="secondary">
   $i18n{incognitoTrackingProtectionsPageDescription}
@@ -22,6 +33,9 @@
       sub-label="$i18n{incognitoTrackingProtectionsBlock3pcsToggleSublabel}">
   </settings-toggle-button>
   <template is="dom-if" if="[[isIpProtectionAvailable_]]">
+    <h3 class="sr-only">
+      $i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}
+    </h3>
     <template is="dom-if" if="[[!isIpProtectionDisabledForEnterprise_]]">
       <settings-toggle-button id="ipProtectionToggle"
           pref="{{prefs.tracking_protection.ip_protection_enabled}}"
@@ -39,7 +53,7 @@
     </template>
     <div class="settings-columned-section">
       <div class="column">
-        <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+        <h4 class="description-header">$i18n{columnHeadingWhenOn}</h4>
         <ul class="icon-bulleted-list">
           <li>
             <cr-icon icon="settings20:network-ping" aria-hidden="true"></cr-icon>
@@ -50,7 +64,7 @@
         </ul>
       </div>
       <div class="column">
-        <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+        <h4 class="description-header">$i18n{columnHeadingConsider}</h4>
         <ul class="icon-bulleted-list">
           <li>
             <cr-icon icon="settings20:preview" aria-hidden="true"></cr-icon>
@@ -75,6 +89,9 @@
     </div>
   </template>
   <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
+    <h3 class="sr-only">
+      $i18n{incognitoTrackingProtectionsFingerprintingProtectionToggleLabel}
+    </h3>
     <settings-toggle-button id="fingerprintingProtectionToggle"
         pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
         label="$i18n{incognitoTrackingProtectionsFingerprintingProtectionToggleLabel}"
@@ -84,7 +101,7 @@
     </settings-toggle-button>
     <div class="settings-columned-section">
       <div class="column">
-        <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+        <h4 class="description-header">$i18n{columnHeadingWhenOn}</h4>
         <ul class="icon-bulleted-list">
           <li>
             <cr-icon icon="settings20:privacy-screen" aria-hidden="true"></cr-icon>
@@ -95,7 +112,7 @@
         </ul>
       </div>
       <div class="column">
-        <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+        <h4 class="description-header">$i18n{columnHeadingConsider}</h4>
         <ul class="icon-bulleted-list">
           <li>
             <cr-icon icon="settings20:preview" aria-hidden="true"></cr-icon>
