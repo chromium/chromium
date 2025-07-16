@@ -43,10 +43,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   METADATA_HEADER(BrowserNonClientFrameView, views::NonClientFrameView)
 
  public:
-  // The minimum height of the region at the top of the frame that should be
-  // draggable to move the window.
-  static constexpr int kMinimumDragHeight = 8;
-
   BrowserNonClientFrameView(BrowserFrame* frame, BrowserView* browser_view);
   BrowserNonClientFrameView(const BrowserNonClientFrameView&) = delete;
   BrowserNonClientFrameView& operator=(const BrowserNonClientFrameView&) =

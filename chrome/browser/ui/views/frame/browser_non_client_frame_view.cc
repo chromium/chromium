@@ -39,9 +39,6 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-// static
-constexpr int BrowserNonClientFrameView::kMinimumDragHeight;
-
 BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
                                                      BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
