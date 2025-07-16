@@ -72,8 +72,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "test_kiosk_extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -517,11 +515,6 @@ TestKioskExtensionBuilder SecondaryAppBuilder(const std::string& id) {
 }
 
 }  // namespace
-
-using crosapi::mojom::AppInstallParamsPtr;
-using crosapi::mojom::ChromeKioskInstallResult;
-using crosapi::mojom::ChromeKioskLaunchController;
-using crosapi::mojom::ChromeKioskLaunchResult;
 
 // Tests without creating `StartupAppLauncher` object.
 class StartupAppLauncherNoCreateTest
@@ -1539,36 +1532,5 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   EXPECT_TRUE(registry()->disabled_extensions().Contains(kSecondaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtraSecondaryAppId));
 }
-
-class FakeChromeKioskLaunchController : public ChromeKioskLaunchController {
- public:
-  void SetInstallResult(ChromeKioskInstallResult result) {
-    install_result_ = result;
-  }
-  void SetLaunchResult(ChromeKioskLaunchResult result) {
-    launch_result_ = result;
-  }
-
-  mojo::PendingRemote<ChromeKioskLaunchController> BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  // `ChromeKioskLaunchController`
-  void InstallKioskApp(AppInstallParamsPtr params,
-                       InstallKioskAppCallback callback) override {
-    std::move(callback).Run(install_result_);
-  }
-
-  void LaunchKioskApp(const std::string& app_id,
-                      bool is_network_ready,
-                      LaunchKioskAppCallback callback) override {
-    std::move(callback).Run(launch_result_);
-  }
-
- private:
-  mojo::Receiver<ChromeKioskLaunchController> receiver_{this};
-  ChromeKioskInstallResult install_result_ = ChromeKioskInstallResult::kUnknown;
-  ChromeKioskLaunchResult launch_result_ = ChromeKioskLaunchResult::kUnknown;
-};
 
 }  // namespace ash
