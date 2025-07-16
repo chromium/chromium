@@ -18,18 +18,6 @@ namespace prefs {
 const char kHintsFetcherLastFetchAttempt[] =
     "optimization_guide.hintsfetcher.last_fetch_attempt";
 
-// A pref that stores the last time a prediction model and host model features
-// fetch was attempted. This limits the frequency of fetching for updates and
-// prevents a crash loop that continually fetches prediction models and host
-// model features on startup.
-const char kModelAndFeaturesLastFetchAttempt[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
-
-// A pref that stores the last time a prediction model fetch was successful.
-// This helps determine when to schedule the next fetch.
-const char kModelLastFetchSuccess[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_success";
-
 // A dictionary pref that stores hosts that have had hints successfully fetched
 // from the remote Optimization Guide Server. The entry for each host contains
 // the time that the fetch that covered this host expires, i.e., any hints
@@ -89,6 +77,17 @@ void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
 
 namespace localstate {
 
+// A pref that stores the last time a prediction model fetch was attempted. This
+// limits the frequency of fetching for updates and prevents a crash loop that
+// continually fetches prediction models on startup.
+const char kModelLastFetchAttempt[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
+
+// A pref that stores the last time a prediction model fetch was successful.
+// This helps determine when to schedule the next fetch.
+const char kModelLastFetchSuccess[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_success";
+
 // A dictionary pref that stores the lightweight metadata of all the models in
 // the store, keyed by the optimization target and ModelCacheKey.
 const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
@@ -111,12 +110,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kHintsFetcherLastFetchAttempt,
       base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
       PrefRegistry::LOSSY_PREF);
-  registry->RegisterInt64Pref(
-      kModelAndFeaturesLastFetchAttempt,
-      base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterInt64Pref(kModelLastFetchSuccess, 0,
-                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kHintsFetcherHostsSuccessfullyFetched,
                                    PrefRegistry::LOSSY_PREF);
 
@@ -133,6 +126,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(localstate::kModelLastFetchAttempt,
+                             base::Time::Min(), PrefRegistry::LOSSY_PREF);
+  registry->RegisterTimePref(localstate::kModelLastFetchSuccess,
+                             base::Time::Min(), PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);

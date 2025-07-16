@@ -215,6 +215,10 @@ inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
     "sync.first_full_sync_completed";
 inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
     "google.services.second_last_gaia_id";
+constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
+constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_success";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1165,6 +1169,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
   registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
                                std::string());
+  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
+  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1390,6 +1396,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
       prefs::kIosPromosManagerSingleDisplayActivePromos, prefs);
   MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosPromosManagerSingleDisplayPendingPromos, prefs);
+
+  // Added 07/2025.
+  prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
+  prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
 }
 
 void MigrateObsoleteUserDefault() {

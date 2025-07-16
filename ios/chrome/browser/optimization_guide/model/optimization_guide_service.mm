@@ -163,8 +163,8 @@ OptimizationGuideService::OptimizationGuideService(
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
             optimization_guide::IOSChromePredictionModelStore::GetInstance(),
-            url_loader_factory, pref_service, application_locale,
-            optimization_guide_logger_.get(),
+            url_loader_factory, GetApplicationContext()->GetLocalState(),
+            application_locale, optimization_guide_logger_.get(),
             base::BindRepeating(&unzip::LaunchInProcessUnzipper));
   }
 

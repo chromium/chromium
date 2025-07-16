@@ -32,7 +32,7 @@ class PredictionModelFetchTimer {
     kPeriodicFetch = 3,
   };
 
-  PredictionModelFetchTimer(PrefService* pref_service,
+  PredictionModelFetchTimer(PrefService* local_state,
                             base::RepeatingCallback<void(void)> fetch_callback);
 
   PredictionModelFetchTimer(const PredictionModelFetchTimer&) = delete;
@@ -89,8 +89,8 @@ class PredictionModelFetchTimer {
   PredictionModelFetchTimerState state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       PredictionModelFetchTimerState::kNone;
 
-  // A reference to the PrefService for this profile. Not owned.
-  raw_ptr<PrefService> pref_service_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  // A reference to the local state prefs. Not owned.
+  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 
   // The callback to call to trigger the model fetches.

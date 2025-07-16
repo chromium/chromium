@@ -18,10 +18,6 @@ namespace prefs {
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kHintsFetcherLastFetchAttempt[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelAndFeaturesLastFetchAttempt[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelLastFetchSuccess[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kHintsFetcherHostsSuccessfullyFetched[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPendingHintsProcessingVersion[];
@@ -52,6 +48,10 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 namespace localstate {
 
 // Local state prefs.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelLastFetchAttempt[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelLastFetchSuccess[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelStoreMetadata[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

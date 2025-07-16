@@ -335,12 +335,12 @@ class TestPredictionManager : public PredictionManager {
   TestPredictionManager(
       PredictionModelStore* prediction_model_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* pref_service,
+      PrefService* local_state,
       const std::string& application_locale)
       : PredictionManager(
             prediction_model_store,
             url_loader_factory,
-            pref_service,
+            local_state,
             application_locale,
             &optimization_guide_logger_,
             base::BindRepeating(&unzip::LaunchInProcessUnzipper)) {}
@@ -397,8 +397,8 @@ class PredictionManagerTestBase : public testing::Test {
     }
 
     prediction_manager_ = std::make_unique<TestPredictionManager>(
-        prediction_model_store_.get(), url_loader_factory_, pref_service_.get(),
-        kTestLocale);
+        prediction_model_store_.get(), url_loader_factory_,
+        local_state_prefs_.get(), kTestLocale);
     prediction_manager_->GetPredictionModelFetchTimerForTesting()
         ->SetClockForTesting(task_environment_.GetMockClock());
   }

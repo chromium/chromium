@@ -23,38 +23,34 @@ base::TimeDelta RandomFetchDelay() {
 }  // namespace
 
 PredictionModelFetchTimer::PredictionModelFetchTimer(
-    PrefService* pref_service,
+    PrefService* local_state,
     base::RepeatingCallback<void(void)> fetch_callback)
     : clock_(base::DefaultClock::GetInstance()),
-      pref_service_(pref_service),
+      local_state_(local_state),
       fetch_callback_(fetch_callback) {}
 
 PredictionModelFetchTimer::~PredictionModelFetchTimer() = default;
 
 void PredictionModelFetchTimer::NotifyModelFetchAttempt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(
-      prefs::kModelAndFeaturesLastFetchAttempt,
-      clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  local_state_->SetTime(prefs::localstate::kModelLastFetchAttempt,
+                        clock_->Now());
 }
 
 void PredictionModelFetchTimer::NotifyModelFetchSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(
-      prefs::kModelLastFetchSuccess,
-      clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  local_state_->SetTime(prefs::localstate::kModelLastFetchSuccess,
+                        clock_->Now());
 }
 
 base::Time PredictionModelFetchTimer::GetLastFetchAttemptTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-      pref_service_->GetInt64(prefs::kModelAndFeaturesLastFetchAttempt)));
+  return local_state_->GetTime(prefs::localstate::kModelLastFetchAttempt);
 }
 
 base::Time PredictionModelFetchTimer::GetLastFetchSuccessTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-      pref_service_->GetInt64(prefs::kModelLastFetchSuccess)));
+  return local_state_->GetTime(prefs::localstate::kModelLastFetchSuccess);
 }
 
 bool PredictionModelFetchTimer::IsFirstModelFetch() const {

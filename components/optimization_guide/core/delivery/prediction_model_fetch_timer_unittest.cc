@@ -17,10 +17,10 @@ namespace optimization_guide {
 class PredictionModelFetchTimerTestBase : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterProfilePrefs(pref_service_->registry());
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs::RegisterLocalStatePrefs(local_state_->registry());
     prediction_model_fetch_timer_ = std::make_unique<PredictionModelFetchTimer>(
-        pref_service_.get(),
+        local_state_.get(),
         base::BindRepeating(&PredictionModelFetchTimerTestBase::OnFetchModels,
                             base::Unretained(this)));
     prediction_model_fetch_timer_->SetClockForTesting(
@@ -56,7 +56,7 @@ class PredictionModelFetchTimerTestBase : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<PredictionModelFetchTimer> prediction_model_fetch_timer_;
 
   // Holds the last time the models were fetched.

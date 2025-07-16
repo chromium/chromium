@@ -168,7 +168,7 @@ PredictionManager::ModelRegistrationInfo::~ModelRegistrationInfo() = default;
 PredictionManager::PredictionManager(
     PredictionModelStore* prediction_model_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* pref_service,
+    PrefService* local_state,
     const std::string& application_locale,
     OptimizationGuideLogger* optimization_guide_logger,
     unzip::UnzipperFactory unzipper_factory)
@@ -177,7 +177,7 @@ PredictionManager::PredictionManager(
       optimization_guide_logger_(optimization_guide_logger),
       unzipper_factory_(std::move(unzipper_factory)),
       prediction_model_fetch_timer_(
-          pref_service,
+          local_state,
           base::BindRepeating(
               &PredictionManager::FetchModels,
               // Its safe to use `base::Unretained(this)` here since

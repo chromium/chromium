@@ -340,7 +340,8 @@ void OptimizationGuideKeyedService::Initialize() {
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       optimization_guide::ChromePredictionModelStore::GetInstance(),
-      g_browser_process->shared_url_loader_factory(), profile->GetPrefs(),
+      g_browser_process->shared_url_loader_factory(),
+      g_browser_process->local_state(),
       g_browser_process->GetApplicationLocale(),
       optimization_guide_logger_.get(),
       base::BindRepeating(&unzip::LaunchUnzipper));

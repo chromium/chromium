@@ -1035,6 +1035,12 @@ inline constexpr char kAssistantTimeOfLastInteraction[] =
     "ash.assistant.time_of_last_interaction";
 #endif
 
+// Deprecated 07/2025
+constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
+constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
+    "optimization_guide.predictionmodelfetcher.last_fetch_success";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1445,6 +1451,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kAssistantNumSessionsWhereOnboardingShown, 0);
   registry->RegisterTimePref(kAssistantTimeOfLastInteraction, base::Time());
 #endif
+
+  // Deprecated 07/2025
+  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
+  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
 }
 
 }  // namespace
@@ -2698,6 +2708,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kAssistantNumSessionsWhereOnboardingShown);
   profile_prefs->ClearPref(kAssistantTimeOfLastInteraction);
 #endif
+
+  // Added 07/2025
+  profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
+  profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
