@@ -248,6 +248,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Mismatched session id"/>
   <int value="19" label="Invalid refresh initiators"/>
   <int value="20" label="Invalid scope rule"/>
+  <int value="21" label="Missing scope"/>
+  <int value="22" label="No credentials"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

@@ -504,6 +504,8 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kMismatchedSessionId:
     case kInvalidRefreshInitiators:
     case kInvalidScopeRule:
+    case kMissingScope:
+    case kNoCredentials:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum
