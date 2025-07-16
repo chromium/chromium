@@ -156,6 +156,9 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
 #endif
 
 SharedImageFactory* GpuChannelSharedImageInterface::GetSharedImageFactory() {
+  if (!shared_image_stub_) {
+    return nullptr;
+  }
   return shared_image_stub_->factory();
 }
 
