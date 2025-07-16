@@ -57,9 +57,7 @@ void PagePlaceholderBrowserAgent::CancelPagePlaceholder() {
   WebStateList* web_state_list = browser_->GetWebStateList();
   const int web_state_list_size = web_state_list->count();
   for (int index = 0; index < web_state_list_size; ++index) {
-    web::WebState* web_state_at_index = web_state_list->GetWebStateAt(index);
-    PagePlaceholderTabHelper::FromWebState(web_state_at_index)
-        ->CancelPlaceholderForNextNavigation();
+    RemovePlaceholderFromWebState(web_state_list->GetWebStateAt(index));
   }
 }
 
@@ -177,4 +175,17 @@ void PagePlaceholderBrowserAgent::AddPlaceholderToWebState(
     PagePlaceholderTabHelper::FromWebState(web_state)
         ->AddPlaceholderForNextNavigation();
   }
+}
+
+void PagePlaceholderBrowserAgent::RemovePlaceholderFromWebState(
+    web::WebState* web_state) {
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      StopObservingWebState(web_state);
+      return;
+    }
+  }
+
+  PagePlaceholderTabHelper::FromWebState(web_state)
+      ->CancelPlaceholderForNextNavigation();
 }

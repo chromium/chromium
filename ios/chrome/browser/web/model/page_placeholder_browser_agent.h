@@ -64,6 +64,9 @@ class PagePlaceholderBrowserAgent final
   // Adds placeholder for next navigation to WebState.
   void AddPlaceholderToWebState(web::WebState* web_state);
 
+  // Removes placeholder for next navigation from WebState.
+  void RemovePlaceholderFromWebState(web::WebState* web_state);
+
   // Observation for SessionRestorationService events.
   base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
       session_restoration_service_observation_{this};
