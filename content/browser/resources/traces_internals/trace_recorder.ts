@@ -460,7 +460,6 @@ export class TraceRecorderElement extends CrLitElement {
     };
     this.trackEventConfig = this.createDefaultTrackEventConfig_();
     this.setDataSource_(this.traceConfig, this.trackEventConfig);
-    this.updateUrlFromConfig_();
   }
 
   private createDefaultTrackEventConfig_(): TrackEventConfig {
