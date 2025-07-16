@@ -2201,6 +2201,10 @@
       status: "stable",
     },
     {
+      name: "FileSystemAccessWriteMode",
+      status: "test",
+    },
+    {
       // The FileSystemObserver interface for the File System Access API.
       // See https://crbug.com/1019297.
       name: "FileSystemObserver",

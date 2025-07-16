@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -17,6 +18,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -106,7 +108,7 @@ TEST_F(FileSystemAccessHandleBaseTest, GetReadPermissionStatus) {
 }
 
 TEST_F(FileSystemAccessHandleBaseTest,
-       GetWritePermissionStatus_ReadStatusNotGranted) {
+       GetReadWritePermissionStatus_ReadStatusNotGranted) {
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
@@ -118,15 +120,15 @@ TEST_F(FileSystemAccessHandleBaseTest,
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::ASK));
-  EXPECT_EQ(PermissionStatus::ASK, handle.GetWritePermissionStatus());
+  EXPECT_EQ(PermissionStatus::ASK, handle.GetReadWritePermissionStatus());
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::DENIED));
-  EXPECT_EQ(PermissionStatus::DENIED, handle.GetWritePermissionStatus());
+  EXPECT_EQ(PermissionStatus::DENIED, handle.GetReadWritePermissionStatus());
 }
 
 TEST_F(FileSystemAccessHandleBaseTest,
-       GetWritePermissionStatus_ReadStatusGranted) {
+       GetReadWritePermissionStatus_ReadStatusGranted) {
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
@@ -140,7 +142,7 @@ TEST_F(FileSystemAccessHandleBaseTest,
       .WillOnce(testing::Return(PermissionStatus::GRANTED));
   EXPECT_CALL(*write_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::ASK));
-  EXPECT_EQ(PermissionStatus::ASK, handle.GetWritePermissionStatus());
+  EXPECT_EQ(PermissionStatus::ASK, handle.GetReadWritePermissionStatus());
 }
 
 TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission_AlreadyGranted) {
@@ -232,6 +234,49 @@ TEST_F(FileSystemAccessHandleBaseTest, GetParentURL_CustomBucketLocator) {
   EXPECT_TRUE(custom_handle.GetParentURLForTesting().bucket());
   EXPECT_EQ(custom_handle.GetParentURLForTesting().bucket().value(),
             custom_bucket_url.bucket().value());
+}
+
+TEST_F(FileSystemAccessHandleBaseTest,
+       GetWritePermissionStatus_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto url = FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("/test"));
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
+
+  EXPECT_DEATH_IF_SUPPORTED(handle.GetWritePermissionStatus(), "");
+}
+
+TEST_F(FileSystemAccessHandleBaseTest,
+       GetWritePermissionStatus_FeatureEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto url = FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("/test"));
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
+
+  // GetWritePermissionStatus should not be affected by the read permission
+  // status.
+  EXPECT_CALL(*read_grant_, GetStatus()).Times(0);
+
+  EXPECT_CALL(*write_grant_, GetStatus())
+      .WillOnce(testing::Return(PermissionStatus::ASK))
+      .WillOnce(testing::Return(PermissionStatus::GRANTED))
+      .WillOnce(testing::Return(PermissionStatus::DENIED));
+
+  EXPECT_EQ(PermissionStatus::ASK, handle.GetWritePermissionStatus());
+  EXPECT_EQ(PermissionStatus::GRANTED, handle.GetWritePermissionStatus());
+  EXPECT_EQ(PermissionStatus::DENIED, handle.GetWritePermissionStatus());
 }
 
 }  // namespace content

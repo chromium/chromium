@@ -94,9 +94,20 @@ FileSystemAccessHandleBase::GetReadPermissionStatus() {
 FileSystemAccessHandleBase::PermissionStatus
 FileSystemAccessHandleBase::GetWritePermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // It is not currently possible to have write only handles, so first check the
-  // read permission status. See also:
-  // http://wicg.github.io/file-system-access/#api-filesystemhandle-querypermission
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessWriteMode)) {
+    // It is not currently possible to have write only handles, so no one should
+    // call this method. See also:
+    // http://wicg.github.io/file-system-access/#api-filesystemhandle-querypermission
+    mojo::ReportBadMessage("feature 'FileSystemAccessWriteMode' not enabled");
+    NOTREACHED();
+  }
+  return handle_state_.write_grant->GetStatus();
+}
+
+FileSystemAccessHandleBase::PermissionStatus
+FileSystemAccessHandleBase::GetReadWritePermissionStatus() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PermissionStatus read_status = GetReadPermissionStatus();
   if (read_status != PermissionStatus::GRANTED) {
     return read_status;
@@ -109,7 +120,8 @@ void FileSystemAccessHandleBase::DoGetPermissionStatus(
     bool writable,
     base::OnceCallback<void(PermissionStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(writable ? GetWritePermissionStatus()
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  std::move(callback).Run(writable ? GetReadWritePermissionStatus()
                                    : GetReadPermissionStatus());
 }
 
@@ -118,8 +130,9 @@ void FileSystemAccessHandleBase::DoRequestPermission(
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
   PermissionStatus current_status =
-      writable ? GetWritePermissionStatus() : GetReadPermissionStatus();
+      writable ? GetReadWritePermissionStatus() : GetReadPermissionStatus();
   // If we already have a valid permission status, just return that. Also just
   // return the current permission status if this is called from a worker, as we
   // don't support prompting for increased permissions from workers.
@@ -175,14 +188,20 @@ void FileSystemAccessHandleBase::DidRequestPermission(
           file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kSecurityError,
               "Not allowed to request permissions in this context."),
-          writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
+          // TODO(crbug.com/40276567): Update if this only needs write-only
+          // permission
+          writable ? GetReadWritePermissionStatus()
+                   : GetReadPermissionStatus());
       return;
     case Outcome::kNoUserActivation:
       std::move(callback).Run(
           file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kSecurityError,
               "User activation is required to request permissions."),
-          writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
+          // TODO(crbug.com/40276567): Update if this only needs write-only
+          // permission
+          writable ? GetReadWritePermissionStatus()
+                   : GetReadPermissionStatus());
       return;
     case Outcome::kBlockedByContentSetting:
     case Outcome::kUserGranted:
@@ -193,9 +212,11 @@ void FileSystemAccessHandleBase::DidRequestPermission(
     case Outcome::kGrantedByPersistentPermission:
     case Outcome::kGrantedByAncestorPersistentPermission:
     case Outcome::kGrantedByRestorePrompt:
-      std::move(callback).Run(
-          file_system_access_error::Ok(),
-          writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
+      std::move(callback).Run(file_system_access_error::Ok(),
+                              // TODO(crbug.com/40276567): Update if this only
+                              // needs write-only permission
+                              writable ? GetReadWritePermissionStatus()
+                                       : GetReadPermissionStatus());
       return;
   }
   NOTREACHED();
@@ -208,7 +229,8 @@ void FileSystemAccessHandleBase::DoMove(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->ResolveTransferToken(
@@ -225,7 +247,8 @@ void FileSystemAccessHandleBase::DoRename(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // To get this far, we must have write access to the entry being moved.
   // Write access to the parent directory is not required for renames.
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (!manager()->IsSafePathComponent(
@@ -314,8 +337,10 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
       resolved_destination_directory->CreateDirectoryHandle(context_);
 
   // Must have write access to the target directory for cross-directory moves.
-  bool has_write_access_to_parent = dir_handle->GetWritePermissionStatus() ==
-                                    blink::mojom::PermissionStatus::GRANTED;
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  bool has_write_access_to_parent =
+      dir_handle->GetReadWritePermissionStatus() ==
+      blink::mojom::PermissionStatus::GRANTED;
   if (!has_write_access_to_parent) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kPermissionDenied));
@@ -546,7 +571,8 @@ void FileSystemAccessHandleBase::DoRemove(
     bool recurse,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // A locked file cannot be removed. Acquire a lock and release it after the

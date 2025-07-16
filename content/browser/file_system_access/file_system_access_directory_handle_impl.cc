@@ -595,7 +595,8 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->DoFileSystemOperation(
@@ -663,7 +664,8 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetDirectoryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->DoFileSystemOperation(

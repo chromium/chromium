@@ -328,7 +328,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
     scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
@@ -350,7 +351,8 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
     scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->DoFileSystemOperation(
@@ -526,7 +528,8 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
     blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // TODO(crbug.com/40194651): Expand this check to all backends.
@@ -602,7 +605,8 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     return;
   }
 
-  if (GetWritePermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  if (GetReadWritePermissionStatus() != PermissionStatus::GRANTED) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kPermissionDenied),
                             mojo::NullRemote());

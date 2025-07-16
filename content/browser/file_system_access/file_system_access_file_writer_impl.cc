@@ -176,7 +176,8 @@ void FileSystemAccessFileWriterImpl::WriteImpl(
     mojo::ScopedDataPipeConsumerHandle stream,
     WriteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (is_close_pending()) {
@@ -214,7 +215,8 @@ void FileSystemAccessFileWriterImpl::DidWrite(WriteState* state,
 void FileSystemAccessFileWriterImpl::TruncateImpl(uint64_t length,
                                                   TruncateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   if (is_close_pending()) {
@@ -237,7 +239,8 @@ void FileSystemAccessFileWriterImpl::TruncateImpl(uint64_t length,
 
 void FileSystemAccessFileWriterImpl::CloseImpl(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetWritePermissionStatus(),
+  // TODO(crbug.com/40276567): Update if this only needs write-only permission
+  DCHECK_EQ(GetReadWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
   if (is_close_pending()) {
     std::move(callback).Run(file_system_access_error::FromStatus(

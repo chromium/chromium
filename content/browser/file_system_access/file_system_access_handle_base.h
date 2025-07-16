@@ -61,8 +61,16 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
     return manager()->context();
   }
 
+  // Returns the permission status for reading. This does not check the write
+  // permission status.
   PermissionStatus GetReadPermissionStatus();
+  // Returns the permission status for writing. This does not check the read
+  // permission status.
   PermissionStatus GetWritePermissionStatus();
+  // TODO(crbug.com/40276567): Update call sites to use
+  // `GetWritePermissionStatus()` if appropriate. Returns the permission status
+  // for reading and writing.
+  PermissionStatus GetReadWritePermissionStatus();
   storage::FileSystemURL GetParentURLForTesting() { return GetParentURL(); }
 
   // Implementation for the GetPermissionStatus method in the
