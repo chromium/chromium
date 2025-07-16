@@ -190,6 +190,11 @@ class CompoundTabContainer : public TabContainer,
   void AnimateScrollToShowXCoordinate(const int start_edge,
                                       const int target_edge);
 
+  // Forwards the split changed event to the appropriate tab container.
+  using SplitChangedCallback = void (TabContainer::*)(const std::vector<int>&);
+  void OnSplitChanged(const std::vector<int>& indices,
+                      SplitChangedCallback callback);
+
   const raw_ref<TabContainerController> controller_;
 
   // Adapts `pinned_tab_container_`'s interactions with the model to account for

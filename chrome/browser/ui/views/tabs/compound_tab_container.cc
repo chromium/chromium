@@ -453,16 +453,16 @@ void CompoundTabContainer::NotifyTabstripBubbleClosed() {
 }
 
 void CompoundTabContainer::OnSplitCreated(const std::vector<int>& indices) {
-  unpinned_tab_container_->OnSplitCreated(indices);
+  OnSplitChanged(indices, &TabContainer::OnSplitCreated);
 }
 
 void CompoundTabContainer::OnSplitRemoved(const std::vector<int>& indices) {
-  unpinned_tab_container_->OnSplitRemoved(indices);
+  OnSplitChanged(indices, &TabContainer::OnSplitRemoved);
 }
 
 void CompoundTabContainer::OnSplitContentsChanged(
     const std::vector<int>& indices) {
-  unpinned_tab_container_->OnSplitContentsChanged(indices);
+  OnSplitChanged(indices, &TabContainer::OnSplitContentsChanged);
 }
 
 std::optional<int> CompoundTabContainer::GetModelIndexOf(
@@ -1107,6 +1107,31 @@ void CompoundTabContainer::AnimateScrollToShowXCoordinate(
       scroll_contents_view_, bounds_animator_.container(), start_rect,
       target_rect);
   tab_scrolling_animation_->Start();
+}
+
+void CompoundTabContainer::OnSplitChanged(const std::vector<int>& indices,
+                                          SplitChangedCallback callback) {
+  CHECK(!indices.empty());
+  int pinned_count = NumPinnedTabs();
+
+  // All the indices are expected to either be in the pinned or unpinned
+  // container and so checking just the first index.
+  if (indices[0] < pinned_count) {
+    return ((*pinned_tab_container_).*callback)(indices);
+  }
+
+  if (pinned_count == 0) {
+    return ((*unpinned_tab_container_).*callback)(indices);
+  }
+
+  std::vector<int> unpinned_indices;
+  unpinned_indices.reserve(indices.size());
+
+  std::transform(indices.begin(), indices.end(),
+                 std::back_inserter(unpinned_indices),
+                 [pinned_count](int index) { return index - pinned_count; });
+
+  return ((*unpinned_tab_container_).*callback)(unpinned_indices);
 }
 
 BEGIN_METADATA(CompoundTabContainer)
