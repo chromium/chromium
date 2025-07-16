@@ -129,7 +129,7 @@ template("chrome_common_shared_library") {
           deps += _module_desc.native_deps
         }
       }
-    } else if (_collect_inputs_only) {
+    } else {
       foreach(_module_desc, _module_descs) {
         if (defined(_module_desc.native_deps)) {
           deps += _module_desc.native_deps

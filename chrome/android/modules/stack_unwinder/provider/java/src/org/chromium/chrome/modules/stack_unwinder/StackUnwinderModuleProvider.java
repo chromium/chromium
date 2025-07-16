@@ -6,6 +6,7 @@ package org.chromium.chrome.modules.stack_unwinder;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.NullMarked;
 
 /** Installs and loads the stack unwinder module. */
@@ -14,7 +15,8 @@ public class StackUnwinderModuleProvider {
     /** Returns true if the module is installed. */
     @CalledByNative
     public static boolean isModuleInstalled() {
-        return StackUnwinderModule.isInstalled();
+        // Return false for APK builds since they do not include native library partitions.
+        return BundleUtils.isIsolatedSplitInstalled(StackUnwinderModule.SPLIT_NAME);
     }
 
     /**
