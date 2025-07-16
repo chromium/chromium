@@ -4,16 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -45,7 +36,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
@@ -62,11 +52,8 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
-import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.MenuModelBridge;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -166,203 +153,6 @@ public class ContextMenuCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         ShadowProfile.sProfileFromWebContents = mProfile;
-    }
-
-    @Test
-    public void testGetItemListWithImageLink() {
-        final ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.IMAGE,
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        0,
-                        false,
-                        /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
-                        /* additionalNavigationParams= */ null);
-        List<ModelList> rawItems = new ArrayList<>();
-        // Link items
-        ModelList groupOne = new ModelList();
-        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
-        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(createListItem(Item.SAVE_LINK_AS));
-        groupOne.add(createShareListItem(Item.SHARE_LINK));
-        rawItems.add(groupOne);
-        // Image Items
-        ModelList groupTwo = new ModelList();
-        groupTwo.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
-        groupTwo.add(createListItem(Item.SAVE_IMAGE));
-        groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
-        rawItems.add(groupTwo);
-
-        mCoordinator.initializeHeaderCoordinatorForTesting(
-                mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
-
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
-        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
-        assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
-        // "Save link as"  and "save image" should be enabled.
-        assertTrue(itemList.get(4).model.get(ENABLED));
-        assertTrue(itemList.get(8).model.get(ENABLED));
-    }
-
-    @Test
-    public void testGetItemListWithDownloadBlockedByPolicy() {
-        final ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.IMAGE,
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        0,
-                        false,
-                        /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
-                        /* additionalNavigationParams= */ null);
-        List<ModelList> rawItems = new ArrayList<>();
-        // Link items
-        ModelList groupOne = new ModelList();
-        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
-        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(createListItem(Item.SAVE_LINK_AS, false));
-        groupOne.add(createShareListItem(Item.SHARE_LINK));
-        rawItems.add(groupOne);
-        // Image Items
-        ModelList groupTwo = new ModelList();
-        groupTwo.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
-        groupTwo.add(createListItem(Item.SAVE_IMAGE, false));
-        groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
-        rawItems.add(groupTwo);
-
-        mCoordinator.initializeHeaderCoordinatorForTesting(
-                mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
-
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
-        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
-        assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
-        // "Save link as"  and "save image" should be disabled.
-        assertFalse(itemList.get(4).model.get(ENABLED));
-        assertFalse(itemList.get(8).model.get(ENABLED));
-    }
-
-    @Test
-    public void testGetItemListWithLink() {
-        // We're testing it for a link, but the mediaType in params is image. That's because if it
-        // isn't image or video, the header mediator tries to get a favicon for us and calls
-        // ProfileManager.getLastUsedRegularProfile(), which throws an exception because native
-        // isn't
-        // initialized. mediaType here doesn't have any effect on what we're testing.
-        final ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.IMAGE,
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        0,
-                        false,
-                        /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
-                        /* additionalNavigationParams= */ null);
-        List<ModelList> rawItems = new ArrayList<>();
-        // Link items
-        ModelList groupOne = new ModelList();
-        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
-        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
-        groupOne.add(createListItem(Item.SAVE_LINK_AS));
-        groupOne.add(createShareListItem(Item.SHARE_LINK));
-        rawItems.add(groupOne);
-
-        mCoordinator.initializeHeaderCoordinatorForTesting(
-                mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
-
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
-        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
-    }
-
-    @Test
-    public void testGetItemListWithVideo() {
-        final ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.VIDEO,
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        0,
-                        false,
-                        /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
-                        /* additionalNavigationParams= */ null);
-        List<ModelList> rawItems = new ArrayList<>();
-        // Video items
-        ModelList groupOne = new ModelList();
-        groupOne.add(createListItem(Item.SAVE_VIDEO));
-        rawItems.add(groupOne);
-
-        mCoordinator.initializeHeaderCoordinatorForTesting(
-                mActivity, params, mProfile, mNativeDelegate);
-        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
-
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
-        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
     }
 
     @Test
@@ -560,34 +350,6 @@ public class ContextMenuCoordinatorTest {
                 "rect.bottom for ContextMenuDialog does not match.",
                 /*200 + 17 + 40 / 2 =*/ 237,
                 rect.bottom);
-    }
-
-    private ListItem createListItem(@Item int item) {
-        return createListItem(item, /* enabled= */ true);
-    }
-
-    private ListItem createListItem(@Item int item, boolean enabled) {
-        final PropertyModel model =
-                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED, CLICK_LISTENER)
-                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(ENABLED, enabled)
-                        .with(
-                                TITLE,
-                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
-                        .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
-    }
-
-    private ListItem createShareListItem(@Item int item) {
-        final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(ENABLED, true)
-                        .with(
-                                TITLE,
-                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
-                        .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 
     private ContextMenuDialog createContextMenuDialogForTest(boolean isPopup) {
