@@ -122,7 +122,7 @@ class NET_EXPORT Session {
   }
 
  private:
-  Session(Id id, url::Origin origin, GURL refresh);
+  Session(Id id, SessionInclusionRules inclusion_rules, GURL refresh);
   Session(Id id,
           GURL refresh,
           SessionInclusionRules inclusion_rules,

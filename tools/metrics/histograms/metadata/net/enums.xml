@@ -250,6 +250,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Invalid scope rule"/>
   <int value="21" label="Missing scope"/>
   <int value="22" label="No credentials"/>
+  <int value="23" label="Invalid include_site in scope"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

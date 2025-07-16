@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/host_patterns.h"
@@ -34,12 +35,12 @@ proto::RuleType GetRuleTypeProto(
              : proto::RuleType::EXCLUDE;
 }
 
-std::optional<SessionInclusionRules::InclusionResult> GetInclusionResult(
+std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
     proto::RuleType proto) {
   if (proto == proto::RuleType::INCLUDE) {
-    return SessionInclusionRules::InclusionResult::kInclude;
+    return SessionParams::Scope::Specification::Type::kInclude;
   } else if (proto == proto::RuleType::EXCLUDE) {
-    return SessionInclusionRules::InclusionResult::kExclude;
+    return SessionParams::Scope::Specification::Type::kExclude;
   }
 
   // proto = RULE_TYPE_UNSPECIFIED
@@ -87,10 +88,45 @@ struct SessionInclusionRules::UrlRule {
   bool MatchesHostAndPath(const GURL& url) const;
 };
 
+// static
+base::expected<SessionInclusionRules, SessionError>
+SessionInclusionRules::Create(const url::Origin& origin,
+                              const SessionParams::Scope& scope_params,
+                              const GURL& refresh_endpoint) {
+  SessionInclusionRules rules(origin);
+
+  if (scope_params.include_site && !rules.may_include_site_) {
+    return base::unexpected(
+        SessionError{SessionError::ErrorType::kInvalidScopeIncludeSite});
+  }
+
+  rules.SetIncludeSite(scope_params.include_site);
+
+  for (const auto& spec : scope_params.specifications) {
+    const auto inclusion_result =
+        spec.type == SessionParams::Scope::Specification::Type::kExclude
+            ? SessionInclusionRules::InclusionResult::kExclude
+            : SessionInclusionRules::InclusionResult::kInclude;
+    if (!rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path)) {
+      return base::unexpected(
+          SessionError{SessionError::ErrorType::kInvalidScopeRule});
+    }
+  }
+
+  if (refresh_endpoint.is_valid()) {
+    // Sessions should never include the refresh endpoint, since that would
+    // prevent them from ever refreshing when a cookie expires. We intentionally
+    // don't return an error if the rule is not valid or add a CHECK, because a
+    // refresh URL is allowed to be outside an origin-scoped session.
+    rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
+                            refresh_endpoint.host(), refresh_endpoint.path());
+  }
+
+  return rules;
+}
+
 SessionInclusionRules::SessionInclusionRules(const url::Origin& origin)
     : origin_(origin), may_include_site_(IsIncludeSiteAllowed(origin)) {}
-
-SessionInclusionRules::SessionInclusionRules() = default;
 
 SessionInclusionRules::~SessionInclusionRules() = default;
 
@@ -104,10 +140,6 @@ bool SessionInclusionRules::operator==(
     const SessionInclusionRules& other) const = default;
 
 void SessionInclusionRules::SetIncludeSite(bool include_site) {
-  if (!may_include_site_) {
-    return;
-  }
-
   if (!include_site) {
     include_site_.reset();
     return;
@@ -250,34 +282,39 @@ proto::SessionInclusionRules SessionInclusionRules::ToProto() const {
 }
 
 // static:
-std::unique_ptr<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
+std::optional<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
     const proto::SessionInclusionRules& proto) {
   if (!proto.has_origin() || !proto.has_do_include_site()) {
-    return nullptr;
+    return std::nullopt;
   }
   url::Origin origin = url::Origin::Create(GURL(proto.origin()));
   if (origin.opaque()) {
     DLOG(ERROR) << "proto origin parse error: " << origin.GetDebugString();
-    return nullptr;
+    return std::nullopt;
   }
 
-  auto result = std::make_unique<SessionInclusionRules>(origin);
-  result->SetIncludeSite(proto.do_include_site());
+  SessionParams::Scope params;
+  params.include_site = proto.do_include_site();
   for (const auto& rule_proto : proto.url_rules()) {
-    std::optional<InclusionResult> rule_type =
+    std::optional<SessionParams::Scope::Specification::Type> rule_type =
         GetInclusionResult(rule_proto.rule_type());
-    if (!rule_type.has_value() ||
-        !result->AddUrlRuleIfValid(*rule_type, rule_proto.host_pattern(),
-                                   rule_proto.path_prefix())) {
-      DLOG(ERROR) << "proto rule parse error: " << "type:"
-                  << proto::RuleType_Name(rule_proto.rule_type()) << " "
-                  << "host_pattern:" << rule_proto.host_pattern() << " "
-                  << "path_prefix:" << rule_proto.path_prefix();
-      return nullptr;
+    if (!rule_type.has_value()) {
+      return std::nullopt;
     }
+
+    params.specifications.emplace_back(*rule_type, rule_proto.host_pattern(),
+                                       rule_proto.path_prefix());
   }
 
-  return result;
+  // We use an empty refresh URL because the implicit refresh rule is already
+  // among those in `url_rules()`.
+  auto inclusion_rules_or_error =
+      Create(origin, std::move(params), /*refresh_endpoint=*/GURL());
+  if (!inclusion_rules_or_error.has_value()) {
+    return std::nullopt;
+  }
+
+  return std::move(*inclusion_rules_or_error);
 }
 
 std::string SessionInclusionRules::DebugString() const {

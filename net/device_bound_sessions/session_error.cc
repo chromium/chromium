@@ -38,6 +38,7 @@ bool SessionError::IsFatal() const {
     case kInvalidScopeRule:
     case kMissingScope:
     case kNoCredentials:
+    case kInvalidScopeIncludeSite:
       return true;
 
     case kNetError:
@@ -73,6 +74,7 @@ bool SessionError::IsServerError() const {
     case kInvalidScopeRule:
     case kMissingScope:
     case kNoCredentials:
+    case kInvalidScopeIncludeSite:
       return true;
   }
 }

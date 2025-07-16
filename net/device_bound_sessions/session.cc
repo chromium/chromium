@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
+#include "base/types/expected_macros.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -59,10 +60,10 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
 };
 }
 
-Session::Session(Id id, url::Origin origin, GURL refresh)
+Session::Session(Id id, SessionInclusionRules inclusion_rules, GURL refresh)
     : id_(id),
       refresh_url_(refresh),
-      inclusion_rules_(origin),
+      inclusion_rules_(std::move(inclusion_rules)),
       backoff_(&kBackoffPolicy) {}
 
 Session::Session(Id id,
@@ -141,32 +142,12 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
         SessionError{SessionError::ErrorType::kRefreshUrlSameSiteMismatch});
   }
 
-  std::unique_ptr<Session> session(new Session(
-      Id(params.session_id), scope_origin, candidate_refresh_endpoint));
-
-  session->inclusion_rules_.SetIncludeSite(params.scope.include_site);
-
-  for (const auto& spec : params.scope.specifications) {
-    if (!spec.domain.empty() && !spec.path.empty()) {
-      const auto inclusion_result =
-          spec.type == SessionParams::Scope::Specification::Type::kExclude
-              ? SessionInclusionRules::InclusionResult::kExclude
-              : SessionInclusionRules::InclusionResult::kInclude;
-      if (!session->inclusion_rules_.AddUrlRuleIfValid(
-              inclusion_result, spec.domain, spec.path)) {
-        return base::unexpected(
-            SessionError{SessionError::ErrorType::kInvalidScopeRule});
-      }
-    }
-  }
-
-  // Sessions should never include the refresh endpoint, since that would
-  // prevent them from ever refreshing when a cookie expires.  We intentionally
-  // don't check here because a refresh URL is allowed to be outside an
-  // origin-scoped session.
-  session->inclusion_rules_.AddUrlRuleIfValid(
-      SessionInclusionRules::InclusionResult::kExclude,
-      candidate_refresh_endpoint.host(), candidate_refresh_endpoint.path());
+  ASSIGN_OR_RETURN(SessionInclusionRules session_inclusion_rules,
+                   SessionInclusionRules::Create(scope_origin, params.scope,
+                                                 candidate_refresh_endpoint));
+  std::unique_ptr<Session> session(
+      new Session(Id(params.session_id), std::move(session_inclusion_rules),
+                  candidate_refresh_endpoint));
 
   for (const auto& cred : params.credentials) {
     if (cred.name.empty()) {
@@ -218,7 +199,7 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     return nullptr;
   }
 
-  std::unique_ptr<SessionInclusionRules> inclusion_rules =
+  std::optional<SessionInclusionRules> inclusion_rules =
       SessionInclusionRules::CreateFromProto(proto.session_inclusion_rules());
   if (!inclusion_rules) {
     return nullptr;
@@ -506,6 +487,7 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kInvalidScopeRule:
     case kMissingScope:
     case kNoCredentials:
+    case kInvalidScopeIncludeSite:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

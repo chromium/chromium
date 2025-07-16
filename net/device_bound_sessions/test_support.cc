@@ -97,7 +97,6 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
             .Set("refresh_url",
                  base_url.Resolve("/dbsc_refresh_session").spec())
             .Set("scope", base::Value::Dict()
-                              .Set("include_site", true)
                               .Set("scope_specification",
                                    base::Value::List().Append(
                                        base::Value::Dict()
