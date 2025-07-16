@@ -152,6 +152,9 @@ std::string SerializePGPing(
 std::string SerializePGResponse(const LoginReputationClientResponse& response);
 std::string SerializeURTLookupPing(const URTLookupRequest& ping);
 std::string SerializeURTLookupResponse(const RTLookupResponse& response);
+std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping);
+std::string SerializeHPRTLookupResponse(
+    const V5::SearchHashesResponse& response);
 
 }  // namespace safe_browsing::web_ui
 

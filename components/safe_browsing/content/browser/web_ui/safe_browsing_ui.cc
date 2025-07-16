@@ -605,37 +605,6 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 namespace {
 
-std::string SerializeHPRTLookupPing(const web_ui::HPRTLookupRequest& ping) {
-  base::Value::Dict request_dict;
-
-  base::Value::Dict inner_request_dict;
-  base::Value::List encoded_hash_prefixes;
-  for (const auto& hash_prefix : ping.inner_request.hash_prefixes()) {
-    std::string encoded_hash_prefix;
-    base::Base64UrlEncode(hash_prefix,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_hash_prefix);
-    encoded_hash_prefixes.Append(std::move(encoded_hash_prefix));
-  }
-  inner_request_dict.Set("hash_prefixes (base64)",
-                         std::move(encoded_hash_prefixes));
-
-  request_dict.Set("inner_request", std::move(inner_request_dict));
-  request_dict.Set("relay_url", ping.relay_url_spec);
-  std::string encoded_ohttp_key;
-  base::Base64UrlEncode(ping.ohttp_key,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_ohttp_key);
-  request_dict.Set("ohttp_public_key (base64)", std::move(encoded_ohttp_key));
-
-  return web_ui::SerializeJson(request_dict);
-}
-
-std::string SerializeHPRTLookupResponse(
-    const V5::SearchHashesResponse& response) {
-  return web_ui::SerializeJson(Serialize(response));
-}
-
 base::Value::Dict SerializeLogMessage(base::Time timestamp,
                                       const std::string& message) {
   base::Value::Dict result;
@@ -1137,7 +1106,7 @@ void SafeBrowsingUIHandler::GetHPRTLookupResponses(
     base::Value::List response_entry;
     response_entry.Append(token_and_response.first);
     response_entry.Append(
-        SerializeHPRTLookupResponse(token_and_response.second));
+        web_ui::SerializeHPRTLookupResponse(token_and_response.second));
     responses_sent.Append(std::move(response_entry));
   }
 
@@ -1448,7 +1417,7 @@ void SafeBrowsingUIHandler::NotifyHPRTLookupResponseJsListener(
     const V5::SearchHashesResponse& response) {
   base::Value::List response_list;
   response_list.Append(token);
-  response_list.Append(SerializeHPRTLookupResponse(response));
+  response_list.Append(web_ui::SerializeHPRTLookupResponse(response));
 
   AllowJavascript();
   FireWebUIListener("hprt-lookup-responses-update", response_list);

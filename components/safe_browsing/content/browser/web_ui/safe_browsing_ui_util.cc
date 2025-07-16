@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 
 using sync_pb::GaiaPasswordReuse;
 
@@ -434,6 +435,37 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
 }
 
 std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
+  return SerializeJson(Serialize(response));
+}
+
+std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
+  base::Value::Dict request_dict;
+
+  base::Value::Dict inner_request_dict;
+  base::Value::List encoded_hash_prefixes;
+  for (const auto& hash_prefix : ping.inner_request.hash_prefixes()) {
+    std::string encoded_hash_prefix;
+    base::Base64UrlEncode(hash_prefix,
+                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &encoded_hash_prefix);
+    encoded_hash_prefixes.Append(std::move(encoded_hash_prefix));
+  }
+  inner_request_dict.Set("hash_prefixes (base64)",
+                         std::move(encoded_hash_prefixes));
+
+  request_dict.Set("inner_request", std::move(inner_request_dict));
+  request_dict.Set("relay_url", ping.relay_url_spec);
+  std::string encoded_ohttp_key;
+  base::Base64UrlEncode(ping.ohttp_key,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_ohttp_key);
+  request_dict.Set("ohttp_public_key (base64)", std::move(encoded_ohttp_key));
+
+  return SerializeJson(request_dict);
+}
+
+std::string SerializeHPRTLookupResponse(
+    const V5::SearchHashesResponse& response) {
   return SerializeJson(Serialize(response));
 }
 
