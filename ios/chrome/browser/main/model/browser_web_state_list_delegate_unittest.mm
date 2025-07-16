@@ -9,8 +9,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/tabs/model/features.h"
-#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
+#import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -24,7 +24,7 @@ namespace {
 // don't depend on a specific tab helper. Using an alias allow to change
 // how the check is performed if in the future `AttachTabHelpers(...)`
 // is modified.
-using ExpectedTabHelper = IOSChromeSyncedTabDelegate;
+using ExpectedTabHelper = VoiceSearchNavigationTabHelper;
 
 // Represents state of the kCreateTabHelperOnlyForRealizedWebStates
 // feature for a test case.

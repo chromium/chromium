@@ -25,17 +25,6 @@
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 
-namespace {
-
-sync_sessions::SyncedTabDelegate* GetSyncedTabDelegateFromWebState(
-    web::WebState* web_state) {
-  sync_sessions::SyncedTabDelegate* delegate =
-      IOSChromeSyncedTabDelegate::FromWebState(web_state);
-  return delegate;
-}
-
-}  // namespace
-
 #pragma mark - IOSChromeLocalSessionEventRouter::Observer
 
 class IOSChromeLocalSessionEventRouter::Observer
@@ -303,7 +292,7 @@ void IOSChromeLocalSessionEventRouter::OnWebStateChange(
     return;
   }
   sync_sessions::SyncedTabDelegate* tab =
-      GetSyncedTabDelegateFromWebState(web_state);
+      IOSChromeSyncedTabDelegate::FromWebState(web_state);
   if (!tab) {
     return;
   }

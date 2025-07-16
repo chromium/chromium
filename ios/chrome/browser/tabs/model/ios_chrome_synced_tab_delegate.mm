@@ -81,8 +81,9 @@ bool ProfileHasPrimaryIdentityManaged(ProfileIOS* profile) {
 
 }  // namespace
 
-IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state)
-    : web_state_(web_state), window_id_(SessionID::InvalidValue()) {
+IOSChromeSyncedTabDelegate::IOSChromeSyncedTabDelegate(web::WebState* web_state,
+                                                       SessionID window_id)
+    : web_state_(web_state), window_id_(window_id) {
   DCHECK(web_state);
 }
 
@@ -90,15 +91,6 @@ IOSChromeSyncedTabDelegate::~IOSChromeSyncedTabDelegate() {}
 
 void IOSChromeSyncedTabDelegate::ResetCachedLastActiveTime() {
   cached_last_active_time_.reset();
-}
-
-void IOSChromeSyncedTabDelegate::SetWindowId(SessionID window_id) {
-  DCHECK(window_id.is_valid());
-  window_id_ = window_id;
-}
-
-void IOSChromeSyncedTabDelegate::ClearWindowId() {
-  window_id_ = SessionID::InvalidValue();
 }
 
 SessionID IOSChromeSyncedTabDelegate::GetWindowId() const {

@@ -172,7 +172,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   OverlayRequestQueue::CreateForWebState(web_state);
 
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
-  IOSChromeSyncedTabDelegate::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
 
   if (IsNativeFindInPageAvailable()) {

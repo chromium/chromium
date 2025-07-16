@@ -59,7 +59,7 @@ class SyncedWindowDelegateBrowserAgent
   // Returns the WebState at index.
   web::WebState* GetWebStateAt(int index) const;
 
-  SessionID session_id_;
+  const SessionID session_id_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_

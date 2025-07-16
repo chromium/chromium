@@ -49,8 +49,9 @@ TEST_F(IOSChromeSyncedTabDelegateTest, ShouldHandleNullItem) {
   ASSERT_EQ(nullptr, navigation_manager->GetPendingItem());
 
   web::FakeWebState web_state;
+  const SessionID window_id = SessionID::NewUnique();
   web_state.SetNavigationManager(std::move(navigation_manager));
-  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state, window_id);
 
   IOSChromeSyncedTabDelegate* tab_delegate =
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
@@ -63,7 +64,8 @@ TEST_F(IOSChromeSyncedTabDelegateTest, ShouldHandleNullItem) {
 // if more time has passed.
 TEST_F(IOSChromeSyncedTabDelegateTest, CachedLastActiveTime) {
   web::FakeWebState web_state;
-  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+  const SessionID window_id = SessionID::NewUnique();
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state, window_id);
 
   IOSChromeSyncedTabDelegate* tab_delegate =
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
@@ -91,7 +93,8 @@ TEST_F(IOSChromeSyncedTabDelegateTest, CachedLastActiveTime) {
 // passed.
 TEST_F(IOSChromeSyncedTabDelegateTest, ResetCachedLastActiveTime) {
   web::FakeWebState web_state;
-  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
+  const SessionID window_id = SessionID::NewUnique();
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state, window_id);
 
   IOSChromeSyncedTabDelegate* tab_delegate =
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
@@ -193,8 +196,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   web_state.SetNavigationManager(std::move(navigation_manager));
   web_state.SetNavigationItemCount(1);
   const SessionID window_id = SessionID::NewUnique();
-  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
-  IOSChromeSyncedTabDelegate::FromWebState(&web_state)->SetWindowId(window_id);
+  IOSChromeSyncedTabDelegate::CreateForWebState(&web_state, window_id);
 
   IOSChromeSyncedTabDelegate* tab_delegate =
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);

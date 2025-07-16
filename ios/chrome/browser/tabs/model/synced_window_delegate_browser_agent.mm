@@ -98,12 +98,12 @@ sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateInserted(
     web::WebState* web_state) {
-  IOSChromeSyncedTabDelegate::FromWebState(web_state)->SetWindowId(session_id_);
+  IOSChromeSyncedTabDelegate::CreateForWebState(web_state, session_id_);
 }
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateRemoved(
     web::WebState* web_state) {
-  IOSChromeSyncedTabDelegate::FromWebState(web_state)->ClearWindowId();
+  IOSChromeSyncedTabDelegate::RemoveFromWebState(web_state);
 }
 
 void SyncedWindowDelegateBrowserAgent::OnWebStateDeleted(
