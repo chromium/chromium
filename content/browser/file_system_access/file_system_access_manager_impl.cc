@@ -541,8 +541,10 @@ void FileSystemAccessManagerImpl::ChooseEntries(
             context.storage_key.origin()) ||
         ((options->type_specific_options->is_save_file_picker_options() ||
           (options->type_specific_options->is_directory_picker_options() &&
+           // TODO(crbug.com/40276567): Support kWrite.
            options->type_specific_options->get_directory_picker_options()
-               ->request_writable)) &&
+                   ->permission_mode ==
+               blink::mojom::FileSystemAccessPermissionMode::kReadWrite)) &&
          !permission_context_->CanObtainWritePermission(
              context.storage_key.origin()))) {
       std::move(callback).Run(
@@ -702,10 +704,12 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
         context.storage_key.origin());
   }
 
-  auto request_directory_write_access =
+  // TODO(crbug.com/40276567): Support kWrite.
+  bool request_directory_write_access =
       options->type_specific_options->is_directory_picker_options() &&
       options->type_specific_options->get_directory_picker_options()
-          ->request_writable;
+              ->permission_mode ==
+          blink::mojom::FileSystemAccessPermissionMode::kReadWrite;
 
   auto suggested_name =
       options->type_specific_options->is_save_file_picker_options()
@@ -1547,7 +1551,7 @@ void FileSystemAccessManagerImpl::DidChooseEntries(
     const BindingContext& binding_context,
     const FileSystemChooser::Options& options,
     const std::string& starting_directory_id,
-    const bool request_directory_write_access,
+    bool request_directory_write_access,
     ChooseEntriesCallback callback,
     blink::mojom::FileSystemAccessErrorPtr result,
     std::vector<PathInfo> entries) {
@@ -1592,7 +1596,7 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
     const BindingContext& binding_context,
     const FileSystemChooser::Options& options,
     const std::string& starting_directory_id,
-    const bool request_directory_write_access,
+    bool request_directory_write_access,
     ChooseEntriesCallback callback,
     std::vector<PathInfo> entries,
     SensitiveEntryResult result) {

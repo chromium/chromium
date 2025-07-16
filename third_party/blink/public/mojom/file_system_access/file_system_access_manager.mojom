@@ -21,6 +21,13 @@ enum WellKnownDirectory {
   kDirVideos,
 };
 
+// Represents the permission mode that can be requested for a file system entry.
+// TODO(crbug.com/40276567): Support Write mode.
+enum FileSystemAccessPermissionMode {
+  kRead,
+  kReadWrite,
+};
+
 // Struct to represent individual options for types of files that are accepted
 // by calls to ChooseEntry. Each type has an optional description, and any
 // number of mime types and/or extensions.
@@ -50,7 +57,7 @@ struct SaveFilePickerOptions {
 };
 
 struct DirectoryPickerOptions {
-  bool request_writable;
+  FileSystemAccessPermissionMode permission_mode;
 };
 
 union TypeSpecificFilePickerOptionsUnion {

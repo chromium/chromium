@@ -459,10 +459,17 @@ GlobalFileSystemAccess::showDirectoryPicker(
   if (exception_state.HadException())
     return EmptyPromise();
 
-  bool request_writable =
-      options->mode() == V8FileSystemPermissionMode::Enum::kReadwrite;
+  mojom::blink::FileSystemAccessPermissionMode mode;
+  switch (options->mode().AsEnum()) {
+    case V8FileSystemPermissionMode::Enum::kRead:
+      mode = mojom::blink::FileSystemAccessPermissionMode::kRead;
+      break;
+    case V8FileSystemPermissionMode::Enum::kReadwrite:
+      mode = mojom::blink::FileSystemAccessPermissionMode::kReadWrite;
+      break;
+  }
   auto directory_picker_options =
-      mojom::blink::DirectoryPickerOptions::New(request_writable);
+      mojom::blink::DirectoryPickerOptions::New(mode);
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<FileSystemDirectoryHandle>>(
           script_state, exception_state.GetContext());
