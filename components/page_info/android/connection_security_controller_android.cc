@@ -7,7 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"
@@ -16,9 +19,11 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType()
 #include "components/page_info/android/jni_headers/PageInfoConnectionSecurityController_jni.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
 using net::x509_util::CryptoBufferAsStringPiece;
 
 // static
@@ -66,6 +71,21 @@ void ConnectionSecurityControllerAndroid::LoadIdentityInfo(JNIEnv* env) {
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
+ScopedJavaLocalRef<jobjectArray> CertToJavaArray(
+    JNIEnv* env,
+    const scoped_refptr<net::X509Certificate>& cert) {
+  std::vector<std::string> cert_chain;
+  if (cert) {
+    cert_chain.reserve(1 + cert->intermediate_buffers().size());
+    cert_chain.emplace_back(
+        net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
+    for (const auto& intermediate : cert->intermediate_buffers()) {
+      cert_chain.emplace_back(CryptoBufferAsStringPiece(intermediate.get()));
+    }
+  }
+  return base::android::ToJavaArrayOfByteArray(env, cert_chain);
+}
+
 void ConnectionSecurityControllerAndroid::SetIdentityInfo(
     const IdentityInfo& identity_info) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -79,22 +99,36 @@ void ConnectionSecurityControllerAndroid::SetIdentityInfo(
       PageInfoUI::GetIdentityIconColorID(identity_info.identity_status));
 
   scoped_refptr<net::X509Certificate> cert = identity_info.certificate;
-  std::vector<std::string> cert_chain;
-  if (cert) {
-    cert_chain.reserve(1 + cert->intermediate_buffers().size());
-    cert_chain.emplace_back(
-        net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-    for (const auto& intermediate : cert->intermediate_buffers()) {
-      cert_chain.emplace_back(CryptoBufferAsStringPiece(intermediate.get()));
-    }
+  auto cert_chain = CertToJavaArray(env, cert);
+
+  std::u16string qwac_identity;
+  // This matches the same check performed in
+  // PageInfoSecurityContentView::SetIdentityInfo.
+  bool is_1qwac = identity_info.identity_status ==
+                      PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT &&
+                  identity_info.connection_status ==
+                      PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED;
+  auto two_qwac_chain = CertToJavaArray(env, identity_info.two_qwac);
+  scoped_refptr<net::X509Certificate> qwac_cert;
+  if (is_1qwac) {
+    qwac_cert = cert;
+  } else if (identity_info.two_qwac) {
+    qwac_cert = identity_info.two_qwac;
+  }
+  if (qwac_cert && !qwac_cert->subject().organization_names.empty() &&
+      !qwac_cert->subject().country_name.empty()) {
+    qwac_identity = l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+        base::UTF8ToUTF16(qwac_cert->subject().organization_names[0]),
+        base::UTF8ToUTF16(qwac_cert->subject().country_name));
   }
 
   Java_PageInfoConnectionSecurityController_setSecurityDescription(
       env, controller_jobject_, icon_id, icon_color_id,
       ConvertUTF16ToJavaString(env, security_description->summary),
       ConvertUTF16ToJavaString(env, security_description->details),
-      identity_info.show_ssl_decision_revoke_button,
-      base::android::ToJavaArrayOfByteArray(env, cert_chain));
+      identity_info.show_ssl_decision_revoke_button, cert_chain, is_1qwac,
+      two_qwac_chain, ConvertUTF16ToJavaString(env, qwac_identity));
 }
 
 void ConnectionSecurityControllerAndroid::ResetCertDecisions(JNIEnv* env) {

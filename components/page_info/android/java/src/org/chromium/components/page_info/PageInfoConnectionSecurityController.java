@@ -102,7 +102,10 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
             String summary,
             String details,
             boolean showResetDecisionsLabel,
-            byte[][] certChain) {
+            byte[][] certChain,
+            boolean isCert1Qwac,
+            byte[][] twoQwacCertChain,
+            String qwacIdentity) {
         mViewParams.iconResId = iconResId;
         mViewParams.iconTint = iconTint;
         mViewParams.summary = summary;
@@ -113,6 +116,11 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
         if (certChain.length != 0) {
             mViewParams.certChain = certChain;
         }
+        mViewParams.isCert1Qwac = isCert1Qwac;
+        if (twoQwacCertChain.length != 0) {
+            mViewParams.twoQwacCertChain = twoQwacCertChain;
+        }
+        mViewParams.qwacIdentity = qwacIdentity;
         if (mActiveView != null) {
             mActiveView.setParams(mViewParams);
         }

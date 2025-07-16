@@ -59,6 +59,56 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- QWAC display -->
+    <LinearLayout
+        android:id="@+id/qwac_cert_info"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="fill"
+        android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+        android:clickable="true"
+        android:focusable="true">
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/qwac_status_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/qwac_status" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/qwac_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/page_info_qwac_status_title"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/qwac_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    app:leading="@dimen/text_size_medium_leading" />
+            </LinearLayout>
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/qwac_cert_details_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_gravity="end"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/open_in_new" />
+    </LinearLayout>
     <!-- Certificate details button-->
     <LinearLayout
         android:id="@+id/certificate_details_button"
@@ -76,7 +126,6 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="24dp"
-                android:layout_weight="0"
                 android:importantForAccessibility="no"
                 app:tint="@color/default_icon_color_tint_list"
                 android:src="@drawable/sticky_note_2" />
@@ -93,7 +142,6 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="24dp"
-                android:layout_weight="0"
                 android:layout_gravity="end"
                 android:importantForAccessibility="no"
                 app:tint="@color/default_icon_color_tint_list"

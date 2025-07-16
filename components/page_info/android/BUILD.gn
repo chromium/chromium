@@ -40,6 +40,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/lock.xml",
     "java/res/drawable/open_in_new.xml",
+    "java/res/drawable/qwac_status.xml",
     "java/res/drawable/sticky_note_2.xml",
     "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",

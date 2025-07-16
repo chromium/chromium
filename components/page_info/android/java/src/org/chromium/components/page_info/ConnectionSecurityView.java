@@ -51,6 +51,9 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
         public @Nullable CharSequence details;
         public @Nullable Runnable resetDecisionsCallback;
         public byte @Nullable [][] certChain;
+        public boolean isCert1Qwac;
+        public byte @Nullable [][] twoQwacCertChain;
+        public @Nullable CharSequence qwacIdentity;
     }
 
     private final Context mContext;
@@ -58,9 +61,11 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
     private final TextView mSummary;
     private final TextView mDetails;
     private final TextView mResetDecision;
+    private final ViewGroup mQwacCertInfo;
     private final ViewGroup mCertDetailsButton;
     private final CertificateViewer mCertificateViewer;
     private byte @Nullable [][] mCertChain;
+    private byte @Nullable [][] mTwoQwacCertChain;
 
     public ConnectionSecurityView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -70,6 +75,7 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
         mSummary = findViewById(R.id.security_description_summary);
         mDetails = findViewById(R.id.security_description_details);
         mResetDecision = findViewById(R.id.security_description_reset_decision);
+        mQwacCertInfo = findViewById(R.id.qwac_cert_info);
         mCertDetailsButton = findViewById(R.id.certificate_details_button);
         setVisibility(GONE);
 
@@ -122,6 +128,22 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
         } else {
             mCertDetailsButton.setOnClickListener(this);
         }
+
+        mTwoQwacCertChain = params.twoQwacCertChain;
+        if (params.isCert1Qwac || mTwoQwacCertChain != null) {
+            mQwacCertInfo.setVisibility(VISIBLE);
+            TextView subtitle = findViewById(R.id.qwac_subtitle);
+            if (params.qwacIdentity != null) {
+                subtitle.setText(params.qwacIdentity);
+            } else {
+                subtitle.setVisibility(GONE);
+            }
+            if (mTwoQwacCertChain == null) {
+                findViewById(R.id.qwac_cert_details_icon).setVisibility(GONE);
+            } else {
+                mQwacCertInfo.setOnClickListener(this);
+            }
+        }
     }
 
     private SpannableStringBuilder buildTextWithLink(CharSequence text, CharSequence linkText) {
@@ -142,6 +164,8 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
             mCertificateViewer.showCertificateChain(mCertChain);
         } else if (v == mDetails) {
             showConnectionSecurityInfo();
+        } else if (v == mQwacCertInfo && mTwoQwacCertChain != null) {
+            mCertificateViewer.showCertificateChain(mTwoQwacCertChain);
         }
     }
 

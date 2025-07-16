@@ -218,7 +218,7 @@
       </message>
 
     <!-- QWAC Certificate Info strings -->
-    <message name="IDS_PAGE_INFO_QWAC_STATUS_TITLE" desc="The text of the title of the Page Info row that shows EU Qualified Certificate status.">
+    <message name="IDS_PAGE_INFO_QWAC_STATUS_TITLE" desc="The text of the title of the Page Info row that shows EU Qualified Certificate status." formatter_data="android_java">
       EU Qualified Status
     </message>
 
