@@ -155,7 +155,7 @@ struct InputTraits<UiEventDispatcher::FirstActInfo> {
 
 template <>
 struct InputTraits<UiEventDispatcher::ActorTaskAsyncChange> {
-  static constexpr const char* name = "ActorTaskToolChange";
+  static constexpr const char* name = "ActorTaskAsyncChange";
   static constexpr auto convert_fn = std::identity();
   static constexpr auto debug_info =
       [](const UiEventDispatcher::ActorTaskAsyncChange& change) {
@@ -170,7 +170,7 @@ struct InputTraits<UiEventDispatcher::ActorTaskAsyncChange> {
 
 template <>
 struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
-  static constexpr const char* name = "ActorTaskChange";
+  static constexpr const char* name = "ActorTaskSyncChange";
   static constexpr auto convert_fn = std::identity();
   static constexpr auto debug_info =
       [](const UiEventDispatcher::ActorTaskSyncChange& change) {
