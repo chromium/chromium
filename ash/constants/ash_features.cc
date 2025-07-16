@@ -1426,6 +1426,12 @@ BASE_FEATURE(kHeliumArcvmKiosk,
              "HeliumArcvmKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables additional features (e.g. manual launch) for ARCVM Kiosk debugging.
+// Should stay disabled by default.
+BASE_FEATURE(kHeliumArcvmKioskDevMode,
+             "HeliumArcvmKioskDevMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the Help app will render the App Detail Page and entry point.
 BASE_FEATURE(kHelpAppAppDetailPage,
              "HelpAppAppDetailPage",
@@ -3865,6 +3871,11 @@ bool AreHealthdInternalsTabsEnabled() {
 
 bool IsHeliumArcvmKioskEnabled() {
   return base::FeatureList::IsEnabled(kHeliumArcvmKiosk);
+}
+
+bool IsHeliumArcvmKioskDevModeEnabled() {
+  return IsHeliumArcvmKioskEnabled() &&
+         base::FeatureList::IsEnabled(kHeliumArcvmKioskDevMode);
 }
 
 bool IsHibernateEnabled() {

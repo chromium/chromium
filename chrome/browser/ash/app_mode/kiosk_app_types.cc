@@ -55,7 +55,7 @@ KioskAppId KioskAppId::ForIsolatedWebApp(const AccountId& account_id) {
 // static
 KioskAppId KioskAppId::ForArcvmApp(const AccountId& account_id) {
   CHECK(account_id.is_valid());
-  return KioskAppId(KioskAppType::kArcvmApp, account_id);
+  return {KioskAppType::kArcvmApp, account_id};
 }
 
 KioskAppId::KioskAppId() = default;

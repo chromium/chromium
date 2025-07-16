@@ -140,6 +140,7 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
   AppendWebApps(apps);
   AppendChromeApps(apps);
   AppendIsolatedWebApps(apps);
+  AppendArcvmApps(apps);
   return apps;
 }
 
@@ -455,6 +456,14 @@ void KioskControllerImpl::AppendIsolatedWebApps(
   for (const KioskAppManagerBase::App& iwa_app : iwa_manager_.GetApps()) {
     apps.emplace_back(KioskAppId::ForIsolatedWebApp(iwa_app.account_id),
                       iwa_app.name, iwa_app.icon);
+  }
+}
+
+void KioskControllerImpl::AppendArcvmApps(std::vector<KioskApp>& apps) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const KioskAppManagerBase::App& iwa_app : arcvm_app_manager_.GetApps()) {
+    apps.emplace_back(KioskAppId::ForArcvmApp(iwa_app.account_id), iwa_app.name,
+                      iwa_app.icon);
   }
 }
 

@@ -98,6 +98,7 @@ class KioskControllerImpl : public KioskController,
   void AppendWebApps(std::vector<KioskApp>& apps) const;
   void AppendChromeApps(std::vector<KioskApp>& apps) const;
   void AppendIsolatedWebApps(std::vector<KioskApp>& apps) const;
+  void AppendArcvmApps(std::vector<KioskApp>& apps) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -1232,6 +1232,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreHealthdInternalsTabsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskDevModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();

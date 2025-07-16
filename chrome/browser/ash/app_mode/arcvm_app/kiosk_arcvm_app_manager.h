@@ -44,7 +44,7 @@ class KioskArcvmAppManager : public KioskAppManagerBase {
   const KioskArcvmAppData* GetAppByAccountId(const AccountId& account_id) const;
 
   // KioskAppManagerBase:
-  std::vector<App> GetApps() const override;
+  KioskAppManagerBase::AppList GetApps() const override;
 
   // Update Android Kiosk app display name and icon values stored in cache.
   void UpdateNameAndIcon(const AccountId& account_id,

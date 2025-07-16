@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -72,8 +73,12 @@ const KioskArcvmAppData* KioskArcvmAppManager::GetAppByAccountId(
   return nullptr;
 }
 
-std::vector<KioskArcvmAppManager::App> KioskArcvmAppManager::GetApps() const {
-  std::vector<App> apps;
+KioskAppManagerBase::AppList KioskArcvmAppManager::GetApps() const {
+  if (!ash::features::IsHeliumArcvmKioskDevModeEnabled()) {
+    return {};
+  }
+
+  KioskAppManagerBase::AppList apps;
   for (const auto& app : apps_) {
     apps.emplace_back(*app);
   }
