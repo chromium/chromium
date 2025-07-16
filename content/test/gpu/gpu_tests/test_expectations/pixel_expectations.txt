@@ -504,6 +504,7 @@ crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_Tree
 crbug.com/415830130 [ fuchsia ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/415830130 [ linux ] Pixel_RenderPasses_TreesInViz [ Failure ]
+crbug.com/415830130 [ chromeos chromeos-board-amd64-generic ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/431824747 [ win ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/431824747 [ android android-chromium ] Pixel_RenderPasses_TreesInViz [ Failure ]
 
