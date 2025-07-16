@@ -2085,6 +2085,13 @@ const FeatureEntry::FeatureVariation kOmniboxMiaZpsVariations[] = {
      std::size(kOmniboxMiaZpsEnabledWithHistoryAblation), nullptr}};
 #endif
 
+const FeatureEntry::FeatureParam
+    kOmniboxAimShortcutTypedStateEnabledForTypedLength15[] = {{"chars", "15"}};
+const FeatureEntry::FeatureVariation kOmniboxAimShortcutTypedStateVariations[] =
+    {{"for 15+ chars", kOmniboxAimShortcutTypedStateEnabledForTypedLength15,
+      std::size(kOmniboxAimShortcutTypedStateEnabledForTypedLength15),
+      nullptr}};
+
 const FeatureEntry::FeatureParam kOmniboxDynamicMaxAutocomplete90[] = {
     {"OmniboxDynamicMaxAutocompleteUrlCutoff", "0"},
     {"OmniboxDynamicMaxAutocompleteIncreasedLimit", "9"}};
@@ -6967,6 +6974,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::MiaZPS::kOmniboxMiaZPS)
 #endif
     },
+
+    {"omnibox-aim-shortcut-typed-state",
+     flag_descriptions::kOmniboxAimShortcutTypedStateName,
+     flag_descriptions::kOmniboxAimShortcutTypedStateDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAimShortcutTypedState,
+                                    kOmniboxAimShortcutTypedStateVariations,
+                                    "OmniboxAimShortcutTypedState")},
 
     {"omnibox-dynamic-max-autocomplete",
      flag_descriptions::kOmniboxDynamicMaxAutocompleteName,

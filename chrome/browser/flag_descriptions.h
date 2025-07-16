@@ -1717,6 +1717,9 @@ extern const char kOmniboxGroupingFrameworkDescription[];
 extern const char kOmniboxMiaZps[];
 extern const char kOmniboxMiaZpsDescription[];
 
+extern const char kOmniboxAimShortcutTypedStateName[];
+extern const char kOmniboxAimShortcutTypedStateDescription[];
+
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 

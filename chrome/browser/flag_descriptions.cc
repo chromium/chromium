@@ -3059,6 +3059,11 @@ const char kOmniboxMiaZps[] = "Omnibox Mia ZPS on NTP";
 const char kOmniboxMiaZpsDescription[] =
     "Enables Mia ZPS suggestions in NTP omnibox";
 
+const char kOmniboxAimShortcutTypedStateName[] =
+    "AIM shortcut in typed state of omnibox";
+const char kOmniboxAimShortcutTypedStateDescription[] =
+    "Enables AIM shortcut in typed state of omnibox";
+
 const char kOmniboxMlLogUrlScoringSignalsName[] =
     "Log Omnibox URL Scoring Signals";
 const char kOmniboxMlLogUrlScoringSignalsDescription[] =

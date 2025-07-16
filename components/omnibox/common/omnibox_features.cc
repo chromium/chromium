@@ -410,7 +410,8 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdate,
-      &kOmniboxMobileParityUpdateV2};
+      &kOmniboxMobileParityUpdateV2,
+      &kOmniboxAimShortcutTypedState};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());
@@ -443,6 +444,11 @@ BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions,
 // "invisible focus".
 BASE_FEATURE(kOmniboxRestoreInvisibleFocusOnly,
              "OmniboxRestoreInvisibleFocusOnly",
+             DISABLED);
+
+// Enabls adding an aim shortcut in the typed state.
+BASE_FEATURE(kOmniboxAimShortcutTypedState,
+             "OmniboxAimShortcutTypedState",
              DISABLED);
 
 }  // namespace omnibox
