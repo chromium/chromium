@@ -134,6 +134,9 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr);
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report);
 std::string SerializeHitReport(const HitReport& hit_report);
 std::string SerializeJson(base::ValueView value);
+base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event);
+base::Value::Dict SerializeSecurityEvent(
+    const sync_pb::GaiaPasswordReuse& event);
 
 }  // namespace safe_browsing::web_ui
 
