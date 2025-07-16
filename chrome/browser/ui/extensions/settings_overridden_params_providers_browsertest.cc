@@ -194,12 +194,31 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SettingsOverriddenParamsProvidersBrowserTest,
     GetExtensionControllingSearch_MultipleSearchProvidingExtensions) {
-  const extensions::Extension* first = AddExtensionControllingSearch();
-  ASSERT_TRUE(first);
+  const extensions::Extension* first_extension =
+      AddExtensionControllingSearch();
+  ASSERT_TRUE(first_extension);
 
-  const extensions::Extension* second =
-      AddExtensionControllingSearch("search_provider_override_2");
-  ASSERT_TRUE(second);
+  extensions::TestExtensionDir second_extension_dir;
+  second_extension_dir.WriteManifest(
+      R"({
+             "name": "Simple Search Override",
+             "version": "0.1",
+             "manifest_version": 3,
+             "chrome_settings_overrides": {
+               "search_provider": {
+                 "search_url": "https://example.com/?q={searchTerms}",
+                 "name": "New Search",
+                 "keyword": "word",
+                 "encoding": "UTF-8",
+                 "favicon_url": "https://example.com/favicon.ico",
+                 "is_default": true
+               }
+             }
+          })");
+  const extensions::Extension* second_extension =
+      InstallExtensionWithPermissionsGranted(
+          second_extension_dir.UnpackedPath(), 1);
+  ASSERT_TRUE(second_extension);
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
@@ -389,6 +408,83 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
     ASSERT_TRUE(params);
     ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
     EXPECT_TRUE(controller.ShouldShow());
+  }
+}
+
+// Tests that null params are returned (indicating no dialog should be shown)
+// when an extension overrides search to the same domain that was previously
+// set by another extension.
+IN_PROC_BROWSER_TEST_F(
+    SettingsOverriddenParamsProvidersBrowserTest,
+    SearchOverriddenToSameSearch_SameDomainExistingExtensionOverride) {
+  // With no extensions installed, there should be no controlling extension.
+  EXPECT_EQ(std::nullopt,
+            settings_overridden_params::GetSearchOverriddenParams(profile()));
+
+  // Install a simple search override extension, that shouldn't trigger the
+  // prompt.
+  extensions::TestExtensionDir extension_dir_1;
+
+  extension_dir_1.WriteManifest(
+      R"({
+           "name": "Simple Search Override",
+           "version": "0.1",
+           "manifest_version": 3,
+           "chrome_settings_overrides": {
+             "search_provider": {
+               "search_url": "https://example.com/?q={searchTerms}",
+               "name": "New Search",
+               "keyword": "word",
+               "encoding": "UTF-8",
+               "favicon_url": "https://example.com/favicon.ico",
+               "is_default": true
+             }
+           }
+        })");
+  const extensions::Extension* extension_1 =
+      InstallExtensionWithPermissionsGranted(extension_dir_1.UnpackedPath(), 1);
+
+  ASSERT_TRUE(extension_1);
+  EXPECT_EQ(extension_1,
+            extensions::GetExtensionOverridingSearchEngine(profile()));
+  {
+    std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+        settings_overridden_params::GetSearchOverriddenParams(profile());
+    ASSERT_TRUE(params);
+    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    EXPECT_FALSE(controller.ShouldShow());
+  }
+
+  // Install a second search override extension, that shouldn't trigger prompt
+  // since it sets the same search domain as the previous extension.
+  extensions::TestExtensionDir extension_dir_2;
+  extension_dir_2.WriteManifest(
+      R"({
+           "name": "Second Search Override",
+           "version": "0.1",
+           "manifest_version": 3,
+           "chrome_settings_overrides": {
+             "search_provider": {
+               "search_url": "https://example.com/?q={searchTerms}",
+               "name": "New Search",
+               "keyword": "word",
+               "encoding": "UTF-8",
+               "favicon_url": "https://example.com/favicon.ico",
+               "is_default": true
+             }
+           },
+           "permissions": ["storage"]
+        })");
+  const extensions::Extension* extension_2 =
+      InstallExtensionWithPermissionsGranted(extension_dir_2.UnpackedPath(), 1);
+
+  ASSERT_TRUE(extension_2);
+  EXPECT_EQ(extension_2,
+            extensions::GetExtensionOverridingSearchEngine(profile()));
+  {
+    std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+        settings_overridden_params::GetSearchOverriddenParams(profile());
+    EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
   }
 }
 

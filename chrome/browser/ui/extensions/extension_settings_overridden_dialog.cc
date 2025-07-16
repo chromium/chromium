@@ -111,7 +111,7 @@ bool ExtensionSettingsOverriddenDialog::ShouldShow() {
     return false;
   }
 
-  // Don't show the extension if it's considered a "simple override" extension.
+  // Don't show the dialog if it's considered a "simple override" extension.
   if (simple_overrides::IsSimpleOverrideExtension(*extension)) {
     return false;
   }

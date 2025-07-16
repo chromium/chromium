@@ -42,9 +42,12 @@ class ExtensionPrefValueMapTestBase : public BASECLASS {
   using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
 
   // Returns an empty string if the key is not set.
-  std::string GetValue(const char * key, bool incognito) const {
-    const base::Value* value =
-        epvm_.GetEffectivePrefValue(key, incognito, nullptr);
+  std::string GetValue(
+      const char* key,
+      bool incognito,
+      std::optional<std::string> ignore_extension_id = std::nullopt) const {
+    const base::Value* value = epvm_.GetEffectivePrefValue(
+        key, incognito, nullptr, ignore_extension_id);
     return value && value->is_string() ? value->GetString() : std::string();
   }
 
@@ -243,6 +246,31 @@ TEST_F(ExtensionPrefValueMapTest, UninstallExtensionFromMiddle) {
   EXPECT_EQ("val4", GetValue(kPref2, false));
   EXPECT_EQ("val6", GetValue(kPref3, false));
   EXPECT_EQ(std::string(), GetValue(kPref4, false));
+}
+
+// Tests ignoring an extension that was winning for a preference.
+TEST_F(ExtensionPrefValueMapTest, IgnoreExtension) {
+  RegisterExtension(kExt1, CreateTime(10));
+  RegisterExtension(kExt2, CreateTime(20));
+  RegisterExtension(kExt3, CreateTime(30));
+
+  epvm_.SetExtensionPref(kExt1, kPref1, ChromeSettingScope::kRegular,
+                         CreateVal("pref1ext1"));
+  epvm_.SetExtensionPref(kExt2, kPref1, ChromeSettingScope::kRegular,
+                         CreateVal("pref1ext2"));
+  epvm_.SetExtensionPref(kExt3, kPref1, ChromeSettingScope::kRegular,
+                         CreateVal("pref1ext3"));
+
+  epvm_.SetExtensionPref(kExt2, kPref2, ChromeSettingScope::kRegular,
+                         CreateVal("pref2ext2"));
+
+  EXPECT_EQ("pref1ext3", GetValue(kPref1, false));
+  EXPECT_EQ("pref1ext3", GetValue(kPref1, false, std::string()));
+  EXPECT_EQ("pref1ext2", GetValue(kPref1, false, kExt3));
+  EXPECT_EQ("pref1ext3", GetValue(kPref1, false, kExt1));
+
+  EXPECT_EQ("pref2ext2", GetValue(kPref2, false));
+  EXPECT_EQ(std::string(), GetValue(kPref2, false, kExt2));
 }
 
 // Tests triggering of notifications to registered observers.

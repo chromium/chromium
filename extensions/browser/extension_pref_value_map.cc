@@ -251,8 +251,10 @@ void ExtensionPrefValueMap::GetExtensionControlledKeys(
 const base::Value* ExtensionPrefValueMap::GetEffectivePrefValue(
     const std::string& key,
     bool incognito,
-    bool* from_incognito) const {
-  auto winner = GetEffectivePrefValueController(key, incognito, from_incognito);
+    bool* from_incognito,
+    std::optional<std::string> ignore_extension_id) const {
+  auto winner = GetEffectivePrefValueController(key, incognito, from_incognito,
+                                                ignore_extension_id);
   if (winner == entries_.end()) {
     return nullptr;
   }
@@ -299,7 +301,8 @@ ExtensionPrefValueMap::ExtensionEntryMap::const_iterator
 ExtensionPrefValueMap::GetEffectivePrefValueController(
     const std::string& key,
     bool incognito,
-    bool* from_incognito) const {
+    bool* from_incognito,
+    std::optional<std::string> ignore_extension_id) const {
   auto winner = entries_.cend();
   base::Time winners_install_time;
 
@@ -316,6 +319,9 @@ ExtensionPrefValueMap::GetEffectivePrefValueController(
       continue;
     }
     if (incognito && !incognito_enabled) {
+      continue;
+    }
+    if (ignore_extension_id && *ignore_extension_id == ext_id) {
       continue;
     }
 

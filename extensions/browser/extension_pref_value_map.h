@@ -162,9 +162,11 @@ class ExtensionPrefValueMap : public KeyedService {
 
   void RemoveObserver(Observer* observer);
 
-  const base::Value* GetEffectivePrefValue(const std::string& key,
-                                           bool incognito,
-                                           bool* from_incognito) const;
+  const base::Value* GetEffectivePrefValue(
+      const std::string& key,
+      bool incognito,
+      bool* from_incognito,
+      std::optional<std::string> ignore_extension_id = std::nullopt) const;
 
  private:
   struct ExtensionEntry;
@@ -191,7 +193,8 @@ class ExtensionPrefValueMap : public KeyedService {
   ExtensionEntryMap::const_iterator GetEffectivePrefValueController(
       const std::string& key,
       bool incognito,
-      bool* from_incognito) const;
+      bool* from_incognito,
+      std::optional<std::string> ignore_extension_id = std::nullopt) const;
 
   void NotifyOfDestruction();
   void NotifyPrefValueChanged(const std::string& key);
