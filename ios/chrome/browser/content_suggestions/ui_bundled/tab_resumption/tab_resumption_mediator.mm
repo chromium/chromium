@@ -81,7 +81,8 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_removal_observer_bridge.h"
@@ -898,16 +899,13 @@ class TabResumptionMediatorProxy {
     if (index == WebStateList::kInvalidIndex) {
       continue;
     }
-    web::WebState* webState = webStateList->GetWebStateAt(index);
-    if (!webState) {
-      continue;
-    }
-    __weak TabResumptionMediator* weakSelf = self;
-    SnapshotTabHelper* snapshotTabHelper =
-        SnapshotTabHelper::FromWebState(webState);
-    snapshotTabHelper->RetrieveColorSnapshot(^(UIImage* image) {
-      [weakSelf snapshotFetched:image forItem:item];
-    });
+    __weak __typeof(self) weakSelf = self;
+    web::WebState* const webState = webStateList->GetWebStateAt(index);
+    SnapshotBrowserAgent::FromBrowser(browser)->RetrieveSnapshotWithID(
+        SnapshotID(webState->GetUniqueIdentifier()), SnapshotKindColor,
+        ^(UIImage* image) {
+          [weakSelf snapshotFetched:image forItem:item];
+        });
     return;
   }
   return [self fetchSalientImageForItem:item];
