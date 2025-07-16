@@ -114,32 +114,35 @@ INSTANTIATE_TEST_SUITE_P(ManifestV3,
                          SwitchAccessTest,
                          ::testing::Values(ManifestVersion::kThree));
 
-// Flaky. See https://crbug.com/1224254.
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
   AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
   test_utils.SetUpTestSupport();
 
-  // Load a webpage with a text box.
-  NavigateToUrl(GURL(
-      "data:text/html;charset=utf-8,<input type='text' class='sa-input'>"));
+  // Load a webpage with a text box that will be focused automatically.
+  NavigateToUrl(
+      GURL("data:text/html;charset=utf-8,<input type='text' class='sa-input' "
+           "autofocus aria-label='MyTextField'>"));
+  utils()->WaitForFocusRing("primary", "textField", "MyTextField");
 
-  // Put focus in the text box.
-  SendVirtualKeyPress(ui::KeyboardCode::VKEY_TAB);
+  // Send a key event for a character not consumed by Switch Access.
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_X);
+  test_utils.WaitForValueChangedEvent();
+
+  // Check that the text field received the character.
+  EXPECT_STREQ("x",
+               test_utils.GetValueForNodeWithClassName("sa-input").c_str());
 
   // Send a key event for a character consumed by Switch Access.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
 
-  // Check that the text field did not receive the character.
-  EXPECT_STREQ("", test_utils.GetValueForNodeWithClassName("sa_input").c_str());
-
-  // Send a key event for a character not consumed by Switch Access.
-  SendVirtualKeyPress(ui::KeyboardCode::VKEY_X);
-
-  // Check that the text field received the character.
+  // Pressing '1' should be consumed by Switch Access to open the menu.
+  utils()->WaitForFocusRing("primary", "button", "Keyboard");
+  // Verify that '1' was not typed into the text field. The value should remain
+  // "x".
   EXPECT_STREQ("x",
-               test_utils.GetValueForNodeWithClassName("sa_input").c_str());
+               test_utils.GetValueForNodeWithClassName("sa-input").c_str());
 }
 
 // TODO(crbug.com/388867933): Disabled on MSAN due to a renderer crash. The
