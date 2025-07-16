@@ -10,6 +10,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -59,9 +60,13 @@ FromGWSAbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
 
   if (navigation_handle->GetNetErrorCode() < 0) {
     CHECK(!net_error_.has_value());
-    CHECK(!net_extended_error_code_.has_value());
     net_error_ = navigation_handle->GetNetErrorCode();
-    net_extended_error_code_ = navigation_handle->GetNetExtendedErrorCode();
+  }
+
+  if (navigation_handle->GetErrorNavigationTrigger().has_value()) {
+    CHECK(!error_navigation_trigger_.has_value());
+    error_navigation_trigger_ =
+        navigation_handle->GetErrorNavigationTrigger().value();
   }
 
   // Set the request / response time of the second redirect by checking:
@@ -124,9 +129,14 @@ void FromGWSAbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
   // through `OnNavigationHandleTimingUpdated`.
   if (!net_error_.has_value()) {
     net_error_ = failed_provisional_load_info.error;
-    net_extended_error_code_ =
-        failed_provisional_load_info.net_extended_error_code;
   }
+
+  if (failed_provisional_load_info.error_navigation_trigger.has_value()) {
+    CHECK(!error_navigation_trigger_.has_value());
+    error_navigation_trigger_ =
+        failed_provisional_load_info.error_navigation_trigger.value();
+  }
+
   AbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
       failed_provisional_load_info);
 }
@@ -217,11 +227,13 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogUKMHistograms(
   }
 
   if (net_error_.has_value()) {
-    CHECK(net_extended_error_code_.has_value());
     builder.SetNet_ErrorCode(
         std::abs(static_cast<int64_t>(net_error_.value())));
+  }
+
+  if (error_navigation_trigger_.has_value()) {
     builder.SetNet_ExtendedErrorCode(
-        std::abs(net_extended_error_code_.value()));
+        std::abs(static_cast<int64_t>(error_navigation_trigger_.value())));
   }
 
   LogUKMHistogramsForAbandonMetrics(builder, abandon_reason, milestone,

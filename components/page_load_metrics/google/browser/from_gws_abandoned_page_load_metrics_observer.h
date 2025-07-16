@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_FROM_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "content/public/browser/error_navigation_trigger.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 
 // This observer tracks page loads that are initiated through GWS and are
@@ -71,7 +72,7 @@ class FromGWSAbandonedPageLoadMetricsObserver
   std::optional<blink::Impression> impression_;
   bool is_committed_ = false;
   std::optional<net::Error> net_error_;
-  std::optional<int> net_extended_error_code_;
+  std::optional<content::ErrorNavigationTrigger> error_navigation_trigger_;
 
   base::TimeTicks second_redirect_request_start_time_;
   base::TimeTicks second_redirect_response_start_time_;
