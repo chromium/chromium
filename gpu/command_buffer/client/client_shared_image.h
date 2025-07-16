@@ -33,10 +33,6 @@ class ProcessMemoryDump;
 class MemoryAllocatorDumpGuid;
 }  // namespace base::trace_event
 
-namespace gfx {
-class GpuMemoryBuffer;
-}
-
 namespace media {
 class VideoFrame;
 }  // namespace media
@@ -54,6 +50,7 @@ class GLES2Interface;
 class SharedImageInterface;
 class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
+class GpuMemoryBufferImpl;
 class InterfaceBase;
 class RasterScopedAccess;
 struct SharedImageInfo;
@@ -109,13 +106,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
         SharedImageMetadata metadata_,
         base::WritableSharedMemoryMapping* mapping);
     static std::unique_ptr<ScopedMapping> Create(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        GpuMemoryBufferImpl* gpu_memory_buffer,
         bool is_already_mapped);
     static void StartCreateAsync(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        GpuMemoryBufferImpl* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb);
     static void FinishCreateAsync(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        GpuMemoryBufferImpl* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
         bool success);
   };
@@ -235,7 +232,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const Mailbox& mailbox,
       const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      std::unique_ptr<GpuMemoryBufferImpl> gpu_memory_buffer,
       gfx::BufferUsage buffer_usage,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
@@ -361,7 +358,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  std::unique_ptr<GpuMemoryBufferImpl> gpu_memory_buffer_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;

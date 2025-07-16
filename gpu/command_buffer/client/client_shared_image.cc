@@ -227,7 +227,7 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     CHECK(buffer_);
     return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
   }
-  bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped) {
+  bool Init(GpuMemoryBufferImpl* gpu_memory_buffer, bool is_already_mapped) {
     if (!gpu_memory_buffer) {
       LOG(ERROR) << "No GpuMemoryBuffer.";
       return false;
@@ -249,7 +249,7 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
   // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
   // removed.
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
+  RAW_PTR_EXCLUSION GpuMemoryBufferImpl* buffer_ = nullptr;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
@@ -378,9 +378,8 @@ ClientSharedImage::ScopedMapping::Create(
 
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>
-ClientSharedImage::ScopedMapping::Create(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    bool is_already_mapped) {
+ClientSharedImage::ScopedMapping::Create(GpuMemoryBufferImpl* gpu_memory_buffer,
+                                         bool is_already_mapped) {
   auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer());
   if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
@@ -391,7 +390,7 @@ ClientSharedImage::ScopedMapping::Create(
 
 // static
 void ClientSharedImage::ScopedMapping::StartCreateAsync(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    GpuMemoryBufferImpl* gpu_memory_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
   gpu_memory_buffer->MapAsync(
       base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
@@ -400,7 +399,7 @@ void ClientSharedImage::ScopedMapping::StartCreateAsync(
 
 // static
 void ClientSharedImage::ScopedMapping::FinishCreateAsync(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    GpuMemoryBufferImpl* gpu_memory_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
     bool success) {
   std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
@@ -801,7 +800,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+    std::unique_ptr<GpuMemoryBufferImpl> gpu_memory_buffer,
     gfx::BufferUsage buffer_usage,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");

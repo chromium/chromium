@@ -145,7 +145,7 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
   bool mapped_;
 };
 
-std::unique_ptr<gfx::GpuMemoryBuffer> CreateTestGpuMemoryBuffer(
+std::unique_ptr<GpuMemoryBufferImpl> CreateTestGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -157,7 +157,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> CreateTestGpuMemoryBuffer(
     return nullptr;
   }
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> result(new FakeGpuMemoryBufferImpl(
+  std::unique_ptr<GpuMemoryBufferImpl> result(new FakeGpuMemoryBufferImpl(
       size, format, std::move(shared_memory_region), 0,
       base::checked_cast<int>(
           gfx::RowSizeForBufferFormat(size.width(), format, 0))));
