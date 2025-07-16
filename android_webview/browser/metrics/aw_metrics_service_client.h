@@ -140,16 +140,12 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   void OnMetricsStart() override;
   void OnMetricsNotStarted() override;
   int GetSampleRatePerMille() const override;
-  int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
 
   // Gets the embedding app's package name if it's OK to log. Otherwise, this
   // returns the empty string.
   std::string GetAppPackageNameIfLoggable() override;
-
-  // Always returns `true`, indicating to record the package name
-  bool ShouldRecordPackageName() override;
 
   // - return `true` if client used to be sampled out.
   // - return `false` if client used to be in-sampled.

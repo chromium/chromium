@@ -551,9 +551,6 @@ int AndroidMetricsServiceClient::GetSampleBucketValue() const {
 
 bool AndroidMetricsServiceClient::IsInSample() const {
   // Called in MaybeStartMetrics(), after |metrics_service_| is created.
-  // NOTE IsInSample and ShouldRecordPackageName deliberately use the same hash
-  // to guarantee we never exceed 10% of total, opted-in clients for
-  // PackageNames.
   return GetSampleBucketValue() < GetSampleRatePerMille();
 }
 
@@ -569,15 +566,11 @@ bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
   return GetInstallerPackageType() != InstallerPackageType::OTHER;
 }
 
-bool AndroidMetricsServiceClient::ShouldRecordPackageName() {
-  return GetSampleBucketValue() < GetPackageNameLimitRatePerMille();
-}
-
 void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(
     MetricsService* service) {}
 
 std::string AndroidMetricsServiceClient::GetAppPackageNameIfLoggable() {
-  if (ShouldRecordPackageName() && CanRecordPackageNameForAppType()) {
+  if (CanRecordPackageNameForAppType()) {
     return GetAppPackageName();
   }
   return std::string();

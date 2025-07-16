@@ -216,8 +216,8 @@ class AndroidMetricsServiceClient
   // Returns a value in the inclusive range [0, 999], to be compared against a
   // per mille sample rate. This value will be based on a persisted value, so it
   // should be consistent across restarts. This value should also be mostly
-  // consistent across upgrades, to avoid significantly impacting IsInSample()
-  // and ShouldRecordPackageName(). Virtual for testing.
+  // consistent across upgrades, to avoid significantly impacting IsInSample().
+  // Virtual for testing.
   virtual int GetSampleBucketValue() const;
 
   // Determines if the client is within the random sample of clients for which
@@ -230,16 +230,6 @@ class AndroidMetricsServiceClient
   // package name. If this returns false, GetAppPackageNameIfLoggable() must
   // return empty string. Virtual for testing.
   virtual bool CanRecordPackageNameForAppType();
-
-  // Determines if this client falls within the group for which the embedding
-  // app's package name may be included. If this returns false,
-  // GetAppPackageNameIfLoggable() must return the empty string.
-  virtual bool ShouldRecordPackageName();
-
-  // Caps the rate at which we include package names in UMA logs, expressed as a
-  // per mille value. See GetSampleRatePerMille() for a description of how per
-  // mille values are handled.
-  virtual int GetPackageNameLimitRatePerMille() = 0;
 
   // Called by CreateMetricsService, allows the embedder to register additional
   // MetricsProviders. Does nothing by default.

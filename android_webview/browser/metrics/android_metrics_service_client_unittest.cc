@@ -40,7 +40,6 @@ class TestClient : public AndroidMetricsServiceClient {
   TestClient()
       : sample_bucket_value_(0),
         sampled_in_rate_per_mille_(1000),
-        package_name_rate_per_mille_(1000),
         record_package_name_for_app_type_(true) {}
 
   TestClient(const TestClient&) = delete;
@@ -68,19 +67,10 @@ class TestClient : public AndroidMetricsServiceClient {
     record_package_name_for_app_type_ = value;
   }
 
-  void SetPackageNameSamplePerMille(int per_mille) {
-    package_name_rate_per_mille_ = per_mille;
-  }
-
-  void SetInPackageNameSample(bool value) {
-    package_name_rate_per_mille_ = value ? 1000 : 0;
-  }
-
   void SetSampleBucketValue(int per_mille) { sample_bucket_value_ = per_mille; }
 
   // Expose the super class implementation for testing.
   using AndroidMetricsServiceClient::IsInSample;
-  using AndroidMetricsServiceClient::ShouldRecordPackageName;
 
  protected:
   void OnMetricsStart() override {}
@@ -102,16 +92,11 @@ class TestClient : public AndroidMetricsServiceClient {
     return metrics::ChromeUserMetricsExtension::CHROME;
   }
 
-  int GetPackageNameLimitRatePerMille() override {
-    return package_name_rate_per_mille_;
-  }
-
   void RegisterAdditionalMetricsProviders(MetricsService* service) override {}
 
  private:
   int sample_bucket_value_;
   int sampled_in_rate_per_mille_;
-  int package_name_rate_per_mille_;
   bool record_package_name_for_app_type_;
 };
 
@@ -136,7 +121,6 @@ class SampleBucketValueTestClient : public AndroidMetricsServiceClient {
   int32_t GetProduct() override {
     return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
   }
-  int GetPackageNameLimitRatePerMille() override { return 0; }
   void RegisterAdditionalMetricsProviders(MetricsService* service) override {}
 };
 
@@ -293,19 +277,6 @@ TEST_F(AndroidMetricsServiceClientTest,
   auto client = CreateAndInitTestClient(prefs.get());
   client->SetHaveMetricsConsent(true, true);
   client->SetRecordPackageNameForAppType(false);
-  client->SetInPackageNameSample(true);
-  std::string package_name = client->GetAppPackageNameIfLoggable();
-  EXPECT_TRUE(package_name.empty());
-}
-
-TEST_F(AndroidMetricsServiceClientTest,
-       TestShouldNotUploadPackageName_SampledOut) {
-  auto prefs = CreateTestPrefs();
-  prefs->SetString(metrics::prefs::kMetricsClientID, kTestClientId);
-  auto client = CreateAndInitTestClient(prefs.get());
-  client->SetHaveMetricsConsent(true, true);
-  client->SetRecordPackageNameForAppType(true);
-  client->SetInPackageNameSample(false);
   std::string package_name = client->GetAppPackageNameIfLoggable();
   EXPECT_TRUE(package_name.empty());
 }
@@ -316,7 +287,6 @@ TEST_F(AndroidMetricsServiceClientTest, TestCanUploadPackageName) {
   auto client = CreateAndInitTestClient(prefs.get());
   client->SetHaveMetricsConsent(true, true);
   client->SetRecordPackageNameForAppType(true);
-  client->SetInPackageNameSample(true);
   std::string package_name = client->GetAppPackageNameIfLoggable();
   EXPECT_FALSE(package_name.empty());
 }
@@ -327,69 +297,6 @@ TEST_F(AndroidMetricsServiceClientTest, TestGetPackageNameInternal) {
   auto client = CreateAndInitTestClient(prefs.get());
   // Make sure GetPackageName returns a non-empty string.
   EXPECT_FALSE(client->GetAppPackageName().empty());
-}
-
-TEST_F(AndroidMetricsServiceClientTest,
-       TestPackageNameLogic_SampleRateBelowPackageNameRate) {
-  auto prefs = CreateTestPrefs();
-  prefs->SetString(metrics::prefs::kMetricsClientID, kTestClientId);
-  auto client = CreateAndInitTestClient(prefs.get());
-  client->SetSampleRatePerMille(80);
-  client->SetPackageNameSamplePerMille(100);
-
-  // When GetSampleRatePerMille() <= 100, everything in-sample should also be in
-  // the package name sample.
-  for (int value = 0; value < 80; value += 10) {
-    client->SetSampleBucketValue(value);
-    EXPECT_TRUE(client->IsInSample())
-        << "Value " << value << " should be in-sample";
-    EXPECT_TRUE(client->ShouldRecordPackageName())
-        << "Value " << value << " should be in the package name sample";
-  }
-  // After this, the only thing we care about is that we're out of sample (the
-  // package name logic shouldn't matter at this point, because we won't upload
-  // any records).
-  for (int value = 80; value < 1000; value += 10) {
-    client->SetSampleBucketValue(value);
-    EXPECT_FALSE(client->IsInSample())
-        << "Value " << value << " should be out of sample";
-  }
-}
-
-TEST_F(AndroidMetricsServiceClientTest,
-       TestPackageNameLogic_SampleRateAbovePackageNameRate) {
-  auto prefs = CreateTestPrefs();
-  prefs->SetString(metrics::prefs::kMetricsClientID, kTestClientId);
-  auto client = CreateAndInitTestClient(prefs.get());
-  client->SetSampleRatePerMille(900);
-  client->SetPackageNameSamplePerMille(100);
-
-  // When GetSampleRate() > 0.10, only values up to 0.10 should be in the
-  // package name sample.
-  for (int value = 0; value < 10; value += 10) {
-    client->SetSampleBucketValue(value);
-    EXPECT_TRUE(client->IsInSample())
-        << "Value " << value << " should be in-sample";
-    EXPECT_TRUE(client->ShouldRecordPackageName())
-        << "Value " << value << " should be in the package name sample";
-  }
-  // After this (but until we hit the sample rate), clients should be in sample
-  // but not upload the package name.
-  for (int value = 100; value < 900; value += 10) {
-    client->SetSampleBucketValue(value);
-    EXPECT_TRUE(client->IsInSample())
-        << "Value " << value << " should be in-sample";
-    EXPECT_FALSE(client->ShouldRecordPackageName())
-        << "Value " << value << " should be out of the package name sample";
-  }
-  // After this, the only thing we care about is that we're out of sample (the
-  // package name logic shouldn't matter at this point, because we won't upload
-  // any records).
-  for (int value = 900; value < 1000; value += 10) {
-    client->SetSampleBucketValue(value);
-    EXPECT_FALSE(client->IsInSample())
-        << "Value " << value << " should be out of sample";
-  }
 }
 
 TEST_F(AndroidMetricsServiceClientTest, TestCanForceEnableMetrics) {

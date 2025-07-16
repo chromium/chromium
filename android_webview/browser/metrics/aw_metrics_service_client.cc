@@ -47,16 +47,6 @@ const int kStableSampledInRatePerMille = 20;
 // exercise the out-of-sample code path.
 const int kBetaDevCanarySampledInRatePerMille = 990;
 
-// The fraction of UMA clients for whom package name data is uploaded. This
-// threshold and the corresponding privacy requirements are described in more
-// detail at http://shortn/_CzfDUxTxm2 (internal document). We also have public
-// documentation for metrics collection in WebView more generally (see
-// https://developer.android.com/guide/webapps/webview-privacy).
-//
-// Do not change this constant without seeking privacy approval with the teams
-// outlined in the internal document above.
-const int kPackageNameLimitRatePerMille = 100;  // (10% of UMA clients)
-
 AwMetricsServiceClient* g_aw_metrics_service_client = nullptr;
 
 int GetBaseSampleRatePerMille() {
@@ -124,10 +114,6 @@ std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
   return std::string();
 }
 
-bool AwMetricsServiceClient::ShouldRecordPackageName() {
-  return true;
-}
-
 // Used below in AwMetricsServiceClient::OnMetricsStart.
 void RecordAppDataDirectorySize() {
   TRACE_EVENT_BEGIN0("android_webview", "RecordAppDataDirectorySize");
@@ -161,10 +147,6 @@ void AwMetricsServiceClient::OnMetricsStart() {
 }
 
 void AwMetricsServiceClient::OnMetricsNotStarted() {}
-
-int AwMetricsServiceClient::GetPackageNameLimitRatePerMille() {
-  return kPackageNameLimitRatePerMille;
-}
 
 void AwMetricsServiceClient::OnAppStateChanged(
     WebViewAppStateObserver::State state) {
