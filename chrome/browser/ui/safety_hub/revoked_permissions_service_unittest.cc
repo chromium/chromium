@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -133,7 +134,7 @@ void PopulateWebsiteSettingsLists(base::Value::List& integer_keyed,
 
       integer_keyed.Append(static_cast<int32_t>(type));
       string_keyed.Append(
-          RevokedPermissionsService::ConvertContentSettingsTypeToKey(type));
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
     }
   }
 }
@@ -144,7 +145,8 @@ void PopulateChooserWebsiteSettingsDicts(base::Value::Dict& integer_keyed,
       base::NumberToString(static_cast<int32_t>(chooser_type)),
       base::Value::Dict().Set("foo", "bar"));
   string_keyed = base::Value::Dict().Set(
-      RevokedPermissionsService::ConvertContentSettingsTypeToKey(chooser_type),
+      UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
+          chooser_type),
       base::Value::Dict().Set("foo", "bar"));
 }
 
@@ -354,14 +356,14 @@ class RevokedPermissionsServiceTest
             .Set(permissions::kRevokedKey,
                  base::Value::List()
                      .Append(
-                         RevokedPermissionsService::
+                         UnusedSitePermissionsManager::
                              ConvertContentSettingsTypeToKey(geolocation_type))
-                     .Append(RevokedPermissionsService::
+                     .Append(UnusedSitePermissionsManager::
                                  ConvertContentSettingsTypeToKey(chooser_type)))
             .Set(permissions::kRevokedChooserPermissionsKey,
                  base::Value::Dict().Set(
-                     RevokedPermissionsService::ConvertContentSettingsTypeToKey(
-                         chooser_type),
+                     UnusedSitePermissionsManager::
+                         ConvertContentSettingsTypeToKey(chooser_type),
                      base::Value(base::Value::Dict().Set("foo", "bar"))));
 
     hcsm()->SetWebsiteSettingDefaultScope(
@@ -418,7 +420,7 @@ class RevokedPermissionsServiceTest
         ContentSettingsPattern::FromURLNoWildcard(GURL(url));
     permissions_data.permission_types = permission_types;
     permissions_data.chooser_permissions_data = base::Value::Dict().Set(
-        RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+        UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
             chooser_type),
         base::Value::Dict().Set("foo", "bar"));
     permissions_data.constraints =
@@ -888,7 +890,7 @@ TEST_P(RevokedPermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 1u);
   EXPECT_EQ(
-      RevokedPermissionsService::ConvertKeyToContentSettingsType(
+      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
           GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[0].GetString()),
       geolocation_type);
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
@@ -915,15 +917,15 @@ TEST_P(RevokedPermissionsServiceTest,
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 3u);
   EXPECT_EQ(
-      RevokedPermissionsService::ConvertKeyToContentSettingsType(
+      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
           GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[0].GetString()),
       geolocation_type);
   EXPECT_EQ(
-      RevokedPermissionsService::ConvertKeyToContentSettingsType(
+      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
           GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[1].GetString()),
       mediastream_type);
   EXPECT_EQ(
-      RevokedPermissionsService::ConvertKeyToContentSettingsType(
+      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
           GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[2].GetString()),
       chooser_type);
 
@@ -1215,7 +1217,7 @@ TEST_P(RevokedPermissionsServiceTest, NotRevokeNotificationPermission) {
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 1u);
   EXPECT_EQ(
-      RevokedPermissionsService::ConvertKeyToContentSettingsType(
+      UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
           GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1))[0].GetString()),
       geolocation_type);
 
@@ -1805,9 +1807,9 @@ TEST_P(RevokedPermissionsServiceTest,
   // Validate content settings are stored in group name strings.
   auto permissions_list_string =
       base::Value::List()
-          .Append(RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               geolocation_type))
-          .Append(RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               mediastream_type));
   revoked_permissions_content_settings =
       hcsm()->GetSettingsForOneType(revoked_unused_site_type);
@@ -1845,7 +1847,7 @@ TEST_P(RevokedPermissionsServiceTest,
   // Validate content settings are stored in group name strings.
   auto permissions_list_string =
       base::Value::List()
-          .Append(RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               geolocation_type))
           .Append(unknown_type);
   revoked_permissions_content_settings =
@@ -1948,7 +1950,7 @@ TEST_F(RevokedPermissionsServiceNameMigrationTest,
   auto dict_string = base::Value::Dict().Set(
       permissions::kRevokedKey,
       base::Value::List().Append(
-          RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               geolocation_type)));
   hcsm()->SetWebsiteSettingDefaultScope(GURL(url1), GURL(url1),
                                         revoked_unused_site_type,
@@ -1972,10 +1974,10 @@ TEST_F(RevokedPermissionsServiceNameMigrationTest,
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted));
   auto expected_permissions_list_url1 = base::Value::List().Append(
-      RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+      UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
           mediastream_type));
   auto expected_permissions_list_url2 = base::Value::List().Append(
-      RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+      UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
           geolocation_type));
   EXPECT_EQ(expected_permissions_list_url1,
             GetRevokedUnusedPermissions(hcsm())[0]
@@ -2004,7 +2006,7 @@ TEST_F(RevokedPermissionsServiceNameMigrationTest,
   auto dict_string = base::Value::Dict().Set(
       permissions::kRevokedKey,
       base::Value::List().Append(
-          RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               geolocation_type)));
   hcsm()->SetWebsiteSettingDefaultScope(GURL(url1), GURL(url1),
                                         revoked_unused_site_type,
@@ -2038,11 +2040,11 @@ TEST_F(RevokedPermissionsServiceNameMigrationTest,
       1);
   auto expected_permissions_list_url1 =
       base::Value::List()
-          .Append(RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+          .Append(UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
               mediastream_type))
           .Append(unknown_type);
   auto expected_permissions_list_url2 = base::Value::List().Append(
-      RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+      UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
           geolocation_type));
   EXPECT_EQ(expected_permissions_list_url1,
             GetRevokedUnusedPermissions(hcsm())[0]

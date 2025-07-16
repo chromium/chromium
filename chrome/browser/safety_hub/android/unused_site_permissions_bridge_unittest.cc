@@ -9,8 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -47,7 +47,7 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
     base::Value::List revoked_permissions_list;
     for (ContentSettingsType type : kUnusedPermissionList) {
       revoked_permissions_list.Append(
-          RevokedPermissionsService::ConvertContentSettingsTypeToKey(type));
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
     }
     auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
                                         revoked_permissions_list.Clone());

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -135,7 +136,7 @@ class SafetyHubHatsServiceTest : public testing::Test {
     base::Value::Dict dict;
     dict.Set(permissions::kRevokedKey,
              base::Value::List().Append(
-                 RevokedPermissionsService::ConvertContentSettingsTypeToKey(
+                 UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
                      ContentSettingsType::GEOLOCATION)));
     content_settings::ContentSettingConstraints default_constraint(
         base::Time::Now());

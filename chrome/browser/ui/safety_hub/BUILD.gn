@@ -25,6 +25,7 @@ source_set("safety_hub") {
     "safety_hub_result.h",
     "safety_hub_service.h",
     "safety_hub_util.h",
+    "unused_site_permissions_manager.h",
   ]
 
   public_deps = [
@@ -88,6 +89,7 @@ source_set("impl") {
     "safety_hub_result.cc",
     "safety_hub_service.cc",
     "safety_hub_util.cc",
+    "unused_site_permissions_manager.cc",
   ]
 
   deps = [

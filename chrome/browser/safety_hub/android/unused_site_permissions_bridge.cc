@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -67,8 +68,9 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
   // but here it is ok since the primary pattern belongs to a single
   // origin. Therefore, it has a fully defined URL+scheme+port which makes
   // converting primary pattern to origin successful.
-  url::Origin origin = RevokedPermissionsService::ConvertPrimaryPatternToOrigin(
-      obj.primary_pattern);
+  url::Origin origin =
+      UnusedSitePermissionsManager::ConvertPrimaryPatternToOrigin(
+          obj.primary_pattern);
   return Java_PermissionsData_create(
       env, origin.Serialize(), permissions,
       obj.constraints.expiration().ToDeltaSinceWindowsEpoch().InMicroseconds(),

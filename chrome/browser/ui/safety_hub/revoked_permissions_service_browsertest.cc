@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -269,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
 
   for (int i = 0; i < (int)revoked_permission_types.size(); i++) {
     ContentSettingsType revoked_permission_type =
-        RevokedPermissionsService::ConvertKeyToContentSettingsType(
+        UnusedSitePermissionsManager::ConvertKeyToContentSettingsType(
             revoked_permission_types[i].GetString());
     EXPECT_EQ(allowed_permission_types[i], revoked_permission_type);
   }
