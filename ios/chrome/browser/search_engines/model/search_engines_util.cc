@@ -4,14 +4,23 @@
 
 #include "ios/chrome/browser/search_engines/model/search_engines_util.h"
 
+#include "base/feature_list.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/template_url_service.h"
 
 namespace search_engines {
 
 void UpdateSearchEngineCountryCodeIfNeeded(PrefService* preferences) {
+  // Do not update `kCountryIDAtInstall` preference when
+  // `kDynamicProfileCountry` is on to avoid situation when multiple codepaths
+  // are affecting regional capabilities service results by updating prefs.
+  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+    return;
+  }
+
   if (!preferences->HasPrefPath(
           regional_capabilities::prefs::kCountryIDAtInstall)) {
     // No search engines were ever installed, just return.

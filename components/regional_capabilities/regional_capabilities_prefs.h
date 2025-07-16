@@ -19,7 +19,21 @@ namespace regional_capabilities::prefs {
 
 // Preference key containing the country ID used for regional capability checks
 // and to determine the list of search engine options to prepopulate.
+//
+// On most OSes (except iOS), this preference key is set once during the Profile
+// creation. On iOS, this preference key is updated dynamically.
+//
+// This is a DEPRECATED preference key, which is used as a fallback if a new
+// preference key `kCountryID` is unset.
+//
+// Until the `kDynamicProfileCountry` feature is not enabled by default,
+// the code related to set/read this key preference should remain in place.
 inline constexpr char kCountryIDAtInstall[] = "countryid_at_install";
+
+// Preference key containing the country ID associated with the Chrome Profile,
+// which updates dynamically. Used for regional capability checks such as
+// to determine the list of search engine options to prepopulate.
+inline constexpr char kCountryID[] = "countryid";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

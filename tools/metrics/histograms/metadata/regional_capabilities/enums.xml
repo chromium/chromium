@@ -44,6 +44,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Only persisted country available"/>
   <int value="3" label="Persisted and latest countries match"/>
   <int value="4" label="Persisted country selected"/>
+  <int value="5"
+      label="Persisted country selected over fallback current country"/>
+  <int value="6" label="Current country selected"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:LoadedCountrySource) -->

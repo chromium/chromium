@@ -35,4 +35,8 @@ COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
 BASE_FEATURE(kTaiyaki, "Taiyaki", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+BASE_FEATURE(kDynamicProfileCountry,
+             "DynamicProfileCountry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches

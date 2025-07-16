@@ -51,6 +51,10 @@ COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
 BASE_DECLARE_FEATURE(kTaiyaki);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+// Updates profile country preference stored in preferences
+// dynamically when the current country does not match the stored value.
+BASE_DECLARE_FEATURE(kDynamicProfileCountry);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_

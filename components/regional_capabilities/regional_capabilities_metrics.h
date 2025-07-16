@@ -19,7 +19,9 @@ enum class LoadedCountrySource {
   kPersistedOnly = 2,
   kBothMatch = 3,
   kPersistedPreferred = 4,
-  kMaxValue = kPersistedPreferred
+  kPersistedPreferredOverFallback = 5,
+  kCurrentPreferred = 6,
+  kMaxValue = kCurrentPreferred
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:LoadedCapabilitiesCountrySource)
 

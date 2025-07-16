@@ -51,13 +51,13 @@ void RecordVariationsCountryMatching(
     country_codes::CountryId variations_latest_country,
     country_codes::CountryId persisted_profile_country,
     country_codes::CountryId current_device_country,
-    bool is_device_country_from_fallback) {
+    bool is_current_device_country_from_fallback) {
   base::UmaHistogramEnumeration(
       "RegionalCapabilities.PersistedCountryMatching",
       ComputeCountryMatchingStatus(persisted_profile_country,
                                    variations_latest_country));
   base::UmaHistogramEnumeration(
-      is_device_country_from_fallback
+      is_current_device_country_from_fallback
           ? "RegionalCapabilities.FallbackCountryMatching"
           : "RegionalCapabilities.FetchedCountryMatching",
       ComputeCountryMatchingStatus(current_device_country,

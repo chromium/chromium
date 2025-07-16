@@ -517,9 +517,10 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(UnknownCountryIdStored) -->
 
 <enum name="UnknownCountryIdStored">
-  <int value="0" label="Valid country stored"/>
+  <int value="0" label="Valid country stored in the static pref"/>
   <int value="1" label="Clearing feature disabled"/>
-  <int value="2" label="Cleared pref due to invalid country ID"/>
+  <int value="2" label="Cleared static pref due to invalid country ID"/>
+  <int value="3" label="Valid country stored in the dynamic pref"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
