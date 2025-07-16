@@ -235,7 +235,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
                                     bitmap, closeButtonSize, closeButtonSize, true));
             bitmap.recycle();
         }
-        mActionButton.setBackground(null);
+        mActionButton.setBackgroundResource(R.drawable.small_icon_background);
         mActionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
 

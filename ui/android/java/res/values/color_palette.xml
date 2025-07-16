@@ -29,6 +29,7 @@ found in the LICENSE file.
     <color name="baseline_primary_10">#041E49</color>
     <color name="baseline_neutral_100">@android:color/white</color>
     <color name="baseline_neutral_100_alpha_10">#19FFFFFF</color>
+    <color name="baseline_neutral_100_alpha_16">#29FFFFFF</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_5" tools:ignore="UnusedResources">#F7F9FC</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_8" tools:ignore="UnusedResources">#F2F5FB</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_11" tools:ignore="UnusedResources">#EFF3FA</color>

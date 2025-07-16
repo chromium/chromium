@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
@@ -541,7 +540,10 @@ class TabGridViewBinder {
         final @ColorInt int backgroundColor =
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         cardView.getContext(), isIncognito, isSelected, colorId);
-        ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
+        ViewCompat.setBackgroundTintList(
+                cardView,
+                TabCardThemeUtil.getCardViewBackgroundColorStateList(
+                        cardView.getContext(), isIncognito, backgroundColor));
 
         titleView.setTextColor(
                 TabCardThemeUtil.getTitleTextColor(

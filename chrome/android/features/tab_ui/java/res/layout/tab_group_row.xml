@@ -88,12 +88,12 @@ found in the LICENSE file.
   </FrameLayout>
 
   <org.chromium.ui.listmenu.ListMenuButton
-      android:id="@+id/tab_group_menu"
-      android:layout_width="@dimen/min_touch_target_size"
-      android:layout_height="match_parent"
-      android:background="@null"
-      android:src="@drawable/ic_more_vert_24dp"
-      app:tint="@color/default_icon_color_tint_list"
-      android:visibility="gone"/>
+    android:id="@+id/tab_group_menu"
+    android:layout_width="@dimen/min_touch_target_size"
+    android:layout_height="match_parent"
+    android:background="@drawable/small_icon_background"
+    android:src="@drawable/ic_more_vert_24dp"
+    app:tint="@color/default_icon_color_tint_list"
+    android:visibility="gone" />
 
 </org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView>
