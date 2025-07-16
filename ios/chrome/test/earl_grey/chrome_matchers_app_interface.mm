@@ -436,6 +436,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CANCEL)];
 }
 
++ (id<GREYMatcher>)closeButton {
+  return
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CLOSE)];
+}
+
 + (id<GREYMatcher>)navigationBarCancelButton {
   return grey_allOf(
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
@@ -479,6 +484,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)stopButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_ACCNAME_STOP)];
+}
+
++ (id<GREYMatcher>)searchBarClearTextButton {
+  return [self buttonWithAccessibilityLabel:@"Clear text"];
 }
 
 + (id<GREYMatcher>)omnibox {

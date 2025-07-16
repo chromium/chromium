@@ -157,6 +157,10 @@ id<GREYMatcher> CancelButton() {
   return [ChromeMatchersAppInterface cancelButton];
 }
 
+id<GREYMatcher> CloseButton() {
+  return [ChromeMatchersAppInterface closeButton];
+}
+
 id<GREYMatcher> NavigationBarCancelButton() {
   return [ChromeMatchersAppInterface navigationBarCancelButton];
 }
@@ -179,6 +183,10 @@ id<GREYMatcher> ReloadButton() {
 
 id<GREYMatcher> StopButton() {
   return [ChromeMatchersAppInterface stopButton];
+}
+
+id<GREYMatcher> SearchBarClearTextButton() {
+  return [ChromeMatchersAppInterface searchBarClearTextButton];
 }
 
 id<GREYMatcher> Omnibox() {

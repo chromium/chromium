@@ -109,15 +109,8 @@ id<GREYMatcher> CountryEntry(NSString* label) {
 
 // Matcher for the search bar.
 id<GREYMatcher> SearchBar() {
-  return grey_allOf(grey_accessibilityID(kAutofillCountrySelectionTableViewId),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the search bar's cancel button.
-id<GREYMatcher> SearchBarCancelButton() {
-  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_APP_CANCEL),
-                    grey_kindOfClass([UIButton class]),
-                    grey_ancestor(grey_kindOfClass([UISearchBar class])),
+  // Match using the accessibility trait for a search field.
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
                     grey_sufficientlyVisible(), nil);
 }
 
@@ -354,24 +347,24 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [self openAutofillProfilesSettings];
 
   // Verify the "Add" button is initially visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsToolbarAddButton()];
 
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
       performAction:grey_tap()];
 
   // Confirm that the "Add" button no longer exists.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      SettingsToolbarAddButton()];
 
   // Switch off edit mode.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarDoneButton()]
       performAction:grey_tap()];
 
   // Verify the "Add" button is visible.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsToolbarAddButton()];
 }
 
 // Checks that the toolbar "Add" button's enabled state changes based on the
@@ -540,8 +533,7 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify the cancel button is visible and unfocuses search bar when tapped.
-  [[EarlGrey selectElementWithMatcher:SearchBarCancelButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Verify countries are searchable using their name in the current locale.
   [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];

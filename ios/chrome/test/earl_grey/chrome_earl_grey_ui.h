@@ -190,6 +190,9 @@
 // Convenient function to trigger the Edit Menu on selector.
 - (void)triggerEditMenu:(ElementSelector*)selector;
 
+// Clears the search bar text and dismisses the search bar.
+- (void)clearAndDismissSearchBar;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_UI_H_

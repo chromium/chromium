@@ -518,6 +518,38 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   }
 }
 
+- (void)clearAndDismissSearchBar {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, with iOS 26+, the search bar is dismissed after clearing the
+    // text. The button for clearing text is always displayed.
+    if (@available(iOS 26, *)) {
+      [[EarlGrey
+          selectElementWithMatcher:chrome_test_util::SearchBarClearTextButton()]
+          performAction:grey_tap()];
+      return;
+    }
+
+    // On iPad, with iOS < 26, the search bar is cleared and dismissed via the
+    // "Cancel" button.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+        performAction:grey_tap()];
+  } else {
+    // On iPhone, both the "Close" and "Cancel" buttons clear the search text
+    // and dismiss the search bar.
+
+    // If iOS 26 is available, tap the "Close" button.
+    if (@available(iOS 26, *)) {
+      [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseButton()]
+          performAction:grey_tap()];
+      return;
+    }
+
+    // If iOS 26 is not available, tap the "Cancel" button.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+        performAction:grey_tap()];
+  }
+}
+
 #pragma mark - Private
 
 // Clears all browsing data from the device. This method needs to be called when

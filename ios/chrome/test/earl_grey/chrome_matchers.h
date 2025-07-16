@@ -127,6 +127,9 @@ id<GREYMatcher> PrimaryToolbar();
 // Returns a matcher for a cancel button.
 id<GREYMatcher> CancelButton();
 
+// Returns a matcher for a close button.
+id<GREYMatcher> CloseButton();
+
 // Returns the matcher for an enabled cancel button in a navigation bar.
 id<GREYMatcher> NavigationBarCancelButton();
 
@@ -147,6 +150,10 @@ id<GREYMatcher> ReloadButton();
 
 // Returns a matcher for the stop loading button.
 id<GREYMatcher> StopButton();
+
+// Returns a matcher for the search bar's clear text button, which is displayed
+// when the search bar is non-empty. Tapping it clears the search text.
+id<GREYMatcher> SearchBarClearTextButton();
 
 // Returns a matcher for the omnibox.
 id<GREYMatcher> Omnibox();
