@@ -136,73 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
 // listener for both chrome.tabs.onUpdated and chrome.tabs.onRemoved.
 // Regression test for https://crbug.com/431965152.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RemovingTabWhilePartOfGroup) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "foo",
-           "manifest_version": 3,
-           "version": "0.1",
-           "permissions": ["tabs"],
-           "background": {"service_worker": "background.js"}
-         })";
-  // The following watches for tabs.onRemoved and tabs.onUpdated, notifying the
-  // browser (by calling notifyPass()) when we've removed a tab and updated
-  // a tab to no longer be in a group.
-  static constexpr char kBackgroundJs[] =
-      R"(let resolveTabRemovedPromise;
-         let resolveTabGroupUpdatedPromise;
-         let updatedCount = 0;
-         let tabRemovedPromise = new Promise((resolve) => {
-           resolveTabRemovedPromise = resolve;
-         });
-         let tabGroupUpdatedPromise = new Promise((resolve) => {
-           resolveTabGroupUpdatedPromise = resolve;
-         });
-         chrome.tabs.onRemoved.addListener((tabId, info) => {
-           resolveTabRemovedPromise();
-         });
-         chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-           if (!changeInfo.groupId || changeInfo.groupId != -1) {
-             return;
-           }
-           resolveTabGroupUpdatedPromise();
-         });
-         Promise.all([tabRemovedPromise, tabGroupUpdatedPromise]).then(() => {
-           chrome.test.notifyPass();
-         });)";
-  extensions::TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
-
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  // Create two new tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://version"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  int index1 = browser()->tab_strip_model()->active_index();
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://about"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  content::WebContents* web_contents2 =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  int index2 = browser()->tab_strip_model()->active_index();
-
-  EXPECT_NE(index1, index2);
-  // Add the new tabs to a tab group.
-  browser()->tab_strip_model()->AddToNewGroup({index1, index2});
-
-  // Next, close the second tab. This results in the tab being removed from the
-  // tab strip and from tabs.onUpdated being dispatched. When onUpdated is
-  // dispatched, the tab is no longer present in the tab strip. The system
-  // should handle this gracefully.
-  // Regression test for https://crbug.com/431965152.
-  extensions::ResultCatcher result_catcher;
-  web_contents2->Close();
-  ASSERT_TRUE(result_catcher.GetNextResult());
+  ASSERT_TRUE(RunExtensionTest("tabs/removing_tab_while_part_of_group"))
+      << message_;
 }
 
 // TODO(crbug.com/40925613): Re-enable this test
