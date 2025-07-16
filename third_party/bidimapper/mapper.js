@@ -8871,11 +8871,21 @@
             return bodySize;
         }
         get #context() {
-            return (this.#response.paused?.frameId ??
+            const result = this.#response.paused?.frameId ??
                 this.#request.info?.frameId ??
                 this.#request.paused?.frameId ??
-                this.#request.auth?.frameId ??
-                null);
+                this.#request.auth?.frameId;
+            if (result !== undefined) {
+                return result;
+            }
+            if (this.#request?.info?.initiator.type === 'preflight' &&
+                this.#request?.info?.initiator.requestId !== undefined) {
+                const maybeInitiator = this.#networkStorage.getRequestById(this.#request?.info?.initiator.requestId);
+                if (maybeInitiator !== undefined) {
+                    return maybeInitiator.#request.info?.frameId ?? null;
+                }
+            }
+            return null;
         }
         get #statusCode() {
             return (this.#responseOverrides?.statusCode ??
