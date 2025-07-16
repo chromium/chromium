@@ -199,6 +199,9 @@ class PDFiumEngineClient {
   // See https://crbug.com/312882 for an example.
   virtual bool IsValidLink(const std::string& url) = 0;
 
+  // Notifies clients that a new text fragments search has started.
+  virtual void OnNewTextFragmentsSearchStarted() = 0;
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Returns true if the client is in annotation mode.
   virtual bool IsInAnnotationMode() const = 0;

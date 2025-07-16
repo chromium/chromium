@@ -23,7 +23,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "pdf/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "components/pdf/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace glic {
 
@@ -51,6 +57,26 @@ std::string AttachmentResultToString(blink::mojom::AttachmentResult result) {
   }
   return string;
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+content::RenderFrameHost* GetAnnotationTargetFrameForPDF(
+    std::optional<shared_highlighting::TextFragment> text_fragment,
+    content::WebContents* focused_contents) {
+  if (!features::kGlicScrollToPDF.Get()) {
+    return nullptr;
+  }
+  // PDFs don't support node selectors.
+  if (!text_fragment) {
+    return nullptr;
+  }
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(focused_contents);
+  if (!pdf_helper || !pdf_helper->IsDocumentLoadComplete()) {
+    return nullptr;
+  }
+  return &pdf_helper->render_frame_host();
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 }  // namespace
 
 GlicAnnotationManager::GlicAnnotationManager(GlicKeyedService* service)
@@ -149,35 +175,50 @@ void GlicAnnotationManager::ScrollTo(
   }
 
   auto focused_tab_data = service_->sharing_manager().GetFocusedTabData();
-  content::Page* focused_primary_page = nullptr;
-  if (focused_tab_data.focus()) {
-    focused_primary_page =
-        &focused_tab_data.focus()->GetContents()->GetPrimaryPage();
-  }
-  if (!focused_primary_page) {
+  if (!focused_tab_data.focus()) {
     std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }
+  content::WebContents* focused_contents =
+      focused_tab_data.focus()->GetContents();
+  CHECK(focused_contents);
+  content::Page& focused_primary_page = focused_contents->GetPrimaryPage();
 
-  // Note: `GlicWindowController::IsShowing()` will be false and
-  // `focused_primary_page` will be non-null when `GlicWindowController` is
-  // running the close animation.
+  // Note: `GlicWindowController::IsShowing()` will be false when
+  // `GlicWindowController` is running the close animation.
   if (!service_->window_controller().IsShowing()) {
     std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
   }
 
+  // We only support scrolling the currently focused tab's main frame.
+  content::RenderFrameHost* focused_rfh =
+      &focused_primary_page.GetMainDocument();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // TODO(crbug.com/427455182): Expand the scrollTo support to the embedded
+  // PDFs. Currently only the main-frame PDF can be scrolled and highlighted.
+  if (focused_primary_page.GetContentsMimeType() == pdf::kPDFMimeType) {
+    focused_rfh =
+        GetAnnotationTargetFrameForPDF(text_fragment, focused_contents);
+    if (!focused_rfh) {
+      std::move(wrapped_callback)
+          .Run(mojom::ScrollToErrorReason::kNotSupported);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   if (annotation_agent_container_.has_value() &&
       annotation_agent_container_->document.AsRenderFrameHostIfValid() !=
-          &focused_primary_page->GetMainDocument()) {
+          focused_rfh) {
     annotation_agent_container_ = std::nullopt;
   }
 
   if (!annotation_agent_container_.has_value()) {
     annotation_agent_container_.emplace();
-    annotation_agent_container_->document =
-        focused_primary_page->GetMainDocument().GetWeakDocumentPtr();
-    focused_primary_page->GetMainDocument().GetRemoteInterfaces()->GetInterface(
+    annotation_agent_container_->document = focused_rfh->GetWeakDocumentPtr();
+    focused_rfh->GetRemoteInterfaces()->GetInterface(
         annotation_agent_container_->remote.BindNewPipeAndPassReceiver());
   }
 
@@ -194,11 +235,9 @@ void GlicAnnotationManager::ScrollTo(
   // Verifies that the document_id parameter (if set) refers to the primary
   // document in the currently focused tab.
   if (params->document_id) {
-    // We only support scrolling the currently focused tab's main frame.
-    content::RenderFrameHost& rfh = focused_primary_page->GetMainDocument();
     auto* document_identifier_user_data =
         optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
-            &rfh);
+            focused_rfh);
     if (!document_identifier_user_data ||
         document_identifier_user_data->serialized_token() !=
             params->document_id) {
@@ -227,7 +266,7 @@ void GlicAnnotationManager::ScrollTo(
       search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
       this, std::move(agent_remote), std::move(agent_host_receiver),
-      std::move(wrapped_callback), *focused_primary_page);
+      std::move(wrapped_callback), focused_primary_page);
 }
 
 void GlicAnnotationManager::RemoveAnnotation(

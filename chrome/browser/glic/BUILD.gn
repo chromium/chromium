@@ -208,6 +208,12 @@ source_set("impl") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/browser",
+      "//components/pdf/common:constants",
+    ]
+  }
 }
 
 mojom("mojo_bindings") {
@@ -349,6 +355,13 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/display:test_support",
   ]
+  if (enable_pdf) {
+    deps += [
+      "//chrome/browser/pdf:pdf_extension_test_utils",
+      "//components/pdf/browser",
+      "//pdf:features",
+    ]
+  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

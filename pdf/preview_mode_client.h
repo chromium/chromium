@@ -75,6 +75,7 @@ class PreviewModeClient : public PDFiumEngineClient {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  void OnNewTextFragmentsSearchStarted() override;
 #if BUILDFLAG(ENABLE_PDF_INK2)
   bool IsInAnnotationMode() const override;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)

@@ -29,6 +29,7 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_annotation_agent.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
@@ -98,7 +99,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PreviewModeClient::Client,
-                               public blink::mojom::AnnotationAgentContainer {
+                               public blink::mojom::AnnotationAgentContainer,
+                               public PDFAnnotationAgent::Container {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.ts.
@@ -402,6 +404,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  void OnNewTextFragmentsSearchStarted() override;
 #if BUILDFLAG(ENABLE_PDF_INK2)
   bool IsInAnnotationMode() const override;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
@@ -463,6 +466,12 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
       blink::mojom::AnnotationType type,
       CreateAgentFromSelectionCallback callback) override;
   void RemoveAgentsOfType(blink::mojom::AnnotationType type) override;
+
+  // `PDFAnnotationAgent::Container`:
+  bool FindAndHighlightTextFragments(
+      base::span<const std::string> text_fragments) override;
+  void ScrollTextFragmentIntoView() override;
+  void RemoveTextFragments() override;
 
   // Initializes the plugin for testing, bypassing certain consistency checks.
   bool InitializeForTesting();
@@ -1019,6 +1028,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Used to allow the embedder to scroll-to and highlight a text fragment.
   mojo::Receiver<blink::mojom::AnnotationAgentContainer>
       annotation_agent_container_receiver_{this};
+  std::unique_ptr<PDFAnnotationAgent> annotation_agent_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   enum class SearchifyState {

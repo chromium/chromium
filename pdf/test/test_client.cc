@@ -72,6 +72,8 @@ bool TestClient::IsValidLink(const std::string& url) {
   return !url.empty();
 }
 
+void TestClient::OnNewTextFragmentsSearchStarted() {}
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 bool TestClient::IsInAnnotationMode() const {
   return false;

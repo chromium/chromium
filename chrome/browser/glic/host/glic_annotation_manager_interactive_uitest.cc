@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -27,10 +28,17 @@
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "pdf/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-test-utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace glic::test {
 
@@ -1268,5 +1276,205 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerWithEnforceDocumentIdUiTest,
                   GetPageContextFromFocusedTab(),
                   ScrollToWithDocumentId(ExactTextSelector("Some text")));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// To test the scrollTo for PDFs, the tests should not use the fake annotation
+// service. Instead the test should exercise on a real renderer with a real PDF
+// document to make sure the correct frame host is targeted.
+class GlicAnnotationManagerTestForPDF
+    : public GlicAnnotationManagerUiTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GlicAnnotationManagerTestForPDF() {
+    InitFeatureParams(/*enable_scroll_to_pdf=*/true);
+  }
+  ~GlicAnnotationManagerTestForPDF() override = default;
+
+  bool UseOopif() const { return GetParam(); }
+
+  void InitFeatureParams(bool enable_scroll_to_pdf) {
+    scoped_feature_list_.Reset();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicScrollTo,
+         {{"glic-scroll-to-pdf", base::ToString(enable_scroll_to_pdf)}}}};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (UseOopif()) {
+      enabled_features.push_back({chrome_pdf::features::kPdfOopif, {}});
+    } else {
+      disabled_features.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+
+  // Note: `EnsurePDFHasLoaded()` uses RunLoop(s) with type kDefault. This
+  // method is not safe to be embedded inside other RunLoops, for example,
+  // inside Kombucha's `RunTestSequence()`.
+  void NavigateToPDF(const GURL& pdf_url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  }
+
+  auto InjectEmbeddedPDF(const GURL& pdf_url) {
+    return Do([this, pdf_url = GURL(pdf_url)]() {
+      constexpr char kAddIFrame[] = R"({
+          (()=>{
+              return new Promise((resolve) => {
+                const frame = document.createElement('embed');
+                frame.addEventListener('load', resolve);
+                frame.id = 'embed';
+                frame.src = $1;
+                document.body.appendChild(frame);
+              });
+          })();
+        })";
+      content::WebContents* web_contents =
+          browser()->tab_strip_model()->GetActiveWebContents();
+      ASSERT_TRUE(web_contents);
+      ASSERT_TRUE(
+          ExecJs(web_contents, content::JsReplace(kAddIFrame, pdf_url)));
+    });
+  }
+
+  static std::string PrintTestVariant(
+      const ::testing::TestParamInfo<bool>& info) {
+    return info.param ? "OOPIF" : "InnerWebContents";
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TextFragmentFound) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      // At the end of `ScrollTo`, "Glic.ScrollTo.MatchDuration.Success" is
+      // asserted to have one sample. The histogram is only recorded with a
+      // successful `DidFinishAttachment()`.
+      ScrollTo(ExactTextSelector("test")));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TwoScrolls) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true),
+                  ScrollTo(ExactTextSelector("test")),
+                  ScrollTo(ExactTextSelector("Result")));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       FirstFoundSecondNotFound) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollTo(ExactTextSelector("test")),
+      ScrollToAsync(ExactTextSelector("not_found")),
+      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TextFragmentNotFound) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollToAsync(ExactTextSelector("not_found")),
+      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       FirstNotFoundSecondFound) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollToAsync(ExactTextSelector("not_found")),
+      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound),
+      ScrollTo(ExactTextSelector("test")));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, EmptyTextFragment) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollToAsync(ExactTextSelector("")),
+      WaitForScrollToError(mojom::ScrollToErrorReason::kNotSupported));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       NodeIdSelectorNotSupported) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true), GetPageContextFromFocusedTab(),
+                  ScrollToWithDocumentIdExpectingError(
+                      NodeIdSelector(base::BindOnce([]() { return -1; })),
+                      mojom::ScrollToErrorReason::kNotSupported,
+                      base::BindLambdaForTesting([]() {
+                        return base::UnguessableToken::Create().ToString();
+                      })));
+}
+
+// Test that scrollTo works after the page is navigated away from the PDF to a
+// regular web page.
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       AnnotationAgentContainerIPCEndPoint) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId), OpenGlicWindow(GlicWindowMode::kDetached),
+      SetTabContextPermission(true),
+      // Blocks until "test" is found.
+      ScrollTo(ExactTextSelector("test")),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      // Blocks until "Some text" is found.
+      ScrollTo(ExactTextSelector("Some text")));
+}
+
+// Asserts that the annotation is not dispatched to embedded PDFs.
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       EmbeddedPDFNotSupported) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      InjectEmbeddedPDF(
+          embedded_test_server()->GetURL("/find_in_pdf_page.pdf")),
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollTo(ExactTextSelector("Some text")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicAnnotationManagerTestForPDF,
+    ::testing::Bool(),
+    &GlicAnnotationManagerTestForPDF::PrintTestVariant);
+
+class GlicAnnotationManagerTestForPDFFeatureDisabled
+    : public GlicAnnotationManagerTestForPDF {
+ public:
+  GlicAnnotationManagerTestForPDFFeatureDisabled() {
+    InitFeatureParams(/*enable_scroll_to_pdf=*/false);
+  }
+  ~GlicAnnotationManagerTestForPDFFeatureDisabled() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDFFeatureDisabled,
+                       NotSupported) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
+      ScrollToExpectingError(ExactTextSelector("test"),
+                             mojom::ScrollToErrorReason::kNotSupported));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicAnnotationManagerTestForPDFFeatureDisabled,
+    ::testing::Bool(),
+    &GlicAnnotationManagerTestForPDF::PrintTestVariant);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace glic::test

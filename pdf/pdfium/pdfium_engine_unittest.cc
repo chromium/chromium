@@ -2842,6 +2842,7 @@ class SearchStringTestClient : public TestClient {
 
   MOCK_METHOD(void, ScrollToX, (int), (override));
   MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, OnNewTextFragmentsSearchStarted, (), (override));
 };
 
 class PDFiumEngineHighlightTextFragmentTest
@@ -3028,6 +3029,27 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
 
   engine->FindAndHighlightTextFragments({"difficult to implement"});
   engine->ScrollToFirstTextFragment();
+}
+
+// Assert that OnNewTextFragmentsSearchStarted() is called for any text
+// fragment search.
+TEST_P(PDFiumEngineHighlightTextFragmentTest, OnNewTextFragmentsSearchStarted) {
+  SearchStringTestClient client;
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  {
+    EXPECT_CALL(client, OnNewTextFragmentsSearchStarted);
+    engine->FindAndHighlightTextFragments({});
+  }
+  {
+    EXPECT_CALL(client, OnNewTextFragmentsSearchStarted);
+    engine->FindAndHighlightTextFragments({"not_found"});
+  }
+  {
+    EXPECT_CALL(client, OnNewTextFragmentsSearchStarted);
+    engine->FindAndHighlightTextFragments({"Google"});
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

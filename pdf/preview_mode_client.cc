@@ -172,6 +172,10 @@ bool PreviewModeClient::IsValidLink(const std::string& url) {
   NOTREACHED();
 }
 
+void PreviewModeClient::OnNewTextFragmentsSearchStarted() {
+  NOTREACHED();
+}
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 bool PreviewModeClient::IsInAnnotationMode() const {
   NOTREACHED();

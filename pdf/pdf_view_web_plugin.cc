@@ -1543,6 +1543,12 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
   return base::Value(url).is_string();
 }
 
+void PdfViewWebPlugin::OnNewTextFragmentsSearchStarted() {
+  if (annotation_agent_) {
+    annotation_agent_->RemoveTextFragments();
+  }
+}
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
 bool PdfViewWebPlugin::IsInAnnotationMode() const {
   return ink_module_ && ink_module_->enabled();
@@ -2940,7 +2946,9 @@ void PdfViewWebPlugin::CreateAgent(
     blink::mojom::AnnotationType type,
     blink::mojom::SelectorPtr selector,
     std::optional<int> search_range_start_node_id) {
-  // TODO(crbug.com/395859365): Implement this.
+  annotation_agent_ = std::make_unique<PDFAnnotationAgent>(
+      this, type, std::move(selector), std::move(host_remote),
+      std::move(agent_receiver));
 }
 
 void PdfViewWebPlugin::CreateAgentFromSelection(
@@ -2960,6 +2968,24 @@ void PdfViewWebPlugin::SendThumbnailForTesting(base::Value::Dict reply,
                                                int page_index,
                                                Thumbnail thumbnail) {
   SendThumbnail(std::move(reply), page_index, std::move(thumbnail));
+}
+
+bool PdfViewWebPlugin::FindAndHighlightTextFragments(
+    base::span<const std::string> text_fragments) {
+  return engine_ &&
+         engine_->FindAndHighlightTextFragments(std::move(text_fragments));
+}
+
+void PdfViewWebPlugin::ScrollTextFragmentIntoView() {
+  if (engine_) {
+    engine_->ScrollToFirstTextFragment();
+  }
+}
+
+void PdfViewWebPlugin::RemoveTextFragments() {
+  if (engine_) {
+    engine_->RemoveTextFragments();
+  }
 }
 
 void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,

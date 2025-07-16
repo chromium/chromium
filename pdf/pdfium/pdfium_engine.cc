@@ -1067,6 +1067,7 @@ bool PDFiumEngine::FindAndHighlightTextFragments(
     base::span<const std::string> text_fragments) {
   HighlightChangeInvalidator invalidator(this);
   PDFiumTextFragmentFinder text_fragment_finder(this);
+  client_->OnNewTextFragmentsSearchStarted();
   text_fragment_highlights_ =
       text_fragment_finder.FindTextFragments(text_fragments);
   return !text_fragment_highlights_.empty();
