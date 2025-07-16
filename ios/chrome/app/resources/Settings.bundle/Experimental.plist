@@ -152,6 +152,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Ignore Device Locale Conditions</string>
+			<key>Key</key>
+			<string>IgnoreDeviceLocaleConditions</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Force Upgrade Promo</string>
 			<key>Key</key>
 			<string>UpgradePromoForceEnabled</string>
@@ -866,7 +876,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 		</dict>
-			<dict>
+		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>

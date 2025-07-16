@@ -53,6 +53,10 @@ bool ShouldResetFirstFollowCount();
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
 
+// Returns true if device locale conditions should be ignored when gating a
+// feature.
+bool ShouldIgnoreDeviceLocaleConditions();
+
 // Returns true if the top of feed notifications promo should be shown
 // regardless of dismissal conditions. It is only shown for signed in users.
 bool ShouldForceContentNotificationsPromo();
