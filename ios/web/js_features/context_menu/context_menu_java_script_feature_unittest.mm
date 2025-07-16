@@ -51,7 +51,15 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchLinkElement) {
   }));
 }
 
-TEST_F(ContextMenuJavaScriptFeatureTest, FetchImageElement) {
+// TODO(crbug.com/40116514): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_FetchImageElement \
+  FetchImageElement
+#else
+#define MAYBE_FetchImageElement \
+  DISABLED_FetchImageElement
+#endif
+TEST_F(ContextMenuJavaScriptFeatureTest, MAYBE_FetchImageElement) {
   NSString* html =
       @"<html><head>"
        "<style>body { font-size:14em; }</style>"
