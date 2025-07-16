@@ -112,8 +112,7 @@
           {"name": "x86-32", "description": "Specifies the native client architecture as x86-32."},
           {"name": "x86-64", "description": "Specifies the native client architecture as x86-64."},
           {"name": "mips", "description": "Specifies the native client architecture as mips."},
-          {"name": "mips64", "description": "Specifies the native client architecture as mips64."},
-          {"name": "riscv64", "description": "Specifies the native client architecture as riscv64."}
+          {"name": "mips64", "description": "Specifies the native client architecture as mips64."}
         ]
       },
       {
@@ -130,6 +129,7 @@
             "description": "The machine's processor architecture."
           },
           "nacl_arch" : {
+            "optional": true,
             "description": "The native client architecture. This may be different from arch on some platforms.",
             "$ref": "PlatformNaclArch"
           }

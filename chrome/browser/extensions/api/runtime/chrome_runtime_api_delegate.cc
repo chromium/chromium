@@ -47,6 +47,10 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -315,6 +319,32 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 #endif
 }
 
+// Helper function for GetPlatformInfo(). nacl_arch is deprecated, so
+// please do not add any new values here.
+extensions::api::runtime::PlatformNaclArch GetPlatformInfoNaClArch() {
+#if defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_X86_64)
+  return extensions::api::runtime::PlatformNaclArch::kX86_64;
+#elif BUILDFLAG(IS_WIN)
+  return base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()
+             ? extensions::api::runtime::PlatformNaclArch::kX86_64
+             : extensions::api::runtime::PlatformNaclArch::kX86_32;
+#else
+  return extensions::api::runtime::PlatformNaclArch::kX86_32;
+#endif
+#elif defined(ARCH_CPU_ARM_FAMILY)
+  return extensions::api::runtime::PlatformNaclArch::kArm;
+#elif defined(ARCH_CPU_MIPSEL)
+  return extensions::api::runtime::PlatformNaclArch::kMips;
+#elif defined(ARCH_CPU_MIPS64EL)
+  return extensions::api::runtime::PlatformNaclArch::kMips64;
+#else
+  // NOTE: Other architectures did not support extensions at the time
+  // of NaCl removal.
+  return extensions::api::runtime::PlatformNaclArch::kNone;
+#endif
+}
+
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   const char* os = update_client::UpdateQueryParams::GetOS();
   if (strcmp(os, "mac") == 0) {
@@ -352,22 +382,7 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
     NOTREACHED();
   }
 
-  const char* nacl_arch = update_client::UpdateQueryParams::GetNaclArch();
-  if (strcmp(nacl_arch, "arm") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kArm;
-  } else if (strcmp(nacl_arch, "x86-32") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kX86_32;
-  } else if (strcmp(nacl_arch, "x86-64") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kX86_64;
-  } else if (strcmp(nacl_arch, "mips32") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips;
-  } else if (strcmp(nacl_arch, "mips64") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips64;
-  } else if (strcmp(nacl_arch, "riscv64") == 0) {
-    info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kRiscv64;
-  } else {
-    NOTREACHED();
-  }
+  info->nacl_arch = GetPlatformInfoNaClArch();
 
   return true;
 }

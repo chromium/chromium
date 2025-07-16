@@ -114,39 +114,6 @@ const char* UpdateQueryParams::GetArch() {
   return kArch;
 }
 
-// TODO(crbug.com/40511454): Remove me.
-// static
-const char* UpdateQueryParams::GetNaclArch() {
-#if defined(ARCH_CPU_X86_FAMILY)
-#if defined(ARCH_CPU_X86_64)
-  return "x86-64";
-#elif BUILDFLAG(IS_WIN)
-  bool x86_64 = base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
-  return x86_64 ? "x86-64" : "x86-32";
-#else
-  return "x86-32";
-#endif
-#elif defined(ARCH_CPU_ARM_FAMILY)
-  return "arm";
-#elif defined(ARCH_CPU_MIPSEL)
-  return "mips32";
-#elif defined(ARCH_CPU_MIPS64EL)
-  return "mips64";
-#elif defined(ARCH_CPU_PPC64)
-  return "ppc64";
-#elif defined(ARCH_CPU_LOONGARCH32)
-  return "loongarch32";
-#elif defined(ARCH_CPU_LOONGARCH64)
-  return "loongarch64";
-#elif defined(ARCH_CPU_RISCV64)
-  return "riscv64";
-#else
-  // NOTE: when adding new values here, please remember to update the
-  // comment in the .h file about possible return values from this function.
-#error "You need to add support for your architecture here"
-#endif
-}
-
 // static
 std::string UpdateQueryParams::GetProdVersion() {
   return std::string(version_info::GetVersionNumber());

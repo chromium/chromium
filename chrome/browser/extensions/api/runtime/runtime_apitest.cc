@@ -13,6 +13,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -192,7 +193,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
           new RuntimeGetPlatformInfoFunction(), "[]", profile()));
   EXPECT_TRUE(dict.contains("os"));
   EXPECT_TRUE(dict.contains("arch"));
+#if defined(ARCH_CPU_RISCV64)
+  // NaCl had never supported RISC-V, so nacl_arch is meaningless there.
+  EXPECT_FALSE(dict.contains("nacl_arch"));
+#else
   EXPECT_TRUE(dict.contains("nacl_arch"));
+#endif
 }
 
 // Tests chrome.runtime.getPackageDirectory with an app.

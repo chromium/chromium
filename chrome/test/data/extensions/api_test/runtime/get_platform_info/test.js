@@ -6,7 +6,8 @@
 //   https://developer.chrome.com/extensions/runtime#type-PlatformOs
 let platformOsList =
     ['mac', 'win', 'android', 'cros', 'linux', 'openbsd', 'fuchsia'];
-let platformArchList = ['arm', 'arm64', 'x86-32', 'x86-64', 'mips', 'mips64'];
+let platformArchList =
+  ['arm', 'arm64', 'x86-32', 'x86-64', 'mips', 'mips64', 'riscv64'];
 let platformNaclArchList = ['arm', 'x86-32', 'x86-64', 'mips', 'mips64'];
 
 chrome.test.runTests([
@@ -19,8 +20,14 @@ chrome.test.runTests([
       // expected.
       chrome.test.assertTrue(platformOsList.includes(platformInfo.os));
       chrome.test.assertTrue(platformArchList.includes(platformInfo.arch));
-      chrome.test.assertTrue(
+      if ('nacl_arch' in platformInfo) {
+        chrome.test.assertTrue(
           platformNaclArchList.includes(platformInfo.nacl_arch));
+      } else {
+        // RISC-V is the only architecture which never supported Native Client.
+        chrome.test.assertEq(platformInfo.arch,
+                             chrome.runtime.PlatformArch.RISCV64);
+      }
       chrome.test.succeed();
     });
   },

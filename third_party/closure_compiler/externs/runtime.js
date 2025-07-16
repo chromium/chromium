@@ -121,7 +121,6 @@ chrome.runtime.PlatformNaclArch = {
   X86_64: 'x86-64',
   MIPS: 'mips',
   MIPS64: 'mips64',
-  RISCV64: 'riscv64',
 };
 
 /**
@@ -129,7 +128,7 @@ chrome.runtime.PlatformNaclArch = {
  * @typedef {{
  *   os: !chrome.runtime.PlatformOs,
  *   arch: !chrome.runtime.PlatformArch,
- *   nacl_arch: !chrome.runtime.PlatformNaclArch
+ *   nacl_arch: (!chrome.runtime.PlatformNaclArch|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/runtime#type-PlatformInfo
  */
