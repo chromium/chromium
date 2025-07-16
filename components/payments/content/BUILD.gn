@@ -317,4 +317,8 @@ source_set("payment_content_unit_tests") {
   } else {
     sources += [ "android_app_communication_test_support_stub.cc" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
