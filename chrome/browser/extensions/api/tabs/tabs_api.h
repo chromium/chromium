@@ -51,9 +51,19 @@ class PrefRegistrySyncable;
 
 namespace extensions {
 
+// This namespace includes a collection of conceptually-internal helper methods
+// and constants that are currently here because they are used by both
+// tabs_api.cc and tabs_api_non_android.cc. Eventually, they should only be
+// used by tabs_api.cc, and we can move them to an anonymous namespace in
+// tabs_api.cc.
+// TODO(devlin): Do that. ^^
+namespace tabs_internal {
+
+inline constexpr char kMissingLockWindowFullscreenPrivatePermission[] =
+    "Cannot lock window to fullscreen or close a locked fullscreen window "
+    "without lockWindowFullscreenPrivate manifest permission";
+
 // A helper class to extract popular properties from different arguments.
-// TODO(devlin): Move this to the .cc file when it's no longer needed in
-// multiple .cc's (tabs_api_non_android.cc and tabs_api.cc).
 template <typename T>
 class ApiParameterExtractor {
  public:
@@ -78,6 +88,12 @@ class ApiParameterExtractor {
  private:
   raw_ref<T> params_;
 };
+
+// Returns true if the given `extension` has API access to the locked
+// fullscreen permission.
+bool ExtensionHasLockedFullscreenPermission(const Extension* extension);
+
+}  // namespace tabs_internal
 
 // Converts a ZoomMode to its ZoomSettings representation.
 void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,

@@ -174,9 +174,6 @@ constexpr char kCannotUpdateMuteCaptured[] =
     "being captured";
 constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
     "Cannot determine language: tab not loaded";
-constexpr char kMissingLockWindowFullscreenPrivatePermission[] =
-    "Cannot lock window to fullscreen or close a locked fullscreen window "
-    "without lockWindowFullscreenPrivate manifest permission";
 constexpr char kWindowCreateSupportsOnlySingleIwaUrlError[] =
     "When creating a window for a URL with the 'isolated-app:' scheme, only "
     "one tab can be added to the window.";
@@ -305,11 +302,6 @@ bool IsValidStateForWindowsCreateFunction(
       return true;
   }
   NOTREACHED();
-}
-
-bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
-  return extension && extension->permissions_data()->HasAPIPermission(
-                          mojom::APIPermissionID::kLockWindowFullscreenPrivate);
 }
 
 api::tabs::Tab CreateTabObjectHelper(WebContents* contents,
@@ -527,7 +519,8 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
       windows::GetLastFocused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ApiParameterExtractor<windows::GetLastFocused::Params> extractor(params);
+  tabs_internal::ApiParameterExtractor<windows::GetLastFocused::Params>
+      extractor(params);
 
   Browser* last_focused_browser = nullptr;
   BrowserList* const browser_list = BrowserList::GetInstance();
@@ -561,7 +554,8 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
       windows::GetAll::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ApiParameterExtractor<windows::GetAll::Params> extractor(params);
+  tabs_internal::ApiParameterExtractor<windows::GetAll::Params> extractor(
+      params);
   base::Value::List window_list;
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
@@ -806,8 +800,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   create_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   if (create_data && create_data->state != windows::WindowState::kNone) {
     if (create_data->state == windows::WindowState::kLockedFullscreen &&
-        !ExtensionHasLockedFullscreenPermission(extension())) {
-      return RespondNow(Error(kMissingLockWindowFullscreenPrivatePermission));
+        !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
+      return RespondNow(
+          Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
     }
     create_params.initial_show_state =
         ConvertToWindowShowState(create_data->state);
@@ -999,8 +994,9 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
       platform_util::IsBrowserLockedFullscreen(browser);
   if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(kMissingLockWindowFullscreenPrivatePermission));
+      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
+    return RespondNow(
+        Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
   }
 
   // Before changing any of a window's state, validate the update parameters.
@@ -1119,36 +1115,6 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
       WithArguments(window_controller->CreateWindowValueForExtension(
           extension(), WindowController::kDontPopulateTabs,
           source_context_type())));
-}
-
-ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
-  std::optional<windows::Remove::Params> params =
-      windows::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  WindowController* window_controller = nullptr;
-  std::string error;
-  if (!windows_util::GetControllerFromWindowID(
-          this, params->window_id, WindowController::kNoWindowFilter,
-          &window_controller, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  if (window_controller->GetBrowser() &&
-      platform_util::IsBrowserLockedFullscreen(
-          window_controller->GetBrowser()) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(kMissingLockWindowFullscreenPrivatePermission));
-  }
-
-  WindowController::Reason reason;
-  if (!window_controller->CanClose(&reason)) {
-    return RespondNow(Error(reason == WindowController::REASON_NOT_EDITABLE
-                                ? ExtensionTabUtil::kTabStripNotEditableError
-                                : kUnknownErrorDoNotUse));
-  }
-  window_controller->window()->Close();
-  return RespondNow(NoArguments());
 }
 
 // Tabs ------------------------------------------------------------------------

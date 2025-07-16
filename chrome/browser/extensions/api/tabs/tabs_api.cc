@@ -9,18 +9,35 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "ui/base/base_window.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/platform_util.h"
+#endif
 
 namespace extensions {
 
 namespace tabs = api::tabs;
 namespace windows = api::windows;
 
+namespace tabs_internal {
+
+bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          mojom::APIPermissionID::kLockWindowFullscreenPrivate);
+}
+
+}  // namespace tabs_internal
+
 ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   std::optional<windows::Get::Params> params =
       windows::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ApiParameterExtractor<windows::Get::Params> extractor(params);
+  tabs_internal::ApiParameterExtractor<windows::Get::Params> extractor(params);
   WindowController* window_controller = nullptr;
   std::string error;
   if (!windows_util::GetControllerFromWindowID(this, params->window_id,
@@ -42,7 +59,8 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
       windows::GetCurrent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ApiParameterExtractor<windows::GetCurrent::Params> extractor(params);
+  tabs_internal::ApiParameterExtractor<windows::GetCurrent::Params> extractor(
+      params);
   WindowController* window_controller = nullptr;
   std::string error;
   if (!windows_util::GetControllerFromWindowID(
@@ -57,6 +75,41 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
       extension(), populate_tab_behavior, source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
+}
+
+ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
+  std::optional<windows::Remove::Params> params =
+      windows::Remove::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  WindowController* window_controller = nullptr;
+  std::string error;
+  if (!windows_util::GetControllerFromWindowID(
+          this, params->window_id, WindowController::kNoWindowFilter,
+          &window_controller, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // TODO(https://crbug.com/432056907): Determine if we need locked-fullscreen
+  // support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (window_controller->GetBrowser() &&
+      platform_util::IsBrowserLockedFullscreen(
+          window_controller->GetBrowser()) &&
+      !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
+    return RespondNow(
+        Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
+  }
+#endif
+
+  WindowController::Reason reason;
+  if (!window_controller->CanClose(&reason)) {
+    return RespondNow(Error(reason == WindowController::REASON_NOT_EDITABLE
+                                ? ExtensionTabUtil::kTabStripNotEditableError
+                                : kUnknownErrorDoNotUse));
+  }
+  window_controller->window()->Close();
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {

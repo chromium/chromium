@@ -81,13 +81,6 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   return RespondNow(Error(kWindowsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
-  std::optional<windows::Remove::Params> params =
-      windows::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
-}
-
 // Tabs ------------------------------------------------------------------------
 
 ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
