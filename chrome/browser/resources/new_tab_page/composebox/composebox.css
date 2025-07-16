@@ -152,13 +152,14 @@
 #cancelIcon {
   --cr-icon-button-fill-color:
       var(--color-new-tab-page-composebox-cancel-button);
-  --cr-icon-button-icon-size: contain 14px;
+  /* SVG is size 24 with 5px of padding so actual size is 14px */
+  --cr-icon-button-icon-size: 24px;
   top: 16px;
 }
 
 #submitIcon {
   --cr-icon-button-fill-color: white;
-  --cr-icon-button-icon-size: contain 16px;
+  --cr-icon-button-icon-size: 16px;
   background-color: var(--color-new-tab-page-composebox-submit-button);
   bottom: var(--input-bottom-spacing);
   cursor: default;

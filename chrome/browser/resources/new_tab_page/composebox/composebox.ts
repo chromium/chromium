@@ -196,6 +196,7 @@ export class ComposeboxElement extends CrLitElement {
 
   protected onInputKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey && this.submitEnabled_) {
+      e.preventDefault();
       this.onSubmitClick_(e);
     }
   }
