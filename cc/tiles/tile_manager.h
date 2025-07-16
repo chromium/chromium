@@ -380,11 +380,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
                                uint16_t priority,
                                bool use_foreground_category);
 
-  raw_ptr<TileManagerClient, DanglingUntriaged> client_;
+  raw_ptr<TileManagerClient> client_;
   raw_ptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<ResourcePool, DanglingUntriaged> resource_pool_;
+  raw_ptr<ResourcePool> resource_pool_;
   std::unique_ptr<TileTaskManager> tile_task_manager_;
-  raw_ptr<RasterBufferProvider, DanglingUntriaged> raster_buffer_provider_;
+  raw_ptr<RasterBufferProvider> raster_buffer_provider_;
   GlobalStateThatImpactsTilePriority global_state_;
   size_t scheduled_raster_task_limit_;
   const bool running_on_renderer_process_;

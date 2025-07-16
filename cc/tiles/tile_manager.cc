@@ -324,8 +324,7 @@ class DidFinishRunningAllTilesTask : public TileTask {
 
  private:
   raw_ptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<RasterQueryQueue, AcrossTasksDanglingUntriaged>
-      pending_raster_queries_;
+  raw_ptr<RasterQueryQueue> pending_raster_queries_;
   CompletionCb completion_cb_;
 };
 
@@ -420,6 +419,10 @@ void TileManager::FinishTasksAndCleanUp() {
   tile_task_manager_->CheckForCompletedTasks();
 
   tile_task_manager_ = nullptr;
+  // The TaskGraph holds onto the TileTasks, so we need to clear it to avoid
+  // dangling pointers from TileTasks to other objects. One example is
+  // DidFinishRunningAllTilesTask::pending_raster_queries_.
+  graph_.Reset();
   resource_pool_ = nullptr;
   pending_raster_queries_ = nullptr;
   more_tiles_need_prepare_check_notifier_.Cancel();
