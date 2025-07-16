@@ -8968,6 +8968,11 @@
     "owners": ["emshack@chromium.org", "agale@chromium.org", "corising@chromium.org"],
     "expiry_milestone": 150
   },
+    {
+    "name": "side-by-side-session-restore",
+    "owners": ["shibalik@chromium.org", "agale@chromium.org", "corising@chromium.org"],
+    "expiry_milestone": 150
+  },
   {
     "name" : "side-panel-improved-clobbering",
     "owners": [ "chrome-cros@google.com", "tluk@chromium.org" ],

@@ -13396,6 +13396,7 @@ from previous Chrome versions.
   <int value="-238717837" label="CellularUseSecondEuicc:disabled"/>
   <int value="-238415226" label="GlobalVaapiLock:disabled"/>
   <int value="-238175256" label="EarlyExitOnNoopClassOrStyleChange:enabled"/>
+  <int value="-237966062" label="SideBySideSessionRestore:disabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236719122" label="AddIdentityInCanMakePaymentEvent:enabled"/>
   <int value="-236310717" label="AccessibilityDeprecateChromeVoxTabs:disabled"/>
@@ -16414,6 +16415,7 @@ from previous Chrome versions.
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:enabled"/>
   <int value="877432034" label="DisableQuickAnswersV2Translation:enabled"/>
   <int value="877907263" label="StrictExtensionIsolation:disabled"/>
+  <int value="878493795" label="SideBySideSessionRestore:enabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879538323"
       label="ForceMajorVersionInMinorPositionInUserAgent:enabled"/>

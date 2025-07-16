@@ -3960,6 +3960,11 @@ const char kSideBySideDescription[] =
     "Allows users to view two tabs "
     "simultaneously in a split view.";
 
+const char kSideBySideSessionRestoreName[] = "Split View Session Restore";
+const char kSideBySideSessionRestoreDescription[] =
+    "Allows users to restore tabs in split view "
+    "from previous session when the browser restarts.";
+
 const char kSidePanelResizingFlagId[] = "side-panel-resizing";
 const char kSidePanelResizingName[] = "Side Panel Resizing";
 const char kSidePanelResizingDescription[] =

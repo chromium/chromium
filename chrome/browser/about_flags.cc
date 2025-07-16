@@ -7964,7 +7964,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-reset-timeout-enabled", flag_descriptions::kCCTResetTimeoutEnabledName,
+    {"cct-reset-timeout-enabled",
+     flag_descriptions::kCCTResetTimeoutEnabledName,
      flag_descriptions::kCCTResetTimeoutEnabledDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTResetTimeoutEnabled)},
 #endif
@@ -12374,6 +12375,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSideBySide,
                                     kSideBySideVariations,
                                     "SideBySide")},
+
+    {"side-by-side-session-restore",
+     flag_descriptions::kSideBySideSessionRestoreName,
+     flag_descriptions::kSideBySideSessionRestoreDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideBySideSessionRestore)},
 #endif
 
     {"enable-secure-payment-confirmation-fallback-ux",
