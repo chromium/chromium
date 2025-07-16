@@ -1,3 +1,6 @@
+<!-- #html_wrapper_imports_start
+import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
+#html_wrapper_imports_end -->
 <div id="content">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
@@ -115,7 +118,7 @@ ${this.showVoiceSearchOverlay_ ? html`
 ` : ''}
 ${this.showComposebox_ ? html`
   <div id="composeboxScrim"
-       @click="${this.closeComposebox_}"></div>
+       @click="${this.composeboxCloseByClickOutside_ ? this.closeComposebox_ : nothing}"></div>
 ` : ''}
 <svg>
   <defs>

@@ -203,6 +203,7 @@ export class AppElement extends AppElementBase {
         notify: true,
       },
 
+      composeboxCloseByClickOutside_: {type: Boolean},
       composeboxEnabled: {type: Boolean},
       composeButtonEnabled: {type: Boolean},
 
@@ -304,6 +305,8 @@ export class AppElement extends AppElementBase {
   protected accessor showWallpaperSearchButton_: boolean = false;
   accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
+  protected accessor composeboxCloseByClickOutside_: boolean =
+      loadTimeData.getBoolean('composeboxCloseByClickOutside');
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
   protected accessor isFooterVisible_: boolean = false;
@@ -324,8 +327,6 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
-  private composeboxCloseByClickOutside_: boolean =
-      loadTimeData.getBoolean('composeboxCloseByClickOutside');
 
   constructor() {
     performance.mark('app-creation-start');
@@ -662,9 +663,6 @@ export class AppElement extends AppElementBase {
   }
 
   protected closeComposebox_() {
-    if (!this.composeboxCloseByClickOutside_) {
-      return;
-    }
     const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
     composeboxHandler.notifySessionAbandoned();
     this.toggleComposebox_();
