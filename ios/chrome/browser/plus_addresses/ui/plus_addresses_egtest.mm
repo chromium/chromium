@@ -328,9 +328,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   // Ensure the error alert is shown.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_OK)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
+      performAction:grey_tap()];
 }
 
 // Tests that the alert is shown and filled when an affiliated site contains the
@@ -451,9 +451,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   // Ensure the error alert is shown.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_OK)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(IDS_OK)]
+      performAction:grey_tap()];
 }
 
 // Tests that a timeout alert is shown when the plus address is failed to
