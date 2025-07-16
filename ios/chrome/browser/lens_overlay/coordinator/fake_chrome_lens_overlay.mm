@@ -88,6 +88,10 @@
   // NO-OP
 }
 
+- (void)updateGuidanceViewVisibility:(BOOL)visible animated:(BOOL)animated {
+  // NO-OP
+}
+
 - (CGRect)selectionRect {
   return CGRectZero;
 }
