@@ -240,7 +240,6 @@ struct Config {
     attrib_helper.blue_size = 8;
     attrib_helper.alpha_size = it.GetBit() ? 8 : 0;
 #endif
-    attrib_helper.bind_generates_resource = it.GetBit();
     [[maybe_unused]] bool es3 = it.GetBit();
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
