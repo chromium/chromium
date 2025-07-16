@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -44,11 +43,11 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_error.h"
-#include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/ui_util.h"
@@ -892,7 +891,9 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
       &extension, extension_misc::EXTENSION_ICON_MEDIUM,
       ExtensionIconSet::Match::kBigger);
   if (icon.empty()) {
-    info.icon_url = GetDefaultIconUrl(extension.name());
+    info.icon_url = GetPlaceholderIconUrl(extension_misc::EXTENSION_ICON_MEDIUM,
+                                          extension.name())
+                        .spec();
     list_.push_back(std::move(info));
   } else {
     ++pending_image_loads_;
@@ -907,25 +908,13 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
   }
 }
 
-std::string ExtensionInfoGenerator::GetDefaultIconUrl(const std::string& name) {
-  return GetIconUrlFromImage(ExtensionIconPlaceholder::CreateImage(
-      extension_misc::EXTENSION_ICON_MEDIUM, name));
-}
-
-std::string ExtensionInfoGenerator::GetIconUrlFromImage(
-    const gfx::Image& image) {
-  std::string base_64 = base::Base64Encode(*image.As1xPNGBytes());
-  const char kDataUrlPrefix[] = "data:image/png;base64,";
-  return GURL(kDataUrlPrefix + base_64).spec();
-}
-
 void ExtensionInfoGenerator::OnImageLoaded(developer::ExtensionInfo info,
                                            const gfx::Image& icon) {
-  if (!icon.IsEmpty()) {
-    info.icon_url = GetIconUrlFromImage(icon);
-  } else {
-    info.icon_url = GetDefaultIconUrl(info.name);
-  }
+  GURL icon_url = icon.IsEmpty()
+                      ? GetPlaceholderIconUrl(
+                            extension_misc::EXTENSION_ICON_MEDIUM, info.name)
+                      : GetIconUrlFromImage(icon);
+  info.icon_url = icon_url.spec();
 
   list_.push_back(std::move(info));
 

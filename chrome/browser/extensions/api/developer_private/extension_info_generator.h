@@ -92,12 +92,6 @@ class ExtensionInfoGenerator : public ProfileObserver {
   void OnImageLoaded(api::developer_private::ExtensionInfo info,
                      const gfx::Image& image);
 
-  // Returns the icon url for the default icon to use.
-  std::string GetDefaultIconUrl(const std::string& name);
-
-  // Returns an icon url from the given image.
-  std::string GetIconUrlFromImage(const gfx::Image& image);
-
   // Construct the needed information for the Extension Safety Check and
   // populate the relevant `extension_info` fields.
   void PopulateSafetyCheckInfo(

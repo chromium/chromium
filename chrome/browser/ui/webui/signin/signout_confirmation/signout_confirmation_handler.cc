@@ -20,12 +20,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/barrier_callback.h"
-#include "base/base64.h"
-#include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/extension_icon_placeholder.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -36,6 +34,8 @@
 #endif
 
 namespace {
+
+constexpr int kIconSize = extension_misc::EXTENSION_ICON_SMALLISH;
 
 int ComputeDialogTitleId(ChromeSignoutConfirmationPromptVariant variant) {
   switch (variant) {
@@ -126,18 +126,6 @@ ConstructSignoutConfirmationData(
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-std::string GetIconUrlFromImage(const gfx::Image& image) {
-  std::string base_64 = base::Base64Encode(*image.As1xPNGBytes());
-  const char kDataUrlPrefix[] = "data:image/png;base64,";
-  return GURL(kDataUrlPrefix + base_64).spec();
-}
-
-// Creates a placeholder icon image based on the extension's `name` and returns
-// a base64 representation of it.
-std::string GetPlaceholderIconUrl(const std::string& name) {
-  return GetIconUrlFromImage(extensions::ExtensionIconPlaceholder::CreateImage(
-      extension_misc::EXTENSION_ICON_SMALLISH, name));
-}
 
 // Called when the icon for `extension_name` is loaded. Must be called for all
 // account extensions before the `SignoutConfirmationData` is sent.
@@ -146,10 +134,11 @@ signout_confirmation::mojom::ExtensionInfoPtr OnExtensionIconLoaded(
     const gfx::Image& icon) {
   auto extension_info_mojo = signout_confirmation::mojom::ExtensionInfo::New();
   extension_info_mojo->name = extension_name;
-  extension_info_mojo->icon_url = icon.IsEmpty()
-                                      ? GetPlaceholderIconUrl(extension_name)
-                                      : GetIconUrlFromImage(icon);
 
+  GURL icon_url = icon.IsEmpty() ? extensions::GetPlaceholderIconUrl(
+                                       kIconSize, extension_name)
+                                 : extensions::GetIconUrlFromImage(icon);
+  extension_info_mojo->icon_url = icon_url.spec();
   return extension_info_mojo;
 }
 
@@ -167,7 +156,7 @@ bool HasAccountExtensions(Profile* profile) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-}  //  namespace
+}  // namespace
 
 SignoutConfirmationHandler::SignoutConfirmationHandler(
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver,
@@ -267,17 +256,16 @@ void SignoutConfirmationHandler::ComputeAccountExtensions() {
           &SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData,
           weak_ptr_factory_.GetWeakPtr()));
 
-  const int icon_size = extension_misc::EXTENSION_ICON_SMALLISH;
   auto* image_loader = extensions::ImageLoader::Get(browser_->profile());
 
   for (const extensions::Extension* extension : account_extensions) {
     extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
-        extension, icon_size, ExtensionIconSet::Match::kBigger);
+        extension, kIconSize, ExtensionIconSet::Match::kBigger);
     if (icon.empty()) {
       barrier_callback.Run(
           ::OnExtensionIconLoaded(extension->name(), gfx::Image()));
     } else {
-      gfx::Size max_size(icon_size, icon_size);
+      gfx::Size max_size(kIconSize, kIconSize);
       image_loader->LoadImageAsync(
           extension, icon, max_size,
           base::BindOnce(&::OnExtensionIconLoaded, extension->name())

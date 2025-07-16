@@ -106,6 +106,10 @@ class AccountExtensionTracker : public KeyedService,
   // Returns all account extensions with type `kAccountInstalledSignedIn`.
   std::vector<const Extension*> GetSignedInAccountExtensions() const;
 
+  // Returns all local extensions that can be uploaded to a signed-in user's
+  // account.
+  std::vector<const Extension*> GetUploadableLocalExtensions() const;
+
   // Called when the user initiates a signin from a promo that appears after an
   // extension with the given `extension_id` is installed.
   void OnSignInInitiatedFromExtensionPromo(const ExtensionId& extension_id);

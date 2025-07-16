@@ -193,6 +193,8 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (extension_sync_service_.value()) {
+      // TODO(crbug.com/425381293): Add an ExtensionLocalDataBatchUploader once
+      // its implementation is complete.
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionDataTypeController>(
               syncer::EXTENSIONS, data_type_store_factory,

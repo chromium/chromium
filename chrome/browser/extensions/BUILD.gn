@@ -443,6 +443,8 @@ source_set("extensions") {
     "startup_helper.h",
     "sync/account_extension_tracker.cc",
     "sync/account_extension_tracker.h",
+    "sync/extension_local_data_batch_uploader.cc",
+    "sync/extension_local_data_batch_uploader.h",
     "sync/extension_sync_data.cc",
     "sync/extension_sync_data.h",
     "sync/extension_sync_service.cc",
