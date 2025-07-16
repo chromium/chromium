@@ -197,6 +197,9 @@ class CORE_EXPORT InspectorCSSAgent final
       std::optional<int>* parent_layout_node_id,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSFunctionRule>>*)
       override;
+  protocol::Response getEnvironmentVariables(
+      std::unique_ptr<protocol::DictionaryValue>* environment_variables)
+      override;
   protocol::Response getInlineStylesForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,

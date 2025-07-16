@@ -2559,6 +2559,11 @@ experimental domain CSS
       # A list of CSS at-function rules referenced by styles of this node.
       experimental optional array of CSSFunctionRule cssFunctionRules
 
+  # Returns the values of the default UA-defined environment variables used in env()
+  experimental command getEnvironmentVariables
+    returns
+      object environmentVariables
+
   # Returns all media queries parsed by the rendering engine.
   command getMediaQueries
     returns

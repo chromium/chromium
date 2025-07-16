@@ -21,6 +21,7 @@ class FeatureContext;
 // a single dimension.
 // When adding a new variable the string equivalent needs to be added to
 // |GetVariableName|.
+// LINT.IfChange(UADefinedVariable)
 enum class UADefinedVariable {
   // The safe area insets are four environment variables that define a
   // rectangle by its top, right, bottom, and left insets from the edge of
@@ -83,6 +84,7 @@ enum class UADefinedVariable {
   // https://github.com/w3c/csswg-drafts/issues/11395
   kSafePrintableInset,
 };
+// LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:EnvironmentVariables)
 
 enum class UADefinedTwoDimensionalVariable {
   // The viewport segment variables describe logically distinct regions of the
