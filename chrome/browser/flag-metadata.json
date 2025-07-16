@@ -1490,7 +1490,7 @@
   {
     "name": "cct-incognito-available-to-third-party",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 180
   },
   {
     "name": "cct-minimized",
