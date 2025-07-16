@@ -602,8 +602,16 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for both the image and the link
 // destination when the image source is a relative url.
+// TODO(crbug.com/40116514): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_FindLinkImageAtPointForRelativeUrl \
+  FindLinkImageAtPointForRelativeUrl
+#else
+#define MAYBE_FindLinkImageAtPointForRelativeUrl \
+  DISABLED_FindLinkImageAtPointForRelativeUrl
+#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FindLinkImageAtPointForRelativeUrl) {
+       MAYBE_FindLinkImageAtPointForRelativeUrl) {
   const char image_link[] = "http://destination/";
   const char relative_image_path[] = "relativeImage";
   NSString* html = GetHtmlForPage(
@@ -627,7 +635,13 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for both the image and the link when
 // the link points to JavaScript that is not a NOP.
-TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
+// TODO(crbug.com/40116514): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_FindImageLinkedToJavaScript FindImageLinkedToJavaScript
+#else
+#define MAYBE_FindImageLinkedToJavaScript DISABLED_FindImageLinkedToJavaScript
+#endif
+TEST_F(ContextMenuJsFindElementAtPointTest, MAYBE_FindImageLinkedToJavaScript) {
   const char image_link[] = "javascript:console.log('whatever')";
   const char relative_image_path[] = "relativeImage";
   NSString* html = GetHtmlForPage(
@@ -653,8 +667,16 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
 
 // Tests that an image link returns details for only the image and not the link
 // when the link points to NOP JavaScript.
+// TODO(crbug.com/40116514): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_FindImageLinkedToNOPJavaScriptSemicolon \
+  FindImageLinkedToNOPJavaScriptSemicolon
+#else
+#define MAYBE_FindImageLinkedToNOPJavaScriptSemicolon \
+  DISABLED_FindImageLinkedToNOPJavaScriptSemicolon
+#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FindImageLinkedToNOPJavaScriptSemicolon) {
+       MAYBE_FindImageLinkedToNOPJavaScriptSemicolon) {
   const char image_link[] = "javascript:;";
   const char relative_image_path[] = "relativeImage";
   NSString* html = GetHtmlForPage(
@@ -679,8 +701,16 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for only the image and not the link
 // when the link points to NOP JavaScript.
+// TODO(crbug.com/40116514): Re-enable the test on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_FindImageLinkedToNOPJavaScriptVoid \
+  FindImageLinkedToNOPJavaScriptVoid
+#else
+#define MAYBE_FindImageLinkedToNOPJavaScriptVoid \
+  DISABLED_FindImageLinkedToNOPJavaScriptVoid
+#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FindImageLinkedToNOPJavaScriptVoid) {
+       MAYBE_FindImageLinkedToNOPJavaScriptVoid) {
   const char image_link[] = "javascript:void(0);";
   const char relative_image_path[] = "relativeImage";
   NSString* html = GetHtmlForPage(
