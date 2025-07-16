@@ -109,6 +109,16 @@ public class PermissionDialogMediator
         }
     }
 
+    /** Dismiss the dialog by the close button. */
+    public void dismissByCloseButton() {
+        if (mState == State.PROMPT_OPEN) {
+            assumeNonNull(mModalDialogManager)
+                    .dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
+        } else {
+            onPermissionDialogEnded();
+        }
+    }
+
     /**
      * Setting up the modal dialog model for the permission's dialog.
      *
@@ -237,6 +247,8 @@ public class PermissionDialogMediator
                 type = DismissalType.NAVIGATE_BACK;
             } else if (dismissalCause == DialogDismissalCause.TOUCH_OUTSIDE) {
                 type = DismissalType.TOUCH_OUTSIDE;
+            } else if (dismissalCause == DialogDismissalCause.ACTION_ON_CONTENT) {
+                type = DismissalType.CLOSE_BUTTON_CLICKED;
             }
             onPermissionDialogResult(ContentSettingValues.DEFAULT);
             mDialogDelegate.onDismiss(type);

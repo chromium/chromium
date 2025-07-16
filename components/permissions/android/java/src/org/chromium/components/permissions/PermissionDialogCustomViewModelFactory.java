@@ -45,6 +45,9 @@ class PermissionDialogCustomViewModelFactory {
                 .with(
                         PermissionDialogCustomViewProperties.RADIO_BUTTON_CALLBACK,
                         delegate::onRadioButtonSelectionChanged)
+                .with(
+                        PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK,
+                        delegate::onCloseButtonClicked)
                 .build();
     }
 }

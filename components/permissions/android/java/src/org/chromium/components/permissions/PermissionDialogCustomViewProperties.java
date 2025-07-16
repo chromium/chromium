@@ -39,7 +39,16 @@ public class PermissionDialogCustomViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Callback<Integer>>
             RADIO_BUTTON_CALLBACK = new PropertyModel.WritableObjectPropertyKey();
 
+    public static final PropertyModel.WritableObjectPropertyKey<Runnable> CLOSE_BUTTON_CALLBACK =
+            new PropertyModel.WritableObjectPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
-        ICON, ICON_TINT, MESSAGE_TEXT, BOLDED_RANGES, RADIO_BUTTONS, RADIO_BUTTON_CALLBACK,
+        ICON,
+        ICON_TINT,
+        MESSAGE_TEXT,
+        BOLDED_RANGES,
+        RADIO_BUTTONS,
+        RADIO_BUTTON_CALLBACK,
+        CLOSE_BUTTON_CALLBACK
     };
 }

@@ -178,6 +178,15 @@ public class PermissionDialogController {
         delegate.destroy();
     }
 
+    public void dismissByCloseButton(PermissionDialogDelegate delegate) {
+        if (mDialogDelegate != null && mDialogDelegate != delegate) {
+            assert mRequestQueue.contains(delegate);
+            mRequestQueue.remove(delegate);
+        } else {
+            assumeNonNull(mCoordinator).dismissByCloseButton();
+        }
+    }
+
     public void notifyObservers(@ContentSettingValues int result) {
         if (result != ContentSettingValues.DEFAULT) {
             assert mDialogDelegate != null;

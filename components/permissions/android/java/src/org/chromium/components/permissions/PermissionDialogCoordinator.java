@@ -198,6 +198,11 @@ public class PermissionDialogCoordinator {
         assumeNonNull(mMediator).dismissFromNative();
     }
 
+    /** Dismiss the dialog by the close button. */
+    public void dismissByCloseButton() {
+        assumeNonNull(mMediator).dismissByCloseButton();
+    }
+
     /** Update the current dialog. This may hide the current dialog and show OS prompt instead. */
     public void updateDialog() {
         assumeNonNull(mMediator).updateDialog(createCustomView());

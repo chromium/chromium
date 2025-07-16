@@ -575,6 +575,8 @@ enum class PermissionChangeInfo {
   kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed,
 };
 
+// LINT.IfChange(DismissalType)
+
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: DismissalType
 enum class DismissalType {
@@ -602,9 +604,14 @@ enum class DismissalType {
   // inflated in some embedders (e.g WebEngine).
   kAutodismissNoDialogManager = 5,
 
+  // The user dismissed by clicking on the close button.
+  kCloseButtonClicked = 6,
+
   // Always keep this at the end.
-  kMaxValue = kAutodismissNoDialogManager,
+  kMaxValue = kCloseButtonClicked,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPromptDismissMethod)
 
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {

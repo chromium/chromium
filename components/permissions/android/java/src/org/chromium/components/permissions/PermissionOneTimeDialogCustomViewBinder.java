@@ -56,6 +56,10 @@ class PermissionOneTimeDialogCustomViewBinder {
             updateRadioButtonCallback(
                     customView,
                     model.get(PermissionDialogCustomViewProperties.RADIO_BUTTON_CALLBACK));
+        } else if (PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK == propertyKey) {
+            updateCloseButtonCallback(
+                    customView,
+                    model.get(PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK));
         }
     }
 
@@ -101,5 +105,12 @@ class PermissionOneTimeDialogCustomViewBinder {
                 (view, id) -> {
                     radioButtonCallback.onResult(view.indexOfChild(view.findViewById(id)));
                 });
+    }
+
+    private static void updateCloseButtonCallback(View customView, Runnable closeButtonCallback) {
+        View closeButton = customView.findViewById(R.id.close_button);
+        if (closeButton != null) {
+            closeButton.setOnClickListener(view -> closeButtonCallback.run());
+        }
     }
 }

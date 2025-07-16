@@ -168,6 +168,11 @@ public class PermissionDialogDelegate {
         // TODO(crbug.com/417684493): Process radio button changes.
     }
 
+    public void onCloseButtonClicked() {
+        assert mDialogController != null;
+        mDialogController.dismissByCloseButton(this);
+    }
+
     public void destroy() {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get().destroy(mNativeDelegatePtr);
