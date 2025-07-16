@@ -1768,7 +1768,7 @@ bool IamfSpecificBox::ReadOBUHeader(BufferReader* reader,
     RCHECK(ReadLeb128Value(reader, &extension_header_size));
     const int num_leb128_bytes_read = reader->pos() - last_reader_pos;
     RCHECK(reader->SkipBytes(extension_header_size));
-    obu_size -= (num_leb128_bytes_read + extension_header_size);
+    *obu_size -= (num_leb128_bytes_read + extension_header_size);
   }
   return true;
 }
