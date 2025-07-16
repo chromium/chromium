@@ -261,6 +261,19 @@ def main():
     os.system("vpython3 gpu/command_buffer/build_gles2_cmd_buffer.py")
     os.system("vpython3 gpu/command_buffer/build_raster_cmd_buffer.py")
 
+    # Some files are not properly covered by this script. Revert the known
+    # failing files.
+    exclusions = [
+        # Reproduce on android-cronet-riscv64-dbg.
+        "base/profiler/register_context_registers.h",
+
+        # Reproduce on linux-cast-arm-rel
+        "media/parsers/parsers/h264_bit_reader.h",
+    ]
+    for exclusion in exclusions:
+        print("Reverting %s" % exclusion, flush=True)
+        os.system("git checkout HEAD -- %s" % exclusion)
+
     # Add changed code and create the commit.
     os.system("git add -u")
 
