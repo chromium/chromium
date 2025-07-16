@@ -40,7 +40,7 @@ void UtilityProcessClient::OnProcessTerminatedNormally() {
       process_info_->service_process_id());
 }
 
-void UtilityProcessClient::OnProcessCrashed() {
+void UtilityProcessClient::OnProcessCrashed(CrashType type) {
   // TODO(crbug.com/40654042): It is unclear how we can observe
   // |OnProcessCrashed()| without observing |OnProcessLaunched()| first, but
   // it can happen on Android. Ignore the notification in this case.
@@ -48,6 +48,7 @@ void UtilityProcessClient::OnProcessCrashed() {
     return;
   }
 
-  GetServiceProcessTracker().NotifyCrashed(process_info_->service_process_id());
+  GetServiceProcessTracker().NotifyCrashed(process_info_->service_process_id(),
+                                           type);
 }
 }  // namespace content

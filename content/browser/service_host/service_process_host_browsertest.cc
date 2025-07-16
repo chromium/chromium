@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
@@ -69,7 +70,12 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
 
   void WaitForLaunch() { launch_loop_.Run(); }
   void WaitForDeath() { death_loop_.Run(); }
-  void WaitForCrash() { crash_loop_.Run(); }
+  // Returns true if the crash was a 'startup crash'.
+  bool WaitForCrash() {
+    crash_loop_.Run();
+    EXPECT_TRUE(crashed_pre_ipc_.has_value());
+    return *crashed_pre_ipc_;
+  }
 
   // Valid after WaitForLaunch.
   base::ProcessId pid() const { return process_.Pid(); }
@@ -91,6 +97,9 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   }
 
   void OnServiceProcessCrashed(const ServiceProcessInfo& info) override {
+    CHECK(info.crashed_pre_ipc().has_value());
+    crashed_pre_ipc_ = info.crashed_pre_ipc().value();
+
     if (info.IsService<echo::mojom::EchoService>()) {
       ASSERT_EQ(info.site(), GURL(kTestUrl));
       crash_loop_.Quit();
@@ -101,6 +110,7 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   base::RunLoop death_loop_;
   base::RunLoop crash_loop_;
   base::Process process_;
+  std::optional<bool> crashed_pre_ipc_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Launch) {
@@ -186,8 +196,25 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {
       ServiceProcessHost::Options().WithSite(GURL(kTestUrl)).Pass());
   observer.WaitForLaunch();
   echo_service->Crash();
-  observer.WaitForCrash();
+  bool crashed_pre_ipc = observer.WaitForCrash();
+  EXPECT_FALSE(crashed_pre_ipc);
 }
+
+// Pre-IPC crash detection is only available on Windows.
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObservePreIpcCrash) {
+  EchoServiceProcessObserver observer;
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
+      ServiceProcessHost::Options()
+          .WithSite(GURL(kTestUrl))
+          .WithExtraCommandLineSwitches(
+              {switches::kUtilityImmediateCrashForTesting})
+          .Pass());
+  observer.WaitForLaunch();
+  bool crashed_pre_ipc = observer.WaitForCrash();
+  EXPECT_TRUE(crashed_pre_ipc);
+}
+#endif  // #if BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, IdleTimeout) {
   EchoServiceProcessObserver observer;
