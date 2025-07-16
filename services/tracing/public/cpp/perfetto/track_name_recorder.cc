@@ -51,6 +51,12 @@ void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
   if (thread_type != ChromeThreadDescriptor::THREAD_UNSPECIFIED) {
     desc.mutable_chrome_thread()->set_thread_type(thread_type);
   }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
+  if (base::GetCurrentProcId() !=
+      base::trace_event::TraceLog::GetInstance()->process_id()) {
+    desc.mutable_chrome_thread()->set_is_sandboxed_tid(true);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
   base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
 }
