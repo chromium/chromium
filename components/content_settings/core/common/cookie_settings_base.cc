@@ -26,6 +26,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -965,12 +966,12 @@ ContentSetting CookieSettingsBase::GetSettingForLegacyCookieAccess(
 
 ContentSetting CookieSettingsBase::GetSettingForLegacyCookieScope(
     const std::string& cookie_domain) const {
-  // The content setting patterns are treated as domains, not URLs, so the
-  // scheme is irrelevant (so we can just arbitrarily pass false).
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie_domain, false /*secure_scheme=*/);
+  // The content setting patterns are treated as registrable domains, not URLs,
+  // so the scheme is irrelevant (so we can just arbitrarily pass false).
+  net::SchemefulSite registrable_domain(net::cookie_util::CookieOriginToURL(
+      cookie_domain, false /*secure_scheme=*/));
 
-  return GetContentSetting(cookie_domain_url, GURL(),
+  return GetContentSetting(registrable_domain.GetURL(), GURL(),
                            ContentSettingsType::LEGACY_COOKIE_SCOPE,
                            /*info=*/nullptr);
 }

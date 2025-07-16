@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -185,6 +186,7 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedJavaScriptOptimizerAllowedForSites,
     prefs::kManagedJavaScriptOptimizerBlockedForSites,
     prefs::kManagedLegacyCookieAccessAllowedForDomains,
+    prefs::kManagedLegacyCookieScopeForDomains,
     prefs::kManagedLocalNetworkAccessAllowedForUrls,
     prefs::kManagedLocalNetworkAccessBlockedForUrls,
     prefs::kManagedNotificationsAllowedForUrls,
@@ -240,6 +242,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultMediaStreamSetting,
     prefs::kManagedDefaultNotificationsSetting,
     prefs::kManagedDefaultPopupsSetting,
+    prefs::kManagedDefaultLegacyCookieScope,
     prefs::kManagedDefaultSensorsSetting,
     prefs::kManagedDefaultSerialGuardSetting,
     prefs::kManagedDefaultWebBluetoothGuardSetting,
@@ -329,6 +332,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::IMAGES, prefs::kManagedDefaultImagesSetting},
         {ContentSettingsType::GEOLOCATION,
          prefs::kManagedDefaultGeolocationSetting},
+        {ContentSettingsType::LEGACY_COOKIE_SCOPE,
+         prefs::kManagedDefaultLegacyCookieScope},
         {ContentSettingsType::JAVASCRIPT,
          prefs::kManagedDefaultJavaScriptSetting},
         {ContentSettingsType::MEDIASTREAM_CAMERA,

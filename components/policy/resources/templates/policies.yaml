@@ -1380,6 +1380,8 @@ policies:
   1379: FloatingSsoSessionCookiesIncluded
   1380: ServiceWorkerAutoPreloadEnabled
   1381: ProtectedContentIdentifiersAllowed
+  1382: LegacyCookieScopeEnabled
+  1383: LegacyCookieScopeEnabledForDomainList
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1441,3 +1443,4 @@ atomic_groups:
   58: LocalNetworkAccessSettings
   59: DeviceAttributesSettings
   60: ProtectedContent
+  61: LegacyCookieScopeSettings

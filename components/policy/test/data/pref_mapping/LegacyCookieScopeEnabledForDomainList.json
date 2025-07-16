@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LegacyCookieScopeEnabledForDomainList": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_legacy_cookie_scope_for_domains": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

@@ -108,3 +108,8 @@ SmartCardConnectSettings:
   - SmartCardConnectAllowedForUrls
   - SmartCardConnectBlockedForUrls
   - DefaultSmartCardConnectSetting
+LegacyCookieScopeSettings:
+  caption: Legacy Cookie Scope settings
+  policies:
+  - LegacyCookieScopeEnabled
+  - LegacyCookieScopeEnabledForDomainList
