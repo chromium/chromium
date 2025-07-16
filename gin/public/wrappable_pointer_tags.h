@@ -23,9 +23,10 @@ enum WrappablePointerTag : uint16_t {
   kFirstPointerTag = 1501,
   kAccessibilityControllerBindings,  // content::AccessibilityControllerBindings
   kAPIBindingBridge,                 // extensions::APIBindingBridge
+  kAPIBindingJSUtil,                 // extensions::APIBindingJSUtil
   kAutomationPosition,               // ui::AutomationPosition
   kChromePluginPlaceholder,          // ChromePluginPlaceholder
-  kDeclarativeEvent,                   // extensions::DeclarativeEvent
+  kDeclarativeEvent,                 // extensions::DeclarativeEvent
   kDomAutomationController,          // content::DomAutomationController
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings

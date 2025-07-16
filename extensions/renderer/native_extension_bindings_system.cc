@@ -1083,12 +1083,12 @@ void NativeExtensionBindingsSystem::OnEventListenerChanged(
 void NativeExtensionBindingsSystem::GetJSBindingUtil(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value>* binding_util_out) {
-  gin::Handle<APIBindingJSUtil> handle = gin::CreateHandle(
-      v8::Isolate::GetCurrent(),
-      new APIBindingJSUtil(
-          api_system_.type_reference_map(), api_system_.request_handler(),
-          api_system_.event_handler(), api_system_.exception_handler()));
-  *binding_util_out = handle.ToV8();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  APIBindingJSUtil* util = cppgc::MakeGarbageCollected<APIBindingJSUtil>(
+      isolate->GetCppHeap()->GetAllocationHandle(),
+      api_system_.type_reference_map(), api_system_.request_handler(),
+      api_system_.event_handler(), api_system_.exception_handler());
+  *binding_util_out = util->GetWrapper(isolate).ToLocalChecked();
 }
 
 void NativeExtensionBindingsSystem::UpdateContentCapabilities(

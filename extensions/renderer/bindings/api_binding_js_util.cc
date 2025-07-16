@@ -24,10 +24,6 @@
 #include "v8/include/v8-cppgc.h"
 
 namespace extensions {
-
-gin::DeprecatedWrapperInfo APIBindingJSUtil::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 APIBindingJSUtil::APIBindingJSUtil(APITypeReferenceMap* type_refs,
                                    APIRequestHandler* request_handler,
                                    APIEventHandler* event_handler,
@@ -41,8 +37,7 @@ APIBindingJSUtil::~APIBindingJSUtil() = default;
 
 gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<APIBindingJSUtil>::GetObjectTemplateBuilder(
-             isolate)
+  return Wrappable<APIBindingJSUtil>::GetObjectTemplateBuilder(isolate)
       .SetMethod("sendRequest", &APIBindingJSUtil::SendRequest)
       .SetMethod("registerEventArgumentMassager",
                  &APIBindingJSUtil::RegisterEventArgumentMassager)
@@ -62,6 +57,10 @@ gin::ObjectTemplateBuilder APIBindingJSUtil::GetObjectTemplateBuilder(
       .SetMethod("validateCustomSignature",
                  &APIBindingJSUtil::ValidateCustomSignature)
       .SetMethod("addCustomSignature", &APIBindingJSUtil::AddCustomSignature);
+}
+
+const gin::WrapperInfo* APIBindingJSUtil::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 void APIBindingJSUtil::SendRequest(
