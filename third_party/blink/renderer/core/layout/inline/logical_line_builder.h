@@ -61,7 +61,7 @@ class LogicalLineBuilder {
                                     InlineBoxState* box);
   InlineBoxState* HandleOpenTag(const InlineItem&,
                                 const InlineItemResult&,
-                                float text_scale,
+                                const FitTextBlockScale& text_scale,
                                 LogicalLineItems*);
   InlineBoxState* HandleCloseTag(const InlineItem&,
                                  const InlineItemResult&,

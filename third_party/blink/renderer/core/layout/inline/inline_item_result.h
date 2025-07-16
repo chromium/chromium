@@ -210,16 +210,29 @@ struct CORE_EXPORT InlineItemResult {
 // Represents a set of InlineItemResult that form a line box.
 using InlineItemResults = HeapVector<InlineItemResult, 32>;
 
-// Find text scaling factor in `line_items`.
+// Do not use this, which is a helper of FindTextScale().
+FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
+                                        wtf_size_t start_index,
+                                        wtf_size_t initial_nesting_level);
+
+// Find text scaling factor and a scaled font in `line_items`.
 // It is obtained from an InlineItemResult at line_items[start_index] or later,
 // and its tag nesting level is 0.
 //
 // For example, if the `line_items` content is "foo</span>bar</span>baz",
-// start_index==0, and initial_nesting_level==1, scaling factor of "bar" item
-// is returned.
-float FindTextScale(const InlineItemResults& line_items,
-                    wtf_size_t start_index,
-                    wtf_size_t initial_nesting_level);
+// start_index==0, and initial_nesting_level==1, scaling factor and a scaled
+// font of "bar" item is returned.
+//
+// `should_scale` - Returns {1.0f, nullptr} if it is false.
+inline FitTextBlockScale FindTextScale(bool should_scale,
+                                       const InlineItemResults& line_items,
+                                       wtf_size_t start_index,
+                                       wtf_size_t initial_nesting_level) {
+  if (!should_scale) {
+    return {1.0f, 1.0f, nullptr};
+  }
+  return FindTextScaleInternal(line_items, start_index, initial_nesting_level);
+}
 
 }  // namespace blink
 

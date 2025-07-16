@@ -119,17 +119,20 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
 void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
                                         const Font& fontref,
                                         FontBaseline ifc_baseline,
-                                        float scale) {
+                                        const FitTextBlockScale* scale) {
   const auto baseline_type =
       styleref.CssDominantBaseline() == EDominantBaseline::kAuto
           ? ifc_baseline
           : styleref.GetFontBaseline();
-  if (const SimpleFontData* font_data = fontref.PrimaryFont()) {
-    if (scale != 1.0f) {
+  const Font& base_font =
+      scale && scale->scaled_font ? *scale->scaled_font : fontref;
+  float paint_scale = scale ? scale->paint_scale : 1.0f;
+  if (const SimpleFontData* font_data = base_font.PrimaryFont()) {
+    if (paint_scale != 1.0f) {
       text_metrics =
           font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
-      text_metrics.ascent *= scale;
-      text_metrics.descent *= scale;
+      text_metrics.ascent *= paint_scale;
+      text_metrics.descent *= paint_scale;
     } else if (is_svg_text) {
       text_metrics =
           font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
@@ -143,14 +146,20 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   text_height = text_metrics.LineHeight();
 
   FontHeight emphasis_marks_outsets =
-      ComputeEmphasisMarkOutsets(styleref, fontref);
-  LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(fontref);
-  if (scale != 1.0f) {
+      ComputeEmphasisMarkOutsets(styleref, base_font);
+  LayoutUnit line_height = styleref.ComputedLineHeightAsFixed(base_font);
+  if (styleref.LineHeight().IsFixed()) {
+    if (scale && scale->total_scale != 1.0f) {
+      line_height *= scale->total_scale;
+    }
     // When the line-height is fixed,
     //  - Should we apply the maximum scaling factor in the line?
     //  - When the text shrinks, this behavior is questionable.  Non-text
     //    items may overflow.
-    line_height *= scale;
+  } else {
+    if (paint_scale != 1.0f) {
+      line_height *= paint_scale;
+    }
   }
   FontHeight leading_space = CalculateLeadingSpace(line_height, text_metrics);
   if (emphasis_marks_outsets.IsEmpty()) {
@@ -231,7 +240,7 @@ void InlineBoxState::ResetTextMetrics() {
 void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
                                        const Font& fontref,
                                        FontBaseline ifc_baseline,
-                                       float scale) {
+                                       const FitTextBlockScale* scale) {
   if (text_metrics.IsEmpty())
     ComputeTextMetrics(styleref, fontref, ifc_baseline, scale);
 }
@@ -301,11 +310,10 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
       box.fragment_start = line_box->size();
       if (box.needs_box_fragment) {
         DCHECK_NE(&box, stack_.data());
-        float text_scale =
-            should_scale_line_height
-                ? FindTextScale(line_items, 0, stack_.size() - i - 1)
-                : 1.0f;
-        AddBoxFragmentPlaceholder(&box, text_scale, line_box, baseline_type);
+        auto text_block_scale = FindTextScale(
+            should_scale_line_height, line_items, 0, stack_.size() - i - 1);
+        AddBoxFragmentPlaceholder(&box, text_block_scale, line_box,
+                                  baseline_type);
       }
       if (!line_height_quirk)
         box.metrics = box.text_metrics;
@@ -334,12 +342,11 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
     if (!line_height_quirk) {
-      line_box_state.ComputeTextMetrics(
-          line_style, *line_box_state.font, baseline_type,
-          should_scale_line_height
-              ? FindTextScale(line_items, /* start_index */ 0,
-                              /* initial_nesting_level */ 0)
-              : 1.0f);
+      auto text_scale = FindTextScale(should_scale_line_height, line_items,
+                                      /* start_index */ 0,
+                                      /* initial_nesting_level */ 0);
+      line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
+                                        baseline_type, &text_scale);
     }
   }
 
@@ -351,7 +358,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
-    float text_scale,
+    const FitTextBlockScale& text_scale,
     LogicalLineItems* line_box) {
   InlineBoxState* box =
       OnOpenTag(space, item, item_result, baseline_type, *line_box);
@@ -467,7 +474,7 @@ void InlineLayoutStateStack::OnBlockInInline(const FontHeight& metrics,
 // from placeholders.
 void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
     InlineBoxState* box,
-    float text_scale,
+    const FitTextBlockScale& text_scale,
     LogicalLineItems* line_box,
     FontBaseline baseline_type) {
   DCHECK(box != stack_.data() &&
@@ -481,11 +488,14 @@ void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
     // line-height property. Compute from style because |box->metrics| includes
     // the line-height property.
     FontHeight metrics;
-    if (const auto* font_data = box->font->PrimaryFont()) {
-      if (text_scale != 1.0f) {
+    const Font* font =
+        text_scale.scaled_font ? text_scale.scaled_font : box->font.Get();
+    if (const auto* font_data = font->PrimaryFont()) {
+      const float scale = text_scale.paint_scale;
+      if (scale != 1.0f) {
         metrics = font_data->GetFontMetrics().GetFloatFontHeight(baseline_type);
-        metrics.ascent *= text_scale;
-        metrics.descent *= text_scale;
+        metrics.ascent *= scale;
+        metrics.descent *= scale;
       } else {
         metrics =
             is_svg_text_

@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -125,11 +126,11 @@ struct InlineBoxState {
   void ComputeTextMetrics(const ComputedStyle&,
                           const Font& fontref,
                           FontBaseline ifc_baseline,
-                          float scale);
+                          const FitTextBlockScale* scale);
   void EnsureTextMetrics(const ComputedStyle&,
                          const Font& fontref,
                          FontBaseline ifc_baseline,
-                         float scale);
+                         const FitTextBlockScale* scale);
   void ResetTextMetrics();
 
   void AccumulateUsedFonts(const ShapeResultView*, float scale = 1.0f);
@@ -190,7 +191,7 @@ class CORE_EXPORT InlineLayoutStateStack {
                             const InlineItem&,
                             const InlineItemResult&,
                             FontBaseline baseline_type,
-                            float text_scale,
+                            const FitTextBlockScale& text_scale,
                             LogicalLineItems* line_box);
 
   // Pop a box state stack.
@@ -272,7 +273,7 @@ class CORE_EXPORT InlineLayoutStateStack {
                    FontBaseline);
 
   void AddBoxFragmentPlaceholder(InlineBoxState*,
-                                 float text_scale,
+                                 const FitTextBlockScale& text_scale,
                                  LogicalLineItems*,
                                  FontBaseline);
   void AddBoxData(const ConstraintSpace&, InlineBoxState*, LogicalLineItems*);
