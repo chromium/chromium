@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
@@ -26,6 +27,8 @@
   SafariDataImportImportMediator* _mediator;
   /// File picker for the user to select Safari data.
   UIDocumentPickerViewController* _documentProvider;
+  /// Table view  that displays the import status of Safari data.
+  SafariDataItemTableView* _tableView;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -45,8 +48,11 @@
   _containerViewController =
       [[SafariDataImportImportViewController alloc] init];
   _containerViewController.delegate = self;
+  _tableView = [[SafariDataItemTableView alloc] init];
+  _containerViewController.itemTableView = _tableView;
   _mediator = [[SafariDataImportImportMediator alloc] init];
   _mediator.importStageConsumer = _containerViewController;
+  _mediator.itemConsumer = _tableView;
   self.baseNavigationController.navigationBarHidden = NO;
   [self.baseNavigationController pushViewController:_containerViewController
                                            animated:YES];

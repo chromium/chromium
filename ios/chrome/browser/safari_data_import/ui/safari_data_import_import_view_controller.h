@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 enum class SafariDataImportStage;
+@class SafariDataItemTableView;
 
 /// Main screen presented for `SafariDataImportImportCoordinator`.
 @interface SafariDataImportImportViewController
@@ -16,6 +17,9 @@ enum class SafariDataImportStage;
 
 /// The current import stage.
 @property(nonatomic, readonly) SafariDataImportStage importStage;
+
+/// The table view  containing the import stages of each Safari data items.
+@property(nonatomic, strong) SafariDataItemTableView* itemTableView;
 
 @end
 

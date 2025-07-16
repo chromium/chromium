@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol SafariDataImportImportStageConsumer;
+@protocol SafariDataItemConsumer;
 
 /// Mediator for the safari data import screen. Handles stages of importing a
 /// .zip file generated from Safari data to Chrome.
@@ -16,6 +17,9 @@
 /// Consumer object handling import stage transitions.
 @property(nonatomic, weak) id<SafariDataImportImportStageConsumer>
     importStageConsumer;
+
+/// Consumer object displaying Safari item import status.
+@property(nonatomic, weak) id<SafariDataItemConsumer> itemConsumer;
 
 @end
 

@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
@@ -60,10 +61,18 @@
       self.primaryButtonSpinnerEnabled = YES;
       break;
     case SafariDataImportStage::kReadyForImport:
+      [self showTableView];
+      self.primaryActionString = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
+      self.primaryButtonSpinnerEnabled = NO;
+      break;
     case SafariDataImportStage::kImporting:
+      self.primaryButtonEnabled = NO;
+      break;
     case SafariDataImportStage::kImported:
-    default:
-      /// TODO(crbug.com/420703283): Implement.
+      self.primaryActionString = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE);
+      self.primaryButtonEnabled = YES;
       break;
   }
   _importStage = stage;
@@ -108,6 +117,29 @@
     [instructionsView.leadingAnchor
         constraintEqualToAnchor:self.specificContentView.leadingAnchor],
     [instructionsView.trailingAnchor
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
+  ]];
+}
+
+/// Displays the table view containing progress for each Safari import item.
+- (void)showTableView {
+  CHECK_EQ(static_cast<int>(self.specificContentView.subviews.count), 1);
+  CHECK(self.itemTableView);
+  /// Removes the instruction view first.
+  [self.specificContentView.subviews[0] removeFromSuperview];
+  /// Displays the table view.
+  SafariDataItemTableView* tableView = self.itemTableView;
+  [self.specificContentView addSubview:tableView];
+  /// Top align the table view.
+  [NSLayoutConstraint activateConstraints:@[
+    [tableView.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
+    [tableView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
+    [tableView.leadingAnchor
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
+    [tableView.trailingAnchor
         constraintEqualToAnchor:self.specificContentView.trailingAnchor],
   ]];
 }

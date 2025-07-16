@@ -5,3 +5,11 @@
 source_set("public") {
   sources = [ "safari_data_import_stage.h" ]
 }
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
