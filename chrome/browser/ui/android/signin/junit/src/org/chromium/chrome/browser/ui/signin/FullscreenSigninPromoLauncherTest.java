@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -48,7 +48,7 @@ import java.util.Set;
 
 /** Tests for {@link FullscreenSigninPromoLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
+@DisableFeatures({SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO})
 public class FullscreenSigninPromoLauncherTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -122,7 +122,7 @@ public class FullscreenSigninPromoLauncherTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)
+    @EnableFeatures(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
     public void promoVisibleWhenForcingSigninPromoAtStartup() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
@@ -138,7 +138,7 @@ public class FullscreenSigninPromoLauncherTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)
+    @EnableFeatures(SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO)
     public void promoShownWhenForcingSigninPromoAtStartupOnAuto() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);

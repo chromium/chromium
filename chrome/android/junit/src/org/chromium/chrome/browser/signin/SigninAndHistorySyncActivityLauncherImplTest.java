@@ -36,6 +36,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -65,6 +67,7 @@ import org.chromium.ui.widget.ToastManager;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableFeatures({SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN})
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowToast.class})

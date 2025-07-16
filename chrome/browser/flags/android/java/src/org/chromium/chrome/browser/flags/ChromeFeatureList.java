@@ -416,7 +416,6 @@ public abstract class ChromeFeatureList {
     public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
             "ForceBrowserControlsUponExitingFullscreen";
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
-    public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
             "ForceTranslucentNotificationTrampoline";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";

@@ -12779,6 +12779,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopWebPrefsLargeDisplays)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"force-history-opt-in-screen",
+     flag_descriptions::kForceHistoryOptInScreenName,
+     flag_descriptions::kForceHistoryOptInScreenDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kForceHistoryOptInScreen)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

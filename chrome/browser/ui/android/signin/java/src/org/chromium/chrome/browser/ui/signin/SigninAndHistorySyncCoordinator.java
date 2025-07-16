@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -112,11 +114,13 @@ public interface SigninAndHistorySyncCoordinator {
     static boolean shouldShowHistorySync(
             Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+        boolean forceHistoryOptInScreen =
+                SigninFeatureMap.isEnabled(SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN);
         return switch (historyOptInMode) {
             case HistorySyncConfig.OptInMode.NONE -> false;
             case HistorySyncConfig.OptInMode.OPTIONAL -> !historySyncHelper
                             .shouldSuppressHistorySync()
-                    && !historySyncHelper.isDeclinedOften();
+                    && (forceHistoryOptInScreen || !historySyncHelper.isDeclinedOften());
             case HistorySyncConfig.OptInMode.REQUIRED -> !historySyncHelper
                     .shouldSuppressHistorySync();
             default -> throw new IllegalArgumentException(

@@ -484,6 +484,13 @@ const char kDevToolsProjectSettingsDescription[] =
     "on local debugging targets.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kForceHistoryOptInScreenName[] = "Force history opt-in screen";
+const char kForceHistoryOptInScreenDescription[] =
+    "If enabled, the history opt-in screen will be forced to show up even if "
+    "the user declined history sync too recently or too often";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

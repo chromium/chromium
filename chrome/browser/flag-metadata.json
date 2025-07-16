@@ -5126,6 +5126,13 @@
     "expiry_milestone": 165
   },
   {
+    "name": "force-history-opt-in-screen",
+    "owners": [ "chrome-signin-team@google.com" ],
+    // This is required by test teams and dev teams to verify the
+    // history opt-in screen functionality.
+    "expiry_milestone": -1
+  },
+  {
     "name": "force-ntp-mobile-promo",
     "owners": [ "rkgibson@google.com", "bling-mony-pod@google.com", "pauladedeji@google.com" ],
     "expiry_milestone": 136

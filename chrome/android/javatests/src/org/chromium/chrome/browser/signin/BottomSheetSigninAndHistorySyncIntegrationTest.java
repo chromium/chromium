@@ -240,6 +240,22 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(SigninFeatures.FORCE_HISTORY_OPT_IN_SCREEN)
+    public void testWithExistingAccount_signIn_historySyncDeclinedOften_forceHistoryOptInScreen() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.OPTIONAL);
+
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+    }
+
+    @Test
+    @MediumTest
     public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         launchActivity(

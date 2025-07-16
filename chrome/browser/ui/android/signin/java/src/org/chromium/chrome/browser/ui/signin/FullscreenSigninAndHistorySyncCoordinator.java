@@ -23,7 +23,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -242,11 +241,6 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     public void advanceToNextPage() {
         if (!isSignedIn() || mCurrentView == ChildView.HISTORY_SYNC) {
             mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
-            return;
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
-            // Always show history sync when the upgrade promo was forced on by a flag.
-            showChildView(ChildView.HISTORY_SYNC);
             return;
         }
         Profile profile = mProfileSupplier.get().getOriginalProfile();

@@ -17,6 +17,10 @@ BASE_FEATURE(kCctSignInPrompt,
              "CctSignInPrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kForceHistoryOptInScreen,
+             "ForceHistoryOptInScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Add history sync opt-in promo in the History Page.
 BASE_FEATURE(kHistoryPageHistorySyncPromo,
              "HistoryPageHistorySyncPromo",

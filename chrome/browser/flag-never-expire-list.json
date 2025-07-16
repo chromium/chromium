@@ -93,6 +93,7 @@
   "fedcm-without-well-known-enforcement",
   "force-color-profile",
   "force-effective-connection-type",
+  "force-history-opt-in-screen",
   "force-show-update-menu-badge",
   "force-startup-signin-promo",
   "force-text-direction",

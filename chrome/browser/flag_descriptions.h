@@ -360,6 +360,11 @@ extern const char kEnableSiteSearchAllowUserOverridePolicyDescription[];
 extern const char kFontationsFontBackendName[];
 extern const char kFontationsFontBackendDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kForceHistoryOptInScreenName[];
+extern const char kForceHistoryOptInScreenDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

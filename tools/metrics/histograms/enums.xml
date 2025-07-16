@@ -11491,6 +11491,7 @@ from previous Chrome versions.
       label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
   <int value="-954302223" label="OfflineItemsInNotifications:enabled"/>
+  <int value="-954034543" label="ForceHistoryOptInScreen:disabled"/>
   <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
@@ -17523,6 +17524,7 @@ from previous Chrome versions.
   <int value="1290343279" label="SafetyCheckNotificationPermissions:disabled"/>
   <int value="1290434276" label="FedCmAutofill:enabled"/>
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
+  <int value="1291174435" label="ForceHistoryOptInScreen:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
   <int value="1291453047" label="UseMultiPlaneFormatForSoftwareVideo:enabled"/>
   <int value="1291546955" label="PermissionElement:enabled"/>
