@@ -72,7 +72,7 @@ class PLATFORM_EXPORT SharedGpuContext {
   static void Reset();
 
  private:
-  friend class WTF::ThreadSpecific<SharedGpuContext>;
+  friend class ThreadSpecific<SharedGpuContext>;
 
   static SharedGpuContext* GetInstanceForCurrentThread();
 

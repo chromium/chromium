@@ -81,7 +81,7 @@ void HarfBuzzFace::Trace(Visitor* visitor) const {
 }
 
 VariationSelectorMode& GetIgnoreVariationSelectorModeRef() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<VariationSelectorMode>,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<VariationSelectorMode>,
                                   variation_selector_mode, ());
   return *variation_selector_mode;
 }

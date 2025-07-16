@@ -90,7 +90,7 @@ class FlushForImageListener {
   }
 
  private:
-  friend class WTF::ThreadSpecific<FlushForImageListener>;
+  friend class ThreadSpecific<FlushForImageListener>;
   base::ObserverList<CanvasResourceProvider> observers_;
 };
 

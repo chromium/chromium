@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T>
 class ThreadSpecific {
@@ -94,7 +94,7 @@ inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // and then free the memory manually.
   T* instance = static_cast<T*>(ptr);
   instance->~T();
-  Partitions::FastFree(ptr);
+  WTF::Partitions::FastFree(ptr);
 }
 
 template <typename T>
@@ -114,7 +114,7 @@ inline ThreadSpecific<T>::operator T*() {
 #else
   const bool kMainThreadAlwaysChecksTLS = false;
   T** ptr = &main_thread_storage_;
-  if (MayNotBeMainThread()) [[unlikely]] {
+  if (WTF::MayNotBeMainThread()) [[unlikely]] {
     off_thread_ptr = static_cast<T*>(Get());
     ptr = &off_thread_ptr;
   }
@@ -123,13 +123,13 @@ inline ThreadSpecific<T>::operator T*() {
   // in case any function it calls needs to access the value, to avoid
   // recursion.
   if (!*ptr) [[unlikely]] {
-    *ptr = static_cast<T*>(Partitions::FastZeroedMalloc(
+    *ptr = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
         sizeof(T), WTF_HEAP_PROFILER_TYPE_NAME(T)));
 
     // Even if we didn't realize we're on the main thread, we might still be.
     // We need to double-check so that |main_thread_storage_| is populated.
     if (!kMainThreadAlwaysChecksTLS && ptr != &main_thread_storage_ &&
-        blink::IsMainThread()) [[unlikely]] {
+        IsMainThread()) [[unlikely]] {
       main_thread_storage_ = *ptr;
     }
 
@@ -149,8 +149,6 @@ inline T& ThreadSpecific<T>::operator*() {
   return *operator T*();
 }
 
-}  // namespace WTF
-
-using WTF::ThreadSpecific;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_

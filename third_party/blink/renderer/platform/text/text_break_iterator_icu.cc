@@ -47,8 +47,8 @@ class LineBreakIteratorPool final {
 
  public:
   static LineBreakIteratorPool& SharedPool() {
-    static WTF::ThreadSpecific<LineBreakIteratorPool>* pool =
-        new WTF::ThreadSpecific<LineBreakIteratorPool>;
+    static ThreadSpecific<LineBreakIteratorPool>* pool =
+        new ThreadSpecific<LineBreakIteratorPool>;
     return **pool;
   }
 
@@ -112,8 +112,8 @@ class LineBreakIteratorPool final {
   Pool pool_;
   HashMap<icu::BreakIterator*, AtomicString> vended_iterators_;
 
-  friend WTF::ThreadSpecific<
-      LineBreakIteratorPool>::operator LineBreakIteratorPool*();
+  friend ThreadSpecific<LineBreakIteratorPool>::
+  operator LineBreakIteratorPool*();
 };
 
 enum TextContext { kNoContext, kPriorContext, kPrimaryContext };
