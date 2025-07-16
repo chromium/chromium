@@ -426,11 +426,11 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ContextMenuItemViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
-                new LayoutViewBuilder<>(R.layout.checkbox_layout),
+                new LayoutViewBuilder<>(R.layout.context_menu_checkbox),
                 ContextMenuItemWithCheckboxViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
-                new LayoutViewBuilder<>(R.layout.radio_button_layout_element),
+                new LayoutViewBuilder<>(R.layout.context_menu_radio_button),
                 ContextMenuItemWithRadioButtonViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,

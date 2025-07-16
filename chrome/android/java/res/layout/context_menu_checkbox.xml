@@ -6,28 +6,26 @@ found in the LICENSE file.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/context_menu_list_lateral_padding"
+    android:gravity="start"
     android:background="@drawable/list_item_ripple"
-    android:paddingHorizontal="@dimen/context_menu_row_item_horizontal_padding"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/submenu_arrow"
-        android:src="@drawable/ic_arrow_back_24dp"
-        android:importantForAccessibility="no"
+    <CheckBox
+        android:id="@+id/checkbox"
         android:layout_width="@dimen/list_item_start_icon_width"
-        android:layout_height="@dimen/context_menu_chip_icon_size"
+        android:layout_height="@dimen/list_item_start_icon_width"
         android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
-        android:layout_gravity="center"
-        android:scaleType="fitCenter"
-        android:background="@android:color/transparent" />
+        android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/menu_row_text"
-        android:layout_width="0dp"
+        android:id="@+id/checkbox_title"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        style="@style/ContextMenuItemText.Bold" />
+        android:layout_width="match_parent"
+        android:maxLines="1"
+        android:ellipsize="end"
+        style="@style/ContextMenuItemText" />
+
 </LinearLayout>

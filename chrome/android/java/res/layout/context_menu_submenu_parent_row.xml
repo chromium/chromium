@@ -15,7 +15,7 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
-        android:layout_width="@dimen/context_menu_chip_icon_size"
+        android:layout_width="@dimen/list_item_start_icon_width"
         android:layout_height="@dimen/context_menu_chip_icon_size"
         android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
         android:layout_gravity="center"

@@ -38,6 +38,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
+import org.chromium.ui.listmenu.ContextMenuCheckItemProperties;
+import org.chromium.ui.listmenu.ContextMenuRadioItemProperties;
 import org.chromium.ui.listmenu.ContextMenuSubmenuHeaderItemProperties;
 import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
@@ -73,7 +75,7 @@ public class ContextMenuRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_CONTEXT_MENU)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     private ModelListAdapter mAdapter;
@@ -188,6 +190,52 @@ public class ContextMenuRenderTest {
                                                     ListMenuItemProperties.START_ICON_BITMAP,
                                                     testBitmap)
                                             .with(ListMenuItemProperties.ENABLED, false)
+                                            .build()));
+                    // Check items
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuCheckItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuCheckItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(ContextMenuCheckItemProperties.CHECKED, true)
+                                            .with(ContextMenuCheckItemProperties.ENABLED, true)
+                                            .build()));
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuCheckItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuCheckItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(ContextMenuCheckItemProperties.CHECKED, false)
+                                            .with(ContextMenuCheckItemProperties.ENABLED, false)
+                                            .build()));
+                    // Radio items
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuRadioItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuRadioItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(ContextMenuRadioItemProperties.SELECTED, true)
+                                            .with(ContextMenuRadioItemProperties.ENABLED, true)
+                                            .build()));
+                    mListItems.add(
+                            new ListItem(
+                                    ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
+                                    new PropertyModel.Builder(
+                                                    ContextMenuRadioItemProperties.ALL_KEYS)
+                                            .with(
+                                                    ContextMenuRadioItemProperties.TITLE,
+                                                    EXAMPLE_LABEL)
+                                            .with(ContextMenuRadioItemProperties.SELECTED, false)
+                                            .with(ContextMenuRadioItemProperties.ENABLED, false)
                                             .build()));
                     // Submenu parent items
                     mListItems.add(
