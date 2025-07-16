@@ -49,6 +49,7 @@ export class FooterElement extends CrLitElement {
 
   protected accessor managedByPolicy_: boolean = false;
   protected accessor checked_: boolean = false;
+  protected canShowManagement_: boolean = false;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -69,6 +70,7 @@ export class FooterElement extends CrLitElement {
               // Checked if the footer is visible by user choice  or if it is enabled by policy.
               this.checked_ = visible || managementNoticeState.enabledByPolicy;
               this.managedByPolicy_ = managementNoticeState.enabledByPolicy;
+              this.canShowManagement_ = managementNoticeState.canBeShown;
             });
     this.pageHandler_.updateFooterSettings();
   }
@@ -84,6 +86,13 @@ export class FooterElement extends CrLitElement {
         CustomizeChromeAction.SHOW_FOOTER_TOGGLE_CLICKED);
     chrome.metricsPrivate.recordBoolean(
         'NewTabPage.Footer.ToggledVisibility', checked);
+    if (this.canShowManagement_) {
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Footer.ToggledVisibility.Enterprise', checked);
+    } else {
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Footer.ToggledVisibility.Consumer', checked);
+    }
     this.checked_ = checked;
     this.setFooterVisible_();
   }

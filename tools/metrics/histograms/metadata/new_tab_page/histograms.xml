@@ -655,14 +655,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Footer.ToggledVisibility" enum="BooleanVisible"
-    expires_after="2026-02-01">
+<histogram name="NewTabPage.Footer.ToggledVisibility{FooterToggleSource}"
+    enum="BooleanVisible" expires_after="2026-02-01">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Logged when New Tab Footer visibility is toggled via Customize Chrome.
+    Logged when New Tab Footer visibility is toggled via Customize Chrome. Note:
+    Prior to M140, NewTabPage.Footer.ToggledVisibility exclusively recorded
+    consumer enablement. NewTabPage.Footer.ToggledVisibility.Consumer did not
+    exist at the time.
   </summary>
+  <token key="FooterToggleSource">
+    <variant name=""/>
+    <variant name=".Consumer"
+        summary="footer visibility is toggled on an unmanaged browser."/>
+    <variant name=".Enterprise"
+        summary="footer visibility is toggled on a managed browser."/>
+  </token>
 </histogram>
 
 <histogram name="NewTabPage.Footer.VisibleOnLoad" enum="BooleanVisible"
