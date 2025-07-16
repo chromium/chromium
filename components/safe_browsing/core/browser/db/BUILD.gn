@@ -285,6 +285,10 @@ static_library("v4_test_util") {
     "//net:test_support",
     "//services/network/public/cpp",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("v4_update_protocol_manager") {

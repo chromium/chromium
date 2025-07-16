@@ -986,6 +986,10 @@ source_set("unit_tests") {
   if (use_blink) {
     deps += [ "//components/history_clusters/core:test_support" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("autocomplete_input_fuzzer") {
