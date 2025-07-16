@@ -1160,6 +1160,21 @@
             ]
         }
     ],
+    "AndroidWindowPopupLargeScreen": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidWindowPopupLargeScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnimatedDefaultBrowserPromoInFRE": [
         {
             "platforms": [
