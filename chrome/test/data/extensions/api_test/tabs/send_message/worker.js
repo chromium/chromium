@@ -19,14 +19,16 @@ chrome.test.runTests([
   function sendMessageWithCallback() {
     chrome.tabs.sendMessage(testTab.id, 'ping', (response) => {
       chrome.test.assertNoLastError();
-      chrome.test.assertEq('pong', response);
+      chrome.test.assertEq('pong', response.message);
+      chrome.test.assertEq(self.location.href, response.senderUrl);
       chrome.test.succeed();
     });
   },
 
   async function sendMessageWithPromise() {
     const response = await chrome.tabs.sendMessage(testTab.id, 'ping');
-    chrome.test.assertEq('pong', response);
+    chrome.test.assertEq('pong', response.message);
+    chrome.test.assertEq(self.location.href, response.senderUrl);
     chrome.test.succeed();
   }
 ]);

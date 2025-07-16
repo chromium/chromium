@@ -806,6 +806,7 @@ void MessageService::OpenChannelToTabImpl(
     source_url = source.GetRenderFrameHost()->GetLastCommittedURL();
   } else if (source.is_for_service_worker() && extension) {
     source_origin = extension->origin();
+    source_url = BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension);
   }
 
   BrowserContext* receiver_context = receiver_contents->GetBrowserContext();
