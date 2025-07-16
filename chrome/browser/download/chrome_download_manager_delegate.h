@@ -122,6 +122,7 @@ class ChromeDownloadManagerDelegate
       const std::string& request_origin,
       int64_t content_length,
       bool is_transient,
+      bool is_content_initiated,
       content::WebContents* web_contents) override;
   void GetSaveDir(content::BrowserContext* browser_context,
                   base::FilePath* website_save_dir,

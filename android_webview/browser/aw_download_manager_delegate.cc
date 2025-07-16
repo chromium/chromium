@@ -23,6 +23,7 @@ bool AwDownloadManagerDelegate::InterceptDownloadIfApplicable(
     const std::string& request_origin,
     int64_t content_length,
     bool is_transient,
+    bool is_content_initiated,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents)

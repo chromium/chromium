@@ -629,10 +629,11 @@ bool DownloadManagerImpl::InterceptDownload(
     }
   }
 
-  if (delegate_ && delegate_->InterceptDownloadIfApplicable(
-                       info.url(), user_agent, info.content_disposition,
-                       info.mime_type, info.request_origin, info.total_bytes,
-                       info.transient, web_contents)) {
+  if (delegate_ &&
+      delegate_->InterceptDownloadIfApplicable(
+          info.url(), user_agent, info.content_disposition, info.mime_type,
+          info.request_origin, info.total_bytes, info.transient,
+          info.is_content_initiated, web_contents)) {
     DropDownload();
     return true;
   }

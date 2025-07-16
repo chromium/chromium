@@ -1034,6 +1034,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     const std::string& request_origin,
     int64_t content_length,
     bool is_transient,
+    bool is_content_initiated,
     content::WebContents* web_contents) {
   PolicyBlocklistService* service =
       PolicyBlocklistFactory::GetForBrowserContext(profile_);
@@ -1052,7 +1053,9 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
   // the download corresponds to background service. Additionally we don't want
   // offline pages backend to intercept html files explicitly marked as
   // attachments.
-  if (!is_transient &&
+  // Also, we only want to respond to browser actions, like saving pages from
+  // a context menu, not content initiated actions. See crbug.com/425492793.
+  if (!is_transient && !is_content_initiated &&
       !net::HttpContentDisposition(content_disposition, std::string())
            .is_attachment() &&
       offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(url,

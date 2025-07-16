@@ -154,6 +154,7 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       const std::string& request_origin,
       int64_t content_length,
       bool is_transient,
+      bool is_content_initiated,
       WebContents* web_contents);
 
   // Retrieve the directories to save html pages and downloads to.
