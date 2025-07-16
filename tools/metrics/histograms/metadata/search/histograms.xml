@@ -41,6 +41,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Tabs" summary="Tabs"/>
 </variants>
 
+<variants name="ChoiceScreenContext">
+  <variant name=""/>
+  <variant name=".PostRestore"
+      summary="Recorded alongside the base histogram when eligibility is
+               checked during the session when we detect that the device has
+               been restored. Histograms from this session are recorded
+               before the client ID reset, under the old client ID."/>
+</variants>
+
 <variants name="ContextualSearchQuickActionCategory">
   <variant name=".Address" summary=""/>
   <variant name=".Email" summary=""/>
@@ -449,8 +458,9 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.ChoiceScreenEvents"
+<histogram name="Search.ChoiceScreenEvents{Context}"
     enum="SearchEngineChoiceScreenEvents" expires_after="2025-12-28">
+  <owner>dgn@chromium.org</owner>
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -459,13 +469,16 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     as Default' button and if this selection was in the FRE or not. On Desktop,
     if the choice screen is shown simultaneously in multiple browsers that all
     have the same profile, the display event is only recorded once.
+
+    {Context}
   </summary>
+  <token key="Context" variants="ChoiceScreenContext"/>
 </histogram>
 
-<histogram name="Search.ChoiceScreenNavigationConditions"
+<histogram name="Search.ChoiceScreenNavigationConditions{Context}"
     enum="SearchEngineChoiceScreenConditions" expires_after="2025-12-28">
   <owner>dgn@chromium.org</owner>
-  <owner>muellerj@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records the conditon state at page navigation for whether to display the
@@ -473,20 +486,26 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     state is being checked, which might be as often as every page navigation.
     The enum is shared with ChoiceScreenProfileInitConditions, and individual
     enum members might appear in only one histogram.
+
+    {Context}
   </summary>
+  <token key="Context" variants="ChoiceScreenContext"/>
 </histogram>
 
-<histogram name="Search.ChoiceScreenProfileInitConditions"
+<histogram name="Search.ChoiceScreenProfileInitConditions{Context}"
     enum="SearchEngineChoiceScreenConditions" expires_after="2025-12-28">
   <owner>dgn@chromium.org</owner>
-  <owner>muellerj@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records the conditon state at profile initialization for displaying the
     search engine choice screen that the profile is in. The enum is shared with
     ChoiceScreenNavigationConditions, and individual enum members might appear
     in only one histogram.
+
+    {Context}
   </summary>
+  <token key="Context" variants="ChoiceScreenContext"/>
 </histogram>
 
 <histogram name="Search.ChoiceScreenSelectedEngineIndex" units="index"

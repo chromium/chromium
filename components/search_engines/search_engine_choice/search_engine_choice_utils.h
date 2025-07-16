@@ -33,8 +33,14 @@ inline constexpr char
         "Search.ChoiceScreenProfileInitConditions";
 inline constexpr char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
     "Search.ChoiceScreenNavigationConditions";
+inline constexpr char kChoiceScreenProfileInitConditionsPostRestoreHistogram[] =
+    "Search.ChoiceScreenProfileInitConditions.PostRestore";
+inline constexpr char kChoiceScreenNavigationConditionsPostRestoreHistogram[] =
+    "Search.ChoiceScreenNavigationConditions.PostRestore";
 inline constexpr char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
+inline constexpr char kChoiceScreenEventsPostRestoreHistogram[] =
+    "Search.ChoiceScreenEvents.PostRestore";
 inline constexpr char
     kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
         "Search.ChoiceScreenDefaultSearchEngineType";

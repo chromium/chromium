@@ -402,18 +402,39 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 
 void SearchEngineChoiceService::RecordStaticEligibility(
     SearchEngineChoiceScreenConditions condition) {
+  if (base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+      client_->IsDeviceRestoreDetectedInCurrentSession()) {
+    base::UmaHistogramEnumeration(
+        kChoiceScreenProfileInitConditionsPostRestoreHistogram, condition);
+  }
+
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
 void SearchEngineChoiceService::RecordDynamicEligibility(
     SearchEngineChoiceScreenConditions condition) {
+  if (base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+      client_->IsDeviceRestoreDetectedInCurrentSession()) {
+    base::UmaHistogramEnumeration(
+        kChoiceScreenNavigationConditionsPostRestoreHistogram, condition);
+  }
+
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
 }
 
 void SearchEngineChoiceService::RecordChoiceScreenEvent(
     SearchEngineChoiceScreenEvents event) {
+  if (base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+      client_->IsDeviceRestoreDetectedInCurrentSession()) {
+    base::UmaHistogramEnumeration(kChoiceScreenEventsPostRestoreHistogram,
+                                  event);
+  }
+
   base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
                                 event);
 

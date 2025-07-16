@@ -1103,10 +1103,29 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       expected_eligibility_condition, 1);
+  if (GetParam().restore_detected_in_current_session &&
+      GetParam().is_feature_enabled) {
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kChoiceScreenProfileInitConditionsPostRestoreHistogram,
+        expected_eligibility_condition, 1);
+  } else {
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kChoiceScreenProfileInitConditionsPostRestoreHistogram,
+        0);
+  }
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
       expected_eligibility_condition, 1);
-
+  if (GetParam().restore_detected_in_current_session &&
+      GetParam().is_feature_enabled) {
+    histogram_tester_.ExpectUniqueSample(
+        search_engines::kChoiceScreenNavigationConditionsPostRestoreHistogram,
+        expected_eligibility_condition, 1);
+  } else {
+    histogram_tester_.ExpectTotalCount(
+        search_engines::kChoiceScreenNavigationConditionsPostRestoreHistogram,
+        0);
+  }
   histogram_tester_.ExpectTotalCount(
       search_engines::kSearchEngineChoiceRepromptSpecificCountryHistogram, 0);
   histogram_tester_.ExpectTotalCount(
