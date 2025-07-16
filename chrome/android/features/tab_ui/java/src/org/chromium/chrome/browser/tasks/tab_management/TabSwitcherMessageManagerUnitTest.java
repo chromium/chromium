@@ -54,9 +54,11 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -227,13 +229,20 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(1).when(mTabModel).getCount();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
 
+        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
-                        TabProperties.UiType.MESSAGE, MessageService.MessageType.ALL);
+                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
-                        TabProperties.UiType.LARGE_MESSAGE,
-                        MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.TAB_GROUP_SUGGESTION_MESSAGE,
+                        MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
@@ -255,13 +264,20 @@ public class TabSwitcherMessageManagerUnitTest {
     public void enterMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
 
+        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
-                        TabProperties.UiType.MESSAGE, MessageService.MessageType.ALL);
+                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         verify(mTabListCoordinator)
                 .removeSpecialListItem(
-                        TabProperties.UiType.LARGE_MESSAGE,
-                        MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.TAB_GROUP_SUGGESTION_MESSAGE,
+                        MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
@@ -347,23 +363,22 @@ public class TabSwitcherMessageManagerUnitTest {
 
     @Test
     public void dismissHandlerSkipWhenUnbound() {
-        @MessageService.MessageType
-        int messageType = MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
+        @MessageType int messageType = MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
         mMessageManager.dismissHandler(messageType);
         verify(mTabListCoordinator)
-                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+                .removeSpecialListItem(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, messageType);
         verify(mMessageUpdateObserver).onRemovedMessage();
 
         mMessageManager.unbind(mTabListCoordinator);
         verify(mTabListCoordinator, times(2))
-                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+                .removeSpecialListItem(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, messageType);
         verify(mMessageUpdateObserver).onRemovedMessage();
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
 
         mMessageManager.dismissHandler(messageType);
         // Not called again and doesn't crash.
         verify(mTabListCoordinator, times(2))
-                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+                .removeSpecialListItem(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, messageType);
         verify(mMessageUpdateObserver).onRemovedMessage();
     }
 }

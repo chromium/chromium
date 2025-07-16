@@ -42,7 +42,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -67,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -764,19 +764,18 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void messageItemNotDraggable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.IPH_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
 
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
-
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
 
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.CUSTOM_MESSAGE);
-        mMockViewHolder1.model = Mockito.mock(PropertyModel.class);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.TAB_GROUP_SUGGESTION_MESSAGE);
+        mMockViewHolder1.model = mock(PropertyModel.class);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
@@ -784,16 +783,16 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void messageItemSwipeable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.IPH_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertTrue(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
     }
 
     @Test
     public void messageItemSwipeable_archivedTabsMessageNotSwipable() {
-        PropertyModel model = Mockito.mock(PropertyModel.class);
+        PropertyModel model = mock(PropertyModel.class);
         when(model.get(MESSAGE_TYPE)).thenReturn(MessageType.ARCHIVED_TABS_MESSAGE);
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.CUSTOM_MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.ARCHIVED_TABS_MESSAGE);
         mMockViewHolder1.model = model;
 
         setupItemTouchHelperCallback(false);
@@ -802,7 +801,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void messageItemNotDropable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.IPH_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.canDropOver(
@@ -814,7 +813,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         PropertyModel model =
                 new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MESSAGE_TYPE, MessageType.ARCHIVED_TABS_MESSAGE)
-                        .with(CARD_TYPE, TabProperties.UiType.MESSAGE)
+                        .with(CARD_TYPE, UiType.ARCHIVED_TABS_IPH_MESSAGE)
                         .build();
 
         ViewHolder mockViewHolder = prepareMockViewHolder(model, mItemView2, POSITION2);
@@ -834,14 +833,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test(expected = AssertionError.class)
     public void messageItemOnMoveFail() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.IPH_MESSAGE);
         setupItemTouchHelperCallback(false);
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
     }
 
     @Test
     public void largeMessageItemNotDraggable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
@@ -849,14 +848,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void largeMessageItemSwipeable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertTrue(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
     }
 
     @Test
     public void largeMessageItemNotDropable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.canDropOver(
@@ -865,7 +864,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test(expected = AssertionError.class)
     public void largeMessageItemOnMoveFail() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
+        when(mMockViewHolder1.getItemViewType()).thenReturn(UiType.INCOGNITO_REAUTH_PROMO_MESSAGE);
         setupItemTouchHelperCallback(false);
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
     }
@@ -1257,7 +1256,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 spy(
                         new SimpleRecyclerViewAdapter.ViewHolder(
                                 mArchivedMsgItemView, /* binder= */ null));
-        when(mMockArchivedMsgViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.MESSAGE);
+        when(mMockArchivedMsgViewHolder.getItemViewType()).thenReturn(UiType.ARCHIVED_TABS_MESSAGE);
         when(mMockArchivedMsgViewHolder.getAdapterPosition())
                 .thenReturn(ARCHIVED_MSG_CARD_POSITION);
         when(mMockArchivedMsgViewHolder.getBindingAdapterPosition())
@@ -1286,7 +1285,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     private ViewHolder prepareMockViewHolder(PropertyModel model, View itemView, int position) {
         ViewHolder viewHolder = spy(new ViewHolder(itemView, /* binder= */ null));
-        when(viewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+        when(viewHolder.getItemViewType()).thenReturn(UiType.TAB);
         when(viewHolder.getAdapterPosition()).thenReturn(position);
         when(viewHolder.getBindingAdapterPosition()).thenReturn(position);
         viewHolder.model = model;

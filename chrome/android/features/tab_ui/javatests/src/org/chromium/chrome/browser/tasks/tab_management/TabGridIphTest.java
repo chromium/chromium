@@ -376,7 +376,7 @@ public class TabGridIphTest {
         RecyclerView.ViewHolder viewHolder =
                 ((RecyclerView) cta.findViewById(R.id.tab_list_recycler_view))
                         .findViewHolderForAdapterPosition(1);
-        assertEquals(TabProperties.UiType.MESSAGE, viewHolder.getItemViewType());
+        assertEquals(TabProperties.UiType.IPH_MESSAGE, viewHolder.getItemViewType());
 
         onView(
                         allOf(

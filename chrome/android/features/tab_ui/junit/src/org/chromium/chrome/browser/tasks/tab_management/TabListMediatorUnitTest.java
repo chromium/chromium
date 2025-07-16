@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
+import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
@@ -148,6 +149,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
@@ -521,8 +523,8 @@ public class TabListMediatorUnitTest {
         doAnswer(
                         invocation -> {
                             int position = invocation.getArgument(0);
-                            int itemType = mModelList.get(position).type;
-                            if (itemType == UiType.MESSAGE || itemType == UiType.LARGE_MESSAGE) {
+                            @UiType int itemType = mModelList.get(position).type;
+                            if (isMessageCard(itemType)) {
                                 return mGridLayoutManager.getSpanCount();
                             }
                             return 1;
@@ -1742,7 +1744,7 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(ARCHIVED_TABS_MESSAGE);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.CUSTOM_MESSAGE, model);
+        mMediator.addSpecialItemToModel(0, UiType.ARCHIVED_TABS_MESSAGE, model);
         assertThat(mModelList.size(), equalTo(3));
 
         // This crashed previously when it tried to update the message instead of the tab group
@@ -2895,10 +2897,10 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.MESSAGE, model);
+        mMediator.addSpecialItemToModel(0, UiType.PRICE_MESSAGE, model);
 
-        assertTrue(mModelList.size() > 0);
-        assertEquals(TabProperties.UiType.MESSAGE, mModelList.get(0).type);
+        assertTrue(!mModelList.isEmpty());
+        assertEquals(UiType.PRICE_MESSAGE, mModelList.get(0).type);
     }
 
     @Test
@@ -2907,18 +2909,18 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.MESSAGE, model);
-        assertEquals(TabProperties.UiType.MESSAGE, mModelList.get(0).type);
+        mMediator.addSpecialItemToModel(0, UiType.PRICE_MESSAGE, model);
+        assertEquals(UiType.PRICE_MESSAGE, mModelList.get(0).type);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         mMediator.resetWithListOfTabs(tabs, null, /* quickMode= */ false);
         assertThat(mModelList.size(), equalTo(2));
-        assertNotEquals(TabProperties.UiType.MESSAGE, mModelList.get(0).type);
-        assertNotEquals(TabProperties.UiType.MESSAGE, mModelList.get(1).type);
+        assertNotEquals(UiType.PRICE_MESSAGE, mModelList.get(0).type);
+        assertNotEquals(UiType.PRICE_MESSAGE, mModelList.get(1).type);
 
-        mMediator.addSpecialItemToModel(1, TabProperties.UiType.MESSAGE, model);
+        mMediator.addSpecialItemToModel(1, UiType.PRICE_MESSAGE, model);
         assertThat(mModelList.size(), equalTo(3));
-        assertEquals(TabProperties.UiType.MESSAGE, mModelList.get(1).type);
+        assertEquals(UiType.PRICE_MESSAGE, mModelList.get(1).type);
     }
 
     @Test
@@ -2928,7 +2930,7 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(null, null, false);
 
         try {
-            mMediator.addSpecialItemToModel(0, TabProperties.UiType.MESSAGE, new PropertyModel());
+            mMediator.addSpecialItemToModel(0, UiType.PRICE_MESSAGE, new PropertyModel());
         } catch (AssertionError e) {
             return;
         }
@@ -2940,17 +2942,18 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(null, null, false);
 
         PropertyModel model = mock(PropertyModel.class);
-        int expectedMessageType = FOR_TESTING;
-        int wrongMessageType = PRICE_MESSAGE;
+        @MessageType int expectedMessageType = IPH;
+        @MessageType int wrongMessageType = PRICE_MESSAGE;
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(expectedMessageType);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.MESSAGE, model);
+        when(model.containsKeyEqualTo(MESSAGE_TYPE, IPH)).thenReturn(true);
+        mMediator.addSpecialItemToModel(0, UiType.IPH_MESSAGE, model);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(TabProperties.UiType.MESSAGE, wrongMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.IPH_MESSAGE, wrongMessageType);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(TabProperties.UiType.MESSAGE, expectedMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.IPH_MESSAGE, expectedMessageType);
         assertEquals(0, mModelList.size());
     }
 
@@ -2959,18 +2962,18 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(null, null, false);
 
         PropertyModel model = mock(PropertyModel.class);
-        int expectedMessageType = PRICE_MESSAGE;
-        int wrongMessageType = IPH;
+        @MessageType int expectedMessageType = PRICE_MESSAGE;
+        @MessageType int wrongMessageType = IPH;
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(expectedMessageType);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
+        when(model.containsKeyEqualTo(MESSAGE_TYPE, PRICE_MESSAGE)).thenReturn(true);
+        mMediator.addSpecialItemToModel(0, UiType.PRICE_MESSAGE, model);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(TabProperties.UiType.MESSAGE, wrongMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.IPH_MESSAGE, wrongMessageType);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(
-                TabProperties.UiType.LARGE_MESSAGE, expectedMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.PRICE_MESSAGE, expectedMessageType);
         assertEquals(0, mModelList.size());
     }
 
@@ -2979,18 +2982,18 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(null, null, false);
 
         PropertyModel model = mock(PropertyModel.class);
-        int expectedMessageType = ARCHIVED_TABS_MESSAGE;
-        int wrongMessageType = IPH;
+        @MessageType int expectedMessageType = ARCHIVED_TABS_MESSAGE;
+        @MessageType int wrongMessageType = IPH;
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(expectedMessageType);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.CUSTOM_MESSAGE, model);
+        when(model.containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE)).thenReturn(true);
+        mMediator.addSpecialItemToModel(0, UiType.ARCHIVED_TABS_MESSAGE, model);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(TabProperties.UiType.MESSAGE, wrongMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.IPH_MESSAGE, wrongMessageType);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeSpecialItemFromModelList(
-                TabProperties.UiType.CUSTOM_MESSAGE, expectedMessageType);
+        mMediator.removeSpecialItemFromModelList(UiType.ARCHIVED_TABS_MESSAGE, expectedMessageType);
         assertEquals(0, mModelList.size());
     }
 
@@ -3262,8 +3265,7 @@ public class TabListMediatorUnitTest {
         // Create a PropertyModel that is not a tab and add it to the existing TabListModel.
         PropertyModel propertyModel = mock(PropertyModel.class);
         when(propertyModel.get(CARD_TYPE)).thenReturn(MESSAGE);
-        mMediator.addSpecialItemToModel(
-                mModelList.size(), TabProperties.UiType.MESSAGE, propertyModel);
+        mMediator.addSpecialItemToModel(mModelList.size(), UiType.IPH_MESSAGE, propertyModel);
         assertThat(mModelList.size(), equalTo(tabs.size() + 1));
 
         // TabListModel unchange check should ignore the non-Tab item.
@@ -3365,14 +3367,14 @@ public class TabListMediatorUnitTest {
     @Test
     public void testUpdateLayout_PriceMessage() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
 
         doAnswer(
                         invocation -> {
                             int position = invocation.getArgument(0);
                             int itemType = mModelList.get(position).type;
-                            if (itemType == TabProperties.UiType.LARGE_MESSAGE) {
+                            if (itemType == UiType.PRICE_MESSAGE) {
                                 return mGridLayoutManager.getSpanCount();
                             }
                             return 1;
@@ -3392,7 +3394,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testIndexOfNthTabCard() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
 
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModelList.indexOfNthTabCard(-1), equalTo(TabModel.INVALID_TAB_INDEX));
@@ -3404,7 +3406,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testIndexOfNthTabCardOrInvalid() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
 
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModelList.indexOfNthTabCardOrInvalid(-1), equalTo(TabModel.INVALID_TAB_INDEX));
@@ -3416,7 +3418,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabCardCountsBefore() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
 
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModelList.getTabCardCountsBefore(-1), equalTo(TabModel.INVALID_TAB_INDEX));
@@ -3429,7 +3431,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabIndexBefore() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModelList.getTabIndexBefore(2), equalTo(0));
         assertThat(mModelList.getTabIndexBefore(0), equalTo(TabModel.INVALID_TAB_INDEX));
@@ -3438,7 +3440,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testGetTabIndexAfter() {
         initAndAssertAllProperties();
-        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
         assertThat(mModelList.getTabIndexAfter(0), equalTo(2));
         assertThat(mModelList.getTabIndexAfter(2), equalTo(TabModel.INVALID_TAB_INDEX));
@@ -3474,7 +3476,7 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_MESSAGE);
-        mMediator.addSpecialItemToModel(1, TabProperties.UiType.LARGE_MESSAGE, model);
+        mMediator.addSpecialItemToModel(1, UiType.PRICE_MESSAGE, model);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
     }
 
@@ -3508,7 +3510,7 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_MESSAGE);
-        mMediator.addSpecialItemToModel(2, TabProperties.UiType.LARGE_MESSAGE, model);
+        mMediator.addSpecialItemToModel(2, UiType.PRICE_MESSAGE, model);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
         mModelList.removeAt(0);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
@@ -4165,12 +4167,12 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
         when(model.get(MESSAGE_TYPE)).thenReturn(FOR_TESTING);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.LARGE_MESSAGE, model);
+        mMediator.addSpecialItemToModel(0, UiType.PRICE_MESSAGE, model);
 
         assertTrue(mModelList.size() > 0);
         assertTrue(mMediator.specialItemExistsInModel(FOR_TESTING));
         assertFalse(mMediator.specialItemExistsInModel(PRICE_MESSAGE));
-        assertTrue(mMediator.specialItemExistsInModel(MessageService.MessageType.ALL));
+        assertTrue(mMediator.specialItemExistsInModel(MessageType.ALL));
     }
 
     @Test
@@ -4916,10 +4918,10 @@ public class TabListMediatorUnitTest {
 
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(TAB_GROUP);
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.TAB_GROUP, model);
+        mMediator.addSpecialItemToModel(0, UiType.TAB_GROUP, model);
 
         assertTrue(mModelList.size() > 0);
-        assertEquals(TabProperties.UiType.TAB_GROUP, mModelList.get(0).type);
+        assertEquals(UiType.TAB_GROUP, mModelList.get(0).type);
     }
 
     @Test
@@ -5097,10 +5099,10 @@ public class TabListMediatorUnitTest {
         assertEquals(1, mModelList.size());
 
         // Assert removing a tab type does nothing.
-        mMediator.removeListItemFromModelList(TabProperties.UiType.TAB_GROUP, ITEM1_ID);
+        mMediator.removeListItemFromModelList(UiType.TAB_GROUP, ITEM1_ID);
         assertEquals(1, mModelList.size());
 
-        mMediator.removeListItemFromModelList(TabProperties.UiType.TAB_GROUP, ITEM4_ID);
+        mMediator.removeListItemFromModelList(UiType.TAB_GROUP, ITEM4_ID);
         assertEquals(0, mModelList.size());
     }
 
@@ -5370,8 +5372,7 @@ public class TabListMediatorUnitTest {
     private void addSpecialItem(int index, @UiType int uiType, int itemIdentifier) {
         PropertyModel model = mock(PropertyModel.class);
         when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
-        if (uiType == TabProperties.UiType.MESSAGE
-                || uiType == TabProperties.UiType.LARGE_MESSAGE) {
+        if (isMessageCard(uiType)) {
             when(model.get(MESSAGE_TYPE)).thenReturn(itemIdentifier);
         }
         // Avoid auto-updating the layout when inserting the special card.

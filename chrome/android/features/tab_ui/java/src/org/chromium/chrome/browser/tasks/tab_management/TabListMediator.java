@@ -13,6 +13,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THUMBNAIL_FETCHER;
+import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isLargeMessageCard;
+import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -88,6 +90,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
@@ -2476,13 +2479,10 @@ class TabListMediator implements TabListNotificationHandler {
      * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link
      *     org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional identifier.
      */
-    void removeSpecialItemFromModelList(
-            @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
+    void removeSpecialItemFromModelList(@UiType int uiType, @MessageType int itemIdentifier) {
         int index = TabModel.INVALID_TAB_INDEX;
-        if (uiType == UiType.MESSAGE
-                || uiType == UiType.LARGE_MESSAGE
-                || uiType == UiType.CUSTOM_MESSAGE) {
-            if (itemIdentifier == MessageService.MessageType.ALL) {
+        if (isMessageCard(uiType)) {
+            if (itemIdentifier == MessageType.ALL) {
                 while (mModelList.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX) {
                     index = mModelList.lastIndexForMessageItem();
                     mModelList.removeAt(index);
@@ -2522,26 +2522,19 @@ class TabListMediator implements TabListNotificationHandler {
      * @param index The index of the item in the model list.
      */
     int getSpanCountForItem(GridLayoutManager manager, int index) {
-        int itemType = mModelList.get(index).type;
+        @UiType int itemType = mModelList.get(index).type;
 
-        if (itemType == TabProperties.UiType.MESSAGE
-                || itemType == TabProperties.UiType.LARGE_MESSAGE
-                || itemType == TabProperties.UiType.CUSTOM_MESSAGE) {
+        if (isMessageCard(itemType)) {
             return manager.getSpanCount();
         }
         return 1;
     }
 
-    private boolean validateItemAt(
-            int index, @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
-        if (uiType == UiType.MESSAGE
-                || uiType == UiType.LARGE_MESSAGE
-                || uiType == UiType.CUSTOM_MESSAGE) {
-            return mModelList.get(index).type == uiType
-                    && mModelList.get(index).model.get(MESSAGE_TYPE) == itemIdentifier;
-        }
-
-        return false;
+    private boolean validateItemAt(int index, @UiType int uiType, @MessageType int itemIdentifier) {
+        PropertyModel model = mModelList.get(index).model;
+        return isMessageCard(uiType)
+                && mModelList.get(index).type == uiType
+                && model.containsKeyEqualTo(MESSAGE_TYPE, itemIdentifier);
     }
 
     /**
@@ -2591,7 +2584,7 @@ class TabListMediator implements TabListNotificationHandler {
                 spanSizeSumForCurrentRow = 0;
             } else if (spanSizeSumForCurrentRow > spanCount) {
                 // Find a blank grid and break.
-                if (mModelList.get(index).type == TabProperties.UiType.LARGE_MESSAGE) break;
+                if (isLargeMessageCard(mModelList.get(index).type)) break;
                 spanSizeSumForCurrentRow = 0;
             }
         }
@@ -2740,8 +2733,8 @@ class TabListMediator implements TabListNotificationHandler {
      *     given {@code itemIdentifier} for its {@link PropertyModel} exists in the current {@link
      *     TabListModel}.
      */
-    boolean specialItemExistsInModel(@MessageService.MessageType int itemIdentifier) {
-        if (itemIdentifier == MessageService.MessageType.ALL) {
+    boolean specialItemExistsInModel(@MessageType int itemIdentifier) {
+        if (itemIdentifier == MessageType.ALL) {
             return mModelList.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX;
         }
         return mModelList.lastIndexForMessageItemFromType(itemIdentifier)

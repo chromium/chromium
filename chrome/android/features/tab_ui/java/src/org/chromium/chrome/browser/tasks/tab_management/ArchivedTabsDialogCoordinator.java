@@ -636,8 +636,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         if (mTabArchiveSettings.shouldShowDialogIph()) {
             if (tabListFirstShown) {
                 mTabListEditorCoordinator.registerItemType(
-                        TabProperties.UiType.MESSAGE,
-                        new LayoutViewBuilder(R.layout.resizable_tab_grid_message_card_item),
+                        UiType.ARCHIVED_TABS_IPH_MESSAGE,
+                        new LayoutViewBuilder<>(R.layout.resizable_tab_grid_message_card_item),
                         ResizableMessageCardViewBinder::bind);
             }
             mIphMessagePropertyModel =
@@ -645,7 +645,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                             mActivity, this::onIphReviewClicked, this::onIphDismissClicked);
             updateIphPropertyModel();
             mTabListEditorCoordinator.addSpecialListItem(
-                    0, UiType.MESSAGE, mIphMessagePropertyModel);
+                    0, UiType.ARCHIVED_TABS_IPH_MESSAGE, mIphMessagePropertyModel);
             mTabListEditorCoordinator.addTabListItemSizeChangedObserver(
                     mTabListItemSizeChangedObserver);
             RecordUserAction.record("Tabs.ArchivedTabsDialogIphShown");
@@ -918,7 +918,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabArchiveSettings.markDialogIphDismissed();
         assumeNonNull(mTabListEditorCoordinator);
         mTabListEditorCoordinator.removeSpecialListItem(
-                UiType.MESSAGE, MessageService.MessageType.ARCHIVED_TABS_IPH_MESSAGE);
+                UiType.ARCHIVED_TABS_IPH_MESSAGE, MessageType.ARCHIVED_TABS_IPH_MESSAGE);
         RecordUserAction.record("Tabs.ArchivedTabsDialogIphDismissed");
     }
 
@@ -938,7 +938,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         if (mTabArchiveSettings.shouldShowDialogIph()) {
             assumeNonNull(mIphMessagePropertyModel);
             mTabListEditorCoordinator.addSpecialListItem(
-                    0, UiType.MESSAGE, mIphMessagePropertyModel);
+                    0, UiType.ARCHIVED_TABS_IPH_MESSAGE, mIphMessagePropertyModel);
         }
     }
 

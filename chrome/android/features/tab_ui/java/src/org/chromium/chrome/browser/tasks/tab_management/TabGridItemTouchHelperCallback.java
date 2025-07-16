@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -191,11 +192,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
     boolean isMessageType(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder == null) return false;
-
         @UiType int type = viewHolder.getItemViewType();
-        return type == UiType.MESSAGE
-                || type == UiType.LARGE_MESSAGE
-                || type == UiType.CUSTOM_MESSAGE;
+        return isMessageCard(type);
     }
 
     boolean hasCollaboration(RecyclerView.@Nullable ViewHolder viewHolder) {
@@ -217,14 +215,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         final int dragFlags = isMessageType(viewHolder) ? 0 : mDragFlags;
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         // The archived tabs message can't be dismissed.
-        if (viewHolder.getItemViewType() == UiType.CUSTOM_MESSAGE) {
+        if (viewHolder.getItemViewType() == UiType.ARCHIVED_TABS_MESSAGE) {
             SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                     (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
             PropertyModel model = simpleViewHolder.model;
             assumeNonNull(model);
-            if (model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE) {
-                swipeFlags = 0;
-            }
+            swipeFlags = 0;
         }
 
         mRecyclerViewSupplier.set(recyclerView);
@@ -239,9 +235,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (isArchivedMessageCard(current)) {
             return canDropOnArchivalMessage((SimpleRecyclerViewAdapter.ViewHolder) target);
         }
-        if (target.getItemViewType() == TabProperties.UiType.MESSAGE
-                || target.getItemViewType() == TabProperties.UiType.LARGE_MESSAGE
-                || target.getItemViewType() == TabProperties.UiType.CUSTOM_MESSAGE) {
+        if (isMessageCard(target.getItemViewType())) {
             return false;
         }
         return super.canDropOver(recyclerView, current, target);

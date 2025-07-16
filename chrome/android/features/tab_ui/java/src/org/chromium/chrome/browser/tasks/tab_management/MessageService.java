@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class MessageService {
+    // TODO(crbug.com/431986099): Decouple tab list messages from the message service.
     @IntDef({
         MessageType.IPH,
         MessageType.PRICE_MESSAGE,

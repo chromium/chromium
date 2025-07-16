@@ -258,8 +258,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* undoBarExplicitTrigger= */ null);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
-                    UiType.MESSAGE,
-                    new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
+                    UiType.COLLABORATION_ACTIVITY_MESSAGE,
+                    new LayoutViewBuilder<>(R.layout.tab_grid_message_card_item),
                     MessageCardViewBinder::bind);
 
             mTabListOnScrollListener
@@ -588,12 +588,14 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Override
     public void addMessageCardItem(int position, PropertyModel messageCardModel) {
-        mTabListCoordinator.addSpecialListItem(position, UiType.MESSAGE, messageCardModel);
+        mTabListCoordinator.addSpecialListItem(
+                position, UiType.COLLABORATION_ACTIVITY_MESSAGE, messageCardModel);
     }
 
     @Override
     public void removeMessageCardItem(@MessageType int messageType) {
-        mTabListCoordinator.removeSpecialListItem(UiType.MESSAGE, messageType);
+        mTabListCoordinator.removeSpecialListItem(
+                UiType.COLLABORATION_ACTIVITY_MESSAGE, messageType);
     }
 
     @Override

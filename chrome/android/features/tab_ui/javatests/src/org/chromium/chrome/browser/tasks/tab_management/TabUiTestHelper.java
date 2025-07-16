@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -86,8 +85,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.io.File;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -813,41 +810,20 @@ public class TabUiTestHelper {
      * of children.
      */
     public static class ChildrenCountAssertion implements ViewAssertion {
-        @IntDef({ChildrenType.TAB, ChildrenType.TAB_SUGGESTION_MESSAGE})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface ChildrenType {
-            int TAB = 0;
-            int TAB_SUGGESTION_MESSAGE = 1;
-        }
-
         private final int mExpectedCount;
-        @ChildrenType private final int mExpectedChildrenType;
 
         public static ChildrenCountAssertion havingTabCount(int tabCount) {
-            return new ChildrenCountAssertion(ChildrenType.TAB, tabCount);
+            return new ChildrenCountAssertion(tabCount);
         }
 
-        public static ChildrenCountAssertion havingTabSuggestionMessageCardCount(int count) {
-            return new ChildrenCountAssertion(ChildrenType.TAB_SUGGESTION_MESSAGE, count);
-        }
-
-        public ChildrenCountAssertion(@ChildrenType int expectedChildrenType, int expectedCount) {
-            mExpectedChildrenType = expectedChildrenType;
+        public ChildrenCountAssertion(int expectedCount) {
             mExpectedCount = expectedCount;
         }
 
         @Override
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
-
-            switch (mExpectedChildrenType) {
-                case ChildrenType.TAB:
-                    checkTabCount(view);
-                    break;
-                case ChildrenType.TAB_SUGGESTION_MESSAGE:
-                    checkTabSuggestionMessageCard(view);
-                    break;
-            }
+            checkTabCount(view);
         }
 
         private void checkTabCount(View view) {
@@ -868,25 +844,6 @@ public class TabUiTestHelper {
                 }
             }
             assertEquals(mExpectedCount + nonTabCardCount, itemCount);
-        }
-
-        private void checkTabSuggestionMessageCard(View view) {
-            RecyclerView recyclerView = ((RecyclerView) view);
-            recyclerView.setItemAnimator(null); // Disable animation to reduce flakiness.
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-
-            int itemCount = adapter.getItemCount();
-            int tabSuggestionMessageCount = 0;
-
-            for (int i = 0; i < itemCount; i++) {
-                RecyclerView.ViewHolder viewHolder =
-                        recyclerView.findViewHolderForAdapterPosition(i);
-                if (viewHolder == null) return;
-                if (viewHolder.getItemViewType() == TabProperties.UiType.MESSAGE) {
-                    tabSuggestionMessageCount += 1;
-                }
-            }
-            assertEquals(mExpectedCount, tabSuggestionMessageCount);
         }
     }
 
