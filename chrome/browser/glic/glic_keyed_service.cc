@@ -224,15 +224,13 @@ void GlicKeyedService::OnZeroStateSuggestionsFetched(
     mojom::ZeroStateSuggestionsPtr suggestions,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
         callback,
-    std::optional<std::vector<std::string>> returned_suggestions) {
+    std::vector<std::string> returned_suggestions) {
   std::vector<mojom::SuggestionContentPtr> output_suggestions;
-  if (returned_suggestions) {
-    for (const std::string& suggestion_string : returned_suggestions.value()) {
-      output_suggestions.push_back(
-          mojom::SuggestionContent::New(suggestion_string));
-    }
-    suggestions->suggestions = std::move(output_suggestions);
+  for (const std::string& suggestion_string : returned_suggestions) {
+    output_suggestions.push_back(
+        mojom::SuggestionContent::New(suggestion_string));
   }
+  suggestions->suggestions = std::move(output_suggestions);
 
   std::move(callback).Run(std::move(suggestions));
 }
@@ -258,7 +256,7 @@ void GlicKeyedService::FetchZeroStateSuggestions(
                 base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
                                GetWeakPtr(), std::move(suggestions),
                                std::move(callback)),
-                std::nullopt));
+                std::vector<std::string>({})));
 
   } else {
     std::move(callback).Run(nullptr);

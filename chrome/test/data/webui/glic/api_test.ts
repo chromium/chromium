@@ -340,6 +340,7 @@ class ApiTests extends ApiTestFixtureBase {
     const suggestions = await sequence.next();
     assertTrue(!!suggestions);
     assertEquals(0, suggestions.suggestions.length);
+    assertEquals(false, suggestions.isPending);
   }
 
   async testGetZeroStateSuggestionsMultipleNavigations() {
@@ -350,12 +351,22 @@ class ApiTests extends ApiTestFixtureBase {
     const suggestions = await sequence.next();
     assertTrue(!!suggestions);
     assertEquals(0, suggestions.suggestions.length);
+    assertEquals(false, suggestions.isPending);
 
     // After a second navigation occurs.
     await this.advanceToNextStep();
+
+    // Should first get a pending state.
     const suggestions2 = await sequence.next();
     assertTrue(!!suggestions2);
-    assertEquals(3, suggestions2.suggestions.length);
+    // We don't care about the suggestions here.
+    assertEquals(true, suggestions2.isPending);
+
+    // Should later get the actual suggestions.
+    const suggestions3 = await sequence.next();
+    assertTrue(!!suggestions2);
+    assertEquals(3, suggestions3.suggestions.length);
+    assertEquals(false, suggestions3.isPending);
   }
 
   async testGetZeroStateSuggestionsFailsWhenHidden() {

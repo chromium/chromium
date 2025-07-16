@@ -403,6 +403,9 @@ struct ZeroStateSuggestions {
 struct ZeroStateSuggestionsV2 {
   // The list of suggestions to present to the user.
   array<SuggestionContent> suggestions;
+  // Whether there is a current outstanding request to generate suggestions for
+  // the current tab context.
+  bool is_pending;
 };
 
 // The options associated with the current zero state suggestions.

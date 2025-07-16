@@ -1457,6 +1457,11 @@ export declare interface ZeroStateSuggestionsV2 {
    * be empty.
    */
   suggestions: SuggestionContent[];
+  /**
+   * Whether there is a current outstanding request to generate suggestions for
+   * the current tab context.
+   */
+  isPending?: boolean;
 }
 
 /**

@@ -40,8 +40,7 @@ class ZeroStateSuggestionsRequest {
 
   // Adds a callback for this pending request that gets invoked when suggestions
   // have been returned.
-  void AddCallback(
-      base::OnceCallback<void(std::optional<std::vector<std::string>>)>);
+  void AddCallback(base::OnceCallback<void(std::vector<std::string>)>);
 
  private:
   friend class ContextualCueingServiceTestZeroStateSuggestions;
@@ -71,8 +70,7 @@ class ZeroStateSuggestionsRequest {
   optimization_guide::proto::ZeroStateSuggestionsRequest pending_base_request_;
 
   // The list of callbacks to invoke when model execution has completed.
-  base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>
-      pending_callbacks_;
+  base::OnceCallbackList<void(std::vector<std::string>)> pending_callbacks_;
 
   // Weak pointer to focused tab page data to cache suggestions later.
   base::WeakPtr<ZeroStateSuggestionsPageData> focused_tab_page_data_;

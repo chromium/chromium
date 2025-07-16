@@ -224,7 +224,7 @@ class GlicKeyedService : public KeyedService {
       glic::mojom::ZeroStateSuggestionsPtr suggestions,
       glic::mojom::WebClientHandler::
           GetZeroStateSuggestionsForFocusedTabCallback callback,
-      std::optional<std::vector<std::string>> returned_suggestions);
+      std::vector<std::string> returned_suggestions);
 
   void FinishPreload(bool should_preload);
   void FinishPreloadFre(bool should_preload);

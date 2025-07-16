@@ -44,7 +44,7 @@ namespace contextual_cueing {
 class ZeroStateSuggestionsRequest;
 
 using GlicSuggestionsCallbackList =
-    base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
+    base::OnceCallbackList<void(std::vector<std::string>)>;
 using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
 
 class ContextualCueingService

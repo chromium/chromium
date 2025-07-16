@@ -298,10 +298,11 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
 }
 
 void Host::NotifyZeroStateSuggestion(
-    std::optional<std::vector<std::string>> suggestions,
+    mojom::ZeroStateSuggestionsV2Ptr suggestions,
     mojom::ZeroStateSuggestionsOptions options) {
   if (primary_page_handler_) {
-    primary_page_handler_->ZeroStateSuggestionChanged(suggestions, options);
+    primary_page_handler_->ZeroStateSuggestionChanged(std::move(suggestions),
+                                                      std::move(options));
   }
 }
 

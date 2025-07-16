@@ -804,9 +804,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     if (!zeroStateData) {
       return {};
     } else {
-      return {
-        suggestions: {suggestions: zeroStateData.suggestions},
-      };
+      return {suggestions: zeroStateData};
     }
   }
   glicBrowserDropScrollToHighlight(): void {

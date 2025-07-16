@@ -62,11 +62,10 @@ bool IsGlicTabContextEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
 }
 
-void OnSuggestionsReceived(
-    base::TimeTicks fetch_begin_time,
-    GlicSuggestionsCallback callback,
-    std::optional<std::vector<std::string>> suggestions) {
-  base::UmaHistogramTimes(suggestions
+void OnSuggestionsReceived(base::TimeTicks fetch_begin_time,
+                           GlicSuggestionsCallback callback,
+                           std::vector<std::string> suggestions) {
+  base::UmaHistogramTimes(!suggestions.empty()
                               ? "ContextualCueing.GlicSuggestions."
                                 "SuggestionsFetchLatency.ValidSuggestions"
                               : "ContextualCueing.GlicSuggestions."
@@ -370,18 +369,18 @@ void ContextualCueingService::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
   if (!IsPageTypeEligibleForContextualSuggestions(
           web_contents->GetLastCommittedURL())) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (!IsGlicTabContextEnabled(pref_service_)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
@@ -399,7 +398,7 @@ void ContextualCueingService::
   zss_request_ptr->AddCallback(base::BindOnce(
       &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
 #else
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run({});
 #endif
 }
 
@@ -412,7 +411,7 @@ void ContextualCueingService::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
@@ -422,13 +421,13 @@ void ContextualCueingService::
         web_contents->GetLastCommittedURL());
   });
   if (pinned_web_contents.empty()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (!IsGlicTabContextEnabled(pref_service_)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
@@ -438,7 +437,7 @@ void ContextualCueingService::
   pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
 #else
-  std::move(callback).Run(std::nullopt);
+  std::move(callback).Run({});
 #endif
 }
 

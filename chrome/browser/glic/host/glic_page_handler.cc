@@ -1462,26 +1462,17 @@ void GlicPageHandler::AllowedChanged() {
 }
 
 void GlicPageHandler::ZeroStateSuggestionChanged(
-    std::optional<std::vector<std::string>> returned_suggestions,
+    mojom::ZeroStateSuggestionsV2Ptr returned_suggestions,
     mojom::ZeroStateSuggestionsOptions returned_options) {
   if (!web_client_handler_) {
     return;
   }
-  auto suggestions_v2 = mojom::ZeroStateSuggestionsV2::New();
-  std::vector<mojom::SuggestionContentPtr> output_suggestions;
-  if (returned_suggestions) {
-    for (const std::string& suggestion_string : returned_suggestions.value()) {
-      output_suggestions.push_back(
-          mojom::SuggestionContent::New(suggestion_string));
-    }
-    suggestions_v2->suggestions = std::move(output_suggestions);
-  }
+
   auto options = mojom::ZeroStateSuggestionsOptions::New();
   options->is_first_run = std::move(returned_options.is_first_run);
   options->supported_tools = std::move(returned_options.supported_tools);
-
   web_client_handler_->NotifyZeroStateSuggestionsChanged(
-      std::move(suggestions_v2), std::move(options));
+      std::move(returned_suggestions), std::move(options));
 }
 
 }  // namespace glic

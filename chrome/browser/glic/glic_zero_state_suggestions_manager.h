@@ -59,13 +59,13 @@ class GlicZeroStateSuggestionsManager {
   void OnZeroStateSuggestionsFetched(
       mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
           callback,
-      std::optional<std::vector<std::string>> returned_suggestions);
+      std::vector<std::string> returned_suggestions);
 
   // A helper function to route NotifyZeroStateSuggestions callbacks.
   void OnZeroStateSuggestionsNotify(
       bool is_first_run,
       const std::vector<std::string>& supported_tools,
-      std::optional<std::vector<std::string>> returned_suggestions);
+      std::vector<std::string> returned_suggestions);
 
   base::WeakPtr<GlicZeroStateSuggestionsManager> GetWeakPtr();
 
