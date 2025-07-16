@@ -136,6 +136,12 @@
       { start: "2020-07-25", domain: "seokho.dev" },
     ]
   },
+  "slightlyoff@chromium.org": {
+    affiliations: [
+      { start: "2008-12-01", domain: "google.com" },
+      { start: "2021-06-21", domain: "microsoft.com" },
+    ]
+  },
   "sohanjg@chromium.org": {
     affiliations: [
       { start: "2016-09-10", domain: "huawei.com" },
