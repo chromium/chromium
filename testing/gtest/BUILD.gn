@@ -68,6 +68,10 @@ static_library("gtest") {
   if (is_ios && gtest_include_ios_coverage) {
     public_deps += [ ":ios_coverage_utils" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # The file/directory layout of Google Test is not yet considered stable. Until
