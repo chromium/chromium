@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_window_watcher.h"
@@ -138,7 +139,8 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
   if (app_id == extension_misc::kGoogleDocsDemoAppId) {
     return DemoModeApp::kGoogleDocsChromeApp;
   }
-  if (app_id == extension_misc::kGoogleDocsPwaAppId) {
+  if (app_id == extension_misc::kGoogleDocsPwaAppId ||
+      app_id == ash::kGoogleDocsAppId) {
     return DemoModeApp::kGoogleDocsPwa;
   }
   if (app_id == extension_misc::kGoogleMeetPwaAppId) {
