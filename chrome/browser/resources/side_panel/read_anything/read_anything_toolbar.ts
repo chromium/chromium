@@ -9,6 +9,7 @@ import './menus/color_menu.js';
 import './menus/line_spacing_menu.js';
 import './menus/letter_spacing_menu.js';
 import './menus/highlight_menu.js';
+import './menus/rate_menu.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -32,6 +33,7 @@ import type {ColorMenuElement} from './menus/color_menu.js';
 import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
+import type {RateMenuElement} from './menus/rate_menu.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
@@ -40,7 +42,7 @@ import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export interface ReadAnythingToolbarElement {
   $: {
-    rateMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    rateMenu: RateMenuElement,
     colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenuElement,
     letterSpacingMenu: LetterSpacingMenuElement,
@@ -103,7 +105,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   static override get properties() {
     return {
-      rateOptions: {type: Array},
       isSpeechActive: {type: Boolean},
       isAudioCurrentlyPlaying: {type: Boolean},
       isReadAloudPlayable: {type: Boolean},
@@ -140,7 +141,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor isReadAloudPlayable: boolean = false;
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
-  accessor rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
   accessor settingsPrefs: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -467,10 +467,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return item === this.fontOptions_.indexOf(this.fontName_);
   }
 
-  protected isRateItemSelected_(item: number): boolean {
-    return item === this.rateOptions.indexOf(this.speechRate_);
-  }
-
   protected getFontItemLabel_(item: string): string {
     // Before fonts are loaded, append the loading text to the font names
     // so that the names will appear in the font menu like:
@@ -495,7 +491,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private closeMenus_() {
-    this.$.rateMenu.getIfExists()?.close();
     this.$.fontMenu.getIfExists()?.close();
   }
 
@@ -526,7 +521,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected onShowRateMenuClick_(event: MouseEvent) {
-    openMenu(this.$.rateMenu.get(), event.target as HTMLElement);
+    this.$.rateMenu.open(event.target as HTMLElement);
   }
 
   protected onVoiceSelectionMenuClick_(event: MouseEvent) {
@@ -627,20 +622,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
   }
 
-  protected onRateClick_(e: Event) {
-    const currentTarget = e.currentTarget as HTMLElement;
-    const index = Number.parseInt(currentTarget.dataset['index']!);
-
-    this.logger_.logSpeechSettingsChange(
-        ReadAloudSettingsChange.VOICE_SPEED_CHANGE);
-    // Log which rate is chosen by index rather than the rate value itself.
-    this.logger_.logVoiceSpeed(index);
-
-    this.speechRate_ = this.rateOptions[index]!;
-    chrome.readingMode.onSpeechRateChange(this.speechRate_);
-    this.fire(ToolbarEvent.RATE);
-
-    this.closeMenus_();
+  protected onRateChange_(event: CustomEvent<{data: number}>) {
+    this.speechRate_ = event.detail.data;
   }
 
   protected onFontSizeIncreaseClick_() {

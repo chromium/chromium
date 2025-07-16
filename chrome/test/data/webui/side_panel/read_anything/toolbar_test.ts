@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {stubAnimationFrame} from './common.js';
@@ -58,6 +58,16 @@ suite('Toolbar', () => {
       letterSpacingButton.click();
       assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
     });
+
+    test('has rate menu', () => {
+      stubAnimationFrame();
+      const rateButton = shadowRoot.querySelector<CrIconButtonElement>('#rate');
+
+      assertTrue(!!rateButton);
+      rateButton.click();
+
+      assertTrue(toolbar.$.rateMenu.$.menu.$.lazyMenu.get().open);
+    });
   });
 
   suite('without read aloud', () => {
@@ -86,6 +96,12 @@ suite('Toolbar', () => {
       assertTrue(!!letterSpacingButton);
       letterSpacingButton.click();
       assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
+    });
+
+    test('does not have rate menu', () => {
+      stubAnimationFrame();
+      const rateButton = shadowRoot.querySelector<CrIconButtonElement>('#rate');
+      assertFalse(!!rateButton);
     });
   });
 });

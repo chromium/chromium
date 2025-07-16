@@ -163,24 +163,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-action-menu>
   `}'>
   </cr-lazy-render-lit>
-  <cr-lazy-render-lit id="rateMenu" .template='${() => html`
-    <cr-action-menu accessibility-label="$i18n{voiceSpeedLabel}"
-        role-description="$i18n{menu}">
-      ${this.rateOptions.map((item, index) => html`
-        <button class="dropdown-item"
-            data-index="${index}"
-            @click="${this.onRateClick_}">
-          <cr-icon class="button-image check-mark
-              check-mark-hidden-${!this.isRateItemSelected_(index)}"
-              icon="read-anything-20:check-mark"
-              aria-label="$i18n{selected}">
-          </cr-icon>
-          ${item}x
-        </button>
-      `)}
-    </cr-action-menu>
-  `}'>
-  </cr-lazy-render-lit>
+  <rate-menu
+      id="rateMenu"
+      .settingsPrefs="${this.settingsPrefs}"
+      @rate-change="${this.onRateChange_}">
   <highlight-menu
       id="highlightMenu"
       .settingsPrefs="${this.settingsPrefs}"

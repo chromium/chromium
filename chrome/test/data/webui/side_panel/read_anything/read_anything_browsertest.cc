@@ -169,9 +169,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NextPrevious) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
-  RunSidePanelTest("side_panel/read_anything/rate_selection_test.js",
-                   "mocha.run()");
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateMenu) {
+  RunSidePanelTest("side_panel/read_anything/rate_menu_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {

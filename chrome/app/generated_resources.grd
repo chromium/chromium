@@ -9420,6 +9420,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_VOICE_SPEED_WITH_RATE" desc="Accessibility label for button that opens a dropdown with options for changing the speed of the voice for Read Aloud.">
         Voice speed <ph name="RATE">$1<ex>1</ex></ph>x
       </message>
+      <message name="IDS_READING_MODE_VOICE_SPEED_OPTION_TITLE" desc="Title for the dropdown menu options that change the speed of the voice for Read Aloud.">
+        <ph name="RATE">$1<ex>1.2</ex></ph>x
+      </message>
       <message name="IDS_READING_MODE_VOICE_SELECTION" desc="Accessibility label for button that opens a dropdown with options for changing the voice used for Read Aloud.">
         Voice selection
       </message>
