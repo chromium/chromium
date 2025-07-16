@@ -557,7 +557,10 @@ async def test_network_preflight(websocket, context_id, html, url_example,
             }
         })
 
-    [_, preflight_request, post_request] = await read_messages(3, sort=True)
+    [_, event_1, event_2] = await read_messages(3, sort=True)
+    preflight_request = event_1 if event_1["params"]["initiator"][
+        "type"] == "preflight" else event_2
+    post_request = event_1 if preflight_request != event_1 else event_2
 
     assert preflight_request == AnyExtending({
         'method': 'network.beforeRequestSent',
