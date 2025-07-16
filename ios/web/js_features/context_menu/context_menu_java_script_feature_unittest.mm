@@ -10,6 +10,7 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest_mac.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -51,22 +52,19 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchLinkElement) {
   }));
 }
 
-// TODO(crbug.com/40116514): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_FetchImageElement \
-  FetchImageElement
-#else
-#define MAYBE_FetchImageElement \
-  DISABLED_FetchImageElement
-#endif
-TEST_F(ContextMenuJavaScriptFeatureTest, MAYBE_FetchImageElement) {
+TEST_F(ContextMenuJavaScriptFeatureTest, FetchImageElement) {
+  net::EmbeddedTestServer test_server;
+  test_server.ServeFilesFromSourceDirectory(
+      base::FilePath("ios/testing/data/http_server_files/"));
+  ASSERT_TRUE(test_server.Start());
+
   NSString* html =
       @"<html><head>"
        "<style>body { font-size:14em; }</style>"
        "<meta name=\"viewport\" content=\"user-scalable=no, width=100\">"
        "</head><body><p><a href=\"http://destination/\"><img title=\"MyTitle\" "
        "alt=\"alt text\" height=100 width=100 "
-       "src=\"myimage.png\"/></a></p></body></html>";
+       "src=\"chromium_logo.png\"/></a></p></body></html>";
   LoadHtml(html);
 
   std::string request_id("123");
@@ -83,7 +81,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, MAYBE_FetchImageElement) {
             EXPECT_NSEQ(@"MyTitle", params.title_attribute);
             EXPECT_NSEQ(@"alt text", params.alt_text);
             EXPECT_EQ("http://destination/", params.link_url.spec());
-            EXPECT_EQ("https://chromium.test/myimage.png",
+            EXPECT_EQ("https://chromium.test/chromium_logo.png",
                       params.src_url.spec());
             callback_called = true;
           }));

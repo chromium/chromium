@@ -20,6 +20,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
@@ -36,6 +37,9 @@ const char kRequestId[] = "UNIQUE_IDENTIFIER";
 
 // The base url for loaded web pages.
 const char kTestUrl[] = "https://chromium.test/";
+
+// The path pointing to a sample image.
+const char kImagePath[] = "/chromium_logo.png";
 
 // A point in the web view's coordinate space on the image returned by
 // `GetHtmlForImage()`.
@@ -181,8 +185,8 @@ NSString* GetHtmlForImage() {
 
 // Returns html for an image styled to fill the width and top 25% of its
 // container.
-NSString* ImageHtmlWithSource(const char* source) {
-  return GetHtmlForImage(source, kImageAlt, /*title=*/nullptr,
+NSString* ImageHtmlWithSource(std::string source) {
+  return GetHtmlForImage(source.c_str(), kImageAlt, /*title=*/nullptr,
                          /*style=*/nullptr);
 }
 
@@ -204,6 +208,10 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
 
   void SetUp() override {
     web::JavascriptTest::SetUp();
+
+    test_server_.ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/"));
+    ASSERT_TRUE(test_server_.Start());
 
     AddGCrWebScript();
     AddCommonScript();
@@ -325,6 +333,8 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
         [body[@"x"] floatValue] * web_view().scrollView.zoomScale,
         [body[@"y"] floatValue] * web_view().scrollView.zoomScale);
   }
+
+  net::EmbeddedTestServer test_server_;
 
   // Handles script message responses sent from `web_view()`.
   CRWFakeScriptMessageHandler* script_message_handler_;
@@ -602,25 +612,15 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for both the image and the link
 // destination when the image source is a relative url.
-// TODO(crbug.com/40116514): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_FindLinkImageAtPointForRelativeUrl \
-  FindLinkImageAtPointForRelativeUrl
-#else
-#define MAYBE_FindLinkImageAtPointForRelativeUrl \
-  DISABLED_FindLinkImageAtPointForRelativeUrl
-#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       MAYBE_FindLinkImageAtPointForRelativeUrl) {
+       FindLinkImageAtPointForRelativeUrl) {
   const char image_link[] = "http://destination/";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
   ASSERT_TRUE(LoadHtml(html));
 
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -635,24 +635,15 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for both the image and the link when
 // the link points to JavaScript that is not a NOP.
-// TODO(crbug.com/40116514): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_FindImageLinkedToJavaScript FindImageLinkedToJavaScript
-#else
-#define MAYBE_FindImageLinkedToJavaScript DISABLED_FindImageLinkedToJavaScript
-#endif
-TEST_F(ContextMenuJsFindElementAtPointTest, MAYBE_FindImageLinkedToJavaScript) {
+TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
   const char image_link[] = "javascript:console.log('whatever')";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
 
   // A page with a link with some JavaScript that does not result in a NOP.
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -667,26 +658,16 @@ TEST_F(ContextMenuJsFindElementAtPointTest, MAYBE_FindImageLinkedToJavaScript) {
 
 // Tests that an image link returns details for only the image and not the link
 // when the link points to NOP JavaScript.
-// TODO(crbug.com/40116514): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_FindImageLinkedToNOPJavaScriptSemicolon \
-  FindImageLinkedToNOPJavaScriptSemicolon
-#else
-#define MAYBE_FindImageLinkedToNOPJavaScriptSemicolon \
-  DISABLED_FindImageLinkedToNOPJavaScriptSemicolon
-#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       MAYBE_FindImageLinkedToNOPJavaScriptSemicolon) {
+       FindImageLinkedToNOPJavaScriptSemicolon) {
   const char image_link[] = "javascript:;";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
+
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
 
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -701,25 +682,14 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for only the image and not the link
 // when the link points to NOP JavaScript.
-// TODO(crbug.com/40116514): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_FindImageLinkedToNOPJavaScriptVoid \
-  FindImageLinkedToNOPJavaScriptVoid
-#else
-#define MAYBE_FindImageLinkedToNOPJavaScriptVoid \
-  DISABLED_FindImageLinkedToNOPJavaScriptVoid
-#endif
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       MAYBE_FindImageLinkedToNOPJavaScriptVoid) {
+       FindImageLinkedToNOPJavaScriptVoid) {
   const char image_link[] = "javascript:void(0);";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
