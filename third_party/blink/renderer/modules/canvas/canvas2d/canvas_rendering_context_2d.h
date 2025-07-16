@@ -166,7 +166,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     }
 
     int buffer_count = 0;
-    auto* provider = canvas()->GetResourceProviderForCanvas2D();
+    auto* provider = GetResourceProviderForCanvas2D();
     if (provider) {
       buffer_count = 1;
       if (provider->IsAccelerated()) {
