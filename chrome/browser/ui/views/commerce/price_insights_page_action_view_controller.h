@@ -28,7 +28,7 @@ namespace commerce {
 // page's commerce-related context.
 class PriceInsightsPageActionViewController {
  public:
-  explicit PriceInsightsPageActionViewController(
+  PriceInsightsPageActionViewController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
 
