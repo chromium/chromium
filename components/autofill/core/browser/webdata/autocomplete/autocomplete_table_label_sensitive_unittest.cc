@@ -31,12 +31,15 @@ namespace autofill {
 
 namespace {
 
+using ::autofill::test::CreateTestFormField;
 using AutocompleteEntryLabelSensitiveSet =
     std::set<AutocompleteEntryLabelSensitive,
              bool (*)(const AutocompleteEntryLabelSensitive&,
                       const AutocompleteEntryLabelSensitive&)>;
-using base::Time;
-using testing::ElementsAre;
+using ::base::Time;
+using ::testing::ElementsAre;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 
 bool CompareAutocompleteEntries(const AutocompleteEntryLabelSensitive& a,
                                 const AutocompleteEntryLabelSensitive& b) {
@@ -61,15 +64,22 @@ AutocompleteEntryLabelSensitive MakeAutocompleteEntryLabelSensitive(
 }
 
 // Checks |actual| and |expected| contain the same elements.
-void CompareAutocompleteEntryLabelSensitiveSets(
+[[nodiscard]] testing::AssertionResult
+CompareAutocompleteEntryLabelSensitiveSets(
     const AutocompleteEntryLabelSensitiveSet& actual,
     const AutocompleteEntryLabelSensitiveSet& expected) {
-  ASSERT_EQ(expected.size(), actual.size());
+  if (actual.size() != expected.size()) {
+    return testing::AssertionFailure() << "Mismatching sizes: " << actual.size()
+                                       << " vs. " << expected.size();
+  }
   size_t count = 0;
   for (const auto& it : actual) {
     count += expected.count(it);
   }
-  EXPECT_EQ(actual.size(), count);
+  return (actual.size() == count) ? testing::AssertionSuccess()
+                                  : testing::AssertionFailure()
+                                        << "actual.size() = " << actual.size()
+                                        << " but count = " << count;
 }
 
 int GetAutocompleteEntryLabelSensitiveCount(const std::u16string& name,
@@ -88,15 +98,27 @@ int GetAutocompleteEntryLabelSensitiveCount(const std::u16string& name,
   return s.ColumnInt(0);
 }
 
+auto EqualsSearchResult(std::u16string value, int count) {
+  return AllOf(Property("AutocompleteSearchResultLabelSensitive::value",
+                        &AutocompleteSearchResultLabelSensitive::value, value),
+               Property("AutocompleteSearchResultLabelSensitive::count",
+                        &AutocompleteSearchResultLabelSensitive::count, count));
+}
+
 class AutocompleteTableLabelSensitiveTest : public testing::Test {
  protected:
+  const std::u16string kDefaultLabel = u"Your Name";
+  const std::u16string kDefaultName = u"your_name";
+  const std::u16string kDefaultValue = u"Superman";
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
     table_ = std::make_unique<AutocompleteTableLabelSensitive>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    changes_.clear();
+    ASSERT_EQ(db_->Init(file_), sql::INIT_OK);
   }
 
   void SetClock(base::Time target) {
@@ -114,8 +136,47 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
     task_environment_.AdvanceClock(delta);
   }
 
+  [[nodiscard]] FormFieldData CreateDefaultFieldWithValue(
+      std::u16string_view value) {
+    return test::CreateTestFormField(kDefaultLabel, kDefaultName, value,
+                                     FormControlType::kInputText);
+  }
+
+  [[nodiscard]] FormFieldData CreateDefaultField() {
+    return CreateDefaultFieldWithValue(kDefaultValue);
+  }
+
+  // Submits a vector of form fields to the table, returns true if successful.
+  [[nodiscard]] bool SubmitFormFields(
+      const std::vector<FormFieldData>& elements) {
+    return table().AddFormFieldValues(elements, &changes_);
+  }
+
+  // Submits a single form field to the table, returns true if successful.
+  [[nodiscard]] bool SubmitFormField(const FormFieldData& field) {
+    return SubmitFormFields({field});
+  }
+
+  // Will return optional field on successful submission, or std::nullopt if
+  // submission fails
+  [[nodiscard]] std::optional<FormFieldData>
+  CreateAndSubmitDefaultFieldWithValue(std::u16string_view value) {
+    FormFieldData field = CreateDefaultFieldWithValue(value);
+    if (!SubmitFormField(field)) {
+      return std::nullopt;
+    }
+    return field;
+  }
+
+  // Will return optional field on successful submission, or std::nullopt if
+  // submission fails
+  [[nodiscard]] std::optional<FormFieldData> CreateAndSubmitDefaultField() {
+    return CreateAndSubmitDefaultFieldWithValue(kDefaultValue);
+  }
+
   WebDatabase& db() { return *db_; }
   AutocompleteTableLabelSensitive& table() { return *table_; }
+  AutocompleteChangeLabelSensitiveList& changes() { return changes_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -124,170 +185,259 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AutocompleteTableLabelSensitive> table_;
   std::unique_ptr<WebDatabase> db_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  AutocompleteChangeLabelSensitiveList changes_;
 };
 
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete) {
-  const base::Time begin = base::Time::Now();
+// TODO(crbug.com/346507576): Add happy path tests
 
-  // Simulate the submission of a handful of entries in a field called "Name",
-  // some more often than others.
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"first_name");
-  field.set_label(u"First Name");
-  field.set_value(u"Superman");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
+using AddFormFieldValuesTest = AutocompleteTableLabelSensitiveTest;
 
-  std::vector<AutocompleteSearchResultLabelSensitive> v;
-  for (int i = 0; i < 5; ++i) {
-    field.set_value(u"Clark Kent");
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-    AdvanceClock(base::Seconds(2));
-  }
-  for (int i = 0; i < 3; ++i) {
-    field.set_value(u"Clark Sutter");
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-    AdvanceClock(base::Seconds(2));
-  }
-  for (int i = 0; i < 2; ++i) {
-    field.set_name(u"favorite_color");
-    field.set_label(u"Favorite Color");
-    field.set_value(u"Green");
-    EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-    AdvanceClock(base::Seconds(2));
-  }
+// Check that AddFormFieldValues correctly appends an ADD entry to change log
+// that is passed as an output parameter to AddFormFieldValues if no
+// autocomplete entry for the same key (field label + name + value) exists in
+// the database, yet.
+TEST_F(AddFormFieldValuesTest, InsertsNewEntry) {
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
 
-  // We have added the name Clark Kent 5 times, so count should be 5.
-  EXPECT_EQ(5, GetAutocompleteEntryLabelSensitiveCount(
-                   u"first_name", u"First Name", u"Clark Kent", &db()));
-
-  // Storing in the data base should be case sensitive, so there should be no
-  // database entry for clark kent lowercase.
-  EXPECT_EQ(0, GetAutocompleteEntryLabelSensitiveCount(
-                   u"first_name", u"First Name", u"clark kent", &db()));
-
-  EXPECT_EQ(2, GetAutocompleteEntryLabelSensitiveCount(
-                   u"favorite_color", u"Favorite Color", u"Green", &db()));
-
-  // This is meant to get a list of suggestions for Name and Label. The empty
-  // prefix in the second argument means it should return all suggestions for a
-  // name no matter what they start with. The order that the names occur in the
-  // list should be decreasing order by count and matching type(in this example
-  // only count matters).
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      u"first_name", u"First Name", std::u16string(), 6, v));
-  EXPECT_EQ(3U, v.size());
-  if (v.size() == 3) {
-    EXPECT_EQ(u"Clark Kent", v[0].value());
-    EXPECT_EQ(u"Clark Sutter", v[1].value());
-    EXPECT_EQ(u"Superman", v[2].value());
-  }
-
-  // If we query again limiting the list size to 1, we should only get the most
-  // frequent entry.
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      u"first_name", u"First Name", std::u16string(), 1, v));
-  EXPECT_EQ(1U, v.size());
-  if (v.size() == 1) {
-    EXPECT_EQ(u"Clark Kent", v[0].value());
-  }
-
-  // Querying for suggestions given a prefix is case-insensitive, so the prefix
-  // "cLa" should get suggestions for both Clarks.
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      u"first_name", u"First Name", u"cLa", 6, v));
-  EXPECT_EQ(2U, v.size());
-  if (v.size() == 2) {
-    EXPECT_EQ(u"Clark Kent", v[0].value());
-    EXPECT_EQ(u"Clark Sutter", v[1].value());
-  }
-
-  // Removing all elements since the beginning of this function should remove
-  // everything from the database.
-  changes.clear();
-  EXPECT_TRUE(table().RemoveFormElementsAddedBetween(begin, Time(), changes));
-
-  const auto kExpectedChanges = std::array{
-      AutocompleteChangeLabelSensitive(
-          AutocompleteChangeLabelSensitive::REMOVE,
-          AutocompleteKeyLabelSensitive(u"first_name", u"First Name",
-                                        u"Superman")),
-      AutocompleteChangeLabelSensitive(
-          AutocompleteChangeLabelSensitive::REMOVE,
-          AutocompleteKeyLabelSensitive(u"first_name", u"First Name",
-                                        u"Clark Kent")),
-      AutocompleteChangeLabelSensitive(
-          AutocompleteChangeLabelSensitive::REMOVE,
-          AutocompleteKeyLabelSensitive(u"first_name", u"First Name",
-                                        u"Clark Sutter")),
-      AutocompleteChangeLabelSensitive(
-          AutocompleteChangeLabelSensitive::REMOVE,
-          AutocompleteKeyLabelSensitive(u"favorite_color", u"Favorite Color",
-                                        u"Green")),
-  };
-  EXPECT_EQ(kExpectedChanges.size(), changes.size());
-  for (size_t i = 0; i < std::size(kExpectedChanges); ++i) {
-    EXPECT_EQ(kExpectedChanges[i], changes[i]);
-  }
-
-  EXPECT_EQ(0, GetAutocompleteEntryLabelSensitiveCount(
-                   u"first_name", u"First Name", u"Clark Kent", &db()));
-
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      u"first_name", u"First Name", std::u16string(), 6, v));
-  EXPECT_EQ(0U, v.size());
-
-  // Now add some values with empty strings.
-  const std::u16string kValue = u"  toto   ";
-
-  field.set_name(u"blank");
-  field.set_label(u"Blank");
-
-  field.set_value(std::u16string());
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-
-  field.set_value(u" ");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-
-  field.set_value(u"      ");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-
-  field.set_value(kValue);
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-
-  // They should be stored normally as the DB layer does not check for empty
-  // values.
-  v.clear();
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      u"blank", u"Blank", std::u16string(), 10, v));
-  EXPECT_EQ(4U, v.size());
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::ADD,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
 }
 
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_GetEntry_Populated) {
-  SetClock(autofill::test::kJune2017);
+// Check that AddFormFieldValues creates an UPDATE entry in the change log
+// that is passed as an output parameter to AddFormFieldValues if an
+// autocomplete entry with the same key (field label + name + value) exists in
+// the database already.
+TEST_F(AddFormFieldValuesTest, UpdatesExistingEntry) {
+  FormFieldData field = CreateDefaultField();
 
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"first_name");
-  field.set_label(u"First Name");
-  field.set_value(u"Superman");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
+  // Add new entry
+  ASSERT_TRUE(SubmitFormField(field));
+  changes().clear();
 
-  std::vector<AutocompleteSearchResultLabelSensitive> prefix_v;
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      field.name(), field.label(), u"Super", 10, prefix_v));
+  // Update existing entry
+  ASSERT_TRUE(SubmitFormField(field));
 
-  std::vector<AutocompleteSearchResultLabelSensitive> no_prefix_v;
-  EXPECT_TRUE(table().GetFormValuesForElementNameAndLabel(
-      field.name(), field.label(), u"", 10, no_prefix_v));
-
-  AutocompleteSearchResultLabelSensitive expected_entry(
-      field.value(), MatchingType::kNameAndLabel, 1);
-
-  EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
-  EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
+  EXPECT_THAT(changes(), ElementsAre(AutocompleteChangeLabelSensitive(
+                             AutocompleteChangeLabelSensitive::UPDATE,
+                             AutocompleteKeyLabelSensitive(
+                                 kDefaultName, kDefaultLabel, kDefaultValue))));
 }
 
+// Check that AddFormFieldValues modifies the underlying database by inserting
+// an entry and later incrementing the use count of the previously inserting
+// entry.
+TEST_F(AddFormFieldValuesTest, UpdatesExistingEntryCount) {
+  FormFieldData field = CreateDefaultField();
+
+  // Add new entry
+  ASSERT_TRUE(SubmitFormField(field));
+
+  // Update existing entry
+  ASSERT_TRUE(SubmitFormField(field));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            2);
+}
+
+// Check if AddFormFieldValues stores and queries the value of autocomplete
+// entry in case-sensitive manner.
+TEST_F(AddFormFieldValuesTest, StoresDataCaseSensitive) {
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    u"clark kent", &db()),
+            0);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    u"Clark Kent", &db()),
+            1);
+}
+
+// Check if AddFormFieldValues stores empty and whitespace values without any
+// changes.
+TEST_F(AddFormFieldValuesTest, StoresEmptyValuesAsIs) {
+  std::optional<FormFieldData> optional_empty_field =
+      CreateAndSubmitDefaultFieldWithValue(u"");
+  ASSERT_TRUE(optional_empty_field.has_value());
+  std::optional<FormFieldData> optional_whitespace_field =
+      CreateAndSubmitDefaultFieldWithValue(u"   ");
+  ASSERT_TRUE(optional_whitespace_field.has_value());
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                kDefaultName, kDefaultLabel,
+                optional_empty_field.value().value(), &db()),
+            1);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                kDefaultName, kDefaultLabel,
+                optional_whitespace_field.value().value(), &db()),
+            1);
+}
+
+// Check if AddFormFieldValues stores null terminated values as is in the
+// database.
+TEST_F(AddFormFieldValuesTest, InsertsNullTerminatedValuesAsIs) {
+  const std::u16string kValueNullTerminated(kDefaultValue,
+                                            std::size(kDefaultValue));
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(kValueNullTerminated).has_value());
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
+                                                    kDefaultValue, &db()),
+            1);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                kDefaultName, kDefaultLabel, kValueNullTerminated, &db()),
+            1);
+}
+
+// Check if additional form fields with identical name/label signature are
+// ignored by AddFormFieldValues.
+TEST_F(AddFormFieldValuesTest, InsertsOnlyOneEntryPerUniqueFieldName) {
+  // Add multiple values for "firstname" and "lastname" names.  Test that only
+  // first value of each gets added. Related to security issue:
+  // http://crbug.com/51727.
+
+  std::vector<FormFieldData> elements = {
+      CreateTestFormField(u"First Name", u"first_name", u"Joe",
+                          FormControlType::kInputText),
+      CreateTestFormField(u"First Name", u"first_name", u"Jane",
+                          FormControlType::kInputText),
+      CreateTestFormField(u"Last Name", u"last_name", u"Smith",
+                          FormControlType::kInputText),
+      CreateTestFormField(u"Last Name", u"last_name", u"Jones",
+                          FormControlType::kInputText)};
+
+  ASSERT_TRUE(SubmitFormFields(elements));
+
+  EXPECT_THAT(changes(),
+              ElementsAre(AutocompleteChangeLabelSensitive(
+                              AutocompleteChangeLabelSensitive::ADD,
+                              AutocompleteKeyLabelSensitive(
+                                  u"first_name", u"First Name", u"Joe")),
+                          AutocompleteChangeLabelSensitive(
+                              AutocompleteChangeLabelSensitive::ADD,
+                              AutocompleteKeyLabelSensitive(
+                                  u"last_name", u"Last Name", u"Smith"))));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                u"first_name", u"First Name", u"Joe", &db()),
+            1);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(u"last_name", u"Last Name",
+                                                    u"Smith", &db()),
+            1);
+}
+
+using GetFormValuesForElementNameAndLabelTest =
+    AutocompleteTableLabelSensitiveTest;
+
+// GetFormValuesForElementNameAndLabel returns the correct set of suggestions
+// for a given name/label and empty value prefix.
+TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsSuggestion) {
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/10,
+      entries));
+
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(kDefaultValue, 1)));
+}
+
+// When asked for 1 result, GetFormValuesForElementNameAndLabel returns the top
+// suggestion for given name/label and empty value prefix.
+TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsTopSuggestion) {
+  // Add 3 entries
+  std::optional<FormFieldData> optional_field = CreateAndSubmitDefaultField();
+  ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
+  ASSERT_TRUE(optional_field.has_value());
+  ASSERT_TRUE(
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
+
+  // Reinforce the first entry which should make it the top suggestion
+  ASSERT_TRUE(SubmitFormField(optional_field.value()));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/1,
+      entries));
+
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(kDefaultValue, 2)));
+}
+
+// When asked for multiple results, GetFormValuesForElementNameAndLabel returns
+// them in correct order based on frequency of previous submissions.
+TEST_F(GetFormValuesForElementNameAndLabelTest,
+       ReturnsMultipleSuggestionsInCorrectOrder) {
+  FormFieldData field1 = CreateDefaultFieldWithValue(u"Clark Kent");
+  FormFieldData field2 = CreateDefaultFieldWithValue(u"Clark Sutter");
+  // Add 2 entries, one with count 1, the other with count 2
+  ASSERT_TRUE(SubmitFormField(field1));
+  ASSERT_TRUE(SubmitFormField(field2));
+  ASSERT_TRUE(SubmitFormField(field2));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(), /*limit=*/10,
+      entries));
+
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(field2.value(), 2),
+                                   EqualsSearchResult(field1.value(), 1)));
+}
+
+// GetFormValuesForElementNameAndLabelTest should match the value prefix
+// case-insensitively.
+TEST_F(GetFormValuesForElementNameAndLabelTest, MatchesPrefixCaseInsensitive) {
+  std::optional<FormFieldData> optional_field =
+      CreateAndSubmitDefaultFieldWithValue(u"SUPERMAN");
+  ASSERT_TRUE(optional_field.has_value());
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      optional_field.value().name(), optional_field.value().label(),
+      /*prefix=*/u"superman",
+      /*limit=*/1, entries));
+
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           optional_field.value().value(), 1)));
+}
+
+// GetFormValuesForElementNameAndLabelTest should return the correct set of
+// suggestions when the provided value prefix narrows down the results.
+TEST_F(GetFormValuesForElementNameAndLabelTest, PrefixNarrowsDownResults) {
+  std::optional<FormFieldData> optional_field1 =
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Kent");
+  ASSERT_TRUE(optional_field1.has_value());
+  std::optional<FormFieldData> optional_field2 =
+      CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter");
+  ASSERT_TRUE(optional_field2.has_value());
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/u"clark ", /*limit=*/10,
+      entries));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries_narrowed_down;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/u"clark k", /*limit=*/10,
+      entries_narrowed_down));
+
+  EXPECT_THAT(entries,
+              UnorderedElementsAre(
+                  EqualsSearchResult(optional_field1.value().value(), 1),
+                  EqualsSearchResult(optional_field2.value().value(), 1)));
+  EXPECT_THAT(entries_narrowed_down, ElementsAre(EqualsSearchResult(
+                                         optional_field1.value().value(), 1)));
+}
+
+// TODO(crbug.com/346507576): Refactor into multiple tests:
+// 1. GetCountOfValuesContainedBetween_ReturnsCorrectCount
+// 2. GetCountOfValuesContainedBetween_ReturnsZeroIfNothingIsInTheInterval
+// 3. GetCountOfValuesContainedBetween_ReturnsValuesOnlyInTheInterval
+// 4. GetCountOfValuesContainedBetween_ReturnsEverythingForUnlimitedInterval
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_GetCountOfValuesContainedBetween) {
   AutocompleteChangeLabelSensitiveList changes;
@@ -358,6 +508,14 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(0, table().GetCountOfValuesContainedBetween(Time(), begin));
 }
 
+// TODO(crbug.com/346507576): Refactor into multiple tests:
+// 1. RemoveFormElementsAddedBetween_RemovesWhatIsInRange
+// 2. RemoveFormElementsAddedBetween_RemovesEverything
+// 3. RemoveFormElementsAddedBetween_EdistWhatIsBeforeAndDuringTheRange
+// 4. RemoveFormElementsAddedBetween_EdistWhatIsAfterAndDuringTheRange
+// 5. RemoveFormElementsAddedBetween_DoesNotRemoveBeforeTheRange
+// 6. RemoveFormElementsAddedBetween_DoesNotRemoveAfterTheRange
+// 7. RemoveFormElementsAddedBetween_DeletesEverythingOlderThan30Days
 TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_RemoveBetweenChanges) {
   const base::Time t1 = base::Time::Now();
   const base::Time t2 = t1 + base::Days(1);
@@ -389,29 +547,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_RemoveBetweenChanges) {
             changes[0]);
 }
 
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_AddChanges) {
-  AutocompleteChangeLabelSensitiveList changes;
-  autofill::FormFieldData field;
-  field.set_name(u"name");
-  field.set_label(u"Name");
-  field.set_value(u"Superman");
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::ADD,
-                AutocompleteKeyLabelSensitive(u"name", u"Name", u"Superman")),
-            changes[0]);
-
-  changes.clear();
-  AdvanceClock(base::Days(1));
-  EXPECT_TRUE(table().AddFormFieldValues({field}, &changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(AutocompleteChangeLabelSensitive(
-                AutocompleteChangeLabelSensitive::UPDATE,
-                AutocompleteKeyLabelSensitive(u"name", u"Name", u"Superman")),
-            changes[0]);
-}
-
+// TODO(crbug.com/346507576): Refactor into
+// UpdateAutocompleteEntries_AddsNewEntry
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_UpdateOneWithOneTimestamp) {
   AutocompleteEntryLabelSensitive entry(
@@ -429,6 +566,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(entry, all_entries[0]);
 }
 
+// TODO(crbug.com/346507576): Refactor into
+// UpdateAutocompleteEntries_OverridesExistingEntryAndSetsProperCount
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_UpdateOneWithTwoTimestamps) {
   AutocompleteEntryLabelSensitive entry(
@@ -446,6 +585,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(entry, all_entries[0]);
 }
 
+// TODO(crbug.com/346507576): should be covered in
+// UpdateAutocompleteEntries_AddsNewEntry
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_GetAutofillTimestamps) {
   AutocompleteEntryLabelSensitive entry(
@@ -461,6 +602,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(Time::FromTimeT(2), table_entry->date_last_used());
 }
 
+// TODO(crbug.com/346507576): Refactor into
+// UpdateAutocompleteEntries_AddsSeveralNewEntries
 TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateTwo) {
   AutocompleteEntryLabelSensitive entry0(
       MakeAutocompleteEntryLabelSensitive(u"foo", u"bar", u"baz0", 1, -1));
@@ -477,34 +620,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateTwo) {
                                                        &db()));
 }
 
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateNullTerminated) {
-  const char16_t kName[] = u"foo";
-  const char16_t kLabel[] = u"bar";
-  const char16_t kValue[] = u"baz";
-  // A value which contains terminating character.
-  std::u16string value(kValue, std::size(kValue));
-
-  AutocompleteEntryLabelSensitive entry0(
-      MakeAutocompleteEntryLabelSensitive(kName, kLabel, kValue, 1, -1));
-  AutocompleteEntryLabelSensitive entry1(
-      MakeAutocompleteEntryLabelSensitive(kName, kLabel, value, 2, 3));
-  std::vector<AutocompleteEntryLabelSensitive> entries;
-  entries.push_back(entry0);
-  entries.push_back(entry1);
-  ASSERT_TRUE(table().UpdateAutocompleteEntries(entries));
-
-  EXPECT_EQ(
-      1, GetAutocompleteEntryLabelSensitiveCount(kName, kLabel, kValue, &db()));
-  EXPECT_EQ(
-      2, GetAutocompleteEntryLabelSensitiveCount(kName, kLabel, value, &db()));
-
-  std::vector<AutocompleteEntryLabelSensitive> all_entries;
-  ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(2U, all_entries.size());
-  EXPECT_EQ(entry0, all_entries[0]);
-  EXPECT_EQ(entry1, all_entries[1]);
-}
-
+// TODO(crbug.com/346507576): Refactor into
+// UpdateAutocompleteEntries_OverridesExistingEntry
 TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateReplace) {
   AutocompleteChangeLabelSensitiveList changes;
   // Add a form field.  This will be replaced.
@@ -526,6 +643,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateReplace) {
   EXPECT_EQ(entry, all_entries[0]);
 }
 
+// TODO(crbug.com/346507576): Refactor into
+// UpdateAutocompleteEntries_AddsWithoutReplacing
 TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateDontReplace) {
   AutocompleteEntryLabelSensitive existing(MakeAutocompleteEntryLabelSensitive(
       u"name", u"Name", u"Superman", base::Time::Now().ToTimeT(), -1));
@@ -552,50 +671,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_UpdateDontReplace) {
   EXPECT_EQ(1U, expected_entries.count(entry));
 }
 
-TEST_F(AutocompleteTableLabelSensitiveTest, Autocomplete_AddFormFieldValues) {
-  // Add multiple values for "firstname" and "lastname" names.  Test that only
-  // first value of each gets added. Related to security issue:
-  // http://crbug.com/51727.
-  std::vector<autofill::FormFieldData> elements;
-  autofill::FormFieldData field;
-  field.set_name(u"firstname");
-  field.set_label(u"First Name");
-  field.set_value(u"Joe");
-  elements.push_back(field);
-
-  field.set_name(u"firstname");
-  field.set_label(u"First Name");
-  field.set_value(u"Jane");
-  elements.push_back(field);
-
-  field.set_name(u"lastname");
-  field.set_label(u"Last Name");
-  field.set_value(u"Smith");
-  elements.push_back(field);
-
-  field.set_name(u"lastname");
-  field.set_label(u"Last Name");
-  field.set_value(u"Jones");
-  elements.push_back(field);
-
-  std::vector<AutocompleteChangeLabelSensitive> changes;
-  table().AddFormFieldValues(elements, &changes);
-
-  ASSERT_EQ(2U, changes.size());
-  EXPECT_EQ(changes[0], AutocompleteChangeLabelSensitive(
-                            AutocompleteChangeLabelSensitive::ADD,
-                            AutocompleteKeyLabelSensitive(
-                                u"firstname", u"First Name", u"Joe")));
-  EXPECT_EQ(changes[1], AutocompleteChangeLabelSensitive(
-                            AutocompleteChangeLabelSensitive::ADD,
-                            AutocompleteKeyLabelSensitive(
-                                u"lastname", u"Last Name", u"Smith")));
-
-  std::vector<AutocompleteEntryLabelSensitive> all_entries;
-  ASSERT_TRUE(table().GetAllAutocompleteEntries(&all_entries));
-  ASSERT_EQ(2U, all_entries.size());
-}
-
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
   // Add an entry used only before the targeted range.
@@ -620,6 +697,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
                    field.name(), field.label(), field.value(), &db()));
 }
 
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
   // Add an entry used only after the targeted range.
@@ -645,6 +724,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
                    field.name(), field.label(), field.value(), &db()));
 }
 
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
   // Add an entry used entirely during the targeted range.
@@ -674,6 +755,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
                    field.name(), field.label(), field.value(), &db()));
 }
 
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
   SetClock(autofill::test::kJune2017);
@@ -711,6 +794,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(base::Time::Now() - base::Seconds(11), entry->date_last_used());
 }
 
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
   SetClock(autofill::test::kJune2017);
@@ -748,6 +833,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   EXPECT_EQ(base::Time::Now(), entry->date_last_used());
 }
 
+// TODO(crbug.com/346507576): remove, should be covered in
+// RemoveFormElementsAddedBetween
 TEST_F(AutocompleteTableLabelSensitiveTest,
        Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days) {
   // Add some form field entries.
@@ -788,8 +875,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   changes.clear();
 }
 
-// Tests that we set the change type to EXPIRE for expired elements and we
-// delete an old entry.
+// TODO(crbug.com/346507576): refactor to
+// "RemoveExpiredFormElements_RemovesExpiredEntries"
 TEST_F(AutocompleteTableLabelSensitiveTest,
        RemoveExpiredFormElements_Expires_DeleteEntry) {
   AutocompleteChangeLabelSensitiveList changes;
@@ -809,8 +896,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
             changes[0]);
 }
 
-// Tests that we don't
-// delete non-expired entries' data from the SQLite table.
+// TODO(crbug.com/346507576): refactor to
+// "RemoveExpiredFormElements_DoesNotRemoveNonExpiredEntries"
 TEST_F(AutocompleteTableLabelSensitiveTest,
        RemoveExpiredFormElements_NotOldEnough) {
   AutocompleteChangeLabelSensitiveList changes;
@@ -864,7 +951,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   AutocompleteEntryLabelSensitiveSet entry_set(entries.begin(), entries.end(),
                                                CompareAutocompleteEntries);
 
-  CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries);
+  EXPECT_TRUE(
+      CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries));
 }
 
 TEST_F(AutocompleteTableLabelSensitiveTest,
@@ -912,7 +1000,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   AutocompleteEntryLabelSensitiveSet entry_set(entries.begin(), entries.end(),
                                                CompareAutocompleteEntries);
 
-  CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries);
+  EXPECT_TRUE(
+      CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries));
 }
 
 TEST_F(AutocompleteTableLabelSensitiveTest,
@@ -949,7 +1038,8 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   AutocompleteEntryLabelSensitiveSet entry_set(entries.begin(), entries.end(),
                                                CompareAutocompleteEntries);
 
-  CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries);
+  EXPECT_TRUE(
+      CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries));
 }
 
 TEST_F(AutocompleteTableLabelSensitiveTest,

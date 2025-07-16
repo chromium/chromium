@@ -149,11 +149,17 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
                                                 std::string_view value,
                                                 FormControlType type);
 
+[[nodiscard]] FormFieldData CreateTestFormField(std::u16string_view label,
+                                                std::u16string_view name,
+                                                std::u16string_view value,
+                                                FormControlType type);
+
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
                                                 FormControlType type,
                                                 std::string_view autocomplete);
+
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,

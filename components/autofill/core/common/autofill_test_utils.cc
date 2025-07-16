@@ -156,12 +156,20 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   std::string_view name,
                                   std::string_view value,
                                   FormControlType type) {
+  return CreateTestFormField(base::UTF8ToUTF16(label), base::UTF8ToUTF16(name),
+                             base::UTF8ToUTF16(value), type);
+}
+
+FormFieldData CreateTestFormField(std::u16string_view label,
+                                  std::u16string_view name,
+                                  std::u16string_view value,
+                                  FormControlType type) {
   FormFieldData field;
   field.set_host_frame(MakeLocalFrameToken());
   field.set_renderer_id(MakeFieldRendererId());
-  field.set_label(base::UTF8ToUTF16(label));
-  field.set_name(base::UTF8ToUTF16(name));
-  field.set_value(base::UTF8ToUTF16(value));
+  field.set_label(std::u16string(label));
+  field.set_name(std::u16string(name));
+  field.set_value(std::u16string(value));
   field.set_form_control_type(type);
   field.set_is_focusable(true);
   return field;
@@ -332,9 +340,8 @@ FormData CreateTestEmailOrLoyaltyCardFormData() {
 
 FormData CreateTestMerchantPromoCodeFormData() {
   FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
-  form.set_fields(
-      {CreateTestFormField("Promo code", "promocode", /*value=*/"",
-                           FormControlType::kInputText)});
+  form.set_fields({CreateTestFormField("Promo code", "promocode", /*value=*/"",
+                                       FormControlType::kInputText)});
   return form;
 }
 
