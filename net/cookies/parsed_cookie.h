@@ -21,9 +21,6 @@ class CookieInclusionStatus;
 
 class NET_EXPORT ParsedCookie {
  public:
-  typedef std::pair<std::string, std::string> TokenValuePair;
-  typedef std::vector<TokenValuePair> PairList;
-
   // The maximum length allowed for a cookie string's name/value pair.
   static const size_t kMaxCookieNamePlusValueSize = 4096;
 
@@ -197,7 +194,7 @@ class NET_EXPORT ParsedCookie {
   // |index| refers to a position in |pairs_|.
   void ClearAttributePair(size_t index);
 
-  PairList pairs_;
+  std::vector<std::pair<std::string, std::string>> pairs_;
   // These will default to 0, but that should never be valid since the
   // 0th index is the user supplied cookie name/value, not an attribute.
   size_t path_index_ = 0;
