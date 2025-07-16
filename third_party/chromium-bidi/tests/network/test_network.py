@@ -523,3 +523,70 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
             "timestamp": ANY_TIMESTAMP
         }
     })
+
+
+@pytest.mark.asyncio
+async def test_network_preflight(websocket, context_id, html, url_example,
+                                 read_messages):
+    """ https://github.com/GoogleChromeLabs/chromium-bidi/issues/3570 """
+    url = html("hello world!",
+               same_origin=False,
+               headers={
+                   "Access-Control-Allow-Origin": "*",
+                   "Access-Control-Allow-Headers": "x-ping"
+               })
+
+    await goto_url(websocket, context_id, url)
+
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    # Initiate a non-trivial CORS request.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""
+                    fetch('{url_example}', {{
+                        method: 'PUT',
+                    }})
+                """,
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+            }
+        })
+
+    [_, preflight_request, post_request] = await read_messages(3, sort=True)
+
+    assert preflight_request == AnyExtending({
+        'method': 'network.beforeRequestSent',
+        'params': {
+            'context': context_id,
+            'initiator': {
+                'request': ANY_STR,
+                'type': 'preflight',
+            },
+            'request': {
+                'method': 'OPTIONS',
+                'request': ANY_STR,
+                'url': url_example,
+            },
+        },
+        'type': 'event',
+    })
+    initiator_request_id = preflight_request['params']['initiator']['request']
+
+    assert post_request == AnyExtending({
+        'method': 'network.beforeRequestSent',
+        'params': {
+            'context': context_id,
+            'request': {
+                'initiatorType': 'fetch',
+                'method': 'PUT',
+                'request': initiator_request_id,
+                'url': url_example,
+            },
+        },
+        'type': 'event',
+    })

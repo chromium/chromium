@@ -242,6 +242,30 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.beforeRequestSent');
       expect(event).to.exist;
     });
+
+    it('should report right context for preflight requests', async () => {
+      const initialRequest = new MockCdpNetworkEvents(cdpClient);
+      initialRequest.requestWillBeSent();
+
+      const preflightRrequest = new MockCdpNetworkEvents(cdpClient, {
+        requestId: 'ANOTHER_REQUEST_ID',
+        // Preflight requests don't have `frameId`.
+        frameId: null,
+        initiator: {
+          type: 'preflight',
+          url: initialRequest.url,
+          requestId: initialRequest.requestId,
+        },
+      });
+      preflightRrequest.requestWillBeSent();
+      preflightRrequest.requestWillBeSentExtraInfo();
+
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+      expect((event as Network.BeforeRequestSentParameters).context).to.equal(
+        MockCdpNetworkEvents.defaultFrameId,
+      );
+    });
   });
 
   describe('network.responseStarted', () => {

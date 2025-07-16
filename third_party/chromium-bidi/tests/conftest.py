@@ -613,11 +613,14 @@ def url_hang_forever_download(local_server_http):
 @pytest.fixture
 def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
-    def html(content="", same_origin=True):
+    def html(content="",
+             same_origin=True,
+             headers: dict[str, str] | None = None):
         if same_origin:
-            return local_server_http.url_200(content=content)
+            return local_server_http.url_200(content=content, headers=headers)
         else:
-            return local_server_http_another_host.url_200(content=content)
+            return local_server_http_another_host.url_200(content=content,
+                                                          headers=headers)
 
     return html
 
