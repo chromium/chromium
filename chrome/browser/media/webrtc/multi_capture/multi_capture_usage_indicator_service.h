@@ -19,6 +19,10 @@
 class NotificationDisplayService;
 class PrefService;
 
+namespace message_center {
+class Notification;
+}
+
 namespace web_app {
 class WebAppProvider;
 }  // namespace web_app
@@ -29,8 +33,9 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
  public:
   struct AllowListedAppNames {
     AllowListedAppNames(
-        std::map<webapps::AppId, std::string> show_capture_notification_apps,
-        std::map<webapps::AppId, std::string> skip_capture_notification_apps,
+        std::map<webapps::AppId, std::string> future_capture_notification_apps,
+        std::map<webapps::AppId, std::string>
+            future_capture_no_notification_apps,
         std::map<webapps::AppId, std::string>
             current_capture_notification_apps);
     ~AllowListedAppNames();
@@ -65,6 +70,11 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
       MultiCaptureUsageIndicatorBrowserTest,
       YouAreCapturedNotificationShowsIfAppInstalledAndAllowlisted);
 
+  message_center::Notification CreateActiveCaptureNotification(
+      const webapps::AppId& app_id,
+      const std::string& app_name,
+      bool should_reuse_future_notification_id);
+
   void ShowUsageIndicatorsOnStart();
   AllowListedAppNames GetInstalledAndAllowlistedAppNames() const;
   void ShowFutureMultiCaptureNotification(const AllowListedAppNames& apps);
@@ -84,7 +94,10 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
 
   // Stores started captures and stores a mapping `app_id` --> `label`.
   std::map<webapps::AppId, std::set<std::string>> started_captures_;
+  // Stores a mapping from `label` to the `app_id` of the app that is capturing
+  // with that `label`.
   std::map<std::string, webapps::AppId> label_to_app_id_;
+  std::set<webapps::AppId> notification_shown_for_app_id_;
 
   base::WeakPtrFactory<MultiCaptureUsageIndicatorService> weak_ptr_factory_{
       this};

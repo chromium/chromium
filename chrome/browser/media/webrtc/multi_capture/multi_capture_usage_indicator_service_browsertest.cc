@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(
                   GetParam().expected_icon_notification_message_after_capture),
               Property(&message_center::Notification::notifier_id,
                        Field(&message_center::NotifierId::id,
-                             "multi-capture-privacy-indicators"))))));
+                             "multi-capture-login-privacy-indicators"))))));
 
   if (expected_notification_count == 2) {
     EXPECT_THAT(
