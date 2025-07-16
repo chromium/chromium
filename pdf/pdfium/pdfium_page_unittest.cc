@@ -138,6 +138,24 @@ TEST_P(PDFiumPageTest, Constructor) {
   EXPECT_FALSE(page.available());
 }
 
+TEST_P(PDFiumPageTest, NonTextPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage page(engine.get(), 0);
+  EXPECT_FALSE(page.available());
+  EXPECT_FALSE(page.GetTextPage());
+  EXPECT_EQ(page.GetCharCount(), 0);
+
+  page.MarkAvailable();
+  EXPECT_TRUE(page.available());
+  EXPECT_TRUE(page.GetTextPage());
+  EXPECT_EQ(page.GetCharCount(), 0);
+}
+
 TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
