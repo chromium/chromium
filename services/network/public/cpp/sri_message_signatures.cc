@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/url_util.h"
+#include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
@@ -49,6 +50,20 @@ ParameterType ParamNameToType(std::string_view name) {
     return ParameterType::kStrictStructuredFieldSerialization;
   }
   NOTREACHED();
+}
+
+bool IsRequestComponent(
+    const mojom::SRIMessageSignatureComponentPtr& component) {
+  return std::ranges::any_of(component->params, [](const auto& p) {
+    return p->type == ParameterType::kRequest;
+  });
+}
+
+bool IsStrictlySerializedComponent(
+    const mojom::SRIMessageSignatureComponentPtr& component) {
+  return std::ranges::any_of(component->params, [](const auto& p) {
+    return p->type == ParameterType::kStrictStructuredFieldSerialization;
+  });
 }
 
 bool ItemHasBooleanParam(const net::structured_headers::ParameterizedItem& item,
@@ -95,9 +110,9 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
   auto result = mojom::SRIMessageSignatureComponent::New();
   result->name = name;
 
-  // The "unencoded-digest" component requires a single `sf` parameter with
-  // a `true` boolean value.
   if (name == "unencoded-digest") {
+    // The "unencoded-digest" component requires a single `sf` parameter with
+    // a `true` boolean value.
     if (!ItemHasBooleanParam(component, "sf") ||
         component.params.size() != 1u) {
       AddIssueFromErrorEnum(
@@ -108,6 +123,25 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     }
     result->params.push_back(ComponentParameter::New(
         ParameterType::kStrictStructuredFieldSerialization, std::nullopt));
+    return result;
+  } else if (!name.starts_with('@') && net::HttpUtil::IsValidHeaderName(name) &&
+             name == base::ToLowerASCII(name)) {
+    // All other headers may specify the `req` parameter:
+    //
+    // TODO(419441852): Perhaps we should support `bs` and `sf` as well?
+    for (const auto& param : component.params) {
+      if (param.second.is_boolean() && param.second.GetBoolean() &&
+          param.first == "req") {
+        result->params.push_back(ComponentParameter::New(
+            ParamNameToType(param.first), std::nullopt));
+      } else {
+        AddIssueFromErrorEnum(
+            mojom::SRIMessageSignatureError::
+                kSignatureInputHeaderInvalidHeaderComponentParameter,
+            issues);
+        return std::nullopt;
+      }
+    }
     return result;
   } else if (base::Contains(kDerivedComponents, name)) {
     // The `@status` derived component must not have any parameters (as it's
@@ -664,37 +698,41 @@ std::optional<std::string> ConstructSignatureBase(
       //         cannot be found in the message or the value cannot be obtained
       //         in the context, produce an error.
     } else {
+      // Grab the header from the request or response as appropriate, punting
+      // out of signature base generation if the header isn't present
       std::optional<std::string> header =
-          headers.GetNormalizedHeader(component->name);
+          IsRequestComponent(component)
+              ? url_request.extra_request_headers().GetHeader(component->name)
+              : headers.GetNormalizedHeader(component->name);
       if (!header.has_value()) {
+        // TODO(mkwst): We should have a more-specific error here.
         return std::nullopt;
       }
 
       // Determine how to serialize the header:
       //
-      // SRI requires the `sf` parameter, which forces strict serialization for
-      // structured fields.
-      if (component->params.size() != 1u ||
-          component->params[0]->type !=
-              ParameterType::kStrictStructuredFieldSerialization) {
-        return std::nullopt;
-      }
-
-      // Unfortunately, there doesn't seem to be a good way to decide how a
-      // given structured field should be serialized (as a Dictionary? List?),
-      // other than encoding a list of known headers and their types.
-      // Fortunately, we only support one header at the moment, so the list is
-      // manageable.
-      if (component->name == "unencoded-digest") {
-        std::optional<net::structured_headers::Dictionary> dict =
-            net::structured_headers::ParseDictionary(header.value());
-        if (!dict.has_value()) {
+      // Is it specified as a strictly-serialized structured field?
+      if (IsStrictlySerializedComponent(component)) {
+        // Unfortunately, there doesn't seem to be a good way to decide how a
+        // given structured field should be serialized (as a Dictionary? List?),
+        // other than encoding a list of known headers and their types.
+        // Fortunately, we only support one header at the moment, so the list is
+        // manageable.
+        if (component->name == "unencoded-digest") {
+          // TODO(mkwst): We shouldn't parse this header both here and in Blink.
+          // Ideally we'll migrate the implementation into the network stack.
+          std::optional<net::structured_headers::Dictionary> dict =
+              net::structured_headers::ParseDictionary(header.value());
+          if (!dict.has_value()) {
+            return std::nullopt;
+          }
+          component_value =
+              net::structured_headers::SerializeDictionary(dict.value());
+        } else {
           return std::nullopt;
         }
-        component_value =
-            net::structured_headers::SerializeDictionary(dict.value());
       } else {
-        return std::nullopt;
+        component_value = header.value();
       }
     }
     // 2.6. Append the covered component's canonicalized component value.

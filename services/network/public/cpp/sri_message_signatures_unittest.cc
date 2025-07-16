@@ -400,9 +400,6 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       {"signature=(\"@unknown-derived-components\")",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentName},
-      {"signature=(\"not-unencoded-digest\")",
-       mojom::SRIMessageSignatureError::
-           kSignatureInputHeaderInvalidComponentName},
       {"signature=(\"Unencoded-Digest\")",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentName},
@@ -414,7 +411,7 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
            kSignatureInputHeaderInvalidHeaderComponentParameter},
       {"signature=(\"something-else\" \"unencoded-digest\")",
        mojom::SRIMessageSignatureError::
-           kSignatureInputHeaderInvalidComponentName},
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
 
       // Invalid component params:
       {"signature=(\"unencoded-digest\")",
@@ -451,12 +448,6 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
        mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader},
 
       // One valid, one invalid component:
-      {"signature=(\"unencoded-digest\";sf \"unknown\")",
-       mojom::SRIMessageSignatureError::
-           kSignatureInputHeaderInvalidComponentName},
-      {"signature=(\"unknown\" \"unencoded-digest\";sf)",
-       mojom::SRIMessageSignatureError::
-           kSignatureInputHeaderInvalidComponentName},
       {"signature=(\"unencoded-digest\";sf \"@path\")",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidDerivedComponentParameter},
@@ -478,6 +469,9 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       {"signature=(\"unencoded-digest\";sf token;req)",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentType},
+      {"signature=(\"unencoded-digest\";sf \"header-with-sf\";sf)",
+       mojom::SRIMessageSignatureError::
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
       {"signature=(token;req \"unencoded-digest\";sf)",
        mojom::SRIMessageSignatureError::
            kSignatureInputHeaderInvalidComponentType},
@@ -491,7 +485,7 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
            kSignatureInputHeaderInvalidHeaderComponentParameter},
       {"signature=(\"@path\";req \"not-unencoded-digest\";sf)",
        mojom::SRIMessageSignatureError::
-           kSignatureInputHeaderInvalidComponentName},
+           kSignatureInputHeaderInvalidHeaderComponentParameter},
   };
 
   for (const auto& test : cases) {
@@ -1356,6 +1350,51 @@ TEST_F(SRIMessageSignatureBaseTest, UnknownParameters) {
   }
 }
 
+TEST_F(SRIMessageSignatureBaseTest, ArbitraryResponseHeaderComponent) {
+  const char* kTestHeaderName = "arbitrary-header";
+  const char* kTestHeaderValue = "test-value";
+
+  std::string input_header =
+      base::StrCat({"signature=(\"unencoded-digest\";sf \"arbitrary-header\");",
+                    "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+
+  std::stringstream expected_base;
+  expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                << "\"arbitrary-header\": " << kTestHeaderValue << '\n'
+                << "\"@signature-params\": (\"unencoded-digest\";sf "
+                   "\"arbitrary-header\");"
+                << "keyid=\"" << kPublicKey << "\";tag=\"ed25519-integrity\"";
+
+  auto headers = ValidHeadersPlusInput(input_header.c_str());
+
+  // First, verify failure when the header is missing:
+  {
+    ASSERT_FALSE(headers->HasHeader("arbitrary-header"));
+
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
+    EXPECT_FALSE(result.has_value());
+  }
+
+  // Then, add the header and verify success:
+  {
+    headers->AddHeader(kTestHeaderName, kTestHeaderValue);
+
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
+  }
+}
+
 //
 // Validation Tests
 //
@@ -1526,6 +1565,29 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
         mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
         parsed->issues[0]->error);
   }
+}
+
+TEST_F(SRIMessageSignatureValidationTest, MissingHeader) {
+  // This signature is valid for a base that includes "unencoded-digest".
+  // We'll try to validate it against a signature declaration that also
+  // includes "x-test-header". The signature base will be different, so
+  // validation should fail.
+  std::string input_header =
+      base::StrCat({"signature=(\"unencoded-digest\";sf \"x-test-header\");",
+                    "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+
+  auto headers =
+      Headers(kValidDigestHeader, kValidSignatureHeader, input_header);
+  // Not adding x-test-header.
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ(0u, parsed->issues.size());
+
+  EXPECT_FALSE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
+  ASSERT_EQ(1u, parsed->issues.size());
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
+            parsed->issues[0]->error);
 }
 
 class SRIMessageSignatureEnforcementTest
