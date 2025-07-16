@@ -4,8 +4,10 @@
 
 #include "chrome/browser/actor/browser_action_util.h"
 
+#include <cstdint>
 #include <optional>
 
+#include "base/base64.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
@@ -551,6 +553,20 @@ optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
   response.set_action_result(static_cast<int32_t>(result_code));
   response.set_tab_id(tab_id);
   return response;
+}
+
+std::string ToBase64(const optimization_guide::proto::BrowserAction& actions) {
+  size_t size = actions.ByteSizeLong();
+  std::vector<uint8_t> buffer(size);
+  actions.SerializeToArray(buffer.data(), size);
+  return base::Base64Encode(buffer);
+}
+
+std::string ToBase64(const optimization_guide::proto::Actions& actions) {
+  size_t size = actions.ByteSizeLong();
+  std::vector<uint8_t> buffer(size);
+  actions.SerializeToArray(buffer.data(), size);
+  return base::Base64Encode(buffer);
 }
 
 }  // namespace actor

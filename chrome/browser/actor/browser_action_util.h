@@ -80,6 +80,9 @@ optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
     mojom::ActionResultCode result_code,
     int32_t tab_id);
 
+std::string ToBase64(const optimization_guide::proto::BrowserAction& actions);
+std::string ToBase64(const optimization_guide::proto::Actions& actions);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_

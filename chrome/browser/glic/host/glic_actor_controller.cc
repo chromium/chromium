@@ -150,6 +150,11 @@ void GlicActorController::Act(
   // the API should have support to deal with this case (Should we return an
   // empty observation? Should we return an error?).
   auto* actor_service = actor::ActorKeyedService::Get(profile_);
+
+  actor_service->GetJournal().Log(
+      GURL(), TaskId(action.task_id()), "GlicActInFocusedTab",
+      absl::StrFormat("Proto: %s", actor::ToBase64(action)));
+
   actor::ActorTask* task =
       action.has_task_id()
           ? actor_service->GetTask(actor::TaskId(action.task_id()))

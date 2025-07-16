@@ -391,6 +391,11 @@ void GlicKeyedService::PerformActions(
     return;
   }
 
+  auto* actor_service = actor::ActorKeyedService::Get(profile_);
+  actor_service->GetJournal().Log(
+      GURL(), actor::TaskId(actions.task_id()), "GlicPerformActions",
+      absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
+
   if (!actions.has_task_id()) {
     std::move(callback).Run(
         base::unexpected(mojom::PerformActionsErrorReason::kMissingTaskId));
@@ -398,7 +403,6 @@ void GlicKeyedService::PerformActions(
   }
 
   actor::TaskId task_id(actions.task_id());
-  auto* actor_service = actor::ActorKeyedService::Get(profile_);
 
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
   if (!requests.has_value()) {

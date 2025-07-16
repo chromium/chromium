@@ -235,6 +235,10 @@ ExperimentalActorExecuteActionFunction::Run() {
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(browser_context());
 
+  actor_service->GetJournal().Log(
+      GURL(), actor::TaskId(action.task_id()), "ExperimentalActorExecutAction",
+      absl::StrFormat("Proto: %s", actor::ToBase64(action)));
+
   // BuildToolRequest looks for tab_ids on the individual action structs since
   // that's where Glic puts them. However, the extension puts the tab_id on the
   // BrowserAction itself. Use the BrowserAction's tab_id as the fallback tab so
@@ -359,6 +363,10 @@ ExperimentalActorPerformActionsFunction::Run() {
   }
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  actor_service->GetJournal().Log(
+      GURL(), actor::TaskId(actions.task_id()), "ExperimentalActorExecutAction",
+      absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
+
   actor::TaskId task_id(actions.task_id());
 
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
