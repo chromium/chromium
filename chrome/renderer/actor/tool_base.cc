@@ -47,8 +47,9 @@ ToolBase::ValidateAndResolveTarget() const {
   if (target_->is_coordinate()) {
     const gfx::PointF coordinate_point(target_->get_coordinate());
     if (!IsPointWithinViewport(coordinate_point, frame_.get())) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds));
+      return base::unexpected(MakeResult(
+          mojom::ActionResultCode::kCoordinatesOutOfBounds,
+          absl::StrFormat("Point [%s]", coordinate_point.ToString())));
     }
     resolved_target.point = coordinate_point;
 

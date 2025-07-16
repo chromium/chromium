@@ -88,30 +88,12 @@ MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
-  if (target_->is_coordinate()) {
-    gfx::PointF move_point = gfx::PointF(target_->get_coordinate());
-    if (!IsPointWithinViewport(move_point, frame_.get())) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds,
-                     absl::StrFormat("Point [%s]", move_point.ToString())));
-    }
-
-    return move_point;
+  auto resolved_target = ValidateAndResolveTarget();
+  if (!resolved_target.has_value()) {
+    return base::unexpected(std::move(resolved_target.error()));
   }
 
-  blink::WebNode node = GetNodeFromId(frame_.get(), target_->get_dom_node_id());
-  if (node.IsNull()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
-  }
-
-  std::optional<gfx::PointF> move_point = InteractionPointFromWebNode(node);
-  if (!move_point.has_value()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kElementOffscreen));
-  }
-
-  return *move_point;
+  return resolved_target->point;
 }
 
 }  // namespace actor

@@ -282,6 +282,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
+  // Injecting a click to get focus if given a coordinate.
   if (std::holds_alternative<gfx::PointF>(validated_result->target)) {
     const gfx::PointF& coordinate =
         std::get<gfx::PointF>(validated_result->target);
@@ -348,6 +349,12 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
 
   CHECK(target_);
 
+  auto resolved_target = ValidateAndResolveTarget();
+  if (!resolved_target.has_value()) {
+    return base::unexpected(std::move(resolved_target.error()));
+  }
+
+  // Perform typing specific validation.
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.
     return base::unexpected(
@@ -372,22 +379,9 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   }
 
   if (target_->is_coordinate()) {
-    // Injecting a click first at the coordinate.
-    gfx::PointF coordinate = gfx::PointF(target_->get_coordinate());
-    if (!IsPointWithinViewport(coordinate, frame_.get())) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds));
-    }
-
-    return TargetAndKeys{coordinate, std::move(key_sequence)};
+    return TargetAndKeys{resolved_target->point, std::move(key_sequence)};
   } else {
-    int32_t dom_node_id = target_->get_dom_node_id();
-    WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
-    if (node.IsNull()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
-    }
-
+    const WebNode& node = resolved_target->node;
     if (!node.IsElementNode()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));

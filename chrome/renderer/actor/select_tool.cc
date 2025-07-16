@@ -80,19 +80,13 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
     return base::unexpected(MakeErrorResult());
   }
 
-  int32_t dom_node_id = target_->get_dom_node_id();
-
-  WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
-  if (node.IsNull()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
+  auto resolved_target = ValidateAndResolveTarget();
+  if (!resolved_target.has_value()) {
+    return base::unexpected(std::move(resolved_target.error()));
   }
 
-  if (!IsNodeWithinViewport(node)) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kElementOffscreen));
-  }
-
+  // Perform select validation on the resolved node.
+  const WebNode& node = resolved_target->node;
   WebSelectElement select = node.DynamicTo<WebSelectElement>();
   if (!select) {
     return base::unexpected(

@@ -111,16 +111,11 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
           MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
     }
   } else {
-    scrolling_element =
-        GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
-    if (scrolling_element.IsNull()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
+    auto resolved_target = ValidateAndResolveTarget();
+    if (!resolved_target.has_value()) {
+      return base::unexpected(std::move(resolved_target.error()));
     }
-    if (!IsNodeWithinViewport(scrolling_element)) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kElementOffscreen));
-    }
+    scrolling_element = resolved_target->node.DynamicTo<WebElement>();
   }
 
   gfx::Vector2dF offset_physical;
