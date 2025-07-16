@@ -41,11 +41,22 @@ namespace viz {
 class CopyOutputSharedImageResult;
 }  // namespace viz
 
+namespace wgpu::dawn::wire::client {
+class Device;
+class Texture;
+struct TextureDescriptor;
+}  // namespace wgpu::dawn::wire::client
+
 namespace gpu {
 
 namespace gles2 {
 class GLES2Interface;
 }  // namespace gles2
+
+namespace webgpu {
+class WebGPUInterface;
+enum MailboxFlags : uint32_t;
+}  // namespace webgpu
 
 class SharedImageInterface;
 class ClientSharedImageInterface;
@@ -57,6 +68,7 @@ struct SharedImageInfo;
 class SharedImageInterfaceHolder;
 class SharedImageTexture;
 class TestSharedImageInterface;
+class WebGPUTextureScopedAccess;
 
 struct ExportedSharedImage;
 
@@ -275,6 +287,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       InterfaceBase* gl_interface,
       const SyncToken& sync_token,
       bool readonly);
+
+  std::unique_ptr<WebGPUTextureScopedAccess> BeginWebGPUTextureAccess(
+      webgpu::WebGPUInterface* webgpu,
+      const SyncToken& sync_token,
+      const wgpu::dawn::wire::client::Device& device,
+      const wgpu::dawn::wire::client::TextureDescriptor& desc,
+      uint64_t usage,
+      webgpu::MailboxFlags mailbox_flags);
 
 #if BUILDFLAG(IS_WIN)
   // Allows client to indicate the |gpu_memory_buffer_| to pre map its shared
@@ -509,6 +529,42 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT RasterScopedAccess {
   const raw_ptr<InterfaceBase> raster_interface_;
   const raw_ptr<ClientSharedImage> shared_image_;
   bool readonly_;
+};
+
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT WebGPUTextureScopedAccess {
+ public:
+  WebGPUTextureScopedAccess(const WebGPUTextureScopedAccess&) = delete;
+  WebGPUTextureScopedAccess& operator=(const WebGPUTextureScopedAccess&) =
+      delete;
+  WebGPUTextureScopedAccess(WebGPUTextureScopedAccess&&) = delete;
+  WebGPUTextureScopedAccess& operator=(WebGPUTextureScopedAccess&&) = delete;
+
+  ~WebGPUTextureScopedAccess();
+
+  static SyncToken EndAccess(
+      std::unique_ptr<WebGPUTextureScopedAccess> scoped_access);
+
+  void SetNeedsPresent(bool needs_present);
+  const wgpu::dawn::wire::client::Texture& texture();
+
+ private:
+  friend class ClientSharedImage;
+  WebGPUTextureScopedAccess(
+      webgpu::WebGPUInterface* webgpu,
+      const scoped_refptr<ClientSharedImage>& shared_image,
+      const SyncToken& sync_token,
+      const wgpu::dawn::wire::client::Device& device,
+      const wgpu::dawn::wire::client::TextureDescriptor& desc,
+      uint64_t usage,
+      webgpu::MailboxFlags mailbox_flags);
+
+  const raw_ptr<webgpu::WebGPUInterface> webgpu_;
+  std::unique_ptr<wgpu::dawn::wire::client::Texture> texture_;
+  uint32_t device_id_ = 0;
+  uint32_t device_generation_ = 0;
+  uint32_t texture_id_ = 0;
+  uint32_t texture_generation_ = 0;
+  bool needs_present_ = false;
 };
 
 }  // namespace gpu

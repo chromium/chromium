@@ -93,10 +93,13 @@ source_set("client_sources") {
   ]
   deps = [
     ":gles2_interface",
+    ":webgpu_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",
     "//skia:buildflags",
+    "//third_party/dawn/include/dawn:cpp_headers_gen",
+    "//third_party/dawn/src/dawn/wire",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]

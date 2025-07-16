@@ -24,6 +24,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -32,6 +33,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
@@ -860,6 +862,18 @@ void ClientSharedImage::CopyNativeGmbToSharedMemoryAsync(
                                                   /*result=*/false));
 }
 
+std::unique_ptr<WebGPUTextureScopedAccess>
+ClientSharedImage::BeginWebGPUTextureAccess(
+    webgpu::WebGPUInterface* webgpu,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::TextureDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags) {
+  return base::WrapUnique(new WebGPUTextureScopedAccess(
+      webgpu, this, sync_token, device, desc, usage, mailbox_flags));
+}
+
 ExportedSharedImage::ExportedSharedImage() = default;
 ExportedSharedImage::~ExportedSharedImage() = default;
 
@@ -1002,6 +1016,67 @@ SyncToken RasterScopedAccess::EndAccess(
   scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
   raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   return sync_token;
+}
+
+WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
+    webgpu::WebGPUInterface* webgpu,
+    const scoped_refptr<ClientSharedImage>& shared_image,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::TextureDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags)
+    : webgpu_(webgpu) {
+  // Wait on any work using the image.
+  webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+
+  // Produce and inject image to WebGPU texture
+  webgpu::ReservedTexture reservation = webgpu_->ReserveTexture(
+      device.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
+  DCHECK(reservation.texture);
+
+  texture_ = base::WrapUnique(
+      new wgpu::Texture(wgpu::Texture::Acquire(reservation.texture)));
+  device_id_ = reservation.deviceId;
+  device_generation_ = reservation.deviceGeneration;
+  texture_id_ = reservation.id;
+  texture_generation_ = reservation.generation;
+
+  // This may fail because gl_backing resource cannot produce dawn
+  // representation.
+  webgpu_->AssociateMailbox(
+      device_id_, device_generation_, texture_id_, texture_generation_,
+      static_cast<uint64_t>(desc.usage), static_cast<uint64_t>(usage),
+      reinterpret_cast<const WGPUTextureFormat*>(desc.viewFormats),
+      base::checked_cast<GLuint>(desc.viewFormatCount), mailbox_flags,
+      shared_image->mailbox());
+}
+
+WebGPUTextureScopedAccess::~WebGPUTextureScopedAccess() = default;
+
+SyncToken WebGPUTextureScopedAccess::EndAccess(
+    std::unique_ptr<WebGPUTextureScopedAccess> scoped_access) {
+  webgpu::WebGPUInterface* webgpu = scoped_access->webgpu_;
+  SyncToken finished_access_token;
+  if (scoped_access->needs_present_) {
+    webgpu->DissociateMailboxForPresent(
+        scoped_access->device_id_, scoped_access->device_generation_,
+        scoped_access->texture_id_, scoped_access->texture_generation_);
+  } else {
+    webgpu->DissociateMailbox(scoped_access->texture_id_,
+                              scoped_access->texture_generation_);
+  }
+
+  webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+  return finished_access_token;
+}
+
+const wgpu::dawn::wire::client::Texture& WebGPUTextureScopedAccess::texture() {
+  return *texture_.get();
+}
+
+void WebGPUTextureScopedAccess::SetNeedsPresent(bool needs_present) {
+  needs_present_ = needs_present;
 }
 
 }  // namespace gpu

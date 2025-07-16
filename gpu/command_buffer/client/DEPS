@@ -10,7 +10,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-"shared_image_pool_unittest.cc": [
+  "client_shared_image.cc": [
+    "+third_party/dawn/include/dawn/wire/client/webgpu_cpp.h",
+  ],
+  "shared_image_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
   "fake_gpu_memory_buffer.cc": [
