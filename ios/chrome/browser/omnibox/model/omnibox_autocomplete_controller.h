@@ -123,6 +123,9 @@ struct OmniboxTextModel;
 - (void)startZeroSuggestRequestWithText:(const std::u16string&)text
                           userClobbered:(BOOL)userClobberedPermanentText;
 
+/// Called when a new omnibox session starts.
+- (void)resetSession;
+
 /// Closes the omnibox popup.
 - (void)closeOmniboxPopup;
 

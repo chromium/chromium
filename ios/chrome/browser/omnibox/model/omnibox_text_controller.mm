@@ -220,8 +220,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 
   if (_omniboxTextModel->SetInputInProgressNoNotify(inProgress)) {
-    if (_omniboxTextModel->user_input_in_progress && _autocompleteController) {
-      _autocompleteController->ResetSession();
+    if (_omniboxTextModel->user_input_in_progress) {
+      [self.omniboxAutocompleteController resetSession];
     }
     [self notifyClientOnUserInputInProgressChange:inProgress];
   }
@@ -909,8 +909,8 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxTextModel->SetInputInProgressNoNotify(true);
 
   if (changeToUserInputInProgress &&
-      _omniboxTextModel->user_input_in_progress && _autocompleteController) {
-    _autocompleteController->ResetSession();
+      _omniboxTextModel->user_input_in_progress) {
+    [self.omniboxAutocompleteController resetSession];
   }
 
   if (!(_omniboxTextModel->HasFocus())) {

@@ -427,6 +427,12 @@ using base::UserMetricsAction;
   [self startAutocompleteWithInput:input];
 }
 
+- (void)resetSession {
+  if (_autocompleteController) {
+    _autocompleteController->ResetSession();
+  }
+}
+
 - (void)closeOmniboxPopup {
   [self stopAutocompleteWithClearSuggestions:YES];
 }
