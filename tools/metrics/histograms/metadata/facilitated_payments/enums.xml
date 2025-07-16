@@ -56,6 +56,7 @@ reviewer.
   <int value="2" label="ShopeePay"/>
   <int value="3" label="Tngd"/>
   <int value="4" label="PromptPay"/>
+  <int value="5" label="Momo"/>
 </enum>
 
 <!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
