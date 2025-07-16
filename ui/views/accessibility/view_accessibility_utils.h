@@ -35,6 +35,10 @@ class VIEWS_EXPORT ViewAccessibilityUtils {
   // setting attributes both in the cache before it gets fully initialized and
   // during the initialization step, through the
   // `View::OnAccessibilityInitializing` function.
+  //
+  // Because this is a performance-intensive debugging check, call sites MUST
+  // be wrapped in a `DCHECK_IS_ON()` block to ensure it has no impact on
+  // release builds.
   static void ValidateAttributesNotSet(const ui::AXNodeData& new_data,
                                        const ui::AXNodeData& existing_data);
 };
