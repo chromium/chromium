@@ -8857,10 +8857,10 @@
   {
     "name": "shimless-rma-os-update",
     "owners": [
-      "gavinwill@chromium.org",
-      "cros-device-enablement@google.com"
+      "jeffulin@google.com",
+      "cros-shimless-tpe-eng@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 170
   },
   {
     "name": "shopping-alternate-server",
